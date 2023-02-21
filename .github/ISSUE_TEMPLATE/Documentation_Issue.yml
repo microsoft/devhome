@@ -1,0 +1,11 @@
+name: "📄 Documentation issue"
+description: Report issues on our documentation
+labels: 
+- Issue-Docs 
+body:
+- type: textarea
+  attributes: 
+    label: Provide a description of requested docs changes
+    placeholder: Briefly describe which document needs to be corrected and why.
+  validations:
+    required: true
