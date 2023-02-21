@@ -1,0 +1,55 @@
+name: "🐛 Bug report"
+description: Report errors or unexpected behavior
+labels: [Issue-Bug]
+body:
+- type: markdown
+  attributes:
+    value: |
+      Please make sure to [search for existing issues](https://github.com/microsoft/devhome/issues) before filing a new one!
+
+- type: input
+  attributes:
+    label: Dev Home version
+    placeholder: "0.1.3651.0"
+    description: 
+  validations:
+    required: false
+    
+- type: input
+  attributes:
+    label: Windows build number
+    placeholder: "10.0.23400.0"
+    description: |
+      Please run `ver` or `[Environment]::OSVersion`.
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Other software
+    description: If you're reporting a bug about our interaction with other software, what software? What versions?
+    placeholder: 
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Steps to reproduce
+    placeholder: Tell us the steps required to trigger your bug.
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: Expected behavior
+    description: If you want to include screenshots, paste them into the markdown editor below.
+    placeholder: What were you expecting?
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Actual behavior
+    placeholder: What happened instead?
+  validations:
+    required: true
