@@ -1,0 +1,47 @@
+name: "🌐 Localization/Translation issue"
+description: Report incorrect translations.
+labels:
+- Issue-Translation
+
+body:
+- type: markdown
+  attributes:
+    value: Please make sure to [search for existing issues](https://github.com/microsoft/devhome/issues) before filing a new one!
+
+- id: version
+  type: input
+  attributes:
+    label: Dev Home version
+    placeholder: "0.1.3651.0"
+    description: 
+  validations:
+    required: false
+
+- id: languageaffected
+  type: input
+  attributes:
+    label: 🌐 Language affected
+    placeholder: "German"
+  validations:
+    required: true
+
+- type: textarea
+  attributes: 
+    label: ❌ Actual phrase(s)
+    placeholder: What is there? Please include a screenshot - it's very helpful to us! 
+  validations:
+    required: true
+
+- type: textarea
+  attributes: 
+    label: ✔️ Expected phrase(s)
+    placeholder: What was expected?
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Why is the current translation wrong
+    placeholder: Why do you feel this is incorrect?
+  validations:
+    required: true
