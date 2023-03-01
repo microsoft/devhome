@@ -59,3 +59,10 @@ body:
     placeholder: What happened instead?
   validations:
     required: true
+
+- id: includedsysinfo
+  type: textarea
+  attributes:
+    label: Included System Information
+  validations:
+    required: false
