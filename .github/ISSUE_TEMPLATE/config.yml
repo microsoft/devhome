@@ -1,7 +1,7 @@
 blank_issues_enabled: true
 
 contact_links:
-  - name: 🔐 Microsoft Security Response Center
+  - name: Microsoft Security Response Center 🔐
     url: https://msrc.microsoft.com/create-report
     about: Please report security vulnerabilities here.
   
