@@ -1,0 +1,23 @@
+{
+  "navMenu": {
+    "groups": [
+      {
+        "identity": "main",
+        "tools": [
+          {
+            "identity": "DevHome.Dashboard",
+            "assembly": "DevHome.Dashboard",
+            "viewFullName": "DevHome.Dashboard.DashboardView",
+            "viewModelFullName": "DevHome.Dashboard.DashboardViewModel"
+          },
+          {
+            "identity": "DevHome.SetupFlow",
+            "assembly": "DevHome.SetupFlow",
+            "viewFullName": "DevHome.SetupFlow.Views.SetupFlowPage",
+            "viewModelFullName": "DevHome.SetupFlow.ViewModels.SetupFlowViewModel"
+          }
+        ]
+      }
+    ]
+  }
+}

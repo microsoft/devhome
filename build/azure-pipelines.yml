@@ -1,0 +1,325 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+parameters:
+  - name: SignOutput
+    type: boolean
+    default: False
+  - name: Platforms
+    type: object
+    default:
+    - x86
+    - x64
+    - arm64
+  - name: Configurations
+    type: object
+    default:
+    - Debug
+    - Release
+
+variables:
+  MSIXVersion: '0.100'
+  SDKVersion: '0.100'
+  solution: '**/DevHome.sln'
+  appxPackageDir: 'AppxPackages'
+  testOutputArtifactDir: 'TestResults'
+
+resources:
+  repositories:
+  - repository: templates_onebranch
+    type: git
+    name: OneBranch.Pipelines/GovernedTemplates
+    ref: refs/heads/main
+
+stages:
+- stage: SourceAnalysis
+  # This stage is expected to run in parallel with BuildWindowsAppSDK-Stages.
+  dependsOn: ''
+  jobs:
+  - job: SDLSourcesScanning
+    steps:
+    # Required by the Packaged ES SDL Templates.
+    - checkout: self
+
+    # Typically this has been done.
+    - task: NodeTool@0
+      displayName: 'Use Node >=8.6.0'
+      inputs:
+        versionSpec: '>=8.6.0'
+
+    - template: v2/Steps/PackageES/Windows.SDL.Sources.Analysis.OS.Undocked.yml@templates_onebranch
+      parameters:
+        globalsdl:
+          tsa:
+            # Not filing bugs for issues found by the scans just yet.
+            #enabled: true    
+            enabled: false
+          codeql:
+            # We currently don't disable other scans that are enabled by default. Just ensure that 
+            # scans that we are interested in are enabled.
+            psscriptanalyzer:
+              enable: true
+              break: true
+            credscan:
+              enable: true
+              break: true
+            policheck:
+              enable: true
+              break: true
+            antimalwarescan:
+              enable: true
+              break: true
+            armory:
+              enable: true
+              break: true
+            eslint:
+              enable: true
+              break: true
+
+    - task: Flawfinder@2
+      displayName: 'Run Flawfinder'
+      inputs:
+        targetFlawfinderPattern: '$(Build.SourcesDirectory)'
+        minRiskLevel: 2
+        onlyInputs: false
+
+- stage: Build_SDK
+  jobs:
+  - job: Build_SDK
+    steps:
+    - task: NuGetToolInstaller@1
+
+    - task: NuGetAuthenticate@0
+      inputs:
+        nuGetServiceConnections: 'DevHomeInternal'
+
+    - task: PowerShell@2
+      displayName: Build SDK
+      name: BuildSDKCommand
+      inputs:
+        filePath: 'Build.ps1'
+        arguments: -Configuration "Release" -SDKVersion $(SDKVersion) -BuildStep "sdk" -IsAzurePipelineBuild
+
+    - task: PublishPipelineArtifact@0
+      displayName: Publish Artifacts
+      inputs:
+        artifactName: SdkNugetPackage
+        targetPath: pluginsdk\_build
+
+    - task: PublishSymbols@2
+      displayName: Publish Symbols
+      inputs:
+        SearchPattern: '**/bin/**/*.pdb'
+        IndexSources: false
+        SymbolServerType: TeamServices
+        SymbolsProduct: DevHomeSDK
+
+- stage: Build_DevHome
+  dependsOn: Build_SDK
+  variables:
+    SDKVersion: $[stageDependencies.Build_SDK.Build_SDK.outputs['BuildSDKCommand.SDKVersion']]
+  jobs:
+  - ${{ each configuration in parameters.Configurations }}:
+    - ${{ each platform in parameters.Platforms }}:
+      - job: Build_${{ platform }}_${{ configuration }}
+        steps:
+        - task: NuGetToolInstaller@1
+
+        - task: NuGetAuthenticate@0
+          inputs:
+            nuGetServiceConnections: 'DevHomeInternal'
+
+        - task: PowerShell@2
+          displayName: Replace Stubbed Files
+          inputs:
+            filePath: 'build/scripts/Unstub.ps1'
+
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            buildType: 'current'
+            artifactName: 'SdkNugetPackage'
+            targetPath: '$(Pipeline.Workspace)\sdkArtifacts\'
+
+        - task: PowerShell@2
+          displayName: Build Dev Home
+          inputs:
+            filePath: 'Build.ps1'
+            arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -Version $(MSIXVersion) -SDKVersion $(SDKVersion) -SDKNugetSource $(Pipeline.Workspace)\sdkArtifacts\ -BuildStep "msix" -IsAzurePipelineBuild
+
+        - task: EsrpCodeSigning@2
+          inputs:
+            ConnectedServiceName: 'Xlang Code Signing'
+            FolderPath: '$(appxPackageDir)\${{ configuration }}'
+            Pattern: '*.msix'
+            signConfigType: 'inlineSignParams'
+            inlineOperation: |
+              [
+                {
+                  "keycode": "CP-230012",
+                  "operationSetCode": "SigntoolSign",
+                  "parameters": [
+                    {
+                      "parameterName": "OpusName",
+                      "parameterValue": "Microsoft"
+                    },
+                    {
+                      "parameterName": "OpusInfo",
+                      "parameterValue": "http://www.microsoft.com"
+                    },
+                    {
+                      "parameterName": "PageHash",
+                      "parameterValue": "/NPH"
+                    },
+                    {
+                      "parameterName": "FileDigest",
+                      "parameterValue": "/fd sha256"
+                    },
+                    {
+                      "parameterName": "TimeStamp",
+                      "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+                    }
+                  ],
+                  "toolName": "signtool.exe",
+                  "toolVersion": "6.2.9304.0"
+                }
+              ]
+            SessionTimeout: '60'
+            MaxConcurrency: '50'
+            MaxRetryAttempts: '5'
+
+        - task: PublishPipelineArtifact@0
+          displayName: Publish MSIX Artifacts
+          inputs:
+            artifactName: msix_${{ platform }}_${{ configuration }}
+            targetPath: $(appxPackageDir)\${{ configuration }}
+
+        - task: AzureKeyVault@1
+          inputs:
+            azureSubscription: 'DevHomeAzureServiceConnection'
+            KeyVaultName: 'DevHomeKeyVault'
+            SecretsFilter: 'ApiScanConnectionString'
+            RunAsPreJob: false
+
+        - task: APIScan@2
+          inputs:
+            softwareFolder: '$(Build.StagingDirectory)'
+            softwareName: 'Dev Home'
+            softwareVersionNum: '1.0'
+            softwareBuildNum: '$(Build.BuildId)'
+            symbolsFolder: 'SRV*http://symweb'
+          env:
+            AzureServicesAuthConnectionString: $(ApiScanConnectionString)
+
+        - task: Windows Application Driver@0
+          condition: and(always(), ne('${{ platform}}', 'arm64'))
+          inputs:
+            OperationType: 'Start'
+
+        - task: PowerShell@2
+          displayName: 'Run Unittests'
+          condition: ne('${{ platform}}', 'arm64')
+          inputs:
+            filePath: 'Test.ps1'
+            arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -IsAzurePipelineBuild
+
+        - task: Windows Application Driver@0
+          condition: and(always(), ne('${{ platform}}', 'arm64'))
+          inputs:
+            OperationType: 'Stop'
+            
+        - task: PublishBuildArtifacts@1
+          displayName: 'Publish Test Results'
+          condition: and(always(), ne('${{ platform}}', 'arm64'))
+          inputs:
+            PathtoPublish: $(testOutputArtifactDir)
+            artifactName: TestResults
+
+        - task: PublishTestResults@2
+          displayName: 'Add Test Results to ADO'
+          condition: and(always(), ne('${{ platform}}', 'arm64'))
+          inputs:
+            testResultsFormat: 'VSTest'
+            testResultsFiles: '*.trx'
+            searchFolder: '$(testOutputArtifactDir)'
+            mergeTestResults: true
+            failTaskOnFailedTests: true 
+            testRunTitle: '$(Agent.JobName)'
+            buildPlatform: '${{ platform }}'
+            buildConfiguration: '${{ configuration }}'
+
+        - task: PublishSymbols@2
+          displayName: Publish Symbols
+          inputs:
+            SearchPattern: '**/bin/**/*.pdb'
+            IndexSources: false
+            SymbolServerType: TeamServices
+            SymbolsProduct: DevHome
+
+- stage: Build_MsixBundle
+  dependsOn: Build_DevHome
+  jobs:
+  - job: Build_MsixBundles
+    steps:
+      - ${{ each configuration in parameters.Configurations }}:
+        - ${{ each platform in parameters.Platforms }}:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: msix_${{ platform }}_${{ configuration }}
+              targetPath: $(appxPackageDir)\${{ configuration }}
+
+        - task: PowerShell@2
+          displayName: Build MsixBundle
+          inputs:
+            filePath: 'Build.ps1'
+            arguments: -Configuration "${{ configuration }}" -Version $(MSIXVersion) -BuildStep "msixbundle" -IsAzurePipelineBuild
+
+        - task: EsrpCodeSigning@2
+          inputs:
+            ConnectedServiceName: 'Xlang Code Signing'
+            FolderPath: 'AppxBundles\${{ configuration }}'
+            Pattern: '*.msixbundle'
+            signConfigType: 'inlineSignParams'
+            inlineOperation: |
+              [
+                {
+                  "keycode": "CP-230012",
+                  "operationSetCode": "SigntoolSign",
+                  "parameters": [
+                    {
+                      "parameterName": "OpusName",
+                      "parameterValue": "Microsoft"
+                    },
+                    {
+                      "parameterName": "OpusInfo",
+                      "parameterValue": "http://www.microsoft.com"
+                    },
+                    {
+                      "parameterName": "PageHash",
+                      "parameterValue": "/NPH"
+                    },
+                    {
+                      "parameterName": "FileDigest",
+                      "parameterValue": "/fd sha256"
+                    },
+                    {
+                      "parameterName": "TimeStamp",
+                      "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+                    }
+                  ],
+                  "toolName": "signtool.exe",
+                  "toolVersion": "6.2.9304.0"
+                }
+              ]
+            SessionTimeout: '60'
+            MaxConcurrency: '50'
+            MaxRetryAttempts: '5'
+
+        - task: PublishPipelineArtifact@0
+          displayName: Publish MSIX Bundle Artifacts
+          inputs:
+            artifactName: MsixBundle_${{ configuration }}
+            targetPath: AppxBundles\${{ configuration }}

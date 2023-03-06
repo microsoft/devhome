@@ -1,0 +1,33 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<UserControl
+    x:Class="DevHome.SetupFlow.RepoConfig.Views.RepoConfigView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow.Common/Styles/SetupToolStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <RelativePanel x:Name="RepoConfigRelativePanel">
+        <!-- Step x/x is from the parent.-->
+        <TextBlock x:Name="IntroTextBlock" FontSize="20"><Bold>Repository Connection</Bold></TextBlock>
+        <TextBlock x:Name="DescriptionTextBlock" RelativePanel.Below="IntroTextBlock">This page is for connection a repo.</TextBlock>
+        <Button x:Name="AddRepoButton" Click="AddRepoButton_Click" RelativePanel.Below="DescriptionTextBlock">
+            <TextBlock>
+                + Add
+            </TextBlock>
+        </Button>
+        <Image x:Name="CreateFromScratchImage" MaxWidth="400" Source="/Assets/CreateFromScratch.png" RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" />
+        <TextBlock x:Name="NoAccountCreatedTextBlock" RelativePanel.AlignHorizontalCenterWith="CreateFromScratchImage" RelativePanel.Below="CreateFromScratchImage">
+            No account is selected yet
+        </TextBlock>
+    </RelativePanel>
+</UserControl>

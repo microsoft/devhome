@@ -1,0 +1,117 @@
+﻿<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<pg:ToolPage
+    x:Class="DevHome.SetupFlow.Views.SetupFlowPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pg="using:DevHome.Common"
+    xmlns:mainPageViews="using:DevHome.SetupFlow.MainPage.Views"
+    xmlns:devVolumeViews="using:DevHome.SetupFlow.DevVolume.Views"
+    xmlns:repoConfigViews="using:DevHome.SetupFlow.RepoConfig.Views"
+    xmlns:appManagementViews="using:DevHome.SetupFlow.AppManagement.Views"
+    xmlns:reviewViews="using:DevHome.SetupFlow.Review.Views"
+    xmlns:loadingViews="using:DevHome.SetupFlow.Loading.Views"
+    xmlns:summaryViews="using:DevHome.SetupFlow.Summary.Views"
+    xmlns:configurationFileViews="using:DevHome.SetupFlow.ConfigurationFile.Views"
+    xmlns:selectors="using:DevHome.SetupFlow.Common.Selectors"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Common.Behaviors"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Display view for the current view-model -->
+        <ContentControl
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch"
+            Content="{x:Bind ViewModel.CurrentPageViewModel, Mode=OneWay}">
+            <ContentControl.ContentTemplateSelector>
+                <selectors:SetupFlowViewSelector>
+                    <selectors:SetupFlowViewSelector.MainPageTemplate>
+                        <DataTemplate>
+                            <mainPageViews:MainPageView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.MainPageTemplate>
+                    <selectors:SetupFlowViewSelector.DevVolumeTemplate>
+                        <DataTemplate>
+                            <devVolumeViews:DevVolumeView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.DevVolumeTemplate>
+                    <selectors:SetupFlowViewSelector.RepoConfigTemplate>
+                        <DataTemplate>
+                            <repoConfigViews:RepoConfigView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.RepoConfigTemplate>
+                    <selectors:SetupFlowViewSelector.AppManagementTemplate>
+                        <DataTemplate>
+                            <appManagementViews:AppManagementView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.AppManagementTemplate>
+                    <selectors:SetupFlowViewSelector.ReviewTemplate>
+                        <DataTemplate>
+                            <reviewViews:ReviewView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.ReviewTemplate>
+                    <selectors:SetupFlowViewSelector.LoadingTemplate>
+                        <DataTemplate>
+                            <loadingViews:LoadingView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.LoadingTemplate>
+                    <selectors:SetupFlowViewSelector.SummaryTemplate>
+                        <DataTemplate>
+                            <summaryViews:SummaryView />
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.SummaryTemplate>
+                    <selectors:SetupFlowViewSelector.ConfigurationFileTemplate>
+                        <DataTemplate>
+                            <configurationFileViews:ConfigurationFileView/>
+                        </DataTemplate>
+                    </selectors:SetupFlowViewSelector.ConfigurationFileTemplate>
+                </selectors:SetupFlowViewSelector>
+            </ContentControl.ContentTemplateSelector>
+        </ContentControl>
+
+        <Grid Grid.Row="1"
+              Padding="0 24"
+              BorderThickness="0 1 0 0"
+              BorderBrush="{ThemeResource ControlStrokeColorDefault}"
+              Visibility="{x:Bind ViewModel.CurrentPageViewModel.IsNavigationBarVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Main content-->
+            <ContentControl VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                <i:Interaction.Behaviors>
+                    <setupFlowBehaviors:SetupFlowNavigationContentBehavior />
+                </i:Interaction.Behaviors>
+            </ContentControl>
+
+            <!-- Right buttons -->
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                <HyperlinkButton Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
+                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel" />
+                <Button Command="{x:Bind ViewModel.GoToPreviousPageCommand, Mode=OneWay}"
+                        Visibility="{x:Bind ViewModel.IsPreviousButtonVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
+                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Previous" />
+                <Button Command="{x:Bind ViewModel.GoToNextPageCommand, Mode=OneWay}"
+                        Style="{StaticResource AccentButtonStyle}"
+                        Content="{x:Bind ViewModel.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</pg:ToolPage>

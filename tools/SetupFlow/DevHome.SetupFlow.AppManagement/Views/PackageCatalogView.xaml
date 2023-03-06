@@ -1,0 +1,84 @@
+<UserControl
+    x:Class="DevHome.SetupFlow.AppManagement.Views.PackageCatalogView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:DevHome.SetupFlow.AppManagement.ViewModels"
+    xmlns:views="using:DevHome.SetupFlow.AppManagement.Views"
+    xmlns:controls="using:CommunityToolkit.Labs.WinUI"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <StackPanel>
+        <!-- Card header -->
+        <controls:SettingsCard
+            Background="Transparent"
+            Header="{x:Bind Catalog.Name}"
+            Description="{x:Bind Catalog.Description}">
+            <controls:SettingsCard.Resources>
+                <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
+                <Thickness x:Key="SettingsCardPadding">0,0,0,15</Thickness>
+                <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
+                <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
+                <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
+                <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
+            </controls:SettingsCard.Resources>
+            <controls:SettingsCard.ActionIcon>
+                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE10A;"/>
+            </controls:SettingsCard.ActionIcon>
+            <HyperlinkButton
+                Grid.Column="1"
+                Visibility="{x:Bind Catalog.CanAddAllPackages, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                Command="{x:Bind Catalog.AddAllPackagesCommand}">
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AddAll" />
+            </HyperlinkButton>
+        </controls:SettingsCard>
+
+        <!-- Packages flip view -->
+        <FlipView
+            x:Name="PackagesFlipView"
+            SizeChanged="OnSizeChanged"
+            Background="Transparent"
+            ItemsSource="{x:Bind PackageGroups, Mode=OneWay}">
+            <FlipView.ItemTemplate>
+                <DataTemplate>
+                    <!-- Package group grid view -->
+                    <GridView
+                        ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                        VerticalAlignment="Top"
+                        ItemsSource="{Binding}"
+                        SelectionMode="None">
+                        <GridView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ItemsWrapGrid
+                                    Margin="20 0 20 0"
+                                    Loaded="OnItemsWrapGridLoaded"
+                                    Unloaded="OnItemsWrapGridUnloaded"
+                                    MaximumRowsOrColumns="3"
+                                    Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </GridView.ItemsPanel>
+                        <GridView.ItemTemplate>
+                            <DataTemplate x:DataType="viewmodels:PackageViewModel">
+                                <views:PackageView Width="190" Height="120" Package="{x:Bind Mode=OneWay}"/>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                    </GridView>
+                </DataTemplate>
+            </FlipView.ItemTemplate>
+        </FlipView>
+
+        <!-- Packages pagination -->
+        <PipsPager
+            Visibility="{x:Bind PagerVisibility,Mode=OneWay}"
+            HorizontalAlignment="Center"
+            Margin="0 15 0 0"
+            NumberOfPages="{x:Bind PackageGroups.Count, Mode=OneWay}"
+            SelectedPageIndex="{x:Bind Path=PackagesFlipView.SelectedIndex, Mode=TwoWay}" />
+    </StackPanel>
+</UserControl>

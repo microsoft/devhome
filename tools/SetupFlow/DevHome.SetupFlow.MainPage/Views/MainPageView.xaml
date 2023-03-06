@@ -1,0 +1,63 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<UserControl
+    x:Class="DevHome.SetupFlow.MainPage.Views.MainPageView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:views="using:DevHome.SetupFlow.MainPage.Views"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
+            <converters:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <ScrollViewer>
+        <StackPanel Spacing="30">
+            <!-- Top Banner (Only one visible) -->
+            <Grid>
+                <!-- Default/First run experience -->
+                <views:Banner
+                    Visibility="{x:Bind ViewModel.ShowAppListBackupBanner,Mode=OneWay,Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                    ButtonCommand="{x:Bind ViewModel.DefaultBannerButtonCommand,Mode=OneWay}"
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DefaultBanner"
+                    ImageSource="ms-appx:///DevHome.SetupFlow/Assets/MainPageDefaultBanner.png"/>
+
+                <!-- Application list backup -->
+                <!-- TODO Update ImageSource once available -->
+                <views:Banner
+                    ButtonCommand="{x:Bind ViewModel.AppListBackupBannerButtonCommand,Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.ShowAppListBackupBanner,Mode=OneWay,Converter={StaticResource BoolToVisibilityConverter}}"
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AppListBackupBanner"
+                    ImageSource="ms-appx:///DevHome.SetupFlow/Assets/MainPageDefaultBanner.png"/>
+            </Grid>
+
+            <StackPanel Spacing="5">
+                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_EnvironmentSetup" />
+                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
+                                   IsClickEnabled="True" Command="{x:Bind ViewModel.StartSetupCommand}" />
+                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile"
+                                   IsClickEnabled="True" Command="{x:Bind ViewModel.StartConfigurationFileCommand}" />
+            </StackPanel>
+
+            <StackPanel Spacing="5">
+                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
+                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos"
+                                   IsClickEnabled="True" Command="{x:Bind ViewModel.StartRepoConfigCommand}" />
+                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
+                                   IsClickEnabled="True" Command="{x:Bind ViewModel.StartAppManagementCommand}" />
+                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevVolume"
+                                   IsClickEnabled="True" Command="{x:Bind ViewModel.StartDevVolumeCommand}" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
