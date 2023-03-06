@@ -1,0 +1,356 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddAll.Text" xml:space="preserve">
+    <value>Add all</value>
+    <comment>Label for adding all items for selection</comment>
+  </data>
+  <data name="AddPackagesDescription.Text" xml:space="preserve">
+    <value>Select packages to restore from your backup, clone from repository, or search with Windows Package Manager.</value>
+    <comment>Description for Add packages page</comment>
+  </data>
+  <data name="AppListBackupBanner.Title" xml:space="preserve">
+    <value>Transfer developer machine settings</value>
+    <comment>Title text of an instruction banner section for transferring settings from a developer machine</comment>
+  </data>
+  <data name="AppListBackupBanner.Description" xml:space="preserve">
+    <value>Use Dev Home to quickly transfer you development machine settings from another PC to get back to coding.</value>
+    <comment>{Locked="Dev Home"}Description text of an instruction banner section for transferring settings from a developer machine</comment>
+  </data>
+  <data name="AppListBackupBanner.ButtonText" xml:space="preserve">
+    <value>Get started</value>
+    <comment>Button text for getting started with transferring settings from a developer machine</comment>
+  </data>
+  <data name="AppManagement.Description" xml:space="preserve">
+    <value>Install Applications</value>
+    <comment>Description for the application management page</comment>
+  </data>
+  <data name="AppManagement.Title" xml:space="preserve">
+    <value>Install Applications</value>
+    <comment>Title for the application management page</comment>
+  </data>
+  <data name="AgreeOnAbovePolicy.Content" xml:space="preserve">
+    <value>I have read, understand and agree to the above policy</value>
+    <comment>Checkbox label for reading, understanding and agreeing to policies presented above this label</comment>
+  </data>
+  <data name="ApplicationsSelectedCount" xml:space="preserve">
+    <value>{0} application(s) selected</value>
+    <comment>{Locked="{0}"} Label for the number of selected applications. {0} is replaced by the number of selected applications.</comment>
+  </data>
+  <data name="Browse.Content" xml:space="preserve">
+    <value>Browse</value>
+    <comment>Label for a browse button</comment>
+  </data>
+  <data name="Cancel.Content" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Label for a cancel button</comment>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+    <comment>Label for a close button</comment>
+  </data>
+  <data name="ConfigurationFileWindow.Title" xml:space="preserve">
+    <value>Configuration file name (Preview)</value>
+    <comment>Title of the configuration file window</comment>
+  </data>
+  <data name="ConfigurationFileTypeNotSupported" xml:space="preserve">
+    <value>The configuration file should be a YAML file. Windows 11 marks a visual evolutions of the operating system.</value>
+    <comment>Configuration file type not supported error message</comment>
+  </data>
+  <data name="ConfigurationFileWarning.Title" xml:space="preserve">
+    <value>Configuration file warning</value>
+    <comment>Title of the configuration file warning message</comment>
+  </data>
+  <data name="ConfigurationFileWarning.Message" xml:space="preserve">
+    <value>This is a test feature. Windows 11 marks a visual evolution of the operating system. We have evolved our design language alongside with Fluent to create a design which is human, universal and truly feels like Windows.</value>
+    <comment>Text of the configuration file warninig message</comment>
+  </data>
+  <data name="DefaultBanner.Title" xml:space="preserve">
+    <value>Get ready to code in minutes</value>
+    <comment>Title text of an instruction banner section for setting up a development machine</comment>
+  </data>
+  <data name="DefaultBanner.Description" xml:space="preserve">
+    <value>Find out how you can use Dev Home to get your development machine set up quickly.</value>
+    <comment>{Locked="Dev Home"}Description text of an instruction banner section for setting up a development machine</comment>
+  </data>
+  <data name="DefaultBanner.ButtonText" xml:space="preserve">
+    <value>Learn more</value>
+    <comment>Button text for learning more about setting up a development machine</comment>
+  </data>
+  <data name="FileTypeNotSupported" xml:space="preserve">
+    <value>File type not supported</value>
+    <comment>File type not supported error message</comment>
+  </data>
+  <data name="LearnMore.Text" xml:space="preserve">
+    <value>Learn more</value>
+    <comment>Text for a clickable learn more button</comment>
+  </data>
+  <data name="MainPage_CloneRepos.Description" xml:space="preserve">
+    <value>Get started on a project by cloning a repository</value>
+    <comment>Body text description for a card that when clicked takes the user to a page for cloning git repositories</comment>
+  </data>
+  <data name="MainPage_CloneRepos.Header" xml:space="preserve">
+    <value>Clone a repository</value>
+    <comment>Header for a card that when clicked takes the user to a page for cloning git repositories</comment>
+  </data>
+  <data name="MainPage_ConfigurationFile.Description" xml:space="preserve">
+    <value>Use one or more configuration (YAML) files</value>
+    <comment>Body text description for a card that when clicked allows the user to select a configuration file and run it</comment>
+  </data>
+  <data name="MainPage_ConfigurationFile.Header" xml:space="preserve">
+    <value>Use a configuration file</value>
+    <comment>Header for a card that when clicked allows the user to select a configuration file and run it</comment>
+  </data>
+  <data name="MainPage_DevVolume.Description" xml:space="preserve">
+    <value>Create a new virtual hard disk for development projects</value>
+    <comment>Body text description for a card that when clicked takes the user to a page for creating a developer drive/volume</comment>
+  </data>
+  <data name="MainPage_DevVolume.Header" xml:space="preserve">
+    <value>Add a developer drive</value>
+    <comment>Header for a card that when clicked takes the user to a page for creating a developer drive (virtual hard disk)</comment>
+  </data>
+  <data name="MainPage_EnvironmentSetup.Text" xml:space="preserve">
+    <value>Set up development environment</value>
+    <comment>Header text for a group of controls giving multiple choices to set up the environment/machine</comment>
+  </data>
+  <data name="MainPage_InstallApps.Description" xml:space="preserve">
+    <value>Download apps and packages from the WinGet library</value>
+    <comment>Body text description for a card that when clicked takes the user to a page for installing apps. WinGet refers to the Windows Package Manager command line tool. {StrContains=WinGet}</comment>
+  </data>
+  <data name="MainPage_InstallApps.Header" xml:space="preserve">
+    <value>Install apps and packages</value>
+    <comment>Header for a card that when clicked takes the user to a page for installing apps</comment>
+  </data>
+  <data name="MainPage_QuickConfiguration.Text" xml:space="preserve">
+    <value>Quick steps</value>
+    <comment>Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
+  </data>
+  <data name="MainPage_SetupFlow.Description" xml:space="preserve">
+    <value>Use an end-to-end- setup flow</value>
+    <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
+  </data>
+  <data name="MainPage_SetupFlow.Header" xml:space="preserve">
+    <value>Step-by-step</value>
+    <comment>Header for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
+  </data>
+  <data name="NoAppsToInstall.Text" xml:space="preserve">
+    <value>No apps to install</value>
+    <comment>Text shown if no applications were selected to install</comment>
+  </data>
+  <data name="NavigationPane.Content" xml:space="preserve">
+    <value>Dev Setup tool</value>
+    <comment>Navigation pane content</comment>
+  </data>
+  <data name="NoApplicationsSelected.Text" xml:space="preserve">
+    <value>No applications selected</value>
+    <comment>Text displayed when a list of applications selected by the user is empty</comment>
+  </data>
+  <data name="NoSearchResultsFoundTitle" xml:space="preserve">
+    <value>No results found for "{0}"</value>
+    <comment>{Locked="{0}"}Text displayed when no search results were found. {0} is replaced by the search query.</comment>
+  </data>
+  <data name="NoSearchResultsFoundDescription.Text" xml:space="preserve">
+    <value>Did't find what you're looking for? Check the spelling, try new keywords.</value>
+    <comment>Text displayed when no search results were found</comment>
+  </data>
+  <data name="ResultCount" xml:space="preserve">
+    <value>{0} Result(s)</value>
+    <comment>{Locked="{0}"} Label for a search result counter. {0} is replaced by the number of result items.</comment>
+  </data>
+  <data name="PackagesCount" xml:space="preserve">
+    <value>{0} packages</value>
+    <comment>{Locked="{0}"} Display the number of packages. {0} is replaced by the number of packages.</comment>
+  </data>
+  <data name="Previous.Content" xml:space="preserve">
+    <value>Previous</value>
+    <comment>Label for a "go to previous page" button</comment>
+  </data>
+  <data name="Restore.Content" xml:space="preserve">
+    <value>Restore</value>
+    <comment>Label for restore button</comment>
+  </data>
+  <data name="Review_EulaTitle.Text" xml:space="preserve">
+    <value>End-User License Agreement</value>
+    <comment>Header for the license agreement text</comment>
+  </data>
+  <data name="Review_EulaText.Text" xml:space="preserve">
+    <value>IMPORTANT—READ CAREFULLY: This Microsoft End-User License Agreement ("EULA") is ...</value>
+    <comment>License agreements</comment>
+  </data>
+  <data name="Review_AcceptEula.Content" xml:space="preserve">
+    <value>I read the terms and allow Windows to accept all EULA on my behalf</value>
+    <comment>Checkbox text for user to accept the EULA</comment>
+  </data>
+  <data name="Review_AcceptReboot.Content" xml:space="preserve">
+    <value>I allow Windows to automatically reboot my system</value>
+    <comment>Checkbox text for user to accept the possibility of reboots during setup</comment>
+  </data>
+  <data name="Review_SetupDetailsTitle.Text" xml:space="preserve">
+    <value>Set up details</value>
+    <comment>Header for a section detailing the set up steps to be performed. "Set up" is the noun</comment>
+  </data>
+  <data name="Review_TermsTitle.Text" xml:space="preserve">
+    <value>Terms</value>
+    <comment>As in "Terms of use"</comment>
+  </data>
+  <data name="Review_TermsText.Text" xml:space="preserve">
+    <value>By clicking Create, I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed above; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings.</value>
+    <comment>Terms of use shown before starting setup.</comment>
+  </data>
+  <data name="Review_RebootTitle.Text" xml:space="preserve">
+    <value>System reboot</value>
+    <comment>Header for text indicating that a reboot may be needed</comment>
+  </data>
+  <data name="Review_RebootText.Text" xml:space="preserve">
+    <value>A reboot may be needed</value>
+    <comment>Text indicating that a reboot may be needed to finish the setup</comment>
+  </data>
+  <data name="SearchBox.PlaceholderText" xml:space="preserve">
+    <value>Try "GitHub"</value>
+    <comment>{Locked="GitHub"}Placeholder text displayed in a search box</comment>
+  </data>
+  <data name="SelectAll.Content" xml:space="preserve">
+    <value>Select all</value>
+    <comment>Label for select all checkbox</comment>
+  </data>
+  <data name="SelectedPackages.Text" xml:space="preserve">
+    <value>Selected packages</value>
+    <comment>Label for selected packages</comment>
+  </data>
+  <data name="SetupButton" xml:space="preserve">
+    <value>Set up</value>
+    <comment>Label for the button that starts the setup</comment>
+  </data>
+  <data name="Applications" xml:space="preserve">
+    <value>Applications</value>
+    <comment>Header for a section showing a summary of applications to be installed</comment>
+  </data>
+  <data name="Basics" xml:space="preserve">
+    <value>Basics</value>
+    <comment>Header for a section showing a summary of "basic" setup steps to be performed</comment>
+  </data>
+  <data name="Repository" xml:space="preserve">
+    <value>Repository</value>
+    <comment>Header for a section showing a summary of repositories to be cloned to the machine</comment>
+  </data>
+  <data name="ViewConfiguration" xml:space="preserve">
+    <value>View {0}</value>
+    <comment>{Locked="{0}"} Text for the view action of a file content. {0} is replaced by a file name.</comment>
+  </data>
+</root>

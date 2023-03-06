@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="ContentArea.Text" xml:space="preserve">
+    <value>This is SampleTool</value>
+  </data>
+  <data name="NavigationPane.Content" xml:space="preserve">
+    <value>Sample Tool</value>
+  </data>
+</root>

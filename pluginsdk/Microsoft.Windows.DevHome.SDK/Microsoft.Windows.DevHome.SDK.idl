@@ -1,0 +1,97 @@
+import "Microsoft.Windows.DevHome.SDK.PluginUI.idl";
+
+namespace Microsoft.Windows.DevHome.SDK
+{
+    [version(1.0)]
+    enum ProviderType
+    {
+        Repository = 0,
+        DevId = 1,
+        Settings = 2,
+        SetupFlow = 3,
+        Widget = 4,
+        DevDoctor = 5,
+        Notifications = 6
+    };
+
+    [version(1.0)] 
+    interface IPlugin 
+    {
+        IInspectable GetProvider(ProviderType providerType);
+        void Dispose();
+    }
+
+    [version(1.0)]
+    interface IRepositoryProvider 
+    {
+        String GetDisplayName();
+
+        Windows.Foundation.IAsyncOperation<IIterable<IRepository> > GetRepositoriesAsync(IDeveloperId developerId);
+    };
+
+    [version(1.0)]
+    interface IRepository 
+    {
+        String DisplayName();
+
+        Windows.Foundation.IAsyncAction CloneRepositoryAsync(String cloneDestination, IDeveloperId developerId);
+
+        Windows.Foundation.IAsyncAction CloneRepositoryAsync(String cloneDestination);
+    }
+
+    [version(1.0)] 
+    interface ISettingsProvider 
+    {
+        String GetName();
+    };
+
+    [version(1.0)]
+    interface IDevIdProvider
+    {
+        String GetName();
+
+        IIterable<IDeveloperId> GetLoggedInDeveloperIds();
+
+        void LoginNewDeveloperId();
+
+        void LogoutDeveloperId(IDeveloperId developerId);
+
+        IPluginAdaptiveCardController GetAdaptiveCardController(String[] args);
+
+        String LogoutUI();
+    };
+
+    [version(1.0)] 
+    interface ISetupFlowProvider 
+    {
+        String GetName();
+    };
+
+    [version(1.0)] 
+    interface IWidgetProvider 
+    {
+        String GetName();
+    };
+
+    [version(1.0)] 
+    interface IDevDoctorProvider 
+    {
+        String GetName();
+    };
+
+    [version(1.0)] 
+    interface INotificationsProvider 
+    {
+        String GetName();
+    };
+
+    [version(1.0)]
+    // IDeveloperId is the basic interface for DeveloperId corresponding to each logged in user, used by the Dev Home Core app
+    interface IDeveloperId
+    {
+        String LoginId();
+        String DisplayName();
+        String Email();
+        String Url();
+    };
+}

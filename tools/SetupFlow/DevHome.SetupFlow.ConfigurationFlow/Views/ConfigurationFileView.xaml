@@ -1,0 +1,38 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<UserControl
+    x:Class="DevHome.SetupFlow.ConfigurationFile.Views.ConfigurationFileView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:DevHome.SetupFlow.Common.Controls"
+    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Common.Behaviors"
+    mc:Ignorable="d">
+    <setupFlowBehaviors:SetupFlowNavigationContentBehavior.Content>
+        <CheckBox
+            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AgreeOnAbovePolicy"
+            IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
+    </setupFlowBehaviors:SetupFlowNavigationContentBehavior.Content>
+    <controls:SetupShell Title="{x:Bind ViewModel.TitleText, Mode=OneWay}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <InfoBar
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ConfigurationFileWarning"
+                IsOpen="True"
+                IsClosable="False"
+                Severity="Warning"/>
+            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
+                <TextBlock
+                    FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                    Padding="15"
+                    FontFamily="{StaticResource CascadiaMonoFontFamily}"
+                    Text="{x:Bind ViewModel.Content, Mode=OneWay}"/>
+            </ScrollViewer>
+        </Grid>
+    </controls:SetupShell>
+</UserControl>
