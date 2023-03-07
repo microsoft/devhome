@@ -66,6 +66,18 @@
     <value>All widgets</value>
     <comment>PaneTitle for the list of Widgets in the NavigationView</comment>
   </data>
+  <data name="DashboardBanner.Title" xml:space="preserve">
+    <value>Monitor your GitHub Issues and Pull Requests</value>
+    <comment>Title text of an instruction banner on the widget dashboard. GitHub refers to a website. GitHub should not be localized {StrContains=GitHub}.</comment>
+  </data>
+  <data name="DashboardBanner.Description" xml:space="preserve">
+    <value>Copy the URL from GitHub to monitor issues and pull requests at a glance.</value>
+    <comment>Description text of an instruction banner on the widget dashboard. GitHub refers to a website. GitHub should not be localized {StrContains=GitHub}.</comment>
+  </data>
+  <data name="DashboardBanner.ButtonText" xml:space="preserve">
+    <value>Learn more</value>
+    <comment>Button text for learning more about setting up the widget dashboard</comment>
+  </data>
   <data name="NavigationPane.Content" xml:space="preserve">
     <value>Dashboard</value>
     <comment>Navigation pane content</comment>

@@ -26,4 +26,10 @@
   <ItemGroup>
     <ProjectReference Include="..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\Banner.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
 </Project>

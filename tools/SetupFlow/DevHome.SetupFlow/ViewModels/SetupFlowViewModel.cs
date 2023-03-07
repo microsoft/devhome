@@ -81,12 +81,10 @@ public partial class SetupFlowViewModel : ObservableObject
         var loadingPageViewModel = _host.GetService<LoadingViewModel>();
         _flowPages.Add(loadingPageViewModel);
 
-        /*
         loadingPageViewModel.ExecutionFinished += (object _, EventArgs _) =>
         {
             GoToNextPage();
         };
-        */
 
         _flowPages.Add(_host.GetService<SummaryViewModel>());
 

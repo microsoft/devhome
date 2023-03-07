@@ -8,7 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-    xmlns:views="using:DevHome.SetupFlow.MainPage.Views"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -21,12 +21,12 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <ScrollViewer>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="30">
             <!-- Top Banner (Only one visible) -->
             <Grid>
                 <!-- Default/First run experience -->
-                <views:Banner
+                <commonviews:Banner
                     Visibility="{x:Bind ViewModel.ShowAppListBackupBanner,Mode=OneWay,Converter={StaticResource InverseBoolToVisibilityConverter}}"
                     ButtonCommand="{x:Bind ViewModel.DefaultBannerButtonCommand,Mode=OneWay}"
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DefaultBanner"
@@ -34,7 +34,7 @@
 
                 <!-- Application list backup -->
                 <!-- TODO Update ImageSource once available -->
-                <views:Banner
+                <commonviews:Banner
                     ButtonCommand="{x:Bind ViewModel.AppListBackupBannerButtonCommand,Mode=OneWay}"
                     Visibility="{x:Bind ViewModel.ShowAppListBackupBanner,Mode=OneWay,Converter={StaticResource BoolToVisibilityConverter}}"
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AppListBackupBanner"
