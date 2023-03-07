@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Views\Banner.xaml" />
     <None Remove="Views\ConfigurationFileWindow.xaml" />
   </ItemGroup>
 
@@ -29,12 +28,6 @@
     <ProjectReference Include="..\DevHome.SetupFlow.ConfigurationFlow\DevHome.SetupFlow.ConfigurationFile.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.DevVolume\DevHome.SetupFlow.DevVolume.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.RepoConfig\DevHome.SetupFlow.RepoConfig.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Views\Banner.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
 
   <ItemGroup>

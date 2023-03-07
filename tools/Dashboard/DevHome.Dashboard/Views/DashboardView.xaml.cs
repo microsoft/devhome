@@ -20,6 +20,7 @@ public partial class DashboardView : ToolPage
 
     public DashboardView()
     {
+        ViewModel = new DashboardViewModel();
         this.InitializeComponent();
     }
 
