@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Dashboard.Views;
@@ -17,6 +18,7 @@ public partial class DashboardView : ToolPage
 
     private readonly WidgetHost _widgetHost;
     private readonly WidgetCatalog _widgetCatalog;
+    private readonly AdaptiveCardRenderer _renderer;
 
     public DashboardView()
     {
@@ -26,11 +28,12 @@ public partial class DashboardView : ToolPage
         // GUID is your personal Host GUID that widget platform will use to identify you
         _widgetHost = WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031"));
         _widgetCatalog = WidgetCatalog.GetDefault();
+        _renderer = new AdaptiveCardRenderer();
     }
 
     private async void AddWidgetButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        var dialog = new AddWidgetDialog(_widgetCatalog)
+        var dialog = new AddWidgetDialog(_widgetHost, _widgetCatalog, _renderer)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
             XamlRoot = this.XamlRoot,
