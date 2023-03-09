@@ -52,13 +52,17 @@ namespace Microsoft.Windows.DevHome.SDK
 
         IIterable<IDeveloperId> GetLoggedInDeveloperIds();
 
-        void LoginNewDeveloperId();
+        Windows.Foundation.IAsyncOperation<IDeveloperId> LoginNewDeveloperIdAsync();
 
         void LogoutDeveloperId(IDeveloperId developerId);
 
         IPluginAdaptiveCardController GetAdaptiveCardController(String[] args);
 
-        String LogoutUI();
+        event Windows.Foundation.EventHandler<IDeveloperId> LoggedIn;
+
+        event Windows.Foundation.EventHandler<IDeveloperId> LoggedOut;
+
+        event Windows.Foundation.EventHandler<IDeveloperId> Updated;
     };
 
     [version(1.0)] 
