@@ -16,8 +16,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         _widgetCatalog = catalog;
 
-        configurationContentFrame.Content = new WidgetConfigurationContent();
-
         FillAvailableWidgets();
     }
 
