@@ -29,9 +29,9 @@ internal class RepositoryProvider
     /// <summary>
     /// Logs the current user into this provider
     /// </summary>
-    public void LogIntoProvider()
+    public async void LogIntoProvider()
     {
-        _devIdProvider.LoginNewDeveloperId();
+        await _devIdProvider.LoginNewDeveloperIdAsync();
     }
 
     /// <summary>
