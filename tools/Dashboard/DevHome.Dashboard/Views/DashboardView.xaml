@@ -15,7 +15,7 @@
     mc:Ignorable="d">
 
     <StackPanel>
-        <Button x:Uid="AddWidget" HorizontalAlignment="Right" Click="AddWidgetButton_Click"></Button>
+        <Button x:Name="AddWidgetButton" x:Uid="AddWidget" HorizontalAlignment="Right" Click="AddWidgetButton_Click" />
 
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="30">
