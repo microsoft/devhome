@@ -1,0 +1,141 @@
+﻿<Page
+    x:Class="DevHome.Views.WhatsNewPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helpers="using:DevHome.Helpers"
+    xmlns:xaml="using:Microsoft.UI.Xaml"
+    xmlns:animations="using:CommunityToolkit.WinUI.UI.Animations"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:models="using:DevHome.Models"
+    mc:Ignorable="d">
+
+    <Grid x:Name="ContentArea" Padding="62 10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48" />
+            <RowDefinition Height="64" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            Grid.Row="0"
+            x:Uid="WhatsNew_Title"
+            FontWeight="Bold"
+            FontSize="32"
+            Style="{StaticResource PageTitleStyle}" />
+
+        <TextBlock
+            Grid.Row="1"
+            VerticalAlignment="Center"
+            Text="Take a few minutes to learn how you can use Dev Home for a better experience!" />
+
+        <Grid 
+            x:Name="ConnectDevIdContentArea"
+            Grid.Row="2"
+            Padding="28"
+            CornerRadius="10"
+            Margin="0 20">
+            
+            <Grid.Background>
+                <RadialGradientBrush>
+                    <GradientStop Color="#2F22C3" Offset="0.8"  />
+                    <GradientStop Color="#000E2A" Offset="0.16" />
+                </RadialGradientBrush>
+            </Grid.Background>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="48" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock 
+                FontFamily="Segoe MDL2 Assets" 
+                Text="&#xE102;" 
+                FontSize="32" />
+
+            <StackPanel 
+                Orientation="Vertical" 
+                Grid.Column="1"
+                Margin="10 0 5 5">
+                
+                <TextBlock
+                    Grid.Column="1"
+                    FontSize="20"
+                    Text="Connect your developer ID" />
+                
+                <TextBlock
+                    Grid.Column="1"
+                    Margin="0 10"
+                    Text="Sign in to GitHub to create widgets, clone reposm receive repository based notifications and more." />
+
+                <Button
+                    Margin="0 10"
+                    Padding="30 7">
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock 
+                            FontFamily="Segoe MDL2 Assets" 
+                            Text="&#xE76E;" 
+                            FontSize="20" />
+                        <TextBlock
+                            Margin="5 0"
+                            Text="Connect GitHub"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <controls:AdaptiveGridView
+            Grid.Row="3"
+            animations:Connected.ListItemElementName="itemThumbnail"
+            animations:Connected.ListItemKey="animationKeyContentGrid"
+            DesiredWidth="500"
+            IsItemClickEnabled="True"
+            ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}"
+            SelectionMode="None"
+            StretchContentForSingleRow="False">
+            <controls:AdaptiveGridView.ItemTemplate>
+                <DataTemplate x:DataType="models:WhatsNewCard">
+                    <Grid
+                        x:Name="itemThumbnail"
+                        Padding="30 25"
+                        Background="Aqua"
+                        CornerRadius="10"
+                        Margin="5">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="48" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <FontIcon
+                            Grid.Column="0"
+                            VerticalAlignment="Top"
+                            Margin="0 5"
+                            Glyph="57643"
+                            AutomationProperties.Name="Globe" />
+
+                        <StackPanel Grid.Column="1">
+
+                            <TextBlock
+                                HorizontalAlignment="Left"
+                                Style="{ThemeResource BodyTextStyle}"
+                                Text="{x:Bind Title}" />
+
+                            <TextBlock
+                                Margin="0 8"
+                                TextWrapping="Wrap"
+                                Text="{x:Bind Description}"/>
+
+                            <TextBlock
+                                Foreground="Blue"
+                                Text="Learn more"/>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </controls:AdaptiveGridView.ItemTemplate>
+        </controls:AdaptiveGridView>
+    </Grid>
+</Page>
