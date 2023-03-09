@@ -7,6 +7,7 @@ using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
 using DevHome.Dashboard.Helpers;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets.Hosts;
 
@@ -17,6 +18,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private readonly WidgetCatalog _widgetCatalog;
     private readonly AdaptiveCardRenderer _renderer;
     private Widget _currentWidget;
+
+    public Widget AddedWidget { get; set; }
 
     public AddWidgetDialog(WidgetHost host, WidgetCatalog catalog, AdaptiveCardRenderer renderer)
     {
@@ -77,6 +80,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // Delete previously shown configuation widget
         var clearWidgetTask = ClearCurrentWidget();
         ConfigurationContentFrame.Content = null;
+        PinButton.Visibility = Visibility.Collapsed;
 
         // Load selected widget configuration
         var selectedTag = (sender.SelectedItem as NavigationViewItem).Tag;
@@ -113,6 +117,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             {
                 // Add FrameworkElement to the UI
                 ConfigurationContentFrame.Content = renderedCard.FrameworkElement;
+                PinButton.Visibility = Visibility.Visible;
             }
 
             clearWidgetTask.Wait();
@@ -120,7 +125,14 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
-    private async void CancelButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void PinButton_Click(object sender, RoutedEventArgs e)
+    {
+        AddedWidget = _currentWidget;
+
+        this.Hide();
+    }
+
+    private async void CancelButton_Click(object sender, RoutedEventArgs e)
     {
         // Delete previously shown configuation card
         await ClearCurrentWidget();

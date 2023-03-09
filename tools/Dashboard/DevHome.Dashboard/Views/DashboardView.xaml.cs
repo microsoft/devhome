@@ -39,5 +39,21 @@ public partial class DashboardView : ToolPage
             XamlRoot = this.XamlRoot,
         };
         _ = await dialog.ShowAsync();
+
+        // ==============================================================
+        // TODO: Temporary code - clean up if a widget was pinned, so we
+        // don't polute the app with invisible, inaccessible widgets
+        _ = dialog.AddedWidget;
+
+        var registeredWidgets = _widgetHost.GetWidgets();
+        if (registeredWidgets != null)
+        {
+            foreach (var registeredWidget in registeredWidgets)
+            {
+                await registeredWidget.DeleteAsync();
+            }
+        }
+
+        // ==============================================================
     }
 }
