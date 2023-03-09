@@ -21,6 +21,7 @@
     </ContentDialog.Resources>
 
     <StackPanel>
+        <!-- Title and Close button -->
         <Grid>
             <TextBlock x:Uid="PinWidgetsTitle" HorizontalAlignment="Left" />
             <Button HorizontalAlignment="Right" Click="CancelButton_Click" BorderThickness="0" >
@@ -30,7 +31,8 @@
             </Button>
         </Grid>
 
-        <NavigationView x:Name="widgetConfigurationNavigationView"
+        <!-- Widgets available to pin-->
+        <NavigationView x:Name="AddWidgetNavigationView"
                         x:Uid="AllWidgetsList"
                         PaneDisplayMode="Left"
                         IsTabStop="False"
@@ -39,15 +41,11 @@
                         IsPaneToggleButtonVisible="False"
                         IsTitleBarAutoPaddingEnabled="False"
                         OpenPaneLength="180"
-                        SelectionChanged="WidgetConfigurationNavigationView_SelectionChanged">
+                        SelectionChanged="AddWidgetNavigationView_SelectionChanged">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="GitHub Placeholder" Icon="Contact" ToolTipService.ToolTip="GitHub" Tag="GitHub" IsExpanded="True">
-                    <NavigationViewItem.MenuItems>
-                        <NavigationViewItem Content="Pull requests Placeholder" ToolTipService.ToolTip="Pull requests" Tag="PullRequests"/>
-                        <NavigationViewItem Content="Issues Placeholder" ToolTipService.ToolTip="Issues" Tag="Issues"/>
-                    </NavigationViewItem.MenuItems>
-                </NavigationViewItem>
             </NavigationView.MenuItems>
+
+            <!-- Widget configuration UI -->
             <Frame x:Name="configurationContentFrame" />
         </NavigationView>
     </StackPanel>
