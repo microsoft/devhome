@@ -34,7 +34,6 @@ Options:
 $ErrorActionPreference = "Stop"
 
 $buildPlatforms = "x64","x86","arm64","AnyCPU"
-$env:Build_RootDirectory = (Split-Path $MyInvocation.MyCommand.Path)
 $env:Build_Configuration = $Configuration
 $env:sdk_version = & (Join-Path $PSScriptRoot "..\build\Scripts\CreateBuildInfo.ps1") -Version $SDKVersion -IsSdkVersion $true -IsAzurePipelineBuild $IsAzurePipelineBuild
 
