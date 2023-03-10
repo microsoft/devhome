@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Extensions;
+using DevHome.Models;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -19,5 +20,19 @@ public sealed partial class WhatsNewPage : Page
     {
         ViewModel = Application.Current.GetService<WhatsNewViewModel>();
         InitializeComponent();
+
+        var whatsNewCards = FeaturesContainer.Resources
+            .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
+            .Select(card => card.Value as WhatsNewCard);
+
+        foreach (var card in whatsNewCards)
+        {
+            if (card is null)
+            {
+               continue;
+            }
+
+            ViewModel.AddCard(card);
+        }
     }
 }

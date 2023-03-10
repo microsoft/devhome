@@ -5,7 +5,10 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Services;
 using DevHome.Models;
+using DevHome.SetupFlow.Common.Services;
+using Microsoft.UI.Xaml.Markup;
 
 namespace DevHome.ViewModels;
 
@@ -21,10 +24,16 @@ public class WhatsNewViewModel : ObservableRecipient
     public WhatsNewViewModel()
     {
         //ItemClickCommand = new RelayCommand<SampleOrder>(OnItemClick);
-        Source.Add(new WhatsNewCard("Title", "This is the description", "https://microsoft.com"));
-        Source.Add(new WhatsNewCard("Title 2", "This is the description 2", "https://microsoft.com"));
-        Source.Add(new WhatsNewCard("Title 3", "This is the description 3", "https://microsoft.com"));
-        Source.Add(new WhatsNewCard("Title 4", "This is the description 4", "https://microsoft.com"));
+
+        //stringResource.GetLocalized("")
+
+        //var xamlReader = XamlReader.LoadWithInitialTemplateValidation(File.ReadAllText("DataResources\\WhatsNewPageData.xaml"));
+        //var x = 1;
+    }
+
+    public void AddCard(WhatsNewCard card)
+    {
+        Source.Add(card);
     }
 
     public async void OnNavigatedTo(object parameter)

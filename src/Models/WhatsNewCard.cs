@@ -7,25 +7,23 @@ using System.Threading.Tasks;
 namespace DevHome.Models;
 public class WhatsNewCard
 {
-    public WhatsNewCard(string title, string description, string? learnMoreUrl)
+    public int Priority
     {
-        Title = title;
-        Description = description;
-        LearnMoreUrl = learnMoreUrl;
+        get; set;
     }
 
-    public string Title
+    public string? Title
     {
-        get; private set;
+        get; set;
     }
 
-    public string Description
+    public string? Description
     {
-        get; private set;
+        get; set;
     }
 
     public string? LearnMoreUrl
     {
-        get; private set;
+        get; set;
     }
 }
