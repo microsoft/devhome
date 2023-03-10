@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:DevHome.Helpers"
     xmlns:xaml="using:Microsoft.UI.Xaml"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:animations="using:CommunityToolkit.WinUI.UI.Animations"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:models="using:DevHome.Models"
@@ -14,155 +15,166 @@
     mc:Ignorable="d">
 
     <ScrollViewer>
-    <Grid x:Name="ContentArea" Padding="10 10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="64" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+        <Grid x:Name="ContentArea" Padding="10 10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="64" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <TextBlock
-            Grid.Row="0"
-            x:Uid="WhatsNewPage_Title"
-            Style="{ThemeResource TitleTextBlockStyle}" />
+            <TextBlock
+                Grid.Row="0"
+                x:Uid="WhatsNewPage_Title"
+                Style="{ThemeResource TitleTextBlockStyle}" />
 
-        <TextBlock
-            Grid.Row="1"
-            Margin="0 20"
-            x:Uid="WhatsNewPage_Description"
-            Text="{StaticResource SplitViewPaneAnimationOpenDuration}" />
+            <TextBlock
+                Grid.Row="1"
+                Margin="0 20"
+                x:Uid="WhatsNewPage_Description"
+                Text="{StaticResource SplitViewPaneAnimationOpenDuration}" />
 
-        <Grid 
-            x:Name="ConnectDevIdContentArea"
-            Grid.Row="2"
-            Padding="28"
-            CornerRadius="10"
-            Margin="0 20"
-            Background="#313131" >
+                <Grid 
+                    x:Name="ConnectDevIdContentArea"
+                    Grid.Row="2"
+                    Padding="28"
+                    CornerRadius="8"
+                    Margin="0 20"
+                    BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+                    BorderThickness="{ThemeResource ExpanderBorderThickness}"
+                    Background="{ThemeResource CardBackgroundFillColorDefault}" >
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="30" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-            <TextBlock 
-                FontFamily="Segoe MDL2 Assets" 
-                Text="&#xE102;" 
-                Grid.Column="0"
-                FontSize="32" />
+                <TextBlock 
+                    FontFamily="Segoe MDL2 Assets" 
+                    Text="&#xE102;" 
+                    Grid.Column="0"
+                    FontSize="32" />
 
-            <StackPanel 
-                Orientation="Vertical" 
-                Grid.Column="1"
-                Margin="10 0 5 5">
-                
-                <TextBlock
+                <StackPanel 
+                    Orientation="Vertical" 
                     Grid.Column="1"
-                    FontSize="20"
-                    x:Uid="WhatsNewPage_DevIdCard_Title" />
+                    Margin="10 0 5 5">
                 
-                <TextBlock
-                    Grid.Column="1"
-                    Margin="0 10"
-                    x:Uid="WhatsNewPage_DevIdCard_Description" />
+                    <TextBlock
+                        Grid.Column="1"
+                        FontSize="20"
+                        x:Uid="WhatsNewPage_DevIdCard_Title" />
+                
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="0 10"
+                        x:Uid="WhatsNewPage_DevIdCard_Description" />
 
-                <Button
-                    Margin="0 10"
-                    Padding="30 7">
+                    <Button
+                        Margin="0 10"
+                        Padding="30 7">
 
-                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal">
                             <Image Source="/Assets/WindowIcon.ico"
-                               HorizontalAlignment="Left"
-                               Width="16"
-                               Height="16" />
-                            <TextBlock
-                            Margin="5 0"
-                            Text="Connect GitHub"/>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-        </Grid>
-
-        <controls:AdaptiveGridView
-            Name="FeaturesContainer"
-            Grid.Row="3"
-            animations:Connected.ListItemElementName="itemThumbnail"
-            animations:Connected.ListItemKey="animationKeyContentGrid"
-            DesiredWidth="500"
-            IsItemClickEnabled="False"
-            ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}"
-            SelectionMode="None"
-            StretchContentForSingleRow="False">
-
-            <controls:AdaptiveGridView.Resources>
-                <models:WhatsNewCard 
-                    x:Uid="WhatsNewPage_DevPFeaturesCard"
-                    x:Key="WhatsNewPage_DevPFeaturesCard"
-                    Priority="10"
-                    LearnMoreUrl="https://microsoft.com/" />
-
-                <models:WhatsNewCard 
-                    x:Uid="WhatsNewPage_ConfigMachineCard"
-                    x:Key="WhatsNewPage_ConfigMachineCard"
-                    Priority="10"
-                    LearnMoreUrl="https://microsoft.com/" />
-
-                <models:WhatsNewCard 
-                    x:Uid="WhatsNewPage_DevDashCard"
-                    x:Key="WhatsNewPage_DevDashCard"
-                    Priority="10"
-                    LearnMoreUrl="https://microsoft.com/" />
-
-                <models:WhatsNewCard
-                    x:Uid="WhatsNewPage_NotifCard"
-                    x:Key="WhatsNewPage_NotifCard"
-                    Priority="10"
-                    LearnMoreUrl="https://microsoft.com/" />
-
-            </controls:AdaptiveGridView.Resources>
-
-            <controls:AdaptiveGridView.ItemTemplate>
-                <DataTemplate x:DataType="models:WhatsNewCard">
-                    <Grid
-                        x:Name="itemThumbnail"
-                        Padding="30 25"
-                        CornerRadius="10"
-                        Margin="5"
-                        Background="#313131">
-
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="48" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <FontIcon
-                            Grid.Column="0"
-                            VerticalAlignment="Top"
-                            Margin="0 5"
-                            Glyph="57643"
-                            AutomationProperties.Name="Globe" />
-
-                        <StackPanel Grid.Column="1">
-
-                            <TextBlock
                                 HorizontalAlignment="Left"
-                                Style="{ThemeResource BodyTextStyle}"
-                                Text="{x:Bind Title}" />
-
+                                Width="16"
+                                Height="16" />
                             <TextBlock
-                                Margin="0 8"
-                                TextWrapping="Wrap"
-                                Text="{x:Bind Description}"/>
-
-                            <TextBlock
-                                Foreground="#99EBFF"
-                                Text="Learn more"/>
+                                Margin="5 0"
+                                Text="Connect to Github">
+                            </TextBlock>
                         </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </controls:AdaptiveGridView.ItemTemplate>
-        </controls:AdaptiveGridView>
-    </Grid>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <controls:AdaptiveGridView
+                Name="FeaturesContainer"
+                Grid.Row="3"
+                animations:Connected.ListItemElementName="itemThumbnail"
+                animations:Connected.ListItemKey="animationKeyContentGrid"
+                DesiredWidth="500"
+                IsItemClickEnabled="False"
+                ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}"
+                SelectionMode="None"
+                StretchContentForSingleRow="False">
+
+                <controls:AdaptiveGridView.Resources>
+                    <models:WhatsNewCard 
+                        x:Uid="WhatsNewPage_DevPFeaturesCard"
+                        x:Key="WhatsNewPage_DevPFeaturesCard"
+                        Priority="10"
+                        LearnMoreUrl="https://microsoft.com/" />
+
+                    <models:WhatsNewCard 
+                        x:Uid="WhatsNewPage_ConfigMachineCard"
+                        x:Key="WhatsNewPage_ConfigMachineCard"
+                        Priority="10"
+                        LearnMoreUrl="https://microsoft.com/" />
+
+                    <models:WhatsNewCard 
+                        x:Uid="WhatsNewPage_DevDashCard"
+                        x:Key="WhatsNewPage_DevDashCard"
+                        Priority="10"
+                        LearnMoreUrl="https://microsoft.com/" />
+
+                    <models:WhatsNewCard
+                        x:Uid="WhatsNewPage_NotifCard"
+                        x:Key="WhatsNewPage_NotifCard"
+                        Priority="10"
+                        LearnMoreUrl="https://microsoft.com/" />
+
+                </controls:AdaptiveGridView.Resources>
+
+                <controls:AdaptiveGridView.ItemTemplate>
+                    <DataTemplate x:DataType="models:WhatsNewCard">
+                        <Grid
+                            HorizontalAlignment="Stretch"
+                            Padding="30 25"
+                            CornerRadius="8"
+                            Margin="5"
+                            Background="{ThemeResource CardBackgroundFillColorDefault}"
+                            BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+                            BorderThickness="{ThemeResource ExpanderBorderThickness}"
+                            x:Name="itemThumbnail">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="48" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock 
+                                FontFamily="Segoe MDL2 Assets" 
+                                Text="&#xE102;" 
+                                Grid.Column="0"
+                                FontSize="32" />
+
+                            <StackPanel Grid.Column="1">
+
+                                <TextBlock
+                                    HorizontalAlignment="Left"
+                                    Style="{ThemeResource BodyTextStyle}"
+                                    Text="{x:Bind Title}" />
+
+                                <TextBlock
+                                    Margin="0 8"
+                                    TextWrapping="Wrap"
+                                    Text="{x:Bind Description}"/>
+
+                                <TextBlock
+                                Foreground="#99EBFF">
+                                <Hyperlink
+                                    NavigateUri="https://microsoft.com"
+                                    TextDecorations="None">
+                                    Learn more
+                                </Hyperlink>
+                                </TextBlock>
+
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </controls:AdaptiveGridView.ItemTemplate>
+            </controls:AdaptiveGridView>
+        </Grid>
     </ScrollViewer>
 </Page>
