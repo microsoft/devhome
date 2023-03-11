@@ -9,9 +9,12 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
+using AdaptiveCards.Templating;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DevHome.Common.Models;
 public class PluginAdaptiveCard : IPluginAdaptiveCard
@@ -31,16 +34,19 @@ public class PluginAdaptiveCard : IPluginAdaptiveCard
         State = string.Empty;
     }
 
-    public void Update(string template, string data, string state)
+    public void Update(string templateJson, string dataJson, string state)
     {
-        var parseResult = AdaptiveCard.FromJsonString(template);
+        var template = new AdaptiveCardTemplate(templateJson);
+        var adaptiveCardString = template.Expand(JsonConvert.DeserializeObject<JObject>(dataJson));
+        var parseResult = AdaptiveCard.FromJsonString(adaptiveCardString);
+
         if (parseResult.AdaptiveCard is null)
         {
-            throw new ArgumentException(JsonSerializer.Serialize(parseResult.Errors));
+            throw new ArgumentException(System.Text.Json.JsonSerializer.Serialize(parseResult.Errors));
         }
 
-        Template = template;
-        Data = data;
+        Template = templateJson;
+        Data = dataJson;
         State = state;
 
         if (UiUpdate is not null)
