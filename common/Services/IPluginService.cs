@@ -13,4 +13,5 @@ public interface IPluginService
     Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync();
 
     Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(Microsoft.Windows.DevHome.SDK.ProviderType providerType);
+    Task StartInstalledPluginsAsync();
 }

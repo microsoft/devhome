@@ -12,6 +12,7 @@
     xmlns:models="using:DevHome.Models"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
+    Loaded="OnLoaded"
     mc:Ignorable="d">
 
     <ScrollViewer>

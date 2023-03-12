@@ -25,7 +25,7 @@ public class AddRepoViewModel
     public async Task StartPlugins()
     {
         var pluginService = Application.Current.GetService<IPluginService>();
-        var pluginWrappers = pluginService.GetInstalledPluginsAsync().Result;
+        var pluginWrappers = await pluginService.GetInstalledPluginsAsync();
         var localProviders = new List<IPlugin>();
         foreach (var pluginWrapper in pluginWrappers.Where(
             plugin => plugin.HasProviderType(ProviderType.Repository) &&

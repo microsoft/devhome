@@ -107,6 +107,15 @@ public class PluginService : IPluginService
         return filteredPlugins;
     }
 
+    public async Task StartInstalledPluginsAsync()
+    {
+        var pluginWrappers = await GetInstalledPluginsAsync();
+        foreach (var pluginWrapper in pluginWrappers)
+        {
+            await pluginWrapper.StartPlugin();
+        }
+    }
+
     private IPropertySet? GetSubPropertySet(IPropertySet propSet, string name)
     {
         return propSet[name] as IPropertySet;
