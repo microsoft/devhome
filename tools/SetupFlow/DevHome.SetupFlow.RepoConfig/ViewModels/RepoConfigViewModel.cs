@@ -69,10 +69,28 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
             }
             else
             {
-                // UserName/Repo
-                var nameParts = urlOrUsernameAndRepo.Split("/");
-                repoName = nameParts[1];
-                cloneUrlOrRepoName = "https://github.com/" + urlOrUsernameAndRepo + ".git";
+                if (Uri.TryCreate(urlOrUsernameAndRepo, UriKind.Absolute, out var url))
+                {
+                    cloneUrlOrRepoName = urlOrUsernameAndRepo;
+                    repoName = url.Segments[url.Segments.Length - 1].TrimEnd('/');
+                }
+                else
+                {
+                    // username/Repo
+                    var nameParts = urlOrUsernameAndRepo.Split("/");
+                    if (nameParts.Count > 2)
+                    {
+                        _logger.Log("Invalid repo name. Expected format: username/RepoName", LogLevel.Local, urlOrUsernameAndRepo);
+                        return;
+                    }
+                    repoName = nameParts[1];
+                    cloneUrlOrRepoName = "https://github.com/" + urlOrUsernameAndRepo;
+                }
+
+                if (!cloneUrlOrRepoName.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
+                {
+                    cloneUrlOrRepoName += ".git";
+                }
             }
 
             var repoToClone = new Repository(repoName, cloneUrlOrRepoName);
