@@ -14,12 +14,17 @@ public partial class DashboardViewModel : ObservableObject
 {
     private const string _hideDashboardBannerKey = "HideDashboardBanner";
 
-    [ObservableProperty]
     private bool _showDashboardBanner;
+
+    public bool ShowDashboardBanner
+    {
+        get => _showDashboardBanner;
+        set => SetProperty(ref _showDashboardBanner, value);
+    }
 
     public DashboardViewModel()
     {
-        _showDashboardBanner = ShouldShowDashboardBanner();
+        ShowDashboardBanner = ShouldShowDashboardBanner();
     }
 
     [RelayCommand]
@@ -34,7 +39,7 @@ public partial class DashboardViewModel : ObservableObject
     {
         var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
         roamingProperties[_hideDashboardBannerKey] = bool.TrueString;
-        _showDashboardBanner = false;
+        ShowDashboardBanner = false;
     }
 
     private bool ShouldShowDashboardBanner()
