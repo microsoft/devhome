@@ -10,7 +10,7 @@ public sealed class PluginServer : IDisposable
 {
     private readonly HashSet<int> registrationCookies = new ();
 
-    public void RegisterPlugin<T>(Func<T> createPlugin)
+    public void RegisterPlugin<T>(Func<T> createPlugin, bool restrictCallers = true)
         where T : IPlugin
     {
         Trace.WriteLine($"Registering class object:");
@@ -22,7 +22,7 @@ public sealed class PluginServer : IDisposable
         var clsid = typeof(T).GUID;
         var hr = Ole32.CoRegisterClassObject(
             ref clsid,
-            new PluginInstanceManager<T>(createPlugin),
+            new PluginInstanceManager<T>(createPlugin, restrictCallers),
             Ole32.CLSCTX_LOCAL_SERVER,
             Ole32.REGCLS_MULTIPLEUSE | Ole32.REGCLS_SUSPENDED,
             out cookie);
