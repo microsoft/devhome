@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <None Remove="Views\AddWidgetDialog.xaml" />
-    <None Remove="Views\WidgetConfigurationContent.xaml" />
     <None Remove="Views\DashboardView.xaml" />
   </ItemGroup>
 
@@ -31,9 +30,6 @@
 
   <ItemGroup>
     <Page Update="Views\AddWidgetDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\WidgetConfigurationContent.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\DashboardView.xaml">

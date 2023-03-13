@@ -46,7 +46,7 @@
             </NavigationView.MenuItems>
 
             <!-- Widget configuration UI -->
-            <Frame x:Name="configurationContentFrame" />
+            <Frame x:Name="ConfigurationContentFrame" />
         </NavigationView>
     </StackPanel>
 </ContentDialog>
