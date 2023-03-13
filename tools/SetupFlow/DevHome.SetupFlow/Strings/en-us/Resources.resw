@@ -337,6 +337,14 @@
     <value>{0} packages</value>
     <comment>{Locked="{0}"} Display the number of packages. {0} is replaced by the number of packages.</comment>
   </data>
+  <data name="PopularAppsTitle" xml:space="preserve">
+    <value>Popular Apps</value>
+    <comment>Header text for a popular application section</comment>
+  </data>
+  <data name="PopularAppsDescription" xml:space="preserve">
+    <value>Here are some popular development tools.</value>
+    <comment>Description text for a popular application section</comment>
+  </data>
   <data name="Previous.Content" xml:space="preserve">
     <value>Previous</value>
     <comment>Label for a "go to previous page" button</comment>

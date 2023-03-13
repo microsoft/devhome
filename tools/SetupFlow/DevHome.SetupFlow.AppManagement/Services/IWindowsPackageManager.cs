@@ -29,12 +29,10 @@ public interface IWindowsPackageManager
     }
 
     /// <summary>
-    /// Gets a composite catalog for the predefined <c>msstore</c> and local catalogs.
+    /// Opens all predefined catalogs.
     /// </summary>
-    public IWinGetCatalog MsStoreCatalog
-    {
-        get;
-    }
+    /// <exception cref="CatalogConnectionException">Exception thrown if a catalog connection failed</exception>
+    public Task ConnectToAllCatalogsAsync();
 
     /// <summary>
     /// Install a winget package

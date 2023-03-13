@@ -16,6 +16,11 @@
     <PRIResource Remove="Models\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Assets\AppManagementPackages.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="SetupFlowPage.xaml" />
     <None Remove="Styles\SetupFlowStyles.xaml" />
   </ItemGroup>
