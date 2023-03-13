@@ -10,8 +10,9 @@ using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.ConfigurationFile.ViewModels;
-using DevHome.SetupFlow.DevVolume;
-using DevHome.SetupFlow.DevVolume.ViewModels;
+using DevHome.SetupFlow.DevDrive;
+using DevHome.SetupFlow.DevDrive.Services;
+using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.SetupFlow.Loading.ViewModels;
 using DevHome.SetupFlow.MainPage.ViewModels;
 using DevHome.SetupFlow.RepoConfig;
@@ -47,7 +48,7 @@ public partial class SetupFlowPage : ToolPage
             .ConfigureServices((context, services) =>
             {
                 // Setup task groups
-                services.AddTransient<DevVolumeTaskGroup>();
+                services.AddTransient<DevDriveTaskGroup>();
                 services.AddTransient<RepoConfigTaskGroup>();
                 services.AddTransient<AppManagementTaskGroup>();
                 services.AddTransient<ConfigurationFileTaskGroup>();
@@ -60,9 +61,9 @@ public partial class SetupFlowPage : ToolPage
                 services.AddTransient<ConfigurationFileViewModel>();
                 services.AddTransient<AddRepoViewModel>();
 
-                // View-models: Dev volume page
-                services.AddTransient<DevVolumeViewModel>();
-                services.AddTransient<DevVolumeReviewViewModel>();
+                // View-models: Dev Drive page
+                services.AddTransient<DevDriveViewModel>();
+                services.AddTransient<DevDriveReviewViewModel>();
 
                 // View-models: Repo page
                 services.AddTransient<RepoConfigViewModel>();
@@ -86,12 +87,21 @@ public partial class SetupFlowPage : ToolPage
                 // View-models: Summary page
                 services.AddTransient<SummaryViewModel>();
 
-                // Services
+                // Services: Dev Home telemetry
                 services.AddSingleton<ILogger>(LoggerFactory.Get<ILogger>());
-                services.AddSingleton<IWindowsPackageManager, WindowsPackageManager>();
+
+                // Services: Dev Home common
                 services.AddSingleton<IStringResource>(new StringResource($"{nameof(DevHome)}.{nameof(SetupFlow)}/Resources"));
+
+                // Services: Setup flow common
                 services.AddSingleton<SetupFlowOrchestrator>();
+
+                // Services: App Management
+                services.AddSingleton<IWindowsPackageManager, WindowsPackageManager>();
                 services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerFactory(ClsidContext.Prod));
+
+                // Services: Dev Drive
+                services.AddSingleton<IDevDriveManager, DevDriveManager>();
             })
             .Build();
     }

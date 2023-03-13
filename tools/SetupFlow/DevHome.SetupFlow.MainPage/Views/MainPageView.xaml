@@ -56,7 +56,13 @@
                 <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
                                    IsClickEnabled="True" Command="{x:Bind ViewModel.StartAppManagementCommand}" />
                 <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevVolume"
-                                   IsClickEnabled="True" Command="{x:Bind ViewModel.StartDevVolumeCommand}" />
+                                   IsClickEnabled="True" Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}" 
+                                   Visibility="{x:Bind ViewModel.ShowDevDriveItem, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <labs:SettingsCard.ActionIcon>
+                        <!-- The open new window icon -->
+                        <FontIcon Glyph="&#xE8A7;" />
+                    </labs:SettingsCard.ActionIcon>
+                </labs:SettingsCard>
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

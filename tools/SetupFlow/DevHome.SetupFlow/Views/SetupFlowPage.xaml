@@ -9,7 +9,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pg="using:DevHome.Common"
     xmlns:mainPageViews="using:DevHome.SetupFlow.MainPage.Views"
-    xmlns:devVolumeViews="using:DevHome.SetupFlow.DevVolume.Views"
     xmlns:repoConfigViews="using:DevHome.SetupFlow.RepoConfig.Views"
     xmlns:appManagementViews="using:DevHome.SetupFlow.AppManagement.Views"
     xmlns:reviewViews="using:DevHome.SetupFlow.Review.Views"
@@ -45,11 +44,6 @@
                             <mainPageViews:MainPageView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.MainPageTemplate>
-                    <selectors:SetupFlowViewSelector.DevVolumeTemplate>
-                        <DataTemplate>
-                            <devVolumeViews:DevVolumeView />
-                        </DataTemplate>
-                    </selectors:SetupFlowViewSelector.DevVolumeTemplate>
                     <selectors:SetupFlowViewSelector.RepoConfigTemplate>
                         <DataTemplate>
                             <repoConfigViews:RepoConfigView />
