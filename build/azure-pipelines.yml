@@ -36,7 +36,6 @@ resources:
 
 stages:
 - stage: SourceAnalysis
-  # This stage is expected to run in parallel with BuildWindowsAppSDK-Stages.
   dependsOn: ''
   jobs:
   - job: SDLSourcesScanning
@@ -87,6 +86,7 @@ stages:
         onlyInputs: false
 
 - stage: Build_SDK
+  dependsOn: ''
   jobs:
   - job: Build_SDK
     steps:

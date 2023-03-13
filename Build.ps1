@@ -101,6 +101,12 @@ Try {
         }
       }
     }
+
+    # Reset the msix version in the appxmanifest
+    $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
+    $xName = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
+    $appxmanifest.Root.Element($xName).Attribute("Version").Value = "0.0.0.0"
+    $appxmanifest.Save($appxmanifestPath)
   }
 
   if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msixbundle")) {
@@ -120,7 +126,7 @@ Try {
 
 $TotalTime = (Get-Date)-$StartTime
 $TotalMinutes = [math]::Floor($TotalTime.TotalMinutes)
-$TotalSeconds = [math]::Ceiling($TotalTime.TotalSeconds)
+$TotalSeconds = [math]::Ceiling($TotalTime.TotalSeconds) - ($TotalMinutes * 60)
 
 if (-not($isAdmin)) {
   Write-Host @"
@@ -129,9 +135,9 @@ WARNING: Cert signing requires admin privileges.  To sign, run the following in 
 "@ -ForegroundColor GREEN
   foreach ($platform in $env:Build_Platform.Split(",")) {
     foreach ($configuration in $env:Build_Configuration.Split(",")) {
-      $appxPackageDir = (Join-Path $env:Build_RootDirectory "AppxPackages\$platform\$configuration")
+      $appxPackageDir = (Join-Path $env:Build_RootDirectory "AppxPackages\$configuration")
         Write-Host @"
-powershell -command "& { . build\scripts\CertSignAndInstall.ps1; Invoke-SignPackage $appxPackageDir\DevHome.msix }"
+powershell -command "& { . build\scripts\CertSignAndInstall.ps1; Invoke-SignPackage $appxPackageDir\DevHome-$platform.msix }"
 "@ -ForegroundColor GREEN
     }
   }
