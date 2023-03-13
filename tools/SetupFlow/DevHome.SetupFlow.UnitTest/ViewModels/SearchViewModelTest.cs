@@ -27,9 +27,9 @@ public class SearchViewModelTest
     }
 
     [TestMethod]
-    [DataRow("")] // Empty
-    [DataRow(" ")] // Space
-    [DataRow(null)]
+    [DataRow("", DisplayName = $"{nameof(Search_NullOrEmptyText_ReturnsEmptyStatusAndNull)}_Empty")]
+    [DataRow(" ", DisplayName = $"{nameof(Search_NullOrEmptyText_ReturnsEmptyStatusAndNull)}_Space")]
+    [DataRow(null, DisplayName = $"{nameof(Search_NullOrEmptyText_ReturnsEmptyStatusAndNull)}_Null")]
     public void Search_NullOrEmptyText_ReturnsEmptyStatusAndNull(string text)
     {
         var searchViewModel = new SearchViewModel(_logger!.Object, _wpm!.Object, _stringResource!.Object);

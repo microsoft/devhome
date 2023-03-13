@@ -99,6 +99,7 @@ public partial class SetupFlowPage : ToolPage
                 // Services: App Management
                 services.AddSingleton<IWindowsPackageManager, WindowsPackageManager>();
                 services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerFactory(ClsidContext.Prod));
+                services.AddSingleton<WinGetPackageJsonDataSource>();
 
                 // Services: Dev Drive
                 services.AddSingleton<IDevDriveManager, DevDriveManager>();

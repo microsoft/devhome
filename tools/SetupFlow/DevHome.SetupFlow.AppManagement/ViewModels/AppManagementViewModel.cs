@@ -57,17 +57,9 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     public async override void OnNavigateToPageAsync()
     {
         // Connect to catalogs on a separate (non-UI) thread to prevent lagging the UI.
-        await Task.Run(async () =>
-        {
-            // Connect composite catalog for all local and remote catalogs to
-            // enable searching for pacakges from any source
-            await _wpm.AllCatalogs.ConnectAsync();
+        await Task.Run(async () => await _wpm.ConnectToAllCatalogsAsync());
 
-            // Connect predefined (winget and msstore) catalogs to enable loading
-            // package with a known source (e.g. for restoring packages)
-            await _wpm.WinGetCatalog.ConnectAsync();
-            await _wpm.MsStoreCatalog.ConnectAsync();
-        });
+        await _packageCatalogListViewModel.LoadCatalogsAsync();
     }
 
     [RelayCommand(AllowConcurrentExecutions = true)]
