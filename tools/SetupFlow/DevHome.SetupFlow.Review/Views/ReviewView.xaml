@@ -10,7 +10,7 @@
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:appManagementViews="using:DevHome.SetupFlow.AppManagement.Views"
     xmlns:commonViewModels="using:DevHome.SetupFlow.Common.ViewModels"
-    xmlns:devVolumeViews="using:DevHome.SetupFlow.DevVolume.Views"
+    xmlns:devVolumeViews="using:DevHome.SetupFlow.DevDrive.Views"
     xmlns:repoConfigViews="using:DevHome.SetupFlow.RepoConfig.Views"
     xmlns:selectors="using:DevHome.SetupFlow.Review.Selectors"
     mc:Ignorable="d">
@@ -42,11 +42,11 @@
                                     VerticalContentAlignment="Stretch" >
                         <ContentControl.ContentTemplateSelector>
                             <selectors:ReviewTabViewSelector>
-                                <selectors:ReviewTabViewSelector.DevVolumeTabTemplate>
+                                <selectors:ReviewTabViewSelector.DevDriveTabTemplate>
                                     <DataTemplate>
-                                        <devVolumeViews:DevVolumeReviewView />
+                                        <devVolumeViews:DevDriveReviewView />
                                     </DataTemplate>
-                                </selectors:ReviewTabViewSelector.DevVolumeTabTemplate>
+                                </selectors:ReviewTabViewSelector.DevDriveTabTemplate>
                                 <selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
                                     <DataTemplate>
                                         <repoConfigViews:RepoConfigReviewView />

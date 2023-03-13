@@ -33,7 +33,7 @@
     <ProjectReference Include="..\DevHome.SetupFlow.AppManagement\DevHome.SetupFlow.AppManagement.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.ConfigurationFlow\DevHome.SetupFlow.ConfigurationFile.csproj" />
-    <ProjectReference Include="..\DevHome.SetupFlow.DevVolume\DevHome.SetupFlow.DevVolume.csproj" />
+    <ProjectReference Include="..\DevHome.SetupFlow.DevDrive\DevHome.SetupFlow.DevDrive.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Loading\DevHome.SetupFlow.Loading.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.MainPage\DevHome.SetupFlow.MainPage.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.RepoConfig\DevHome.SetupFlow.RepoConfig.csproj" />

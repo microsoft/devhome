@@ -9,6 +9,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.RepoConfig.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;

@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
+    <ProjectReference Include="..\DevHome.SetupFlow.DevDrive\DevHome.SetupFlow.DevDrive.csproj" />
   </ItemGroup>
 
   <ItemGroup>
