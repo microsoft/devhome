@@ -65,7 +65,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
                 repoName = urlParts[urlParts.Length - 1];
 
                 // substring out .git
-                repoName = repoName.Substring(0, repoName.IndexOf('.'));
+                repoName = repoName.Substring(0, repoName.LastIndexOf('.'));
             }
             else
             {
@@ -78,7 +78,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
                 {
                     // username/Repo
                     var nameParts = urlOrUsernameAndRepo.Split("/");
-                    if (nameParts.Length > 2)
+                    if (nameParts.Length != 2)
                     {
                         _logger.Log("Invalid repo name. Expected format: username/RepoName", LogLevel.Local, urlOrUsernameAndRepo);
                         return;
