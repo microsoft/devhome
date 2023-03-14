@@ -37,13 +37,8 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
+    [ObservableProperty]
     private FrameworkElement _widgetUIElement;
-
-    public FrameworkElement WidgetUIElement
-    {
-        get => _widgetUIElement;
-        set => SetProperty(ref _widgetUIElement, value);
-    }
 
     public WidgetViewModel(
         Widget widget,
