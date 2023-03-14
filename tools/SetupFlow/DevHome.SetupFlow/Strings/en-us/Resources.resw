@@ -421,7 +421,7 @@
     <value>View {0}</value>
     <comment>{Locked="{0}"} Text for the view action of a file content. {0} is replaced by a file name.</comment>
   </data>
-   <data name="MainPage_RepoReviewDescription.Text" xml:space="preserve">
+  <data name="MainPage_RepoReviewDescription.Text" xml:space="preserve">
     <value>Add private or public repositories to clone to your compuer</value>
     <comment>Description for the repo review page</comment>
   </data>
@@ -512,5 +512,21 @@
   <data name="RepositoriesList.Text" xml:space="preserve">
     <value>Your repositories</value>
     <comment>Shown above the list of user repositories</comment>
+  </data>
+  <data name="CloneRepoDialog.CloseButtonText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Content for the secondary button in the repo review tool.</comment>
+  </data>
+  <data name="CloneRepoDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Add</value>
+    <comment>Content for the primary button in the repo review tool</comment>
+  </data>
+  <data name="EditClonePathDialog.CloseButtonText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Content for the close button in the edit clone path dialog.</comment>
+  </data>
+  <data name="EditClonePathDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Add</value>
+    <comment>Content for the primary button in the edit clone path dialog.</comment>
   </data>
 </root>

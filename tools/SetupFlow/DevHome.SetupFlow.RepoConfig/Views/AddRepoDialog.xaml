@@ -9,9 +9,8 @@
                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
                mc:Ignorable="d"
                x:Name="AddRepoContentDialog"
-               PrimaryButtonText="Add" PrimaryButtonClick="AddRepoContentDialog_PrimaryButtonClick"
-               IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldPrimaryButtonBeEnabled, Mode=OneWay}"
-               CloseButtonText="Cancel">
+               PrimaryButtonClick="AddRepoContentDialog_PrimaryButtonClick"
+               IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldPrimaryButtonBeEnabled, Mode=OneWay}">
     <ContentDialog.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
