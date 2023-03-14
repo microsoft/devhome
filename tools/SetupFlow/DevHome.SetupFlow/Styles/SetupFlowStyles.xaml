@@ -15,4 +15,8 @@
     <Style x:Key="CardGridSecondaryStyle" TargetType="Grid" BasedOn="{StaticResource CardGridStyle}">
         <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorSecondary}" />
     </Style>
+
+    <!-- Package catalog -->
+    <x:Double x:Key="PackageCardWidth">190</x:Double>
+    <x:Double x:Key="PackageCardHeight">120</x:Double>
 </ResourceDictionary>

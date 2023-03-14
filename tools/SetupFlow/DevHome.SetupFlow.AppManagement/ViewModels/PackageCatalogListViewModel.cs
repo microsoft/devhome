@@ -25,6 +25,11 @@ public partial class PackageCatalogListViewModel : ObservableObject
     public ObservableCollection<PackageCatalogViewModel> PackageCatalogs { get; } = new ();
 
     /// <summary>
+    /// Gets a list of package catalogs shimmers to display
+    /// </summary>
+    public ObservableCollection<IEnumerable<int>> PackageCatalogShimmers { get; } = new ();
+
+    /// <summary>
     /// Occurrs when a package catalog is loaded
     /// </summary>
     public event EventHandler<PackageCatalogViewModel> CatalogLoaded;
@@ -33,6 +38,9 @@ public partial class PackageCatalogListViewModel : ObservableObject
     {
         _logger = logger;
         _jsonDataSource = jsonDataSource;
+
+        // Initialize shimmers
+        AddShimmers(1);
     }
 
     /// <summary>
@@ -53,6 +61,10 @@ public partial class PackageCatalogListViewModel : ObservableObject
             _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while loading catalogs from json data source");
             _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Local, e.Message);
         }
+        finally
+        {
+            RemoveShimmer();
+        }
 
         // TODO Load restore packages
         foreach (var catalog in allCatalogs)
@@ -60,6 +72,22 @@ public partial class PackageCatalogListViewModel : ObservableObject
             var viewModel = new PackageCatalogViewModel(catalog);
             PackageCatalogs.Add(viewModel);
             CatalogLoaded?.Invoke(null, viewModel);
+        }
+    }
+
+    private void AddShimmers(int count)
+    {
+        while (count-- > 0)
+        {
+            PackageCatalogShimmers.Add(Enumerable.Range(1, 6));
+        }
+    }
+
+    public void RemoveShimmer()
+    {
+        if (PackageCatalogShimmers.Any())
+        {
+            PackageCatalogShimmers.Remove(PackageCatalogShimmers.Last());
         }
     }
 }
