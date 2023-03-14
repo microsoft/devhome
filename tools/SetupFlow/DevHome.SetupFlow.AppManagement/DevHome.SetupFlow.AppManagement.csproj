@@ -16,6 +16,7 @@
     <None Remove="Views\AppManagementView.xaml" />
     <None Remove="Views\PackageCatalogListView.xaml" />
     <None Remove="Views\SearchView.xaml" />
+    <None Remove="Views\ShimmerSearchView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,6 +32,12 @@
   <ItemGroup>
     <ProjectReference Include="..\DevHome.SetupFlow.ComInterop.Projection\DevHome.SetupFlow.ComInterop.Projection.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\ShimmerSearchView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>

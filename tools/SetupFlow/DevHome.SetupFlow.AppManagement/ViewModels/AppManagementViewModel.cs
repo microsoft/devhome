@@ -20,6 +20,7 @@ namespace DevHome.SetupFlow.AppManagement.ViewModels;
 public partial class AppManagementViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _logger;
+    private readonly ShimmerSearchViewModel _shimmerSearchViewModel;
     private readonly SearchViewModel _searchViewModel;
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
     private readonly AppManagementTaskGroup _taskGroup;
@@ -46,6 +47,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         _wpm = wpm;
 
         _searchViewModel = host.GetService<SearchViewModel>();
+        _shimmerSearchViewModel = host.GetService<ShimmerSearchViewModel>();
 
         _packageCatalogListViewModel = host.GetService<PackageCatalogListViewModel>();
         _packageCatalogListViewModel.CatalogLoaded += OnCatalogLoaded;
@@ -65,6 +67,8 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     [RelayCommand(AllowConcurrentExecutions = true)]
     private async Task SearchTextChangedAsync(string text, CancellationToken cancellationToken)
     {
+        CurrentView = _shimmerSearchViewModel;
+
         var (searchResultStatus, packages) = await _searchViewModel.SearchAsync(text, cancellationToken);
         switch (searchResultStatus)
         {
