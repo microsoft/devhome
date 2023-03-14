@@ -39,19 +39,7 @@
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.PackageCatalogShimmers, Mode=OneWay}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Spacing="18">
-                            <!-- Title/Description shimmer -->
-                            <labs:Shimmer HorizontalAlignment="Left" Width="10" />
-                            <labs:Shimmer HorizontalAlignment="Left" Width="100" />
-                            <!-- Packages shimmer -->
-                            <GridView SelectionMode="None" ItemsSource="{Binding}">
-                                <GridView.ItemTemplate>
-                                    <DataTemplate>
-                                        <labs:Shimmer Width="{StaticResource PackageCardWidth}" Height="{StaticResource PackageCardHeight}" />
-                                    </DataTemplate>
-                                </GridView.ItemTemplate>
-                            </GridView>
-                        </StackPanel>
+                        <views:ShimmerPackageCatalogView PackageCount="6" />
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>
