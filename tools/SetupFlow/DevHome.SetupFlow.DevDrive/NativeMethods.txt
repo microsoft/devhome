@@ -1,0 +1,9 @@
+﻿CreateVirtualDisk
+HRESULT_FROM_WIN32
+AttachVirtualDisk
+DeviceIoControl
+CreateFile
+OpenVirtualDisk
+GetVirtualDiskPhysicalPath
+STORAGE_DEVICE_NUMBER
+IOCTL_STORAGE_GET_DEVICE_NUMBER

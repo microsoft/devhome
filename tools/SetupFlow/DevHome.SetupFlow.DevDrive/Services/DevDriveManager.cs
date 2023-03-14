@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.SetupFlow.DevDrive.Models;
@@ -11,7 +12,14 @@ using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
-using Microsoft.UI.Xaml;
+using Windows.Foundation;
+using Windows.Media.Playback;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.Security;
+using Windows.Win32.Storage.FileSystem;
+using Windows.Win32.Storage.Vhd;
+using Windows.Win32.System.Ioctl;
 
 namespace DevHome.Common.Services;
 
@@ -44,7 +52,53 @@ public class DevDriveManager : IDevDriveManager
     }
 
     /// <inheritdoc/>
-    public Task<bool> CreateDevDrive(IDevDrive devDrive) => throw new NotImplementedException();
+    public async Task<int> CreateDevDrive(IDevDrive devDrive)
+    {
+        // Create and attach the virtual hard disk
+        var result = (HRESULT)_devDriveStorageOperator.CreateAndAttachVhd(@"C:\vhds\test.vhdx", 5);
+        if (result.Failed)
+        {
+            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to create and attach virtual disk. {result.ToString()}");
+            return result.Value;
+        }
+
+        // Get the disk number to be used to initialize the disk.
+        uint diskNumber;
+        result = (HRESULT)_devDriveStorageOperator.GetDiskNumber(@"C:\vhds\test.vhdx", out diskNumber);
+        if (result.Failed)
+        {
+            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to get virtual disk number. {result.ToString()}");
+            return result.Value;
+        }
+
+        // Initialize the disk
+        result = (HRESULT)await _devDriveStorageOperator.InitializeDisk(diskNumber);
+
+        if (result.Failed)
+        {
+            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to initialize disk {diskNumber}. {result.ToString()}");
+            return result.Value;
+        }
+
+        // Create a partition using the provided drive letter.
+        result = (HRESULT)await _devDriveStorageOperator.CreatePartition(diskNumber, 'A');
+
+        if (result.Failed)
+        {
+            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to create partition disk: {diskNumber}, drive letter: {devDrive.DriveLetter}. {result.ToString()}");
+            return result.Value;
+        }
+
+        // Format the partition as a Dev Drive.
+        result = (HRESULT)await _devDriveStorageOperator.FormatPartitionAsDevDrive('A', "this is a Dev Drive");
+
+        if (result.Failed)
+        {
+            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to format partition as Dev Drive: disk: {diskNumber}, drive letter: {devDrive.DriveLetter}. {result.ToString()}");
+        }
+
+        return result.Value;
+    }
 
     /// <inheritdoc/>
     public Task<bool> LaunchDevDriveWindow(IDevDrive devDrive)
