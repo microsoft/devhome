@@ -34,39 +34,38 @@ public partial class SetupFlowViewModel : ObservableObject
 
     public bool IsPreviousButtonVisible => _currentPageIndex > 0;
 
-    private PropertyChangedEventHandler onPropertyChanged;
-
     private int CurrentPageIndex
     {
         get => _currentPageIndex;
         set
         {
             _currentPageIndex = value;
-            if (onPropertyChanged != null)
+            if (CurrentPageViewModel is not null)
             {
-                CurrentPageViewModel.PropertyChanged -= onPropertyChanged;
+                CurrentPageViewModel.PropertyChanged -= CurrentPageViewModel_PropertyChanged;
             }
 
             CurrentPageViewModel = _flowPages[_currentPageIndex];
-            onPropertyChanged = (_, p) =>
-            {
-                if (p.PropertyName == nameof(SetupPageViewModelBase.CanGoToNextPage))
-                {
-                    GoToNextPageCommand.NotifyCanExecuteChanged();
-                }
-                else if (p.PropertyName == nameof(SetupPageViewModelBase.CanGoToPreviousPage))
-                {
-                    GoToPreviousPageCommand.NotifyCanExecuteChanged();
-                }
-                else if (p.PropertyName == nameof(SetupPageViewModelBase.CanCancel))
-                {
-                    CancelCommand.NotifyCanExecuteChanged();
-                }
-            };
-            CurrentPageViewModel.PropertyChanged += onPropertyChanged;
+            CurrentPageViewModel.PropertyChanged += CurrentPageViewModel_PropertyChanged;
             CurrentPageViewModel.OnNavigateToPageAsync();
             _orchestrator.NotifyNavigationCanExecuteChanged();
             OnPropertyChanged(nameof(IsPreviousButtonVisible));
+        }
+    }
+
+    private void CurrentPageViewModel_PropertyChanged(object sender, PropertyChangedEventArgs p)
+    {
+        if (p.PropertyName == nameof(SetupPageViewModelBase.CanGoToNextPage))
+        {
+            GoToNextPageCommand.NotifyCanExecuteChanged();
+        }
+        else if (p.PropertyName == nameof(SetupPageViewModelBase.CanGoToPreviousPage))
+        {
+            GoToPreviousPageCommand.NotifyCanExecuteChanged();
+        }
+        else if (p.PropertyName == nameof(SetupPageViewModelBase.CanCancel))
+        {
+            CancelCommand.NotifyCanExecuteChanged();
         }
     }
 
