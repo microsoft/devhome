@@ -78,7 +78,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
                 {
                     // username/Repo
                     var nameParts = urlOrUsernameAndRepo.Split("/");
-                    if (nameParts.Count > 2)
+                    if (nameParts.Length > 2)
                     {
                         _logger.Log("Invalid repo name. Expected format: username/RepoName", LogLevel.Local, urlOrUsernameAndRepo);
                         return;
