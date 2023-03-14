@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Extensions;
@@ -10,10 +9,12 @@ using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.RepoConfig;
 
+/// <summary>
+/// The tesk group for cloning repositories
+/// </summary>
 public class RepoConfigTaskGroup : ISetupTaskGroup
 {
     private readonly IHost _host;
@@ -23,30 +24,31 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         _host = host;
     }
 
-    private readonly IList<CloneRepoTask> _cloneTasks = new List<CloneRepoTask>();
-
+    /// <summary>
+    /// Gets all the tasks to execute during the loading screen.
+    /// </summary>
     public IEnumerable<ISetupTask> SetupTasks => _cloneTasks;
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _host.CreateInstance<RepoConfigViewModel>(this);
 
     public ReviewTabViewModelBase GetReviewTabViewModel() => _host.CreateInstance<RepoConfigReviewViewModel>();
 
-    public void SaveSetupTaskInformation(CloningInformation cloningInformation)
-    {
-        foreach (var developerId in cloningInformation.RepositoriesToClone.Keys)
-        {
-            foreach (var repositoryToClone in cloningInformation.RepositoriesToClone[developerId])
-            {
-                // Possible that two accounts have the same repo name from forking.
-                var fullPath = Path.Combine(cloningInformation.CloneLocation.FullName, developerId.LoginId(), repositoryToClone.DisplayName());
-                _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), repositoryToClone, developerId));
-            }
-        }
-    }
+    /// <summary>
+    /// All tasks that need to be ran.
+    /// </summary>
+    private readonly IList<CloneRepoTask> _cloneTasks = new List<CloneRepoTask>();
 
-    public void SaveSetupTaskInformation(DirectoryInfo path, IRepository repoToClone)
+    /// <summary>
+    /// Converts CloningInformation to a ClineRepoTask.
+    /// </summary>
+    /// <param name="cloningInformations">all repositories the user wants to clone.</param>
+    public void SaveSetupTaskInformation(List<CloningInformation> cloningInformations)
     {
-        var fullPath = Path.Combine(path.FullName, repoToClone.DisplayName());
-        _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), repoToClone));
+        _cloneTasks.Clear();
+        foreach (var cloningInformation in cloningInformations)
+        {
+            var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.OwningAccount.LoginId(), cloningInformation.RepositoryToClone.DisplayName());
+            _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount));
+        }
     }
 }

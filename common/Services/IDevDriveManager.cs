@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.DevDrive.Models;
 
-namespace DevHome.SetupFlow.DevDrive.Services;
+namespace DevHome.Common.Services;
 
 /// <summary>
 /// Allows requesters to get passed back the Dev Drive object once a Dev Drive window has closed.

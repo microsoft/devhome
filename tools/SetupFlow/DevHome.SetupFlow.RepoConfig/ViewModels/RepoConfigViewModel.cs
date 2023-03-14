@@ -1,22 +1,43 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
 using System.Collections.Generic;
-using System.IO;
-using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.Telemetry;
-using Microsoft.Windows.DevHome.SDK;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.SetupFlow.RepoConfig.ViewModels;
 
+/// <summary>
+/// The view model to handle the whole repo tool.
+/// </summary>
 public partial class RepoConfigViewModel : SetupPageViewModelBase
 {
+    /// <summary>
+    /// The logger to use to log things.
+    /// </summary>
     private readonly ILogger _logger;
+
+    /// <summary>
+    /// All the tasks that need to be ran during the loading page.
+    /// </summary>
     private readonly RepoConfigTaskGroup _taskGroup;
+
+    /// <summary>
+    /// All repositories the user wants to clone.
+    /// </summary>
+    [ObservableProperty]
+    private ObservableCollection<CloningInformation> _repoReviewItems = new ();
+
+    /// <summary>
+    /// Controls if the "No repo" message is shown to the user.
+    /// </summary>
+    [ObservableProperty]
+    private Visibility _shouldShowNoRepoMessage = Visibility.Visible;
 
     public RepoConfigViewModel(ILogger logger, IStringResource stringResource, RepoConfigTaskGroup taskGroup)
         : base(stringResource)
@@ -26,28 +47,34 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
-    /// Converts the location and repositories to a list of CloneRepo tasks.
+    /// Saves all cloning informations to be cloned during the loading screen.
     /// </summary>
-    /// <param name="cloningInformation">All repositories the user selected.  Can be 1 if the user types in a git URL</param>
-    public void SaveSetupTaskInformation(CloningInformation cloningInformation)
+    /// <param name="cloningInformations">All repositories the user selected.</param>
+    /// <remarks>
+    /// Makes a new collection to force UI to update.
+    /// </remarks>
+    public void SaveSetupTaskInformation(List<CloningInformation> cloningInformations)
     {
-        _taskGroup.SaveSetupTaskInformation(cloningInformation);
+        List<CloningInformation> repoReviewItems = new (RepoReviewItems);
+        repoReviewItems.AddRange(cloningInformations);
+
+        ShouldShowNoRepoMessage = Visibility.Collapsed;
+        RepoReviewItems = new ObservableCollection<CloningInformation>(repoReviewItems);
+        _taskGroup.SaveSetupTaskInformation(repoReviewItems);
     }
 
-    public void SaveSetupTaskInformation(DirectoryInfo path, IRepository repoToClone)
+    /// <summary>
+    /// Remove a specific cloning location from the list of repos to clone.
+    /// </summary>
+    /// <param name="cloningInformation">The cloning information to remove.</param>
+    public void RemoveCloningInformation(CloningInformation cloningInformation)
     {
-        _taskGroup.SaveSetupTaskInformation(path, repoToClone);
-    }
+        RepoReviewItems.Remove(cloningInformation);
+        UpdateCollection();
 
-    public void SaveRepoInformation(CloningInformation cloningInformation)
-    {
-        // When adding via URL the user can enter either
-        // 1. A URL
-        // 2. A Username/RepositoryName
-        // At the moment, this assumes that the user will enter a url that ends with .git.
-        // Need to make this provider agnostic.
-        if (cloningInformation.CurrentPage == Models.Common.CurrentPage.AddViaUrl)
+        if (RepoReviewItems.Count == 0)
         {
+<<<<<<< HEAD
             // Get all information to figure out what the user entered.
             var repoName = string.Empty;
             var urlOrUsernameAndRepo = cloningInformation.UrlOrUsernameRepo;
@@ -100,6 +127,17 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         else
         {
             SaveSetupTaskInformation(cloningInformation);
+=======
+            ShouldShowNoRepoMessage = Visibility.Visible;
+>>>>>>> DartRepo/user/dahoehna/UIDevDriveAndRefactoring
         }
+    }
+
+    // Assumes an item in the list has been changed via reference.
+    public void UpdateCollection()
+    {
+        List<CloningInformation> repoReviewItems = new (RepoReviewItems);
+        RepoReviewItems = new ObservableCollection<CloningInformation>(repoReviewItems);
+        _taskGroup.SaveSetupTaskInformation(repoReviewItems);
     }
 }
