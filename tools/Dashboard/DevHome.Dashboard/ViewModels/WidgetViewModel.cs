@@ -12,24 +12,28 @@ using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.ViewModels;
 
-public class WidgetViewModel : ObservableObject
+public partial class WidgetViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly AdaptiveCardRenderer _renderer;
 
+    [ObservableProperty]
     private Widget _widget;
 
-    public Widget Widget
+    partial void OnWidgetChanging(Widget value)
     {
-        get => _widget;
-        set
+        if (Widget != null)
         {
-            _widget = value;
-            if (_widget != null)
-            {
-                Widget.WidgetUpdated += HandleWidgetUpdated;
-                RenderWidgetUIElement();
-            }
+            Widget.WidgetUpdated -= HandleWidgetUpdated;
+        }
+    }
+
+    partial void OnWidgetChanged(Widget value)
+    {
+        if (Widget != null)
+        {
+            Widget.WidgetUpdated += HandleWidgetUpdated;
+            RenderWidgetUIElement();
         }
     }
 
