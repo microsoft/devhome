@@ -70,7 +70,7 @@ public partial class WidgetViewModel : ObservableObject
                 if (renderedCard != null && renderedCard.FrameworkElement != null)
                 {
                     renderedCard.Action += HandleInvokedAction;
-                    WidgetUIElement = renderedCard.FrameworkElement as Grid;
+                    WidgetUIElement = renderedCard.FrameworkElement;
                 }
             });
         }
