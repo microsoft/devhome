@@ -83,6 +83,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
                         _logger.Log("Invalid repo name. Expected format: username/RepoName", LogLevel.Local, urlOrUsernameAndRepo);
                         return;
                     }
+
                     repoName = nameParts[1];
                     cloneUrlOrRepoName = "https://github.com/" + urlOrUsernameAndRepo;
                 }
