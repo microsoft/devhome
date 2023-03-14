@@ -8,7 +8,7 @@ using DevHome.Dashboard.ViewModels;
 using DevHome.Dashboard.Views;
 using Microsoft.Windows.Widgets.Hosts;
 
-namespace DevHome.Dashboard;
+namespace DevHome.Dashboard.Views;
 
 public partial class DashboardView : ToolPage
 {
