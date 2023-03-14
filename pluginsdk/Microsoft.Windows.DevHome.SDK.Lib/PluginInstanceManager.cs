@@ -88,7 +88,7 @@ internal class PluginInstanceManager<T> : IClassFactory
             // Get the caller process id and use it to check if the caller has permissions to access the feature.
             AppCapabilityAccessStatus status = AppCapabilityAccessStatus.DeniedBySystem;
 
-            AppCapability capability = AppCapability.CreateWithProcessIdForUser(null, "DevHomePluginHost", callerProcessId);
+            AppCapability capability = AppCapability.CreateWithProcessIdForUser(null, "devicePortalProvider", callerProcessId);
             status = capability.CheckAccess();
 
             return (status == AppCapabilityAccessStatus.Allowed);
