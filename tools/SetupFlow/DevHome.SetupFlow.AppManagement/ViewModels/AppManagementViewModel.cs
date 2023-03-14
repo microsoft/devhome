@@ -67,6 +67,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     [RelayCommand(AllowConcurrentExecutions = true)]
     private async Task SearchTextChangedAsync(string text, CancellationToken cancellationToken)
     {
+        // Change view to searching
         CurrentView = _shimmerSearchViewModel;
 
         var (searchResultStatus, packages) = await _searchViewModel.SearchAsync(text, cancellationToken);

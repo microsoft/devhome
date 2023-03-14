@@ -6,15 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DevHome.SetupFlow.AppManagement.ViewModels"
     xmlns:views="using:DevHome.SetupFlow.AppManagement.Views"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
     <ScrollViewer>
         <StackPanel>
             <!-- Package catalogs -->
@@ -35,7 +27,7 @@
                 </ItemsRepeater.Layout>
             </ItemsRepeater>
 
-            <!-- Shimmers -->
+            <!-- Package catalog shimmers -->
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.PackageCatalogShimmers, Mode=OneWay}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>

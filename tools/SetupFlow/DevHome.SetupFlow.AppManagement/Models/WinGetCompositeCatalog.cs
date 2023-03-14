@@ -69,7 +69,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog
         }
     }
 
-    public async Task<IList<IWinGetPackage>> SearchAsync(string query)
+    public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit)
     {
         try
         {
@@ -80,6 +80,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog
             filter.Option = PackageFieldMatchOption.ContainsCaseInsensitive;
             filter.Value = query;
             options.Selectors.Add(filter);
+            options.ResultLimit = limit;
 
             return await FindPackagesAsync(options);
         }

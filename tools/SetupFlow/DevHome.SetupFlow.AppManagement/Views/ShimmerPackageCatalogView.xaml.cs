@@ -15,6 +15,9 @@ public sealed partial class ShimmerPackageCatalogView : UserControl
     [ObservableProperty]
     private IEnumerable<int> _shimmerPackages;
 
+    /// <summary>
+    /// Gets or sets the number of packages to display in a shimmer package catalog
+    /// </summary>
     public int PackageCount
     {
         get => (int)GetValue(PackageCountProperty);

@@ -25,9 +25,10 @@ public partial class PackageCatalogListViewModel : ObservableObject
     public ObservableCollection<PackageCatalogViewModel> PackageCatalogs { get; } = new ();
 
     /// <summary>
-    /// Gets a list of package catalogs shimmers to display
+    /// Gets a list of shimmer indices.
+    /// This list is used to repeat the shimmer control {Count} times
     /// </summary>
-    public ObservableCollection<IEnumerable<int>> PackageCatalogShimmers { get; } = new ();
+    public ObservableCollection<int> PackageCatalogShimmers { get; } = new (Enumerable.Range(0, 1));
 
     /// <summary>
     /// Occurrs when a package catalog is loaded
@@ -38,9 +39,6 @@ public partial class PackageCatalogListViewModel : ObservableObject
     {
         _logger = logger;
         _jsonDataSource = jsonDataSource;
-
-        // Initialize shimmers
-        AddShimmers(1);
     }
 
     /// <summary>
@@ -52,8 +50,9 @@ public partial class PackageCatalogListViewModel : ObservableObject
 
         try
         {
-            // Load catalogs from JSON file
-            var catalogsFromJsonDataSource = await _jsonDataSource.LoadCatalogsAsync(_packageCollectionsPath);
+            // Load catalogs from JSON file and resolve package ids from winget
+            // on a separate thread to avoid lagging the UI
+            var catalogsFromJsonDataSource = await Task.Run(async () => await _jsonDataSource.LoadCatalogsAsync(_packageCollectionsPath));
             allCatalogs.AddRange(catalogsFromJsonDataSource);
         }
         catch (Exception e)
@@ -75,14 +74,9 @@ public partial class PackageCatalogListViewModel : ObservableObject
         }
     }
 
-    private void AddShimmers(int count)
-    {
-        while (count-- > 0)
-        {
-            PackageCatalogShimmers.Add(Enumerable.Range(1, 6));
-        }
-    }
-
+    /// <summary>
+    /// Removes a package catalog shimmer
+    /// </summary>
     public void RemoveShimmer()
     {
         if (PackageCatalogShimmers.Any())
