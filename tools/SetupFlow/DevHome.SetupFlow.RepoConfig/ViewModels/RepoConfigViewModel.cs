@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
@@ -23,6 +24,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     {
         _logger = logger;
         _taskGroup = taskGroup;
+        CanGoToNextPage = taskGroup.SetupTasks.Any();
     }
 
     /// <summary>
@@ -32,11 +34,13 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     public void SaveSetupTaskInformation(CloningInformation cloningInformation)
     {
         _taskGroup.SaveSetupTaskInformation(cloningInformation);
+        CanGoToNextPage = true;
     }
 
     public void SaveSetupTaskInformation(DirectoryInfo path, IRepository repoToClone)
     {
         _taskGroup.SaveSetupTaskInformation(path, repoToClone);
+        CanGoToNextPage = true;
     }
 
     public void SaveRepoInformation(CloningInformation cloningInformation)

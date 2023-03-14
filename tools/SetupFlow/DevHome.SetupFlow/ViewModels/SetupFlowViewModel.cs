@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -33,13 +34,36 @@ public partial class SetupFlowViewModel : ObservableObject
 
     public bool IsPreviousButtonVisible => _currentPageIndex > 0;
 
+    private PropertyChangedEventHandler onPropertyChanged;
+
     private int CurrentPageIndex
     {
         get => _currentPageIndex;
         set
         {
             _currentPageIndex = value;
+            if (onPropertyChanged != null)
+            {
+                CurrentPageViewModel.PropertyChanged -= onPropertyChanged;
+            }
+
             CurrentPageViewModel = _flowPages[_currentPageIndex];
+            onPropertyChanged = (_, p) =>
+            {
+                if (p.PropertyName == nameof(SetupPageViewModelBase.CanGoToNextPage))
+                {
+                    GoToNextPageCommand.NotifyCanExecuteChanged();
+                }
+                else if (p.PropertyName == nameof(SetupPageViewModelBase.CanGoToPreviousPage))
+                {
+                    GoToPreviousPageCommand.NotifyCanExecuteChanged();
+                }
+                else if (p.PropertyName == nameof(SetupPageViewModelBase.CanCancel))
+                {
+                    CancelCommand.NotifyCanExecuteChanged();
+                }
+            };
+            CurrentPageViewModel.PropertyChanged += onPropertyChanged;
             CurrentPageViewModel.OnNavigateToPageAsync();
             _orchestrator.NotifyNavigationCanExecuteChanged();
             OnPropertyChanged(nameof(IsPreviousButtonVisible));
