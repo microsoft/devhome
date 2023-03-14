@@ -33,7 +33,7 @@ public partial class DashboardView : ToolPage
 
     private async void AddWidgetButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        var dialog = new AddWidgetDialog(_widgetHost, _widgetCatalog, _renderer)
+        var dialog = new AddWidgetDialog(_widgetHost, _widgetCatalog, _renderer, Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread())
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
             XamlRoot = this.XamlRoot,

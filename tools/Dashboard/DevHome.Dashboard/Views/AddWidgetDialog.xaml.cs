@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.ViewModels;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets.Hosts;
@@ -21,8 +24,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     public Widget AddedWidget { get; set; }
 
-    public AddWidgetDialog(WidgetHost host, WidgetCatalog catalog, AdaptiveCardRenderer renderer)
+    public WidgetViewModel ViewModel { get; set; }
+
+    public AddWidgetDialog(WidgetHost host, WidgetCatalog catalog, AdaptiveCardRenderer renderer, DispatcherQueue dispatcher)
     {
+        ViewModel = new WidgetViewModel(null, renderer, dispatcher);
         this.InitializeComponent();
 
         _widgetHost = host;
@@ -103,22 +109,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
             // Put in small wait to avoid this.
             System.Threading.Thread.Sleep(100);
 
-            var temp = await widget.GetCardTemplateAsync();
-            var data = await widget.GetCardDataAsync();
-
-            // Use the data to fill in the template
-            var template = new AdaptiveCardTemplate(temp);
-            var json = template.Expand(data);
-
-            // Create the Adaptive Card from the widget
-            var card = AdaptiveCard.FromJsonString(json);
-            var renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
-            if (renderedCard.FrameworkElement != null)
-            {
-                // Add FrameworkElement to the UI
-                ConfigurationContentFrame.Content = renderedCard.FrameworkElement;
-                PinButton.Visibility = Visibility.Visible;
-            }
+            ViewModel.Widget = widget;
+            PinButton.Visibility = Visibility.Visible;
 
             clearWidgetTask.Wait();
             _currentWidget = widget;
