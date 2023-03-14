@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:viewmodels="using:DevHome.SetupFlow.AppManagement.ViewModels"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -15,6 +16,18 @@
             <converters:BoolToObjectConverter x:Key="ImageOpacityConverter" TrueValue="0.4" FalseValue="1" />
             <converters:BoolToObjectConverter x:Key="TextEnableDisableConverter" TrueValue="{ThemeResource TextFillColorDisabledBrush}" FalseValue="{ThemeResource TextFillColorPrimaryBrush}" />
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <DataTemplate x:Key="PackageImage" x:DataType="viewmodels:PackageViewModel">
+                        <ImageIcon Source="{x:Bind LightThemeIcon,Mode=OneWay}"/>
+                    </DataTemplate>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <DataTemplate x:Key="PackageImage" x:DataType="viewmodels:PackageViewModel">
+                        <ImageIcon Source="{x:Bind DarkThemeIcon,Mode=OneWay}"/>
+                    </DataTemplate>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -33,11 +46,12 @@
             </Grid.ColumnDefinitions>
 
             <!-- Package image -->
-            <ImageIcon
+            <ContentControl
                 Width="24"
                 VerticalAlignment="Center"
                 Opacity="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource ImageOpacityConverter}}"
-                Source="{x:Bind Package.ImageUri.AbsoluteUri,Mode=OneWay}"/>
+                ContentTemplate="{ThemeResource PackageImage}"
+                Content="{x:Bind Package,Mode=OneWay}"/>
 
             <!-- Select button -->
             <Button

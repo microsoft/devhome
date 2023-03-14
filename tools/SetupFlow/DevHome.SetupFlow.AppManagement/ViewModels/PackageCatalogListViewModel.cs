@@ -17,6 +17,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
 {
     private readonly ILogger _logger;
     private readonly WinGetPackageJsonDataSource _jsonDataSource;
+    private readonly WinGetPackageRestoreDataSource _restoreDataSource;
     private readonly string _packageCollectionsPath = Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "DevHome.SetupFlow", "Assets", "AppManagementPackages.json");
 
     /// <summary>
@@ -29,10 +30,11 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// </summary>
     public event EventHandler<PackageCatalogViewModel> CatalogLoaded;
 
-    public PackageCatalogListViewModel(ILogger logger, WinGetPackageJsonDataSource jsonDataSource)
+    public PackageCatalogListViewModel(ILogger logger, WinGetPackageJsonDataSource jsonDataSource, WinGetPackageRestoreDataSource restoreDataSource)
     {
         _logger = logger;
         _jsonDataSource = jsonDataSource;
+        _restoreDataSource = restoreDataSource;
     }
 
     /// <summary>
@@ -45,13 +47,19 @@ public partial class PackageCatalogListViewModel : ObservableObject
         try
         {
             // Load catalogs from JSON file
-            var catalogsFromJsonDataSource = await _jsonDataSource.LoadCatalogsAsync(_packageCollectionsPath);
+            var catalogsFromJsonDataSource = await Task.Run(async () => await _jsonDataSource.LoadCatalogsAsync(_packageCollectionsPath));
             allCatalogs.AddRange(catalogsFromJsonDataSource);
         }
         catch (Exception e)
         {
             _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while loading catalogs from json data source");
             _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Local, e.Message);
+        }
+
+        var restoreCatalog = await _restoreDataSource.LoadCatalogAsync();
+        if (restoreCatalog != null)
+        {
+            allCatalogs.Add(restoreCatalog);
         }
 
         // TODO Load restore packages

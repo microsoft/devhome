@@ -9,9 +9,11 @@
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <converters:CollectionVisibilityConverter x:Name="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
-        <converters:StringFormatConverter x:Name="StringFormatConverter" />
-        <converters:BoolToObjectConverter x:Name="SelectButtonGlyphConverter" TrueValue="&#xE106;" FalseValue="&#xE109;" />
+        <ResourceDictionary>
+            <converters:CollectionVisibilityConverter x:Name="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
+            <converters:StringFormatConverter x:Name="StringFormatConverter" />
+            <converters:BoolToObjectConverter x:Name="SelectButtonGlyphConverter" TrueValue="&#xE106;" FalseValue="&#xE109;" />
+        </ResourceDictionary>
     </UserControl.Resources>
     <!-- Search view layout -->
     <Grid>
@@ -58,12 +60,16 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:PackageViewModel">
                     <!-- Search package result entity -->
-                    <controls:SettingsCard Header="{x:Bind Name}" Description="{x:Bind Version}">
+                    <controls:SettingsCard
+                        Header="{x:Bind Name}"
+                        Description="{x:Bind Version}">
                         <controls:SettingsCard.Resources>
-                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
+                            <ResourceDictionary>
+                                <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
+                            </ResourceDictionary>
                         </controls:SettingsCard.Resources>
                         <controls:SettingsCard.HeaderIcon>
-                            <ImageIcon Source="{x:Bind ImageUri.AbsoluteUri, Mode=OneWay}"/>
+                            <ImageIcon Source="{x:Bind Icon}"/>
                         </controls:SettingsCard.HeaderIcon>
                         <StackPanel Orientation="Horizontal" Spacing="10">
                             <HyperlinkButton NavigateUri="{x:Bind PackageUri}">

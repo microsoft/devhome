@@ -4,6 +4,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.ViewModels;
@@ -22,7 +23,7 @@ public class AccountsPageViewModel
     {
         // Currently, we assume that there is only one extension
         var pluginService = new DevHome.Services.PluginService();
-        var plugins = pluginService.GetInstalledPluginsAsync().Result;
+        var plugins = new List<IPluginWrapper>();
         var plugin = plugins.FirstOrDefault();
         if (plugin is null)
         {
