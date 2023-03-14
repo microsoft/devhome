@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.DevDrive.Models;
@@ -24,7 +25,6 @@ namespace DevHome.SetupFlow.DevDrive.Services;
 /// </summary>
 public class DevDriveManager : IDevDriveManager
 {
-    private readonly ILogger _logger;
     private readonly IHost _host;
     private readonly IDevDriveStorageOperator _devDriveStorageOperator = new DevDriveStorageOperator();
 
@@ -38,10 +38,9 @@ public class DevDriveManager : IDevDriveManager
     /// </summary>
     public event EventHandler<DevDriveWindowClosedEventArgs> OnViewModelWindowClosed = (sender, e) => { };
 
-    public DevDriveManager(IHost host, ILogger logger)
+    public DevDriveManager(IHost host)
     {
         _host = host;
-        _logger = logger;
     }
 
     /// <inheritdoc/>
@@ -54,9 +53,9 @@ public class DevDriveManager : IDevDriveManager
         {
             return _devDriveToViewModelMap[devDrive].LaunchDevDriveWindow();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to launch a new Dev Drive window. {ex.Message}");
+            /* _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to launch a new Dev Drive window. {ex.Message}");*/
             throw;
         }
     }
@@ -82,5 +81,12 @@ public class DevDriveManager : IDevDriveManager
     }
 
     /// <inheritdoc/>
-    public Task<IEnumerable<IDevDrive>> GetAllDevDrivesThatExistOnSystem() => throw new NotImplementedException();
+    public Task<IEnumerable<IDevDrive>> GetAllDevDrivesThatExistOnSystem()
+    {
+        return Task.Run(() =>
+        {
+            IEnumerable<IDevDrive> toReturn = new List<IDevDrive>();
+            return toReturn;
+        });
+    }
 }

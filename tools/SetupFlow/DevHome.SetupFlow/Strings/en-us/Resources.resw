@@ -421,4 +421,96 @@
     <value>View {0}</value>
     <comment>{Locked="{0}"} Text for the view action of a file content. {0} is replaced by a file name.</comment>
   </data>
+   <data name="MainPage_RepoReviewDescription.Text" xml:space="preserve">
+    <value>Add private or public repositories to clone to your compuer</value>
+    <comment>Description for the repo review page</comment>
+  </data>
+  <data name="MainPage_RepoReviewHeader.Text" xml:space="preserve">
+    <value>End-to-end flow</value>
+    <comment>Header for the repo review page</comment>
+  </data>
+  <data name="MainPage_RepoReview_AddRepository.Content" xml:space="preserve">
+    <value>+ Add repository</value>
+    <comment>Add repository button text</comment>
+  </data>
+  <data name="StepperCloneRepos.Text" xml:space="preserve">
+    <value>Clone Repos</value>
+    <comment>Clone Repo label for the stepper</comment>
+  </data>
+  <data name="StepperInstallApps.Text" xml:space="preserve">
+    <value>Install Apps</value>
+    <comment>Install Apps label for the stepper</comment>
+  </data>
+  <data name="StepperReviewAndSetup.Text" xml:space="preserve">
+    <value>Review &amp; setup</value>
+    <comment>Review and Setup label for the stepper</comment>
+  </data>
+  <data name="AddDevDriveLabel.Text" xml:space="preserve">
+    <value>Optimize repo performance with a new Dev Drive</value>
+    <comment>Text for the use to choose to make a dev drive</comment>
+  </data>
+  <data name="ClonePath.Header" xml:space="preserve">
+    <value>Clone Path</value>
+    <comment>Header for choosing a clone path</comment>
+  </data>
+  <data name="ClonePath.PlaceholderText" xml:space="preserve">
+    <value>Choose a clone path</value>
+    <comment>Prompts the user to choose a path</comment>
+  </data>
+  <data name="ClonePath_Button.Content" xml:space="preserve">
+    <value>Browse</value>
+    <comment>Browse button for opening the storage picker</comment>
+  </data>
+  <data name="RepoUrl.Header" xml:space="preserve">
+    <value>Repository URL</value>
+    <comment>Header for the textbox for entering in a URL</comment>
+  </data>
+  <data name="RepoUrl.PlaceholderText" xml:space="preserve">
+    <value>URL</value>
+    <comment>Text to appear in the textbox for entering in a URL</comment>
+  </data>
+  <data name="CloneRepoDialog.Title" xml:space="preserve">
+    <value>Clone a Repository</value>
+    <comment>Header for the dialog bos to clone repositories</comment>
+  </data>
+  <data name="NewDevDriveComboBox.Content" xml:space="preserve">
+    <value>Optimimize repo performance with a new DevDrive</value>
+    <comment>Check box label to notify users of making a new dev drive</comment>
+  </data>
+  <data name="RepositoryDisplay.Header" xml:space="preserve">
+    <value>Account Type</value>
+    <comment>Header to prompt users to choose an account</comment>
+  </data>
+  <data name="RepoTool_AddViaAccountButton.Content" xml:space="preserve">
+    <value>Account</value>
+    <comment>Content for account toggle button </comment>
+  </data>
+  <data name="RepoTool_AddViaUrlButton.Content" xml:space="preserve">
+    <value>URL</value>
+    <comment>Content for URL button</comment>
+  </data>
+  <data name="RepoTool_FilterTextBox.PlaceholderText" xml:space="preserve">
+    <value>Filter</value>
+    <comment>Prompt user to filter</comment>
+  </data>
+  <data name="Repo_ToolClonePathError.Text" xml:space="preserve">
+    <value>Please enter an absolute path</value>
+    <comment>Shown when Clone Location isn't an absolute path</comment>
+  </data>
+  <data name="RepoReview_NoReposSelected.Text" xml:space="preserve">
+    <value>No repository is added yet</value>
+    <comment>Shown when no repos are selected when the user gets to the repo page</comment>
+  </data>
+  <data name="RepoReview_NoReposSelectedLink.Content" xml:space="preserve">
+    <value>+ Add repository</value>
+    <comment>The hyperlink to bring the user to the repo clone dialog.  Shows if the user hasn't selected any repos to clone.</comment>
+  </data>
+  <data name="EditClonePathDialog.Title" xml:space="preserve">
+    <value>Edit clone path</value>
+    <comment>Header for the edit clone path dialog</comment>
+  </data>
+  <data name="RepositoriesList.Text" xml:space="preserve">
+    <value>Your repositories</value>
+    <comment>Shown above the list of user repositories</comment>
+  </data>
 </root>

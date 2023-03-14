@@ -2,34 +2,54 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
-using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
-using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.RepoConfig.Models;
 
+/// <summary>
+/// Object to hold all information needed to clone a repository.
+/// 1:1 CloningInformation to repository.
+/// </summary>
 internal class CloneRepoTask : ISetupTask
 {
+    /// <summary>
+    /// Absolute path the user watns to clone their repository to.
+    /// </summary>
     private readonly DirectoryInfo cloneLocation;
 
+    /// <summary>
+    /// The repository the user wants to clone.
+    /// </summary>
     private readonly IRepository repositoryToClone;
 
+    /// <summary>
+    /// Gets a value indicating whether the task requires being admin.
+    /// </summary>
     public bool RequiresAdmin => false;
 
+    /// <summary>
+    /// Gets a value indicating whether the task requires rebooting their machine.
+    /// </summary>
     public bool RequiresReboot => false;
 
+    /// <summary>
+    /// THe message to show during the loading screen.
+    /// </summary>
     private readonly LoadingMessages _loadingMessage;
 
+    /// <summary>
+    /// The developer ID that is used when a repository is being cloned.
+    /// </summary>
     private readonly IDeveloperId _developerId;
 
+    /// <summary>
+    /// Get all messages to show in the loading screen.
+    /// </summary>
+    /// <returns>All loading messages for the </returns>
     public LoadingMessages GetLoadingMessages() => _loadingMessage;
 
     /// <summary>
@@ -68,6 +88,10 @@ internal class CloneRepoTask : ISetupTask
             "Repository " + repositoryToClone.DisplayName() + " needs your attention.");
     }
 
+    /// <summary>
+    /// Clones the repository.  Mkes the directory if it does not exist.
+    /// </summary>
+    /// <returns>An awaitable operation.</returns>
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
     {
         return Task.Run(async () =>
