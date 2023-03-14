@@ -56,7 +56,7 @@ public partial class WidgetViewModel : ObservableObject
         var cardTemplate = await _widget.GetCardTemplateAsync();
         var cardData = await _widget.GetCardDataAsync();
 
-        if (!cardData.Equals(string.Empty, StringComparison.Ordinal))
+        if (!string.IsNullOrEmpty(cardData))
         {
             // Use the data to fill in the template
             var template = new AdaptiveCardTemplate(cardTemplate);
@@ -82,17 +82,17 @@ public partial class WidgetViewModel : ObservableObject
         if (actionExecute != null)
         {
             var dataToSend = string.Empty;
-            var data = actionExecute.DataJson.Stringify();
-            if (data != "null")
+            var dataType = actionExecute.DataJson.ValueType;
+            if (dataType != Windows.Data.Json.JsonValueType.Null)
             {
-                dataToSend = data;
+                dataToSend = actionExecute.DataJson.Stringify();
             }
             else
             {
-                var inputs = args.Inputs.AsJson().Stringify();
-                if (inputs != "null")
+                var inputType = args.Inputs.AsJson().ValueType;
+                if (inputType != Windows.Data.Json.JsonValueType.Null)
                 {
-                    dataToSend = inputs;
+                    dataToSend = args.Inputs.AsJson().Stringify();
                 }
             }
 
