@@ -70,6 +70,7 @@ public partial class SetupFlowPage : ToolPage
                 services.AddTransient<RepoConfigReviewViewModel>();
 
                 // View-models: Application management page
+                services.AddTransient<ShimmerSearchViewModel>();
                 services.AddTransient<SearchViewModel>();
                 services.AddTransient<PackageViewModel>();
                 services.AddTransient<PackageCatalogListViewModel>();
