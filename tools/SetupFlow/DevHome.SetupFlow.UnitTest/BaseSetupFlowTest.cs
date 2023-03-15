@@ -10,6 +10,10 @@ using Microsoft.Extensions.Hosting;
 using Moq;
 
 namespace DevHome.SetupFlow.UnitTest;
+
+/// <summary>
+/// Base class for setup flow unit tests
+/// </summary>
 public class BaseSetupFlowTest
 {
     protected Mock<IWindowsPackageManager>? WindowsPackageManager { get; private set; }
@@ -23,6 +27,10 @@ public class BaseSetupFlowTest
         TestHost = CreateTestHost();
     }
 
+    /// <summary>
+    /// Create a test host with mock service instances
+    /// </summary>
+    /// <returns>Test host</returns>
     private IHost CreateTestHost()
     {
         return Host.CreateDefaultBuilder()
