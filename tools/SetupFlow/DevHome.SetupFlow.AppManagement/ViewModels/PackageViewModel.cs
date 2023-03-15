@@ -51,6 +51,9 @@ public partial class PackageViewModel : ObservableObject
     [RelayCommand]
     private void ToggleSelection() => IsSelected = !IsSelected;
 
+    /// <summary>
+    /// Command for launching a 'Learn more' uri
+    /// </summary>
     [RelayCommand]
     private async void LearnMore()
     {
@@ -61,20 +64,19 @@ public partial class PackageViewModel : ObservableObject
     /// Gets the learn more button uri.
     /// For packages from winget or private catalogs:
     /// 1. Use package url
-    /// 2. Use publisher url
-    /// 3. Use "https://github.com/microsoft/winget-pkgs"
+    /// 2. Else, use publisher url
+    /// 3. Else, use "https://github.com/microsoft/winget-pkgs"
     ///
     /// For packages from ms store catalog:
     /// 1. Use package url
-    /// 2. Use "ms-windows-store://pdp?ProductId={ID}"
+    /// 2. Else, use "ms-windows-store://pdp?ProductId={ID}"
     /// </summary>
     /// <returns>Learn more button uri</returns>
     private Uri GetLearnMoreUri()
     {
-        var packageUrl = _package.PackageUrl;
-        if (packageUrl != null)
+        if (_package.PackageUrl != null)
         {
-            return packageUrl;
+            return _package.PackageUrl;
         }
 
         if (_wpm.IsPackageFromCatalog(_package, PredefinedPackageCatalog.MicrosoftStore))
@@ -82,10 +84,9 @@ public partial class PackageViewModel : ObservableObject
             return new Uri($"ms-windows-store://pdp/?productid={_package.Id}");
         }
 
-        var publisherUrl = _package.PublisherUrl;
-        if (publisherUrl != null)
+        if (_package.PublisherUrl != null)
         {
-            return publisherUrl;
+            return _package.PublisherUrl;
         }
 
         return new Uri("https://github.com/microsoft/winget-pkgs");

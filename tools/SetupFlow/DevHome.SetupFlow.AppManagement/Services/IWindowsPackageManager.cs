@@ -41,5 +41,11 @@ public interface IWindowsPackageManager
     /// <param name="package">Package to install</param>
     public Task InstallPackageAsync(WinGetPackage package);
 
+    /// <summary>
+    /// Checks if a package is obtained from the specified catalog
+    /// </summary>
+    /// <param name="package">Target package</param>
+    /// <param name="catalog">Target catalog</param>
+    /// <returns>True if the package is obtained from the specified catalog</returns>
     public bool IsPackageFromCatalog(IWinGetPackage package, PredefinedPackageCatalog catalog);
 }
