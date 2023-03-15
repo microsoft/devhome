@@ -65,12 +65,25 @@ public partial class WidgetViewModel : ObservableObject
             // Render card on the UI thread
             _dispatcher.TryEnqueue(() =>
             {
-                var card = AdaptiveCard.FromJsonString(json);
-                var renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
-                if (renderedCard != null && renderedCard.FrameworkElement != null)
+                try
                 {
-                    renderedCard.Action += HandleInvokedAction;
-                    WidgetUIElement = renderedCard.FrameworkElement;
+                    var card = AdaptiveCard.FromJsonString(json);
+                    var renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
+                    if (renderedCard != null && renderedCard.FrameworkElement != null)
+                    {
+                        renderedCard.Action += HandleInvokedAction;
+                        WidgetUIElement = renderedCard.FrameworkElement;
+                    }
+                }
+                catch (Exception)
+                {
+                    // TODO: LogError("WidgetViewModel", "Error rendering widget card", e);
+
+                    // TODO: Create nice fallback element with localized text.
+                    WidgetUIElement = new TextBlock
+                    {
+                        Text = "This widget could not be rendered",
+                    };
                 }
             });
         }
