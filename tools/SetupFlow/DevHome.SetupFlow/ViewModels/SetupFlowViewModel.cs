@@ -38,9 +38,25 @@ public partial class SetupFlowViewModel : ObservableObject
         get => _currentPageIndex;
         set
         {
+            var movingForward = value > _currentPageIndex;
+
+            // Do pre-navigation tasks when moving forward
+            if (movingForward)
+            {
+                CurrentPageViewModel?.OnNavigateFromAsync();
+            }
+
+            // Update current page
             _currentPageIndex = value;
             CurrentPageViewModel = _flowPages[_currentPageIndex];
-            CurrentPageViewModel.OnNavigateToPageAsync();
+
+            // Do post-navigation tasks when moving forward
+            if (movingForward)
+            {
+                CurrentPageViewModel?.OnNavigateToAsync();
+            }
+
+            // Notify of changes to UI
             _orchestrator.NotifyNavigationCanExecuteChanged();
             OnPropertyChanged(nameof(IsPreviousButtonVisible));
         }

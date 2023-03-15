@@ -110,7 +110,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         _setupTasks[taskNumber].MessageToShow = stringToReplace;
     }
 
-    public async override void OnNavigateToPageAsync()
+    protected async override Task OnFirstNavigateToAsync()
     {
         FetchTaskInformation();
 
@@ -122,7 +122,16 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 // Start the task and wait for it to complete.
                 try
                 {
-                    var taskFinishedState = await task.TaskToExecute.Execute();
+                    TaskFinishedState taskFinishedState;
+                    if (task.TaskToExecute.RequiresAdmin)
+                    {
+                        taskFinishedState = await task.TaskToExecute.ExecuteAsAdmin(orchestrator.RemoteElevatedFactory.Value);
+                    }
+                    else
+                    {
+                        taskFinishedState = await task.TaskToExecute.Execute();
+                    }
+
                     window.DispatcherQueue.TryEnqueue(() =>
                     {
                         ChangeMessage(task.TaskIndex, taskFinishedState);

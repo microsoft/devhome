@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.SetupFlow.Common.Models;
+using DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.Common.Services;
 
@@ -21,6 +22,11 @@ public class SetupFlowOrchestrator
     /// Gets or sets the task groups that are to be executed on the flow.
     /// </summary>
     public IList<ISetupTaskGroup> TaskGroups
+    {
+        get; set;
+    }
+
+    public RemoteObject<IElevatedComponentFactory> RemoteElevatedFactory
     {
         get; set;
     }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
+using DevHome.SetupFlow.ElevatedComponent;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel.Activation;
@@ -88,4 +89,6 @@ internal class CloneRepoTask : ISetupTask
             return TaskFinishedState.Success;
         }).AsAsyncOperation();
     }
+
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
 }

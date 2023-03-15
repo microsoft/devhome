@@ -1,0 +1,5 @@
+CreateStreamOnHGlobal
+CoMarshalInterface
+CoUnmarshalInterface
+MSHCTX
+MSHLFLAGS

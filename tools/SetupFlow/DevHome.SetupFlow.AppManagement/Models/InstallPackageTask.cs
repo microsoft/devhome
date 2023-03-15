@@ -3,6 +3,7 @@
 
 using System;
 using DevHome.SetupFlow.Common.Models;
+using DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.AppManagement.Models;
@@ -18,4 +19,6 @@ internal class InstallPackageTask : ISetupTask
     public LoadingMessages GetLoadingMessages() => throw new NotImplementedException();
 
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute() => throw new NotImplementedException();
+
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
 }

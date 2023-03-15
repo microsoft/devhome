@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
+using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
@@ -45,11 +46,23 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         CanGoToNextPage = false;
     }
 
-    public async override void OnNavigateToPageAsync()
+    protected async override Task OnFirstNavigateToAsync()
     {
         IsRebootRequired = _orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresReboot));
         ReviewTabs = _orchestrator.TaskGroups.Select(taskGroup => taskGroup.GetReviewTabViewModel()).ToList();
         SelectedReviewTab = ReviewTabs.FirstOrDefault();
+        await Task.CompletedTask;
+    }
+
+    protected async override Task OnFirstNavigateFromAsync()
+    {
+        var isAdminRequired = _orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresAdmin));
+        if (isAdminRequired)
+        {
+            // TODO: Handle errors
+            _orchestrator.RemoteElevatedFactory = IPCSetup.CreateOutOfProcessObject<IElevatedComponentFactory>();
+        }
+
         await Task.CompletedTask;
     }
 

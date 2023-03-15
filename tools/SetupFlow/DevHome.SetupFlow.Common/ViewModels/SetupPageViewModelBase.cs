@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
@@ -71,6 +70,16 @@ public partial class SetupPageViewModelBase : ObservableObject
     private bool _isStepPage = true;
 
     /// <summary>
+    /// Indicates whether this page has already executed <see cref="OnFirstNavigateToAsync"/>.
+    /// </summary>
+    private bool _hasExecutedFirstNavigateTo;
+
+    /// <summary>
+    /// Indicates whether this page has already executed <see cref="OnFirstNavigateFromAsync"/>
+    /// </summary>
+    private bool _hasExecutedFirstNavigateFrom;
+
+    /// <summary>
     /// Gets an object used to retrieve localized strings.
     /// </summary>
     protected IStringResource StringResource
@@ -85,15 +94,60 @@ public partial class SetupPageViewModelBase : ObservableObject
     }
 
     /// <summary>
-    /// Hook for actions to execute the first time the page is loaded.
+    /// Performs any work needed when navigating to a page.
     /// </summary>
     /// <remarks>
     /// The orchestrator takes care of calling this when appropriate.
+    /// </remarks>
+    public async Task OnNavigateToAsync()
+    {
+        if (_hasExecutedFirstNavigateTo)
+        {
+            _hasExecutedFirstNavigateTo = true;
+            await OnFirstNavigateToAsync();
+        }
+    }
+
+    /// <summary>
+    /// Performs any work needed when navigating away from a page.
+    /// </summary>
+    /// <remarks>
+    /// The orchestrator takes care of calling this when appropriate.
+    /// </remarks>
+    public async Task OnNavigateFromAsync()
+    {
+        if (_hasExecutedFirstNavigateFrom)
+        {
+            _hasExecutedFirstNavigateFrom = true;
+            await OnFirstNavigateFromAsync();
+        }
+    }
+
+    /// <summary>
+    /// Hook for actions to execute the first time the page is loaded.
+    /// </summary>
+    /// <remarks>
+    /// The orchestrator takes care of calling this when appropriate through <see cref="OnNavigateToAsync"/>.
     /// This runs on the UI thread, any time-consuming task should be non-blocking.
     /// Examples of uses include loading content to display on the page, or start
     /// background processing.
     /// </remarks>
-    public async virtual void OnNavigateToPageAsync()
+    protected async virtual Task OnFirstNavigateToAsync()
+    {
+        // Do nothing
+        await Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Hook for actions to execute immediately before navigating to the next page for the first time.
+    /// </summary>
+    /// <remarks>
+    /// The orchestrator takes care of calling this when appropriate through <see cref="OnNavigateFromAsync"/>.
+    /// This runs on the UI thread, any time-consuming task should ne non-blocking.
+    /// Example of uses include starting the elevated background process when leaving
+    /// the review page.
+    /// </remarks>
+    protected async virtual Task OnFirstNavigateFromAsync()
     {
         // Do nothing
         await Task.CompletedTask;

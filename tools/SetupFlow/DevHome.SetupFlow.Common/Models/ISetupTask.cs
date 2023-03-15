@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Common.Models;
@@ -47,6 +48,15 @@ public interface ISetupTask
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
     public abstract IAsyncOperation<TaskFinishedState> Execute();
+
+    /// <summary>
+    /// Executes this setup task as admin.
+    /// </summary>
+    /// <param name="elevatedComponentFactory">Helper object to create the needed objects on the elevated process.</param>
+    /// <returns>
+    /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
+    /// </returns>
+    public abstract IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory);
 
     /// <summary>
     /// Gets a string to show in the loading page while executing this task.
