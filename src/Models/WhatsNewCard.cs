@@ -26,4 +26,9 @@ public class WhatsNewCard
     {
         get; set;
     }
+
+    public string? Icon
+    {
+        get; set;
+    }
 }

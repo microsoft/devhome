@@ -15,7 +15,7 @@
 		<EnableMsixTooling>true</EnableMsixTooling>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Content Remove="Assets\GithubIcon.png" />
+	  <Content Remove="Assets\Fonts\DevHome.ttf" />
 	</ItemGroup>
 
 	<ItemGroup>
