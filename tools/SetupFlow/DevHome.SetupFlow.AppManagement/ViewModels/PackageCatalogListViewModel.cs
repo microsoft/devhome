@@ -8,9 +8,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 public partial class PackageCatalogListViewModel : ObservableObject
@@ -18,6 +20,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
     private readonly ILogger _logger;
     private readonly WinGetPackageJsonDataSource _jsonDataSource;
     private readonly string _packageCollectionsPath = Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "DevHome.SetupFlow", "Assets", "AppManagementPackages.json");
+    private readonly IHost _host;
 
     /// <summary>
     /// Gets a list of package catalogs to display
@@ -35,10 +38,11 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// </summary>
     public event EventHandler<PackageCatalogViewModel> CatalogLoaded;
 
-    public PackageCatalogListViewModel(ILogger logger, WinGetPackageJsonDataSource jsonDataSource)
+    public PackageCatalogListViewModel(IHost host, ILogger logger, WinGetPackageJsonDataSource jsonDataSource)
     {
         _logger = logger;
         _jsonDataSource = jsonDataSource;
+        _host = host;
     }
 
     /// <summary>
@@ -68,7 +72,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
         // TODO Load restore packages
         foreach (var catalog in allCatalogs)
         {
-            var viewModel = new PackageCatalogViewModel(catalog);
+            var viewModel = _host.CreateInstance<PackageCatalogViewModel>(catalog);
             PackageCatalogs.Add(viewModel);
             CatalogLoaded?.Invoke(null, viewModel);
         }

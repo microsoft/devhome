@@ -3,6 +3,7 @@
 
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Models;
+using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.AppManagement.Services;
 
@@ -39,4 +40,6 @@ public interface IWindowsPackageManager
     /// </summary>
     /// <param name="package">Package to install</param>
     public Task InstallPackageAsync(WinGetPackage package);
+
+    public bool IsPackageFromCatalog(IWinGetPackage package, PredefinedPackageCatalog catalog);
 }

@@ -57,6 +57,13 @@ public class WindowsPackageManager : IWindowsPackageManager
         throw new NotImplementedException();
     }
 
+    public bool IsPackageFromCatalog(IWinGetPackage package, PredefinedPackageCatalog catalog)
+    {
+        var packageManager = _wingetFactory.CreatePackageManager();
+        var packageCatalog = packageManager.GetPredefinedPackageCatalog(catalog);
+        return package.CatalogId == packageCatalog.Info.Id;
+    }
+
     /// <summary>
     /// Create a composite catalog that can be used for finding packages in all
     /// remote and local packages
