@@ -5,7 +5,6 @@ using System;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common;
 using DevHome.Dashboard.ViewModels;
-using DevHome.Dashboard.Views;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Views;

@@ -3,10 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
-using AdaptiveCards.Templating;
-using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Dispatching;
@@ -83,12 +80,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
         NavigationView sender,
         NavigationViewSelectionChangedEventArgs args)
     {
-        // Delete previously shown configuation widget
+        // Delete previously shown configuation widget.
         var clearWidgetTask = ClearCurrentWidget();
         ConfigurationContentFrame.Content = null;
         PinButton.Visibility = Visibility.Collapsed;
 
-        // Load selected widget configuration
+        // Load selected widget configuration.
         var selectedTag = (sender.SelectedItem as NavigationViewItem).Tag;
         if (selectedTag == null)
         {
@@ -126,7 +123,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async void CancelButton_Click(object sender, RoutedEventArgs e)
     {
-        // Delete previously shown configuation card
+        // Delete previously shown configuation card.
         await ClearCurrentWidget();
 
         this.Hide();

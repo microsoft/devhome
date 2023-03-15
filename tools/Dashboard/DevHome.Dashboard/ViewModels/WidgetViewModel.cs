@@ -58,11 +58,11 @@ public partial class WidgetViewModel : ObservableObject
 
         if (!string.IsNullOrEmpty(cardData))
         {
-            // Use the data to fill in the template
+            // Use the data to fill in the template.
             var template = new AdaptiveCardTemplate(cardTemplate);
             var json = template.Expand(cardData);
 
-            // Render card on the UI thread
+            // Render card on the UI thread.
             _dispatcher.TryEnqueue(() =>
             {
                 try
