@@ -14,13 +14,8 @@ public partial class DashboardViewModel : ObservableObject
 {
     private const string _hideDashboardBannerKey = "HideDashboardBanner";
 
+    [ObservableProperty]
     private bool _showDashboardBanner;
-
-    public bool ShowDashboardBanner
-    {
-        get => _showDashboardBanner;
-        set => SetProperty(ref _showDashboardBanner, value);
-    }
 
     public DashboardViewModel()
     {
