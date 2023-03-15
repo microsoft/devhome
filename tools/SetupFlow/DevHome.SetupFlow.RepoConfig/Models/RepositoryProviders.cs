@@ -25,10 +25,7 @@ internal class RepositoryProviders
 
     public RepositoryProviders(IEnumerable<IPluginWrapper> pluginWrappers)
     {
-        foreach (var pluginWrapper in pluginWrappers)
-        {
-            _providers.Add(pluginWrapper.Name, new RepositoryProvider(pluginWrapper));
-        }
+        _providers = pluginWrappers.ToDictionary(pluginWrapper => pluginWrapper.Name, pluginWrapper => new RepositoryProvider(pluginWrapper));
     }
 
     /// <summary>
@@ -38,29 +35,31 @@ internal class RepositoryProviders
     /// <returns>An awaitable task</returns>
     public async Task StartIfNotRunningAsync(string providerName)
     {
-        await _providers[providerName].StartIfNotRunningAsync();
+        if (_providers.ContainsKey(providerName))
+        {
+            await _providers[providerName].StartIfNotRunningAsync();
+        }
     }
 
     /// <summary>
     /// Goes through all providers to figure out if they can make a repo from a Uri.
     /// </summary>
     /// <param name="uri">The Uri to parse.</param>
-    /// <param name="providerName">The provider that successfully parsed the Uri.</param>
-    /// <returns>The repository from the Uri</returns>
-    public IRepository ParseRepositoryFromUri(string uri, out string providerName)
+    /// <returns>If a provider was found that can parse the Uri then (providerName, repository) in not
+    /// (string.empty, null)</returns>
+    public async Task<(string, IRepository)> ParseRepositoryFromUriAsync(Uri uri)
     {
         foreach (var provider in _providers)
         {
+            await provider.Value.StartIfNotRunningAsync();
             var repository = provider.Value.ParseRepositoryFromUri(uri);
             if (repository != null)
             {
-                providerName = provider.Key;
-                return repository;
+                return (provider.Key, repository);
             }
         }
 
-        providerName = string.Empty;
-        return null;
+        return (string.Empty, null);
     }
 
     /// <summary>

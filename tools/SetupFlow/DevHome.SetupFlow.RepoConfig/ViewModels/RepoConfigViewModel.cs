@@ -27,6 +27,8 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// </summary>
     private readonly RepoConfigTaskGroup _taskGroup;
 
+    private readonly IDevDriveManager _devDriveManager;
+
     /// <summary>
     /// All repositories the user wants to clone.
     /// </summary>
@@ -39,11 +41,14 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private Visibility _shouldShowNoRepoMessage = Visibility.Visible;
 
-    public RepoConfigViewModel(ILogger logger, IStringResource stringResource, RepoConfigTaskGroup taskGroup)
+    public IDevDriveManager DevDriveManager => _devDriveManager;
+
+    public RepoConfigViewModel(ILogger logger, IStringResource stringResource, IDevDriveManager devDriveManager, RepoConfigTaskGroup taskGroup)
         : base(stringResource)
     {
         _logger = logger;
         _taskGroup = taskGroup;
+        _devDriveManager = devDriveManager;
     }
 
     /// <summary>
@@ -74,62 +79,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
         if (RepoReviewItems.Count == 0)
         {
-<<<<<<< HEAD
-            // Get all information to figure out what the user entered.
-            var repoName = string.Empty;
-            var urlOrUsernameAndRepo = cloningInformation.UrlOrUsernameRepo;
-            var cloneUrlOrRepoName = string.Empty;
-
-            // if Test ends with .git assume url.
-            if (urlOrUsernameAndRepo.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
-            {
-                cloneUrlOrRepoName = urlOrUsernameAndRepo;
-
-                // Get the repo name from the url
-                var urlParts = urlOrUsernameAndRepo.Split('/');
-
-                // Get reponame.git
-                repoName = urlParts[urlParts.Length - 1];
-
-                // substring out .git
-                repoName = repoName.Substring(0, repoName.LastIndexOf('.'));
-            }
-            else
-            {
-                if (Uri.TryCreate(urlOrUsernameAndRepo, UriKind.Absolute, out var url))
-                {
-                    cloneUrlOrRepoName = urlOrUsernameAndRepo;
-                    repoName = url.Segments[url.Segments.Length - 1].TrimEnd('/');
-                }
-                else
-                {
-                    // username/Repo
-                    var nameParts = urlOrUsernameAndRepo.Split("/");
-                    if (nameParts.Length != 2)
-                    {
-                        _logger.Log("Invalid repo name. Expected format: username/RepoName", LogLevel.Local, urlOrUsernameAndRepo);
-                        return;
-                    }
-
-                    repoName = nameParts[1];
-                    cloneUrlOrRepoName = "https://github.com/" + urlOrUsernameAndRepo;
-                }
-
-                if (!cloneUrlOrRepoName.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
-                {
-                    cloneUrlOrRepoName += ".git";
-                }
-            }
-
-            var repoToClone = new Repository(repoName, cloneUrlOrRepoName);
-            SaveSetupTaskInformation(cloningInformation.CloneLocation, repoToClone);
-        }
-        else
-        {
-            SaveSetupTaskInformation(cloningInformation);
-=======
             ShouldShowNoRepoMessage = Visibility.Visible;
->>>>>>> DartRepo/user/dahoehna/UIDevDriveAndRefactoring
         }
     }
 

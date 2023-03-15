@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
@@ -52,9 +53,9 @@ public partial class EditDevDriveViewModel : ObservableObject
     [ObservableProperty]
     private bool _isDevDriveCheckboxEnabled;
 
-    public EditDevDriveViewModel()
+    public EditDevDriveViewModel(IDevDriveManager devDriveManager)
     {
-        _devDriveManager = Application.Current.GetService<IDevDriveManager>();
+        _devDriveManager = devDriveManager;
         ShowCustomizeOption = Visibility.Collapsed;
         IsDevDriveCheckboxEnabled = true;
     }

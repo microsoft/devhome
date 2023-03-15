@@ -12,7 +12,7 @@ using static DevHome.SetupFlow.RepoConfig.Models.Common;
 namespace DevHome.SetupFlow.RepoConfig.Models;
 
 /// <summary>.
-/// Specifically this contains all information needed to clone repositories to a user's machine.
+/// Contains all information needed to clone repositories to a user's machine.
 /// One CloneInformation per repository
 /// </summary>
 public partial class CloningInformation : ObservableObject, IEquatable<CloningInformation>
@@ -26,7 +26,9 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     }
 
     /// <summary>
-    /// The location to clone to.
+    /// Full path the user wants to clone the repository.
+    /// RepoConfigTaskGroup appends other directories at the end of CloningLocation to make sure that
+    /// two repositories aren't cloned to the same location.
     /// </summary>
     [ObservableProperty]
     private DirectoryInfo _cloningLocation;
@@ -40,7 +42,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     }
 
     /// <summary>
-    /// Gets or sets the name of the provider that contains the owning account.
+    /// Gets or sets the name of the repository provider that the user used to log into their account.
     /// </summary>
     public string ProviderName
     {
@@ -50,7 +52,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// <summary>
     /// Gets the repo name and formats it for the Repo Review view.
     /// </summary>
-    public string RepositoryId => OwningAccount.LoginId() ?? string.Empty + "/" + RepositoryToClone.DisplayName() ?? string.Empty;
+    public string RepositoryId => $"{OwningAccount.LoginId() ?? string.Empty}/{RepositoryToClone.DisplayName() ?? string.Empty}";
 
     /// <summary>
     /// Gets the clone path the user wants ot clone the repo to.
@@ -63,26 +65,18 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// <param name="other">The CloningInformation to compare to.</param>
     /// <returns>True if equal.</returns>
     /// <remarks>
-    /// ProviderName, OwningAccount, and RepositoryToClone is used for equality.
+    /// ProviderName, OwningAccount, and RepositoryToClone are used for equality.
     /// </remarks>
     public bool Equals(CloningInformation other)
     {
-        if (!ProviderName.Equals(other.ProviderName, StringComparison.OrdinalIgnoreCase))
+        if (other == null)
         {
             return false;
         }
 
-        if (!OwningAccount.LoginId().Equals(other.OwningAccount.LoginId(), StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
-        if (!RepositoryToClone.DisplayName().Equals(other.RepositoryToClone.DisplayName(), StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
-        return true;
+        return ProviderName.Equals(other.ProviderName, StringComparison.OrdinalIgnoreCase) &&
+            OwningAccount.LoginId().Equals(other.OwningAccount.LoginId(), StringComparison.OrdinalIgnoreCase) &&
+            RepositoryToClone.DisplayName().Equals(other.RepositoryToClone.DisplayName(), StringComparison.OrdinalIgnoreCase);
     }
 
     public override bool Equals(object obj)

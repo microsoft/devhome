@@ -17,7 +17,7 @@ namespace DevHome.SetupFlow.RepoConfig.Models;
 internal class CloneRepoTask : ISetupTask
 {
     /// <summary>
-    /// Absolute path the user watns to clone their repository to.
+    /// Absolute path the user wants to clone their repository to.
     /// </summary>
     private readonly DirectoryInfo cloneLocation;
 
@@ -37,7 +37,7 @@ internal class CloneRepoTask : ISetupTask
     public bool RequiresReboot => false;
 
     /// <summary>
-    /// THe message to show during the loading screen.
+    /// The message to show during the loading screen.
     /// </summary>
     private readonly LoadingMessages _loadingMessage;
 
@@ -89,7 +89,7 @@ internal class CloneRepoTask : ISetupTask
     }
 
     /// <summary>
-    /// Clones the repository.  Mkes the directory if it does not exist.
+    /// Clones the repository.  Makes the directory if it does not exist.
     /// </summary>
     /// <returns>An awaitable operation.</returns>
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()

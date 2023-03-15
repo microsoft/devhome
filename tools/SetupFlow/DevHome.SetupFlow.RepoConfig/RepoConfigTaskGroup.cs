@@ -13,7 +13,7 @@ using Microsoft.Extensions.Hosting;
 namespace DevHome.SetupFlow.RepoConfig;
 
 /// <summary>
-/// The tesk group for cloning repositories
+/// The task group for cloning repositories
 /// </summary>
 public class RepoConfigTaskGroup : ISetupTaskGroup
 {
@@ -39,7 +39,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     private readonly IList<CloneRepoTask> _cloneTasks = new List<CloneRepoTask>();
 
     /// <summary>
-    /// Converts CloningInformation to a ClineRepoTask.
+    /// Converts CloningInformation to a CloneRepoTask.
     /// </summary>
     /// <param name="cloningInformations">all repositories the user wants to clone.</param>
     public void SaveSetupTaskInformation(List<CloningInformation> cloningInformations)

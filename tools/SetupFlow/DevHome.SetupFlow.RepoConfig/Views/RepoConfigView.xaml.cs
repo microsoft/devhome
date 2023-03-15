@@ -28,7 +28,7 @@ public sealed partial class RepoConfigView : UserControl
     /// </summary>
     private async void AddRepoButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        var addRepoDialog = new AddRepoDialog();
+        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager);
 
         await addRepoDialog.GetPluginsAsync();
         await addRepoDialog.SetupDevDrivesAsync();
@@ -49,7 +49,7 @@ public sealed partial class RepoConfigView : UserControl
     /// <param name="sender">Used to find the cloning information clicked on.</param>
     private async void EditClonePathButton_Click(object sender, RoutedEventArgs e)
     {
-        var editClonePathDialog = new EditClonePathDialog();
+        var editClonePathDialog = new EditClonePathDialog(ViewModel.DevDriveManager);
         var themeService = Application.Current.GetService<IThemeSelectorService>();
         editClonePathDialog.XamlRoot = RepoConfigStackPanel.XamlRoot;
         editClonePathDialog.RequestedTheme = themeService.Theme;

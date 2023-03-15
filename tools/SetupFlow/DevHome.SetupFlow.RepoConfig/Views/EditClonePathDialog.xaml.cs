@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using DevHome.Common.Services;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -36,11 +37,11 @@ public sealed partial class EditClonePathDialog
         get; set;
     }
 
-    public EditClonePathDialog()
+    public EditClonePathDialog(IDevDriveManager devDriveManager)
     {
         this.InitializeComponent();
         EditClonePathViewModel = new EditClonePathViewModel();
-        EditDevDriveViewModel = new EditDevDriveViewModel();
+        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel();
         IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
     }

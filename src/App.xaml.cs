@@ -10,8 +10,6 @@ using DevHome.Core.Services;
 using DevHome.Helpers;
 using DevHome.Models;
 using DevHome.Services;
-using DevHome.SetupFlow.DevDrive.Services;
-using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -66,7 +64,6 @@ public partial class App : Application, IApp
             services.AddSingleton<IPluginService, PluginService>();
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
-            services.AddSingleton<IDevDriveManager, DevDriveManager>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -83,7 +80,6 @@ public partial class App : Application, IApp
             services.AddTransient<FeedbackPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ShellViewModel>();
-            services.AddTransient<DevDriveViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

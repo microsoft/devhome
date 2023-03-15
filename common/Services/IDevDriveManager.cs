@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.DevDrive.Models;
+using DevHome.Common.Models;
 
 namespace DevHome.Common.Services;
 

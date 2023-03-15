@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Windows.DevHome.SDK;
@@ -11,7 +12,7 @@ namespace DevHome.SetupFlow.RepoConfig.Models;
 /// Concrete DeveloperId.  Used when a user selects a repo from the URL page
 /// because URL page does not require a login.
 /// </summary>
-public class DeveloperAccount : IDeveloperId
+public class DeveloperId : IDeveloperId
 {
     private readonly string _displayName;
 
@@ -29,11 +30,7 @@ public class DeveloperAccount : IDeveloperId
 
     public string Url() => _url;
 
-    public DeveloperAccount()
-    {
-    }
-
-    public DeveloperAccount(string displayName, string email, string loginId, string url)
+    public DeveloperId(string displayName, string email, string loginId, string url)
     {
         _displayName = displayName;
         _email = email;

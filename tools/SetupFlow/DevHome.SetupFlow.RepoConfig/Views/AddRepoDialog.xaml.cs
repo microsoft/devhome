@@ -3,6 +3,7 @@
 
 using System.IO;
 using System.Threading.Tasks;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -44,11 +45,11 @@ internal partial class AddRepoDialog
     /// </summary>
     private string _oldCloneLocation;
 
-    public AddRepoDialog()
+    public AddRepoDialog(IDevDriveManager devDriveManager)
     {
         this.InitializeComponent();
         AddRepoViewModel = new AddRepoViewModel();
-        EditDevDriveViewModel = new EditDevDriveViewModel();
+        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel();
         ToggleCloneButton();
     }
@@ -152,11 +153,11 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Adds the repository from the URL screen to the list of repos to be cloned.
     /// </summary>
-    private void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
-        if (AddRepoViewModel.CurrentPage == CurrentPage.AddViaUrl)
+        if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
-            AddRepoViewModel.AddRepositoryViaUri(FolderPickerViewModel.CloneLocation);
+            await AddRepoViewModel.AddRepositoryViaUriAsync(FolderPickerViewModel.CloneLocation);
         }
     }
 

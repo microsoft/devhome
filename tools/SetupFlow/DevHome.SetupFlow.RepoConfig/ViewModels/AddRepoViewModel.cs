@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -110,7 +111,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <summary>
     /// Gets or sets what page the user is currently on.  Used to branch logic depending on the page.
     /// </summary>
-    public CurrentPage CurrentPage
+    internal PageKind CurrentPage
     {
         get; set;
     }
@@ -154,7 +155,7 @@ public partial class AddRepoViewModel : ObservableObject
         ShowRepoPage = Visibility.Collapsed;
         IsUrlAccountButtonChecked = true;
         IsAccountToggleButtonChecked = false;
-        CurrentPage = CurrentPage.AddViaUrl;
+        CurrentPage = PageKind.AddViaUrl;
     }
 
     public void ChangeToAccountPage()
@@ -164,7 +165,7 @@ public partial class AddRepoViewModel : ObservableObject
         ShowRepoPage = Visibility.Collapsed;
         IsUrlAccountButtonChecked = false;
         IsAccountToggleButtonChecked = true;
-        CurrentPage = CurrentPage.AddViaAccount;
+        CurrentPage = PageKind.AddViaAccount;
     }
 
     public void ChangeToRepoPage()
@@ -172,7 +173,7 @@ public partial class AddRepoViewModel : ObservableObject
         ShowUrlPage = Visibility.Collapsed;
         ShowAccountPage = Visibility.Collapsed;
         ShowRepoPage = Visibility.Visible;
-        CurrentPage = CurrentPage.Repositories;
+        CurrentPage = PageKind.Repositories;
 
         // The only way to get the repo page is through the account page.
         // No need to change toggle buttons.
@@ -184,12 +185,12 @@ public partial class AddRepoViewModel : ObservableObject
     /// <returns>True if all information is in order, otherwise false</returns>
     public bool ValidateRepoInformation()
     {
-        if (CurrentPage == CurrentPage.AddViaUrl)
+        if (CurrentPage == PageKind.AddViaUrl)
         {
             // check if url or username/repo is filled in.
             return !string.IsNullOrWhiteSpace(Url) && !string.IsNullOrEmpty(Url);
         }
-        else if (CurrentPage == CurrentPage.AddViaAccount || CurrentPage == CurrentPage.Repositories)
+        else if (CurrentPage == PageKind.AddViaAccount || CurrentPage == PageKind.Repositories)
         {
             // make sure the user has selected some repositories.
             return EverythingToClone.Count > 0;
@@ -267,20 +268,20 @@ public partial class AddRepoViewModel : ObservableObject
     /// Adds a repository from the URL page.
     /// </summary>
     /// <param name="cloneLocation">The location to clone the repo to</param>
-    public void AddRepositoryViaUri(string cloneLocation)
+    public async Task AddRepositoryViaUriAsync(string cloneLocation)
     {
         // Try to parse repo from Uri
         // null means no providers were able to parse the Uri.
-        string providerName;
-        var repository = _providers.ParseRepositoryFromUri(Url, out providerName);
-        if (repository == null)
+        var providerNameAndRepo = await _providers.ParseRepositoryFromUriAsync(new Uri(Url));
+        if (providerNameAndRepo.Item2 == null)
         {
             return;
         }
 
-        var developerId = new DeveloperAccount(repository.GetOwningAccountName(), string.Empty, repository.GetOwningAccountName(), Url);
+        var repository = providerNameAndRepo.Item2;
+        var developerId = new DeveloperId(repository.GetOwningAccountName(), string.Empty, repository.GetOwningAccountName(), Url);
         var cloningInformation = new CloningInformation();
-        cloningInformation.ProviderName = providerName;
+        cloningInformation.ProviderName = providerNameAndRepo.Item1;
         cloningInformation.OwningAccount = developerId;
         cloningInformation.RepositoryToClone = repository;
         cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);

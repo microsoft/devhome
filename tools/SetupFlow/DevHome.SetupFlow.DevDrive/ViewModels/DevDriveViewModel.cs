@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.DevDrive.Models;
-using DevHome.SetupFlow.DevDrive.Services;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.DevDrive.Windows;
 using DevHome.Telemetry;
@@ -21,6 +21,8 @@ namespace DevHome.SetupFlow.DevDrive.ViewModels;
 
 public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewModel
 {
+    private readonly ILogger _logger;
+    private readonly DevDriveTaskGroup _taskGroup;
     private readonly IDevDriveManager _devDriveManager;
     private readonly Models.DevDrive _concreteDevDrive = new ();
     private readonly IReadOnlyList<ByteUnit> _byteUnitList = new List<ByteUnit>
@@ -45,8 +47,12 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     public IList<char> DriveLetters => DevDriveUtil.GetAvailableDriveLetters();
 
     public DevDriveViewModel(
-        IHost host)
+        IHost host,
+        ILogger logger,
+        DevDriveTaskGroup taskGroup)
     {
+        _logger = logger;
+        _taskGroup = taskGroup;
         _devDriveManager = host.GetService<IDevDriveManager>();
     }
 
