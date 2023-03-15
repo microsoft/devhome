@@ -33,7 +33,7 @@ public interface IWinGetCatalog
     /// Equivalent to <c>"winget search --query {query} --source {this}"</c>
     /// </summary>
     /// <param name="query">Search query</param>
-    /// <param name="limit">Result limit. Use 0 for infinite results</param>
+    /// <param name="limit">Maximum number of results to return. Use 0 for infinite results</param>
     /// <returns>List of winget package matches</returns>
     /// <exception cref="FindPackagesException">Exception thrown if the search packages operation failed</exception>
     public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit = 0);
