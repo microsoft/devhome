@@ -53,4 +53,12 @@ public interface ISetupTask
     /// </summary>
     /// <returns>A localized string indicating that this task is being executed.</returns>
     public abstract LoadingMessages GetLoadingMessages();
+
+    /// <summary>
+    /// Gets or sets a value indicating whether a dev drive needs to be installed before this task can start.
+    /// </summary>
+    public bool DependsOnDevDriveToBeInstalled
+    {
+        get; set;
+    }
 }

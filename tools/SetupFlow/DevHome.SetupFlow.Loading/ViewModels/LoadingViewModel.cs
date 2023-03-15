@@ -32,7 +32,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// <summary>
     /// Event raised when the execution of all tasks is completed.
     /// </summary>
-    public event EventHandler ExecutionFinished;
+    /*public event EventHandler ExecutionFinished;*/
 
     private readonly SetupFlowOrchestrator orchestrator;
 
@@ -40,7 +40,13 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private ObservableCollection<TaskInformation> _setupTasks;
 
     [ObservableProperty]
+    private ObservableCollection<TaskInformation> _actionCenterItems;
+
+    [ObservableProperty]
     private int _tasksCompleted;
+
+    [ObservableProperty]
+    private int _tasksStarted;
 
     [ObservableProperty]
     private int _tasksFinishedSuccessfully;
@@ -68,6 +74,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         IsStepPage = false;
 
         orchestrator = _host.GetService<SetupFlowOrchestrator>();
+        ActionCenterItems = new ();
     }
 
     private void FetchTaskInformation()
@@ -77,20 +84,17 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             foreach (var task in taskGroup.SetupTasks)
             {
-                _setupTasks.Add(new TaskInformation { TaskIndex = taskIndex++, TaskToExecute = task, MessageToShow = task.GetLoadingMessages().Executing });
+                SetupTasks.Add(new TaskInformation { TaskIndex = taskIndex++, TaskToExecute = task, MessageToShow = task.GetLoadingMessages().Executing });
             }
         }
 
-        /*
-         * These strings need to be localized.
-         */
-        ExecutingTasks = $"Executing Step {TasksCompleted}/{_setupTasks.Count}";
-        ActionCenterDisplay = "Succeeded: 0 - Failed: 0 - Needs Attention: 0";
+        ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _setupTasks.Count);
+        ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, 0, 0, 0);
     }
 
     public void ChangeMessage(int taskNumber, TaskFinishedState taskFinishedState)
     {
-        var information = _setupTasks[taskNumber];
+        var information = SetupTasks[taskNumber];
         var stringToReplace = string.Empty;
 
         if (taskFinishedState == TaskFinishedState.Success)
@@ -100,14 +104,16 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         else if (taskFinishedState == TaskFinishedState.Failure)
         {
             stringToReplace = information.TaskToExecute.GetLoadingMessages().Error;
+            ActionCenterItems.Add(information);
         }
         else if (taskFinishedState == TaskFinishedState.NeedsAttention)
         {
             stringToReplace = information.TaskToExecute.GetLoadingMessages().NeedsAttention;
+            ActionCenterItems.Add(information);
         }
 
         // change a value in the list to force UI to update
-        _setupTasks[taskNumber].MessageToShow = stringToReplace;
+        SetupTasks[taskNumber].MessageToShow = stringToReplace;
     }
 
     public async override void OnNavigateToPageAsync()
@@ -117,29 +123,66 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         var window = Application.Current.GetService<WindowEx>();
         await Task.Run(() =>
         {
-            Parallel.ForEach(_setupTasks, async task =>
+            var tasksToRunFirst = new List<TaskInformation>();
+            var tasksToRunSecond = new List<TaskInformation>();
+
+            foreach (var taskInformation in _setupTasks)
             {
-                // Start the task and wait for it to complete.
-                try
+                if (taskInformation.TaskToExecute.DependsOnDevDriveToBeInstalled)
                 {
-                    var taskFinishedState = await task.TaskToExecute.Execute();
-                    window.DispatcherQueue.TryEnqueue(() =>
-                    {
-                        ChangeMessage(task.TaskIndex, taskFinishedState);
-                        TasksFinishedSuccessfully++;
-                        TasksCompleted++;
-                        ExecutingTasks = $"Executing Step {TasksCompleted}/{_setupTasks.Count}";
-                        ActionCenterDisplay = $"Succeeded: {TasksFinishedSuccessfully} - Failed: {TasksFinishedUnSuccessfully} - Needs Attention: {TasksThatNeedAttention}";
-                    });
+                    tasksToRunSecond.Add(taskInformation);
                 }
-                catch
+                else
                 {
-                    // Don't let a single task break everything
-                    // TODO: Show failed tasks on UI
+                    tasksToRunFirst.Add(taskInformation);
                 }
+            }
+
+            var blah = Parallel.ForEach(tasksToRunFirst, async task =>
+            {
+                await StartTaskAndReportResult(window, task);
+            });
+
+            while (!blah.IsCompleted)
+            {
+                Thread.Sleep(1000);
+            }
+
+            Parallel.ForEach(tasksToRunSecond, async task =>
+            {
+                await StartTaskAndReportResult(window, task);
             });
         });
 
-        ExecutionFinished.Invoke(null, null);
+        /* ExecutionFinished.Invoke(null, null); */
+    }
+
+    private async Task StartTaskAndReportResult(WinUIEx.WindowEx window, TaskInformation taskInformation)
+    {
+        // Start the task and wait for it to complete.
+        try
+        {
+            window.DispatcherQueue.TryEnqueue(() =>
+            {
+                TasksStarted++;
+                ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _setupTasks.Count);
+            });
+
+            var taskFinishedState = await taskInformation.TaskToExecute.Execute();
+
+            window.DispatcherQueue.TryEnqueue(() =>
+            {
+                ChangeMessage(taskInformation.TaskIndex, taskFinishedState);
+
+                TasksCompleted++;
+                TasksFinishedSuccessfully++;
+                ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, TasksFinishedSuccessfully, TasksFinishedUnSuccessfully, TasksThatNeedAttention);
+            });
+        }
+        catch
+        {
+            // Don't let a single task break everything
+            // TODO: Show failed tasks on UI
+        }
     }
 }

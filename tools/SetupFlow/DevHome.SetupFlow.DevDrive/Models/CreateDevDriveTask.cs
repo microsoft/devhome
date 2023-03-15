@@ -13,6 +13,12 @@ internal class CreateDevDriveTask : ISetupTask
 
     public bool RequiresReboot => false;
 
+    public bool DependsOnDevDriveToBeInstalled
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+    }
+
     public LoadingMessages GetLoadingMessages() => throw new NotImplementedException();
 
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute() => throw new NotImplementedException();

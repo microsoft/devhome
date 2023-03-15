@@ -27,4 +27,6 @@ public static class StringResourceKey
     public static readonly string SelectedPackagesCount = nameof(SelectedPackagesCount);
     public static readonly string SetUpButton = nameof(SetUpButton);
     public static readonly string ViewConfiguration = nameof(ViewConfiguration);
+    public static readonly string LoadingExecutingProgress = nameof(LoadingExecutingProgress);
+    public static readonly string ActionCenterDisplay = nameof(ActionCenterDisplay);
 }

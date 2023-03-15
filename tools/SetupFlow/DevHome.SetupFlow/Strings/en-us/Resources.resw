@@ -421,4 +421,32 @@
     <value>View {0}</value>
     <comment>{Locked="{0}"} Text for the view action of a file content. {0} is replaced by a file name.</comment>
   </data>
+  <data name="LoadingPage_HeaderBottomRow.Text" xml:space="preserve">
+    <value>stay tuned for the magic...</value>
+    <comment>Bottom row of the header for the loading page.</comment>
+  </data>
+  <data name="LoadingPage_HeaderTopRow.Text" xml:space="preserve">
+    <value>Setup initiated</value>
+    <comment>Top row of the header for the loading page</comment>
+  </data>
+  <data name="LoadingExecutingProgress" xml:space="preserve">
+    <value>Executing Task {0}/{1}</value>
+    <comment>Shows ot the user how many tasks have been completed</comment>
+  </data>
+  <data name="Loading_StopButton.Content" xml:space="preserve">
+    <value>Stop</value>
+    <comment>Content to stop loading tasks.</comment>
+  </data>
+  <data name="ActionCenterDisplay" xml:space="preserve">
+    <value>Succeeded: {0} - Failed: {1} - Needs Attention: {2}</value>
+    <comment>Action center display to see status of all tasks that have finished.</comment>
+  </data>
+  <data name="Loading_ActionCenter.Text" xml:space="preserve">
+    <value>Action Center</value>
+    <comment>Header for action center</comment>
+  </data>
+  <data name="Loading_ExecutingTasks.Text" xml:space="preserve">
+    <value>Tasks</value>
+    <comment>Header for executing tasks</comment>
+  </data>
 </root>

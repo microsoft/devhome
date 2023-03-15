@@ -32,6 +32,11 @@ internal class CloneRepoTask : ISetupTask
 
     public LoadingMessages GetLoadingMessages() => _loadingMessage;
 
+    public bool DependsOnDevDriveToBeInstalled
+    {
+        get; set;
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="CloneRepoTask"/> class.
     /// Task to clone a repository with provided credentials.
@@ -85,7 +90,9 @@ internal class CloneRepoTask : ISetupTask
             }
 
             await repositoryToClone.CloneRepositoryAsync(cloneLocation.FullName, _developerId);
-            return TaskFinishedState.Success;
+
+            // BUGBUG: Change back to Success when done testing.
+            return TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }
 }
