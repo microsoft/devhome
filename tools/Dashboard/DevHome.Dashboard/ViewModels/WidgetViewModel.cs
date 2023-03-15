@@ -89,7 +89,7 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    private void HandleInvokedAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
+    private async void HandleInvokedAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
     {
         var actionExecute = args.Action as AdaptiveExecuteAction;
         if (actionExecute != null)
@@ -109,7 +109,8 @@ public partial class WidgetViewModel : ObservableObject
                 }
             }
 
-            _ = _widget.NotifyActionInvokedAsync(actionExecute.Verb, dataToSend);
+            // TODO: LogInfo("WidgetViewModel", $"Notify widget {Widget.Id} of action {actionExecute.Verb} with data {dataToSend}");
+            await _widget.NotifyActionInvokedAsync(actionExecute.Verb, dataToSend);
         }
     }
 
