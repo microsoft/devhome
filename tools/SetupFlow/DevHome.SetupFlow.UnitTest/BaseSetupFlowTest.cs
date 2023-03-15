@@ -23,20 +23,22 @@ public class BaseSetupFlowTest
         TestHost = CreateTestHost();
     }
 
-    private IHost CreateTestHost(Action<IServiceCollection>? spAction = null)
+    private IHost CreateTestHost()
     {
         return Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
             {
-                // Configure string resource
-                var stringResource = new Mock<IStringResource>();
-                stringResource
-                    .Setup(sr => sr.GetLocalized(It.IsAny<string>(), It.IsAny<object[]>()))
-                    .Returns((string key, object[] args) => key);
-
                 // Common services
                 services.AddSingleton<ILogger>(new Mock<ILogger>().Object);
-                services.AddSingleton<IStringResource>(stringResource.Object);
+                services.AddSingleton<IStringResource>(_ =>
+                {
+                    // Configure string resource localization to return the input key
+                    var stringResource = new Mock<IStringResource>();
+                    stringResource
+                        .Setup(sr => sr.GetLocalized(It.IsAny<string>(), It.IsAny<object[]>()))
+                        .Returns((string key, object[] args) => key);
+                    return stringResource.Object;
+                });
 
                 // App-management view models
                 services.AddTransient<PackageViewModel>();
@@ -46,9 +48,6 @@ public class BaseSetupFlowTest
                 // App-management services
                 services.AddSingleton<IWindowsPackageManager>(WindowsPackageManager!.Object);
                 services.AddSingleton<WinGetPackageJsonDataSource>();
-
-                // Custom services
-                spAction?.Invoke(services);
             }).Build();
     }
 }

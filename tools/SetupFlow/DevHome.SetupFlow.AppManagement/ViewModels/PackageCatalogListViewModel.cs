@@ -17,10 +17,10 @@ using Microsoft.Extensions.Hosting;
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 public partial class PackageCatalogListViewModel : ObservableObject
 {
+    private readonly IHost _host;
     private readonly ILogger _logger;
     private readonly WinGetPackageJsonDataSource _jsonDataSource;
     private readonly string _packageCollectionsPath = Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "DevHome.SetupFlow", "Assets", "AppManagementPackages.json");
-    private readonly IHost _host;
 
     /// <summary>
     /// Gets a list of package catalogs to display

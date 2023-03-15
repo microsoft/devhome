@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.SetupFlow.AppManagement.Models;
@@ -31,10 +32,10 @@ public partial class PackageViewModel : ObservableObject
     [ObservableProperty]
     private bool _isSelected;
 
-    public PackageViewModel(IWinGetPackage package, IWindowsPackageManager wpm)
+    public PackageViewModel(IWindowsPackageManager wpm, IWinGetPackage package)
     {
-        _package = package;
         _wpm = wpm;
+        _package = package;
     }
 
     public string Name => _package.Name;
@@ -55,7 +56,7 @@ public partial class PackageViewModel : ObservableObject
     /// Command for launching a 'Learn more' uri
     /// </summary>
     [RelayCommand]
-    private async void LearnMore()
+    private async Task LearnMoreAsync()
     {
         await Launcher.LaunchUriAsync(GetLearnMoreUri());
     }
