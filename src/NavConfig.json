@@ -7,8 +7,8 @@
           {
             "identity": "DevHome.Dashboard",
             "assembly": "DevHome.Dashboard",
-            "viewFullName": "DevHome.Dashboard.DashboardView",
-            "viewModelFullName": "DevHome.Dashboard.DashboardViewModel"
+            "viewFullName": "DevHome.Dashboard.Views.DashboardView",
+            "viewModelFullName": "DevHome.Dashboard.ViewModels.DashboardViewModel"
           },
           {
             "identity": "DevHome.SetupFlow",
