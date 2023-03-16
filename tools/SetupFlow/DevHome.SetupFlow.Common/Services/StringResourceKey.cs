@@ -29,4 +29,13 @@ public static class StringResourceKey
     public static readonly string ViewConfiguration = nameof(ViewConfiguration);
     public static readonly string LoadingExecutingProgress = nameof(LoadingExecutingProgress);
     public static readonly string ActionCenterDisplay = nameof(ActionCenterDisplay);
+
+    // Action center and loading screen
+    public static readonly string LoadingScreenCloningRepositoryMainText = nameof(LoadingScreenCloningRepositoryMainText);
+    public static readonly string LoadingScreenCloningRepositoryFinished = nameof(LoadingScreenCloningRepositoryFinished);
+    public static readonly string LoadingScreenCloningRepositoryErrorText = nameof(LoadingScreenCloningRepositoryErrorText);
+    public static readonly string LoadingScreenCloningReposityNeedsAttention = nameof(LoadingScreenCloningReposityNeedsAttention);
+    public static readonly string LoadingScreenCloningRepositoryErrorTestSecondary = nameof(LoadingScreenCloningRepositoryErrorTestSecondary);
+    public static readonly string LoadingScreenCloningRepositoryErrorMainButtonContent = nameof(LoadingScreenCloningRepositoryErrorMainButtonContent);
+    public static readonly string LoadingScreenCloningRepositoryErrorSecondaryButtonContent = nameof(LoadingScreenCloningRepositoryErrorSecondaryButtonContent);
 }

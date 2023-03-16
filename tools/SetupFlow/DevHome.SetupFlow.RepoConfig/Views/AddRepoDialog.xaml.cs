@@ -277,7 +277,7 @@ internal sealed partial class AddRepoDialog
         {
             foreach (var repository in repositories)
             {
-                repositoriesToShow.Add(loginId + "/" + repository.DisplayName());
+                repositoriesToShow.Add(loginId + "/" + repository.DisplayName);
             }
 
             avalibleRepositoresToSelectFrom = repositories.ToList();
@@ -301,7 +301,7 @@ internal sealed partial class AddRepoDialog
         foreach (var selectedItem in selectedItems)
         {
             var repoInformation = (selectedItem as string).Split("/");
-            var repositoryToAddOrRemove = avalibleRepositoresToSelectFrom.FirstOrDefault(x => x.DisplayName().Equals(repoInformation[1], StringComparison.OrdinalIgnoreCase));
+            var repositoryToAddOrRemove = avalibleRepositoresToSelectFrom.FirstOrDefault(x => x.DisplayName.Equals(repoInformation[1], StringComparison.OrdinalIgnoreCase));
 
             if (repositoryToAddOrRemove != null)
             {

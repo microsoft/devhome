@@ -24,7 +24,7 @@ namespace Microsoft.Windows.DevHome.SDK
     [version(1.0)]
     interface IRepositoryProvider 
     {
-        String GetDisplayName();
+        String GetDisplayName { get; };
 
         Windows.Foundation.IAsyncOperation<IIterable<IRepository> > GetRepositoriesAsync(IDeveloperId developerId);
     };
@@ -32,7 +32,10 @@ namespace Microsoft.Windows.DevHome.SDK
     [version(1.0)]
     interface IRepository 
     {
-        String DisplayName();
+        String DisplayName
+        {
+            get;
+        };
 
         Windows.Foundation.IAsyncAction CloneRepositoryAsync(String cloneDestination, IDeveloperId developerId);
 

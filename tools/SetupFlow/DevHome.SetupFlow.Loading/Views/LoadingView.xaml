@@ -64,14 +64,14 @@
                             <DataTemplate x:Key="SecondHorizontalBarTemplate" x:DataType="models:TaskInformation">
                                 <StackPanel Orientation="Vertical" Spacing="10">
                                     <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                    <TextBlock Text="This is a sub title"/>
+                                    <TextBlock x:Name="SecondaryErrorTextTextBlock"/>
                                     <Grid ColumnSpacing="10">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition/>
                                             <ColumnDefinition/>
                                         </Grid.ColumnDefinitions>
-                                        <Button Grid.Column="0" Content="Primary" HorizontalAlignment="Stretch"/>
-                                        <Button Grid.Column="1" Content="Secondary" HorizontalAlignment="Stretch"/>
+                                        <Button  Grid.Column="0" x:Name="ActionCenterPrimaryButton" HorizontalAlignment="Stretch"/>
+                                        <Button Grid.Column="1" x:Name="ActionCenterSecondaryButton" HorizontalAlignment="Stretch"/>
                                     </Grid>
                                 </StackPanel>
                             </DataTemplate>

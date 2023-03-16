@@ -61,7 +61,7 @@ public class CloningInformation
     {
         RepositoriesToClone.TryAdd(account, new List<IRepository>());
 
-        if (!RepositoriesToClone[account].Any(x => x.DisplayName().Equals(repositoryToAddOrRemove.DisplayName(), StringComparison.OrdinalIgnoreCase)))
+        if (!RepositoriesToClone[account].Any(x => x.DisplayName.Equals(repositoryToAddOrRemove.DisplayName, StringComparison.OrdinalIgnoreCase)))
         {
             RepositoriesToClone[account].Add(repositoryToAddOrRemove);
         }

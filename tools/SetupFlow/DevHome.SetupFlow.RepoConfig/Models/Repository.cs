@@ -28,6 +28,8 @@ internal class Repository : Microsoft.Windows.DevHome.SDK.IRepository
         _cloneUrl = cloneUrl;
     }
 
+    string Microsoft.Windows.DevHome.SDK.IRepository.DisplayName => _displayName;
+
     public IAsyncAction CloneRepositoryAsync(string cloneDestination, IDeveloperId forPrivateRepos)
     {
         return Task.Run(() =>

@@ -19,7 +19,9 @@ internal class CreateDevDriveTask : ISetupTask
         set => throw new NotImplementedException();
     }
 
-    public LoadingMessages GetLoadingMessages() => throw new NotImplementedException();
+    public ActionCenterErrorMessages GetActionCenterMessages() => throw new NotImplementedException();
+
+    public TaskMessages GetLoadingMessages() => throw new NotImplementedException();
 
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute() => throw new NotImplementedException();
 }

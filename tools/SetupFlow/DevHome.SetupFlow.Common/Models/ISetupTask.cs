@@ -49,10 +49,16 @@ public interface ISetupTask
     public abstract IAsyncOperation<TaskFinishedState> Execute();
 
     /// <summary>
-    /// Gets a string to show in the loading page while executing this task.
+    /// Gets the object used to display all messages in the loading screen.
     /// </summary>
-    /// <returns>A localized string indicating that this task is being executed.</returns>
-    public abstract LoadingMessages GetLoadingMessages();
+    /// <returns>Object that containes strings for the loading screen.</returns>
+    public abstract TaskMessages GetLoadingMessages();
+
+    /// <summary>
+    /// Gets an object that contains all the data needed for display an error in the action cneter.
+    /// </summary>
+    /// <returns>An object with strings to display in the action cneter.</returns>
+    public abstract ActionCenterErrorMessages GetActionCenterMessages();
 
     /// <summary>
     /// Gets or sets a value indicating whether a dev drive needs to be installed before this task can start.

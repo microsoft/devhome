@@ -33,7 +33,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// Event raised when the execution of all tasks is completed.
     /// </summary>
     /*public event EventHandler ExecutionFinished;*/
-
     private readonly SetupFlowOrchestrator orchestrator;
 
     [ObservableProperty]

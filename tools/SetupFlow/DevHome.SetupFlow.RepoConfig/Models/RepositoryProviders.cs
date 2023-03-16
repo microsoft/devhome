@@ -25,7 +25,7 @@ internal class RepositoryProviders
         {
             if (provider.GetProvider(ProviderType.Repository) is IRepositoryProvider repositoryProvider)
             {
-                this._providers.Add(repositoryProvider.GetDisplayName(), new RepositoryProvider(provider));
+                this._providers.Add(repositoryProvider.GetDisplayName, new RepositoryProvider(provider));
             }
         }
     }

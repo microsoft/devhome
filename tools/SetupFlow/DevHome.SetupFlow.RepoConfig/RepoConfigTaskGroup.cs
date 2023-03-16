@@ -38,7 +38,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
             foreach (var repositoryToClone in cloningInformation.RepositoriesToClone[developerId])
             {
                 // Possible that two accounts have the same repo name from forking.
-                var fullPath = Path.Combine(cloningInformation.CloneLocation.FullName, developerId.LoginId(), repositoryToClone.DisplayName());
+                var fullPath = Path.Combine(cloningInformation.CloneLocation.FullName, developerId.LoginId(), repositoryToClone.DisplayName);
                 _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), repositoryToClone, developerId));
             }
         }
@@ -46,7 +46,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
 
     public void SaveSetupTaskInformation(DirectoryInfo path, IRepository repoToClone)
     {
-        var fullPath = Path.Combine(path.FullName, repoToClone.DisplayName());
+        var fullPath = Path.Combine(path.FullName, repoToClone.DisplayName);
         _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), repoToClone));
     }
 }

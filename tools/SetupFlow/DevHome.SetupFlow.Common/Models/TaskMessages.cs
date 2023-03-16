@@ -12,7 +12,7 @@ namespace DevHome.SetupFlow.Common.Models;
 /// <summary>
 /// Messages to display in the loading screen.
 /// </summary>
-public class LoadingMessages
+public class TaskMessages
 {
     /// <summary>
     /// Gets or sets the message to display when the task is executing.
@@ -46,11 +46,19 @@ public class LoadingMessages
         get; set;
     }
 
-    public LoadingMessages()
+    /// <summary>
+    /// Gets or sets the content of the primary button for action center items.
+    /// </summary>
+    public string PrimaryBuittonContent
+    {
+        get; set;
+    }
+
+    public TaskMessages()
     {
     }
 
-    public LoadingMessages(string executingMessage, string finishedMessage, string errorMessage, string needsAttention)
+    public TaskMessages(string executingMessage, string finishedMessage, string errorMessage, string needsAttention)
     {
         Executing = executingMessage;
         Finished = finishedMessage;

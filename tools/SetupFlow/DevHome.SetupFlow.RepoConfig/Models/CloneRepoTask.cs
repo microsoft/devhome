@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
+using DevHome.SetupFlow.Common.Services;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel.Activation;
@@ -26,11 +28,15 @@ internal class CloneRepoTask : ISetupTask
 
     public bool RequiresReboot => false;
 
-    private readonly LoadingMessages _loadingMessage;
+    private readonly TaskMessages _taskMessage;
+
+    private readonly ActionCenterErrorMessages _actionCenterMessages;
 
     private readonly IDeveloperId _developerId;
 
-    public LoadingMessages GetLoadingMessages() => _loadingMessage;
+    public TaskMessages GetLoadingMessages() => _taskMessage;
+
+    public ActionCenterErrorMessages GetActionCenterMessages() => _actionCenterMessages;
 
     public bool DependsOnDevDriveToBeInstalled
     {
@@ -50,10 +56,14 @@ internal class CloneRepoTask : ISetupTask
         this.repositoryToClone = repositoryToClone;
         _developerId = developerId;
 
-        _loadingMessage = new ("Cloning Repository " + repositoryToClone.DisplayName(),
-            "Done cloning repository " + repositoryToClone.DisplayName(),
-            "Something happened to repository " + repositoryToClone.DisplayName() + ", oh no!",
-            "Repository " + repositoryToClone.DisplayName() + " needs your attention.");
+        var stringResource = Application.Current.GetService<StringResource>();
+        var executingMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryMainText, repositoryToClone.DisplayName);
+        var finishedMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryFinished, repositoryToClone.DisplayName);
+        var errorMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryErrorText, repositoryToClone.DisplayName);
+        var needsAttention = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningReposityNeedsAttention, repositoryToClone.DisplayName);
+
+        _taskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsAttention);
+        _actionCenterMessages = new ();
     }
 
     /// <summary>
@@ -67,10 +77,13 @@ internal class CloneRepoTask : ISetupTask
         this.cloneLocation = cloneLocation;
         this.repositoryToClone = repositoryToClone;
 
-        _loadingMessage = new ("Cloning Repository " + repositoryToClone.DisplayName(),
-            "Done cloning repository " + repositoryToClone.DisplayName(),
-            "Something happened to repository " + repositoryToClone.DisplayName() + ", oh no!",
-            "Repository " + repositoryToClone.DisplayName() + " needs your attention.");
+        var stringResource = Application.Current.GetService<StringResource>();
+        var executingMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryMainText, repositoryToClone.DisplayName);
+        var finishedMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryFinished, repositoryToClone.DisplayName);
+        var errorMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryErrorText, repositoryToClone.DisplayName);
+        var needsAttention = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningReposityNeedsAttention, repositoryToClone.DisplayName);
+
+        _taskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsAttention);
     }
 
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()

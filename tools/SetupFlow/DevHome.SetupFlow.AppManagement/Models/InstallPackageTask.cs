@@ -20,7 +20,9 @@ internal class InstallPackageTask : ISetupTask
         get; set;
     }
 
-    public LoadingMessages GetLoadingMessages() => throw new NotImplementedException();
+    public ActionCenterErrorMessages GetActionCenterMessages() => throw new NotImplementedException();
+
+    public TaskMessages GetLoadingMessages() => throw new NotImplementedException();
 
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute() => throw new NotImplementedException();
 }

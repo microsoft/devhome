@@ -449,4 +449,32 @@
     <value>Tasks</value>
     <comment>Header for executing tasks</comment>
   </data>
+  <data name="LoadingScreenCloningRepositoryErrorMainButtonContent" xml:space="preserve">
+    <value>Retry</value>
+    <comment>Option 1 of 2 to execute when a clone fails.</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryErrorSecondaryButtonContent" xml:space="preserve">
+    <value>Ignore</value>
+    <comment>Option 2 of 2 to execute when a clone fails.</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryErrorTestSecondary" xml:space="preserve">
+    <value>Repository failed because {0}</value>
+    <comment>Sub text that will show up in the action center</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryErrorText" xml:space="preserve">
+    <value>Failed to clone repository {0}</value>
+    <comment>Main tex tto show in the loading screen that a repo failed to clone</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryFinished" xml:space="preserve">
+    <value>Repository Cloned, and location set to  {0}</value>
+    <comment>Notify the user that a repository has been cloned</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryMainText" xml:space="preserve">
+    <value>Cloning Repository {0}</value>
+    <comment>Text to notify the user what repository is being clones</comment>
+  </data>
+  <data name="LoadingScreenCloningReposityNeedsAttention" xml:space="preserve">
+    <value>Repository {0} needs your attention</value>
+    <comment>Task message when a cloning task needs a users attention</comment>
+  </data>
 </root>
