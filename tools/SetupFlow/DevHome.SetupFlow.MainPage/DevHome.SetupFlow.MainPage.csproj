@@ -19,14 +19,14 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221209.1" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DevHome.SetupFlow.AppManagement\DevHome.SetupFlow.AppManagement.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.ConfigurationFlow\DevHome.SetupFlow.ConfigurationFile.csproj" />
-    <ProjectReference Include="..\DevHome.SetupFlow.DevVolume\DevHome.SetupFlow.DevVolume.csproj" />
+    <ProjectReference Include="..\DevHome.SetupFlow.DevDrive\DevHome.SetupFlow.DevDrive.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.RepoConfig\DevHome.SetupFlow.RepoConfig.csproj" />
   </ItemGroup>
 

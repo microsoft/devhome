@@ -40,10 +40,6 @@ Options:
   Exit
 }
 
-if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
-  pluginsdk\Build.ps1 -SDKVersion $SDKVersion -IsAzurePipelineBuild $IsAzurePipelineBuild
-}
-
 $env:Build_RootDirectory = (Split-Path $MyInvocation.MyCommand.Path)
 $env:Build_Platform = $Platform.ToLower()
 $env:Build_Configuration = $Configuration.ToLower()
@@ -51,6 +47,10 @@ $env:msix_version = build\Scripts\CreateBuildInfo.ps1 -Version $Version -IsAzure
 $env:sdk_version = build\Scripts\CreateBuildInfo.ps1 -Version $SDKVersion -IsSdkVersion $true -IsAzurePipelineBuild $IsAzurePipelineBuild
 
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
+
+if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
+  pluginsdk\Build.ps1 -SDKVersion $env:sdk_version -IsAzurePipelineBuild $IsAzurePipelineBuild
+}
 
 $msbuildPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
 if ($IsAzurePipelineBuild) {

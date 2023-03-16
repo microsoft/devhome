@@ -74,6 +74,7 @@ public partial class App : Application, IApp
 
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
+            services.AddTransient<AccountsPageViewModel>();
             services.AddTransient<SettingsPage>();
             services.AddTransient<FeedbackViewModel>();
             services.AddTransient<FeedbackPage>();

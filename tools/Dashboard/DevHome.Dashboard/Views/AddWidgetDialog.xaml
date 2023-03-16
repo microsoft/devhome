@@ -21,6 +21,7 @@
     </ContentDialog.Resources>
 
     <StackPanel>
+        <!-- Title and Close button -->
         <Grid>
             <TextBlock x:Uid="PinWidgetsTitle" HorizontalAlignment="Left" />
             <Button HorizontalAlignment="Right" Click="CancelButton_Click" BorderThickness="0" >
@@ -30,7 +31,8 @@
             </Button>
         </Grid>
 
-        <NavigationView x:Name="widgetConfigurationNavigationView"
+        <!-- Widgets available to pin-->
+        <NavigationView x:Name="AddWidgetNavigationView"
                         x:Uid="AllWidgetsList"
                         PaneDisplayMode="Left"
                         IsTabStop="False"
@@ -39,16 +41,24 @@
                         IsPaneToggleButtonVisible="False"
                         IsTitleBarAutoPaddingEnabled="False"
                         OpenPaneLength="180"
-                        SelectionChanged="WidgetConfigurationNavigationView_SelectionChanged">
+                        SelectionChanged="AddWidgetNavigationView_SelectionChanged">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="GitHub Placeholder" Icon="Contact" ToolTipService.ToolTip="GitHub" Tag="GitHub" IsExpanded="True">
-                    <NavigationViewItem.MenuItems>
-                        <NavigationViewItem Content="Pull requests Placeholder" ToolTipService.ToolTip="Pull requests" Tag="PullRequests"/>
-                        <NavigationViewItem Content="Issues Placeholder" ToolTipService.ToolTip="Issues" Tag="Issues"/>
-                    </NavigationViewItem.MenuItems>
-                </NavigationViewItem>
             </NavigationView.MenuItems>
-            <Frame x:Name="configurationContentFrame" />
+
+            <!-- Widget configuration UI -->
+            <!-- TODO: This is a bare-bones representation of the configuration UI -->
+            <!--       Should have better layout / possibly be a user control -->
+            <Grid>
+                <Frame x:Name="ConfigurationContentFrame" MinHeight="600"
+                       Content="{x:Bind ViewModel.WidgetUIElement, Mode=OneWay}" />
+                <Button x:Name="PinButton" x:Uid="PinButton" Content="Pin"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                        Visibility="Collapsed"
+                        Height="32" Width="118"
+                        Click="PinButton_Click"
+                        Grid.Row="1"
+                        Margin="0,0,0,43" />
+            </Grid>
         </NavigationView>
     </StackPanel>
 </ContentDialog>

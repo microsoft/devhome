@@ -1,0 +1,35 @@
+﻿// Note: This is temporary list of popular apps
+[
+  {
+    "NameResourceKey": "PopularAppsTitle",
+    "DescriptionResourceKey": "PopularAppsDescription",
+    "WinGetPackageIds": [
+      "Microsoft.VisualStudio.2022.Community",
+      "Microsoft.VisualStudioCode",
+      "Microsoft.PowerShell",
+      "Git.Git",
+      "Notepad++.Notepad++",
+      "Microsoft.SQLServerManagementStudio",
+      "Microsoft.PowerToys",
+      "7zip.7zip",
+      "Google.AndroidStudio",
+      "JetBrains.IntelliJIDEA.Community",
+      "JetBrains.PyCharm.Community",
+      "Cygwin.Cygwin",
+      "Python.Python.3.11",
+      "Microsoft.DotNet.SDK.7",
+      "GitHub.Atom",
+      "Docker.DockerDesktop",
+      "PuTTY.PuTTY",
+      "Unity.Unity.2022",
+      "Orwell.Dev-C++",
+      "Codeblocks.Codeblocks",
+      "SublimeHQ.SublimeText.4",
+      "vim.vim",
+      "Postman.Postman",
+      "GitHub.GitHubDesktop",
+      "OpenJS.NodeJS"
+
+    ]
+  }
+]

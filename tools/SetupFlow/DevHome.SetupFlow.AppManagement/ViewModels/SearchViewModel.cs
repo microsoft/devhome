@@ -36,6 +36,7 @@ public partial class SearchViewModel : ObservableObject
     private readonly ILogger _logger;
     private readonly IWindowsPackageManager _wpm;
     private readonly IStringResource _stringResource;
+    private const int SearchResultLimit = 20;
 
     /// <summary>
     /// Search query text
@@ -91,7 +92,7 @@ public partial class SearchViewModel : ObservableObject
         try
         {
             // Run the search on a separate (non-UI) thread to prevent lagging the UI.
-            var matches = await Task.Run(async () => await _wpm.AllCatalogs.SearchAsync(text), cancellationToken);
+            var matches = await Task.Run(async () => await _wpm.AllCatalogs.SearchAsync(text, SearchResultLimit), cancellationToken);
 
             // Don't update the UI if the operation was canceled
             if (cancellationToken.IsCancellationRequested)

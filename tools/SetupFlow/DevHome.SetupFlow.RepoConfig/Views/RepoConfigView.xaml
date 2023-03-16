@@ -19,12 +19,8 @@
     <RelativePanel x:Name="RepoConfigRelativePanel">
         <!-- Step x/x is from the parent.-->
         <TextBlock x:Name="IntroTextBlock" FontSize="20"><Bold>Repository Connection</Bold></TextBlock>
-        <TextBlock x:Name="DescriptionTextBlock" RelativePanel.Below="IntroTextBlock">This page is for connection a repo.</TextBlock>
-        <Button x:Name="AddRepoButton" Click="AddRepoButton_Click" RelativePanel.Below="DescriptionTextBlock">
-            <TextBlock>
-                + Add
-            </TextBlock>
-        </Button>
+        <TextBlock x:Name="DescriptionTextBlock" RelativePanel.Below="IntroTextBlock">This page is for connection to a repo.</TextBlock>
+        <Button x:Name="AddRepoButton" Click="AddRepoButton_Click" RelativePanel.Below="DescriptionTextBlock">+ Add</Button>
         <Image x:Name="CreateFromScratchImage" MaxWidth="400" Source="/Assets/CreateFromScratch.png" RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" />
         <TextBlock x:Name="NoAccountCreatedTextBlock" RelativePanel.AlignHorizontalCenterWith="CreateFromScratchImage" RelativePanel.Below="CreateFromScratchImage">
             No account is selected yet

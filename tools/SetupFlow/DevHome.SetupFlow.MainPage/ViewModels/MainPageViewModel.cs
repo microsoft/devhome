@@ -11,7 +11,8 @@ using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.DevVolume;
+using DevHome.SetupFlow.DevDrive;
+using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.RepoConfig;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
@@ -33,6 +34,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private bool _showAppListBackupBanner;
 
+    [ObservableProperty]
+    private bool _showDevDriveItem;
+
     /// <summary>
     /// Event raised when the user elects to start the setup flow.
     /// The orchestrator for the whole flow subscribes to this event to handle
@@ -48,6 +52,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
+        ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
     }
 
     /// <summary>
@@ -66,7 +71,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private void StartSetup()
     {
         StartSetupFlowForTaskGroups(
-            _host.GetService<DevVolumeTaskGroup>(),
+            _host.GetService<DevDriveTaskGroup>(),
             _host.GetService<RepoConfigTaskGroup>(),
             _host.GetService<AppManagementTaskGroup>());
     }
@@ -90,12 +95,13 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
-    /// Starts a setup flow that only includes dev volume.
+    /// Opens the Windows settings app and redirects the user to the disks and volumes page.
     /// </summary>
     [RelayCommand]
-    private void StartDevVolume()
+    private async void LaunchDisksAndVolumesSettingsPage()
     {
-        StartSetupFlowForTaskGroups(_host.GetService<DevVolumeTaskGroup>());
+        // TODO: Add telemetry.
+        await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
 
     /// <summary>

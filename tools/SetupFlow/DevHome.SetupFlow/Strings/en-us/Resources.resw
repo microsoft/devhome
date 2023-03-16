@@ -193,6 +193,66 @@
     <value>Learn more</value>
     <comment>Button text for learning more about setting up a development machine</comment>
   </data>
+  <data name="DevDriveWindowByteUnitComboBox" xml:space="preserve">
+    <value>Byte unit of mearsure</value>
+    <comment>Unit of mearsure values that will populate the dropdown. Only gigabyte and terabyte</comment>
+  </data>
+  <data name="DevDriveWindowByteUnitComboBoxGB" xml:space="preserve">
+    <value>GB</value>
+    <comment>Dropdown value representation for a gigabyte</comment>
+  </data>
+  <data name="DevDriveWindowByteUnitComboBoxTB" xml:space="preserve">
+    <value>TB</value>
+    <comment>Dropdown value representation for a terabyte</comment>
+  </data>
+  <data name="DevDriveWindowCancelButton.Content" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Cancel button that will close the Dev Drive window</comment>
+  </data>
+  <data name="DevDriveWindowDriveLettersComboBox.Header" xml:space="preserve">
+    <value>Drive letters</value>
+    <comment>The drive letters that are currently available to use on the system</comment>
+  </data>
+  <data name="DevDriveWindowLaunchSettingsDisksAndVolumesHeader.Text" xml:space="preserve">
+    <value>For advanced settings, open the settings app.</value>
+    <comment>Text to Advise the user that the disks and volumes page in the Windows settings app has more advanced options for creating a Dev Drive.</comment>
+  </data>
+  <data name="DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink.Text" xml:space="preserve">
+    <value>Open disks and volumes setting</value>
+    <comment>Hyperlink text, so when clicked the user will be redirected to the disks and volumes Windows settings page.</comment>
+  </data>
+  <data name="DevDriveWindowLocationTextBox.Header" xml:space="preserve">
+    <value>Dev Drive location</value>
+    <comment>Header for the Dev Drive location text box. This location can be on the location system or on a network share</comment>
+  </data>
+  <data name="DevDriveWindowLocationTextBox.PlaceholderText" xml:space="preserve">
+    <value>C:\Users\user\Documents\DevDisks</value>
+    <comment>Placeholder value within the Dev Drive location text box to show the user an example input of a folder location</comment>
+  </data>
+  <data name="DevDriveWindowNameTextBox.Header" xml:space="preserve">
+    <value>Dev Drive name</value>
+    <comment>Header for the Dev Drive name text box</comment>
+  </data>
+  <data name="DevDriveWindowNameTextBox.PlaceholderText" xml:space="preserve">
+    <value>Dev Disk VHD</value>
+    <comment>Placeholder drive label value that will be used as the file name within the Dev Drive name text box. VHD stands for virtual hard disk, which is what will be created when the user goes to create a Dev Drive.</comment>
+  </data>
+  <data name="DevDriveWindowOnlyOneDevDriveAllowedHeader.Text" xml:space="preserve">
+    <value>You can only create one Dev Drive in Dev Home at a time.</value>
+    <comment>Text to advise users that they are only allowed the create one Dev Drive at a time.</comment>
+  </data>
+  <data name="DevDriveWindowSaveButton.Content" xml:space="preserve">
+    <value>Save</value>
+    <comment>Save button that will let users save the options selected in the dialog</comment>
+  </data>
+  <data name="DevDriveWindowSizeNumberBox.Header" xml:space="preserve">
+    <value>Size</value>
+    <comment>Header for the Dev Drive size number box</comment>
+  </data>
+  <data name="DevDriveWindowTitle.Text" xml:space="preserve">
+    <value>Create Dev Drive</value>
+    <comment>Title for the Dev Drive window that opens up</comment>
+  </data>
   <data name="FileTypeNotSupported" xml:space="preserve">
     <value>File type not supported</value>
     <comment>File type not supported error message</comment>
@@ -276,6 +336,14 @@
   <data name="PackagesCount" xml:space="preserve">
     <value>{0} packages</value>
     <comment>{Locked="{0}"} Display the number of packages. {0} is replaced by the number of packages.</comment>
+  </data>
+  <data name="PopularAppsTitle" xml:space="preserve">
+    <value>Popular Apps</value>
+    <comment>Header text for a popular application section</comment>
+  </data>
+  <data name="PopularAppsDescription" xml:space="preserve">
+    <value>Here are some popular development tools.</value>
+    <comment>Description text for a popular application section</comment>
   </data>
   <data name="Previous.Content" xml:space="preserve">
     <value>Previous</value>

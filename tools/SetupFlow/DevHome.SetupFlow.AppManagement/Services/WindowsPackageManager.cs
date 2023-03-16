@@ -24,7 +24,6 @@ public class WindowsPackageManager : IWindowsPackageManager
     // Predefined catalogs
     private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
     private readonly Lazy<WinGetCompositeCatalog> _wingetCatalog;
-    private readonly Lazy<WinGetCompositeCatalog> _msStoreCatalog;
 
     public WindowsPackageManager(IHost host, ILogger logger, WindowsPackageManagerFactory wingetFactory)
     {
@@ -35,14 +34,22 @@ public class WindowsPackageManager : IWindowsPackageManager
         // Lazy-initialize catalogs
         _allCatalogs = new (CreateAllCatalogs);
         _wingetCatalog = new (CreateWinGetCatalog);
-        _msStoreCatalog = new (CreateMsStoreCatalog);
     }
 
     public IWinGetCatalog AllCatalogs => _allCatalogs.Value;
 
     public IWinGetCatalog WinGetCatalog => _wingetCatalog.Value;
 
-    public IWinGetCatalog MsStoreCatalog => _msStoreCatalog.Value;
+    public async Task ConnectToAllCatalogsAsync()
+    {
+        // Connect composite catalog for all local and remote catalogs to
+        // enable searching for pacakges from any source
+        await AllCatalogs.ConnectAsync();
+
+        // Connect predefined winget catalog to enable loading
+        // package with a known source (e.g. for restoring packages)
+        await WinGetCatalog.ConnectAsync();
+    }
 
     public async Task InstallPackageAsync(WinGetPackage package)
     {
@@ -80,16 +87,6 @@ public class WindowsPackageManager : IWindowsPackageManager
     private WinGetCompositeCatalog CreateWinGetCatalog()
     {
         return CreatePredefinedCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
-    }
-
-    /// <summary>
-    /// Create a composite catalog that can be used for finding packages in
-    /// msstore and local catalogs
-    /// </summary>
-    /// <returns>Catalog composed of msstore and local catalogs</returns>
-    private WinGetCompositeCatalog CreateMsStoreCatalog()
-    {
-        return CreatePredefinedCatalog(PredefinedPackageCatalog.MicrosoftStore);
     }
 
     /// <summary>

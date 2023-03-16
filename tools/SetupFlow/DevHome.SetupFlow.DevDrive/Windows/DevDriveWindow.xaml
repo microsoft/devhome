@@ -1,0 +1,34 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<windowex:WindowEx
+    x:Class="DevHome.SetupFlow.DevDrive.Windows.DevDriveWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:windowex="using:WinUIEx"
+    xmlns:viewmodels="using:DevHome.SetupFlow.DevDrive.ViewModels"
+    xmlns:views="using:DevHome.SetupFlow.DevDrive.Views"
+    IsMaximizable="False"
+    Height="600"
+    Width="600"
+    MinHeight="600"
+    MinWidth="600"
+    PersistenceId="DevDriveWindow"
+    mc:Ignorable="d">
+    <windowex:WindowEx.Backdrop>
+        <windowex:MicaSystemBackdrop/>
+    </windowex:WindowEx.Backdrop>
+    <ContentControl
+        HorizontalContentAlignment="Stretch"
+        VerticalContentAlignment="Stretch"
+        Content="{x:Bind ViewModel}"
+        IsTabStop="False">
+        <ContentControl.ContentTemplate>
+            <DataTemplate x:DataType="viewmodels:DevDriveViewModel">
+                <views:DevDriveView />
+            </DataTemplate>
+        </ContentControl.ContentTemplate>
+    </ContentControl>
+</windowex:WindowEx>
