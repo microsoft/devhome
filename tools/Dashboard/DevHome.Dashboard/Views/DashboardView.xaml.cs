@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common;
 using DevHome.Dashboard.ViewModels;
@@ -125,17 +126,12 @@ public partial class DashboardView : ToolPage
     // Remove widget(s) from the Dashboard if the provider deletes the widget definition, or the provider is uninstalled.
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
-        var defId = args.DefinitionId;
-        if (defId != null)
+        _dispatcher.TryEnqueue(() =>
         {
-            for (var widgetIndex = PinnedWidgets.Count - 1; widgetIndex <= 0; widgetIndex--)
+            foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == args.DefinitionId).ToList())
             {
-                var widget = PinnedWidgets[widgetIndex];
-                if (widget.Widget.DefinitionId == defId)
-                {
-                    PinnedWidgets.RemoveAt(widgetIndex);
-                }
+                PinnedWidgets.Remove(widgetToRemove);
             }
-        }
+        });
     }
 }
