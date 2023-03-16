@@ -101,5 +101,6 @@ public partial class App : Application, IApp
         base.OnLaunched(args);
 
         await GetService<IActivationService>().ActivateAsync(args);
+        GetService<IAccountsService>().InitializeAsync();
     }
 }

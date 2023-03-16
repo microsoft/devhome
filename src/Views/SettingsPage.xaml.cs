@@ -2,6 +2,8 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Extensions;
+using DevHome.Contracts.Services;
+using DevHome.Services;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

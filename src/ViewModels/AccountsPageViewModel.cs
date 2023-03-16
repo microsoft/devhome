@@ -4,6 +4,7 @@
 using System.Collections.ObjectModel;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.ViewModels;
 
@@ -13,7 +14,7 @@ public class AccountsPageViewModel
 
     public AccountsPageViewModel()
     {
-        var devIdProviders = App.Current.GetService<IAccountsService>().GetDevIdProviders();
+        var devIdProviders = Application.Current.GetService<IAccountsService>().GetDevIdProviders();
         devIdProviders.ToList().ForEach((devIdProvider) =>
         {
             AccountsProviders.Add(new AccountsProviderViewModel(devIdProvider));
