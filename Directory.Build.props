@@ -20,7 +20,7 @@
   </PropertyGroup>
 -->
   <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup>

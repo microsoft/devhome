@@ -53,7 +53,7 @@
                 </NavigationViewItem>
                 <NavigationViewItem x:Uid="WhatsNew" helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.WhatsNewViewModel" Content="What's New">
                     <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE939;"/>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE789;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>

@@ -41,9 +41,4 @@ public sealed partial class WhatsNewPage : Page
             ViewModel.AddCard(card);
         }
     }
-
-    private void FeaturesContainer_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
-    {
-        //var x = CardGrid.
-    }
 }

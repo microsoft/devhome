@@ -89,7 +89,6 @@
             <muxc:ItemsRepeater
                 Name="FeaturesContainer"
                 Grid.Row="3"
-                DataContextChanged="FeaturesContainer_DataContextChanged"
                 animations:Connected.ListItemElementName="itemThumbnail"
                 animations:Connected.ListItemKey="animationKeyContentGrid"
                 ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}">
@@ -129,8 +128,8 @@
                     <muxc:UniformGridLayout 
                         x:Name="CardGrid"
                         Orientation="Horizontal" 
-                        MinItemWidth="400" 
-                        MinItemHeight="100"
+                        MinItemWidth="450" 
+                        MinItemHeight="200"
                         MinRowSpacing="16" 
                         MinColumnSpacing="8"
                         ItemsStretch="Fill" />
