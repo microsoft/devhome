@@ -122,13 +122,13 @@ public partial class DashboardView : ToolPage
         }
     }
 
-    // Remove widget from the Dashboard if the provider deletes the widget, or the provider is uninstalled.
+    // Remove widget(s) from the Dashboard if the provider deletes the widget definition, or the provider is uninstalled.
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
         var defId = args.DefinitionId;
         if (defId != null)
         {
-            for (var widgetIndex = 0; widgetIndex < PinnedWidgets.Count; widgetIndex++)
+            for (var widgetIndex = PinnedWidgets.Count - 1; widgetIndex <= 0; widgetIndex--)
             {
                 var widget = PinnedWidgets[widgetIndex];
                 if (widget.Widget.DefinitionId == defId)
