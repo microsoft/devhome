@@ -108,12 +108,14 @@ public partial class DashboardView : ToolPage
 
     private async void DeleteWidgetClick(object sender, RoutedEventArgs e)
     {
-        if (sender as MenuFlyoutItem is MenuFlyoutItem deleteMenuItem)
+        if (sender is MenuFlyoutItem deleteMenuItem)
         {
             if (deleteMenuItem?.Tag is WidgetViewModel widgetViewModel)
             {
-                await widgetViewModel.Widget.DeleteAsync();
+                // Remove the widget from the list before deleting, otherwise the widget will
+                // have changed and the collection won't be able to find it to remove it.
                 PinnedWidgets.Remove(widgetViewModel);
+                await widgetViewModel.Widget.DeleteAsync();
             }
         }
     }
