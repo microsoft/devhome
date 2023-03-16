@@ -16,7 +16,7 @@ public sealed partial class SettingsPage : Page
         get;
     }
 
-    public AccountsPageViewModel AccountsViewModel
+    public AccountsPageViewModel AccountsPageViewModel
     {
         get;
     }
@@ -24,18 +24,18 @@ public sealed partial class SettingsPage : Page
     public SettingsPage()
     {
         ViewModel = Application.Current.GetService<SettingsViewModel>();
-        AccountsViewModel = Application.Current.GetService<AccountsPageViewModel>();
+        AccountsPageViewModel = Application.Current.GetService<AccountsPageViewModel>();
         InitializeComponent();
     }
 
     private void AddDeveloperId_Click(object sender, RoutedEventArgs e)
     {
-        AccountsViewModel.AddAccount();
+        AccountsPageViewModel.AccountsProviders.First().AddAccount();
     }
 
     private async void Logout_Click(object sender, RoutedEventArgs e)
     {
-        var confirmLogoutContentDialog = new ContentDialog()
+        var confirmLogoutContentDialog = new ContentDialog
         {
             Title = "Are you sure?",
             Content = "Are you sure you want to remove this user account?"
@@ -45,8 +45,8 @@ public sealed partial class SettingsPage : Page
             PrimaryButtonText = "Yes",
             SecondaryButtonText = "No",
             DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = XamlRoot,
         };
-        confirmLogoutContentDialog.XamlRoot = this.XamlRoot;
         var contentDialogResult = await confirmLogoutContentDialog.ShowAsync();
 
         if (contentDialogResult.Equals(ContentDialogResult.Secondary))
@@ -60,16 +60,15 @@ public sealed partial class SettingsPage : Page
             return;
         }
 
-        AccountsViewModel.RemoveAccount(loginIdToRemove);
+        AccountsPageViewModel.AccountsProviders.First().RemoveAccount(loginIdToRemove);
 
-        var afterLogoutContentDialog = new ContentDialog()
+        var afterLogoutContentDialog = new ContentDialog
         {
             Title = "Logout Successful",
             Content = loginIdToRemove + " has successfully logged out",
             PrimaryButtonText = "OK",
+            XamlRoot = XamlRoot,
         };
-
-        afterLogoutContentDialog.XamlRoot = this.XamlRoot;
         _ = await afterLogoutContentDialog.ShowAsync();
     }
 }
