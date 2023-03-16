@@ -44,6 +44,8 @@ public partial class DashboardView : ToolPage
         _widgetCatalog = WidgetCatalog.GetDefault();
         _renderer = new AdaptiveCardRenderer();
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+        _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
     }
 
     private void RestorePinnedWidgets(object sender, RoutedEventArgs e)
@@ -116,6 +118,23 @@ public partial class DashboardView : ToolPage
                 // have changed and the collection won't be able to find it to remove it.
                 PinnedWidgets.Remove(widgetViewModel);
                 await widgetViewModel.Widget.DeleteAsync();
+            }
+        }
+    }
+
+    // Remove widget from the Dashboard if the provider deletes the widget, or the provider is uninstalled.
+    private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
+    {
+        var defId = args.DefinitionId;
+        if (defId != null)
+        {
+            for (var widgetIndex = 0; widgetIndex < PinnedWidgets.Count; widgetIndex++)
+            {
+                var widget = PinnedWidgets[widgetIndex];
+                if (widget.Widget.DefinitionId == defId)
+                {
+                    PinnedWidgets.RemoveAt(widgetIndex);
+                }
             }
         }
     }
