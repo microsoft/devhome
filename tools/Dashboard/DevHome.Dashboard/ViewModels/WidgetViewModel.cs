@@ -8,6 +8,7 @@ using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.ViewModels;
@@ -38,10 +39,14 @@ public partial class WidgetViewModel : ObservableObject
     }
 
     [ObservableProperty]
+    private WidgetSize _widgetSize;
+
+    [ObservableProperty]
     private FrameworkElement _widgetUIElement;
 
     public WidgetViewModel(
         Widget widget,
+        WidgetSize widgetSize,
         AdaptiveCardRenderer renderer,
         Microsoft.UI.Dispatching.DispatcherQueue dispatcher)
     {
@@ -49,6 +54,7 @@ public partial class WidgetViewModel : ObservableObject
         _dispatcher = dispatcher;
 
         Widget = widget;
+        WidgetSize = widgetSize;
     }
 
     private async void RenderWidgetUIElement()
