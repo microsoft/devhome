@@ -9,7 +9,7 @@ public interface IAccountsService
 {
     void InitializeAsync();
 
-    public IReadOnlyList<IDevIdProvider> GetDevIdProviders();
+    IReadOnlyList<IDevIdProvider> GetDevIdProviders();
 
     IReadOnlyList<IDeveloperId> GetDeveloperIds(IDevIdProvider iDevIdProvider);
 
