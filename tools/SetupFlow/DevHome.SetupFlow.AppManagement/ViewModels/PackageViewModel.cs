@@ -44,36 +44,19 @@ public partial class PackageViewModel : ObservableObject
 
     public string Version => _package.Version;
 
-    partial void OnIsSelectedChanged(bool value) => SelectionChanged?.Invoke(null, this);
-
-    /// <summary>
-    /// Toggle package selection
-    /// </summary>
-    [RelayCommand]
-    private void ToggleSelection() => IsSelected = !IsSelected;
-
-    /// <summary>
-    /// Command for launching a 'Learn more' uri
-    /// </summary>
-    [RelayCommand]
-    private async Task LearnMoreAsync()
-    {
-        await Launcher.LaunchUriAsync(GetLearnMoreUri());
-    }
-
     /// <summary>
     /// Gets the learn more button uri.
-    /// For packages from winget or private catalogs:
+    /// For packages from winget or custom catalogs:
     /// 1. Use package url
     /// 2. Else, use publisher url
     /// 3. Else, use "https://github.com/microsoft/winget-pkgs"
     ///
     /// For packages from ms store catalog:
     /// 1. Use package url
-    /// 2. Else, use "ms-windows-store://pdp?ProductId={ID}"
+    /// 2. Else, use "ms-windows-store://pdp?productid={ID}"
     /// </summary>
     /// <returns>Learn more button uri</returns>
-    private Uri GetLearnMoreUri()
+    public Uri GetLearnMoreUri()
     {
         if (_package.PackageUrl != null)
         {
@@ -91,5 +74,22 @@ public partial class PackageViewModel : ObservableObject
         }
 
         return new Uri("https://github.com/microsoft/winget-pkgs");
+    }
+
+    partial void OnIsSelectedChanged(bool value) => SelectionChanged?.Invoke(null, this);
+
+    /// <summary>
+    /// Toggle package selection
+    /// </summary>
+    [RelayCommand]
+    private void ToggleSelection() => IsSelected = !IsSelected;
+
+    /// <summary>
+    /// Command for launching a 'Learn more' uri
+    /// </summary>
+    [RelayCommand]
+    private async Task LearnMoreAsync()
+    {
+        await Launcher.LaunchUriAsync(GetLearnMoreUri());
     }
 }

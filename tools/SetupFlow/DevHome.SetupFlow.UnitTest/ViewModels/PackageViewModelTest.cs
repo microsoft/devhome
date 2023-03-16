@@ -2,14 +2,22 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.UnitTest.Helpers;
+using Microsoft.Management.Deployment;
+using Moq;
 
 namespace DevHome.SetupFlow.UnitTest.ViewModels;
 
 [TestClass]
 public class PackageViewModelTest : BaseSetupFlowTest
 {
+    private const string MockPackageUrl = "https://mock/packageUrl";
+    private const string MockPublisherUrl = "https://mock/publisherUrl";
+    private const string WinGetPkgsUrl = "https://github.com/microsoft/winget-pkgs";
+    private const string MsStoreAppUrl = "ms-windows-store://pdp/?productid=mockId";
+
     [TestMethod]
     public void CreatePackageViewModel_Success()
     {
@@ -24,5 +32,41 @@ public class PackageViewModelTest : BaseSetupFlowTest
             Assert.AreEqual(expectedPackages[i].ImageUri, packages[i].ImageUri);
             Assert.AreEqual(expectedPackages[i].Version, packages[i].Version);
         }
+    }
+
+    [TestMethod]
+    [DataRow(MockPackageUrl, MockPublisherUrl, MockPackageUrl)]
+    [DataRow("", MockPublisherUrl, MockPublisherUrl)]
+    [DataRow("", "", WinGetPkgsUrl)]
+    public void LearnMore_PackageFromWinGetOrCustomCatalog_ReturnsExpectedUri(string packageUrl, string publisherUrl, string expectedUrl)
+    {
+        // Winget package
+        WindowsPackageManager!
+            .Setup(wpm => wpm.IsPackageFromCatalog(It.IsAny<IWinGetPackage>(), PredefinedPackageCatalog.MicrosoftStore))
+            .Returns(false);
+
+        var package = PackageHelper.CreatePackage("mockId");
+        package.Setup<Uri?>(p => p.PackageUrl).Returns(string.IsNullOrEmpty(packageUrl) ? null : new Uri(packageUrl));
+        package.Setup<Uri?>(p => p.PublisherUrl).Returns(string.IsNullOrEmpty(publisherUrl) ? null : new Uri(publisherUrl));
+        var packageViewModel = TestHost!.CreateInstance<PackageViewModel>(package.Object);
+        Assert.AreEqual(expectedUrl, packageViewModel.GetLearnMoreUri().ToString());
+    }
+
+    [TestMethod]
+    [DataRow(MockPackageUrl, MockPublisherUrl, MockPackageUrl)]
+    [DataRow("", MockPublisherUrl, MsStoreAppUrl)]
+    [DataRow("", "", MsStoreAppUrl)]
+    public void LearnMore_PackageFromMsStoreCatalog_ReturnsExpectedUri(string packageUrl, string publisherUrl, string expectedUrl)
+    {
+        // Store package
+        WindowsPackageManager!
+            .Setup(wpm => wpm.IsPackageFromCatalog(It.IsAny<IWinGetPackage>(), PredefinedPackageCatalog.MicrosoftStore))
+            .Returns(true);
+
+        var package = PackageHelper.CreatePackage("mockId");
+        package.Setup<Uri?>(p => p.PackageUrl).Returns(string.IsNullOrEmpty(packageUrl) ? null : new Uri(packageUrl));
+        package.Setup<Uri?>(p => p.PublisherUrl).Returns(string.IsNullOrEmpty(publisherUrl) ? null : new Uri(publisherUrl));
+        var packageViewModel = TestHost!.CreateInstance<PackageViewModel>(package.Object);
+        Assert.AreEqual(expectedUrl, packageViewModel.GetLearnMoreUri().ToString());
     }
 }
