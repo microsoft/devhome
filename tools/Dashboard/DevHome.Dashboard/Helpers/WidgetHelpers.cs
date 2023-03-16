@@ -26,4 +26,20 @@ internal class WidgetHelpers
 
         return largest;
     }
+
+    public static double GetPixelHeightFromWidgetSize(WidgetSize size)
+    {
+        if (size == WidgetSize.Small)
+        {
+            return WidgetPxHeightSmall;
+        }
+        else if (size == WidgetSize.Medium)
+        {
+            return WidgetPxHeightMedium;
+        }
+        else
+        {
+            return WidgetPxHeightLarge;
+        }
+    }
 }

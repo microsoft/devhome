@@ -10,6 +10,9 @@
     xmlns:pg="using:DevHome.Common"
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:vm="using:DevHome.Dashboard.ViewModels"
+    xmlns:views="using:DevHome.Dashboard.Views"
+    xmlns:helpers="using:DevHome.Dashboard.Helpers"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -30,7 +33,29 @@
                     ButtonCommand="{x:Bind ViewModel.DashboardBannerButtonCommand,Mode=OneWay}"
                     x:Uid="ms-resource:///DevHome.Dashboard/Resources/DashboardBanner"
                     ImageSource="ms-appx:///DevHome.Dashboard/Assets/DashboardBanner.png"/>
-                <Grid></Grid>
+
+                <!-- Widget grid -->
+                <GridView x:Name="MainGridView" ItemsSource="{x:Bind views:DashboardView.PinnedWidgets}">
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:WidgetViewModel">
+                            <Grid Width="300" Height="{x:Bind helpers:WidgetHelpers.GetPixelHeightFromWidgetSize(WidgetSize), Mode=OneWay}">
+                                <ContentPresenter Content="{Binding WidgetUIElement, UpdateSourceTrigger=PropertyChanged}"/>
+                                <Button Tag="{Binding}" FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xE712;" 
+                                        VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 30 3 0" BorderThickness="0"
+                                        Click="OpenWidgetMenu">
+                                    <Button.Flyout>
+                                        <MenuFlyout/>
+                                    </Button.Flyout>
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                </GridView>
             </StackPanel>
         </ScrollViewer>
     </StackPanel>
