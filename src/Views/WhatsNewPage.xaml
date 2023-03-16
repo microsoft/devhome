@@ -9,6 +9,7 @@
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:animations="using:CommunityToolkit.WinUI.UI.Animations"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls" 
     xmlns:models="using:DevHome.Models"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
@@ -85,18 +86,15 @@
                 </StackPanel>
             </Grid>
 
-            <controls:AdaptiveGridView
+            <muxc:ItemsRepeater
                 Name="FeaturesContainer"
                 Grid.Row="3"
+                DataContextChanged="FeaturesContainer_DataContextChanged"
                 animations:Connected.ListItemElementName="itemThumbnail"
                 animations:Connected.ListItemKey="animationKeyContentGrid"
-                DesiredWidth="500"
-                IsItemClickEnabled="False"
-                ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}"
-                SelectionMode="None"
-                StretchContentForSingleRow="False">
+                ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}">
 
-                <controls:AdaptiveGridView.Resources>
+                <muxc:ItemsRepeater.Resources>
                     <models:WhatsNewCard 
                         x:Uid="WhatsNewPage_DevPFeaturesCard"
                         x:Key="WhatsNewPage_DevPFeaturesCard"
@@ -125,10 +123,22 @@
                         Priority="10"
                         LearnMoreUrl="https://microsoft.com/" />
 
-                </controls:AdaptiveGridView.Resources>
+                </muxc:ItemsRepeater.Resources>
 
-                <controls:AdaptiveGridView.ItemTemplate>
-                    <DataTemplate x:DataType="models:WhatsNewCard">
+                <muxc:ItemsRepeater.Layout>
+                    <muxc:UniformGridLayout 
+                        x:Name="CardGrid"
+                        Orientation="Horizontal" 
+                        MinItemWidth="400" 
+                        MinItemHeight="100"
+                        MinRowSpacing="16" 
+                        MinColumnSpacing="8"
+                        ItemsStretch="Fill" />
+                </muxc:ItemsRepeater.Layout>
+
+                <muxc:ItemsRepeater.ItemTemplate>
+                    <DataTemplate 
+                        x:DataType="models:WhatsNewCard">
                         <Grid
                             HorizontalAlignment="Stretch"
                             Padding="30 25"
@@ -136,8 +146,7 @@
                             Margin="5"
                             Background="{ThemeResource CardBackgroundFillColorDefault}"
                             BorderBrush="{ThemeResource ControlElevationBorderBrush}"
-                            BorderThickness="{ThemeResource ExpanderBorderThickness}"
-                            x:Name="itemThumbnail">
+                            BorderThickness="{ThemeResource ExpanderBorderThickness}">
 
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="48" />
@@ -176,8 +185,8 @@
                             </StackPanel>
                         </Grid>
                     </DataTemplate>
-                </controls:AdaptiveGridView.ItemTemplate>
-            </controls:AdaptiveGridView>
+                </muxc:ItemsRepeater.ItemTemplate>
+            </muxc:ItemsRepeater>
         </Grid>
     </ScrollViewer>
 </Page>
