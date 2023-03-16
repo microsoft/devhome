@@ -8,11 +8,11 @@ namespace DevHome.Services;
 
 public class AccountsService : IAccountsService
 {
-    private readonly Dictionary<IDevIdProvider, List<IDeveloperId>> accountsList;
+    private readonly Dictionary<IDevIdProvider, List<IDeveloperId>> _accountsDictionary;
 
     public AccountsService()
     {
-        accountsList = new ();
+        _accountsDictionary = new ();
     }
 
     public async void InitializeAsync()
@@ -31,7 +31,7 @@ public class AccountsService : IAccountsService
 
             if (devIdProvider is IDevIdProvider iDevIdProvider)
             {
-                accountsList.Add(iDevIdProvider, iDevIdProvider.GetLoggedInDeveloperIds().ToList());
+                _accountsDictionary.Add(iDevIdProvider, iDevIdProvider.GetLoggedInDeveloperIds().ToList());
 
                 iDevIdProvider.LoggedIn += LoggedInEventHandler;
                 iDevIdProvider.LoggedOut += LoggedOutEventHandler;
@@ -39,9 +39,9 @@ public class AccountsService : IAccountsService
         }
     }
 
-    public IReadOnlyList<IDevIdProvider> GetDevIdProviders() => accountsList.Keys.ToList();
+    public IReadOnlyList<IDevIdProvider> GetDevIdProviders() => _accountsDictionary.Keys.ToList();
 
-    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDevIdProvider iDevIdProvider) => accountsList[iDevIdProvider];
+    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDevIdProvider iDevIdProvider) => _accountsDictionary[iDevIdProvider];
 
     public IReadOnlyList<IDeveloperId> GetDeveloperIds(IPlugin plugin)
     {
@@ -57,7 +57,7 @@ public class AccountsService : IAccountsService
     {
         if (sender is IDevIdProvider iDevIdProvider)
         {
-            accountsList[iDevIdProvider].Add(developerId);
+            _accountsDictionary[iDevIdProvider].Add(developerId);
         }
     }
 
@@ -65,7 +65,7 @@ public class AccountsService : IAccountsService
     {
         if (sender is IDevIdProvider iDevIdProvider)
         {
-            accountsList[iDevIdProvider].Remove(developerId);
+            _accountsDictionary[iDevIdProvider].Remove(developerId);
         }
     }
 }
