@@ -25,7 +25,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     public AddWidgetDialog(WidgetHost host, WidgetCatalog catalog, AdaptiveCardRenderer renderer, DispatcherQueue dispatcher)
     {
-        ViewModel = new WidgetViewModel(null, renderer, dispatcher);
+        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, renderer, dispatcher);
         this.InitializeComponent();
 
         _widgetHost = host;
