@@ -29,17 +29,12 @@ internal class WidgetHelpers
 
     public static double GetPixelHeightFromWidgetSize(WidgetSize size)
     {
-        if (size == WidgetSize.Small)
+        return size switch
         {
-            return WidgetPxHeightSmall;
-        }
-        else if (size == WidgetSize.Medium)
-        {
-            return WidgetPxHeightMedium;
-        }
-        else
-        {
-            return WidgetPxHeightLarge;
-        }
+            WidgetSize.Small => WidgetPxHeightSmall,
+            WidgetSize.Medium => WidgetPxHeightMedium,
+            WidgetSize.Large => WidgetPxHeightLarge,
+            _ => 0,
+        };
     }
 }
