@@ -36,7 +36,12 @@ public partial class AccountsProviderViewModel : ObservableObject
         {
             return await _devIdProvider.LoginNewDeveloperIdAsync();
         });
-        LoggedInAccounts.Add(new AccountViewModel(newDeveloperId));
+
+        // Only add to LoggedInAccounts if not already present
+        if (!LoggedInAccounts.Any((account) => account.LoginId == newDeveloperId.LoginId()))
+        {
+            LoggedInAccounts.Add(new AccountViewModel(newDeveloperId));
+        }
 
         // Bring focus back to DevHome after login
         SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);

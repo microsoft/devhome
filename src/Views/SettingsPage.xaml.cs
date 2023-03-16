@@ -30,8 +30,23 @@ public sealed partial class SettingsPage : Page
         InitializeComponent();
     }
 
-    private void AddDeveloperId_Click(object sender, RoutedEventArgs e)
+    private async void AddDeveloperId_Click(object sender, RoutedEventArgs e)
     {
+        if (AccountsPageViewModel.AccountsProviders.Count == 0)
+        {
+            var confirmLogoutContentDialog = new ContentDialog
+            {
+                Title = "No Dev Home Plugins found!",
+                Content = "Please install a Dev Home Plugin and restart Dev Home to add an account.",
+                PrimaryButtonText = "Ok",
+                XamlRoot = XamlRoot,
+            };
+
+            await confirmLogoutContentDialog.ShowAsync();
+            return;
+        }
+
+        // TODO: expand this for multiple providers after their buttons are added
         AccountsPageViewModel.AccountsProviders.First().AddAccount();
     }
 
