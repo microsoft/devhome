@@ -46,7 +46,7 @@
                                     <TextBlock Text="{x:Bind LoginId}"  Style="{ThemeResource BodyTextStyle}" HorizontalAlignment="Left"/>
                                 </StackPanel>
                                 <StackPanel RelativePanel.AlignRightWithPanel="True">
-                                <Button Tag="{x:Bind LoginId}" x:Uid="Settings_Accounts_LogoutButton" HorizontalAlignment="Right" Click="Logout_Click"/>
+                                <Button Tag="{x:Bind}" x:Uid="Settings_Accounts_LogoutButton" HorizontalAlignment="Right" Click="Logout_Click"/>
                                 </StackPanel>
                             </RelativePanel>
                         </Expander.Header>
@@ -73,9 +73,8 @@
                                     <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right">
                                         <Button.Flyout>
                                             <Flyout>
-                                                <ItemsRepeater ItemsSource="{x:Bind AccountsPageViewModel.AccountsProviders}" 
-                                                               ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
-                                                               HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
+                                                <ItemsRepeater ItemsSource="{x:Bind AccountsPageViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
                                                 </ItemsRepeater>
                                                 <Flyout.FlyoutPresenterStyle>
                                                     <Style TargetType="FlyoutPresenter">

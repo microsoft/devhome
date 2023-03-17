@@ -23,7 +23,7 @@ public partial class AccountsProviderViewModel : ObservableObject
         _devIdProvider = devIdProvider;
         _devIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
         {
-            LoggedInAccounts.Add(new AccountViewModel(devId));
+            LoggedInAccounts.Add(new AccountViewModel(this, devId));
         });
     }
 
@@ -37,7 +37,7 @@ public partial class AccountsProviderViewModel : ObservableObject
         // Only add to LoggedInAccounts if not already present
         if (!LoggedInAccounts.Any((account) => account.LoginId == newDeveloperId.LoginId()))
         {
-            LoggedInAccounts.Add(new AccountViewModel(newDeveloperId));
+            LoggedInAccounts.Add(new AccountViewModel(this, newDeveloperId));
         }
 
         // Bring focus back to DevHome after login

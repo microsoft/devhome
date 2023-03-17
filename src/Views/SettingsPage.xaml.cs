@@ -48,8 +48,18 @@ public sealed partial class SettingsPage : Page
             return;
         }
 
-        // TODO: expand this for multiple providers after their buttons are added
-        AccountsPageViewModel.AccountsProviders.First().AddAccount();
+        if (sender as Button is Button addAccountButton)
+        {
+            if (addAccountButton.Tag is AccountsProviderViewModel accountProvider)
+            {
+                accountProvider.AddAccount();
+            }
+            else
+            {
+                // TODO: Log and handle this case
+                return;
+            }
+        }
     }
 
     private async void Logout_Click(object sender, RoutedEventArgs e)
@@ -71,21 +81,18 @@ public sealed partial class SettingsPage : Page
             return;
         }
 
-        var loginIdToRemove = (sender as Button)?.Tag.ToString();
-        if (string.IsNullOrEmpty(loginIdToRemove))
+        if (sender is Button { Tag: AccountViewModel accountToRemove })
         {
-            return;
+            accountToRemove.RemoveAccount();
+
+            var afterLogoutContentDialog = new ContentDialog
+            {
+                Title = resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_Title"),
+                Content = accountToRemove.LoginId + resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_Content"),
+                PrimaryButtonText = resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_PrimaryButtonText"),
+                XamlRoot = XamlRoot,
+            };
+            _ = await afterLogoutContentDialog.ShowAsync();
         }
-
-        AccountsPageViewModel.AccountsProviders.First().RemoveAccount(loginIdToRemove);
-
-        var afterLogoutContentDialog = new ContentDialog
-        {
-            Title = resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_Title"),
-            Content = loginIdToRemove + resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_Content"),
-            PrimaryButtonText = resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_PrimaryButtonText"),
-            XamlRoot = XamlRoot,
-        };
-        _ = await afterLogoutContentDialog.ShowAsync();
     }
 }
