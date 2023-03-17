@@ -57,15 +57,17 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 {
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
-                        if (IsPinnable(widgetDef))
+                        var subItem = new NavigationViewItem
                         {
-                            var subItem = new NavigationViewItem
-                            {
-                                Tag = widgetDef,
-                                Content = widgetDef.DisplayTitle,
-                            };
-                            navItem.MenuItems.Add(subItem);
+                            Tag = widgetDef,
+                            Content = widgetDef.DisplayTitle,
+                        };
+                        if (AlreadyPinnedSingleInstance(widgetDef))
+                        {
+                            subItem.IsEnabled = false;
                         }
+
+                        navItem.MenuItems.Add(subItem);
                     }
                 }
 
@@ -77,7 +79,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
-    private bool IsPinnable(WidgetDefinition widgetDef)
+    private bool AlreadyPinnedSingleInstance(WidgetDefinition widgetDef)
     {
         // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
         if (!widgetDef.AllowMultiple)
@@ -89,13 +91,13 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 {
                     if (pinnedWidget.DefinitionId == widgetDef.Id)
                     {
-                        return false;
+                        return true;
                     }
                 }
             }
         }
 
-        return true;
+        return false;
     }
 
     private bool IsIncludedWidgetProvider(WidgetProviderDefinition provider)
