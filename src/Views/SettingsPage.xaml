@@ -16,6 +16,12 @@
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
 
+        <DataTemplate x:Key="AccountsProviderButtonTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
+            <StackPanel>
+                <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Right" Click="AddAccount_Click" Tag="{x:Bind}"/>
+            </StackPanel>
+        </DataTemplate>
+        
         <DataTemplate x:Key="AccountsProviderViewTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
             <StackPanel>
                 <StackPanel>
@@ -64,7 +70,15 @@
                                     <TextBlock x:Uid="Settings_Accounts_AddAccountText" Style="{ThemeResource BodyTextStyle}" HorizontalAlignment="Left"/>
                                 </StackPanel>
                                 <StackPanel RelativePanel.AlignRightWithPanel="True">
-                                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right" Click="AddAccount_Click"/>
+                                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right">
+                                        <Button.Flyout>
+                                            <Flyout>
+                                                <ItemsRepeater ItemsSource="{x:Bind AccountsPageViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
+                                                </ItemsRepeater>
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
                                 </StackPanel>
                             </RelativePanel>
                         </Expander.Header>
