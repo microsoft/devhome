@@ -36,6 +36,7 @@ public partial class SearchViewModel : ObservableObject
     private readonly ILogger _logger;
     private readonly IWindowsPackageManager _wpm;
     private readonly IStringResource _stringResource;
+    private readonly PackageProvider _packageProvider;
     private const int SearchResultLimit = 20;
 
     /// <summary>
@@ -62,11 +63,12 @@ public partial class SearchViewModel : ObservableObject
     /// </summary>
     public string NoSearchResultsText => _stringResource.GetLocalized(StringResourceKey.NoSearchResultsFoundTitle, SearchText);
 
-    public SearchViewModel(ILogger logger, IWindowsPackageManager wpm, IStringResource stringResource)
+    public SearchViewModel(ILogger logger, IWindowsPackageManager wpm, IStringResource stringResource, PackageProvider packageProvider)
     {
         _wpm = wpm;
         _logger = logger;
         _stringResource = stringResource;
+        _packageProvider = packageProvider;
     }
 
     /// <summary>
@@ -102,7 +104,7 @@ public partial class SearchViewModel : ObservableObject
 
             // Update the UI only if the operation was successful
             SearchText = text;
-            ResultPackages = matches.Select(m => new PackageViewModel(m)).ToList();
+            ResultPackages = matches.Select(m => _packageProvider.CreateOrGet(m)).ToList();
             return (SearchResultStatus.Ok, ResultPackages);
         }
         catch (OperationCanceledException)

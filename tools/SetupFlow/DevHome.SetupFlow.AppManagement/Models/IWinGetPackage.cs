@@ -21,6 +21,23 @@ public interface IWinGetPackage
     }
 
     /// <summary>
+    /// Gets the package catalog id
+    /// </summary>
+    public string CatalogId
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets a globally unique composite key for the package.
+    /// This property can be used as a key in a dictionary, hashset, etc ...
+    /// </summary>
+    public (string, string) CompositeKey
+    {
+        get;
+    }
+
+    /// <summary>
     /// Gets the package display name
     /// </summary>
     public string Name

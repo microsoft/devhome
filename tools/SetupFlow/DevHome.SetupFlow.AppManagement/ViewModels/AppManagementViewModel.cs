@@ -25,6 +25,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
     private readonly AppManagementTaskGroup _taskGroup;
     private readonly IWindowsPackageManager _wpm;
+    private readonly PackageProvider _packageProvider;
 
     /// <summary>
     /// Current view to display in the main content control
@@ -32,25 +33,25 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ObservableObject _currentView;
 
-    public ObservableCollection<PackageViewModel> SelectedPackages { get; } = new ();
+    public ReadOnlyObservableCollection<PackageViewModel> SelectedPackages => _packageProvider.SelectedPackages;
 
     /// <summary>
     /// Gets the localized string for <see cref="StringResourceKey.ApplicationsSelectedCount"/>
     /// </summary>
     public string ApplicationsSelectedCountText => StringResource.GetLocalized(StringResourceKey.ApplicationsSelectedCount, SelectedPackages.Count);
 
-    public AppManagementViewModel(ILogger logger, IStringResource stringResource, IHost host, IWindowsPackageManager wpm, AppManagementTaskGroup taskGroup)
+    public AppManagementViewModel(ILogger logger, IStringResource stringResource, IHost host, IWindowsPackageManager wpm, AppManagementTaskGroup taskGroup, PackageProvider packageProvider)
         : base(stringResource)
     {
         _logger = logger;
         _taskGroup = taskGroup;
         _wpm = wpm;
+        _packageProvider = packageProvider;
 
         _searchViewModel = host.GetService<SearchViewModel>();
         _shimmerSearchViewModel = host.GetService<ShimmerSearchViewModel>();
 
         _packageCatalogListViewModel = host.GetService<PackageCatalogListViewModel>();
-        _packageCatalogListViewModel.CatalogLoaded += OnCatalogLoaded;
 
         // By default, show the package catalogs
         CurrentView = _packageCatalogListViewModel;
@@ -100,22 +101,8 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         }
     }
 
-    private void OnCatalogLoaded(object sender, PackageCatalogViewModel packageCatalog)
-    {
-        packageCatalog.PackageSelectionChanged += OnPackageSelectionChanged;
-    }
-
     private void OnPackageSelectionChanged(object sender, PackageViewModel package)
     {
-        if (package.IsSelected)
-        {
-            SelectedPackages.Add(package);
-        }
-        else
-        {
-            SelectedPackages.Remove(package);
-        }
-
         OnPropertyChanged(nameof(ApplicationsSelectedCountText));
     }
 }

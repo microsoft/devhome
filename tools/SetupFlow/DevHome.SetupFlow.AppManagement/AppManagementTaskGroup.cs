@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Models;
+using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.ViewModels;
@@ -14,10 +15,13 @@ namespace DevHome.SetupFlow.AppManagement;
 public class AppManagementTaskGroup : ISetupTaskGroup
 {
     private readonly IHost _host;
+    private readonly PackageProvider _packageProvider;
 
-    public AppManagementTaskGroup(IHost host)
+    public AppManagementTaskGroup(IHost host, PackageProvider packageProvider)
     {
         _host = host;
+        _packageProvider = packageProvider;
+        _packageProvider.Clear();
     }
 
     private readonly IList<InstallPackageTask> _installTasks = new List<InstallPackageTask>();

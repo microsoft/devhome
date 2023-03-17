@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Models;
+using DevHome.SetupFlow.AppManagement.Services;
 
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 
@@ -27,20 +27,10 @@ public partial class PackageCatalogViewModel : ObservableObject
 
     public IReadOnlyCollection<PackageViewModel> Packages { get; private set; }
 
-    /// <summary>
-    /// Occurs when one of the packages in this catalog has its IsSelected state changed
-    /// </summary>
-    public event EventHandler<PackageViewModel> PackageSelectionChanged;
-
-    public PackageCatalogViewModel(PackageCatalog packageCatalog)
+    public PackageCatalogViewModel(PackageProvider packageProvider, PackageCatalog packageCatalog)
     {
         _packageCatalog = packageCatalog;
-        Packages = packageCatalog.Packages.Select(p =>
-        {
-            var packageViewModel = new PackageViewModel(p);
-            packageViewModel.SelectionChanged += (sender, eventArg) => PackageSelectionChanged?.Invoke(sender, eventArg);
-            return packageViewModel;
-        }).ToReadOnlyCollection();
+        Packages = packageCatalog.Packages.Select(p => packageProvider.CreateOrGet(p, cache: true)).ToReadOnlyCollection();
     }
 
     [RelayCommand]

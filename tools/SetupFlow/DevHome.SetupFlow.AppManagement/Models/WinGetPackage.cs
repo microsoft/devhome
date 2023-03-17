@@ -24,6 +24,10 @@ public class WinGetPackage : IWinGetPackage
 
     public string Id => _package.Id;
 
+    public string CatalogId => _package.DefaultInstallVersion.PackageCatalog.Info.Id;
+
+    public (string, string) CompositeKey => (Id, CatalogId);
+
     public string Name => _package.Name;
 
     public string Version => _package.DefaultInstallVersion.Version;

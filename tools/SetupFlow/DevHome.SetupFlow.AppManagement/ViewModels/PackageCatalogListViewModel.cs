@@ -8,14 +8,18 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 public partial class PackageCatalogListViewModel : ObservableObject
 {
+    private readonly IHost _host;
     private readonly ILogger _logger;
+    private readonly PackageProvider _packageProvider;
     private readonly WinGetPackageJsonDataSource _jsonDataSource;
     private readonly string _packageCollectionsPath = Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "DevHome.SetupFlow", "Assets", "AppManagementPackages.json");
 
@@ -35,10 +39,12 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// </summary>
     public event EventHandler<PackageCatalogViewModel> CatalogLoaded;
 
-    public PackageCatalogListViewModel(ILogger logger, WinGetPackageJsonDataSource jsonDataSource)
+    public PackageCatalogListViewModel(ILogger logger, IHost host, WinGetPackageJsonDataSource jsonDataSource, PackageProvider packageProvider)
     {
+        _host = host;
         _logger = logger;
         _jsonDataSource = jsonDataSource;
+        _packageProvider = packageProvider;
     }
 
     /// <summary>
@@ -68,7 +74,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
         // TODO Load restore packages
         foreach (var catalog in allCatalogs)
         {
-            var viewModel = new PackageCatalogViewModel(catalog);
+            var viewModel = _host.CreateInstance<PackageCatalogViewModel>(catalog);
             PackageCatalogs.Add(viewModel);
             CatalogLoaded?.Invoke(null, viewModel);
         }

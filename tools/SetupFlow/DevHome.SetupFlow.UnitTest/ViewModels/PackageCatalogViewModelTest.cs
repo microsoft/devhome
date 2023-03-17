@@ -13,7 +13,7 @@ public class PackageCatalogViewModelTest
     public void NewPackageCatalogViewModel_Success()
     {
         var packageCatalog = PackageHelper.CreatePackageCatalog(10);
-        var packageViewModel = new PackageCatalogViewModel(packageCatalog);
+        var packageViewModel = new PackageCatalogViewModel(null, packageCatalog);
         Assert.AreEqual(packageCatalog.Name, packageViewModel.Name);
         Assert.AreEqual(packageCatalog.Description, packageViewModel.Description);
         Assert.AreEqual(packageCatalog.Packages.Count, packageViewModel.Packages.Count);

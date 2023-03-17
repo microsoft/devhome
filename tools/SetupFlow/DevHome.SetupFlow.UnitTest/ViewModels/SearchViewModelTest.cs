@@ -32,7 +32,7 @@ public class SearchViewModelTest
     [DataRow(null, DisplayName = $"{nameof(Search_NullOrEmptyText_ReturnsEmptyStatusAndNull)}_Null")]
     public void Search_NullOrEmptyText_ReturnsEmptyStatusAndNull(string text)
     {
-        var searchViewModel = new SearchViewModel(_logger!.Object, _wpm!.Object, _stringResource!.Object);
+        var searchViewModel = new SearchViewModel(_logger!.Object, _wpm!.Object, _stringResource!.Object, null);
 
         var (status, packages) = searchViewModel.SearchAsync(text, new CancellationToken(canceled: false)).GetAwaiter().GetResult();
 
@@ -45,7 +45,7 @@ public class SearchViewModelTest
     {
         var allcatalogs = new Mock<IWinGetCatalog>();
         allcatalogs.Setup(c => c.IsConnected).Returns(true);
-        var searchViewModel = new SearchViewModel(_logger!.Object, _wpm!.Object, _stringResource!.Object);
+        var searchViewModel = new SearchViewModel(_logger!.Object, _wpm!.Object, _stringResource!.Object, null);
         _wpm.Setup(wpm => wpm.AllCatalogs).Returns(allcatalogs.Object);
 
         var (status, packages) = searchViewModel.SearchAsync("mock", new CancellationToken(canceled: true)).GetAwaiter().GetResult();
@@ -59,7 +59,7 @@ public class SearchViewModelTest
     {
         var allcatalogs = new Mock<IWinGetCatalog>();
         allcatalogs.Setup(c => c.IsConnected).Returns(false);
-        var searchViewModel = new SearchViewModel(_logger!.Object, _wpm!.Object, _stringResource!.Object);
+        var searchViewModel = new SearchViewModel(_logger!.Object, _wpm!.Object, _stringResource!.Object, null);
         _wpm.Setup(wpm => wpm.AllCatalogs).Returns(allcatalogs.Object);
 
         var (status, packages) = searchViewModel.SearchAsync("mock", new CancellationToken(false)).GetAwaiter().GetResult();
@@ -74,7 +74,7 @@ public class SearchViewModelTest
         var allcatalogs = new Mock<IWinGetCatalog>();
         allcatalogs.Setup(c => c.IsConnected).Returns(true);
         allcatalogs.Setup(c => c.SearchAsync(It.IsAny<string>(), It.IsAny<uint>())).ThrowsAsync(new InvalidOperationException());
-        var searchViewModel = new SearchViewModel(_logger!.Object, _wpm!.Object, _stringResource!.Object);
+        var searchViewModel = new SearchViewModel(_logger!.Object, _wpm!.Object, _stringResource!.Object, null);
         _wpm.Setup(wpm => wpm.AllCatalogs).Returns(allcatalogs.Object);
 
         var (status, packages) = searchViewModel.SearchAsync("mock", new CancellationToken(false)).GetAwaiter().GetResult();
@@ -93,7 +93,7 @@ public class SearchViewModelTest
             // Mock a single result package
             new Mock<IWinGetPackage>().Object,
         });
-        var searchViewModel = new SearchViewModel(_logger!.Object, _wpm!.Object, _stringResource!.Object);
+        var searchViewModel = new SearchViewModel(_logger!.Object, _wpm!.Object, _stringResource!.Object, null);
         _wpm.Setup(wpm => wpm.AllCatalogs).Returns(allcatalogs.Object);
 
         var (status, packages) = searchViewModel.SearchAsync("mock", new CancellationToken(false)).GetAwaiter().GetResult();

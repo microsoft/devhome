@@ -32,6 +32,8 @@ public partial class PackageViewModel : ObservableObject
         _package = package;
     }
 
+    public (string, string) CompositeKey => _package.CompositeKey;
+
     public string Name => _package.Name;
 
     public Uri ImageUri => _package.ImageUri ?? DefaultPackageIconSource;
