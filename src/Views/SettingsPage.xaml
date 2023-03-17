@@ -21,7 +21,7 @@
                 <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Right" Click="AddAccount_Click" Tag="{x:Bind}"/>
             </StackPanel>
         </DataTemplate>
-        
+
         <DataTemplate x:Key="AccountsProviderViewTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
             <StackPanel>
                 <StackPanel>
@@ -73,9 +73,16 @@
                                     <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right">
                                         <Button.Flyout>
                                             <Flyout>
-                                                <ItemsRepeater ItemsSource="{x:Bind AccountsPageViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
-                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
+                                                <ItemsRepeater ItemsSource="{x:Bind AccountsPageViewModel.AccountsProviders}" 
+                                                               ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
+                                                               HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
                                                 </ItemsRepeater>
+                                                <Flyout.FlyoutPresenterStyle>
+                                                    <Style TargetType="FlyoutPresenter">
+                                                        <Setter Property="IsTabStop" Value="True"/>
+                                                        <Setter Property="TabNavigation" Value="Cycle"/>
+                                                    </Style>
+                                                </Flyout.FlyoutPresenterStyle>
                                             </Flyout>
                                         </Button.Flyout>
                                     </Button>
