@@ -56,7 +56,8 @@ public class WindowsPackageManager : IWindowsPackageManager
     {
         var packageManager = _wingetFactory.CreatePackageManager();
         var options = _wingetFactory.CreateInstallOptions();
-        var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options);
+        options.PackageInstallMode = PackageInstallMode.Silent;
+        var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options).AsTask();
         if (installResult.Status != InstallResultStatus.Ok)
         {
             throw new InstallPackageException(installResult.Status);

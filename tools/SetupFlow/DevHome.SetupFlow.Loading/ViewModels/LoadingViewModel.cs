@@ -115,9 +115,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         FetchTaskInformation();
 
         var window = Application.Current.GetService<WindowEx>();
-        await Task.Run(() =>
+        await Task.Run(async () =>
         {
-            Parallel.ForEach(_setupTasks, async task =>
+            await Parallel.ForEachAsync(_setupTasks, async (task, _) =>
             {
                 // Start the task and wait for it to complete.
                 try
