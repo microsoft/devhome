@@ -57,7 +57,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Remove="CustomCapability.SCCD" />
 		<None Remove="Styles\Feedback_ThemeResources.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="CustomCapability.SCCD" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
