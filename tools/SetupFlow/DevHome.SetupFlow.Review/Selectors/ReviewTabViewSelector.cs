@@ -3,7 +3,7 @@
 
 using System;
 using DevHome.SetupFlow.AppManagement.ViewModels;
-using DevHome.SetupFlow.DevVolume.ViewModels;
+using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -12,12 +12,12 @@ namespace DevHome.SetupFlow.Review.Selectors;
 
 /// <summary>
 /// Data template selector class for rendering the current active tab in the review page.
-/// For example, if the DevVolumeReviewViewModel is currently bound to the
-/// content control, then the DevVolumeReviewView will render.
+/// For example, if the DevDriveReviewViewModel is currently bound to the
+/// content control, then the DevDriveReviewView will render.
 /// </summary>
 public class ReviewTabViewSelector : DataTemplateSelector
 {
-    public DataTemplate DevVolumeTabTemplate
+    public DataTemplate DevDriveTabTemplate
     {
         get; set;
     }
@@ -52,7 +52,7 @@ public class ReviewTabViewSelector : DataTemplateSelector
     {
         return item switch
         {
-            DevVolumeReviewViewModel => DevVolumeTabTemplate,
+            DevDriveReviewViewModel => DevDriveTabTemplate,
             RepoConfigReviewViewModel => RepoConfigTabTemplate,
             AppManagementReviewViewModel => AppManagementTabTemplate,
             _ => defaultDataTemplate(),

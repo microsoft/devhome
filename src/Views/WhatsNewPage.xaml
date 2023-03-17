@@ -1,0 +1,191 @@
+﻿<Page
+    x:Class="DevHome.Views.WhatsNewPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helpers="using:DevHome.Helpers"
+    xmlns:xaml="using:Microsoft.UI.Xaml"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:animations="using:CommunityToolkit.WinUI.UI.Animations"
+    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls" 
+    xmlns:models="using:DevHome.Models"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
+    Loaded="OnLoaded"
+    mc:Ignorable="d">
+
+    <ScrollViewer>
+        <Grid x:Name="ContentArea" Padding="10 10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="64" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                Grid.Row="0"
+                x:Uid="WhatsNewPage_Title"
+                Style="{ThemeResource TitleTextBlockStyle}" />
+
+            <TextBlock
+                Grid.Row="1"
+                Margin="0 20"
+                x:Uid="WhatsNewPage_Description"
+                Text="{StaticResource SplitViewPaneAnimationOpenDuration}" />
+
+                <Grid 
+                    x:Name="ConnectDevIdContentArea"
+                    Grid.Row="2"
+                    Padding="28"
+                    CornerRadius="{ThemeResource ControlCornerRadius}"
+                    Margin="5 10"
+                    BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+                    BorderThickness="{ThemeResource ExpanderBorderThickness}"
+                    Background="{ThemeResource CardBackgroundFillColorDefault}" >
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Image Source="/Assets/WhatsNewPage/ConnectDevId.png"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Width="32"
+                    Height="32" />
+
+                <StackPanel 
+                    Orientation="Vertical" 
+                    Grid.Column="1"
+                    Margin="10 0 5 5">
+                
+                    <TextBlock
+                        Grid.Column="1"
+                        FontSize="20"
+                        x:Uid="WhatsNewPage_DevIdCard_Title" />
+                
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="0 10"
+                        x:Uid="WhatsNewPage_DevIdCard_Description" />
+
+                    <Button
+                        Margin="0 10"
+                        Padding="30 7">
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock
+                                Margin="5 0"
+                                Text="Connect to Github">
+                            </TextBlock>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <muxc:ItemsRepeater
+                Name="FeaturesContainer"
+                Grid.Row="3"
+                animations:Connected.ListItemElementName="itemThumbnail"
+                animations:Connected.ListItemKey="animationKeyContentGrid"
+                ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}">
+
+                <muxc:ItemsRepeater.Resources>
+                    <models:WhatsNewCard 
+                        x:Uid="WhatsNewPage_DevPFeaturesCard"
+                        x:Key="WhatsNewPage_DevPFeaturesCard"
+                        Icon="/Assets/WhatsNewPage/DevPFeatures.png"
+                        Priority="10"
+                        LearnMoreUrl="https://microsoft.com/" />
+
+                    <models:WhatsNewCard 
+                        x:Uid="WhatsNewPage_ConfigMachineCard"
+                        x:Key="WhatsNewPage_ConfigMachineCard"
+                        Icon="/Assets/WhatsNewPage/ConfigNewMachine.png"
+                        Priority="10"
+                        LearnMoreUrl="https://microsoft.com/" />
+
+                    <models:WhatsNewCard 
+                        x:Uid="WhatsNewPage_DevDashCard"
+                        x:Key="WhatsNewPage_DevDashCard"
+                        Icon="/Assets/WhatsNewPage/DevDashboards.png"
+                        Priority="10"
+                        LearnMoreUrl="https://microsoft.com/" />
+
+                    <models:WhatsNewCard
+                        x:Uid="WhatsNewPage_NotifCard"
+                        x:Key="WhatsNewPage_NotifCard"
+                        Icon="/Assets/WhatsNewPage/RepoNotifications.png"
+                        Priority="10"
+                        LearnMoreUrl="https://microsoft.com/" />
+
+                </muxc:ItemsRepeater.Resources>
+
+                <muxc:ItemsRepeater.Layout>
+                    <muxc:UniformGridLayout 
+                        x:Name="CardGrid"
+                        Orientation="Horizontal" 
+                        MinItemWidth="450" 
+                        MinItemHeight="200"
+                        MinRowSpacing="16" 
+                        MinColumnSpacing="8"
+                        ItemsStretch="Fill" />
+                </muxc:ItemsRepeater.Layout>
+
+                <muxc:ItemsRepeater.ItemTemplate>
+                    <DataTemplate 
+                        x:DataType="models:WhatsNewCard">
+                        <Grid
+                            HorizontalAlignment="Stretch"
+                            Padding="30 25"
+                            CornerRadius="{ThemeResource ControlCornerRadius}"
+                            Margin="5"
+                            Background="{ThemeResource CardBackgroundFillColorDefault}"
+                            BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+                            BorderThickness="{ThemeResource ExpanderBorderThickness}">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="48" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Image 
+                                Source="{x:Bind Icon}"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Grid.Column="0"
+                                Width="32"
+                                Height="32" />
+
+                            <StackPanel Grid.Column="1">
+
+                                <TextBlock
+                                    HorizontalAlignment="Left"
+                                    Style="{ThemeResource BodyTextStyle}"
+                                    Text="{x:Bind Title}" />
+
+                                <TextBlock
+                                    Margin="0 8"
+                                    TextWrapping="Wrap"
+                                    Text="{x:Bind Description}"/>
+
+                                <TextBlock
+                                    Foreground="#99EBFF">
+                                    <Hyperlink
+                                        NavigateUri="https://microsoft.com"
+                                        TextDecorations="None">
+                                        Learn more
+                                    </Hyperlink>
+                                </TextBlock>
+
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </muxc:ItemsRepeater.ItemTemplate>
+            </muxc:ItemsRepeater>
+        </Grid>
+    </ScrollViewer>
+</Page>

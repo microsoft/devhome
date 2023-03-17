@@ -16,6 +16,8 @@ public static class StringResourceKey
     public static readonly string Basics = nameof(Basics);
     public static readonly string Close = nameof(Close);
     public static readonly string ConfigurationFileTypeNotSupported = nameof(ConfigurationFileTypeNotSupported);
+    public static readonly string DevDriveWindowByteUnitComboBoxGB = nameof(DevDriveWindowByteUnitComboBoxGB);
+    public static readonly string DevDriveWindowByteUnitComboBoxTB = nameof(DevDriveWindowByteUnitComboBoxTB);
     public static readonly string FileTypeNotSupported = nameof(FileTypeNotSupported);
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);

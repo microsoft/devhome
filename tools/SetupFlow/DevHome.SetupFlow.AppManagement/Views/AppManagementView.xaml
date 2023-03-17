@@ -65,6 +65,12 @@
                                     <views:SearchView />
                                 </DataTemplate>
                             </selectors:AppManagementViewSelector.SearchTemplate>
+                            <!-- Shimmer search template -->
+                            <selectors:AppManagementViewSelector.ShimmerSearchTemplate>
+                                <DataTemplate>
+                                    <views:ShimmerSearchView PackageCount="6" />
+                                </DataTemplate>
+                            </selectors:AppManagementViewSelector.ShimmerSearchTemplate>
                         </selectors:AppManagementViewSelector>
                     </ContentControl.ContentTemplateSelector>
                 </ContentControl>

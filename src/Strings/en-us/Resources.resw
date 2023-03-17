@@ -393,4 +393,40 @@
     <value>https://YourSecurityLinkGoesHere/</value>
     <comment>httpsYourSecurityLinkGoesHere is a dummy security guidance link that goes here. Will be replaced with an aka.ms link later.</comment>
   </data>
+  <data name="WhatsNewPage_DevIdCard_Description.Text" xml:space="preserve">
+    <value>Sign-in to Github to create widgets, clone repos, receive repository based notifications and more.</value>
+  </data>
+  <data name="WhatsNewPage_Title.Text" xml:space="preserve">
+    <value>Introducing Dev Home</value>
+  </data>
+  <data name="WhatsNewPage_ConfigMachineCard.Description" xml:space="preserve">
+    <value>Clone multiple repos and download all the apps and packages you need in one streamlined process.</value>
+  </data>
+  <data name="WhatsNewPage_ConfigMachineCard.Title" xml:space="preserve">
+    <value>Configure a new machine in three easy steps</value>
+  </data>
+  <data name="WhatsNewPage_Description.Text" xml:space="preserve">
+    <value>Take a second to understand why Developer Hub is the best tool there is for assisting developers</value>
+  </data>
+  <data name="WhatsNewPage_DevDashCard.Description" xml:space="preserve">
+    <value>Create Widgets to monitor issues, pull requests, and system performance all in one convenient dashboard.</value>
+  </data>
+  <data name="WhatsNewPage_DevDashCard.Title" xml:space="preserve">
+    <value>Developer Dashboards</value>
+  </data>
+  <data name="WhatsNewPage_DevIdCard_Title.Text" xml:space="preserve">
+    <value>Connect your developer account</value>
+  </data>
+  <data name="WhatsNewPage_DevPFeaturesCard.Description" xml:space="preserve">
+    <value>Faster files system performance with Dev Drive, File Explorer Git integration, and exciting new system settings.</value>
+  </data>
+  <data name="WhatsNewPage_DevPFeaturesCard.Title" xml:space="preserve">
+    <value>Learn more about Developer+ features coming in 2023</value>
+  </data>
+  <data name="WhatsNewPage_NotifCard.Description" xml:space="preserve">
+    <value>Receive Windows system notifications for your pull requests, checks and merges.</value>
+  </data>
+  <data name="WhatsNewPage_NotifCard.Title" xml:space="preserve">
+    <value>Notifications on your Repositories</value>
+  </data>
 </root>

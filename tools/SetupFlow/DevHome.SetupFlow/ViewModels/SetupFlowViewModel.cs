@@ -73,7 +73,7 @@ public partial class SetupFlowViewModel : ObservableObject
     private void StartSetupFlowWithCurrentTaskGroups()
     {
         _flowPages.Clear();
-        _flowPages.AddRange(_orchestrator.TaskGroups.Select(flow => flow.GetSetupPageViewModel()));
+        _flowPages.AddRange(_orchestrator.TaskGroups.Select(flow => flow.GetSetupPageViewModel()).Where(page => page is not null));
         _flowPages.Add(_host.GetService<ReviewViewModel>());
 
         // The Loading page can advance to the next page

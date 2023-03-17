@@ -20,6 +20,7 @@ namespace DevHome.SetupFlow.AppManagement.ViewModels;
 public partial class AppManagementViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _logger;
+    private readonly ShimmerSearchViewModel _shimmerSearchViewModel;
     private readonly SearchViewModel _searchViewModel;
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
     private readonly AppManagementTaskGroup _taskGroup;
@@ -46,6 +47,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         _wpm = wpm;
 
         _searchViewModel = host.GetService<SearchViewModel>();
+        _shimmerSearchViewModel = host.GetService<ShimmerSearchViewModel>();
 
         _packageCatalogListViewModel = host.GetService<PackageCatalogListViewModel>();
         _packageCatalogListViewModel.CatalogLoaded += OnCatalogLoaded;
@@ -57,22 +59,17 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     public async override void OnNavigateToPageAsync()
     {
         // Connect to catalogs on a separate (non-UI) thread to prevent lagging the UI.
-        await Task.Run(async () =>
-        {
-            // Connect composite catalog for all local and remote catalogs to
-            // enable searching for pacakges from any source
-            await _wpm.AllCatalogs.ConnectAsync();
+        await Task.Run(async () => await _wpm.ConnectToAllCatalogsAsync());
 
-            // Connect predefined (winget and msstore) catalogs to enable loading
-            // package with a known source (e.g. for restoring packages)
-            await _wpm.WinGetCatalog.ConnectAsync();
-            await _wpm.MsStoreCatalog.ConnectAsync();
-        });
+        await _packageCatalogListViewModel.LoadCatalogsAsync();
     }
 
     [RelayCommand(AllowConcurrentExecutions = true)]
     private async Task SearchTextChangedAsync(string text, CancellationToken cancellationToken)
     {
+        // Change view to searching
+        CurrentView = _shimmerSearchViewModel;
+
         var (searchResultStatus, packages) = await _searchViewModel.SearchAsync(text, cancellationToken);
         switch (searchResultStatus)
         {
