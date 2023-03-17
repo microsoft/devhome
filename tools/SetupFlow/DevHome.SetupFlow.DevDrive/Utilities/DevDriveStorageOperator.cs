@@ -183,7 +183,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
 
         if (Marshal.GetHRForLastWin32Error() != 0)
         {
-            return (HRESULT)Marshal.GetHRForLastWin32Error();
+            return ReturnLastErrorAsHR();
         }
 
         // Initialize the disk
@@ -206,7 +206,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
 
         if (!result)
         {
-            return (HRESULT)Marshal.GetHRForLastWin32Error();
+            ReturnLastErrorAsHR();
         }
 
         // Collect information about how we want the partition layout to look before
@@ -227,7 +227,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
 
         if (!result)
         {
-            return (HRESULT)Marshal.GetHRForLastWin32Error();
+            return ReturnLastErrorAsHR();
         }
 
         unsafe
@@ -263,7 +263,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
 
         if (!result)
         {
-            return (HRESULT)Marshal.GetHRForLastWin32Error();
+            return ReturnLastErrorAsHR();
         }
 
         // After the partition is created, we need to wait for the volume
@@ -284,7 +284,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
 
         if (!result)
         {
-            return (HRESULT)Marshal.GetHRForLastWin32Error();
+            return ReturnLastErrorAsHR();
         }
 
         // At this point the partition has been created with the first assignable
@@ -307,7 +307,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
 
         if (!result)
         {
-            return (HRESULT)Marshal.GetHRForLastWin32Error();
+            return ReturnLastErrorAsHR();
         }
 
         diskNumber = storageDeviceInfo.DeviceNumber;
@@ -329,7 +329,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
                 volumeHandle = new FindVolumeCloseSafeHandle(PInvoke.FindFirstVolume(pathPtr, PInvoke.MAX_PATH));
                 if (Marshal.GetHRForLastWin32Error() != 0)
                 {
-                    return (HRESULT)Marshal.GetHRForLastWin32Error();
+                    return ReturnLastErrorAsHR();
                 }
 
                 do
@@ -354,7 +354,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
 
                     if (Marshal.GetHRForLastWin32Error() != 0)
                     {
-                        return (HRESULT)Marshal.GetHRForLastWin32Error();
+                        return ReturnLastErrorAsHR();
                     }
 
                     // The device number will tell us if we're looking at the virtual disk or not.
@@ -398,7 +398,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
                             out oldDrivePathLength);
                         if (!result)
                         {
-                            return (HRESULT)Marshal.GetHRForLastWin32Error();
+                            return ReturnLastErrorAsHR();
                         }
                     }
 
@@ -407,7 +407,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
                         result = PInvoke.DeleteVolumeMountPoint(oldDriveLetterPath);
                         if (!result)
                         {
-                            return (HRESULT)Marshal.GetHRForLastWin32Error();
+                            return ReturnLastErrorAsHR();
                         }
                     }
 
@@ -416,7 +416,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
                     result = PInvoke.SetVolumeMountPoint(fullDrivePath, volumeGuidPathBeforeTrim);
                     if (!result)
                     {
-                        return (HRESULT)Marshal.GetHRForLastWin32Error();
+                        return ReturnLastErrorAsHR();
                     }
 
                     return new HRESULT(0);
@@ -428,10 +428,15 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
         // FindNextVolume errored out for some other reason.
         if (Marshal.GetLastWin32Error() != (int)WIN32_ERROR.ERROR_NO_MORE_FILES)
         {
-            return (HRESULT)Marshal.GetHRForLastWin32Error();
+            return ReturnLastErrorAsHR();
         }
 
         return new HRESULT(0);
+    }
+
+    private HRESULT ReturnLastErrorAsHR()
+    {
+        return PInvoke.HRESULT_FROM_WIN32((WIN32_ERROR)Marshal.GetHRForLastWin32Error());
     }
 
     public async Task<HRESULT> FormatPartitionAsDevDrive(char driveLetter, string driveLabel)
