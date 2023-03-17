@@ -120,7 +120,7 @@ Try {
 
 $TotalTime = (Get-Date)-$StartTime
 $TotalMinutes = [math]::Floor($TotalTime.TotalMinutes)
-$TotalSeconds = [math]::Ceiling($TotalTime.TotalSeconds)
+$TotalSeconds = [math]::Ceiling($TotalTime.TotalSeconds) - ($totalMinutes * 60)
 
 if (-not($isAdmin)) {
   Write-Host @"
