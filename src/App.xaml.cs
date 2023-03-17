@@ -81,6 +81,7 @@ public partial class App : Application, IApp
             services.AddTransient<FeedbackPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ShellViewModel>();
+            services.AddTransient<WhatsNewViewModel>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

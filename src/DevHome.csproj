@@ -35,7 +35,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\tools\SampleTool\src\SampleTool.csproj" />
+	    <ProjectReference Include="..\tools\SampleTool\src\SampleTool.csproj" />
 		<ProjectReference Include="..\tools\SampleTool\src\SampleTool.csproj" />
 		<ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
 		<ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
