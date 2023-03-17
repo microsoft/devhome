@@ -2,8 +2,8 @@
 // Licensed under the MIT license.
 
 using System.Collections.Generic;
+using System.Linq;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.Common.Models;
@@ -16,17 +16,18 @@ public class AppManagementTaskGroup : ISetupTaskGroup
 {
     private readonly IHost _host;
     private readonly PackageProvider _packageProvider;
+    private readonly IWindowsPackageManager _wpm;
 
-    public AppManagementTaskGroup(IHost host, PackageProvider packageProvider)
+    public AppManagementTaskGroup(IHost host, IWindowsPackageManager wpm, PackageProvider packageProvider)
     {
         _host = host;
         _packageProvider = packageProvider;
+        _wpm = wpm;
+
         _packageProvider.Clear();
     }
 
-    private readonly IList<InstallPackageTask> _installTasks = new List<InstallPackageTask>();
-
-    public IEnumerable<ISetupTask> SetupTasks => _installTasks;
+    public IEnumerable<ISetupTask> SetupTasks => _packageProvider.SelectedPackages.Select(sp => sp.Package.CreateInstallTask(_wpm));
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _host.CreateInstance<AppManagementViewModel>(this);
 

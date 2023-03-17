@@ -46,4 +46,9 @@ public class WinGetPackage : IWinGetPackage
     {
         await wpm.InstallPackageAsync(this);
     }
+
+    public InstallPackageTask CreateInstallTask(IWindowsPackageManager wpm)
+    {
+        return new InstallPackageTask(wpm, this);
+    }
 }

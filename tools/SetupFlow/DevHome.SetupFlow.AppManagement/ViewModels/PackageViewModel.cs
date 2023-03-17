@@ -34,6 +34,8 @@ public partial class PackageViewModel : ObservableObject
 
     public (string, string) CompositeKey => _package.CompositeKey;
 
+    public IWinGetPackage Package => _package;
+
     public string Name => _package.Name;
 
     public Uri ImageUri => _package.ImageUri ?? DefaultPackageIconSource;

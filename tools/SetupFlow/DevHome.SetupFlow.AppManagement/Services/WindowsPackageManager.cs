@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.Telemetry;
@@ -53,8 +54,13 @@ public class WindowsPackageManager : IWindowsPackageManager
 
     public async Task InstallPackageAsync(WinGetPackage package)
     {
-        await Task.CompletedTask;
-        throw new NotImplementedException();
+        var packageManager = _wingetFactory.CreatePackageManager();
+        var options = _wingetFactory.CreateInstallOptions();
+        var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options);
+        if (installResult.Status != InstallResultStatus.Ok)
+        {
+            throw new InstallPackageException(installResult.Status);
+        }
     }
 
     /// <summary>

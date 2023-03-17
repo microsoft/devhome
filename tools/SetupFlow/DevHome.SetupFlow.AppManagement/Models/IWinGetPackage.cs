@@ -76,4 +76,6 @@ public interface IWinGetPackage
     /// </summary>
     /// <param name="wpm">Windows package manager service</param>
     Task InstallAsync(IWindowsPackageManager wpm);
+
+    InstallPackageTask CreateInstallTask(IWindowsPackageManager wpm);
 }
