@@ -52,52 +52,9 @@ public class DevDriveManager : IDevDriveManager
     }
 
     /// <inheritdoc/>
-    public async Task<int> CreateDevDrive(IDevDrive devDrive)
+    public Task<int> CreateDevDrive(IDevDrive devDrive)
     {
-        // Create and attach the virtual hard disk
-        var result = (HRESULT)_devDriveStorageOperator.CreateAndAttachVhd(@"C:\vhds\test.vhdx", 5);
-        if (result.Failed)
-        {
-            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to create and attach virtual disk. {result.ToString()}");
-            return result.Value;
-        }
-
-        // Get the disk number to be used to initialize the disk.
-        uint diskNumber;
-        result = (HRESULT)_devDriveStorageOperator.GetDiskNumber(@"C:\vhds\test.vhdx", out diskNumber);
-        if (result.Failed)
-        {
-            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to get virtual disk number. {result.ToString()}");
-            return result.Value;
-        }
-
-        // Initialize the disk
-        result = (HRESULT)await _devDriveStorageOperator.InitializeDisk(diskNumber);
-
-        if (result.Failed)
-        {
-            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to initialize disk {diskNumber}. {result.ToString()}");
-            return result.Value;
-        }
-
-        // Create a partition using the provided drive letter.
-        result = (HRESULT)await _devDriveStorageOperator.CreatePartition(diskNumber, 'A');
-
-        if (result.Failed)
-        {
-            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to create partition disk: {diskNumber}, drive letter: {devDrive.DriveLetter}. {result.ToString()}");
-            return result.Value;
-        }
-
-        // Format the partition as a Dev Drive.
-        result = (HRESULT)await _devDriveStorageOperator.FormatPartitionAsDevDrive('A', "this is a Dev Drive");
-
-        if (result.Failed)
-        {
-            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to format partition as Dev Drive: disk: {diskNumber}, drive letter: {devDrive.DriveLetter}. {result.ToString()}");
-        }
-
-        return result.Value;
+        throw new NotImplementedException();
     }
 
     /// <inheritdoc/>

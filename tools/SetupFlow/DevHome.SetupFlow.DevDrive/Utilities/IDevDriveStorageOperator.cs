@@ -12,15 +12,15 @@ namespace DevHome.SetupFlow.DevDrive.Utilities;
 /// <summary>
 /// Interface for objects that will perform storage operations related to Dev Drives.
 /// </summary>
-public interface IDevDriveStorageOperator
+internal interface IDevDriveStorageOperator
 {
-    public int CreateAndAttachVhd(string path, ulong size);
+    public Task<HRESULT> CreateDevDrive(string virtDiskPath, ulong sizeInBytes, char driveLetter, string driveLabel);
 
-    public int GetDiskNumber(string path, out uint diskNumber);
+    public HRESULT CreateAndAttachVhdx(string virtDiskPath, ulong sizeInBytes, out string virtDiskPhysicalPath);
 
-    public Task<int> InitializeDisk(uint diskNumber);
+    public HRESULT CreatePartition(string virtDiskPhysicalPath, out uint diskNumber);
 
-    public Task<int> CreatePartition(uint diskNumber, char driveLetter);
+    public HRESULT AssignDriveLetterToPartition(uint diskNumber, char newDriveLetter);
 
-    public Task<int> FormatPartitionAsDevDrive(char driveLetter, string label);
+    public Task<HRESULT> FormatPartitionAsDevDrive(char driveLetter, string driveLabel);
 }
