@@ -40,7 +40,7 @@
                                     <TextBlock Text="{x:Bind LoginId}"  Style="{ThemeResource BodyTextStyle}" HorizontalAlignment="Left"/>
                                 </StackPanel>
                                 <StackPanel RelativePanel.AlignRightWithPanel="True">
-                                    <Button Tag="{x:Bind LoginId}" Content="Logout" HorizontalAlignment="Right" Click="Logout_Click"/>
+                                <Button Tag="{x:Bind LoginId}" x:Uid="Settings_Accounts_LogoutButton" HorizontalAlignment="Right" Click="Logout_Click"/>
                                 </StackPanel>
                             </RelativePanel>
                         </Expander.Header>
@@ -53,7 +53,7 @@
             <!-- TODO: The following is to be in the Accounts page when it is set up -->
             <StackPanel x:Name="AccountsContentArea">
                 <StackPanel x:Name="AccountsTitleStackPanel" Margin="{StaticResource XSmallTopMargin}">
-                    <TextBlock Text="Accounts" Style="{ThemeResource TitleTextBlockStyle}" />
+                    <TextBlock x:Uid="Settings_Accounts_SubTitle" Style="{ThemeResource TitleTextBlockStyle}" />
                 </StackPanel>
 
                 <StackPanel x:Name="AddAccountMainStackPanel" Margin="{StaticResource XSmallTopMargin}">
@@ -61,10 +61,10 @@
                         <Expander.Header>
                             <RelativePanel Margin="{StaticResource XSmallLeftTopRightBottomMargin}">
                                 <StackPanel>
-                                    <TextBlock Text="Add account" Style="{ThemeResource BodyTextStyle}" HorizontalAlignment="Left"/>
+                                    <TextBlock x:Uid="Settings_Accounts_AddAccountText" Style="{ThemeResource BodyTextStyle}" HorizontalAlignment="Left"/>
                                 </StackPanel>
                                 <StackPanel RelativePanel.AlignRightWithPanel="True">
-                                    <Button Content ="Add account" HorizontalAlignment="Right" Click="AddDeveloperId_Click"/>
+                                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right" Click="AddAccount_Click"/>
                                 </StackPanel>
                             </RelativePanel>
                         </Expander.Header>

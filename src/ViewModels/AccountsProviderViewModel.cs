@@ -32,10 +32,7 @@ public partial class AccountsProviderViewModel : ObservableObject
     public async void AddAccount()
     {
         // Currently, we directly open the browser rather than the AdaptiveCard flyout
-        var newDeveloperId = await Task.Run(async () =>
-        {
-            return await _devIdProvider.LoginNewDeveloperIdAsync();
-        });
+        var newDeveloperId = await _devIdProvider.LoginNewDeveloperIdAsync();
 
         // Only add to LoggedInAccounts if not already present
         if (!LoggedInAccounts.Any((account) => account.LoginId == newDeveloperId.LoginId()))
@@ -52,7 +49,7 @@ public partial class AccountsProviderViewModel : ObservableObject
         var accountToRemove = LoggedInAccounts?.FirstOrDefault(x => x.LoginId == loginId);
         if (accountToRemove != null)
         {
-            Task.Run(() => _devIdProvider.LogoutDeveloperId(accountToRemove.GetDevId()));
+            _devIdProvider.LogoutDeveloperId(accountToRemove.GetDevId());
             LoggedInAccounts?.Remove(accountToRemove);
         }
     }

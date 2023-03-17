@@ -7,6 +7,7 @@ using DevHome.Services;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace DevHome.Views;
 
@@ -30,19 +31,20 @@ public sealed partial class SettingsPage : Page
         InitializeComponent();
     }
 
-    private async void AddDeveloperId_Click(object sender, RoutedEventArgs e)
+    private async void AddAccount_Click(object sender, RoutedEventArgs e)
     {
         if (AccountsPageViewModel.AccountsProviders.Count == 0)
         {
-            var confirmLogoutContentDialog = new ContentDialog
+            var resourceLoader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            var noProvidersContentDialog = new ContentDialog
             {
-                Title = "No Dev Home Plugins found!",
-                Content = "Please install a Dev Home Plugin and restart Dev Home to add an account.",
-                PrimaryButtonText = "Ok",
+                Title = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_Title"),
+                Content = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_Content"),
+                PrimaryButtonText = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_PrimaryButtonText"),
                 XamlRoot = XamlRoot,
             };
 
-            await confirmLogoutContentDialog.ShowAsync();
+            await noProvidersContentDialog.ShowAsync();
             return;
         }
 
@@ -52,15 +54,13 @@ public sealed partial class SettingsPage : Page
 
     private async void Logout_Click(object sender, RoutedEventArgs e)
     {
+        var resourceLoader = new Windows.ApplicationModel.Resources.ResourceLoader();
         var confirmLogoutContentDialog = new ContentDialog
         {
-            Title = "Are you sure?",
-            Content = "Are you sure you want to remove this user account?"
-                    + Environment.NewLine
-                    + Environment.NewLine
-                    + "Dev Home will no longer be able to access online resources that use this account.",
-            PrimaryButtonText = "Yes",
-            SecondaryButtonText = "No",
+            Title = resourceLoader.GetString("Settings_Accounts_ConfirmLogoutContentDialog_Title"),
+            Content = resourceLoader.GetString("Settings_Accounts_ConfirmLogoutContentDialog_Content"),
+            PrimaryButtonText = resourceLoader.GetString("Settings_Accounts_ConfirmLogoutContentDialog_PrimaryButtonText"),
+            SecondaryButtonText = resourceLoader.GetString("Settings_Accounts_ConfirmLogoutContentDialog_SecondaryButtonText"),
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = XamlRoot,
         };
@@ -81,9 +81,9 @@ public sealed partial class SettingsPage : Page
 
         var afterLogoutContentDialog = new ContentDialog
         {
-            Title = "Logout Successful",
-            Content = loginIdToRemove + " has successfully logged out",
-            PrimaryButtonText = "OK",
+            Title = resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_Title"),
+            Content = loginIdToRemove + resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_Content"),
+            PrimaryButtonText = resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_PrimaryButtonText"),
             XamlRoot = XamlRoot,
         };
         _ = await afterLogoutContentDialog.ShowAsync();
