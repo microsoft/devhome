@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.Common.Helpers;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
 using Microsoft.UI.Xaml;
@@ -10,6 +11,8 @@ namespace DevHome.Services;
 public class ThemeSelectorService : IThemeSelectorService
 {
     private const string SettingsKey = "AppBackgroundRequestedTheme";
+
+    public event EventHandler<ElementTheme> ThemeChanged = (_, _) => { };
 
     public ElementTheme Theme { get; set; } = ElementTheme.Default;
 
@@ -31,6 +34,7 @@ public class ThemeSelectorService : IThemeSelectorService
         Theme = theme;
 
         await SetRequestedThemeAsync();
+        ThemeChanged(null, theme);
         await SaveThemeInSettingsAsync(Theme);
     }
 
@@ -40,7 +44,7 @@ public class ThemeSelectorService : IThemeSelectorService
         {
             rootElement.RequestedTheme = Theme;
 
-            TitleBarHelper.UpdateTitleBar(Theme);
+            TitleBarHelper.UpdateTitleBar(App.MainWindow, Theme);
         }
 
         await Task.CompletedTask;

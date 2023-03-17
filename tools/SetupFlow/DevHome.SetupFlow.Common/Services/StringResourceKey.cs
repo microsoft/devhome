@@ -14,17 +14,24 @@ public static class StringResourceKey
     public static readonly string ApplicationsSelectedCount = nameof(ApplicationsSelectedCount);
     public static readonly string Applications = nameof(Applications);
     public static readonly string Basics = nameof(Basics);
+    public static readonly string BrowseTextBlock = nameof(BrowseTextBlock);
     public static readonly string Close = nameof(Close);
     public static readonly string ConfigurationFileTypeNotSupported = nameof(ConfigurationFileTypeNotSupported);
+    public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
+    public static readonly string DevDriveDefaultFolderName = nameof(DevDriveDefaultFolderName);
+    public static readonly string DevDriveReviewPageNumberOfDevDrives = nameof(DevDriveReviewPageNumberOfDevDrives);
+    public static readonly string DevDriveReviewPageNumberOfDevDrivesTitle = nameof(DevDriveReviewPageNumberOfDevDrivesTitle);
     public static readonly string DevDriveWindowByteUnitComboBoxGB = nameof(DevDriveWindowByteUnitComboBoxGB);
     public static readonly string DevDriveWindowByteUnitComboBoxTB = nameof(DevDriveWindowByteUnitComboBoxTB);
     public static readonly string FileTypeNotSupported = nameof(FileTypeNotSupported);
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
     public static readonly string PackagesCount = nameof(PackagesCount);
+    public static readonly string PathWithColon = nameof(PathWithColon);
     public static readonly string ResultCount = nameof(ResultCount);
     public static readonly string Repository = nameof(Repository);
     public static readonly string SelectedPackagesCount = nameof(SelectedPackagesCount);
     public static readonly string SetUpButton = nameof(SetUpButton);
+    public static readonly string SizeWithColon = nameof(SizeWithColon);
     public static readonly string ViewConfiguration = nameof(ViewConfiguration);
 }

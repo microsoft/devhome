@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 
@@ -8,6 +9,8 @@ namespace DevHome.Contracts.Services;
 
 public interface IThemeSelectorService
 {
+    public event EventHandler<ElementTheme> ThemeChanged;
+
     ElementTheme Theme
     {
         get;

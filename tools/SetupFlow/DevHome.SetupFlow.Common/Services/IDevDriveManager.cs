@@ -4,9 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DevHome.Common.Models;
+using DevHome.SetupFlow.DevDrive.Models;
+using DevHome.SetupFlow.DevDrive.Utilities;
 
-namespace DevHome.Common.Services;
+namespace DevHome.SetupFlow.DevDrive.Services;
 
 /// <summary>
 /// Allows requesters to get passed back the Dev Drive object once a Dev Drive window has closed.
@@ -25,6 +26,28 @@ public class DevDriveWindowClosedEventArgs : EventArgs
 }
 
 /// <summary>
+/// Enum Operation results when the Dev Drive manager performs an operation
+/// related to a Dev Drive such as validating its contents. This is only to
+/// allow us to know which error to show in the UI. These do not replace any
+/// established error coding system.
+/// </summary>
+public enum DevDriveOperationResult
+{
+    Successful,
+    ObjectWasNull,
+    InvalidDriveSize,
+    InvalidDriveLabel,
+    InvalidFolderLocation,
+    FolderLocationNotFound,
+    DefaultFolderNotAvailable,
+    DriveLetterNotAvailable,
+    NoDriveLettersAvailable,
+    NotEnoughFreeSpace,
+    CreateDevDriveFailed,
+    DevDriveNotFound,
+}
+
+/// <summary>
 /// Interface for Dev Drive manager. Managers should be able to associate the Dev Drive that it creates to a
 /// Dev drive window that is launched.
 /// </summary>
@@ -35,10 +58,12 @@ public interface IDevDriveManager
     /// </summary>
     /// <param name="devDrive">IDevDrive to create</param>
     /// <returns>Returns true if the Dev Drive was created successfully</returns>
-    public Task<bool> CreateDevDrive(IDevDrive devDrive);
+    public Task<DevDriveOperationResult> CreateDevDrive(IDevDrive devDrive);
 
     /// <summary>
-    /// Allows objects to request a Dev Drive window be created.
+    /// Allows objects to request a Dev Drive window be created. The passed in IDevDrive
+    /// must have been created by the Dev Drive manager or the return bool will be false
+    /// and the window will not launch.
     /// </summary>
     /// <param name="devDrive">Dev Drive the window will be created for</param>
     /// <returns>Returns true if the Dev Drive window was launched successfully</returns>
@@ -53,8 +78,11 @@ public interface IDevDriveManager
     /// <summary>
     /// Gets a new Dev Drive object.
     /// </summary>
-    /// <returns>An Dev Drive thats associated with a viewmodel</returns>
-    public IDevDrive GetNewDevDrive();
+    /// <returns>
+    /// An Dev Drive thats associated with a viewmodel and a result that indicates whether the operation
+    /// was successful.
+    /// </returns>
+    public (DevDriveOperationResult, IDevDrive) GetNewDevDrive();
 
     /// <summary>
     /// Gets a list of all Dev Drives currently on the local system. This will cause storage calls
@@ -66,4 +94,48 @@ public interface IDevDriveManager
     /// Event that requesters can subscribe to, to know when a Dev Drive window has closed.
     /// </summary>
     public event EventHandler<DevDriveWindowClosedEventArgs> OnViewModelWindowClosed;
+
+    /// <summary>
+    /// Validates the values inside the Dev Drive against Dev Drive requirements. Dev drive is only validated
+    /// if the only result returned is DevDriveOperationResult.Successful
+    /// </summary>
+    /// <param name="devDrive">Dev Drive object</param>
+    /// <returns>
+    /// A set of operation results from the Dev Drive manager attempting to validate the contents
+    /// of the Dev Drive.
+    /// </returns>
+    public ISet<DevDriveOperationResult> GetDevDriveValidationResults(IDevDrive devDrive);
+
+    /// <summary>
+    /// Gets a list of drive letters that have been marked for creation by the Dev Drive Manager.
+    /// </summary>
+    /// <returns>A list of IDevDrive objects that will be created</returns>
+    public IList<IDevDrive> DevDrivesMarkedForCreation
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets All available drive letters on the system and that haven't been used by the Dev Manager at the
+    /// current time. The list is small so using a SortedSet should be fine as there will be very few times
+    /// this method would be called.
+    /// </summary>
+    /// <param name="devDrive">
+    /// when not null the Dev Drive manager should only add a used letter if it doesn't already belong
+    /// to the IDevDrive object.
+    /// </param>
+    /// <returns>
+    /// A list of sorted drive letters currently not in use by the Dev Drive manager and the system
+    /// </returns>
+    public IList<char> GetAvailableDriveLetters(IDevDrive devDrive);
+
+    /// <summary>
+    /// Removes Dev Drives that were created in memory by the Dev Drive Manager. This does not detach
+    /// or remove a Dev Drive from the users machine. This is used only to disassociate a Dev Drive object
+    /// from a Dev Drive view model that was created by the Dev Drive manager in memory.
+    /// <param name="devDrive">Dev Drive object</param>
+    /// <returns>
+    /// A result indicating whether the operation was successful.
+    /// </returns>
+    public DevDriveOperationResult RemoveDevDrive(IDevDrive devDrive);
 }
