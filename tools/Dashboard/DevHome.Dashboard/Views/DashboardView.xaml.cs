@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common;
 using DevHome.Dashboard.ViewModels;
@@ -44,6 +45,8 @@ public partial class DashboardView : ToolPage
         _widgetCatalog = WidgetCatalog.GetDefault();
         _renderer = new AdaptiveCardRenderer();
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+        _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
     }
 
     private void RestorePinnedWidgets(object sender, RoutedEventArgs e)
@@ -118,5 +121,17 @@ public partial class DashboardView : ToolPage
                 await widgetViewModel.Widget.DeleteAsync();
             }
         }
+    }
+
+    // Remove widget(s) from the Dashboard if the provider deletes the widget definition, or the provider is uninstalled.
+    private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
+    {
+        _dispatcher.TryEnqueue(() =>
+        {
+            foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == args.DefinitionId).ToList())
+            {
+                PinnedWidgets.Remove(widgetToRemove);
+            }
+        });
     }
 }
