@@ -277,7 +277,7 @@ internal sealed partial class AddRepoDialog
         {
             foreach (var repository in repositories)
             {
-                repositoriesToShow.Add(loginId + "/" + repository.DisplayName());
+                repositoriesToShow.Add(repository.DisplayName());
             }
 
             avalibleRepositoresToSelectFrom = repositories.ToList();
