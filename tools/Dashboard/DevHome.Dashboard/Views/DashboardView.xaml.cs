@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common;
 using DevHome.Dashboard.ViewModels;
@@ -77,9 +78,16 @@ public partial class DashboardView : ToolPage
 
     private async void AddWidgetToPinnedWidgets(Widget widget)
     {
-        var size = await widget.GetSizeAsync();
-        var wvm = new WidgetViewModel(widget, size, _renderer, _dispatcher);
-        PinnedWidgets.Add(wvm);
+        try
+        {
+            var size = await widget.GetSizeAsync();
+            var wvm = new WidgetViewModel(widget, size, _renderer, _dispatcher);
+            PinnedWidgets.Add(wvm);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+        }
     }
 
     private void OpenWidgetMenu(object sender, RoutedEventArgs e)

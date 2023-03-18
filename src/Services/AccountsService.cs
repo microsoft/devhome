@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Runtime.InteropServices;
 using DevHome.Contracts.Services;
+using DevHome.Helpers;
+using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Services;
@@ -58,6 +61,11 @@ public class AccountsService : IAccountsService
         if (sender is IDevIdProvider iDevIdProvider)
         {
             _accountsDictionary[iDevIdProvider].Add(developerId);
+            LoggingHelper.LoginEvent_Critical(iDevIdProvider.GetName(), developerId.LoginId());
+        }
+        else
+        {
+            LoggerFactory.Get<ILogger>().LogException($"LoggedInEvent_InvalidObject_Failure", new InvalidComObjectException($"LoggedInEventHandler() sender: {sender?.ToString()} developerId: {developerId.LoginId}"));
         }
     }
 
@@ -66,6 +74,11 @@ public class AccountsService : IAccountsService
         if (sender is IDevIdProvider iDevIdProvider)
         {
             _accountsDictionary[iDevIdProvider].Remove(developerId);
+            LoggingHelper.LogoutEvent_Critical(iDevIdProvider.GetName(), developerId.LoginId());
+        }
+        else
+        {
+            LoggerFactory.Get<ILogger>().LogException($"LoggedOutEventHandler_InvalidObject_Failure", new InvalidComObjectException($"LoggedOutEventHandler() sender: {sender?.ToString()} developerId: {developerId.LoginId}"));
         }
     }
 }
