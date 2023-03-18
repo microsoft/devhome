@@ -5,6 +5,9 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Views;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.ViewModels;
@@ -29,12 +32,19 @@ public partial class AccountsProviderViewModel : ObservableObject
 
     public string ProviderName => _devIdProvider.GetName();
 
-    public void AddAccount()
+    public PluginAdaptiveCardPanel GetLoginUI()
+    {
+        string[] args = { "Settings" };
+        var loginUIAdaptiveCardController = _devIdProvider.GetAdaptiveCardController(args);
+        var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
+        pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController);
+        return pluginAdaptiveCardPanel;
+    }
+
+    public async void AddAccount()
     {
         // Currently, we directly open the browser rather than the AdaptiveCard flyout
-        var adaptiveCardController = _devIdProvider.GetAdaptiveCardController(null);
-        var loginUI = new IPluginAdaptiveCard();
-        adaptiveCardController.Initialize();
+        var newDeveloperId = await _devIdProvider.LoginNewDeveloperIdAsync();
 
         // Only add to LoggedInAccounts if not already present
         if (!LoggedInAccounts.Any((account) => account.LoginId == newDeveloperId.LoginId()))

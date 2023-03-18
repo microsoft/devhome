@@ -14,6 +14,8 @@ namespace DevHome.Views;
 // TODO: Set the URL for your privacy policy by updating SettingsPage_PrivacyTermsLink.NavigateUri in Resources.resw.
 public sealed partial class SettingsPage : Page
 {
+    private readonly ContentDialog _loginUIContentDialog;
+
     public SettingsViewModel ViewModel
     {
         get;
@@ -28,6 +30,7 @@ public sealed partial class SettingsPage : Page
     {
         ViewModel = Application.Current.GetService<SettingsViewModel>();
         AccountsPageViewModel = Application.Current.GetService<AccountsPageViewModel>();
+        _loginUIContentDialog = new ContentDialog();
         InitializeComponent();
     }
 
@@ -52,7 +55,12 @@ public sealed partial class SettingsPage : Page
         {
             if (addAccountButton.Tag is AccountsProviderViewModel accountProvider)
             {
-                accountProvider.AddAccount();
+                accountProvider.GetLoginUI();
+
+                _loginUIContentDialog.Content = accountProvider.GetLoginUI();
+                _loginUIContentDialog.XamlRoot = this.Content.XamlRoot;
+
+                _ = await _loginUIContentDialog.ShowAsync();
             }
             else
             {
