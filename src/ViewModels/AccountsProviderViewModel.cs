@@ -29,10 +29,12 @@ public partial class AccountsProviderViewModel : ObservableObject
 
     public string ProviderName => _devIdProvider.GetName();
 
-    public async void AddAccount()
+    public void AddAccount()
     {
         // Currently, we directly open the browser rather than the AdaptiveCard flyout
-        var newDeveloperId = await _devIdProvider.LoginNewDeveloperIdAsync();
+        var adaptiveCardController = _devIdProvider.GetAdaptiveCardController(null);
+        var loginUI = new IPluginAdaptiveCard();
+        adaptiveCardController.Initialize();
 
         // Only add to LoggedInAccounts if not already present
         if (!LoggedInAccounts.Any((account) => account.LoginId == newDeveloperId.LoginId()))
@@ -40,17 +42,28 @@ public partial class AccountsProviderViewModel : ObservableObject
             LoggedInAccounts.Add(new AccountViewModel(this, newDeveloperId));
         }
 
+        // Refresh LoggedInAccounts list
+        _devIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
+        {
+            LoggedInAccounts.Add(new AccountViewModel(this, devId));
+        });
+
         // Bring focus back to DevHome after login
         SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
     }
 
     public void RemoveAccount(string loginId)
     {
-        var accountToRemove = LoggedInAccounts?.FirstOrDefault(x => x.LoginId == loginId);
+        var accountToRemove = LoggedInAccounts.FirstOrDefault(x => x.LoginId == loginId);
         if (accountToRemove != null)
         {
             _devIdProvider.LogoutDeveloperId(accountToRemove.GetDevId());
-            LoggedInAccounts?.Remove(accountToRemove);
         }
+
+        // Refresh LoggedInAccounts list
+        _devIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
+        {
+            LoggedInAccounts.Add(new AccountViewModel(this, devId));
+        });
     }
 }
