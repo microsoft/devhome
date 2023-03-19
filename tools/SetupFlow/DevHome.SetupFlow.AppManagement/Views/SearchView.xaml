@@ -12,7 +12,7 @@
         <converters:CollectionVisibilityConverter x:Name="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         <converters:StringFormatConverter x:Name="StringFormatConverter" />
         <converters:BoolToObjectConverter x:Name="SelectButtonGlyphConverter" TrueValue="&#xE106;" FalseValue="&#xE109;" />
-        <converters:BoolNegationConverter x:Name="DisableIfInstalledConverter" />
+        <converters:BoolNegationConverter x:Name="BoolNegationConverter" />
     </UserControl.Resources>
     <!-- Search view layout -->
     <Grid>
@@ -56,33 +56,73 @@
 
         <!-- Search result -->
         <ListView Name="PackagesListView" Grid.Row="1" ItemsSource="{x:Bind ViewModel.ResultPackages, Mode=OneWay}" SelectionMode="None">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                    <!-- Search package result entity -->
-                    <controls:SettingsCard
-                        IsEnabled="{x:Bind IsInstalled, Mode=OneWay, Converter={StaticResource DisableIfInstalledConverter}}"
-                        Header="{x:Bind Name}"
-                        Description="{x:Bind Version}">
-                        <controls:SettingsCard.Resources>
-                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
-                        </controls:SettingsCard.Resources>
-                        <controls:SettingsCard.HeaderIcon>
-                            <ImageIcon Source="{x:Bind ImageUri.AbsoluteUri, Mode=OneWay}"/>
-                        </controls:SettingsCard.HeaderIcon>
-                        <StackPanel Orientation="Horizontal" Spacing="10">
-                            <HyperlinkButton NavigateUri="{x:Bind PackageUri}">
-                                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
-                            </HyperlinkButton>
-                            <Button Command="{x:Bind ToggleSelectionCommand,Mode=OneWay}" Padding="5">
-                                <FontIcon
-                                    Glyph="{x:Bind IsSelected,Mode=OneWay, Converter={StaticResource SelectButtonGlyphConverter}}"
-                                    FontSize="{ThemeResource CaptionTextBlockFontSize}"
-                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
-                            </Button>
-                        </StackPanel>
-                    </controls:SettingsCard>
-                </DataTemplate>
-            </ListView.ItemTemplate>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Grid>
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState>
+                                                <VisualState.StateTriggers>
+                                                    <StateTrigger IsActive="{Binding IsInstalled}" />
+                                                    <StateTrigger IsActive="{Binding IsSelected}" />
+                                                </VisualState.StateTriggers>
+                                                <VisualState.Setters>
+                                                    <Setter Target="Image.Opacity" Value="0.4"/>
+                                                    <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
+                                                    <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
+                                                    <Setter Target="LearnMoreButton.IsEnabled" Value="False"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+
+                                    <controls:SettingsCard
+                                        Name="PackageCard">
+                                        <controls:SettingsCard.Header>
+                                            <TextBlock
+                                                Name="Title"
+                                                Style="{ThemeResource CaptionTextBlockStyle}"
+                                                Text="{Binding Name}"/>
+                                        </controls:SettingsCard.Header>
+                                        <controls:SettingsCard.Description>
+                                            <TextBlock
+                                                Name="Version"
+                                                Foreground="{ThemeResource TextFillColorSecondary}"
+                                                Style="{ThemeResource CaptionTextBlockStyle}"
+                                                Text="{Binding Version}"/>
+                                        </controls:SettingsCard.Description>
+                                        <controls:SettingsCard.Resources>
+                                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
+                                        </controls:SettingsCard.Resources>
+                                        <controls:SettingsCard.HeaderIcon>
+                                            <ImageIcon Name="Image" Source="{Binding ImageUri.AbsoluteUri, Mode=OneWay}"/>
+                                        </controls:SettingsCard.HeaderIcon>
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <HyperlinkButton
+                                                Name="LearnMoreButton"
+                                                NavigateUri="{Binding PackageUri}">
+                                                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
+                                            </HyperlinkButton>
+                                            <Button
+                                                IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
+                                                Command="{Binding ToggleSelectionCommand,Mode=OneWay}"
+                                                Padding="5">
+                                                <FontIcon
+                                                    Glyph="{Binding IsSelected,Mode=OneWay, Converter={StaticResource SelectButtonGlyphConverter}}"
+                                                    FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                                                    FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </controls:SettingsCard>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Spacing="2" />
