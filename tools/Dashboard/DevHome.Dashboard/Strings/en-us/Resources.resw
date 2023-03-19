@@ -86,4 +86,8 @@
     <value>Pin Widgets</value>
     <comment>Title for "Pin Widgets" dialog</comment>
   </data>
+  <data name="RemoveWidgetMenuText" xml:space="preserve">
+    <value>Remove widget</value>
+    <comment>Menu item that will remove the Widget from being displayed on the dashboard if it is selected</comment>
+  </data>
 </root>

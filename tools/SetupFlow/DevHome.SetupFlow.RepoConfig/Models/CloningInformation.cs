@@ -68,6 +68,10 @@ public class CloningInformation
         else
         {
             RepositoriesToClone[account].Remove(repositoryToAddOrRemove);
+            if (RepositoriesToClone[account].Count == 0)
+            {
+                RepositoriesToClone.Remove(account);
+            }
         }
     }
 }

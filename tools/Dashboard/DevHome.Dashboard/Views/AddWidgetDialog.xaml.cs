@@ -3,10 +3,11 @@
 
 using System;
 using System.Threading.Tasks;
-using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
-using AdaptiveCards.Templating;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.ViewModels;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets.Hosts;
 
@@ -18,8 +19,13 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private readonly AdaptiveCardRenderer _renderer;
     private Widget _currentWidget;
 
-    public AddWidgetDialog(WidgetHost host, WidgetCatalog catalog, AdaptiveCardRenderer renderer)
+    public Widget AddedWidget { get; set; }
+
+    public WidgetViewModel ViewModel { get; set; }
+
+    public AddWidgetDialog(WidgetHost host, WidgetCatalog catalog, AdaptiveCardRenderer renderer, DispatcherQueue dispatcher)
     {
+        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, renderer, dispatcher);
         this.InitializeComponent();
 
         _widgetHost = host;
@@ -74,11 +80,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
         NavigationView sender,
         NavigationViewSelectionChangedEventArgs args)
     {
-        // Delete previously shown configuation widget
+        // Delete previously shown configuation widget.
         var clearWidgetTask = ClearCurrentWidget();
         ConfigurationContentFrame.Content = null;
+        PinButton.Visibility = Visibility.Collapsed;
 
-        // Load selected widget configuration
+        // Load selected widget configuration.
         var selectedTag = (sender.SelectedItem as NavigationViewItem).Tag;
         if (selectedTag == null)
         {
@@ -99,30 +106,24 @@ public sealed partial class AddWidgetDialog : ContentDialog
             // Put in small wait to avoid this.
             System.Threading.Thread.Sleep(100);
 
-            var temp = await widget.GetCardTemplateAsync();
-            var data = await widget.GetCardDataAsync();
-
-            // Use the data to fill in the template
-            var template = new AdaptiveCardTemplate(temp);
-            var json = template.Expand(data);
-
-            // Create the Adaptive Card from the widget
-            var card = AdaptiveCard.FromJsonString(json);
-            var renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
-            if (renderedCard.FrameworkElement != null)
-            {
-                // Add FrameworkElement to the UI
-                ConfigurationContentFrame.Content = renderedCard.FrameworkElement;
-            }
+            ViewModel.Widget = widget;
+            PinButton.Visibility = Visibility.Visible;
 
             clearWidgetTask.Wait();
             _currentWidget = widget;
         }
     }
 
-    private async void CancelButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void PinButton_Click(object sender, RoutedEventArgs e)
     {
-        // Delete previously shown configuation card
+        AddedWidget = _currentWidget;
+
+        this.Hide();
+    }
+
+    private async void CancelButton_Click(object sender, RoutedEventArgs e)
+    {
+        // Delete previously shown configuation card.
         await ClearCurrentWidget();
 
         this.Hide();

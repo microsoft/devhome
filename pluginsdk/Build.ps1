@@ -35,7 +35,6 @@ $ErrorActionPreference = "Stop"
 
 $buildPlatforms = "x64","x86","arm64","AnyCPU"
 $env:Build_Configuration = $Configuration
-$env:sdk_version = & (Join-Path $PSScriptRoot "..\build\Scripts\CreateBuildInfo.ps1") -Version $SDKVersion -IsSdkVersion $true -IsAzurePipelineBuild $IsAzurePipelineBuild
 
 $msbuildPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
 if ($IsAzurePipelineBuild) {
@@ -67,11 +66,11 @@ Try {
   Exit 1
 }
 
-& $nugetPath pack (Join-Path $PSScriptRoot "nuget\Microsoft.Windows.DevHome.SDK.nuspec") -Version $env:sdk_version -OutputDirectory "$PSScriptRoot\_build"
+& $nugetPath pack (Join-Path $PSScriptRoot "nuget\Microsoft.Windows.DevHome.SDK.nuspec") -Version $SDKVersion -OutputDirectory "$PSScriptRoot\_build"
 
 if ($IsAzurePipelineBuild) {
-  Write-Host "##vso[task.setvariable variable=SDKVersion;]$env:sdk_version"
-  Write-Host "##vso[task.setvariable variable=SDKVersion;isOutput=true;]$env:sdk_version"
+  Write-Host "##vso[task.setvariable variable=SDKVersion;]$SDKVersion"
+  Write-Host "##vso[task.setvariable variable=SDKVersion;isOutput=true;]$SDKVersion"
 }
 
 $TotalTime = (Get-Date)-$StartTime

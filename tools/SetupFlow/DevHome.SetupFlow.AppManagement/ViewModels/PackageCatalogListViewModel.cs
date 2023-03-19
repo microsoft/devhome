@@ -25,6 +25,12 @@ public partial class PackageCatalogListViewModel : ObservableObject
     public ObservableCollection<PackageCatalogViewModel> PackageCatalogs { get; } = new ();
 
     /// <summary>
+    /// Gets a list of shimmer indices.
+    /// This list is used to repeat the shimmer control {Count} times
+    /// </summary>
+    public ObservableCollection<int> PackageCatalogShimmers { get; } = new (Enumerable.Range(0, 1));
+
+    /// <summary>
     /// Occurrs when a package catalog is loaded
     /// </summary>
     public event EventHandler<PackageCatalogViewModel> CatalogLoaded;
@@ -45,7 +51,8 @@ public partial class PackageCatalogListViewModel : ObservableObject
 
         try
         {
-            // Load catalogs from JSON file
+            // Load catalogs from JSON file and resolve package ids from winget
+            // on a separate thread to avoid lagging the UI
             var catalogsFromJsonDataSource = await Task.Run(async () => await _jsonDataSource.LoadCatalogsAsync(_packageCollectionsPath));
             allCatalogs.AddRange(catalogsFromJsonDataSource.Select(catalog => new PackageCatalogViewModel(catalog)));
         }
@@ -53,6 +60,10 @@ public partial class PackageCatalogListViewModel : ObservableObject
         {
             _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while loading catalogs from json data source");
             _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Local, e.Message);
+        }
+        finally
+        {
+            RemoveShimmer();
         }
 
         var restoreCatalog = await _restoreDataSource.LoadCatalogAsync();
@@ -68,6 +79,17 @@ public partial class PackageCatalogListViewModel : ObservableObject
         {
             PackageCatalogs.Add(catalog);
             CatalogLoaded?.Invoke(null, catalog);
+        }
+    }
+
+    /// <summary>
+    /// Removes a package catalog shimmer
+    /// </summary>
+    public void RemoveShimmer()
+    {
+        if (PackageCatalogShimmers.Any())
+        {
+            PackageCatalogShimmers.Remove(PackageCatalogShimmers.Last());
         }
     }
 }

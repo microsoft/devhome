@@ -23,7 +23,7 @@
 		<PackageReference Include="CommunityToolkit.Labs.WinUI.SettingsControls" Version="0.0.14" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221209.1" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
 		<PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.188-beta">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -35,7 +35,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\tools\SampleTool\src\SampleTool.csproj" />
+	    <ProjectReference Include="..\tools\SampleTool\src\SampleTool.csproj" />
 		<ProjectReference Include="..\tools\SampleTool\src\SampleTool.csproj" />
 		<ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
 		<ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />

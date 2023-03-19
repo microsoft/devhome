@@ -102,7 +102,7 @@
             <TextBlock x:Name="ClonePathTextBlock" Grid.Column="0" Grid.Row="3" Margin="0, 0, 0, 10">
                 Clone Repo
             </TextBlock>
-            <TextBox x:Name="CloneLocationForUrlTextBox" LostFocus="CloneLocationForUrlTextBox_LostFocus" PlaceholderText="/Users/Desktop" Grid.Row="4" Grid.Column="0" />
+            <TextBox x:Name="CloneLocationForUrlTextBox" TextChanged="CloneLocationForUrlTextBox_TextChanged" PlaceholderText="/Users/Desktop" Grid.Row="4" Grid.Column="0" />
             <Button x:Name="ChooseCloneLocationForUrlButton" Grid.Row="4" Grid.Column="1" Content="Choose..." Margin="10, 0, 0, 0" Click="ChooseCloneLocationButton_Click"></Button>
         </Grid>
 
@@ -142,7 +142,7 @@
             </ComboBox>
 
             <!-- WINUI3 does not have a folder/file picker control.  Lets make one that looks like it. -->
-            <TextBox x:Name="CloneLocationForAccountTextBox" LostFocus="CloneLocationForUrlTextBox_LostFocus" PlaceholderText="/Users/Desktop" Grid.Row="3" Grid.ColumnSpan="2" Margin="10, 0, 0, 10" >
+            <TextBox x:Name="CloneLocationForAccountTextBox" TextChanged="CloneLocationForUrlTextBox_TextChanged" PlaceholderText="/Users/Desktop" Grid.Row="3" Grid.ColumnSpan="2" Margin="10, 0, 0, 10" >
                 <TextBox.Header>
                     <TextBlock>
                         Clone Path

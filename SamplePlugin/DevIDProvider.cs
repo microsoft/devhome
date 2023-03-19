@@ -8,11 +8,18 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Foundation;
 
 namespace SamplePlugin;
 
 internal class DevIDProvider : IDevIdProvider
 {
+    public event EventHandler<IDeveloperId> LoggedIn;
+
+    public event EventHandler<IDeveloperId> LoggedOut;
+
+    public event EventHandler<IDeveloperId> Updated;
+
     public IEnumerable<IDeveloperId> GetLoggedInDeveloperIds() => throw new NotImplementedException();
 
     public string GetName() => "Sample Dev ID Provider";
@@ -32,4 +39,6 @@ internal class DevIDProvider : IDevIdProvider
     public void LogoutDeveloperId(IDeveloperId developerId) => throw new NotImplementedException();
 
     public string LogoutUI() => throw new NotImplementedException();
+
+    IAsyncOperation<IDeveloperId> IDevIdProvider.LoginNewDeveloperIdAsync() => throw new NotImplementedException();
 }
