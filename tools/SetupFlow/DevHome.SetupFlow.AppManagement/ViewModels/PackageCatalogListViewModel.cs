@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.Telemetry;
 
@@ -42,13 +41,13 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// </summary>
     public async Task LoadCatalogsAsync()
     {
-        var allCatalogs = new List<PackageCatalog>();
+        var allCatalogs = new List<PackageCatalogViewModel>();
 
         try
         {
             // Load catalogs from JSON file
             var catalogsFromJsonDataSource = await Task.Run(async () => await _jsonDataSource.LoadCatalogsAsync(_packageCollectionsPath));
-            allCatalogs.AddRange(catalogsFromJsonDataSource);
+            allCatalogs.AddRange(catalogsFromJsonDataSource.Select(catalog => new PackageCatalogViewModel(catalog)));
         }
         catch (Exception e)
         {
@@ -59,14 +58,16 @@ public partial class PackageCatalogListViewModel : ObservableObject
         var restoreCatalog = await _restoreDataSource.LoadCatalogAsync();
         if (restoreCatalog != null)
         {
-            allCatalogs.Add(restoreCatalog);
+            allCatalogs.Add(new PackageCatalogViewModel(restoreCatalog)
+            {
+                CanAddAllPackages = true,
+            });
         }
 
         foreach (var catalog in allCatalogs)
         {
-            var viewModel = new PackageCatalogViewModel(catalog);
-            PackageCatalogs.Add(viewModel);
-            CatalogLoaded?.Invoke(null, viewModel);
+            PackageCatalogs.Add(catalog);
+            CatalogLoaded?.Invoke(null, catalog);
         }
     }
 }
