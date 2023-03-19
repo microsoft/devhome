@@ -21,23 +21,23 @@ public class PluginAdaptiveCard : IPluginAdaptiveCard
 {
     public event EventHandler<AdaptiveCard>? UiUpdate;
 
-    public string Data { get; private set; }
+    public string DataJson { get; private set; }
 
     public string State { get; private set; }
 
-    public string Template { get; private set; }
+    public string TemplateJson { get; private set; }
 
     public PluginAdaptiveCard()
     {
-        Template = new JsonObject().ToJsonString();
-        Data = new JsonObject().ToJsonString();
+        TemplateJson = new JsonObject().ToJsonString();
+        DataJson = new JsonObject().ToJsonString();
         State = string.Empty;
     }
 
     public void Update(string templateJson, string dataJson, string state)
     {
-        var template = new AdaptiveCardTemplate(templateJson);
-        var adaptiveCardString = template.Expand(JsonConvert.DeserializeObject<JObject>(dataJson));
+        var template = new AdaptiveCardTemplate(templateJson ?? TemplateJson);
+        var adaptiveCardString = template.Expand(JsonConvert.DeserializeObject<JObject>(dataJson ?? DataJson));
         var parseResult = AdaptiveCard.FromJsonString(adaptiveCardString);
 
         if (parseResult.AdaptiveCard is null)
@@ -45,9 +45,9 @@ public class PluginAdaptiveCard : IPluginAdaptiveCard
             throw new ArgumentException(System.Text.Json.JsonSerializer.Serialize(parseResult.Errors));
         }
 
-        Template = templateJson;
-        Data = dataJson;
-        State = state;
+        TemplateJson = templateJson ?? TemplateJson;
+        DataJson = dataJson ?? DataJson;
+        State = state ?? State;
 
         if (UiUpdate is not null)
         {
