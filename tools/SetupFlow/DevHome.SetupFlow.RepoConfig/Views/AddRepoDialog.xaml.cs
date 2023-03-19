@@ -300,8 +300,7 @@ internal sealed partial class AddRepoDialog
 
         foreach (var selectedItem in selectedItems)
         {
-            var repoInformation = (selectedItem as string).Split("/");
-            var repositoryToAddOrRemove = avalibleRepositoresToSelectFrom.FirstOrDefault(x => x.DisplayName().Equals(repoInformation[1], StringComparison.OrdinalIgnoreCase));
+            var repositoryToAddOrRemove = avalibleRepositoresToSelectFrom.FirstOrDefault(x => x.DisplayName().Equals(selectedItem as string, StringComparison.OrdinalIgnoreCase));
 
             if (repositoryToAddOrRemove != null)
             {
@@ -315,7 +314,7 @@ internal sealed partial class AddRepoDialog
     /// <summary>
     /// Writs the cloning location to all text boxes that show a clone location.
     /// </summary>
-    private void CloneLocationForUrlTextBox_LostFocus(object sender, RoutedEventArgs e)
+    private void CloneLocationForUrlTextBox_TextChanged(object sender, RoutedEventArgs e)
     {
         var locationToCloneTo = string.Empty;
         if (cloningInformation.CurrentPage == CurrentPage.AddViaUrl)
@@ -328,8 +327,10 @@ internal sealed partial class AddRepoDialog
         }
 
         // The control could lose focus when nothing was typed into the text box.
-        if (string.IsNullOrEmpty(locationToCloneTo) || string.IsNullOrWhiteSpace(locationToCloneTo))
+        if (string.IsNullOrWhiteSpace(locationToCloneTo))
         {
+            cloningInformation.CloneLocation = null;
+            ToggleCloneButton();
             return;
         }
 
