@@ -44,10 +44,6 @@ public partial class PackageViewModel : ObservableObject
 
     public string Name => _package.Name;
 
-    public BitmapImage LightThemeIcon => _packageLightThemeIcon.Value;
-
-    public BitmapImage DarkThemeIcon => _packageDarkThemeIcon.Value;
-
     public BitmapImage Icon => GetIcon();
 
     public string Version => _package.Version;
@@ -62,47 +58,44 @@ public partial class PackageViewModel : ObservableObject
     [RelayCommand]
     private void ToggleSelection() => IsSelected = !IsSelected;
 
+    /// <summary>
+    /// Gets the package icon based on the provided theme
+    /// </summary>
+    /// <param name="theme">Package icon theme</param>
+    /// <returns>Package icon</returns>
     private BitmapImage GetIconByTheme(RestoreApplicationIconTheme theme)
     {
-        // Package dark theme icon
-        if (theme == RestoreApplicationIconTheme.Dark && _package.DarkThemeIcon != null)
+        if (theme == RestoreApplicationIconTheme.Dark)
         {
-            var image = new BitmapImage();
-            image.SetSource(_package.DarkThemeIcon);
-            return image;
+            // Get default dark theme icon if corresponding package icon was not found
+            if (_package.DarkThemeIcon == null)
+            {
+                return DefaultDarkPackageIconSource;
+            }
+
+            var darkThemeBitmapImage = new BitmapImage();
+            darkThemeBitmapImage.SetSource(_package.DarkThemeIcon);
+            return darkThemeBitmapImage;
         }
 
-        // Package light theme icon
-        if (theme == RestoreApplicationIconTheme.Light && _package.LightThemeIcon != null)
+        // Get default light theme icon if corresponding package icon was not found
+        if (_package.LightThemeIcon == null)
         {
-            var image = new BitmapImage();
-            image.SetSource(_package.LightThemeIcon);
-            return image;
+            return DefaultLightPackageIconSource;
         }
 
-        return theme == RestoreApplicationIconTheme.Dark ? DefaultDarkPackageIconSource : DefaultLightPackageIconSource;
+        var lightThemeBitmapImage = new BitmapImage();
+        lightThemeBitmapImage.SetSource(_package.LightThemeIcon);
+        return lightThemeBitmapImage;
     }
 
+    /// <summary>
+    /// Gets the package icon based on the application theme
+    /// </summary>
+    /// <returns>Package icon</returns>
     private BitmapImage GetIcon()
     {
-        var theme = Application.Current.GetService<IThemeSelectorService>();
-        if (theme.Theme == ElementTheme.Dark)
-        {
-            return DarkThemeIcon;
-        }
-
-        if (theme.Theme == ElementTheme.Light)
-        {
-            return LightThemeIcon;
-        }
-
-        // Default
-        var applicationTheme = Application.Current.RequestedTheme;
-        if (applicationTheme == ApplicationTheme.Dark)
-        {
-            return DarkThemeIcon;
-        }
-
-        return LightThemeIcon;
+        var themeService = Application.Current.GetService<IThemeSelectorService>();
+        return themeService.IsDarkTheme() ? _packageDarkThemeIcon.Value : _packageLightThemeIcon.Value;
     }
 }

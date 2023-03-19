@@ -18,4 +18,10 @@ public interface IThemeSelectorService
     Task SetThemeAsync(ElementTheme theme);
 
     Task SetRequestedThemeAsync();
+
+    /// <summary>
+    /// Checks if the <see cref="Theme"/> value resolves to dark
+    /// </summary>
+    /// <returns>True if the current theme is dark</returns>
+    bool IsDarkTheme();
 }

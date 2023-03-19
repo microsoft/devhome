@@ -29,16 +29,16 @@ public class WinGetPackageRestoreDataSource
 
     public async Task<PackageCatalog> LoadCatalogAsync()
     {
+        var restoreDeviceInfoResult = await _restoreInfo.GetRestoreDeviceInfoAsync();
+        if (restoreDeviceInfoResult.Status != RestoreDeviceInfoStatus.Ok)
+        {
+            _logger.Log(nameof(WinGetPackageRestoreDataSource), LogLevel.Local, $"Restore data source skipped with status: {restoreDeviceInfoResult.Status}");
+            return null;
+        }
+
+        var appsInfo = restoreDeviceInfoResult.RestoreDeviceInfo.WinGetApplicationsInfo;
         try
         {
-            var restoreDeviceInfoResult = await _restoreInfo.GetRestoreDeviceInfoAsync();
-            if (restoreDeviceInfoResult.Status != RestoreDeviceInfoStatus.Ok)
-            {
-                return null;
-            }
-
-            var appsInfo = restoreDeviceInfoResult.RestoreDeviceInfo.WinGetApplicationsInfo;
-
             // Get packages from winget catalog
             var unorderedPackages = await _wpm.WinGetCatalog.GetPackagesAsync(appsInfo.Select(appInfo => appInfo.Id).ToHashSet());
             var unorderedPackagesMap = unorderedPackages.ToDictionary(p => p.Id, p => p);
@@ -65,7 +65,7 @@ public class WinGetPackageRestoreDataSource
         }
         catch (Exception e)
         {
-            _logger.LogError(nameof(WinGetPackageJsonDataSource), LogLevel.Info, $"Error loading packages from winget catalog: {e.Message}");
+            _logger.LogError(nameof(WinGetPackageRestoreDataSource), LogLevel.Info, $"Error loading packages from winget catalog: {e.Message}");
             return null;
         }
     }

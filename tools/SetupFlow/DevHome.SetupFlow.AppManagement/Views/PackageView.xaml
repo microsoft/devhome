@@ -16,18 +16,6 @@
             <converters:BoolToObjectConverter x:Key="ImageOpacityConverter" TrueValue="0.4" FalseValue="1" />
             <converters:BoolToObjectConverter x:Key="TextEnableDisableConverter" TrueValue="{ThemeResource TextFillColorDisabledBrush}" FalseValue="{ThemeResource TextFillColorPrimaryBrush}" />
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
-            <ResourceDictionary.ThemeDictionaries>
-                <ResourceDictionary x:Key="Light">
-                    <DataTemplate x:Key="PackageImage" x:DataType="viewmodels:PackageViewModel">
-                        <ImageIcon Source="{x:Bind LightThemeIcon,Mode=OneWay}"/>
-                    </DataTemplate>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Dark">
-                    <DataTemplate x:Key="PackageImage" x:DataType="viewmodels:PackageViewModel">
-                        <ImageIcon Source="{x:Bind DarkThemeIcon,Mode=OneWay}"/>
-                    </DataTemplate>
-                </ResourceDictionary>
-            </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -46,12 +34,11 @@
             </Grid.ColumnDefinitions>
 
             <!-- Package image -->
-            <ContentControl
+            <ImageIcon
                 Width="24"
                 VerticalAlignment="Center"
                 Opacity="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource ImageOpacityConverter}}"
-                ContentTemplate="{ThemeResource PackageImage}"
-                Content="{x:Bind Package,Mode=OneWay}"/>
+                Source="{x:Bind Package.Icon,Mode=OneWay}"/>
 
             <!-- Select button -->
             <Button

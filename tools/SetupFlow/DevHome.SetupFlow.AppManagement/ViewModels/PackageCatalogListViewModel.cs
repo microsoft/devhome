@@ -62,7 +62,6 @@ public partial class PackageCatalogListViewModel : ObservableObject
             allCatalogs.Add(restoreCatalog);
         }
 
-        // TODO Load restore packages
         foreach (var catalog in allCatalogs)
         {
             var viewModel = new PackageCatalogViewModel(catalog);
