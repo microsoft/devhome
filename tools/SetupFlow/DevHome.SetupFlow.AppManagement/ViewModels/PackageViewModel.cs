@@ -42,6 +42,8 @@ public partial class PackageViewModel : ObservableObject
 
     public string Version => _package.Version;
 
+    public bool IsInstalled => _package.IsInstalled;
+
     public Uri PackageUri => _package.PackageUri;
 
     partial void OnIsSelectedChanged(bool value) => SelectionChanged?.Invoke(null, this);

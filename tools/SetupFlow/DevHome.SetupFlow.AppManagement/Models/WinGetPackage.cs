@@ -32,6 +32,8 @@ public class WinGetPackage : IWinGetPackage
 
     public string Version => _package.DefaultInstallVersion.Version;
 
+    public bool IsInstalled => _package.InstalledVersion != null;
+
     public Uri ImageUri
     {
         get; set;

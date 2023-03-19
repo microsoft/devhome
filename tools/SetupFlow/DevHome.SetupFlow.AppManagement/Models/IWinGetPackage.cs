@@ -56,6 +56,14 @@ public interface IWinGetPackage
     }
 
     /// <summary>
+    /// Gets a value indicating whether the package is installed
+    /// </summary>
+    public bool IsInstalled
+    {
+        get;
+    }
+
+    /// <summary>
     /// Gets the package image uri
     /// </summary>
     public Uri ImageUri
