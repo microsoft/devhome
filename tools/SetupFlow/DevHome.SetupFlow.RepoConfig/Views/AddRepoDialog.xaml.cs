@@ -327,7 +327,7 @@ internal sealed partial class AddRepoDialog
         }
 
         // The control could lose focus when nothing was typed into the text box.
-        if (string.IsNullOrEmpty(locationToCloneTo) || string.IsNullOrWhiteSpace(locationToCloneTo))
+        if (string.IsNullOrWhiteSpace(locationToCloneTo))
         {
             cloningInformation.CloneLocation = null;
             ToggleCloneButton();
