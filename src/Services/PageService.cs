@@ -6,6 +6,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
+using DevHome.Settings.ViewModels;
+using DevHome.Settings.Views;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.UI.Xaml.Controls;

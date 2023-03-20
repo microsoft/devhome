@@ -1,0 +1,24 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<pg:ToolPage
+    x:Class="DevHome.Settings.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:pg="using:DevHome.Common"
+    mc:Ignorable="d">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="30">
+            <StackPanel Spacing="5">
+                <labs:SettingsCard x:Uid="ms-resource:///DevHome.Settings/Resources/Settings_Preferences" IsClickEnabled="True" />
+                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile" IsClickEnabled="True" />
+                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos" IsClickEnabled="True" />
+                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps" IsClickEnabled="True" />
+                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevVolume" IsClickEnabled="True" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</pg:ToolPage>
