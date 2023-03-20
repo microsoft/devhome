@@ -8,10 +8,12 @@ using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Views;
@@ -58,7 +60,7 @@ public partial class DashboardView : ToolPage
         {
             foreach (var widget in pinnedWidgets)
             {
-                AddWidgetToPinnedWidgets(widget);
+                AddWidgetToPinnedWidgets(widget, false);
             }
         }
     }
@@ -78,13 +80,23 @@ public partial class DashboardView : ToolPage
 
         if (newWidget != null)
         {
-            AddWidgetToPinnedWidgets(newWidget);
+            AddWidgetToPinnedWidgets(newWidget, true);
         }
     }
 
-    private async void AddWidgetToPinnedWidgets(Widget widget)
+    private async void AddWidgetToPinnedWidgets(Widget widget, bool isNew)
     {
-        var size = await widget.GetSizeAsync();
+        WidgetSize size;
+        if (isNew)
+        {
+            var widgetDef = _widgetCatalog.GetWidgetDefinition(widget.DefinitionId);
+            size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
+        }
+        else
+        {
+            size = await widget.GetSizeAsync();
+        }
+
         var wvm = new WidgetViewModel(widget, size, _renderer, _dispatcher);
         PinnedWidgets.Add(wvm);
     }

@@ -20,11 +20,51 @@ internal class WidgetHelpers
         {
             if (cap.Size > largest)
             {
-            largest = cap.Size;
+                largest = cap.Size;
             }
         }
 
         return largest;
+    }
+
+    public static WidgetSize GetDefaultWidgetSize(WidgetCapability[] capabilities)
+    {
+        // The default size of the widget should be priortized as Medium, Large, Small.
+        // This matches the size preferences of the Windows Widget Dashboard.
+        var sizeS = false;
+        var sizeM = false;
+        var sizeL = false;
+
+        foreach (var cap in capabilities)
+        {
+            switch (cap.Size)
+            {
+                case WidgetSize.Small:
+                    sizeS = true; break;
+                case WidgetSize.Medium:
+                    sizeM = true; break;
+                case WidgetSize.Large:
+                    sizeL = true; break;
+            }
+        }
+
+        if (sizeM)
+        {
+            return WidgetSize.Medium;
+        }
+        else if (sizeL)
+        {
+            return WidgetSize.Large;
+        }
+        else if (sizeS)
+        {
+            return WidgetSize.Small;
+        }
+        else
+        {
+            // Return something in case new sizes are added.
+            return capabilities[0].Size;
+        }
     }
 
     public static double GetPixelHeightFromWidgetSize(WidgetSize size)
