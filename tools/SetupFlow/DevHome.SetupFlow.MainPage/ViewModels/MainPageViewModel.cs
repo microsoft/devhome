@@ -10,6 +10,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement;
 using DevHome.SetupFlow.Common.Models;
+using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.DevDrive;
 using DevHome.SetupFlow.DevDrive.Utilities;
@@ -44,7 +45,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// </summary>
     public event EventHandler<IList<ISetupTaskGroup>> StartSetupFlow;
 
-    public MainPageViewModel(ILogger logger, IStringResource stringResource, IHost host)
+    public MainPageViewModel(ILogger logger, SetupFlowStringResource stringResource, IHost host)
         : base(stringResource)
     {
         _logger = logger;

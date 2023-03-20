@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.Telemetry;
@@ -18,7 +19,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     private readonly ILogger _logger;
     private readonly RepoConfigTaskGroup _taskGroup;
 
-    public RepoConfigViewModel(ILogger logger, IStringResource stringResource, RepoConfigTaskGroup taskGroup)
+    public RepoConfigViewModel(ILogger logger, SetupFlowStringResource stringResource, RepoConfigTaskGroup taskGroup)
         : base(stringResource)
     {
         _logger = logger;

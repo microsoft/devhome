@@ -5,6 +5,7 @@ using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.UnitTest.Helpers;
 using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
@@ -16,14 +17,14 @@ namespace DevHome.SetupFlow.UnitTest.ViewModels;
 public class WinGetPackageJsonDataSourceTest
 {
     private Mock<ILogger>? _logger;
-    private Mock<IStringResource>? _stringResource;
+    private Mock<SetupFlowStringResource>? _stringResource;
     private Mock<IWindowsPackageManager>? _wpm;
 
     [TestInitialize]
     public void TestInitialize()
     {
         _logger = new Mock<ILogger>();
-        _stringResource = new Mock<IStringResource>();
+        _stringResource = new Mock<SetupFlowStringResource>();
         _wpm = new Mock<IWindowsPackageManager>();
 
         // Configure string resource

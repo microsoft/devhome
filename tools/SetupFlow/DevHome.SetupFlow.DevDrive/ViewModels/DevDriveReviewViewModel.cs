@@ -15,7 +15,7 @@ public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
     private readonly IStringResource _stringResource;
     private readonly DevDriveTaskGroup _taskGroup;
 
-    public DevDriveReviewViewModel(ILogger logger, IStringResource stringResource, DevDriveTaskGroup taskGroup)
+    public DevDriveReviewViewModel(ILogger logger, SetupFlowStringResource stringResource, DevDriveTaskGroup taskGroup)
     {
         _logger = logger;
         _stringResource = stringResource;

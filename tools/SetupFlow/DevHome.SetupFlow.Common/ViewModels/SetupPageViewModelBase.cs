@@ -78,7 +78,7 @@ public partial class SetupPageViewModelBase : ObservableObject
         get; init;
     }
 
-    public SetupPageViewModelBase(IStringResource stringResource)
+    public SetupPageViewModelBase(SetupFlowStringResource stringResource)
     {
         StringResource = stringResource;
         _nextPageButtonText = StringResource.GetLocalized(StringResourceKey.Next);

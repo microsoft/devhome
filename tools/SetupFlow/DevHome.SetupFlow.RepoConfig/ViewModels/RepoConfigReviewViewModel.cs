@@ -14,7 +14,7 @@ public partial class RepoConfigReviewViewModel : ReviewTabViewModelBase
     private readonly IStringResource _stringResource;
     private readonly RepoConfigTaskGroup _taskGroup;
 
-    public RepoConfigReviewViewModel(ILogger logger, IStringResource stringResource, RepoConfigTaskGroup taskGroup)
+    public RepoConfigReviewViewModel(ILogger logger, SetupFlowStringResource stringResource, RepoConfigTaskGroup taskGroup)
     {
         _logger = logger;
         _stringResource = stringResource;

@@ -18,7 +18,7 @@ public partial class AppManagementReviewViewModel : ReviewTabViewModelBase
     // TODO Use the selected packages for the review list once available.
     public ObservableCollection<PackageViewModel> ReviewPackages { get; } = new ();
 
-    public AppManagementReviewViewModel(ILogger logger, IStringResource stringResource, AppManagementTaskGroup taskGroup)
+    public AppManagementReviewViewModel(ILogger logger, SetupFlowStringResource stringResource, AppManagementTaskGroup taskGroup)
     {
         _logger = logger;
         _stringResource = stringResource;

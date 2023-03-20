@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement.Models;
+using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
 
 namespace DevHome.SetupFlow.AppManagement.Services;
@@ -36,7 +37,7 @@ public class WinGetPackageJsonDataSource
     private readonly IStringResource _stringResource;
     private readonly IWindowsPackageManager _wpm;
 
-    public WinGetPackageJsonDataSource(ILogger logger, IStringResource stringResource, IWindowsPackageManager wpm)
+    public WinGetPackageJsonDataSource(ILogger logger, SetupFlowStringResource stringResource, IWindowsPackageManager wpm)
     {
         _logger = logger;
         _stringResource = stringResource;

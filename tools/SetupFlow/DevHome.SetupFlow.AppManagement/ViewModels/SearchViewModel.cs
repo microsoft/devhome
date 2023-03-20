@@ -62,7 +62,7 @@ public partial class SearchViewModel : ObservableObject
     /// </summary>
     public string NoSearchResultsText => _stringResource.GetLocalized(StringResourceKey.NoSearchResultsFoundTitle, SearchText);
 
-    public SearchViewModel(ILogger logger, IWindowsPackageManager wpm, IStringResource stringResource)
+    public SearchViewModel(ILogger logger, IWindowsPackageManager wpm, SetupFlowStringResource stringResource)
     {
         _wpm = wpm;
         _logger = logger;

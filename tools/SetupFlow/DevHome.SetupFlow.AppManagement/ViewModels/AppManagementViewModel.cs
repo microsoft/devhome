@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
@@ -39,7 +38,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     /// </summary>
     public string ApplicationsSelectedCountText => StringResource.GetLocalized(StringResourceKey.ApplicationsSelectedCount, SelectedPackages.Count);
 
-    public AppManagementViewModel(ILogger logger, IStringResource stringResource, IHost host, IWindowsPackageManager wpm, AppManagementTaskGroup taskGroup)
+    public AppManagementViewModel(ILogger logger, SetupFlowStringResource stringResource, IHost host, IWindowsPackageManager wpm, AppManagementTaskGroup taskGroup)
         : base(stringResource)
     {
         _logger = logger;

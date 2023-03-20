@@ -22,7 +22,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     private readonly IHost _host;
     private readonly SetupFlowOrchestrator _orchestrator;
 
-    public ConfigurationFileViewModel(ILogger logger, IStringResource stringResource, IHost host, SetupFlowOrchestrator orchestrator)
+    public ConfigurationFileViewModel(ILogger logger, SetupFlowStringResource stringResource, IHost host, SetupFlowOrchestrator orchestrator)
         : base(stringResource)
     {
         _logger = logger;

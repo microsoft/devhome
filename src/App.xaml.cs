@@ -88,7 +88,7 @@ public partial class App : Application, IApp
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
 
             // Setup flow
-            services.AddSetupFlow();
+            services.AddSetupFlow(context);
         }).
         Build();
 
