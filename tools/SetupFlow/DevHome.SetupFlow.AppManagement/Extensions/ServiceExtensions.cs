@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.SetupFlow.AppManagement;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DevHome.SetupFlow.Extensions;
+namespace DevHome.SetupFlow.AppManagement.Extensions;
 public static class ServiceExtensions
 {
     public static IServiceCollection AddAppManagement(this IServiceCollection services)

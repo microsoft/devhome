@@ -12,6 +12,7 @@ using DevHome.SetupFlow.AppManagement;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
+using DevHome.SetupFlow.ConfigurationFile;
 using DevHome.SetupFlow.DevDrive;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.RepoConfig;

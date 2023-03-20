@@ -6,7 +6,7 @@ using DevHome.SetupFlow.DevDrive.Services;
 using DevHome.SetupFlow.DevDrive.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DevHome.SetupFlow.Extensions;
+namespace DevHome.SetupFlow.DevDrive.Extensions;
 public static class ServiceExtensions
 {
     public static IServiceCollection AddDevDrive(this IServiceCollection services)

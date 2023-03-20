@@ -4,7 +4,7 @@
 using DevHome.SetupFlow.Loading.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DevHome.SetupFlow.Extensions;
+namespace DevHome.SetupFlow.Loading.Extensions;
 public static class ServiceExtensions
 {
     public static IServiceCollection AddLoading(this IServiceCollection services)

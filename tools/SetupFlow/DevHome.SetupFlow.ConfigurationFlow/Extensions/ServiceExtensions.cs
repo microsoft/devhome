@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.SetupFlow.AppManagement;
 using DevHome.SetupFlow.ConfigurationFile.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DevHome.SetupFlow.Extensions;
+namespace DevHome.SetupFlow.ConfigurationFile.Extensions;
 public static class ServiceExtensions
 {
     public static IServiceCollection AddConfigurationFile(this IServiceCollection services)

@@ -1,7 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.SetupFlow.AppManagement.Extensions;
 using DevHome.SetupFlow.Common.Services;
+using DevHome.SetupFlow.ConfigurationFile.Extensions;
+using DevHome.SetupFlow.DevDrive.Extensions;
+using DevHome.SetupFlow.Loading.Extensions;
+using DevHome.SetupFlow.MainPage.Extensions;
+using DevHome.SetupFlow.RepoConfig.Extensions;
+using DevHome.SetupFlow.Review.Extensions;
+using DevHome.SetupFlow.Summary.Extensions;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

@@ -4,7 +4,7 @@
 using DevHome.SetupFlow.MainPage.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DevHome.SetupFlow.Extensions;
+namespace DevHome.SetupFlow.MainPage.Extensions;
 public static class ServiceExtensions
 {
     public static IServiceCollection AddMainPage(this IServiceCollection services)

@@ -4,7 +4,7 @@
 using DevHome.SetupFlow.Summary.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DevHome.SetupFlow.Extensions;
+namespace DevHome.SetupFlow.Summary.Extensions;
 public static class ServiceExtensions
 {
     public static IServiceCollection AddSummary(this IServiceCollection services)
