@@ -101,7 +101,7 @@ public partial class SetupPageViewModelBase : ObservableObject
     /// </remarks>
     public async Task OnNavigateToAsync()
     {
-        if (_hasExecutedFirstNavigateTo)
+        if (!_hasExecutedFirstNavigateTo)
         {
             _hasExecutedFirstNavigateTo = true;
             await OnFirstNavigateToAsync();
@@ -116,7 +116,7 @@ public partial class SetupPageViewModelBase : ObservableObject
     /// </remarks>
     public async Task OnNavigateFromAsync()
     {
-        if (_hasExecutedFirstNavigateFrom)
+        if (!_hasExecutedFirstNavigateFrom)
         {
             _hasExecutedFirstNavigateFrom = true;
             await OnFirstNavigateFromAsync();
