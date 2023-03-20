@@ -59,8 +59,6 @@ public sealed partial class SettingsPage : Page
         {
             if (addAccountButton.Tag is AccountsProviderViewModel accountProvider)
             {
-                accountProvider.GetLoginUI();
-
                 try
                 {
                     _loginUIContentDialog.Content = accountProvider.GetLoginUI();

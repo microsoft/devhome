@@ -60,12 +60,12 @@ public class AccountsService : IAccountsService
     {
         if (sender is IDevIdProvider iDevIdProvider)
         {
-            _accountsDictionary[iDevIdProvider].Add(developerId);
-            LoggingHelper.AccountEvent_Critical("LoggedInEvent", iDevIdProvider.GetName(), developerId.LoginId());
+            _accountsDictionary[iDevIdProvider] = iDevIdProvider.GetLoggedInDeveloperIds().ToList();
+            LoggingHelper.AccountEvent_Critical("OnLogin", iDevIdProvider.GetName(), developerId.LoginId());
         }
         else
         {
-            LoggerFactory.Get<ILogger>().LogException($"LoggedInEvent_InvalidObject_Failure", new InvalidComObjectException($"LoggedInEventHandler() sender: {sender?.ToString()} developerId: {developerId.LoginId}"));
+            LoggerFactory.Get<ILogger>().LogException($"OnLogin_InvalidObject_Failure", new InvalidComObjectException($"OnLogin() sender: {sender?.ToString()} developerId: {developerId.LoginId}"));
         }
     }
 
@@ -73,12 +73,12 @@ public class AccountsService : IAccountsService
     {
         if (sender is IDevIdProvider iDevIdProvider)
         {
-            _accountsDictionary[iDevIdProvider].Remove(developerId);
-            LoggingHelper.AccountEvent_Critical("LoggedOutEvent", iDevIdProvider.GetName(), developerId.LoginId());
+            _accountsDictionary[iDevIdProvider] = iDevIdProvider.GetLoggedInDeveloperIds().ToList();
+            LoggingHelper.AccountEvent_Critical("OnLogout", iDevIdProvider.GetName(), developerId.LoginId());
         }
         else
         {
-            LoggerFactory.Get<ILogger>().LogException($"LoggedOutEventHandler_InvalidObject_Failure", new InvalidComObjectException($"LoggedOutEventHandler() sender: {sender?.ToString()} developerId: {developerId.LoginId}"));
+            LoggerFactory.Get<ILogger>().LogException($"OnLogout_InvalidObject_Failure", new InvalidComObjectException($"OnLogout() sender: {sender?.ToString()} developerId: {developerId.LoginId}"));
         }
     }
 }
