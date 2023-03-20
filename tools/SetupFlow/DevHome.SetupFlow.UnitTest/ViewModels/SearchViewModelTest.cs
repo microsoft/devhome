@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Services;
-using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;

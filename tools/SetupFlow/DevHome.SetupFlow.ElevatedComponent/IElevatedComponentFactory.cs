@@ -8,5 +8,11 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 /// </summary>
 public interface IElevatedComponentFactory
 {
-    public void TestMethod();
+    /// <summary>
+    /// Writes a string to standard output.
+    /// </summary>
+    /// <remarks>
+    /// This is intended for tests only.
+    /// </remarks>
+    public void WriteToStdOut(string value);
 }

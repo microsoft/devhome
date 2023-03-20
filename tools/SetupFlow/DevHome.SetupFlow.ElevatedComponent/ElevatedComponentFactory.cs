@@ -8,8 +8,8 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 /// </summary>
 public sealed class ElevatedComponentFactory : IElevatedComponentFactory
 {
-    public void TestMethod()
+    void IElevatedComponentFactory.WriteToStdOut(string value)
     {
-        Console.WriteLine("TestMethod!");
+        Console.WriteLine(value);
     }
 }
