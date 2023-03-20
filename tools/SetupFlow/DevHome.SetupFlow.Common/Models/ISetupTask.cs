@@ -55,10 +55,16 @@ public interface ISetupTask
     public abstract TaskMessages GetLoadingMessages();
 
     /// <summary>
-    /// Gets an object that contains all the data needed for display an error in the action cneter.
+    /// Gets an object that contains all the data needed to display an error message in the action center of the loading screen.
     /// </summary>
-    /// <returns>An object with strings to display in the action cneter.</returns>
-    public abstract ActionCenterErrorMessages GetActionCenterMessages();
+    /// <returns>An object with strings to display in the action center.</returns>
+    public abstract ActionCenterMessages GetErrorMessages();
+
+    /// <summary>
+    /// Gets an object that contains all the data needed to display a "Needs Attention" in the action center of the loading screen.
+    /// </summary>
+    /// <returns>An object of strings.</returns>
+    public abstract ActionCenterMessages GetNeedsAttentionMessages();
 
     /// <summary>
     /// Gets or sets a value indicating whether a dev drive needs to be installed before this task can start.

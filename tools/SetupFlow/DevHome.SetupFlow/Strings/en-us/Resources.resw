@@ -477,4 +477,19 @@
     <value>Repository {0} needs your attention</value>
     <comment>Task message when a cloning task needs a users attention</comment>
   </data>
+  <data name="LoadingScreenCloningRepositoryNeedsAttentionMainMessage" xml:space="preserve">
+    <value>Something needs your attention</value>
+    <comment>Sub message in the "Needs Attention" window</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryNeedsAttentionPrimaryButtonContent" xml:space="preserve">
+    <value>Okay</value>
+    <comment>Main message in the "Needs attention" window</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryNeedsAttentionSecondaryButtonContent" xml:space="preserve">
+    <value>Not Okay</value>
+    <comment>Content of the primary button in the "Needs Attention" window</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryNeedsAttentionSubMessage" xml:space="preserve">
+    <value>Repository {0} needs your attention</value>
+  </data>
 </root>

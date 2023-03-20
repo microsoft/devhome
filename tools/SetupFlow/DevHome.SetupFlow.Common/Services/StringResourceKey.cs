@@ -38,4 +38,9 @@ public static class StringResourceKey
     public static readonly string LoadingScreenCloningRepositoryErrorTestSecondary = nameof(LoadingScreenCloningRepositoryErrorTestSecondary);
     public static readonly string LoadingScreenCloningRepositoryErrorMainButtonContent = nameof(LoadingScreenCloningRepositoryErrorMainButtonContent);
     public static readonly string LoadingScreenCloningRepositoryErrorSecondaryButtonContent = nameof(LoadingScreenCloningRepositoryErrorSecondaryButtonContent);
+
+    public static readonly string LoadingScreenCloningRepositoryNeedsAttentionSubMessage = nameof(LoadingScreenCloningRepositoryNeedsAttentionSubMessage);
+    public static readonly string LoadingScreenCloningRepositoryNeedsAttentionMainMessage = nameof(LoadingScreenCloningRepositoryNeedsAttentionMainMessage);
+    public static readonly string LoadingScreenCloningRepositoryNeedsAttentionPrimaryButtonContent = nameof(LoadingScreenCloningRepositoryNeedsAttentionPrimaryButtonContent);
+    public static readonly string LoadingScreenCloningRepositoryNeedsAttentionSecondaryButtonContent = nameof(LoadingScreenCloningRepositoryNeedsAttentionSecondaryButtonContent);
 }

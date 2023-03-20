@@ -4,9 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -19,7 +16,8 @@ using DevHome.SetupFlow.Loading.Models;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Windows.UI.Core;
+using Microsoft.UI.Xaml.Media;
+using Windows.UI;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.Loading.ViewModels;
@@ -39,7 +37,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private ObservableCollection<TaskInformation> _setupTasks;
 
     [ObservableProperty]
-    private ObservableCollection<TaskInformation> _actionCenterItems;
+    private ObservableCollection<ActionCenterMessages> _actionCenterItems;
 
     [ObservableProperty]
     private int _tasksCompleted;
@@ -83,7 +81,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             foreach (var task in taskGroup.SetupTasks)
             {
-                SetupTasks.Add(new TaskInformation { TaskIndex = taskIndex++, TaskToExecute = task, MessageToShow = task.GetLoadingMessages().Executing });
+                SetupTasks.Add(new TaskInformation { TaskIndex = taskIndex++, TaskToExecute = task, MessageToShow = task.GetLoadingMessages().Executing, StatusIconGridVisibility = Visibility.Collapsed });
             }
         }
 
@@ -95,24 +93,37 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     {
         var information = SetupTasks[taskNumber];
         var stringToReplace = string.Empty;
+        var circleBrush = new SolidColorBrush();
+        var statusSymbolHex = string.Empty;
 
         if (taskFinishedState == TaskFinishedState.Success)
         {
             stringToReplace = information.TaskToExecute.GetLoadingMessages().Finished;
+            circleBrush.Color = Microsoft.UI.Colors.Green;
+            statusSymbolHex = "\xF13E";
         }
         else if (taskFinishedState == TaskFinishedState.Failure)
         {
             stringToReplace = information.TaskToExecute.GetLoadingMessages().Error;
-            ActionCenterItems.Add(information);
+            ActionCenterItems.Add(information.TaskToExecute.GetErrorMessages());
+            circleBrush.Color = Microsoft.UI.Colors.Red;
+            statusSymbolHex = "\xE711";
         }
         else if (taskFinishedState == TaskFinishedState.NeedsAttention)
         {
             stringToReplace = information.TaskToExecute.GetLoadingMessages().NeedsAttention;
-            ActionCenterItems.Add(information);
+            ActionCenterItems.Add(information.TaskToExecute.GetErrorMessages());
+            circleBrush.Color = Microsoft.UI.Colors.Green;
+            statusSymbolHex = "\xF13E";
         }
 
+        information.MessageToShow = stringToReplace;
+        information.StatusIconGridVisibility = Visibility.Visible;
+        information.CircleForeground = circleBrush;
+        information.StatusSymbolHex = statusSymbolHex;
+
         // change a value in the list to force UI to update
-        SetupTasks[taskNumber].MessageToShow = stringToReplace;
+        SetupTasks[taskNumber] = information;
     }
 
     public async override void OnNavigateToPageAsync()
@@ -168,7 +179,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             });
 
             var taskFinishedState = await taskInformation.TaskToExecute.Execute();
-
+            taskFinishedState = TaskFinishedState.Failure;
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 ChangeMessage(taskInformation.TaskIndex, taskFinishedState);

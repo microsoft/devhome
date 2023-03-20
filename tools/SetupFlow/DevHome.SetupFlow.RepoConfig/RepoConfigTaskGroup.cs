@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
@@ -18,9 +19,12 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
 {
     private readonly IHost _host;
 
-    public RepoConfigTaskGroup(IHost host)
+    private readonly IStringResource _stringResource;
+
+    public RepoConfigTaskGroup(IHost host, IStringResource stringResource)
     {
         _host = host;
+        _stringResource = stringResource;
     }
 
     private readonly IList<CloneRepoTask> _cloneTasks = new List<CloneRepoTask>();
@@ -39,7 +43,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
             {
                 // Possible that two accounts have the same repo name from forking.
                 var fullPath = Path.Combine(cloningInformation.CloneLocation.FullName, developerId.LoginId(), repositoryToClone.DisplayName);
-                _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), repositoryToClone, developerId));
+                _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), repositoryToClone, developerId, _stringResource));
             }
         }
     }
@@ -47,6 +51,6 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     public void SaveSetupTaskInformation(DirectoryInfo path, IRepository repoToClone)
     {
         var fullPath = Path.Combine(path.FullName, repoToClone.DisplayName);
-        _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), repoToClone));
+        _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), repoToClone, _stringResource));
     }
 }
