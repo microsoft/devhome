@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -28,7 +27,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// Gets a list of shimmer indices.
     /// This list is used to repeat the shimmer control {Count} times
     /// </summary>
-    public ObservableCollection<int> PackageCatalogShimmers { get; } = new (Enumerable.Range(0, 1));
+    public ObservableCollection<int> PackageCatalogShimmers { get; } = new (Enumerable.Range(0, 2));
 
     /// <summary>
     /// Occurrs when a package catalog is loaded
@@ -47,37 +46,36 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// </summary>
     public async Task LoadCatalogsAsync()
     {
-        var allCatalogs = new List<PackageCatalogViewModel>();
-
         try
         {
             // Load catalogs from JSON file and resolve package ids from winget
             // on a separate thread to avoid lagging the UI
             var catalogsFromJsonDataSource = await Task.Run(async () => await _jsonDataSource.LoadCatalogsAsync(_packageCollectionsPath));
-            allCatalogs.AddRange(catalogsFromJsonDataSource.Select(catalog => new PackageCatalogViewModel(catalog)));
+            RemoveShimmer();
+            foreach (var catalog in catalogsFromJsonDataSource.Select(catalog => new PackageCatalogViewModel(catalog)))
+            {
+                PackageCatalogs.Add(catalog);
+            }
         }
         catch (Exception e)
         {
             _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while loading catalogs from json data source");
             _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Local, e.Message);
-        }
-        finally
-        {
             RemoveShimmer();
         }
 
         var restoreCatalog = await _restoreDataSource.LoadCatalogAsync();
+        RemoveShimmer();
         if (restoreCatalog != null)
         {
-            allCatalogs.Add(new PackageCatalogViewModel(restoreCatalog)
+            PackageCatalogs.Add(new PackageCatalogViewModel(restoreCatalog)
             {
                 CanAddAllPackages = true,
             });
         }
 
-        foreach (var catalog in allCatalogs)
+        foreach (var catalog in PackageCatalogs)
         {
-            PackageCatalogs.Add(catalog);
             CatalogLoaded?.Invoke(null, catalog);
         }
     }
