@@ -73,14 +73,6 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         {
             return false;
         }
-        else
-        {
-            RepositoriesToClone[account].Remove(repositoryToAddOrRemove);
-            if (RepositoriesToClone[account].Count == 0)
-            {
-                RepositoriesToClone.Remove(account);
-            }
-        }
 
         return ProviderName.Equals(other.ProviderName, StringComparison.OrdinalIgnoreCase) &&
             OwningAccount.LoginId().Equals(other.OwningAccount.LoginId(), StringComparison.OrdinalIgnoreCase) &&

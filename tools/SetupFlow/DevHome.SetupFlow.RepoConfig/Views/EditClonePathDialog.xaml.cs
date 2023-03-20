@@ -88,7 +88,7 @@ public sealed partial class EditClonePathDialog
     /// <summary>
     /// User left the clone location.  Validate the text.
     /// </summary>
-    private void CloneLocationTextBox_LostFocus(object sender, RoutedEventArgs e)
+    private void CloneLocationTextBox_TextChanged(object sender, RoutedEventArgs e)
     {
         IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
     }

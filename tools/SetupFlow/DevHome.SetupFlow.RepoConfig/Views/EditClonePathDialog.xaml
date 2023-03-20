@@ -26,7 +26,7 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <!--WINUI3 does not have a folder/file picker control.  Lets make one that looks like it.-->
-            <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath" Grid.Column="0" LostFocus="CloneLocationTextBox_LostFocus"  Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"/>
+            <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath" Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"  Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"/>
             <Button IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click"  Grid.Column="1" Margin="5, 25, 0, 0"/>
         </Grid>
         <Grid Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" ColumnSpacing="10">
