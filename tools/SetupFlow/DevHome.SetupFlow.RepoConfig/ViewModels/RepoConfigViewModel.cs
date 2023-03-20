@@ -19,7 +19,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     private readonly ILogger _logger;
     private readonly RepoConfigTaskGroup _taskGroup;
 
-    public RepoConfigViewModel(ILogger logger, SetupFlowStringResource stringResource, RepoConfigTaskGroup taskGroup)
+    public RepoConfigViewModel(ILogger logger, ISetupFlowStringResource stringResource, RepoConfigTaskGroup taskGroup)
         : base(stringResource)
     {
         _logger = logger;

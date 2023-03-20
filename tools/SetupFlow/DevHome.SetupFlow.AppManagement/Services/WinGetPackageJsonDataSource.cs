@@ -34,10 +34,10 @@ public class WinGetPackageJsonDataSource
     }
 
     private readonly ILogger _logger;
-    private readonly IStringResource _stringResource;
+    private readonly ISetupFlowStringResource _stringResource;
     private readonly IWindowsPackageManager _wpm;
 
-    public WinGetPackageJsonDataSource(ILogger logger, SetupFlowStringResource stringResource, IWindowsPackageManager wpm)
+    public WinGetPackageJsonDataSource(ILogger logger, ISetupFlowStringResource stringResource, IWindowsPackageManager wpm)
     {
         _logger = logger;
         _stringResource = stringResource;

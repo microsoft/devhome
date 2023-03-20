@@ -25,7 +25,7 @@ public static class ServiceExtensions
         services.AddTransient<SetupFlowViewModel>();
 
         // Services
-        services.AddSingleton<SetupFlowStringResource>();
+        services.AddSingleton<ISetupFlowStringResource, SetupFlowStringResource>();
         services.AddSingleton<SetupFlowOrchestrator>();
 
         // Configurations

@@ -16,14 +16,14 @@ namespace DevHome.SetupFlow.UnitTest.ViewModels;
 public class SearchViewModelTest
 {
     private Mock<ILogger>? _logger;
-    private Mock<SetupFlowStringResource>? _stringResource;
+    private Mock<ISetupFlowStringResource>? _stringResource;
     private Mock<IWindowsPackageManager>? _wpm;
 
     [TestInitialize]
     public void TestInitialize()
     {
         _logger = new Mock<ILogger>();
-        _stringResource = new Mock<SetupFlowStringResource>();
+        _stringResource = new Mock<ISetupFlowStringResource>();
         _wpm = new Mock<IWindowsPackageManager>();
     }
 

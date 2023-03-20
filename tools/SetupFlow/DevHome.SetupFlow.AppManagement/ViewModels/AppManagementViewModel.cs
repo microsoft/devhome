@@ -38,7 +38,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     /// </summary>
     public string ApplicationsSelectedCountText => StringResource.GetLocalized(StringResourceKey.ApplicationsSelectedCount, SelectedPackages.Count);
 
-    public AppManagementViewModel(ILogger logger, SetupFlowStringResource stringResource, IHost host, IWindowsPackageManager wpm, AppManagementTaskGroup taskGroup)
+    public AppManagementViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host, IWindowsPackageManager wpm, AppManagementTaskGroup taskGroup)
         : base(stringResource)
     {
         _logger = logger;

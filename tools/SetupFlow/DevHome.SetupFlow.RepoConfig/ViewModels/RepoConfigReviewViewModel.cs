@@ -11,10 +11,10 @@ namespace DevHome.SetupFlow.RepoConfig.ViewModels;
 public partial class RepoConfigReviewViewModel : ReviewTabViewModelBase
 {
     private readonly ILogger _logger;
-    private readonly IStringResource _stringResource;
+    private readonly ISetupFlowStringResource _stringResource;
     private readonly RepoConfigTaskGroup _taskGroup;
 
-    public RepoConfigReviewViewModel(ILogger logger, SetupFlowStringResource stringResource, RepoConfigTaskGroup taskGroup)
+    public RepoConfigReviewViewModel(ILogger logger, ISetupFlowStringResource stringResource, RepoConfigTaskGroup taskGroup)
     {
         _logger = logger;
         _stringResource = stringResource;

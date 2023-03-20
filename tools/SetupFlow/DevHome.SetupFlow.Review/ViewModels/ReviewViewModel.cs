@@ -34,7 +34,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ReviewTabViewModelBase _selectedReviewTab;
 
-    public ReviewViewModel(ILogger logger, SetupFlowStringResource stringResource, IHost host, SetupFlowOrchestrator orchestrator)
+    public ReviewViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host, SetupFlowOrchestrator orchestrator)
         : base(stringResource)
     {
         _logger = logger;

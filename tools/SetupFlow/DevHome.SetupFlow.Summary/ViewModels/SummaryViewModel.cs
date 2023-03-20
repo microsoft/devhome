@@ -13,7 +13,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _logger;
 
-    public SummaryViewModel(ILogger logger, SetupFlowStringResource stringResource)
+    public SummaryViewModel(ILogger logger, ISetupFlowStringResource stringResource)
         : base(stringResource)
     {
         _logger = logger;
