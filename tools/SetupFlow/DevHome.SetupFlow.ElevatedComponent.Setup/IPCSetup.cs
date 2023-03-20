@@ -2,17 +2,11 @@
 // Licensed under the MIT license.
 
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.System.Com;
 using WinRT;
-using WinRT.Interop;
-
-// TODO: Use better exceptions
-// TODO: Preserve sig
-#pragma warning disable CA2201
 
 namespace DevHome.SetupFlow.ElevatedComponent;
 
@@ -68,7 +62,6 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 ////   to work for different versions of the same type
 ////
 //// TODO: Copy winmd
-//// TODO: Remove Console.WriteLines
 public static class IPCSetup
 {
     /// <summary>
@@ -124,6 +117,25 @@ public static class IPCSetup
     /// <returns>A factory that creates WinRT objects in the background process.</returns>
     public static RemoteObject<T> CreateOutOfProcessObject<T>()
     {
+        (var remoteObject, _) = CreateOutOfProcessObjectAndGetProcess<T>(runBackgroundProcessElevated: true);
+        return remoteObject;
+    }
+
+    /// <summary>
+    /// Creates a factory for the objects that need to run in a
+    /// background process. This is to be called from the main
+    /// app process.
+    /// </summary>
+    /// <remarks>
+    /// This is intended to be used for tests. For anything else we
+    /// should use <see cref="IPCSetup.CreateOutOfProcessObject{T}"/>
+    /// </remarks>
+    /// <returns>
+    /// A factory that creates WinRT objects in the background process,
+    /// and the process object for the background process.
+    /// </returns>
+    public static (RemoteObject<T>, Process) CreateOutOfProcessObjectAndGetProcess<T>(bool runBackgroundProcessElevated)
+    {
         // The shared memory block, initialization event and completion mutex all need a name
         // that will be used by the child process to find them. We use new random GUIDs for them.
         // For the memory block, we also set the handle inheritability so that only descendant
@@ -145,7 +157,7 @@ public static class IPCSetup
         MappedMemoryValue mappedMemoryValue = default;
         using (var mappedFileAccessor = mappedFile.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Write))
         {
-            mappedMemoryValue.HResult = 1; // TODO: Use better result
+            mappedMemoryValue.HResult = unchecked((int)0x80000008); // E_FAIL
             mappedFileAccessor.Write(0, ref mappedMemoryValue);
         }
 
@@ -165,18 +177,41 @@ public static class IPCSetup
         {
             FileName = serverPath,
             Arguments = serverArgs,
-            UseShellExecute = true,
             CreateNoWindow = true,
         };
+
+        if (runBackgroundProcessElevated)
+        {
+            // We need to start the process with ShellExecute to run elevated
+            processStartupInfo.UseShellExecute = true;
+            processStartupInfo.Verb = "runas";
+        }
+        else
+        {
+            // If we are not running elevated, we can run without ShellExecute
+            // and get the process output. This is useful for testing.
+            processStartupInfo.UseShellExecute = false;
+            processStartupInfo.RedirectStandardOutput = true;
+        }
+
         var process = Process.Start(processStartupInfo);
+        if (process is null)
+        {
+            throw new InvalidOperationException("Failed to start background process");
+        }
 
         // Wait for the background process to finish initializing the object and writing
         // it to the shared memory. The timeout is arbitrary and can be changed.
+        // We also stop waiting if the process exits.
+        process.Exited += (_, _) => { initEvent.Set(); };
         if (!initEvent.WaitOne(60 * 1000))
         {
-            // TODO: Check if process finished
-            // TODO: Use a better exception
-            throw new Exception("Failed to initialize");
+            throw new TimeoutException("Background process failed to initialized in the allowed time");
+        }
+
+        if (process.HasExited)
+        {
+            throw new InvalidOperationException("Background process terminated");
         }
 
         // Read the initialization result and the factory size
@@ -189,7 +224,6 @@ public static class IPCSetup
         // Read the marshalling object
         Marshal.ThrowExceptionForHR(PInvoke.CreateStreamOnHGlobal(0, fDeleteOnRelease: true, out var stream));
 
-        // IElevatedComponentFactory factory;
         using (var mappedFileAccessor = mappedFile.CreateViewAccessor())
         {
             unsafe
@@ -212,10 +246,10 @@ public static class IPCSetup
 
                 if (bytesWritten != mappedMemoryValue.MarshaledObjectSize)
                 {
-                    // TODO: Use a better exception
-                    throw new ExternalException("Failed to read shared memory");
+                    throw new InvalidDataException("Shared memory stream has unexpected data");
                 }
 
+                // Reset the stream to the beginning before reading the object
                 stream.Seek(0, SeekOrigin.Begin);
             }
         }
@@ -223,8 +257,7 @@ public static class IPCSetup
         Marshal.ThrowExceptionForHR(PInvoke.CoUnmarshalInterface(stream, GetMarshalInterfaceGUID<T>(), out var obj));
         var value = MarshalInterface<T>.FromAbi(Marshal.GetIUnknownForObject(obj));
 
-        // TODO: Use the actual interface we want
-        return new RemoteObject<T>(value, completionMutex);
+        return (new RemoteObject<T>(value, completionMutex), process);
     }
 
     /// <summary>
@@ -246,7 +279,6 @@ public static class IPCSetup
         string completionMutexName)
     {
         // Open the shared resources
-        Console.WriteLine("Starting initialization");
         var mappedFile = MemoryMappedFile.OpenExisting(mappedFileName, MemoryMappedFileRights.Write);
         var initEvent = EventWaitHandle.OpenExisting(initEventName);
         var completionMutex = Mutex.OpenExisting(completionMutexName);
@@ -261,9 +293,7 @@ public static class IPCSetup
             {
                 unsafe
                 {
-                    Console.WriteLine("Creating stream");
-
-                    // Read the object into a stream
+                    // Write the object into a stream from which we will copy to the shared memory
                     Marshal.ThrowExceptionForHR(PInvoke.CreateStreamOnHGlobal(0, fDeleteOnRelease: true, out var stream));
 
                     var marshaler = MarshalInterface<T>.CreateMarshaler(value);
@@ -277,13 +307,12 @@ public static class IPCSetup
 
                     if (mappedMemory.MarshaledObjectSize > MaxFactorySizeInBytes)
                     {
-                        // TODO: Use better exception
-                        throw new Exception("Too big");
+                        throw new InvalidDataException("Marshaled object is too large for shared memory block");
                     }
 
+                    // Reset the stream to the beginning before reading it to the shared memory.
                     stream.Seek(0, SeekOrigin.Begin);
 
-                    Console.WriteLine("Writing to shared memory");
                     using var mappedFileAccessor = mappedFile.CreateViewAccessor();
                     byte* rawPointer = null;
                     uint bytesRead;
@@ -302,16 +331,13 @@ public static class IPCSetup
 
                     if (bytesRead != streamSize)
                     {
-                        // TODO: Use better exception
-                        throw new ExternalException("Failed to write marshal object to shared memory");
+                        throw new InvalidDataException("Failed to write marshal object to shared memory");
                     }
                 }
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Failed: {e}");
-            Console.WriteLine($"0x{e.HResult:x}");
             mappedMemory.HResult = e.HResult;
         }
 
@@ -325,7 +351,6 @@ public static class IPCSetup
         initEvent.Set();
 
         // Wait until the caller releases the object
-        Console.WriteLine("Waiting for exit");
         completionMutex.WaitOne();
     }
 }
