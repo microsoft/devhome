@@ -1,8 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.SetupFlow.DevDrive;
-using DevHome.SetupFlow.DevDrive.Services;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.DevDrive.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
