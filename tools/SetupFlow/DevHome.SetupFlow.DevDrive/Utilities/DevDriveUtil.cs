@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DevHome.Common.Models;
 using DevHome.SetupFlow.DevDrive.Models;
 using ToolKitHelpers = CommunityToolkit.WinUI.Helpers;
 

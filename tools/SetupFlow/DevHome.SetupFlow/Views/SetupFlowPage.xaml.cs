@@ -11,7 +11,6 @@ using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.ConfigurationFile.ViewModels;
 using DevHome.SetupFlow.DevDrive;
-using DevHome.SetupFlow.DevDrive.Services;
 using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.SetupFlow.Loading.ViewModels;
 using DevHome.SetupFlow.MainPage.ViewModels;
