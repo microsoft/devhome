@@ -7,6 +7,7 @@ using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Core.Helpers;
 using DevHome.Helpers;
+using DevHome.Services;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -31,9 +32,6 @@ public sealed partial class ShellPage : Page
     {
         ViewModel = viewModel;
         InitializeComponent();
-
-        var pluginService = Application.Current.GetService<IPluginService>();
-
         ViewModel.NavigationService.Frame = NavigationFrame;
         ViewModel.NavigationViewService.Initialize(NavigationViewControl);
 
@@ -54,6 +52,8 @@ public sealed partial class ShellPage : Page
 
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
+
+        Application.Current.GetService<INavigationService>().NavigateTo(typeof(WhatsNewViewModel).FullName!);
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)

@@ -19,7 +19,12 @@ public class AppManagementViewSelector : DataTemplateSelector
     public DataTemplate MainTemplate { get; set; }
 
     /// <summary>
-    /// Gets or sets the search template displayed during a search operation
+    /// Gets or sets the shimmer search template displayed during a search operation
+    /// </summary>
+    public DataTemplate ShimmerSearchTemplate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the search template displayed after a search operation is completed
     /// </summary>
     public DataTemplate SearchTemplate { get; set; }
 
@@ -38,6 +43,7 @@ public class AppManagementViewSelector : DataTemplateSelector
         return item switch
         {
             SearchViewModel => SearchTemplate,
+            ShimmerSearchViewModel => ShimmerSearchTemplate,
             _ => MainTemplate,
         };
     }

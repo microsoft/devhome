@@ -2,6 +2,8 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Extensions;
+using DevHome.Contracts.Services;
+using DevHome.Services;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -16,7 +18,7 @@ public sealed partial class SettingsPage : Page
         get;
     }
 
-    public AccountsPageViewModel AccountsViewModel
+    public AccountsPageViewModel AccountsPageViewModel
     {
         get;
     }
@@ -24,18 +26,33 @@ public sealed partial class SettingsPage : Page
     public SettingsPage()
     {
         ViewModel = Application.Current.GetService<SettingsViewModel>();
-        AccountsViewModel = Application.Current.GetService<AccountsPageViewModel>();
+        AccountsPageViewModel = Application.Current.GetService<AccountsPageViewModel>();
         InitializeComponent();
     }
 
-    private void AddDeveloperId_Click(object sender, RoutedEventArgs e)
+    private async void AddDeveloperId_Click(object sender, RoutedEventArgs e)
     {
-        AccountsViewModel.AddAccount();
+        if (AccountsPageViewModel.AccountsProviders.Count == 0)
+        {
+            var confirmLogoutContentDialog = new ContentDialog
+            {
+                Title = "No Dev Home Plugins found!",
+                Content = "Please install a Dev Home Plugin and restart Dev Home to add an account.",
+                PrimaryButtonText = "Ok",
+                XamlRoot = XamlRoot,
+            };
+
+            await confirmLogoutContentDialog.ShowAsync();
+            return;
+        }
+
+        // TODO: expand this for multiple providers after their buttons are added
+        AccountsPageViewModel.AccountsProviders.First().AddAccount();
     }
 
     private async void Logout_Click(object sender, RoutedEventArgs e)
     {
-        var confirmLogoutContentDialog = new ContentDialog()
+        var confirmLogoutContentDialog = new ContentDialog
         {
             Title = "Are you sure?",
             Content = "Are you sure you want to remove this user account?"
@@ -45,8 +62,8 @@ public sealed partial class SettingsPage : Page
             PrimaryButtonText = "Yes",
             SecondaryButtonText = "No",
             DefaultButton = ContentDialogButton.Primary,
+            XamlRoot = XamlRoot,
         };
-        confirmLogoutContentDialog.XamlRoot = this.XamlRoot;
         var contentDialogResult = await confirmLogoutContentDialog.ShowAsync();
 
         if (contentDialogResult.Equals(ContentDialogResult.Secondary))
@@ -60,16 +77,15 @@ public sealed partial class SettingsPage : Page
             return;
         }
 
-        AccountsViewModel.RemoveAccount(loginIdToRemove);
+        AccountsPageViewModel.AccountsProviders.First().RemoveAccount(loginIdToRemove);
 
-        var afterLogoutContentDialog = new ContentDialog()
+        var afterLogoutContentDialog = new ContentDialog
         {
             Title = "Logout Successful",
             Content = loginIdToRemove + " has successfully logged out",
             PrimaryButtonText = "OK",
+            XamlRoot = XamlRoot,
         };
-
-        afterLogoutContentDialog.XamlRoot = this.XamlRoot;
         _ = await afterLogoutContentDialog.ShowAsync();
     }
 }

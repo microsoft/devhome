@@ -16,11 +16,20 @@
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
 
-        <DataTemplate x:Key="AccountsViewTemplate" x:DataType="viewmodels:AccountViewModel">
+        <DataTemplate x:Key="AccountsProviderViewTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
             <StackPanel>
                 <StackPanel>
-                    <TextBlock Text="GitHub" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource XSmallTopMargin}"/>
+                    <TextBlock Text="{x:Bind ProviderName}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource XSmallTopMargin}"/>
                 </StackPanel>
+                <StackPanel>
+                    <ItemsRepeater ItemsSource="{x:Bind LoggedInAccounts}" ItemTemplate="{StaticResource AccountsViewTemplate}"
+                                    HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
+                    </ItemsRepeater>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="AccountsViewTemplate" x:DataType="viewmodels:AccountViewModel">
                 <StackPanel Margin="{StaticResource XSmallTopMargin}">
                     <Expander Style="{StaticResource AccountsExpander}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" IsExpanded="False">
                         <Expander.Header>
@@ -37,7 +46,6 @@
                         </Expander.Header>
                     </Expander>
                 </StackPanel>
-            </StackPanel>
         </DataTemplate>
     </Page.Resources>
     <Grid>
@@ -64,7 +72,7 @@
                 </StackPanel>
 
                 <StackPanel>
-                    <ItemsRepeater ItemsSource="{x:Bind AccountsViewModel.LoggedInAccounts}" ItemTemplate="{StaticResource AccountsViewTemplate}"
+                    <ItemsRepeater ItemsSource="{x:Bind AccountsPageViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderViewTemplate}"
                             HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
                     </ItemsRepeater>
                 </StackPanel>
