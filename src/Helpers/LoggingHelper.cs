@@ -1,24 +1,28 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using DevHome.Telemetry;
-using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Helpers;
 public static class LoggingHelper
 {
-    public static void LoginEvent_Critical(string providerName, string loginId)
+    public static void AccountEvent_Critical(string eventName, string providerName, string loginId)
     {
-        LoggerFactory.Get<ILogger>().Log($"LoggedInEvent", LogLevel.Critical, $"DevIdProvider: {providerName} developerId: {loginId}");
-    }
+        using SHA256 mySHA256 = SHA256.Create();
+        var loginIdBytes = Encoding.ASCII.GetBytes(loginId);
+        var hashedLoginId = mySHA256.ComputeHash(loginIdBytes);
+        if (BitConverter.IsLittleEndian)
+        {
+            Array.Reverse(hashedLoginId);
+        }
 
-    public static void LogoutEvent_Critical(string providerName, string loginId)
-    {
-        LoggerFactory.Get<ILogger>().Log($"LoggedOutEvent", LogLevel.Critical, $"DevIdProvider: {providerName} developerId: {loginId}");
+        var hashedLoginIdString = BitConverter.ToString(hashedLoginId).Replace("-", string.Empty);
+        Trace.WriteLine("Hash value: " + hashedLoginIdString);
+
+        // TODO: Instead of LoginId, hash a globally unique id of DeveloperId (like url)
+        LoggerFactory.Get<ILogger>().Log($"{eventName}", LogLevel.Critical, $"DevIdProvider: {providerName} developerId: {hashedLoginIdString}");
     }
 }

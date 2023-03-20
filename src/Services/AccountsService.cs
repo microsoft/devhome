@@ -36,8 +36,8 @@ public class AccountsService : IAccountsService
             {
                 _accountsDictionary.Add(iDevIdProvider, iDevIdProvider.GetLoggedInDeveloperIds().ToList());
 
-                iDevIdProvider.LoggedIn += LoggedInEventHandler;
-                iDevIdProvider.LoggedOut += LoggedOutEventHandler;
+                iDevIdProvider.LoggedIn += OnLogin;
+                iDevIdProvider.LoggedOut += OnLogout;
             }
         }
     }
@@ -56,12 +56,12 @@ public class AccountsService : IAccountsService
         return new List<IDeveloperId>();
     }
 
-    public void LoggedInEventHandler(object? sender, IDeveloperId developerId)
+    public void OnLogin(object? sender, IDeveloperId developerId)
     {
         if (sender is IDevIdProvider iDevIdProvider)
         {
             _accountsDictionary[iDevIdProvider].Add(developerId);
-            LoggingHelper.LoginEvent_Critical(iDevIdProvider.GetName(), developerId.LoginId());
+            LoggingHelper.AccountEvent_Critical("LoggedInEvent", iDevIdProvider.GetName(), developerId.LoginId());
         }
         else
         {
@@ -69,12 +69,12 @@ public class AccountsService : IAccountsService
         }
     }
 
-    public void LoggedOutEventHandler(object? sender, IDeveloperId developerId)
+    public void OnLogout(object? sender, IDeveloperId developerId)
     {
         if (sender is IDevIdProvider iDevIdProvider)
         {
             _accountsDictionary[iDevIdProvider].Remove(developerId);
-            LoggingHelper.LogoutEvent_Critical(iDevIdProvider.GetName(), developerId.LoginId());
+            LoggingHelper.AccountEvent_Critical("LoggedOutEvent", iDevIdProvider.GetName(), developerId.LoginId());
         }
         else
         {
