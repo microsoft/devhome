@@ -10,6 +10,7 @@ using DevHome.Core.Services;
 using DevHome.Helpers;
 using DevHome.Models;
 using DevHome.Services;
+using DevHome.SetupFlow.Extensions;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -85,6 +86,9 @@ public partial class App : Application, IApp
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
+
+            // Setup flow
+            services.AddSetupFlow();
         }).
         Build();
 
