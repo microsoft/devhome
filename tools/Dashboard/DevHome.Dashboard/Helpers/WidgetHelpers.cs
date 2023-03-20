@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using System.Linq;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
@@ -31,32 +32,19 @@ internal class WidgetHelpers
     {
         // The default size of the widget should be priortized as Medium, Large, Small.
         // This matches the size preferences of the Windows Widget Dashboard.
-        var sizeS = false;
-        var sizeM = false;
-        var sizeL = false;
+        var hasSizeS = capabilities.Any(cap => cap.Size == WidgetSize.Small);
+        var hasSizeM = capabilities.Any(cap => cap.Size == WidgetSize.Medium);
+        var hasSizeL = capabilities.Any(cap => cap.Size == WidgetSize.Large);
 
-        foreach (var cap in capabilities)
-        {
-            switch (cap.Size)
-            {
-                case WidgetSize.Small:
-                    sizeS = true; break;
-                case WidgetSize.Medium:
-                    sizeM = true; break;
-                case WidgetSize.Large:
-                    sizeL = true; break;
-            }
-        }
-
-        if (sizeM)
+        if (hasSizeM)
         {
             return WidgetSize.Medium;
         }
-        else if (sizeL)
+        else if (hasSizeL)
         {
             return WidgetSize.Large;
         }
-        else if (sizeS)
+        else if (hasSizeS)
         {
             return WidgetSize.Small;
         }
