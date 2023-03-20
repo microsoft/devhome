@@ -6,6 +6,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common;
+using DevHome.Common.Extensions;
+using DevHome.Contracts.Services;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -63,10 +65,12 @@ public partial class DashboardView : ToolPage
 
     private async void AddWidgetButton_Click(object sender, RoutedEventArgs e)
     {
+        var themeService = Application.Current.GetService<IThemeSelectorService>();
         var dialog = new AddWidgetDialog(_widgetHost, _widgetCatalog, _renderer, _dispatcher)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
+            RequestedTheme = themeService.Theme,
         };
         _ = await dialog.ShowAsync();
 
