@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -27,7 +25,6 @@ public static class ServiceExtensions
         services.AddTransient<SetupFlowViewModel>();
 
         // Services
-        services.AddSingleton(LoggerFactory.Get<ILogger>());
         services.AddSingleton<SetupFlowStringResource>();
         services.AddSingleton<SetupFlowOrchestrator>();
 

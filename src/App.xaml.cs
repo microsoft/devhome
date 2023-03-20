@@ -11,6 +11,7 @@ using DevHome.Helpers;
 using DevHome.Models;
 using DevHome.Services;
 using DevHome.SetupFlow.Extensions;
+using DevHome.Telemetry;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -66,6 +67,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IAccountsService, AccountsService>();
+            services.AddSingleton<ILogger>(LoggerFactory.Get<ILogger>());
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
