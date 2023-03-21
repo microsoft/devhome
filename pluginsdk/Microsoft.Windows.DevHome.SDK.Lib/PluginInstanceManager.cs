@@ -26,6 +26,8 @@ internal class PluginInstanceManager<T> : IClassFactory
 
     private const int E_ACCESSDENIED = unchecked((int)0x80070005);
 
+    private static HANDLE CURRENT_THREAD_PSEUDO_HANDLE = (HANDLE)(IntPtr)(-6);
+
     private static readonly Guid IID_IUnknown = Guid.Parse("00000000-0000-0000-C000-000000000046");
 
 #pragma warning restore SA1310 // Field names should not contain underscore
@@ -81,16 +83,16 @@ internal class PluginInstanceManager<T> : IClassFactory
             return false;
         }
 
-        uint a = 0;
-        if (PInvoke.GetPackageFamilyNameFromToken((HANDLE)(IntPtr)(-6), &a, null) != WIN32_ERROR.ERROR_INSUFFICIENT_BUFFER)
+        uint buffer = 0;
+        if (PInvoke.GetPackageFamilyNameFromToken(CURRENT_THREAD_PSEUDO_HANDLE, &buffer, null) != WIN32_ERROR.ERROR_INSUFFICIENT_BUFFER)
         {
             return false;
         }
 
-        var value = new char[a];
+        var value = new char[buffer];
         fixed (char* p = value)
         {
-            if (PInvoke.GetPackageFamilyNameFromToken((HANDLE)(IntPtr)(-6), &a, p) != 0)
+            if (PInvoke.GetPackageFamilyNameFromToken(CURRENT_THREAD_PSEUDO_HANDLE, &buffer, p) != 0)
             {
                 return false;
             }
