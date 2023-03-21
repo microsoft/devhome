@@ -11,7 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AdaptiveCards.Templating" Version="1.4.0" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.Primitives" Version="7.1.2" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.*-*" />
@@ -20,8 +21,10 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.8" />
     <PackageReference Include="WinUIEx" Version="1.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	<PackageReference Include="CommunityToolkit.WinUI.UI.Animations" Version="7.1.2" />
     <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="0.0.1" />
     <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="0.0.1" />
+	<PackageReference Include="AdaptiveCards.Templating" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>

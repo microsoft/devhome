@@ -10,7 +10,7 @@ internal class LoginUI : IPluginAdaptiveCardController
 {
     private IPluginAdaptiveCard pluginUI;
 
-    public void Create(IPluginAdaptiveCard pluginUI)
+    public void Initialize(IPluginAdaptiveCard pluginUI)
     {
         this.pluginUI = pluginUI;
 

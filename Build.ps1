@@ -101,6 +101,12 @@ Try {
         }
       }
     }
+
+    # Reset the version in appxmanifest to prevent unnecessary code changes
+    $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
+    $xName = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
+    $appxmanifest.Root.Element($xName).Attribute("Version").Value = "0.0.0.0"
+    $appxmanifest.Save($appxmanifestPath)
   }
 
   if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msixbundle")) {
@@ -120,7 +126,7 @@ Try {
 
 $TotalTime = (Get-Date)-$StartTime
 $TotalMinutes = [math]::Floor($TotalTime.TotalMinutes)
-$TotalSeconds = [math]::Ceiling($TotalTime.TotalSeconds)
+$TotalSeconds = [math]::Ceiling($TotalTime.TotalSeconds) - ($totalMinutes * 60)
 
 if (-not($isAdmin)) {
   Write-Host @"

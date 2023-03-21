@@ -11,63 +11,81 @@ using static DevHome.SetupFlow.RepoConfig.Models.Common;
 
 namespace DevHome.SetupFlow.RepoConfig.Models;
 
-/// <summary>
-/// Used to shuttle information between RepoConfigView and AddRepoDialog.
-/// Specifically this contains all information needed to clone repositories to a user's machine.
+/// <summary>.
+/// Contains all information needed to clone repositories to a user's machine.
+/// One CloneInformation per repository
 /// </summary>
-public class CloningInformation
+public partial class CloningInformation : ObservableObject, IEquatable<CloningInformation>
 {
-    internal string UrlOrUsernameRepo
+    /// <summary>
+    /// Gets or sets the repository the user wants to clone.
+    /// </summary>
+    public IRepository RepositoryToClone
     {
         get; set;
-    }
-
-    internal Dictionary<IDeveloperId, List<IRepository>> RepositoriesToClone
-    {
-        get; set;
-    }
-
-    internal DirectoryInfo CloneLocation
-    {
-        get; set;
-    }
-
-    internal CurrentPage CurrentPage
-    {
-        get; set;
-    }
-
-    internal CloneLocationSelectionMethod CloneLocationSelectionMethod
-    {
-        get; set;
-    }
-
-    public CloningInformation()
-    {
-        UrlOrUsernameRepo = string.Empty;
-        RepositoriesToClone = new ();
-        CloneLocation = null;
-        CurrentPage = CurrentPage.AddViaUrl;
-        CloneLocationSelectionMethod = CloneLocationSelectionMethod.LocalPath;
     }
 
     /// <summary>
-    /// If the repository exists, it is removed from the list.
-    /// If the repository does not exist, it is added to the list.
+    /// Full path the user wants to clone the repository.
+    /// RepoConfigTaskGroup appends other directories at the end of CloningLocation to make sure that
+    /// two repositories aren't cloned to the same location.
     /// </summary>
-    /// <param name="account">Used to find the repository</param>
-    /// <param name="repositoryToAddOrRemove">The repository to add or remove from the list</param>
-    public void AddRepositoryOrRemoveIfExists(IDeveloperId account, IRepository repositoryToAddOrRemove)
-    {
-        RepositoriesToClone.TryAdd(account, new List<IRepository>());
+    [ObservableProperty]
+    private DirectoryInfo _cloningLocation;
 
-        if (!RepositoriesToClone[account].Any(x => x.DisplayName().Equals(repositoryToAddOrRemove.DisplayName(), StringComparison.OrdinalIgnoreCase)))
+    /// <summary>
+    /// Gets or sets the account that owns the repository.
+    /// </summary>
+    public IDeveloperId OwningAccount
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the repository provider that the user used to log into their account.
+    /// </summary>
+    public string ProviderName
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets the repo name and formats it for the Repo Review view.
+    /// </summary>
+    public string RepositoryId => $"{OwningAccount.LoginId() ?? string.Empty}/{RepositoryToClone.DisplayName() ?? string.Empty}";
+
+    /// <summary>
+    /// Gets the clone path the user wants ot clone the repo to.
+    /// </summary>
+    public string ClonePath => CloningLocation.FullName ?? string.Empty;
+
+    /// <summary>
+    /// Compares two CloningInformations for equality.
+    /// </summary>
+    /// <param name="other">The CloningInformation to compare to.</param>
+    /// <returns>True if equal.</returns>
+    /// <remarks>
+    /// ProviderName, OwningAccount, and RepositoryToClone are used for equality.
+    /// </remarks>
+    public bool Equals(CloningInformation other)
+    {
+        if (other == null)
         {
-            RepositoriesToClone[account].Add(repositoryToAddOrRemove);
+            return false;
         }
-        else
-        {
-            RepositoriesToClone[account].Remove(repositoryToAddOrRemove);
-        }
+
+        return ProviderName.Equals(other.ProviderName, StringComparison.OrdinalIgnoreCase) &&
+            OwningAccount.LoginId().Equals(other.OwningAccount.LoginId(), StringComparison.OrdinalIgnoreCase) &&
+            RepositoryToClone.DisplayName().Equals(other.RepositoryToClone.DisplayName(), StringComparison.OrdinalIgnoreCase);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as CloningInformation);
+    }
+
+    public override int GetHashCode()
+    {
+        return (ProviderName + OwningAccount.LoginId() + RepositoryToClone.DisplayName()).GetHashCode();
     }
 }

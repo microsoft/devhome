@@ -2,12 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
@@ -57,7 +52,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private string _actionCenterDisplay;
 
-    public LoadingViewModel(ILogger logger, IStringResource stringResource, IHost host)
+    public LoadingViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host)
         : base(stringResource)
     {
         _logger = logger;

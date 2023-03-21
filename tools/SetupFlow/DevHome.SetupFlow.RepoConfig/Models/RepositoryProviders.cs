@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.RepoConfig.Models;
@@ -17,26 +18,57 @@ namespace DevHome.SetupFlow.RepoConfig.Models;
 /// </remarks>
 internal class RepositoryProviders
 {
+    /// <summary>
+    /// Hold all providers and organize by their names.
+    /// </summary>
     private readonly Dictionary<string, RepositoryProvider> _providers = new ();
 
-    public RepositoryProviders(IEnumerable<IPlugin> providers)
+    public RepositoryProviders(IEnumerable<IPluginWrapper> pluginWrappers)
     {
-        foreach (var provider in providers)
+        _providers = pluginWrappers.ToDictionary(pluginWrapper => pluginWrapper.Name, pluginWrapper => new RepositoryProvider(pluginWrapper));
+    }
+
+    /// <summary>
+    /// Starts a provider if it isn't running.
+    /// </summary>
+    /// <param name="providerName">The provider to start.</param>
+    /// <returns>An awaitable task</returns>
+    public async Task StartIfNotRunningAsync(string providerName)
+    {
+        if (_providers.ContainsKey(providerName))
         {
-            if (provider.GetProvider(ProviderType.Repository) is IRepositoryProvider repositoryProvider)
+            await _providers[providerName].StartIfNotRunningAsync();
+        }
+    }
+
+    /// <summary>
+    /// Goes through all providers to figure out if they can make a repo from a Uri.
+    /// </summary>
+    /// <param name="uri">The Uri to parse.</param>
+    /// <returns>If a provider was found that can parse the Uri then (providerName, repository) in not
+    /// (string.empty, null)</returns>
+    public async Task<(string, IRepository)> ParseRepositoryFromUriAsync(Uri uri)
+    {
+        foreach (var provider in _providers)
+        {
+            await provider.Value.StartIfNotRunningAsync();
+            var repository = provider.Value.ParseRepositoryFromUri(uri);
+            if (repository != null)
             {
-                this._providers.Add(repositoryProvider.GetDisplayName(), new RepositoryProvider(provider));
+                return (provider.Key, repository);
             }
         }
+
+        return (string.Empty, null);
     }
 
     /// <summary>
     /// Logs the user into a certain provider.
     /// </summary>
     /// <param name="providerName">The provider to log the user into.  Must match IRepositoryProvider.GetDisplayName</param>
-    public void LogInToProvider(string providerName)
+    public async Task LogInToProvider(string providerName)
     {
-        _providers.GetValueOrDefault(providerName)?.LogIntoProvider();
+        await _providers.GetValueOrDefault(providerName)?.LogIntoProvider();
     }
 
     /// <summary>

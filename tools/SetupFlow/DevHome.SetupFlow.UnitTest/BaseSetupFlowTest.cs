@@ -4,6 +4,7 @@
 using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;
+using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -38,10 +39,10 @@ public class BaseSetupFlowTest
             {
                 // Common services
                 services.AddSingleton<ILogger>(new Mock<ILogger>().Object);
-                services.AddSingleton<IStringResource>(_ =>
+                services.AddSingleton<ISetupFlowStringResource>(_ =>
                 {
                     // Configure string resource localization to return the input key
-                    var stringResource = new Mock<IStringResource>();
+                    var stringResource = new Mock<ISetupFlowStringResource>();
                     stringResource
                         .Setup(sr => sr.GetLocalized(It.IsAny<string>(), It.IsAny<object[]>()))
                         .Returns((string key, object[] args) => key);

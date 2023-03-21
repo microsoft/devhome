@@ -26,4 +26,15 @@ internal class WidgetHelpers
 
         return largest;
     }
+
+    public static double GetPixelHeightFromWidgetSize(WidgetSize size)
+    {
+        return size switch
+        {
+            WidgetSize.Small => WidgetPxHeightSmall,
+            WidgetSize.Medium => WidgetPxHeightMedium,
+            WidgetSize.Large => WidgetPxHeightLarge,
+            _ => 0,
+        };
+    }
 }

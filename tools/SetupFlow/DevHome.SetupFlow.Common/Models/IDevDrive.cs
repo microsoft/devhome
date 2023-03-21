@@ -3,7 +3,7 @@
 
 using System;
 
-namespace DevHome.SetupFlow.DevDrive.Models;
+namespace DevHome.Common.Models;
 
 /// <summary>
 /// Enum to provide callers with the state of the Dev Drive. Dev Drive creation functionality must go through the

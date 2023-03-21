@@ -38,7 +38,7 @@ public partial class SearchViewModel : ObservableObject
     private readonly IHost _host;
     private readonly ILogger _logger;
     private readonly IWindowsPackageManager _wpm;
-    private readonly IStringResource _stringResource;
+    private readonly ISetupFlowStringResource _stringResource;
     private const int SearchResultLimit = 20;
 
     /// <summary>
@@ -65,7 +65,7 @@ public partial class SearchViewModel : ObservableObject
     /// </summary>
     public string NoSearchResultsText => _stringResource.GetLocalized(StringResourceKey.NoSearchResultsFoundTitle, SearchText);
 
-    public SearchViewModel(IHost host, ILogger logger, IWindowsPackageManager wpm, IStringResource stringResource)
+    public SearchViewModel(IHost host, ILogger logger, IWindowsPackageManager wpm, ISetupFlowStringResource stringResource)
     {
         _host = host;
         _wpm = wpm;

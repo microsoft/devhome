@@ -2,10 +2,14 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using Windows.ApplicationModel.Background;
 using Windows.Foundation;
 using Windows.Storage;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.Security;
 using WinRT;
 
 namespace Microsoft.Windows.DevHome.SDK;
@@ -16,9 +20,11 @@ internal class PluginInstanceManager<T> : IClassFactory
 {
 #pragma warning disable SA1310 // Field names should not contain underscore
 
-    private const int E_NOINTERFACE = unchecked((int)0x800004002);
+    private const int E_NOINTERFACE = unchecked((int)0x80004002);
 
     private const int CLASS_E_NOAGGREGATION = unchecked((int)0x80040110);
+
+    private const int E_ACCESSDENIED = unchecked((int)0x80070005);
 
     private static readonly Guid IID_IUnknown = Guid.Parse("00000000-0000-0000-C000-000000000046");
 
@@ -26,9 +32,12 @@ internal class PluginInstanceManager<T> : IClassFactory
 
     private readonly Func<T> _createPlugin;
 
-    public PluginInstanceManager(Func<T> createPlugin)
+    private readonly bool _restrictToMicrosoftPluginHosts;
+
+    public PluginInstanceManager(Func<T> createPlugin, bool restrictToMicrosoftPluginHosts)
     {
         this._createPlugin = createPlugin;
+        this._restrictToMicrosoftPluginHosts = restrictToMicrosoftPluginHosts;
     }
 
     public void CreateInstance(
@@ -36,6 +45,11 @@ internal class PluginInstanceManager<T> : IClassFactory
         ref Guid riid,
         out IntPtr ppvObject)
     {
+        if (_restrictToMicrosoftPluginHosts && !IsMicrosoftPluginHost())
+        {
+            Marshal.ThrowExceptionForHR(E_ACCESSDENIED);
+        }
+        
         ppvObject = IntPtr.Zero;
 
         if (pUnkOuter != null)
@@ -58,6 +72,53 @@ internal class PluginInstanceManager<T> : IClassFactory
 
     public void LockServer([MarshalAs(UnmanagedType.Bool)] bool fLock)
     {
+    }
+
+    private unsafe bool IsMicrosoftPluginHost()
+    {
+        if (PInvoke.CoImpersonateClient() != 0)
+        {
+            return false;
+        }
+        
+        HANDLE callerToken = HANDLE.Null;
+        if (PInvoke.OpenThreadToken(PInvoke.GetCurrentThread(), TOKEN_ACCESS_MASK.TOKEN_QUERY, true, &callerToken) != 0)
+        {
+            return false;
+        }
+
+        if (PInvoke.CoRevertToSelf() != 0)
+        {
+            return false;
+        }
+
+        uint a = 0;
+        if (PInvoke.GetPackageFamilyNameFromToken(callerToken, &a, null) != 0)
+        {
+            return false;
+        }
+
+        var value = new char[a];
+        fixed (char* p = value)
+        {
+            if (PInvoke.GetPackageFamilyNameFromToken(callerToken, &a, p) != 0)
+            {
+                return false;
+            }
+        }
+
+        var valueStr = new string(value);
+        switch (valueStr)
+        {
+            case "Microsoft.Windows.DevHome_8wekyb3d8bbwe\0":
+            case "Microsoft.WindowsTerminal\0":
+            case "Microsoft.WindowsTerminal_8wekyb3d8bbwe\0":
+            case "WindowsTerminalDev_8wekyb3d8bbwe\0":
+            case "Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\0":
+                return true;
+            default:
+                return false;
+        }
     }
 }
 
