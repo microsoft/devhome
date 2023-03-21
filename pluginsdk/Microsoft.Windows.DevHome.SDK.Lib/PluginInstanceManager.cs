@@ -26,6 +26,8 @@ internal class PluginInstanceManager<T> : IClassFactory
 
     private const int E_ACCESSDENIED = unchecked((int)0x80070005);
 
+    // Known constant ignored by win32metadata and cswin32 projections.
+    // https://github.com/microsoft/win32metadata/blob/main/generation/WinSDK/RecompiledIdlHeaders/um/processthreadsapi.h
     private static HANDLE CURRENT_THREAD_PSEUDO_HANDLE = (HANDLE)(IntPtr)(-6);
 
     private static readonly Guid IID_IUnknown = Guid.Parse("00000000-0000-0000-C000-000000000046");
