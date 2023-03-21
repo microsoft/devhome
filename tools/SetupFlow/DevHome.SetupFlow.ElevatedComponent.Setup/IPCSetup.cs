@@ -60,8 +60,6 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 ////   ElevatedComponent.Projection that uses the WinMD to generate the
 ////   projections. The code here is called from both sides, so it needs
 ////   to work for different versions of the same type
-////
-//// TODO: Copy winmd
 public static class IPCSetup
 {
     /// <summary>
@@ -117,7 +115,7 @@ public static class IPCSetup
     /// <returns>A factory that creates WinRT objects in the background process.</returns>
     public static RemoteObject<T> CreateOutOfProcessObject<T>()
     {
-        (var remoteObject, _) = CreateOutOfProcessObjectAndGetProcess<T>(runBackgroundProcessElevated: true);
+        (var remoteObject, _) = CreateOutOfProcessObjectAndGetProcess<T>();
         return remoteObject;
     }
 
@@ -134,7 +132,7 @@ public static class IPCSetup
     /// A factory that creates WinRT objects in the background process,
     /// and the process object for the background process.
     /// </returns>
-    public static (RemoteObject<T>, Process) CreateOutOfProcessObjectAndGetProcess<T>(bool runBackgroundProcessElevated)
+    public static (RemoteObject<T>, Process) CreateOutOfProcessObjectAndGetProcess<T>(bool isForTesting = false)
     {
         // The shared memory block, initialization event and completion mutex all need a name
         // that will be used by the child process to find them. We use new random GUIDs for them.
@@ -167,97 +165,103 @@ public static class IPCSetup
 
         // Create a mutex to hold on to to ensure keep the background process alive.
         var completionMutex = new Mutex(initiallyOwned: true, completionMutexName);
-
-        // Start the elevated process.
-        // Command is: <server>.exe <mapped memory name> <event name> <mutex name>
-        var serverArgs = $"{mappedFileName} {initEventName} {completionMutexName}";
-        var serverPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DevHome.SetupFlow.ElevatedServer.exe");
-
-        var processStartupInfo = new ProcessStartInfo
+        try
         {
-            FileName = serverPath,
-            Arguments = serverArgs,
-            CreateNoWindow = true,
-        };
+            // Start the elevated process.
+            // Command is: <server>.exe <mapped memory name> <event name> <mutex name>
+            var serverArgs = $"{mappedFileName} {initEventName} {completionMutexName}";
+            var serverPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DevHome.SetupFlow.ElevatedServer.exe");
 
-        if (runBackgroundProcessElevated)
-        {
             // We need to start the process with ShellExecute to run elevated
-            processStartupInfo.UseShellExecute = true;
-            processStartupInfo.Verb = "runas";
-        }
-        else
-        {
-            // If we are not running elevated, we can run without ShellExecute
-            // and get the process output. This is useful for testing.
-            processStartupInfo.UseShellExecute = false;
-            processStartupInfo.RedirectStandardOutput = true;
-        }
-
-        var process = Process.Start(processStartupInfo);
-        if (process is null)
-        {
-            throw new InvalidOperationException("Failed to start background process");
-        }
-
-        // Wait for the background process to finish initializing the object and writing
-        // it to the shared memory. The timeout is arbitrary and can be changed.
-        // We also stop waiting if the process exits.
-        process.Exited += (_, _) => { initEvent.Set(); };
-        if (!initEvent.WaitOne(60 * 1000))
-        {
-            throw new TimeoutException("Background process failed to initialized in the allowed time");
-        }
-
-        if (process.HasExited)
-        {
-            throw new InvalidOperationException("Background process terminated");
-        }
-
-        // Read the initialization result and the factory size
-        using (var mappedFileAccessor = mappedFile.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Read))
-        {
-            mappedFileAccessor.Read(0, out mappedMemoryValue);
-            Marshal.ThrowExceptionForHR(mappedMemoryValue.HResult);
-        }
-
-        // Read the marshalling object
-        Marshal.ThrowExceptionForHR(PInvoke.CreateStreamOnHGlobal(0, fDeleteOnRelease: true, out var stream));
-
-        using (var mappedFileAccessor = mappedFile.CreateViewAccessor())
-        {
-            unsafe
+            var processStartupInfo = new ProcessStartInfo
             {
-                // Copy the object into an IStream that we can use with CoUnmarshalInterface
-                byte* rawPointer = null;
-                uint bytesWritten;
-                try
-                {
-                    mappedFileAccessor.SafeMemoryMappedViewHandle.AcquirePointer(ref rawPointer);
-                    Marshal.ThrowExceptionForHR(stream.Write(rawPointer + MappedMemoryValueSizeInBytes, (uint)mappedMemoryValue.MarshaledObjectSize, &bytesWritten));
-                }
-                finally
-                {
-                    if (rawPointer != null)
-                    {
-                        mappedFileAccessor.SafeMemoryMappedViewHandle.ReleasePointer();
-                    }
-                }
+                FileName = serverPath,
+                Arguments = serverArgs,
+                //// CreateNoWindow = true,
+                UseShellExecute = true,
+                Verb = "runas",
+            };
 
-                if (bytesWritten != mappedMemoryValue.MarshaledObjectSize)
-                {
-                    throw new InvalidDataException("Shared memory stream has unexpected data");
-                }
-
-                // Reset the stream to the beginning before reading the object
-                stream.Seek(0, SeekOrigin.Begin);
+            if (isForTesting)
+            {
+                // For testing we run without ShellExecute so we can inspect the process output.
+                // This has the side effect of not running elevated.
+                processStartupInfo.UseShellExecute = false;
+                processStartupInfo.RedirectStandardOutput = true;
             }
+
+            var process = Process.Start(processStartupInfo);
+            if (process is null)
+            {
+                throw new InvalidOperationException("Failed to start background process");
+            }
+
+            // Wait for the background process to finish initializing the object and writing
+            // it to the shared memory. The timeout is arbitrary and can be changed.
+            // We also stop waiting if the process exits.
+            process.Exited += (_, _) => { initEvent.Set(); };
+            if (!initEvent.WaitOne(60 * 1000))
+            {
+                throw new TimeoutException("Background process failed to initialized in the allowed time");
+            }
+
+            if (process.HasExited)
+            {
+                throw new InvalidOperationException("Background process terminated");
+            }
+
+            // Read the initialization result and the factory size
+            using (var mappedFileAccessor = mappedFile.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Read))
+            {
+                mappedFileAccessor.Read(0, out mappedMemoryValue);
+                Marshal.ThrowExceptionForHR(mappedMemoryValue.HResult);
+            }
+
+            // Read the marshalling object
+            Marshal.ThrowExceptionForHR(PInvoke.CreateStreamOnHGlobal(0, fDeleteOnRelease: true, out var stream));
+
+            using (var mappedFileAccessor = mappedFile.CreateViewAccessor())
+            {
+                unsafe
+                {
+                    // Copy the object into an IStream that we can use with CoUnmarshalInterface
+                    byte* rawPointer = null;
+                    uint bytesWritten;
+                    try
+                    {
+                        mappedFileAccessor.SafeMemoryMappedViewHandle.AcquirePointer(ref rawPointer);
+                        Marshal.ThrowExceptionForHR(stream.Write(rawPointer + MappedMemoryValueSizeInBytes, (uint)mappedMemoryValue.MarshaledObjectSize, &bytesWritten));
+                    }
+                    finally
+                    {
+                        if (rawPointer != null)
+                        {
+                            mappedFileAccessor.SafeMemoryMappedViewHandle.ReleasePointer();
+                        }
+                    }
+
+                    if (bytesWritten != mappedMemoryValue.MarshaledObjectSize)
+                    {
+                        throw new InvalidDataException("Shared memory stream has unexpected data");
+                    }
+
+                    // Reset the stream to the beginning before reading the object
+                    stream.Seek(0, SeekOrigin.Begin);
+                }
+            }
+
+            Marshal.ThrowExceptionForHR(PInvoke.CoUnmarshalInterface(stream, GetMarshalInterfaceGUID<T>(), out var obj));
+            var value = MarshalInterface<T>.FromAbi(Marshal.GetIUnknownForObject(obj));
+
+            return (new RemoteObject<T>(value, completionMutex), process);
         }
-
-        Marshal.ThrowExceptionForHR(PInvoke.CoUnmarshalInterface(stream, GetMarshalInterfaceGUID<T>(), out var obj));
-        var value = MarshalInterface<T>.FromAbi(Marshal.GetIUnknownForObject(obj));
-
-        return (new RemoteObject<T>(value, completionMutex), process);
+        catch
+        {
+            // Release the mutex if there is any error.
+            // On success, we will release it after we're done with the work.
+            completionMutex.ReleaseMutex();
+            throw;
+        }
     }
 
     /// <summary>

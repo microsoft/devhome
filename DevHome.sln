@@ -78,12 +78,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.SetupFlow.ElevatedS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.SetupFlow.ElevatedComponent", "tools\SetupFlow\DevHome.SetupFlow.ElevatedComponent\DevHome.SetupFlow.ElevatedComponent.csproj", "{A7E5FD7B-B41A-4CAE-A45A-E686DFA8ACF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevHome.SetupFlow.ElevatedComponent.Setup", "tools\SetupFlow\DevHome.SetupFlow.ElevatedComponent.Setup\DevHome.SetupFlow.ElevatedComponent.Setup.csproj", "{B0DE9F34-90E8-4A4C-AD37-BBE4DFE6CD5B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.SetupFlow.ElevatedComponent.Setup", "tools\SetupFlow\DevHome.SetupFlow.ElevatedComponent.Setup\DevHome.SetupFlow.ElevatedComponent.Setup.csproj", "{B0DE9F34-90E8-4A4C-AD37-BBE4DFE6CD5B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A7E5FD7B-B41A-4CAE-A45A-E686DFA8ACF1} = {A7E5FD7B-B41A-4CAE-A45A-E686DFA8ACF1}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevHome.SetupFlow.ElevatedComponent.Projection", "tools\SetupFlow\DevHome.SetupFlow.ElevatedComponent.Projection\DevHome.SetupFlow.ElevatedComponent.Projection.csproj", "{053AF75C-5CD8-497F-BA25-47435BD86047}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.SetupFlow.ElevatedComponent.Projection", "tools\SetupFlow\DevHome.SetupFlow.ElevatedComponent.Projection\DevHome.SetupFlow.ElevatedComponent.Projection.csproj", "{053AF75C-5CD8-497F-BA25-47435BD86047}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A7E5FD7B-B41A-4CAE-A45A-E686DFA8ACF1} = {A7E5FD7B-B41A-4CAE-A45A-E686DFA8ACF1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

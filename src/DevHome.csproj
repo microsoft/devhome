@@ -37,7 +37,6 @@
 		<ProjectReference Include="..\common\DevHome.Common.csproj" />
 		<ProjectReference Include="..\tools\SampleTool\src\SampleTool.csproj" />
 		<ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
-		<ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow.ElevatedServer\DevHome.SetupFlow.ElevatedServer.csproj" />
 		<ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
 	</ItemGroup>
 	<ItemGroup>
@@ -62,5 +61,13 @@
 
 	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
 		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+	</PropertyGroup>
+
+	<!-- In the setup flow there is a WinRT component that gets consumed by project reference
+	     in some places and by referencing the .winmd in others. This results in multiple
+	     projects having the .winmd as output, which causes a build error. We disable that
+	     check for now, but we should find a solution that doesn't require it. -->
+	<PropertyGroup>
+		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
 	</PropertyGroup>
 </Project>
