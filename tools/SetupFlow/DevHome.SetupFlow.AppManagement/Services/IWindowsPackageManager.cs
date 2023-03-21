@@ -3,6 +3,7 @@
 
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Models;
+using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.AppManagement.Services;
 
@@ -12,6 +13,22 @@ namespace DevHome.SetupFlow.AppManagement.Services;
 /// </summary>
 public interface IWindowsPackageManager
 {
+    /// <summary>
+    /// Gets the predefined WinGet catalog id
+    /// </summary>
+    public string WinGetCatalogId
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the predefined MsStore catalog id
+    /// </summary>
+    public string MsStoreId
+    {
+        get;
+    }
+
     /// <summary>
     /// Gets a composite catalog for all remote and local catalogs.
     /// </summary>
@@ -29,7 +46,7 @@ public interface IWindowsPackageManager
     }
 
     /// <summary>
-    /// Opens all predefined catalogs.
+    /// Opens all custom composite catalogs.
     /// </summary>
     /// <exception cref="CatalogConnectionException">Exception thrown if a catalog connection failed</exception>
     public Task ConnectToAllCatalogsAsync();

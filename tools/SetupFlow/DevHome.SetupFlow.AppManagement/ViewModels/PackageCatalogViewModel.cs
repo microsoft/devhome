@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Models;
+using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 
@@ -32,12 +33,12 @@ public partial class PackageCatalogViewModel : ObservableObject
     /// </summary>
     public event EventHandler<PackageViewModel> PackageSelectionChanged;
 
-    public PackageCatalogViewModel(PackageCatalog packageCatalog)
+    public PackageCatalogViewModel(IHost host, PackageCatalog packageCatalog)
     {
         _packageCatalog = packageCatalog;
         Packages = packageCatalog.Packages.Select(p =>
         {
-            var packageViewModel = new PackageViewModel(p);
+            var packageViewModel = host.CreateInstance<PackageViewModel>(p);
             packageViewModel.SelectionChanged += (sender, eventArg) => PackageSelectionChanged?.Invoke(sender, eventArg);
             return packageViewModel;
         }).ToReadOnlyCollection();
