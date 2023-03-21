@@ -53,14 +53,15 @@ public partial class DashboardView : ToolPage
         _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
     }
 
-    private void RestorePinnedWidgets(object sender, RoutedEventArgs e)
+    private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
     {
         var pinnedWidgets = _widgetHost.GetWidgets();
         if (pinnedWidgets != null)
         {
             foreach (var widget in pinnedWidgets)
             {
-                AddWidgetToPinnedWidgets(widget, false);
+                var size = await widget.GetSizeAsync();
+                AddWidgetToPinnedWidgets(widget, size);
             }
         }
     }
@@ -80,23 +81,14 @@ public partial class DashboardView : ToolPage
 
         if (newWidget != null)
         {
-            AddWidgetToPinnedWidgets(newWidget, true);
+            var widgetDef = _widgetCatalog.GetWidgetDefinition(newWidget.DefinitionId);
+            var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
+            AddWidgetToPinnedWidgets(newWidget, size);
         }
     }
 
-    private async void AddWidgetToPinnedWidgets(Widget widget, bool isNew)
+    private void AddWidgetToPinnedWidgets(Widget widget, WidgetSize size)
     {
-        WidgetSize size;
-        if (isNew)
-        {
-            var widgetDef = _widgetCatalog.GetWidgetDefinition(widget.DefinitionId);
-            size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
-        }
-        else
-        {
-            size = await widget.GetSizeAsync();
-        }
-
         var wvm = new WidgetViewModel(widget, size, _renderer, _dispatcher);
         PinnedWidgets.Add(wvm);
     }
