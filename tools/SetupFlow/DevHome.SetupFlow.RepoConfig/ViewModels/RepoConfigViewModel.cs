@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.Telemetry;
@@ -43,7 +44,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
     public IDevDriveManager DevDriveManager => _devDriveManager;
 
-    public RepoConfigViewModel(ILogger logger, IStringResource stringResource, IDevDriveManager devDriveManager, RepoConfigTaskGroup taskGroup)
+    public RepoConfigViewModel(ILogger logger, ISetupFlowStringResource stringResource, IDevDriveManager devDriveManager, RepoConfigTaskGroup taskGroup)
         : base(stringResource)
     {
         _logger = logger;

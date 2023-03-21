@@ -6,6 +6,7 @@ using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;
+using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
 using Moq;
 
@@ -15,14 +16,14 @@ namespace DevHome.SetupFlow.UnitTest.ViewModels;
 public class SearchViewModelTest
 {
     private Mock<ILogger>? _logger;
-    private Mock<IStringResource>? _stringResource;
+    private Mock<ISetupFlowStringResource>? _stringResource;
     private Mock<IWindowsPackageManager>? _wpm;
 
     [TestInitialize]
     public void TestInitialize()
     {
         _logger = new Mock<ILogger>();
-        _stringResource = new Mock<IStringResource>();
+        _stringResource = new Mock<ISetupFlowStringResource>();
         _wpm = new Mock<IWindowsPackageManager>();
     }
 

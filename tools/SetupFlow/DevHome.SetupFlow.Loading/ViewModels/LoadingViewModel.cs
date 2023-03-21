@@ -52,7 +52,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private string _actionCenterDisplay;
 
-    public LoadingViewModel(ILogger logger, IStringResource stringResource, IHost host)
+    public LoadingViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host)
         : base(stringResource)
     {
         _logger = logger;

@@ -10,7 +10,7 @@ using DevHome.SetupFlow.ConfigurationFile.Models;
 using DevHome.SetupFlow.ConfigurationFile.ViewModels;
 using Microsoft.Extensions.Hosting;
 
-namespace DevHome.SetupFlow.AppManagement;
+namespace DevHome.SetupFlow.ConfigurationFile;
 
 public class ConfigurationFileTaskGroup : ISetupTaskGroup
 {
