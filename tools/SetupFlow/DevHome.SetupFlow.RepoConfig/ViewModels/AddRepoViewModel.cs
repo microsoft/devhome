@@ -243,22 +243,20 @@ public partial class AddRepoViewModel : ObservableObject
         var developerId = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId() == accountName);
         foreach (string repositoryToRemove in repositoriesToRemove)
         {
-            var repositoryDisplayName = repositoryToRemove.Split("/")[1];
             var cloningInformation = new CloningInformation();
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName() == repositoryDisplayName);
+            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName() == repositoryToRemove);
 
             EverythingToClone.Remove(cloningInformation);
         }
 
         foreach (string repositoryToAdd in repositoriesToAdd)
         {
-            var repositoryDisplayName = repositoryToAdd.Split("/")[1];
             var cloningInformation = new CloningInformation();
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName() == repositoryDisplayName);
+            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName() == repositoryToAdd);
 
             EverythingToClone.Add(cloningInformation);
         }
@@ -302,7 +300,7 @@ public partial class AddRepoViewModel : ObservableObject
     {
         var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
         _repositoriesForAccount = await _providers.GetAllRepositoriesAsync(repositoryProvider, loggedInDeveloper);
-        Repositories = new ObservableCollection<string>(_repositoriesForAccount.Select(x => loginId + "/" + x.DisplayName()));
+        Repositories = new ObservableCollection<string>(_repositoriesForAccount.Select(x => x.DisplayName()));
     }
 
     /// <summary>

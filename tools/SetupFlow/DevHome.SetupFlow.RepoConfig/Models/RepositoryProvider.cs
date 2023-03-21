@@ -55,12 +55,14 @@ internal class RepositoryProvider
         if (!_pluginWrapper.IsRunning())
         {
             await _pluginWrapper.StartPlugin();
-            var provider = _pluginWrapper.GetPluginObject();
-            if (provider != null)
-            {
-                _developerId = provider.GetProvider(ProviderType.DevId) as IDevIdProvider;
-                _repositoryProvider = provider.GetProvider(ProviderType.Repository) as IRepositoryProvider;
-            }
+        }
+
+        var provider = _pluginWrapper.GetPluginObject();
+        if (provider != null)
+        {
+            _developerId = provider.GetProvider(ProviderType.DevId) as IDevIdProvider;
+            var repositoryProvider = provider.GetProvider(ProviderType.Repository);
+            _repositoryProvider = repositoryProvider as IRepositoryProvider;
         }
     }
 
