@@ -80,20 +80,9 @@ internal class PluginInstanceManager<T> : IClassFactory
         {
             return false;
         }
-        
-        HANDLE callerToken = HANDLE.Null;
-        if (PInvoke.OpenThreadToken(PInvoke.GetCurrentThread(), TOKEN_ACCESS_MASK.TOKEN_QUERY, true, &callerToken) != 0)
-        {
-            return false;
-        }
-
-        if (PInvoke.CoRevertToSelf() != 0)
-        {
-            return false;
-        }
 
         uint a = 0;
-        if (PInvoke.GetPackageFamilyNameFromToken(callerToken, &a, null) != 0)
+        if (PInvoke.GetPackageFamilyNameFromToken((HANDLE)(IntPtr)(-6), &a, null) != WIN32_ERROR.ERROR_INSUFFICIENT_BUFFER)
         {
             return false;
         }
@@ -101,10 +90,15 @@ internal class PluginInstanceManager<T> : IClassFactory
         var value = new char[a];
         fixed (char* p = value)
         {
-            if (PInvoke.GetPackageFamilyNameFromToken(callerToken, &a, p) != 0)
+            if (PInvoke.GetPackageFamilyNameFromToken((HANDLE)(IntPtr)(-6), &a, p) != 0)
             {
                 return false;
             }
+        }
+
+        if (PInvoke.CoRevertToSelf() != 0)
+        {
+            return false;
         }
 
         var valueStr = new string(value);
