@@ -77,7 +77,7 @@
       "foregroundColors": {
         "default": {
           "default": "#FFFFFF",
-          "subtle": "#FFFFFF"
+          "subtle": "#EEEEEE"
         },
         "accent": {
           "default": "#2E89FC",

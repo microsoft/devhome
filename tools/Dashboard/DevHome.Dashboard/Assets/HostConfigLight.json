@@ -9,7 +9,7 @@
   },
   "separator": {
     "lineThickness": 0,
-    "lineColor": "#EEEEEE"
+    "lineColor": "#111111"
   },
   "supportsInteractivity": true,
   "fontTypes": {
@@ -46,12 +46,12 @@
   },
   "containerStyles": {
     "default": {
-      "backgroundColor": "#201e23",
-      "borderColor": "#201e23",
+      "backgroundColor": "#e8e8e9",
+      "borderColor": "#e8e8e9",
       "foregroundColors": {
         "default": {
-          "default": "#FFFFFF",
-          "subtle": "#EEEEEE"
+          "default": "#000000",
+          "subtle": "#111111"
         },
         "accent": {
           "default": "#0063B1",
@@ -72,12 +72,12 @@
       }
     },
     "emphasis": {
-      "backgroundColor": "#2b292e",
-      "borderColor": "#2b292e",
+      "backgroundColor": "#d4d4d5",
+      "borderColor": "#d4d4d5",
       "foregroundColors": {
         "default": {
-          "default": "#FFFFFF",
-          "subtle": "#FFFFFF"
+          "default": "#000000",
+          "subtle": "#111111"
         },
         "accent": {
           "default": "#2E89FC",
