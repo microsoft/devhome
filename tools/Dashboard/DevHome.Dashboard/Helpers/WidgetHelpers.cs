@@ -15,7 +15,7 @@ internal class WidgetHelpers
     public static WidgetSize GetLargetstCapabilitySize(WidgetCapability[] capabilities)
     {
         // Guaranteed to have at least one capability
-        WidgetSize largest = capabilities[0].Size;
+        var largest = capabilities[0].Size;
 
         foreach (var cap in capabilities)
         {
@@ -32,19 +32,15 @@ internal class WidgetHelpers
     {
         // The default size of the widget should be priortized as Medium, Large, Small.
         // This matches the size preferences of the Windows Widget Dashboard.
-        var hasSizeS = capabilities.Any(cap => cap.Size == WidgetSize.Small);
-        var hasSizeM = capabilities.Any(cap => cap.Size == WidgetSize.Medium);
-        var hasSizeL = capabilities.Any(cap => cap.Size == WidgetSize.Large);
-
-        if (hasSizeM)
+        if (capabilities.Any(cap => cap.Size == WidgetSize.Medium))
         {
             return WidgetSize.Medium;
         }
-        else if (hasSizeL)
+        else if (capabilities.Any(cap => cap.Size == WidgetSize.Large))
         {
             return WidgetSize.Large;
         }
-        else if (hasSizeS)
+        else if (capabilities.Any(cap => cap.Size == WidgetSize.Small))
         {
             return WidgetSize.Small;
         }
