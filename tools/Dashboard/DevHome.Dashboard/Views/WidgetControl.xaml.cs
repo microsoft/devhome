@@ -7,6 +7,7 @@ using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Widgets;
 
 namespace DevHome.Dashboard.Views;
 public sealed partial class WidgetControl : UserControl
@@ -37,14 +38,16 @@ public sealed partial class WidgetControl : UserControl
                 if (widgetControl != null && widgetControl.WidgetSource is WidgetViewModel widgetViewModel)
                 {
                     var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-                    var text = resourceLoader.GetString("RemoveWidgetMenuText");
+                    var removeWidgetText = resourceLoader.GetString("RemoveWidgetMenuText");
                     var menuItemClose = new MenuFlyoutItem
                     {
                         Tag = widgetViewModel,
-                        Text = text,
+                        Text = removeWidgetText,
                     };
                     menuItemClose.Click += DeleteWidgetClick;
                     widgetMenuFlyout.Items.Add(menuItemClose);
+
+                    AddSizesToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
                 }
             }
         }
@@ -63,6 +66,69 @@ public sealed partial class WidgetControl : UserControl
                 DashboardView.PinnedWidgets.Remove(widgetViewModel);
                 await widgetViewModel.Widget.DeleteAsync();
                 Log.Logger()?.ReportInfo("WidgetControl", $"Deleted Widget {widgetIdToDelete}");
+            }
+        }
+    }
+
+    private void AddSizesToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    {
+        // Add all three sizes to the menu, but disable them for now.
+        var menuItemSmall = new MenuFlyoutItem
+        {
+            Tag = WidgetSize.Small,
+            Text = resourceLoader.GetString("SmallWidgetMenuText"),
+            IsEnabled = false,
+        };
+        menuItemSmall.Click += MenuItemSize_Click;
+        widgetMenuFlyout.Items.Add(menuItemSmall);
+
+        var menuItemMedium = new MenuFlyoutItem
+        {
+            Tag = WidgetSize.Medium,
+            Text = resourceLoader.GetString("MediumWidgetMenuText"),
+            IsEnabled = false,
+        };
+        menuItemMedium.Click += MenuItemSize_Click;
+        widgetMenuFlyout.Items.Add(menuItemMedium);
+
+        var menuItemLarge = new MenuFlyoutItem
+        {
+            Tag = WidgetSize.Large,
+            Text = resourceLoader.GetString("LargeWidgetMenuText"),
+            IsEnabled = false,
+        };
+        menuItemLarge.Click += MenuItemSize_Click;
+        widgetMenuFlyout.Items.Add(menuItemLarge);
+
+        // Enable the sizes that are valid for this widget.
+        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
+        var capabilities = widgetDefinition.GetWidgetCapabilities();
+
+        if (capabilities.Any(cap => cap.Size == WidgetSize.Small))
+        {
+            menuItemSmall.IsEnabled = true;
+        }
+
+        if (capabilities.Any(cap => cap.Size == WidgetSize.Medium))
+        {
+            menuItemMedium.IsEnabled = true;
+        }
+
+        if (capabilities.Any(cap => cap.Size == WidgetSize.Large))
+        {
+            menuItemLarge.IsEnabled = true;
+        }
+    }
+
+    private async void MenuItemSize_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem menuSizeItem)
+        {
+            if (menuSizeItem.DataContext is WidgetViewModel widgetViewModel)
+            {
+                var size = (WidgetSize)menuSizeItem.Tag;
+                await widgetViewModel.Widget.SetSizeAsync(size);
+                widgetViewModel.WidgetSize = size;
             }
         }
     }
