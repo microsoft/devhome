@@ -62,26 +62,26 @@
                 </Style>
             </controls:DataGrid.ColumnHeaderStyle>
             <controls:DataGrid.Columns>
-                <controls:DataGridTemplateColumn Header="Repository Type" MinWidth="150">
+                <controls:DataGridTemplateColumn Header="Repository Type" MinWidth="250">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="models:CloningInformation">
-                            <TextBlock Text="{x:Bind ProviderName}" Width="150"/>
+                            <TextBlock Text="{x:Bind ProviderName}" Width="250" HorizontalTextAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
                 <controls:DataGridTemplateColumn Header="Repository ID" MinWidth="300">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="models:CloningInformation">
-                            <TextBlock Text="{x:Bind RepositoryId}" Width="300"/>
+                            <TextBlock Text="{x:Bind RepositoryId}" Width="300" HorizontalTextAlignment="Center"/>
                         </DataTemplate>
                     </controls:DataGridTemplateColumn.CellTemplate>
                 </controls:DataGridTemplateColumn>
                 <controls:DataGridTemplateColumn Header="Clone Path" MinWidth="450">
                     <controls:DataGridTemplateColumn.CellTemplate>
                         <DataTemplate x:DataType="models:CloningInformation">
-                            <Grid HorizontalAlignment="Stretch" ColumnSpacing="10">
+                            <Grid HorizontalAlignment="Left" ColumnSpacing="10">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="400" />
+                                    <ColumnDefinition Width="300" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>

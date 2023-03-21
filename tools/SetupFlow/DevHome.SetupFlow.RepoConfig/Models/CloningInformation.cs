@@ -52,7 +52,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// <summary>
     /// Gets the repo name and formats it for the Repo Review view.
     /// </summary>
-    public string RepositoryId => $"{OwningAccount.LoginId() ?? string.Empty}/{RepositoryToClone.DisplayName() ?? string.Empty}";
+    public string RepositoryId => $"{RepositoryToClone.DisplayName() ?? string.Empty}";
 
     /// <summary>
     /// Gets the clone path the user wants ot clone the repo to.

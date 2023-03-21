@@ -47,7 +47,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         _cloneTasks.Clear();
         foreach (var cloningInformation in cloningInformations)
         {
-            var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.OwningAccount.LoginId(), cloningInformation.RepositoryToClone.DisplayName());
+            var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.RepositoryToClone.DisplayName());
             _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount));
         }
     }

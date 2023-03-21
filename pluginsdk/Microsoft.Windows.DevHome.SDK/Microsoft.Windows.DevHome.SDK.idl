@@ -28,7 +28,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
         Windows.Foundation.IAsyncOperation<IIterable<IRepository> > GetRepositoriesAsync(IDeveloperId developerId);
 
-        IRepository ParseRepositoryFromUrl(Windows.Foundation.Uri Uri);
+        IRepository ParseRepositoryFromUrl(Windows.Foundation.Uri uri);
     };
 
     [version(1.0)]
