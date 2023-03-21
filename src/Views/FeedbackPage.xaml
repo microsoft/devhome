@@ -106,6 +106,13 @@
                 </Hyperlink>
             </TextBlock>
             <StackPanel>
+                <labs:SettingsCard x:Uid="Feedback_ReportBug_Internal">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                  Glyph="&#xebe8;"/>
+                    </labs:SettingsCard.HeaderIcon>
+                    <Button x:Uid="Feedback_ReportBug_Button" Click="OpenFeedbackHub"/>
+                </labs:SettingsCard>                
                 <labs:SettingsCard x:Uid="Feedback_ReportBug">
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
@@ -118,7 +125,7 @@
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea80;"/>
                     </labs:SettingsCard.HeaderIcon>
-                    <Button x:Uid="Feedback_FeatureImprovement_Button" Click="DisplaySugestFeature"/>
+                    <Button x:Uid="Feedback_FeatureImprovement_Button" Click="DisplaySuggestFeature"/>
                 </labs:SettingsCard>
                 <labs:SettingsCard x:Uid="Feedback_LocalizationIssue">
                     <labs:SettingsCard.HeaderIcon>
