@@ -45,7 +45,9 @@ public partial class PackageViewModel : ObservableObject
     public string Version => _package.Version;
 
     /// <summary>
-    /// Gets the learn more button uri.
+    /// Gets the URI for the "Learn more" button
+    /// </summary>
+    /// <remarks>
     /// For packages from winget or custom catalogs:
     /// 1. Use package url
     /// 2. Else, use publisher url
@@ -54,7 +56,7 @@ public partial class PackageViewModel : ObservableObject
     /// For packages from ms store catalog:
     /// 1. Use package url
     /// 2. Else, use "ms-windows-store://pdp?productid={ID}"
-    /// </summary>
+    /// </remarks>
     /// <returns>Learn more button uri</returns>
     public Uri GetLearnMoreUri()
     {

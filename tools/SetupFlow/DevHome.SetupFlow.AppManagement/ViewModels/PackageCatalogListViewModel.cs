@@ -40,9 +40,9 @@ public partial class PackageCatalogListViewModel : ObservableObject
 
     public PackageCatalogListViewModel(IHost host, ILogger logger, WinGetPackageJsonDataSource jsonDataSource)
     {
+        _host = host;
         _logger = logger;
         _jsonDataSource = jsonDataSource;
-        _host = host;
     }
 
     /// <summary>
