@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
@@ -16,8 +18,6 @@ using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.SetupFlow.DevDrive.Windows;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 
@@ -122,7 +122,6 @@ public class DevDriveManager : IDevDriveManager
             return toReturn;
         });
     }
-    public Task<IEnumerable<IDevDrive>> GetAllDevDrivesThatExistOnSystem() => throw new NotImplementedException();
 
     /// <summary>
     /// Gets prepoppulated data and updates the passed in dev drive object with it.

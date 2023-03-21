@@ -1,17 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.DevDrive.Models;
-using Windows.Storage.Streams;
+using DevHome.Common.Models;
 using Windows.Win32;
 using Windows.Win32.UI.Shell;
 

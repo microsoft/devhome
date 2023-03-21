@@ -60,11 +60,18 @@ public partial class EditDevDriveViewModel : ObservableObject
         IsDevDriveCheckboxEnabled = true;
     }
 
-    public void MakeDefaultDevDrive()
+    public bool MakeDefaultDevDrive()
     {
         // DevDrive SetToDefaults
         ShowCustomizeOption = Visibility.Visible;
-        DevDrive = _devDriveManager.GetNewDevDrive();
+        var (result, devDrive) = _devDriveManager.GetNewDevDrive();
+        if (result == DevDriveOperationResult.Successful)
+        {
+            DevDrive = devDrive;
+            return true;
+        }
+
+        return false;
     }
 
     public void ShowDevDriveUIIfEnabled()
@@ -82,6 +89,7 @@ public partial class EditDevDriveViewModel : ObservableObject
 
     public void RemoveNewDevDrive()
     {
+        _devDriveManager.RemoveDevDrive(DevDrive);
         ShowCustomizeOption = Visibility.Collapsed;
     }
 
@@ -141,10 +149,6 @@ public partial class EditDevDriveViewModel : ObservableObject
     private void DevDriveCustomizationWindowClosed(object sender, DevDriveWindowClosedEventArgs args)
     {
         IsDevDriveCheckboxEnabled = true;
-
-        if (DevDriveUtil.ValidateDevDrive(args.DevDrive))
-        {
-            DevDrive = args.DevDrive;
-        }
+        DevDrive = args.DevDrive;
     }
 }

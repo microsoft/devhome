@@ -4,7 +4,6 @@
 using System;
 using DevHome.Common.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
-using Windows.ApplicationModel.Appointments.AppointmentsProvider;
 
 namespace DevHome.SetupFlow.DevDrive.Models;
 

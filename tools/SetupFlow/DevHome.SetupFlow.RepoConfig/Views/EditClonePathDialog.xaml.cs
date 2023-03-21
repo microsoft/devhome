@@ -67,8 +67,16 @@ public sealed partial class EditClonePathDialog
         var isChecked = (sender as CheckBox).IsChecked;
         if (isChecked.Value)
         {
-            EditDevDriveViewModel.MakeDefaultDevDrive();
-            FolderPickerViewModel.DisableBrowseButton();
+            if (EditDevDriveViewModel.MakeDefaultDevDrive())
+            {
+                FolderPickerViewModel.DisableBrowseButton();
+            }
+            else
+            {
+                // TODO: Add simple error Text in UI, e.g MakeDefaultDevDrive could return
+                // the actual result and we could display the error text related to it from the .resw file.
+                (sender as CheckBox).IsChecked = false;
+            }
         }
         else
         {

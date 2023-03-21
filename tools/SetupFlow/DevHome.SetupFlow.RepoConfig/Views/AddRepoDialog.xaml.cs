@@ -173,10 +173,18 @@ internal partial class AddRepoDialog
         var isChecked = (sender as CheckBox).IsChecked;
         if (isChecked.Value)
         {
-            EditDevDriveViewModel.MakeDefaultDevDrive();
-            FolderPickerViewModel.DisableBrowseButton();
-            _oldCloneLocation = FolderPickerViewModel.CloneLocation;
-            FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
+            if (EditDevDriveViewModel.MakeDefaultDevDrive())
+            {
+                FolderPickerViewModel.DisableBrowseButton();
+                _oldCloneLocation = FolderPickerViewModel.CloneLocation;
+                FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
+                return;
+            }
+
+            // TODO: Add UX to tell user we couldn't create one. Highly unlikely to happen but would happen
+            // if the user doesn't have the required space in the drive that has their OS. Minimum is 50 GB.
+            // Or if the user runs out of drive letters.
+            (sender as CheckBox).IsChecked = false;
         }
         else
         {

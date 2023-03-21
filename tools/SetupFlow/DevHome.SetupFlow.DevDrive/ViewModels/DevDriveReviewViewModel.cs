@@ -1,18 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using CommunityToolkit.Common;
-using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.DevDrive.Models;
-using DevHome.SetupFlow.DevDrive.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
