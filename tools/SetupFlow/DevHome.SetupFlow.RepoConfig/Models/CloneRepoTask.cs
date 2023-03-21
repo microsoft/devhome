@@ -108,7 +108,17 @@ internal class CloneRepoTask : ISetupTask
                 }
             }
 
-            await repositoryToClone.CloneRepositoryAsync(cloneLocation.FullName, _developerId);
+            try
+            {
+                await repositoryToClone.CloneRepositoryAsync(cloneLocation.FullName, _developerId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Something happened while trying to clone {cloneLocation.FullName}");
+                Console.WriteLine(e.ToString());
+                return TaskFinishedState.Failure;
+            }
+
             return TaskFinishedState.Success;
         }).AsAsyncOperation();
     }
