@@ -14,6 +14,22 @@ namespace DevHome.SetupFlow.AppManagement.Services;
 public interface IWindowsPackageManager
 {
     /// <summary>
+    /// Gets the predefined WinGet catalog id
+    /// </summary>
+    public string WinGetCatalogId
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the predefined MsStore catalog id
+    /// </summary>
+    public string MsStoreId
+    {
+        get;
+    }
+
+    /// <summary>
     /// Gets a composite catalog for all remote and local catalogs.
     /// </summary>
     public IWinGetCatalog AllCatalogs
@@ -30,7 +46,7 @@ public interface IWindowsPackageManager
     }
 
     /// <summary>
-    /// Opens all predefined catalogs.
+    /// Opens all custom composite catalogs.
     /// </summary>
     /// <exception cref="CatalogConnectionException">Exception thrown if a catalog connection failed</exception>
     public Task ConnectToAllCatalogsAsync();
@@ -40,12 +56,4 @@ public interface IWindowsPackageManager
     /// </summary>
     /// <param name="package">Package to install</param>
     public Task InstallPackageAsync(WinGetPackage package);
-
-    /// <summary>
-    /// Checks if a package is obtained from the specified catalog
-    /// </summary>
-    /// <param name="package">Target package</param>
-    /// <param name="catalog">Target catalog</param>
-    /// <returns>True if the package is obtained from the specified catalog</returns>
-    public bool IsPackageFromCatalog(IWinGetPackage package, PredefinedPackageCatalog catalog);
 }

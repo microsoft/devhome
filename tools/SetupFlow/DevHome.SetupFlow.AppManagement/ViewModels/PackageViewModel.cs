@@ -63,7 +63,7 @@ public partial class PackageViewModel : ObservableObject
             return _package.PackageUrl;
         }
 
-        if (_wpm.IsPackageFromCatalog(_package, PredefinedPackageCatalog.MicrosoftStore))
+        if (_package.CatalogId == _wpm.MsStoreId)
         {
             return new Uri($"ms-windows-store://pdp/?productid={_package.Id}");
         }

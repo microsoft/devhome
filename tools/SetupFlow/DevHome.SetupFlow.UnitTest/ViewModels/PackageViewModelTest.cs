@@ -40,15 +40,17 @@ public class PackageViewModelTest : BaseSetupFlowTest
     [DataRow("", "", WinGetPkgsUrl)]
     public void LearnMore_PackageFromWinGetOrCustomCatalog_ReturnsExpectedUri(string packageUrl, string publisherUrl, string expectedUrl)
     {
-        // Winget package
-        WindowsPackageManager!
-            .Setup(wpm => wpm.IsPackageFromCatalog(It.IsAny<IWinGetPackage>(), PredefinedPackageCatalog.MicrosoftStore))
-            .Returns(false);
-
+        // Arrange
+        WindowsPackageManager!.Setup(wpm => wpm.MsStoreId).Returns("mockMsStoreId");
         var package = PackageHelper.CreatePackage("mockId");
+        package.Setup(p => p.CatalogId).Returns("mockWinGetCatalogId");
         package.Setup<Uri?>(p => p.PackageUrl).Returns(string.IsNullOrEmpty(packageUrl) ? null : new Uri(packageUrl));
         package.Setup<Uri?>(p => p.PublisherUrl).Returns(string.IsNullOrEmpty(publisherUrl) ? null : new Uri(publisherUrl));
+
+        // Act
         var packageViewModel = TestHost!.CreateInstance<PackageViewModel>(package.Object);
+
+        // Assert
         Assert.AreEqual(expectedUrl, packageViewModel.GetLearnMoreUri().ToString());
     }
 
@@ -58,15 +60,17 @@ public class PackageViewModelTest : BaseSetupFlowTest
     [DataRow("", "", MsStoreAppUrl)]
     public void LearnMore_PackageFromMsStoreCatalog_ReturnsExpectedUri(string packageUrl, string publisherUrl, string expectedUrl)
     {
-        // Store package
-        WindowsPackageManager!
-            .Setup(wpm => wpm.IsPackageFromCatalog(It.IsAny<IWinGetPackage>(), PredefinedPackageCatalog.MicrosoftStore))
-            .Returns(true);
-
+        // Arrange
+        WindowsPackageManager!.Setup(wpm => wpm.MsStoreId).Returns("mockMsStoreId");
         var package = PackageHelper.CreatePackage("mockId");
+        package.Setup(p => p.CatalogId).Returns(WindowsPackageManager!.Object.MsStoreId);
         package.Setup<Uri?>(p => p.PackageUrl).Returns(string.IsNullOrEmpty(packageUrl) ? null : new Uri(packageUrl));
         package.Setup<Uri?>(p => p.PublisherUrl).Returns(string.IsNullOrEmpty(publisherUrl) ? null : new Uri(publisherUrl));
+
+        // Act
         var packageViewModel = TestHost!.CreateInstance<PackageViewModel>(package.Object);
+
+        // Assert
         Assert.AreEqual(expectedUrl, packageViewModel.GetLearnMoreUri().ToString());
     }
 }

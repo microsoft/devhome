@@ -18,23 +18,33 @@ namespace DevHome.SetupFlow.AppManagement.Services;
 public class WindowsPackageManager : IWindowsPackageManager
 {
     private readonly ILogger _logger;
-    private readonly IHost _host;
     private readonly WindowsPackageManagerFactory _wingetFactory;
 
-    // Predefined catalogs
+    // Custom composite catalogs
     private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
     private readonly Lazy<WinGetCompositeCatalog> _wingetCatalog;
 
-    public WindowsPackageManager(IHost host, ILogger logger, WindowsPackageManagerFactory wingetFactory)
+    // Predefined catalog ids
+    private readonly Lazy<string> _wingetCatalogId;
+    private readonly Lazy<string> _msStoreCatalogId;
+
+    public WindowsPackageManager(ILogger logger, WindowsPackageManagerFactory wingetFactory)
     {
-        _host = host;
         _logger = logger;
         _wingetFactory = wingetFactory;
 
-        // Lazy-initialize catalogs
+        // Lazy-initialize custom composite catalogs
         _allCatalogs = new (CreateAllCatalogs);
         _wingetCatalog = new (CreateWinGetCatalog);
+
+        // Lazy-initialize predefined catalog ids
+        _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
+        _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
     }
+
+    public string WinGetCatalogId => _wingetCatalogId.Value;
+
+    public string MsStoreId => _msStoreCatalogId.Value;
 
     public IWinGetCatalog AllCatalogs => _allCatalogs.Value;
 
@@ -57,11 +67,16 @@ public class WindowsPackageManager : IWindowsPackageManager
         throw new NotImplementedException();
     }
 
-    public bool IsPackageFromCatalog(IWinGetPackage package, PredefinedPackageCatalog catalog)
+    /// <summary>
+    /// Gets the id of the provided predefined catalog
+    /// </summary>
+    /// <param name="catalog">Predefined catalog</param>
+    /// <returns>Catalog id</returns>
+    private string GetPredefinedCatalogId(PredefinedPackageCatalog catalog)
     {
         var packageManager = _wingetFactory.CreatePackageManager();
         var packageCatalog = packageManager.GetPredefinedPackageCatalog(catalog);
-        return package.CatalogId == packageCatalog.Info.Id;
+        return packageCatalog.Info.Id;
     }
 
     /// <summary>
