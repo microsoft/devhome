@@ -87,6 +87,7 @@ public partial class DashboardView : ToolPage
 
     private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
     {
+        // TODO: Ideally there would be some sort of visual loading indicator while the renderer gets set up.
         SetHostConfigOnWidgetRenderer().Wait();
 
         var pinnedWidgets = _widgetHost.GetWidgets();
