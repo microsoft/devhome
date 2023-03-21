@@ -103,7 +103,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// Opens the Windows settings app and redirects the user to the disks and volumes page.
     /// </summary>
     [RelayCommand]
-    private void LaunchDisksAndVolumesSettingsPage()
+    private async void LaunchDisksAndVolumesSettingsPage()
     {
         // TODO: Add telemetry.
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
