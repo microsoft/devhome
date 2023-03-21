@@ -27,10 +27,6 @@ public class PluginAdaptiveCard : IPluginAdaptiveCard
 
     public string TemplateJson { get; private set; }
 
-    public string Data => throw new NotImplementedException();
-
-    public string Template => throw new NotImplementedException();
-
     public PluginAdaptiveCard()
     {
         TemplateJson = new JsonObject().ToJsonString();
