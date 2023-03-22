@@ -529,4 +529,75 @@
     <value>Add</value>
     <comment>Content for the primary button in the edit clone path dialog.</comment>
   </data>
+  <data name="LoadingPage_HeaderBottomRow.Text" xml:space="preserve">
+    <value>stay tuned for the magic...</value>
+    <comment>Bottom row of the header for the loading page.</comment>
+  </data>
+  <data name="LoadingPage_HeaderTopRow.Text" xml:space="preserve">
+    <value>Setup initiated</value>
+    <comment>Top row of the header for the loading page</comment>
+  </data>
+  <data name="LoadingExecutingProgress" xml:space="preserve">
+    <value>Executing Task {0}/{1}</value>
+    <comment>Shows ot the user how many tasks have been completed</comment>
+  </data>
+  <data name="Loading_StopButton.Content" xml:space="preserve">
+    <value>Stop</value>
+    <comment>Content to stop loading tasks.</comment>
+  </data>
+  <data name="ActionCenterDisplay" xml:space="preserve">
+    <value>Succeeded: {0} - Failed: {1} - Needs Attention: {2}</value>
+    <comment>Action center display to see status of all tasks that have finished.</comment>
+  </data>
+  <data name="Loading_ActionCenter.Text" xml:space="preserve">
+    <value>Action Center</value>
+    <comment>Header for action center</comment>
+  </data>
+  <data name="Loading_ExecutingTasks.Text" xml:space="preserve">
+    <value>Tasks</value>
+    <comment>Header for executing tasks</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryErrorMainButtonContent" xml:space="preserve">
+    <value>Retry</value>
+    <comment>Option 1 of 2 to execute when a clone fails.</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryErrorSecondaryButtonContent" xml:space="preserve">
+    <value>Ignore</value>
+    <comment>Option 2 of 2 to execute when a clone fails.</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryErrorTestSecondary" xml:space="preserve">
+    <value>Repository failed because {0}</value>
+    <comment>Sub text that will show up in the action center</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryErrorText" xml:space="preserve">
+    <value>Failed to clone repository {0}</value>
+    <comment>Main tex tto show in the loading screen that a repo failed to clone</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryFinished" xml:space="preserve">
+    <value>Repository Cloned, and location set to  {0}</value>
+    <comment>Notify the user that a repository has been cloned</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryMainText" xml:space="preserve">
+    <value>Cloning Repository {0}</value>
+    <comment>Text to notify the user what repository is being clones</comment>
+  </data>
+  <data name="LoadingScreenCloningReposityNeedsAttention" xml:space="preserve">
+    <value>Repository {0} needs your attention</value>
+    <comment>Task message when a cloning task needs a users attention</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryNeedsAttentionMainMessage" xml:space="preserve">
+    <value>Something needs your attention</value>
+    <comment>Sub message in the "Needs Attention" window</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryNeedsAttentionPrimaryButtonContent" xml:space="preserve">
+    <value>Okay</value>
+    <comment>Main message in the "Needs attention" window</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryNeedsAttentionSecondaryButtonContent" xml:space="preserve">
+    <value>Not Okay</value>
+    <comment>Content of the primary button in the "Needs Attention" window</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryNeedsAttentionSubMessage" xml:space="preserve">
+    <value>Repository {0} needs your attention</value>
+  </data>
 </root>

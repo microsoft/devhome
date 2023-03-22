@@ -6,6 +6,7 @@ using System.IO;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
+using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
@@ -20,9 +21,9 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
 {
     private readonly IHost _host;
 
-    private readonly IStringResource _stringResource;
+    private readonly ISetupFlowStringResource _stringResource;
 
-    public RepoConfigTaskGroup(IHost host, IStringResource stringResource)
+    public RepoConfigTaskGroup(IHost host, ISetupFlowStringResource stringResource)
     {
         _host = host;
         _stringResource = stringResource;
