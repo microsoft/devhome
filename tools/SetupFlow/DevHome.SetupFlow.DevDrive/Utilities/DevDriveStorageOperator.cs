@@ -487,74 +487,83 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
 
     public IEnumerable<IDevDrive> GetAllExistingDevDrives()
     {
-        var devDrives = new List<IDevDrive>();
-        ManagementObjectSearcher searcher =
-                new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage", "SELECT * FROM MSFT_Volume");
-
-        foreach (ManagementObject queryObj in searcher.Get())
+        try
         {
-            var volumePath = queryObj["Path"] as string;
-            var volumeLabel = queryObj["FileSystemLabel"] as string;
-            var volumeSize = queryObj["Size"];
-            var volumeLetter = queryObj["DriveLetter"];
-            uint outputSize;
-            var volumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
-            var inputVolumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
-            inputVolumeInfo.FlagMask = _volumeStateFlag;
-            inputVolumeInfo.Version = 1;
+            var devDrives = new List<IDevDrive>();
+            ManagementObjectSearcher searcher =
+                    new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage", "SELECT * FROM MSFT_Volume");
 
-            SafeFileHandle volumeFileHandle = PInvoke.CreateFile(
-               volumePath,
-               FILE_ACCESS_FLAGS.FILE_READ_ATTRIBUTES | FILE_ACCESS_FLAGS.FILE_WRITE_ATTRIBUTES,
-               FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-               null,
-               FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-               FILE_FLAGS_AND_ATTRIBUTES.FILE_FLAG_BACKUP_SEMANTICS,
-               null);
-
-            if (volumeFileHandle.IsInvalid)
+            foreach (ManagementObject queryObj in searcher.Get())
             {
-                continue;
-            }
+                var volumePath = queryObj["Path"] as string;
+                var volumeLabel = queryObj["FileSystemLabel"] as string;
+                var volumeSize = queryObj["Size"];
+                var volumeLetter = queryObj["DriveLetter"];
+                uint outputSize;
+                var volumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
+                var inputVolumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
+                inputVolumeInfo.FlagMask = _volumeStateFlag;
+                inputVolumeInfo.Version = 1;
 
-            unsafe
-            {
-                var result = PInvoke.DeviceIoControl(
-                    volumeFileHandle,
-                    PInvoke.FSCTL_QUERY_PERSISTENT_VOLUME_STATE,
-                    &inputVolumeInfo,
-                    (uint)sizeof(FILE_FS_PERSISTENT_VOLUME_INFORMATION),
-                    &volumeInfo,
-                    (uint)sizeof(FILE_FS_PERSISTENT_VOLUME_INFORMATION),
-                    &outputSize,
-                    null);
+                SafeFileHandle volumeFileHandle = PInvoke.CreateFile(
+                   volumePath,
+                   FILE_ACCESS_FLAGS.FILE_READ_ATTRIBUTES | FILE_ACCESS_FLAGS.FILE_WRITE_ATTRIBUTES,
+                   FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
+                   null,
+                   FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+                   FILE_FLAGS_AND_ATTRIBUTES.FILE_FLAG_BACKUP_SEMANTICS,
+                   null);
 
-                if (!result)
+                if (volumeFileHandle.IsInvalid)
                 {
                     continue;
                 }
 
-                if ((volumeInfo.VolumeFlags & _volumeStateFlag) > 0 &&
-                    volumeLetter is char newLetter && volumeSize is ulong newSize)
+                unsafe
                 {
-                    // volume size is over 1 Tb, so we'll use tb as the default byte unit when
-                    // this appears in the UI.
-                    var byteUnit = newSize >= (1ul << 40);
-                    var newDevDrive = new Models.DevDrive
-                    {
-                        DriveLetter = newLetter,
-                        DriveSizeInBytes = newSize,
-                        DriveUnitOfMeasure = byteUnit ? ByteUnit.TB : ByteUnit.GB,
-                        DriveLocation = string.Empty,
-                        DriveLabel = volumeLabel,
-                        State = DevDriveState.ExistsOnSystem,
-                    };
+                    var result = PInvoke.DeviceIoControl(
+                        volumeFileHandle,
+                        PInvoke.FSCTL_QUERY_PERSISTENT_VOLUME_STATE,
+                        &inputVolumeInfo,
+                        (uint)sizeof(FILE_FS_PERSISTENT_VOLUME_INFORMATION),
+                        &volumeInfo,
+                        (uint)sizeof(FILE_FS_PERSISTENT_VOLUME_INFORMATION),
+                        &outputSize,
+                        null);
 
-                    devDrives.Add(newDevDrive);
+                    if (!result)
+                    {
+                        continue;
+                    }
+
+                    if ((volumeInfo.VolumeFlags & _volumeStateFlag) > 0 &&
+                        volumeLetter is char newLetter && volumeSize is ulong newSize)
+                    {
+                        // volume size is over 1 Tb, so we'll use tb as the default byte unit when
+                        // this appears in the UI.
+                        var byteUnit = newSize >= (1ul << 40);
+                        var newDevDrive = new Models.DevDrive
+                        {
+                            DriveLetter = newLetter,
+                            DriveSizeInBytes = newSize,
+                            DriveUnitOfMeasure = byteUnit ? ByteUnit.TB : ByteUnit.GB,
+                            DriveLocation = string.Empty,
+                            DriveLabel = volumeLabel,
+                            State = DevDriveState.ExistsOnSystem,
+                        };
+
+                        devDrives.Add(newDevDrive);
+                    }
                 }
             }
-        }
 
-        return devDrives;
+            return devDrives;
+        }
+        catch (ManagementException)
+        {
+            // TODO: Add logging, I don't think rethrowing here is ideal, so log then return empty list, as this
+            // only means we don't show the user their existing dev drive. Not catastrophic failure.
+            return new List<IDevDrive>();
+        }
     }
 }
