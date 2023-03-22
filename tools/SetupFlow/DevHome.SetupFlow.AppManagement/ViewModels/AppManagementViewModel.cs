@@ -58,9 +58,11 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
 
     public async override void OnNavigateToPageAsync()
     {
+        // Load catalogs from all data sources
         await _packageCatalogListViewModel.LoadCatalogsAsync();
 
-        // Connect to catalog on a separate (non-UI) thread to prevent lagging the UI.
+        // Connect to composite catalog used for searching on a separate
+        // (non-UI) thread to prevent lagging the UI.
         await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
     }
 

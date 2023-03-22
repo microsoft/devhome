@@ -31,8 +31,13 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         _restoreInfo = restoreInfo;
     }
 
-    // Each collection of packages from a restore device is compiled into a
-    // catalog. At most we show one catalog.
+    /// <summary>
+    /// Gets the total number of package catalogs available in this data source
+    /// </summary>
+    /// <remarks>
+    /// Each collection of packages from a restore device is compiled into a
+    /// catalog. At most we show one catalog.
+    /// </remarks>
     public override int CatalogCount => _restoreDeviceInfo == null ? 0 : 1;
 
     /// <summary>

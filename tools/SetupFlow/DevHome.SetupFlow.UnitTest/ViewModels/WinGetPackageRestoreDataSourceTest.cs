@@ -50,7 +50,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
     [TestMethod]
     [DataRow(RestoreDeviceInfoStatus.NotAvailable)]
     [DataRow(RestoreDeviceInfoStatus.Error)]
-    public void LoadCatalogs_NonSuccessStatus_ThrowsException(RestoreDeviceInfoStatus status)
+    public void LoadCatalogs_NonSuccessStatus_ReturnsNoCatalogs(RestoreDeviceInfoStatus status)
     {
         // Arrange
         ConfigureRestoreDeviceInfo(status, new List<string>());
@@ -108,6 +108,10 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
         Assert.AreEqual(expectedPackages[1].Id, loadedPackages[0].Packages.ElementAt(1).Id);
     }
 
+    /// <summary>
+    /// Configure WinGet catalog packages
+    /// </summary>
+    /// <param name="expectedPackages">Expected packages</param>
     private void ConfigureWinGetCatalogPackages(IList<IWinGetPackage> expectedPackages)
     {
         var catalog = new Mock<IWinGetCatalog>();
@@ -115,6 +119,10 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
         WindowsPackageManager!.Setup(wpm => wpm.WinGetCatalog).Returns(catalog.Object);
     }
 
+    /// <summary>
+    /// Load catalogs from restore data source
+    /// </summary>
+    /// <returns>List of package catalogs</returns>
     private IList<AppManagement.Models.PackageCatalog> LoadCatalogsFromRestoreDataSource()
     {
         var restoreDataSource = TestHost!.GetService<WinGetPackageRestoreDataSource>();
@@ -122,6 +130,11 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
         return restoreDataSource.LoadCatalogsAsync().GetAwaiter().GetResult();
     }
 
+    /// <summary>
+    /// Configure a restore device info including WinGet packages to restore
+    /// </summary>
+    /// <param name="status">Result status</param>
+    /// <param name="packageIds">Mock a list of WinGet package ids to restore</param>
     private void ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus status, IEnumerable<string> packageIds)
     {
         // Mock list of restore application info

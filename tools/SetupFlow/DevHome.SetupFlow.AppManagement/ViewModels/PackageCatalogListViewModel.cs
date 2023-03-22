@@ -146,7 +146,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// Add package catalog shimmers
     /// </summary>
     /// <param name="count">Number of package catalog shimmers to add</param>
-    public void AddShimmers(int count)
+    private void AddShimmers(int count)
     {
         while (count-- > 0)
         {
@@ -158,7 +158,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// Remove package catalog shimmers
     /// </summary>
     /// <param name="count">Number of package catalog shimmers to remove</param>
-    public void RemoveShimmers(int count)
+    private void RemoveShimmers(int count)
     {
         while (count-- > 0 && PackageCatalogShimmers.Any())
         {
