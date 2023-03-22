@@ -107,7 +107,7 @@ public partial class DashboardView : ToolPage
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
-            RequestedTheme = this.RequestedTheme,
+            RequestedTheme = this.ActualTheme,
         };
         _ = await dialog.ShowAsync();
 
