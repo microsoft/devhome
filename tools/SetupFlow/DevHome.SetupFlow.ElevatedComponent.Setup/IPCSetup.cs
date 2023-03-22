@@ -199,9 +199,9 @@ public static class IPCSetup
 
             // Wait for the background process to finish initializing the object and writing
             // it to the shared memory. The timeout is arbitrary and can be changed.
-            // We also stop waiting if the process exits.
+            // We also stop waiting if the process exits or has already exited.
             process.Exited += (_, _) => { initEvent.Set(); };
-            if (!initEvent.WaitOne(60 * 1000))
+            if (process.HasExited || !initEvent.WaitOne(60 * 1000))
             {
                 throw new TimeoutException("Background process failed to initialized in the allowed time");
             }
@@ -303,6 +303,7 @@ public static class IPCSetup
 
                     var marshaler = MarshalInterface<T>.CreateMarshaler(value);
                     var marshalerAbi = MarshalInterface<T>.GetAbi(marshaler);
+
                     Marshal.ThrowExceptionForHR(PInvoke.CoMarshalInterface(stream, GetMarshalInterfaceGUID<T>(), Marshal.GetObjectForIUnknown(marshalerAbi), (uint)MSHCTX.MSHCTX_LOCAL, null, (uint)MSHLFLAGS.MSHLFLAGS_NORMAL));
 
                     // Store the object size
