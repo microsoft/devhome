@@ -37,7 +37,7 @@ public sealed partial class FeedbackPage : Page
 
     private void OpenFeedbackHub(object sender, RoutedEventArgs e)
     {
-        // Opens feedback hub session with the correction context
+        // Opens feedback hub session with the correct context
         const string feedbackUrl = "feedback-hub:?contextid=1330&tabid=2&newFeedback=true";
 
         var psi = new System.Diagnostics.ProcessStartInfo();
