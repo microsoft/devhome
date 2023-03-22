@@ -60,6 +60,10 @@
 		<None Remove="Styles\Feedback_ThemeResources.xaml" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Folder Include="Assets\Tiles\" />
+	</ItemGroup>
+
 	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
 		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
 	</PropertyGroup>
