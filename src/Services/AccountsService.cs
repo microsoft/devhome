@@ -35,7 +35,7 @@ public class AccountsService : IAccountsService
                 var devIds = iDevIdProvider.GetLoggedInDeveloperIds().ToList();
                 _accountsDictionary.Add(iDevIdProvider, devIds);
 
-                LoggingHelper.Critical_AccountStartupEvent("Startup DevId Event", iDevIdProvider.GetName(), devIds);
+                LoggingHelper.AccountStartupEvent("Startup_DevId_Event", iDevIdProvider.GetName(), devIds);
 
                 iDevIdProvider.LoggedIn += LoggedInEventHandler;
                 iDevIdProvider.LoggedOut += LoggedOutEventHandler;
@@ -62,7 +62,7 @@ public class AccountsService : IAccountsService
         if (sender is IDevIdProvider iDevIdProvider)
         {
             _accountsDictionary[iDevIdProvider].Add(developerId);
-            LoggingHelper.Critical_AccountEvent("Login DevId Event", iDevIdProvider.GetName(), developerId.LoginId());
+            LoggingHelper.AccountEvent("Login_DevId_Event", iDevIdProvider.GetName(), developerId.LoginId());
         }
     }
 
@@ -71,7 +71,7 @@ public class AccountsService : IAccountsService
         if (sender is IDevIdProvider iDevIdProvider)
         {
             _accountsDictionary[iDevIdProvider].Remove(developerId);
-            LoggingHelper.Critical_AccountEvent("Logout DevId Event", iDevIdProvider.GetName(), developerId.LoginId());
+            LoggingHelper.AccountEvent("Logout_DevId_Event", iDevIdProvider.GetName(), developerId.LoginId());
         }
     }
 }
