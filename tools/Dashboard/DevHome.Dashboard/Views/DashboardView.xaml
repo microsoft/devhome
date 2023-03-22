@@ -9,25 +9,19 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pg="using:DevHome.Common"
     xmlns:commonviews="using:DevHome.Common.Views"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:vm="using:DevHome.Dashboard.ViewModels"
     xmlns:views="using:DevHome.Dashboard.Views"
     xmlns:helpers="using:DevHome.Dashboard.Helpers"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
-        </ResourceDictionary>
-    </UserControl.Resources>
 
     <StackPanel>
-        <Button x:Uid="AddWidget" HorizontalAlignment="Right" Click="AddWidgetButton_Click"></Button>
+        <Button x:Name="AddWidgetButton" x:Uid="AddWidget" HorizontalAlignment="Right" Click="AddWidgetButton_Click" />
 
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="30">
                 <!-- Top Banner - Default/First run experience - shown until user dismissed -->
                 <commonviews:Banner x:Name="DashboardBanner"
-                    Visibility="{x:Bind ViewModel.ShowDashboardBanner,Mode=OneWay,Converter={StaticResource BoolToVisibilityConverter}}"
+                    Visibility="{x:Bind ViewModel.ShowDashboardBanner,Mode=OneWay}"
                     HideButtonVisibility="true"
                     HideButtonCommand="{x:Bind ViewModel.HideDashboardBannerButtonCommand,Mode=OneWay}"
                     ButtonCommand="{x:Bind ViewModel.DashboardBannerButtonCommand,Mode=OneWay}"

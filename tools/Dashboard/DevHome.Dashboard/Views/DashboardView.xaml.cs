@@ -41,6 +41,9 @@ public partial class DashboardView : ToolPage
 
         ActualThemeChanged += OnActualThemeChanged;
         Loaded += RestorePinnedWidgets;
+#if DEBUG
+        Loaded += AddResetButton;
+#endif
     }
 
     private void InitializeWidgetHost()
@@ -176,4 +179,31 @@ public partial class DashboardView : ToolPage
             }
         });
     }
+
+#if DEBUG
+    private void AddResetButton(object sender, RoutedEventArgs e)
+    {
+        var resetButton = new Button
+        {
+            Content = new SymbolIcon(Symbol.Refresh),
+            HorizontalAlignment = HorizontalAlignment.Right,
+            FontSize = 4,
+        };
+        resetButton.Click += ResetButton_Click;
+        var parent = AddWidgetButton.Parent as StackPanel;
+        var index = parent.Children.IndexOf(AddWidgetButton);
+        parent.Children.Insert(index + 1, resetButton);
+    }
+
+    private void ResetButton_Click(object sender, RoutedEventArgs e)
+    {
+        var roamingProperties = Windows.Storage.ApplicationData.Current.RoamingSettings.Values;
+        if (roamingProperties.ContainsKey("HideDashboardBanner"))
+        {
+            roamingProperties.Remove("HideDashboardBanner");
+        }
+
+        ViewModel.ShowDashboardBanner = true;
+    }
+#endif
 }
