@@ -72,7 +72,7 @@
                             <ImageIcon Source="{x:Bind Icon}"/>
                         </controls:SettingsCard.HeaderIcon>
                         <StackPanel Orientation="Horizontal" Spacing="10">
-                            <HyperlinkButton NavigateUri="{x:Bind PackageUri}">
+                            <HyperlinkButton Command="{x:Bind LearnMoreCommand,Mode=OneWay}">
                                 <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
                             </HyperlinkButton>
                             <Button Command="{x:Bind ToggleSelectionCommand,Mode=OneWay}" Padding="5">

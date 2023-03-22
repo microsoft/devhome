@@ -12,10 +12,10 @@ namespace DevHome.SetupFlow.DevDrive.ViewModels;
 public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
 {
     private readonly ILogger _logger;
-    private readonly IStringResource _stringResource;
+    private readonly ISetupFlowStringResource _stringResource;
     private readonly DevDriveTaskGroup _taskGroup;
 
-    public DevDriveReviewViewModel(ILogger logger, IStringResource stringResource, DevDriveTaskGroup taskGroup)
+    public DevDriveReviewViewModel(ILogger logger, ISetupFlowStringResource stringResource, DevDriveTaskGroup taskGroup)
     {
         _logger = logger;
         _stringResource = stringResource;

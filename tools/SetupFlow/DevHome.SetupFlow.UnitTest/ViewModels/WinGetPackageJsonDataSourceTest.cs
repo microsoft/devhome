@@ -1,37 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.Common.Services;
+using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.UnitTest.Helpers;
-using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 using Moq;
 
 namespace DevHome.SetupFlow.UnitTest.ViewModels;
 
 [TestClass]
-public class WinGetPackageJsonDataSourceTest
+public class WinGetPackageJsonDataSourceTest : BaseSetupFlowTest
 {
-    private Mock<ILogger>? _logger;
-    private Mock<IStringResource>? _stringResource;
-    private Mock<IWindowsPackageManager>? _wpm;
-
-    [TestInitialize]
-    public void TestInitialize()
-    {
-        _logger = new Mock<ILogger>();
-        _stringResource = new Mock<IStringResource>();
-        _wpm = new Mock<IWindowsPackageManager>();
-
-        // Configure string resource
-        _stringResource!
-            .Setup(sr => sr.GetLocalized(It.IsAny<string>(), It.IsAny<object[]>()))
-            .Returns((string key, object[] args) => key);
-    }
-
     [TestMethod]
     public void LoadCatalogs_Success_ReturnsWinGetCatalogs()
     {
@@ -105,7 +87,7 @@ public class WinGetPackageJsonDataSourceTest
         // Configure winget catalog
         var catalogs = new Mock<IWinGetCatalog>();
         catalogs.Setup(c => c.GetPackagesAsync(It.IsAny<HashSet<string>>())).ThrowsAsync(new FindPackagesException(FindPackagesResultStatus.CatalogError));
-        _wpm!.Setup(wpm => wpm.WinGetCatalog).Returns(catalogs.Object);
+        WindowsPackageManager!.Setup(wpm => wpm.WinGetCatalog).Returns(catalogs.Object);
 
         // Act
         var loadedPackages = LoadCatalogsFromJsonDataSource("AppManagementPackages_Success.json");
@@ -123,7 +105,7 @@ public class WinGetPackageJsonDataSourceTest
 
         // Act/Assert
         var fileName = TestHelpers.GetTestFilePath("file_not_found");
-        var jsonDataSource = new WinGetPackageJsonDataSource(_logger!.Object, _stringResource!.Object, _wpm!.Object);
+        var jsonDataSource = TestHost!.GetService<WinGetPackageJsonDataSource>();
         Assert.ThrowsException<FileNotFoundException>(() => jsonDataSource.LoadCatalogsAsync(fileName).GetAwaiter().GetResult());
     }
 
@@ -135,7 +117,7 @@ public class WinGetPackageJsonDataSourceTest
     {
         var catalog = new Mock<IWinGetCatalog>();
         catalog.Setup(c => c.GetPackagesAsync(It.IsAny<HashSet<string>>())).ReturnsAsync(expectedPackages);
-        _wpm!.Setup(wpm => wpm.WinGetCatalog).Returns(catalog.Object);
+        WindowsPackageManager!.Setup(wpm => wpm.WinGetCatalog).Returns(catalog.Object);
     }
 
     /// <summary>
@@ -146,7 +128,7 @@ public class WinGetPackageJsonDataSourceTest
     private IList<AppManagement.Models.PackageCatalog> LoadCatalogsFromJsonDataSource(string fileName)
     {
         var fileNamePath = TestHelpers.GetTestFilePath(fileName);
-        var jsonDataSource = new WinGetPackageJsonDataSource(_logger!.Object, _stringResource!.Object, _wpm!.Object);
+        var jsonDataSource = TestHost!.GetService<WinGetPackageJsonDataSource>();
         return jsonDataSource.LoadCatalogsAsync(fileNamePath).GetAwaiter().GetResult();
     }
 }

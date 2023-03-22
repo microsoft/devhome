@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement.Models;
+using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
@@ -17,10 +17,10 @@ public class WinGetPackageRestoreDataSource
 {
     private readonly RestoreInfo _restoreInfo = new ();
     private readonly ILogger _logger;
-    private readonly IStringResource _stringResource;
+    private readonly ISetupFlowStringResource _stringResource;
     private readonly IWindowsPackageManager _wpm;
 
-    public WinGetPackageRestoreDataSource(ILogger logger, IStringResource stringResource, IWindowsPackageManager wpm)
+    public WinGetPackageRestoreDataSource(ILogger logger, ISetupFlowStringResource stringResource, IWindowsPackageManager wpm)
     {
         _logger = logger;
         _stringResource = stringResource;

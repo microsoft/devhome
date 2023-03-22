@@ -7,12 +7,15 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 public partial class PackageCatalogListViewModel : ObservableObject
 {
+    private readonly IHost _host;
     private readonly ILogger _logger;
     private readonly WinGetPackageJsonDataSource _jsonDataSource;
     private readonly WinGetPackageRestoreDataSource _restoreDataSource;
@@ -34,8 +37,9 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// </summary>
     public event EventHandler<PackageCatalogViewModel> CatalogLoaded;
 
-    public PackageCatalogListViewModel(ILogger logger, WinGetPackageJsonDataSource jsonDataSource, WinGetPackageRestoreDataSource restoreDataSource)
+    public PackageCatalogListViewModel(IHost host, ILogger logger, WinGetPackageJsonDataSource jsonDataSource, WinGetPackageRestoreDataSource restoreDataSource)
     {
+        _host = host;
         _logger = logger;
         _jsonDataSource = jsonDataSource;
         _restoreDataSource = restoreDataSource;
@@ -52,7 +56,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
             // on a separate thread to avoid lagging the UI
             var catalogsFromJsonDataSource = await Task.Run(async () => await _jsonDataSource.LoadCatalogsAsync(_packageCollectionsPath));
             RemoveShimmer();
-            foreach (var catalog in catalogsFromJsonDataSource.Select(catalog => new PackageCatalogViewModel(catalog)))
+            foreach (var catalog in catalogsFromJsonDataSource.Select(catalog => _host.CreateInstance<PackageCatalogViewModel>(catalog)))
             {
                 PackageCatalogs.Add(catalog);
             }
@@ -68,10 +72,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
         RemoveShimmer();
         if (restoreCatalog != null)
         {
-            PackageCatalogs.Add(new PackageCatalogViewModel(restoreCatalog)
-            {
-                CanAddAllPackages = true,
-            });
+            PackageCatalogs.Add(_host.CreateInstance<PackageCatalogViewModel>(restoreCatalog));
         }
 
         foreach (var catalog in PackageCatalogs)

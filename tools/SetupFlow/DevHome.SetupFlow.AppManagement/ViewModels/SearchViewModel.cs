@@ -7,10 +7,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 public partial class SearchViewModel : ObservableObject
@@ -33,9 +35,10 @@ public partial class SearchViewModel : ObservableObject
         ExceptionThrown,
     }
 
+    private readonly IHost _host;
     private readonly ILogger _logger;
     private readonly IWindowsPackageManager _wpm;
-    private readonly IStringResource _stringResource;
+    private readonly ISetupFlowStringResource _stringResource;
     private const int SearchResultLimit = 20;
 
     /// <summary>
@@ -62,8 +65,9 @@ public partial class SearchViewModel : ObservableObject
     /// </summary>
     public string NoSearchResultsText => _stringResource.GetLocalized(StringResourceKey.NoSearchResultsFoundTitle, SearchText);
 
-    public SearchViewModel(ILogger logger, IWindowsPackageManager wpm, IStringResource stringResource)
+    public SearchViewModel(IHost host, ILogger logger, IWindowsPackageManager wpm, ISetupFlowStringResource stringResource)
     {
+        _host = host;
         _wpm = wpm;
         _logger = logger;
         _stringResource = stringResource;
@@ -102,7 +106,7 @@ public partial class SearchViewModel : ObservableObject
 
             // Update the UI only if the operation was successful
             SearchText = text;
-            ResultPackages = matches.Select(m => new PackageViewModel(m)).ToList();
+            ResultPackages = matches.Select(m => _host.CreateInstance<PackageViewModel>(m)).ToList();
             return (SearchResultStatus.Ok, ResultPackages);
         }
         catch (OperationCanceledException)

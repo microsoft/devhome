@@ -22,6 +22,14 @@ public interface IWinGetPackage
     }
 
     /// <summary>
+    /// Gets the package catalog Id
+    /// </summary>
+    public string CatalogId
+    {
+        get;
+    }
+
+    /// <summary>
     /// Gets the package display name
     /// </summary>
     public string Name
@@ -56,9 +64,17 @@ public interface IWinGetPackage
     }
 
     /// <summary>
-    /// Gets the package "learn more" uri
+    /// Gets the package url
     /// </summary>
-    public Uri PackageUri
+    public Uri PackageUrl
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the publisher url
+    /// </summary>
+    public Uri PublisherUrl
     {
         get;
     }

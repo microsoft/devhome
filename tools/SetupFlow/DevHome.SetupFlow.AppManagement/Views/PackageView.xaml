@@ -72,7 +72,7 @@
             <!-- Package link -->
             <HyperlinkButton
                 IsEnabled="{x:Bind Package.IsSelected,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
-                NavigateUri="{x:Bind Package.PackageUri}"
+                Command="{x:Bind Package.LearnMoreCommand, Mode=OneWay}"
                 Style="{ThemeResource TextBlockButtonStyle}">
                 <TextBlock
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"
