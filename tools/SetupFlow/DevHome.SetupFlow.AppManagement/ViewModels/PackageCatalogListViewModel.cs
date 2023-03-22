@@ -17,6 +17,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
 {
     private readonly IHost _host;
     private readonly ILogger _logger;
+    private readonly IWindowsPackageManager _wpm;
     private readonly WinGetPackageJsonDataSource _jsonDataSource;
     private readonly WinGetPackageRestoreDataSource _restoreDataSource;
     private readonly string _packageCollectionsPath = Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "DevHome.SetupFlow", "Assets", "AppManagementPackages.json");
@@ -37,19 +38,57 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// </summary>
     public event EventHandler<PackageCatalogViewModel> CatalogLoaded;
 
-    public PackageCatalogListViewModel(IHost host, ILogger logger, WinGetPackageJsonDataSource jsonDataSource, WinGetPackageRestoreDataSource restoreDataSource)
+    /// <summary>
+    /// Gets a value indicating whether data sources are already initialized
+    /// </summary>
+    private bool IsInitialized => _jsonDataSource.CatalogCount + _restoreDataSource.CatalogCount > 0;
+
+    public PackageCatalogListViewModel(IHost host, ILogger logger, WinGetPackageJsonDataSource jsonDataSource, WinGetPackageRestoreDataSource restoreDataSource, IWindowsPackageManager wpm)
     {
         _host = host;
         _logger = logger;
         _jsonDataSource = jsonDataSource;
         _restoreDataSource = restoreDataSource;
+        _wpm = wpm;
     }
 
-    public async Task InitializeCatalogsAsync()
+    /// <summary>
+    /// Load the package catalogs to display
+    /// </summary>
+    public async Task LoadCatalogsAsync()
+    {
+        if (!IsInitialized)
+        {
+            // Initialize all data sources and load package ids into memory
+            await InitializeDataSourcesAsync();
+
+            // Connect to winget catalog on a separate (non-UI) thread to prevent lagging the UI.
+            await Task.Run(async () => await _wpm.WinGetCatalog.ConnectAsync());
+
+            // Resolve package ids and create corresponding catalogs
+            await LoadCatalogsFromDataSourceAsync(_restoreDataSource);
+            await LoadCatalogsFromDataSourceAsync(_jsonDataSource);
+        }
+    }
+
+    /// <summary>
+    /// Initialize all data sources by loading the package ids in memory (without
+    /// resolving them) and adding the corresponding number of catalog shimmers
+    /// </summary>
+    private async Task InitializeDataSourcesAsync()
+    {
+        await InitializeJsonDataSourceAsync();
+        await InitializeRestoreDataSourceAsync();
+    }
+
+    /// <summary>
+    /// Initialize JSON data source
+    /// </summary>
+    private async Task InitializeJsonDataSourceAsync()
     {
         try
         {
-            await _jsonDataSource.ImportCatalogsAsync(_packageCollectionsPath);
+            await _jsonDataSource.DeserializeJsonCatalogsAsync(_packageCollectionsPath);
         }
         catch (Exception e)
         {
@@ -60,7 +99,13 @@ public partial class PackageCatalogListViewModel : ObservableObject
         {
             AddShimmers(_jsonDataSource.CatalogCount);
         }
+    }
 
+    /// <summary>
+    /// Initialize restore data source
+    /// </summary>
+    private async Task InitializeRestoreDataSourceAsync()
+    {
         try
         {
             await _restoreDataSource.GetRestoreDeviceInfoAsync();
@@ -77,14 +122,9 @@ public partial class PackageCatalogListViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Load the package catalogs to display
+    /// Load catalogs from the provided data source and remove corresponding shimmers
     /// </summary>
-    public async Task LoadCatalogsAsync()
-    {
-        await LoadCatalogsFromDataSourceAsync(_restoreDataSource);
-        await LoadCatalogsFromDataSourceAsync(_jsonDataSource);
-    }
-
+    /// <param name="dataSource">Target data source</param>
     private async Task LoadCatalogsFromDataSourceAsync(WinGetPackageDataSource dataSource)
     {
         if (dataSource.CatalogCount > 0)
@@ -102,17 +142,22 @@ public partial class PackageCatalogListViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Add package catalog shimmers
+    /// </summary>
+    /// <param name="count">Number of package catalog shimmers to add</param>
     public void AddShimmers(int count)
     {
         while (count-- > 0)
         {
-            PackageCatalogShimmers.Add(0);
+            PackageCatalogShimmers.Add(PackageCatalogShimmers.Count);
         }
     }
 
     /// <summary>
-    /// Removes a package catalog shimmer
+    /// Remove package catalog shimmers
     /// </summary>
+    /// <param name="count">Number of package catalog shimmers to remove</param>
     public void RemoveShimmers(int count)
     {
         while (count-- > 0 && PackageCatalogShimmers.Any())

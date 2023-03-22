@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -57,12 +58,10 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
 
     public async override void OnNavigateToPageAsync()
     {
-        await _packageCatalogListViewModel.InitializeCatalogsAsync();
-
-        // Connect to catalogs on a separate (non-UI) thread to prevent lagging the UI.
-        await Task.Run(async () => await _wpm.ConnectToAllCatalogsAsync());
-
         await _packageCatalogListViewModel.LoadCatalogsAsync();
+
+        // Connect to catalog on a separate (non-UI) thread to prevent lagging the UI.
+        await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
     }
 
     [RelayCommand(AllowConcurrentExecutions = true)]

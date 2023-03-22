@@ -31,8 +31,13 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         _restoreInfo = restoreInfo;
     }
 
+    // Each collection of packages from a restore device is compiled into a
+    // catalog. At most we show one catalog.
     public override int CatalogCount => _restoreDeviceInfo == null ? 0 : 1;
 
+    /// <summary>
+    /// Gets the restore device information
+    /// </summary>
     public async Task GetRestoreDeviceInfoAsync()
     {
         var restoreDeviceInfoResult = await _restoreInfo.GetRestoreDeviceInfoAsync();

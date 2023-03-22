@@ -45,7 +45,11 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         _stringResource = stringResource;
     }
 
-    public async Task ImportCatalogsAsync(string fileName)
+    /// <summary>
+    /// Deserialize JSON catalogs from an input file
+    /// </summary>
+    /// <param name="fileName">JSON file name</param>
+    public async Task DeserializeJsonCatalogsAsync(string fileName)
     {
         // Open and deserialize JSON file
         using var fileStream = File.OpenRead(fileName);
@@ -53,11 +57,6 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         _jsonCatalogs = await JsonSerializer.DeserializeAsync<IList<JsonWinGetPackageCatalog>>(fileStream, options);
     }
 
-    /// <summary>
-    /// Load package catalogs from the JSON file input
-    /// </summary>
-    /// <param name="fileName">JSON file name</param>
-    /// <returns>List of package catalogs</returns>
     public async override Task<IList<PackageCatalog>> LoadCatalogsAsync()
     {
         var result = new List<PackageCatalog>();

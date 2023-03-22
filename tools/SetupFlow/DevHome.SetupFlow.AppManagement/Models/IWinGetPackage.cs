@@ -48,7 +48,7 @@ public interface IWinGetPackage
     }
 
     /// <summary>
-    /// Gets or sets the package's light icon
+    /// Gets or sets the package's light theme icon
     /// </summary>
     public IRandomAccessStream LightThemeIcon
     {
@@ -56,7 +56,7 @@ public interface IWinGetPackage
     }
 
     /// <summary>
-    /// Gets or sets the package's dark icon
+    /// Gets or sets the package's dark theme icon
     /// </summary>
     public IRandomAccessStream DarkThemeIcon
     {
