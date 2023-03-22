@@ -3,18 +3,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
+using DevHome.Common.Models;
 using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Xaml;
 
-namespace DevHome.SetupFlow.DevDrive.Services;
+namespace DevHome.Common.Services;
 
 /// <summary>
 /// Class for Dev Drive manager. The Dev Drive manager is the mediator between objects that will be a viewmodel for
@@ -82,5 +81,14 @@ public class DevDriveManager : IDevDriveManager
     }
 
     /// <inheritdoc/>
-    public Task<IEnumerable<IDevDrive>> GetAllDevDrivesThatExistOnSystem() => throw new NotImplementedException();
+    public Task<IEnumerable<IDevDrive>> GetAllDevDrivesThatExistOnSystem()
+    {
+        return Task.Run(() =>
+        {
+            // TODO: Return empty list so code does not throw.
+            // SHould fix with implementation.
+            IEnumerable<IDevDrive> toReturn = new List<IDevDrive>();
+            return toReturn;
+        });
+    }
 }

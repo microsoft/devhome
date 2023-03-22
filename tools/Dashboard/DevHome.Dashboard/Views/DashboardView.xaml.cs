@@ -4,13 +4,17 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common;
+using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Windows.Storage;
 
 namespace DevHome.Dashboard.Views;
 
@@ -35,7 +39,11 @@ public partial class DashboardView : ToolPage
 
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
 
+        ActualThemeChanged += OnActualThemeChanged;
         Loaded += RestorePinnedWidgets;
+#if DEBUG
+        Loaded += AddResetButton;
+#endif
     }
 
     private void InitializeWidgetHost()
@@ -49,14 +57,49 @@ public partial class DashboardView : ToolPage
         _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
     }
 
-    private void RestorePinnedWidgets(object sender, RoutedEventArgs e)
+    private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
+        await SetHostConfigOnWidgetRenderer();
+    }
+
+    private async Task SetHostConfigOnWidgetRenderer()
+    {
+        var hostConfigContents = string.Empty;
+        var hostConfigFileName = (ActualTheme == ElementTheme.Light) ? "HostConfigLight.json" : "HostConfigDark.json";
+        try
+        {
+            var uri = new Uri($"ms-appx:///DevHome.Dashboard/Assets/{hostConfigFileName}");
+            var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
+            hostConfigContents = await FileIO.ReadTextAsync(file);
+        }
+        catch (Exception)
+        {
+            // TODO: LogError("DashboardView", "Error rettrieving HostConfig", e);
+        }
+
+        _dispatcher.TryEnqueue(() =>
+        {
+            if (!string.IsNullOrEmpty(hostConfigContents))
+            {
+                _renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+            }
+        });
+
+        return;
+    }
+
+    private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
+    {
+        // TODO: Ideally there would be some sort of visual loading indicator while the renderer gets set up.
+        SetHostConfigOnWidgetRenderer().Wait();
+
         var pinnedWidgets = _widgetHost.GetWidgets();
         if (pinnedWidgets != null)
         {
             foreach (var widget in pinnedWidgets)
             {
-                AddWidgetToPinnedWidgets(widget);
+                var size = await widget.GetSizeAsync();
+                AddWidgetToPinnedWidgets(widget, size);
             }
         }
     }
@@ -67,6 +110,7 @@ public partial class DashboardView : ToolPage
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
+            RequestedTheme = this.ActualTheme,
         };
         _ = await dialog.ShowAsync();
 
@@ -74,13 +118,14 @@ public partial class DashboardView : ToolPage
 
         if (newWidget != null)
         {
-            AddWidgetToPinnedWidgets(newWidget);
+            var widgetDef = _widgetCatalog.GetWidgetDefinition(newWidget.DefinitionId);
+            var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
+            AddWidgetToPinnedWidgets(newWidget, size);
         }
     }
 
-    private async void AddWidgetToPinnedWidgets(Widget widget)
+    private void AddWidgetToPinnedWidgets(Widget widget, WidgetSize size)
     {
-        var size = await widget.GetSizeAsync();
         var wvm = new WidgetViewModel(widget, size, _renderer, _dispatcher);
         PinnedWidgets.Add(wvm);
     }
@@ -134,4 +179,31 @@ public partial class DashboardView : ToolPage
             }
         });
     }
+
+#if DEBUG
+    private void AddResetButton(object sender, RoutedEventArgs e)
+    {
+        var resetButton = new Button
+        {
+            Content = new SymbolIcon(Symbol.Refresh),
+            HorizontalAlignment = HorizontalAlignment.Right,
+            FontSize = 4,
+        };
+        resetButton.Click += ResetButton_Click;
+        var parent = AddWidgetButton.Parent as StackPanel;
+        var index = parent.Children.IndexOf(AddWidgetButton);
+        parent.Children.Insert(index + 1, resetButton);
+    }
+
+    private void ResetButton_Click(object sender, RoutedEventArgs e)
+    {
+        var roamingProperties = Windows.Storage.ApplicationData.Current.RoamingSettings.Values;
+        if (roamingProperties.ContainsKey("HideDashboardBanner"))
+        {
+            roamingProperties.Remove("HideDashboardBanner");
+        }
+
+        ViewModel.ShowDashboardBanner = true;
+    }
+#endif
 }

@@ -19,7 +19,7 @@ public partial class DashboardViewModel : ObservableObject
 
     public DashboardViewModel()
     {
-        _showDashboardBanner = ShouldShowDashboardBanner();
+        ShowDashboardBanner = ShouldShowDashboardBanner();
     }
 
     [RelayCommand]
@@ -34,7 +34,7 @@ public partial class DashboardViewModel : ObservableObject
     {
         var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
         roamingProperties[_hideDashboardBannerKey] = bool.TrueString;
-        _showDashboardBanner = false;
+        ShowDashboardBanner = false;
     }
 
     private bool ShouldShowDashboardBanner()

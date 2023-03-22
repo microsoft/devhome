@@ -82,12 +82,12 @@ public partial class SetupPageViewModelBase : ObservableObject
     /// <summary>
     /// Gets an object used to retrieve localized strings.
     /// </summary>
-    protected IStringResource StringResource
+    protected ISetupFlowStringResource StringResource
     {
         get; init;
     }
 
-    public SetupPageViewModelBase(IStringResource stringResource)
+    public SetupPageViewModelBase(ISetupFlowStringResource stringResource)
     {
         StringResource = stringResource;
         _nextPageButtonText = StringResource.GetLocalized(StringResourceKey.Next);

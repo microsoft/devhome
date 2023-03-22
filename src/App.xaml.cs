@@ -10,6 +10,8 @@ using DevHome.Core.Services;
 using DevHome.Helpers;
 using DevHome.Models;
 using DevHome.Services;
+using DevHome.SetupFlow.Extensions;
+using DevHome.Telemetry;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,6 +67,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IAccountsService, AccountsService>();
+            services.AddSingleton<ILogger>(LoggerFactory.Get<ILogger>());
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -85,6 +88,9 @@ public partial class App : Application, IApp
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
+
+            // Setup flow
+            services.AddSetupFlow(context);
         }).
         Build();
 

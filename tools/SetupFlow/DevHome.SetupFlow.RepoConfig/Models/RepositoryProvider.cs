@@ -5,33 +5,86 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace DevHome.SetupFlow.RepoConfig.Models;
 
 /// <summary>
-/// Class to contain the logic for a repository provider.
+/// Object that holds a refrence to the providers in a plugin.
+/// This needs to be changed to handle multiple accounts per provider.
 /// </summary>
 internal class RepositoryProvider
 {
-    private readonly List<IDeveloperId> _accounts = new ();
+    /// <summary>
+    /// Wrapper for the plugin that is providing a repository and developer id.
+    /// </summary>
+    /// <remarks>
+    /// The plugin is not started in the constructor.  It is started when StartIfNotRunningAsync is called.
+    /// This is for lazy loading and starting and prevents all plugins from starting all at once.
+    /// </remarks>
+    private readonly IPluginWrapper _pluginWrapper;
 
-    private readonly IDevIdProvider _devIdProvider;
+    /// <summary>
+    /// The DevId provider used to log a user into an account.
+    /// </summary>
+    private IDevIdProvider _developerId;
 
-    private readonly IRepositoryProvider _repositoryProvider;
+    /// <summary>
+    /// Provider used to clone a repsitory.
+    /// </summary>
+    private IRepositoryProvider _repositoryProvider;
 
-    public RepositoryProvider(IPlugin provider)
+    /// <summary>
+    /// All the repositories for an account.
+    /// </summary>
+    private Lazy<IEnumerable<IRepository>> _repositories = new ();
+
+    public RepositoryProvider(IPluginWrapper pluginWrapper)
     {
-        _devIdProvider = provider.GetProvider(ProviderType.DevId) as IDevIdProvider;
-        _repositoryProvider = provider.GetProvider(ProviderType.Repository) as IRepositoryProvider;
+        _pluginWrapper = pluginWrapper;
+    }
+
+    /// <summary>
+    /// Starts the plugin if it isn't running.
+    /// </summary>
+    /// <returns>An awaitable task</returns>
+    public async Task StartIfNotRunningAsync()
+    {
+        if (!_pluginWrapper.IsRunning())
+        {
+            await _pluginWrapper.StartPlugin();
+        }
+
+        var provider = _pluginWrapper.GetPluginObject();
+        if (provider != null)
+        {
+            _developerId = provider.GetProvider(ProviderType.DevId) as IDevIdProvider;
+            var repositoryProvider = provider.GetProvider(ProviderType.Repository);
+            _repositoryProvider = repositoryProvider as IRepositoryProvider;
+        }
+    }
+
+    /// <summary>
+    /// Tries to parse the repo name from the URi and makes a Repository from it.
+    /// </summary>
+    /// <param name="uri">The Uri to parse.</param>
+    /// <returns>The repository the user wants to clone.  Null if parsing was unsuccessful.</returns>
+    /// <remarks>
+    /// Can be null if the provider can't parse the Uri.
+    /// </remarks>
+    public IRepository ParseRepositoryFromUri(Uri uri)
+    {
+        return _repositoryProvider.ParseRepositoryFromUrl(uri);
     }
 
     /// <summary>
     /// Logs the current user into this provider
     /// </summary>
-    public async void LogIntoProvider()
+    public async Task LogIntoProvider()
     {
-        await _devIdProvider.LoginNewDeveloperIdAsync();
+        await _developerId.LoginNewDeveloperIdAsync();
     }
 
     /// <summary>
@@ -40,7 +93,7 @@ internal class RepositoryProvider
     /// <returns>A list of all accounts.  May be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts()
     {
-        return _devIdProvider.GetLoggedInDeveloperIds() ?? new List<IDeveloperId>();
+        return _developerId.GetLoggedInDeveloperIds() ?? new List<IDeveloperId>();
     }
 
     /// <summary>
@@ -50,6 +103,11 @@ internal class RepositoryProvider
     /// <returns>A collection of repositories.  May be empty</returns>
     public async Task<IEnumerable<IRepository>> GetAllRepositoriesAsync(IDeveloperId developerId)
     {
-        return await _repositoryProvider.GetRepositoriesAsync(developerId) ?? new List<IRepository>();
+        if (!_repositories.IsValueCreated)
+        {
+            _repositories = new Lazy<IEnumerable<IRepository>>(await _repositoryProvider.GetRepositoriesAsync(developerId));
+        }
+
+        return _repositories.Value;
     }
 }

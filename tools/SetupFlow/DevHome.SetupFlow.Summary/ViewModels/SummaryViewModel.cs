@@ -15,7 +15,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly ILogger _logger;
     private readonly SetupFlowOrchestrator _orchestrator;
 
-    public SummaryViewModel(ILogger logger, IStringResource stringResource, SetupFlowOrchestrator orchestrator)
+    public SummaryViewModel(ILogger logger, ISetupFlowStringResource stringResource, SetupFlowOrchestrator orchestrator)
         : base(stringResource)
     {
         _logger = logger;
