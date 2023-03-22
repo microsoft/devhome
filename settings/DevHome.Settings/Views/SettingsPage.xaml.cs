@@ -5,19 +5,23 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.Labs.WinUI;
 using DevHome.Common;
+using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Markup;
 using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace DevHome.Settings.Views;
 
-public partial class SettingsPage : ToolPage
+public sealed partial class SettingsPage : Page
 {
-    public override string ShortName => "Settings";
-
-    public SettingsViewModel ViewModel { get; }
+    public SettingsViewModel ViewModel
+    {
+        get;
+    }
 
     public SettingsPage()
     {
