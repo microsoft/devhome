@@ -4,10 +4,9 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common;
-using DevHome.Common.Extensions;
-using DevHome.Contracts.Services;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
@@ -15,6 +14,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Windows.Storage;
 
 namespace DevHome.Dashboard.Views;
 
@@ -39,6 +39,7 @@ public partial class DashboardView : ToolPage
 
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
 
+        ActualThemeChanged += OnActualThemeChanged;
         Loaded += RestorePinnedWidgets;
     }
 
@@ -53,8 +54,42 @@ public partial class DashboardView : ToolPage
         _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
     }
 
+    private async void OnActualThemeChanged(FrameworkElement sender, object args)
+    {
+        await SetHostConfigOnWidgetRenderer();
+    }
+
+    private async Task SetHostConfigOnWidgetRenderer()
+    {
+        var hostConfigContents = string.Empty;
+        var hostConfigFileName = (ActualTheme == ElementTheme.Light) ? "HostConfigLight.json" : "HostConfigDark.json";
+        try
+        {
+            var uri = new Uri($"ms-appx:///DevHome.Dashboard/Assets/{hostConfigFileName}");
+            var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
+            hostConfigContents = await FileIO.ReadTextAsync(file);
+        }
+        catch (Exception)
+        {
+            // TODO: LogError("DashboardView", "Error rettrieving HostConfig", e);
+        }
+
+        _dispatcher.TryEnqueue(() =>
+        {
+            if (!string.IsNullOrEmpty(hostConfigContents))
+            {
+                _renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+            }
+        });
+
+        return;
+    }
+
     private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
     {
+        // TODO: Ideally there would be some sort of visual loading indicator while the renderer gets set up.
+        SetHostConfigOnWidgetRenderer().Wait();
+
         var pinnedWidgets = _widgetHost.GetWidgets();
         if (pinnedWidgets != null)
         {
@@ -68,12 +103,11 @@ public partial class DashboardView : ToolPage
 
     private async void AddWidgetButton_Click(object sender, RoutedEventArgs e)
     {
-        var themeService = Application.Current.GetService<IThemeSelectorService>();
         var dialog = new AddWidgetDialog(_widgetHost, _widgetCatalog, _renderer, _dispatcher)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
-            RequestedTheme = themeService.Theme,
+            RequestedTheme = this.ActualTheme,
         };
         _ = await dialog.ShowAsync();
 

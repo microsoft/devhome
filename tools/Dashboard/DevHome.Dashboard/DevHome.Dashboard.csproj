@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\HostConfigDark.json" />
+    <None Remove="Assets\HostConfigLight.json" />
     <None Remove="Views\AddWidgetDialog.xaml" />
     <None Remove="Views\DashboardView.xaml" />
   </ItemGroup>
@@ -29,15 +31,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Assets\HostConfigLight.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\HostConfigDark.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Update="Views\AddWidgetDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\DashboardView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Assets\" />
   </ItemGroup>
 </Project>
