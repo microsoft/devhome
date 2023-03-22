@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.Common.Services;
+using DevHome.Contracts.Services;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.Common.Services;
@@ -19,12 +19,15 @@ public class BaseSetupFlowTest
 {
     protected Mock<IWindowsPackageManager>? WindowsPackageManager { get; private set; }
 
+    protected Mock<IThemeSelectorService>? ThemeSelectorService { get; private set; }
+
     protected IHost? TestHost { get; private set; }
 
     [TestInitialize]
     public void TestInitialize()
     {
         WindowsPackageManager = new Mock<IWindowsPackageManager>();
+        ThemeSelectorService = new Mock<IThemeSelectorService>();
         TestHost = CreateTestHost();
     }
 
@@ -39,6 +42,7 @@ public class BaseSetupFlowTest
             {
                 // Common services
                 services.AddSingleton<ILogger>(new Mock<ILogger>().Object);
+                services.AddSingleton<IThemeSelectorService>(ThemeSelectorService!.Object);
                 services.AddSingleton<ISetupFlowStringResource>(_ =>
                 {
                     // Configure string resource localization to return the input key

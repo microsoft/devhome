@@ -23,10 +23,13 @@ public partial class PackageViewModel : ObservableObject
 {
     private static readonly BitmapImage DefaultLightPackageIconSource = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultLightPackageIcon.png"));
     private static readonly BitmapImage DefaultDarkPackageIconSource = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultDarkPackageIcon.png"));
+
     private readonly Lazy<BitmapImage> _packageDarkThemeIcon;
     private readonly Lazy<BitmapImage> _packageLightThemeIcon;
+
     private readonly IWinGetPackage _package;
     private readonly IWindowsPackageManager _wpm;
+    private readonly IThemeSelectorService _themeSelector;
 
     /// <summary>
     /// Occurrs after the package selection changes
@@ -39,17 +42,18 @@ public partial class PackageViewModel : ObservableObject
     [ObservableProperty]
     private bool _isSelected;
 
-    public PackageViewModel(IWindowsPackageManager wpm, IWinGetPackage package)
+    public PackageViewModel(IWindowsPackageManager wpm, IWinGetPackage package, IThemeSelectorService themeSelector)
     {
         _wpm = wpm;
         _package = package;
+        _themeSelector = themeSelector;
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
     }
 
     public string Name => _package.Name;
 
-    public BitmapImage Icon => GetIcon();
+    public BitmapImage Icon => _themeSelector.IsDarkTheme() ? _packageDarkThemeIcon.Value : _packageLightThemeIcon.Value;
 
     public string Version => _package.Version;
 
@@ -124,16 +128,6 @@ public partial class PackageViewModel : ObservableObject
         var lightThemeBitmapImage = new BitmapImage();
         lightThemeBitmapImage.SetSource(_package.LightThemeIcon);
         return lightThemeBitmapImage;
-    }
-
-    /// <summary>
-    /// Gets the package icon based on the application theme
-    /// </summary>
-    /// <returns>Package icon</returns>
-    private BitmapImage GetIcon()
-    {
-        var themeService = Application.Current.GetService<IThemeSelectorService>();
-        return themeService.IsDarkTheme() ? _packageDarkThemeIcon.Value : _packageLightThemeIcon.Value;
     }
 
     /// <summary>
