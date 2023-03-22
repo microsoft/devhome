@@ -24,3 +24,5 @@ DeleteVolumeMountPoint
 GetVolumePathNamesForVolumeName
 FindFirstVolume
 FindNextVolume
+FILE_FS_PERSISTENT_VOLUME_INFORMATION
+FSCTL_QUERY_PERSISTENT_VOLUME_STATE

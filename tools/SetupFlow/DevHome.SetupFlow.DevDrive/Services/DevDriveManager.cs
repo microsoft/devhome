@@ -96,10 +96,7 @@ public class DevDriveManager : IDevDriveManager
     {
         return Task.Run(() =>
         {
-            // TODO: Return empty list so code does not throw.
-            // SHould fix with implementation.
-            IEnumerable<IDevDrive> toReturn = new List<IDevDrive>();
-            return toReturn;
+            return _devDriveStorageOperator.GetAllExistingDevDrives();
         });
     }
 }

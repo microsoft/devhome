@@ -2,34 +2,19 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Buffers;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Management;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics.X86;
-using System.ServiceProcess;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Management.Infrastructure;
-using Microsoft.PowerShell;
-using Microsoft.UI.Xaml.Controls;
+using DevHome.Common.Models;
 using Microsoft.Win32.SafeHandles;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security;
 using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.Storage.Vhd;
 using Windows.Win32.System.Ioctl;
-using static System.Net.WebRequestMethods;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace DevHome.SetupFlow.DevDrive.Utilities;
 
@@ -41,10 +26,14 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
     /// <summary>
     /// Windows already uses 1024 bytes to represent a Kilobyte, so we'll stick with this.
     /// </summary>
-    private static readonly long _oneKb = 1024;
-    private static readonly long _oneMb = _oneKb * _oneKb;
-    private static readonly long _fourKb = _oneKb * 4;
-    private static readonly string _fileSytem = "ReFS";
+    public static readonly long _oneKb = 1024;
+    public static readonly long _oneMb = _oneKb * _oneKb;
+    public static readonly long _fourKb = _oneKb * 4;
+    public static readonly string _fileSytem = "ReFS";
+
+    // Query flag for persistent state info of the volume, the presense of this flag will let us know
+    // its a Dev drive.
+    public static readonly uint _volumeStateFlag = 0x00002000;
 
     /// <summary>
     /// We need a way to hold the partition information, when we call IoDeviceControl with IOCTL_DISK_GET_DRIVE_LAYOUT_EX.
@@ -62,6 +51,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
     /// wait until all volumes have been have completed work, e.g creating the partition, before
     /// trying to use it again. This is public in Ntdddisk.h.
     /// see https://learn.microsoft.com/en-us/windows/win32/fileio/ioctl-disk-are-volumes-ready
+    /// https://github.com/tpn/winsdk-10/blob/master/Include/10.0.14393.0/shared/ntdddisk.h
     /// </summary>
     public struct IOCTL_DISK_ARE_VOLUMES_READY
     {
@@ -69,9 +59,9 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
         {
         }
 
-        private static readonly int _deviceType = 0x00000007;
-        private static readonly int _function = 0x0087;
-        private static readonly int _access = 0x0001;
+        public static readonly int _deviceType = 0x00000007;
+        public static readonly int _function = 0x0087;
+        public static readonly int _access = 0x0001;
 
         public static uint CtlCodeOutput => (uint)((_deviceType << 16) | (_access << 14) | (_function << 2));
    }
@@ -80,7 +70,8 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
     {
     }
 
-    public async Task<HRESULT> CreateDevDrive(string virtDiskPath, ulong sizeInBytes, char newDriveLetter, string driveLabel)
+    /// <inheritdoc/>
+    public HRESULT CreateDevDrive(string virtDiskPath, ulong sizeInBytes, char newDriveLetter, string driveLabel)
     {
         string virtDiskPhysicalPath;
         var result = CreateAndAttachVhdx(virtDiskPath, sizeInBytes, out virtDiskPhysicalPath);
@@ -94,7 +85,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
                 result = AssignDriveLetterToPartition(diskNumber, newDriveLetter);
                 if (result.Succeeded)
                 {
-                    result = await FormatPartitionAsDevDrive(newDriveLetter, driveLabel);
+                    result = FormatPartitionAsDevDrive(newDriveLetter, driveLabel);
                 }
             }
         }
@@ -102,6 +93,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
         return result;
     }
 
+    /// <inheritdoc/>
     public HRESULT CreateAndAttachVhdx(string virtDiskPath, ulong sizeInBytes, out string virtDiskPhysicalPath)
     {
         virtDiskPhysicalPath = string.Empty;
@@ -147,7 +139,9 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
             return PInvoke.HRESULT_FROM_WIN32(result);
         }
 
-        var tempPhysicalPath = new char[PInvoke.MAX_PATH];
+        // Getting the virtual disk path here before exiting save alot more repeated win32 code in the long run
+        // as we need the path to get the disk number.
+        var tempPhysicalPath = new string('\0', (int)PInvoke.MAX_PATH);
         var virtDiskPhysicalPathSize = PInvoke.MAX_PATH * sizeof(char);
         unsafe
         {
@@ -169,6 +163,8 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
         return PInvoke.HRESULT_FROM_WIN32(result);
     }
 
+    /// <inheritdoc/>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1119:Statement should not use unnecessary parenthesis", Justification = "For math, 10 - 3 - 7 is alot different than 10  - (3 - 7)")]
     public HRESULT CreatePartition(string virtDiskPhysicalPath, out uint diskNumber)
     {
         diskNumber = 0;
@@ -181,7 +177,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
             0,
             null);
 
-        if (Marshal.GetHRForLastWin32Error() != 0)
+        if (diskHandle.IsInvalid)
         {
             return ReturnLastErrorAsHR();
         }
@@ -314,11 +310,12 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
         return new HRESULT(0);
     }
 
+    /// <inheritdoc/>
     public HRESULT AssignDriveLetterToPartition(uint diskNumber, char newDriveLetter)
     {
-        // Since we have just created the virtual disk and create a single partition, we don't have to worry about there
+        // Since we have just created the virtual disk and created a single partition, we don't have to worry about there
         // being multiple on the disk. However in win32 to get the correct volume, we still need to use the FindFirstVolume
-        // which iterates through each volume on the system, and then compare the disk that volume is on with the virtual disk.
+        // which iterates through each volume on the system, and then compares the disk that volume is on with the virtual disk.
         // Thats how we'll know which volume is the right one.
         unsafe
         {
@@ -327,7 +324,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
             fixed (char* pathPtr = volumeGuidPathBeforeTrim)
             {
                 volumeHandle = new FindVolumeCloseSafeHandle(PInvoke.FindFirstVolume(pathPtr, PInvoke.MAX_PATH));
-                if (Marshal.GetHRForLastWin32Error() != 0)
+                if (volumeHandle.IsInvalid)
                 {
                     return ReturnLastErrorAsHR();
                 }
@@ -352,7 +349,7 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
                         0,
                         null);
 
-                    if (Marshal.GetHRForLastWin32Error() != 0)
+                    if (volumeFileHandle.IsInvalid)
                     {
                         return ReturnLastErrorAsHR();
                     }
@@ -425,49 +422,139 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
             }
         }
 
-        // FindNextVolume errored out for some other reason.
-        if (Marshal.GetLastWin32Error() != (int)WIN32_ERROR.ERROR_NO_MORE_FILES)
-        {
-            return ReturnLastErrorAsHR();
-        }
-
-        return new HRESULT(0);
+        // FindNextVolume errored out for some other reason without us finding our volume.
+        return ReturnLastErrorAsHR();
     }
 
-    private HRESULT ReturnLastErrorAsHR()
+    /// <summary>
+    /// Helper method that results in the the HRESULT class wrapping GetHRForLastWin32Error return value.
+    /// </summary>
+    /// <returns>Returns errorcode indicating success or failure</returns>
+    public HRESULT ReturnLastErrorAsHR()
     {
-        return PInvoke.HRESULT_FROM_WIN32((WIN32_ERROR)Marshal.GetHRForLastWin32Error());
+        return new HRESULT(Marshal.GetHRForLastWin32Error());
     }
 
-    public async Task<HRESULT> FormatPartitionAsDevDrive(char driveLetter, string driveLabel)
+    /// <inheritdoc/>
+    public HRESULT FormatPartitionAsDevDrive(char curDriveLetter, string driveLabel)
     {
         try
         {
-            // Create a default initial session state and set the execution policy.
-            InitialSessionState initialSessionState = InitialSessionState.CreateDefault();
-            initialSessionState.ExecutionPolicy = ExecutionPolicy.Unrestricted;
+            // Since at the time of this call we don't know the unique object ID of our new volume
+            // we need to iterate through the volumes that exist to find the one that matches our
+            // drive letter. Note: the object ID here is different than what we find in AssignDriveLetterToPartition.
+            ManagementObjectSearcher searcher =
+                new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage", "SELECT * FROM MSFT_Volume");
 
-            // Create a runspace and open it.
-            var powerShell = PowerShell.Create(RunspaceFactory.CreateRunspace(initialSessionState));
-
-            powerShell.AddCommand("Format-Volume")
-                .AddParameter("DriveLetter", driveLetter)
-                .AddParameter("FileSystem", _fileSytem)
-                .AddParameter("NewFileSystemLabel", driveLabel)
-                .AddParameter("AllocationUnitSize", _fourKb)
-                .AddParameter("DeveloperVolume");
-            var results = await powerShell.InvokeAsync();
-            if (powerShell.HadErrors)
+            foreach (ManagementObject queryObj in searcher.Get())
             {
-                return (HRESULT)powerShell.Streams.Error.Last().Exception.HResult;
+                var objectId = queryObj["ObjectId"] as string;
+                var letter = queryObj["DriveLetter"];
+                if (letter is char foundALetter
+                    && curDriveLetter == foundALetter &&
+                    !string.IsNullOrEmpty(objectId))
+                {
+                    // Obtain in-parameters for the method
+                    ManagementBaseObject inParams =
+                        queryObj.GetMethodParameters("Format");
+
+                    // Add the default parameters.
+                    inParams["DeveloperVolume"] = true;
+                    inParams["FileSystem"] = _fileSytem;
+                    inParams["FileSystemLabel"] = driveLabel;
+                    inParams["AllocationUnitSize"] = _fourKb;
+
+                    // Execute the method and obtain the return values.
+                    ManagementBaseObject outParams =
+                        queryObj.InvokeMethod("Format", inParams, new InvokeMethodOptions());
+
+                    var returnValue = outParams["ReturnValue"] as int?;
+                    return new HRESULT(returnValue.Value);
+                }
             }
 
-            return new HRESULT(0);
+            // If we got here that means the partition was never created with the drive letter passed into this method.
+            // Using a generic failure here but we should never actually get to this part of the method, as we fail early before
+            // this method is called.
+            return PInvoke.HRESULT_FROM_WIN32(WIN32_ERROR.ERROR_FUNCTION_FAILED);
         }
-        catch (Exception ex)
+        catch (ManagementException e)
         {
-            // If class is used out of proc, we don't want to bring down the process, so return the error to the caller.
-            return new HRESULT(ex.HResult);
+            // TODO: Add logging
+            return new HRESULT(e.HResult);
         }
+    }
+
+    public IEnumerable<IDevDrive> GetAllExistingDevDrives()
+    {
+        var devDrives = new List<IDevDrive>();
+        ManagementObjectSearcher searcher =
+                new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage", "SELECT * FROM MSFT_Volume");
+
+        foreach (ManagementObject queryObj in searcher.Get())
+        {
+            var volumePath = queryObj["Path"] as string;
+            var volumeLabel = queryObj["FileSystemLabel"] as string;
+            var volumeSize = queryObj["Size"];
+            var volumeLetter = queryObj["DriveLetter"];
+            uint outputSize;
+            var volumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
+            var inputVolumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
+            inputVolumeInfo.FlagMask = _volumeStateFlag;
+            inputVolumeInfo.Version = 1;
+
+            SafeFileHandle volumeFileHandle = PInvoke.CreateFile(
+               volumePath,
+               FILE_ACCESS_FLAGS.FILE_READ_ATTRIBUTES | FILE_ACCESS_FLAGS.FILE_WRITE_ATTRIBUTES,
+               FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
+               null,
+               FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+               FILE_FLAGS_AND_ATTRIBUTES.FILE_FLAG_BACKUP_SEMANTICS,
+               null);
+
+            if (volumeFileHandle.IsInvalid)
+            {
+                continue;
+            }
+
+            unsafe
+            {
+                var result = PInvoke.DeviceIoControl(
+                    volumeFileHandle,
+                    PInvoke.FSCTL_QUERY_PERSISTENT_VOLUME_STATE,
+                    &inputVolumeInfo,
+                    (uint)sizeof(FILE_FS_PERSISTENT_VOLUME_INFORMATION),
+                    &volumeInfo,
+                    (uint)sizeof(FILE_FS_PERSISTENT_VOLUME_INFORMATION),
+                    &outputSize,
+                    null);
+
+                if (!result)
+                {
+                    continue;
+                }
+
+                if ((volumeInfo.VolumeFlags & _volumeStateFlag) > 0 &&
+                    volumeLetter is char newLetter && volumeSize is ulong newSize)
+                {
+                    // volume size is over 1 Tb, so we'll use tb as the default byte unit when
+                    // this appears in the UI.
+                    var byteUnit = newSize >= (1ul << 40);
+                    var newDevDrive = new Models.DevDrive
+                    {
+                        DriveLetter = newLetter,
+                        DriveSizeInBytes = newSize,
+                        DriveUnitOfMeasure = byteUnit ? ByteUnit.TB : ByteUnit.GB,
+                        DriveLocation = string.Empty,
+                        DriveLabel = volumeLabel,
+                        State = DevDriveState.ExistsOnSystem,
+                    };
+
+                    devDrives.Add(newDevDrive);
+                }
+            }
+        }
+
+        return devDrives;
     }
 }
