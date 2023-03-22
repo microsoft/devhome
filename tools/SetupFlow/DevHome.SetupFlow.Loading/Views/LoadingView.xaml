@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DevHome.SetupFlow.Loading.ViewModels"
     xmlns:models="using:DevHome.SetupFlow.Loading.Models"
+    xmlns:commonModels="using:DevHome.SetupFlow.Common.Models"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -18,54 +19,77 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid x:Name="LoadingPageGrid">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <!-- Setup intiated-->
-            <RowDefinition Height="50"/>
-            
-            <!-- Progress Bar -->
-            <RowDefinition Height="50"/>
-            
-            <!-- Executing step blah/blah-->
-            <RowDefinition MaxHeight="20"/>
-            
-            <!-- General message area-->
-            <RowDefinition MaxHeight="20" />
-            
-            <!-- Logs/Action center-->
-            <RowDefinition MaxHeight="50"/>
-            
-            <!-- Tasks list view-->
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <!-- Please localize this string and all other strings.-->
-        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="24" Style="{ThemeResource BodyStrongTextBlockStyle}">Setup initiated, stay tuned for the magic...</TextBlock>
-        <ProgressBar x:Name="SetupTaskProgressBar" Grid.Row="1" Grid.ColumnSpan="3" Maximum="{x:Bind ViewModel.SetupTasks.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
-        <TextBlock Grid.Row="2" Text="{x:Bind ViewModel.ExecutingTasks, Mode=OneWay}"/>
-        
-        <!-- Other types of tasks exist.  Maybe this should be removed?-->
-        <TextBlock Grid.Row="3" Padding="0, 0, 0, 10">Creating repositories</TextBlock>
-        <TextBlock Grid.Row="4" Grid.Column="0" Style="{ThemeResource BodyStrongTextBlockStyle}">Logs</TextBlock>
-        <TextBlock Grid.Row="4" Grid.Column="2" Style="{ThemeResource BodyStrongTextBlockStyle}">Action Center</TextBlock>
-        <ScrollViewer Grid.Row="5" Grid.ColumnSpan="2" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="0, 0, 0, 50">
-                <StackPanel.Resources>
-                    <StackLayout x:Name="VerticalStackLayout" Orientation="Vertical" Spacing="8"/>
-                    <DataTemplate x:Key="HorizontalBarTemplate" x:DataType="models:TaskInformation">
-                        <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                    </DataTemplate>
-                </StackPanel.Resources>
-                <ItemsRepeater x:Name="TasksItemsRepeater" ItemsSource="{x:Bind ViewModel.SetupTasks, Mode=OneWay}"
+    <StackPanel x:Name="LoadingPageStackPanel" Orientation="Vertical" Spacing="20">
+        <Grid x:Name="HeaderGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Vertical" Grid.Column="0">
+                <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderTopRow"/>
+                <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderBottomRow"/>
+            </StackPanel>
+            <Button Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_StopButton"/>
+        </Grid>
+        <ProgressBar x:Name="SetupTaskProgressBar" Maximum="{x:Bind ViewModel.SetupTasks.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
+        <TextBlock Text="{x:Bind ViewModel.ExecutingTasks, Mode=OneWay}" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <StackPanel x:Name="ExecutingTasksStackPanel" Grid.Column="0">
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks"/>
+                <ScrollViewer x:Name="AllRunningTasksScrollViewer" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <StackPanel.Resources>
+                            <StackLayout x:Name="VerticalStackLayout" Orientation="Vertical" Spacing="8"/>
+                            <DataTemplate x:Key="HorizontalBarTemplate" x:DataType="models:TaskInformation">
+                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                    <Grid Padding="2" Visibility="{x:Bind StatusIconGridVisibility}">
+                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xEA3B;" Foreground="{x:Bind CircleForeground}"/>
+                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="{x:Bind StatusSymbolHex}" Foreground="Black"/>
+                                    </Grid>
+                                    <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </StackPanel.Resources>
+                        <ItemsRepeater x:Name="TasksItemsRepeater" ItemsSource="{x:Bind ViewModel.SetupTasks, Mode=OneWay}"
                            Layout="{StaticResource VerticalStackLayout}" 
                            ItemTemplate="{StaticResource HorizontalBarTemplate}">
-                </ItemsRepeater>
+                        </ItemsRepeater>
+                    </StackPanel>
+                </ScrollViewer>
             </StackPanel>
-        </ScrollViewer>
-        <TextBlock Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}" Grid.Row="5" Grid.Column="2" Margin="10, 0, 0, 0"/>
-    </Grid>
+            <StackPanel x:Name="ActionCenterStackPanel" Grid.Column="1">
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter"/>
+                <TextBlock Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}" Margin="0, 0, 0, 10"/>
+                <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <StackPanel.Resources>
+                            <StackLayout x:Name="SecondVerticalStackLayout" Orientation="Vertical" Spacing="8"/>
+                            <DataTemplate x:Key="SecondHorizontalBarTemplate" x:DataType="commonModels:ActionCenterMessages">
+                                <StackPanel Orientation="Vertical" Spacing="10" Background="{ThemeResource CardBackgroundFillColorDefault}" CornerRadius="10" Padding="20">
+                                    <TextBlock Text="{x:Bind PrimaryMessage, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                    <TextBlock Text="{x:Bind SecondaryMessage, Mode=OneWay}"/>
+                                    <Grid ColumnSpacing="10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button  Grid.Column="0" Content="{x:Bind PrimaryButtonContent}" HorizontalAlignment="Stretch"/>
+                                        <Button Grid.Column="1" Content="{x:Bind SecondaryButtonContent}" HorizontalAlignment="Stretch"/>
+                                    </Grid>
+                                </StackPanel>
+                            </DataTemplate>
+                        </StackPanel.Resources>
+                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.ActionCenterItems, Mode=OneWay}"
+                           Layout="{StaticResource SecondVerticalStackLayout}" 
+                           ItemTemplate="{StaticResource SecondHorizontalBarTemplate}">
+                        </ItemsRepeater>
+                    </StackPanel>
+                </ScrollViewer>
+            </StackPanel>
+        </Grid>
+    </StackPanel>
 </UserControl>

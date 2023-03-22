@@ -2,7 +2,9 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
@@ -14,6 +16,7 @@ using DevHome.SetupFlow.Loading.Models;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 using Windows.UI.Core;
 using WinUIEx;
 
@@ -35,7 +38,13 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private ObservableCollection<TaskInformation> _setupTasks;
 
     [ObservableProperty]
+    private ObservableCollection<ActionCenterMessages> _actionCenterItems;
+
+    [ObservableProperty]
     private int _tasksCompleted;
+
+    [ObservableProperty]
+    private int _tasksStarted;
 
     [ObservableProperty]
     private int _tasksFinishedSuccessfully;
@@ -63,6 +72,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         IsStepPage = false;
 
         orchestrator = _host.GetService<SetupFlowOrchestrator>();
+        ActionCenterItems = new ();
     }
 
     private void FetchTaskInformation()
@@ -72,37 +82,49 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             foreach (var task in taskGroup.SetupTasks)
             {
-                _setupTasks.Add(new TaskInformation { TaskIndex = taskIndex++, TaskToExecute = task, MessageToShow = task.GetLoadingMessages().Executing });
+                SetupTasks.Add(new TaskInformation { TaskIndex = taskIndex++, TaskToExecute = task, MessageToShow = task.GetLoadingMessages().Executing, StatusIconGridVisibility = Visibility.Collapsed });
             }
         }
 
-        /*
-         * These strings need to be localized.
-         */
-        ExecutingTasks = $"Executing Step {TasksCompleted}/{_setupTasks.Count}";
-        ActionCenterDisplay = "Succeeded: 0 - Failed: 0 - Needs Attention: 0";
+        ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _setupTasks.Count);
+        ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, 0, 0, 0);
     }
 
     public void ChangeMessage(int taskNumber, TaskFinishedState taskFinishedState)
     {
-        var information = _setupTasks[taskNumber];
+        var information = SetupTasks[taskNumber];
         var stringToReplace = string.Empty;
+        var circleBrush = new SolidColorBrush();
+        var statusSymbolHex = string.Empty;
 
         if (taskFinishedState == TaskFinishedState.Success)
         {
             stringToReplace = information.TaskToExecute.GetLoadingMessages().Finished;
+            circleBrush.Color = Microsoft.UI.Colors.Green;
+            statusSymbolHex = "\xF13E";
         }
         else if (taskFinishedState == TaskFinishedState.Failure)
         {
             stringToReplace = information.TaskToExecute.GetLoadingMessages().Error;
+            ActionCenterItems.Add(information.TaskToExecute.GetErrorMessages());
+            circleBrush.Color = Microsoft.UI.Colors.Red;
+            statusSymbolHex = "\xE711";
         }
         else if (taskFinishedState == TaskFinishedState.NeedsAttention)
         {
             stringToReplace = information.TaskToExecute.GetLoadingMessages().NeedsAttention;
+            ActionCenterItems.Add(information.TaskToExecute.GetErrorMessages());
+            circleBrush.Color = Microsoft.UI.Colors.Green;
+            statusSymbolHex = "\xF13E";
         }
 
+        information.MessageToShow = stringToReplace;
+        information.StatusIconGridVisibility = Visibility.Visible;
+        information.CircleForeground = circleBrush;
+        information.StatusSymbolHex = statusSymbolHex;
+
         // change a value in the list to force UI to update
-        _setupTasks[taskNumber].MessageToShow = stringToReplace;
+        SetupTasks[taskNumber] = information;
     }
 
     public async override void OnNavigateToPageAsync()
@@ -112,29 +134,65 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         var window = Application.Current.GetService<WindowEx>();
         await Task.Run(() =>
         {
-            Parallel.ForEach(_setupTasks, async task =>
+            var tasksToRunFirst = new List<TaskInformation>();
+            var tasksToRunSecond = new List<TaskInformation>();
+            foreach (var taskInformation in _setupTasks)
             {
-                // Start the task and wait for it to complete.
-                try
+                if (taskInformation.TaskToExecute.DependsOnDevDriveToBeInstalled)
                 {
-                    var taskFinishedState = await task.TaskToExecute.Execute();
-                    window.DispatcherQueue.TryEnqueue(() =>
-                    {
-                        ChangeMessage(task.TaskIndex, taskFinishedState);
-                        TasksFinishedSuccessfully++;
-                        TasksCompleted++;
-                        ExecutingTasks = $"Executing Step {TasksCompleted}/{_setupTasks.Count}";
-                        ActionCenterDisplay = $"Succeeded: {TasksFinishedSuccessfully} - Failed: {TasksFinishedUnSuccessfully} - Needs Attention: {TasksThatNeedAttention}";
-                    });
+                    tasksToRunSecond.Add(taskInformation);
                 }
-                catch
+                else
                 {
-                    // Don't let a single task break everything
-                    // TODO: Show failed tasks on UI
+                    tasksToRunFirst.Add(taskInformation);
                 }
+            }
+
+            var blah = Parallel.ForEach(tasksToRunFirst, async task =>
+            {
+                await StartTaskAndReportResult(window, task);
+            });
+
+            while (!blah.IsCompleted)
+            {
+                Thread.Sleep(1000);
+            }
+
+            Parallel.ForEach(tasksToRunSecond, async task =>
+            {
+                await StartTaskAndReportResult(window, task);
             });
         });
 
         ExecutionFinished.Invoke(null, null);
+    }
+
+    private async Task StartTaskAndReportResult(WinUIEx.WindowEx window, TaskInformation taskInformation)
+    {
+        // Start the task and wait for it to complete.
+        try
+        {
+            window.DispatcherQueue.TryEnqueue(() =>
+            {
+                TasksStarted++;
+                ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _setupTasks.Count);
+            });
+
+            var taskFinishedState = await taskInformation.TaskToExecute.Execute();
+            taskFinishedState = TaskFinishedState.Failure;
+            window.DispatcherQueue.TryEnqueue(() =>
+            {
+                ChangeMessage(taskInformation.TaskIndex, taskFinishedState);
+
+                TasksCompleted++;
+                TasksFinishedSuccessfully++;
+                ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, TasksFinishedSuccessfully, TasksFinishedUnSuccessfully, TasksThatNeedAttention);
+            });
+        }
+        catch
+        {
+            // Don't let a single task break everything
+            // TODO: Show failed tasks on UI
+        }
     }
 }

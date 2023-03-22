@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
@@ -19,9 +20,12 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
 {
     private readonly IHost _host;
 
-    public RepoConfigTaskGroup(IHost host)
+    private readonly IStringResource _stringResource;
+
+    public RepoConfigTaskGroup(IHost host, IStringResource stringResource)
     {
         _host = host;
+        _stringResource = stringResource;
     }
 
     /// <summary>
@@ -47,8 +51,8 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         _cloneTasks.Clear();
         foreach (var cloningInformation in cloningInformations)
         {
-            var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.RepositoryToClone.DisplayName());
-            _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount));
+            var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.RepositoryToClone.DisplayName);
+            _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource));
         }
     }
 }

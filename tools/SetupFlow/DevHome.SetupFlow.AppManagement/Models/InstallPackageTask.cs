@@ -15,7 +15,16 @@ internal class InstallPackageTask : ISetupTask
     // simply assume that any package installation may need a reboot.
     public bool RequiresReboot => true;
 
-    public LoadingMessages GetLoadingMessages() => throw new NotImplementedException();
+    public bool DependsOnDevDriveToBeInstalled
+    {
+        get; set;
+    }
+
+    public ActionCenterMessages GetErrorMessages() => throw new NotImplementedException();
+
+    public TaskMessages GetLoadingMessages() => throw new NotImplementedException();
+
+    public ActionCenterMessages GetNeedsAttentionMessages() => throw new NotImplementedException();
 
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute() => throw new NotImplementedException();
 }
