@@ -74,7 +74,8 @@
 
                     <Button
                         Margin="0 10"
-                        Padding="30 7">
+                        Padding="30 7"
+                        Click="ConnectToGitHubButton_Click">
 
                         <StackPanel Orientation="Horizontal">
                             <TextBlock
