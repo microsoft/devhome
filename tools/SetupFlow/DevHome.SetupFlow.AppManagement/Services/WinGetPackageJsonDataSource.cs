@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
@@ -18,7 +17,7 @@ namespace DevHome.SetupFlow.AppManagement.Services;
 /// <summary>
 /// Class for loading package catalogs from a JSON data source
 /// </summary>
-public class WinGetPackageJsonDataSource
+public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 {
     /// <summary>
     /// Class for deserializing a JSON package catalog with package ids from
@@ -35,13 +34,23 @@ public class WinGetPackageJsonDataSource
 
     private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly IWindowsPackageManager _wpm;
+    private IList<JsonWinGetPackageCatalog> _jsonCatalogs = new List<JsonWinGetPackageCatalog>();
+
+    public override int CatalogCount => _jsonCatalogs.Count;
 
     public WinGetPackageJsonDataSource(ILogger logger, ISetupFlowStringResource stringResource, IWindowsPackageManager wpm)
+        : base(wpm)
     {
         _logger = logger;
         _stringResource = stringResource;
-        _wpm = wpm;
+    }
+
+    public async Task ImportCatalogsAsync(string fileName)
+    {
+        // Open and deserialize JSON file
+        using var fileStream = File.OpenRead(fileName);
+        var options = new JsonSerializerOptions() { ReadCommentHandling = JsonCommentHandling.Skip };
+        _jsonCatalogs = await JsonSerializer.DeserializeAsync<IList<JsonWinGetPackageCatalog>>(fileStream, options);
     }
 
     /// <summary>
@@ -49,15 +58,10 @@ public class WinGetPackageJsonDataSource
     /// </summary>
     /// <param name="fileName">JSON file name</param>
     /// <returns>List of package catalogs</returns>
-    public async Task<IList<PackageCatalog>> LoadCatalogsAsync(string fileName)
+    public async override Task<IList<PackageCatalog>> LoadCatalogsAsync()
     {
-        // Open and deserialize JSON file
-        using var fileStream = File.OpenRead(fileName);
         var result = new List<PackageCatalog>();
-        var options = new JsonSerializerOptions() { ReadCommentHandling = JsonCommentHandling.Skip };
-        var jsonCatalogList = await JsonSerializer.DeserializeAsync<IList<JsonWinGetPackageCatalog>>(fileStream, options);
-
-        foreach (var jsonCatalog in jsonCatalogList)
+        foreach (var jsonCatalog in _jsonCatalogs)
         {
             var packageCatalog = await LoadCatalogAsync(jsonCatalog);
             if (packageCatalog?.Packages.Any() ?? false)
@@ -79,15 +83,7 @@ public class WinGetPackageJsonDataSource
     {
         try
         {
-            // Get packages from winget catalog
-            var unorderedPackages = await _wpm.WinGetCatalog.GetPackagesAsync(jsonCatalog.WinGetPackageIds.ToHashSet());
-
-            // Sort result based on the input
-            var unorderedPackagesMap = unorderedPackages.ToDictionary(p => p.Id, p => p);
-            var orderedPackages = jsonCatalog.WinGetPackageIds
-                .Select(id => unorderedPackagesMap.GetValueOrDefault(id, null))
-                .Where(package => package is not null);
-
+            var orderedPackages = await GetOrderedPackagesAsync(jsonCatalog.WinGetPackageIds, id => id);
             return new PackageCatalog()
             {
                 Name = _stringResource.GetLocalized(jsonCatalog.NameResourceKey),

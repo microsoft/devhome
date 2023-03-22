@@ -5,6 +5,8 @@ using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Internal.Windows.DevHome.Helpers;
+using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 
 namespace DevHome.SetupFlow.AppManagement.Extensions;
 public static class ServiceExtensions
@@ -23,9 +25,11 @@ public static class ServiceExtensions
         // Services
         services.AddSingleton<IWindowsPackageManager, WindowsPackageManager>();
         services.AddSingleton(new WindowsPackageManagerFactory(ClsidContext.Prod));
+        services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddTransient<AppManagementTaskGroup>();
-        services.AddSingleton<WinGetPackageJsonDataSource>();
-        services.AddSingleton<WinGetPackageRestoreDataSource>();
+        services.AddTransient<WinGetPackageJsonDataSource>();
+        services.AddTransient<WinGetPackageRestoreDataSource>();
+
         return services;
     }
 }

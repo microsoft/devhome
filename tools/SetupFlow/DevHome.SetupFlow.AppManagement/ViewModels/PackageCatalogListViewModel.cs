@@ -30,7 +30,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// Gets a list of shimmer indices.
     /// This list is used to repeat the shimmer control {Count} times
     /// </summary>
-    public ObservableCollection<int> PackageCatalogShimmers { get; } = new (Enumerable.Range(0, 2));
+    public ObservableCollection<int> PackageCatalogShimmers { get; } = new ();
 
     /// <summary>
     /// Occurrs when a package catalog is loaded
@@ -45,48 +45,77 @@ public partial class PackageCatalogListViewModel : ObservableObject
         _restoreDataSource = restoreDataSource;
     }
 
+    public async Task InitializeCatalogsAsync()
+    {
+        try
+        {
+            await _jsonDataSource.ImportCatalogsAsync(_packageCollectionsPath);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while initializing json data source");
+            _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Local, e.Message);
+        }
+        finally
+        {
+            AddShimmers(_jsonDataSource.CatalogCount);
+        }
+
+        try
+        {
+            await _restoreDataSource.GetRestoreDeviceInfoAsync();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while initializing restore data source");
+            _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Local, e.Message);
+        }
+        finally
+        {
+            AddShimmers(_restoreDataSource.CatalogCount);
+        }
+    }
+
     /// <summary>
     /// Load the package catalogs to display
     /// </summary>
     public async Task LoadCatalogsAsync()
     {
-        try
+        await LoadCatalogsFromDataSourceAsync(_restoreDataSource);
+        await LoadCatalogsFromDataSourceAsync(_jsonDataSource);
+    }
+
+    private async Task LoadCatalogsFromDataSourceAsync(WinGetPackageDataSource dataSource)
+    {
+        if (dataSource.CatalogCount > 0)
         {
-            // Load catalogs from JSON file and resolve package ids from winget
-            // on a separate thread to avoid lagging the UI
-            var catalogsFromJsonDataSource = await Task.Run(async () => await _jsonDataSource.LoadCatalogsAsync(_packageCollectionsPath));
-            RemoveShimmer();
-            foreach (var catalog in catalogsFromJsonDataSource.Select(catalog => _host.CreateInstance<PackageCatalogViewModel>(catalog)))
+            // Load catalogs on a separate thread to avoid lagging the UI
+            var catalogs = await Task.Run(async () => await dataSource.LoadCatalogsAsync());
+            RemoveShimmers(dataSource.CatalogCount);
+            foreach (var catalog in catalogs)
             {
-                PackageCatalogs.Add(catalog);
+                var catalogViewModel = _host.CreateInstance<PackageCatalogViewModel>(catalog);
+                catalogViewModel.CanAddAllPackages = true;
+                PackageCatalogs.Add(catalogViewModel);
+                CatalogLoaded?.Invoke(null, catalogViewModel);
             }
         }
-        catch (Exception e)
-        {
-            _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while loading catalogs from json data source");
-            _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Local, e.Message);
-            RemoveShimmer();
-        }
+    }
 
-        var restoreCatalog = await _restoreDataSource.LoadCatalogAsync();
-        RemoveShimmer();
-        if (restoreCatalog != null)
+    public void AddShimmers(int count)
+    {
+        while (count-- > 0)
         {
-            PackageCatalogs.Add(_host.CreateInstance<PackageCatalogViewModel>(restoreCatalog));
-        }
-
-        foreach (var catalog in PackageCatalogs)
-        {
-            CatalogLoaded?.Invoke(null, catalog);
+            PackageCatalogShimmers.Add(0);
         }
     }
 
     /// <summary>
     /// Removes a package catalog shimmer
     /// </summary>
-    public void RemoveShimmer()
+    public void RemoveShimmers(int count)
     {
-        if (PackageCatalogShimmers.Any())
+        while (count-- > 0 && PackageCatalogShimmers.Any())
         {
             PackageCatalogShimmers.Remove(PackageCatalogShimmers.Last());
         }
