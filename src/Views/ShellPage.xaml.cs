@@ -37,7 +37,6 @@ public sealed partial class ShellPage : Page
 
         UpdateNavigationMenuItems();
 
-        // TODO: Set the title bar icon by updating /Assets/WindowIcon.ico.
         // A custom title bar is required for full window theme and Mica support.
         // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
         App.MainWindow.ExtendsContentIntoTitleBar = true;
@@ -105,7 +104,7 @@ public sealed partial class ShellPage : Page
             {
                 var navigationViewItemString = $@"<NavigationViewItem xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:helpers=""using:DevHome.Helpers"" x:Uid=""/{tool.Assembly}/Resources/NavigationPane"" helpers:NavigationHelper.NavigateTo=""{tool.ViewModelFullName}"">
                                                   <NavigationViewItem.Icon>
-                                                      <FontIcon FontFamily=""{{StaticResource SymbolThemeFontFamily}}"" Glyph=""&#xe7c3;""/>
+                                                      <FontIcon FontFamily=""{{StaticResource SymbolThemeFontFamily}}"" Glyph=""&#x{tool.Icon};""/>
                                                   </NavigationViewItem.Icon>
                                               </NavigationViewItem>";
                 NavigationViewItem navigationViewItem = (NavigationViewItem)XamlReader.Load(navigationViewItemString);
