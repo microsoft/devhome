@@ -90,4 +90,23 @@ public class DevDrive : IDevDrive
     {
         get;
     }
+
+    /// <summary>
+    /// Swaps the DriveLabel , DriveLetter, DrizeSizeInBytes, DriveLocation and DriveUnitOfMearsure
+    /// and the Drive state of two Dev Drives.
+    /// </summary>
+    public static void SwapContent(DevDrive devDriveA, DevDrive devDriveB)
+    {
+        (devDriveA.DriveLabel, devDriveB.DriveLabel) = (devDriveB.DriveLabel, devDriveA.DriveLabel);
+
+        (devDriveA.DriveLetter, devDriveB.DriveLetter) = (devDriveB.DriveLetter, devDriveA.DriveLetter);
+
+        (devDriveA.DriveSizeInBytes, devDriveB.DriveSizeInBytes) = (devDriveB.DriveSizeInBytes, devDriveA.DriveSizeInBytes);
+
+        (devDriveA.DriveLocation, devDriveB.DriveLocation) = (devDriveB.DriveLocation, devDriveA.DriveLocation);
+
+        (devDriveA.DriveUnitOfMeasure, devDriveB.DriveUnitOfMeasure) = (devDriveB.DriveUnitOfMeasure, devDriveA.DriveUnitOfMeasure);
+
+        (devDriveA.State, devDriveB.State) = (devDriveB.State, devDriveA.State);
+    }
 }

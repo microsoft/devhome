@@ -64,7 +64,13 @@ public partial class EditDevDriveViewModel : ObservableObject
     {
         // DevDrive SetToDefaults
         ShowCustomizeOption = Visibility.Visible;
-        DevDrive = _devDriveManager.GetNewDevDrive();
+
+        // TODO: More changes to stitch this up in the coming PRs
+        var (result, devDrive) = _devDriveManager.GetNewDevDrive();
+        if (result == DevDriveOperationResult.Successful)
+        {
+            DevDrive = devDrive;
+        }
     }
 
     public void ShowDevDriveUIIfEnabled()
@@ -99,7 +105,7 @@ public partial class EditDevDriveViewModel : ObservableObject
         var windowOpened = await _devDriveManager.LaunchDevDriveWindow(DevDrive);
         if (windowOpened)
         {
-            _devDriveManager.OnViewModelWindowClosed += DevDriveCustomizationWindowClosed;
+            _devDriveManager.ViewModelWindowClosed += DevDriveCustomizationWindowClosed;
             IsDevDriveCheckboxEnabled = false;
         }
     }
@@ -138,13 +144,9 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// <summary>
     /// Clean up when the customization window is closed.
     /// </summary>
-    private void DevDriveCustomizationWindowClosed(object sender, DevDriveWindowClosedEventArgs args)
+    private void DevDriveCustomizationWindowClosed(object sender, IDevDrive devDrive)
     {
         IsDevDriveCheckboxEnabled = true;
-
-        if (DevDriveUtil.ValidateDevDrive(args.DevDrive))
-        {
-            DevDrive = args.DevDrive;
-        }
+        DevDrive = devDrive;
     }
 }
