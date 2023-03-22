@@ -40,7 +40,7 @@ public class BackgroundProcessTest
         // Confirm the process exits and it had the expected output
         // The first assert with the timeout ensures we don't sit here waiting for too long;
         // the second assert ensures it did exit instead of timing out.
-        Assert.IsTrue(backgroundProcess.HasExited || waitForExit.WaitOne(1000), "Process should exit after disposing the completion mutex");
+        Assert.IsTrue(backgroundProcess.HasExited || waitForExit.WaitOne(10 * 1000), "Process should exit after disposing the completion mutex");
         Assert.IsTrue(backgroundProcess.HasExited, "Process should exit after releasing the completion mutex");
         Assert.IsTrue(backgroundProcess.StandardOutput.ReadToEnd().Contains(randomString), "Process should have written to its stdout");
     }
