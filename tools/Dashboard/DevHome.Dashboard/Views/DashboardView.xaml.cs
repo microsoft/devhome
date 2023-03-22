@@ -65,7 +65,7 @@ public partial class DashboardView : ToolPage
         var hostConfigFileName = (ActualTheme == ElementTheme.Light) ? "HostConfigLight.json" : "HostConfigDark.json";
         try
         {
-            var uri = new Uri("ms-appx:///DevHome.Dashboard/Assets/" + hostConfigFileName);
+            var uri = new Uri($"ms-appx:///DevHome.Dashboard/Assets/{hostConfigFileName}");
             var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
             hostConfigContents = await FileIO.ReadTextAsync(file);
         }
