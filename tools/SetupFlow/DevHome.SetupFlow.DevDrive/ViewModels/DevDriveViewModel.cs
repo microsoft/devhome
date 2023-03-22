@@ -37,6 +37,11 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private readonly string _devHomeIconPath = "Assets/WindowIcon.ico";
     private readonly Dictionary<ByteUnit, string> _byteUnitList;
 
+    public bool IsDevDriveWindowOpen
+    {
+        get; private set;
+    }
+
     /// <summary>
     /// Gets the window that will contain the view.
     /// </summary>
@@ -75,6 +80,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         DriveLabel = devDrive.DriveLabel;
         Location = devDrive.DriveLocation;
         ComboBoxDriveLetter = devDrive.DriveLetter;
+        _devDriveManager.RequestToCloseViewModelWindow += CloseRequestedDevDriveWindow;
     }
 
     /// <summary>
@@ -186,6 +192,18 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
+    /// Closes the Dev Drive window if an object that holds a reference to the AssociatedDrive requests
+    /// for the window to be closed.
+    /// </summary>
+    public void CloseRequestedDevDriveWindow(object sender, IDevDrive devDrive)
+    {
+        if (devDrive.ID == AssociatedDrive.ID && IsDevDriveWindowOpen)
+        {
+            DevDriveWindowContainer.Close();
+        }
+    }
+
+    /// <summary>
     /// Cancel button click command used to close the window. Note, the only time the  <see cref="Models.DevDrive"/>
     /// object associated with the view model should have its values changed is on a save command.
     /// </summary>
@@ -251,11 +269,14 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         DevDriveWindowContainer = new (this);
         DevDriveWindowContainer.Closed += ViewContainerClosed;
-        return Task.FromResult(DevDriveWindowContainer.Show());
+        DevDriveWindowContainer.Activate();
+        IsDevDriveWindowOpen = true;
+        return Task.FromResult(IsDevDriveWindowOpen);
     }
 
     private void ViewContainerClosed(object sender, WindowEventArgs args)
     {
+        IsDevDriveWindowOpen = false;
         _devDriveManager.NotifyDevDriveWindowClosed(_concreteDevDrive);
     }
 

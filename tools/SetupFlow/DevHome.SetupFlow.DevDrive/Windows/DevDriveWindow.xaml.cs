@@ -24,7 +24,7 @@ public sealed partial class DevDriveWindow : SecondaryWindowExtension
     private readonly DevDriveViewModel _devDriveViewModel;
     private readonly DevDriveView _devDriveView;
     private readonly double _initialHeight = 600;
-    private readonly double _initialWidth = 800;
+    private readonly double _initialWidth = 600;
 
     public DevDriveWindow(DevDriveViewModel viewModel)
         : base()

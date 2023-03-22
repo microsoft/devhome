@@ -7,10 +7,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using CommunityToolkit.Common;
+using DevHome.Common.Models;
 using DevHome.SetupFlow.DevDrive.Models;
 using Newtonsoft.Json.Linq;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
 using ToolKitHelpers = CommunityToolkit.WinUI.Helpers;
 
 namespace DevHome.SetupFlow.DevDrive.Utilities;
@@ -138,27 +141,27 @@ public static class DevDriveUtil
     }
 
     /// <summary>
-    /// This method does not test if the value is valid in bytes. It simply checks if the value is within the given human
-    /// readable range. E.g for gigiabytes it checks if value is below 50 or over 64000.
+    /// This method does not test if the value is valid in bytes. It is used for the Dev Drive window size combo box.
+    /// It simply checks if the value is within the given human readable range. E.g for gigiabytes it checks if value is below 50 or over 64000.
     /// For the terabytes case below 0.05 or over 64. Minimum Dev Drive size is 50 GB and maximum file size for vhdx is 64 Tb.
     /// </summary>
     /// <returns> A bool that says whether the value is within the required bounds for Dev Drives</returns>
     public static bool IsValidSize(double value, ByteUnit unit)
     {
-        bool valueIsGreaterThanMin;
-        bool valueIsLessThanMax;
+        bool valueIsGreaterOrEqualToMin;
+        bool valueIsLessThanOrEqualToMax;
         if (unit == ByteUnit.TB)
         {
-            valueIsGreaterThanMin = value.CompareTo(MinSizeForTbComboBox) >= 0;
-            valueIsLessThanMax = value.CompareTo(MaxSizeForTbComboBox) <= 0;
+            valueIsGreaterOrEqualToMin = value.CompareTo(MinSizeForTbComboBox) >= 0;
+            valueIsLessThanOrEqualToMax = value.CompareTo(MaxSizeForTbComboBox) <= 0;
         }
         else
         {
-            valueIsGreaterThanMin = value.CompareTo(MinSizeForGbComboBox) >= 0;
-            valueIsLessThanMax = value.CompareTo(MaxSizeForGbComboBox) <= 0;
+            valueIsGreaterOrEqualToMin = value.CompareTo(MinSizeForGbComboBox) >= 0;
+            valueIsLessThanOrEqualToMax = value.CompareTo(MaxSizeForGbComboBox) <= 0;
         }
 
-        return valueIsGreaterThanMin && valueIsLessThanMax;
+        return valueIsGreaterOrEqualToMin && valueIsLessThanOrEqualToMax;
     }
 
     /// <summary>
@@ -216,6 +219,41 @@ public static class DevDriveUtil
         }
 
         return returnSet;
+    }
+
+    /// <summary>
+    /// Converts from a ulong amount of bytes to a localized string representation of that byte size in gigabytes.
+    /// Relies on StrFormatByteSizeEx to convert to localized.
+    /// </summary>
+    /// <returns>
+    /// If succeeds internally return localized size in gigabytes, otherwise falls back to community toolkit
+    /// implementation which is in english.
+    /// </returns>
+    public static string ConvertBytesToString(ulong sizeInBytes)
+    {
+        unsafe
+        {
+            // We only need 15 characters + null terminator.
+            var buffer = new string(' ', 16);
+            fixed (char* tempPath = buffer)
+            {
+                var result =
+                    PInvoke.StrFormatByteSizeEx(
+                        sizeInBytes,
+                        SFBS_FLAGS.SFBS_FLAGS_TRUNCATE_UNDISPLAYED_DECIMAL_DIGITS,
+                        tempPath,
+                        PInvoke.MAX_PATH);
+                if (result != 0)
+                {
+                    // fallback to using community toolkit which shows this unlocalized. In the form of 50 GB, 40 TB etc.
+                    return Converters.ToFileSizeString((long)sizeInBytes);
+                }
+                else
+                {
+                    return buffer.Trim();
+                }
+            }
+        }
     }
 
     private static string FormatExceptionString(ByteUnit unit, double value, double minSize, double maxSize)

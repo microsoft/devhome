@@ -48,7 +48,7 @@
                     Margin="35,5,5,0"/>
             </Grid>
             <ScrollViewer VerticalScrollBarVisibility="Auto"
-                Margin="20 30 20 20"
+                Margin="10 30 10 20"
                 Canvas.ZIndex="1">
                 <StackPanel
                     Margin="0 10 0 0">
@@ -144,7 +144,7 @@
                     </Grid>
                     <Grid
                         Margin="0 10 0 10"
-                        ColumnDefinitions="5*, *">
+                        ColumnDefinitions="4*, Auto">
                         <TextBox 
                             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLocationTextBox"
                             x:Name="DriveLocationTextBox"
@@ -160,6 +160,7 @@
                             Margin="10 26 0 0"
                             Padding="30 7 33 7"
                             HorizontalContentAlignment="Center"
+                            VerticalAlignment="Top"
                             Command="{x:Bind ViewModel.ChooseFolderLocationCommand, Mode=OneWay}">
                             <TextBlock 
                                 TextWrapping="Wrap"

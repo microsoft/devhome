@@ -92,7 +92,7 @@ public interface IDevDriveManager
     /// <summary>
     /// Event that requesters can subscribe to, to know when a Dev Drive window has closed.
     /// </summary>
-    public event EventHandler<DevDriveWindowClosedEventArgs> OnViewModelWindowClosed;
+    public event EventHandler<IDevDrive> ViewModelWindowClosed;
 
     /// <summary>
     /// Validates the values inside the Dev Drive against Dev Drive requirements. Dev drive is only validated
@@ -137,4 +137,18 @@ public interface IDevDriveManager
     /// A result indicating whether the operation was successful.
     /// </returns>
     public DevDriveOperationResult RemoveDevDrive(IDevDrive devDrive);
+
+    /// <summary>
+    /// Allows who hold a IDevDrive object to request that the Manager tell the view model who created the window to close the
+    /// Dev Drive window. In this case the requester wants to close the window, whereas in the NotifyDevDriveWindowClosed case
+    /// the view model is telling the requester the window closed.
+    /// </summary>
+    /// <param name="devDrive">Dev Drive object</param>
+    public void RequestToCloseDevDriveWindow(IDevDrive devDrive);
+
+    /// <summary>
+    /// Event that View model can subscribe to, to know if a requester wants them to close the window, without the user explicity
+    /// closing the window themselves, through actions like clicking the close button.
+    /// </summary>
+    public event EventHandler<IDevDrive> RequestToCloseViewModelWindow;
 }

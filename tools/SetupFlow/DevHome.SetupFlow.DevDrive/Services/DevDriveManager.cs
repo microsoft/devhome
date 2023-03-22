@@ -49,7 +49,12 @@ public class DevDriveManager : IDevDriveManager
     /// <summary>
     /// Event that requesters can subscribe to, to know when a <see cref="DevDriveWindow"/> has closed.
     /// </summary>
-    public event EventHandler<DevDriveWindowClosedEventArgs> OnViewModelWindowClosed = (sender, e) => { };
+    public event EventHandler<IDevDrive> ViewModelWindowClosed = (sender, e) => { };
+
+    /// <summary>
+    /// Event that view model can subscribe to, to know if a requester wants them to close their <see cref="DevDriveWindow"/>.
+    /// </summary>
+    public event EventHandler<IDevDrive> RequestToCloseViewModelWindow = (sender, e) => { };
 
     public DevDriveManager(IHost host, ILogger logger, IStringResource stringResource)
     {
@@ -86,7 +91,14 @@ public class DevDriveManager : IDevDriveManager
     /// <inheritdoc/>
     public void NotifyDevDriveWindowClosed(IDevDrive devDrive)
     {
-        OnViewModelWindowClosed(null, new DevDriveWindowClosedEventArgs(devDrive));
+        ViewModelWindowClosed(null, devDrive);
+    }
+
+    /// <inheritdoc/>
+    public void RequestToCloseDevDriveWindow(IDevDrive devDrive)
+    {
+        RequestToCloseViewModelWindow(null, devDrive);
+        RemoveDevDrive(devDrive);
     }
 
     /// <summary>
