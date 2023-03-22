@@ -173,7 +173,7 @@ public static class IPCSetup
             var serverPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DevHome.SetupFlow.ElevatedServer.exe");
 
             // We need to start the process with ShellExecute to run elevated
-            var processStartupInfo = new ProcessStartInfo
+            var processStartInfo = new ProcessStartInfo
             {
                 FileName = serverPath,
                 Arguments = serverArgs,
@@ -186,11 +186,12 @@ public static class IPCSetup
             {
                 // For testing we run without ShellExecute so we can inspect the process output.
                 // This has the side effect of not running elevated.
-                processStartupInfo.UseShellExecute = false;
-                processStartupInfo.RedirectStandardOutput = true;
+                processStartInfo.UseShellExecute = false;
+                processStartInfo.Verb = string.Empty;
+                processStartInfo.RedirectStandardOutput = true;
             }
 
-            var process = Process.Start(processStartupInfo);
+            var process = Process.Start(processStartInfo);
             if (process is null)
             {
                 throw new InvalidOperationException("Failed to start background process");
