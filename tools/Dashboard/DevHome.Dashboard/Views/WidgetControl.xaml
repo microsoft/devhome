@@ -14,7 +14,7 @@
     <Grid Width="300" Height="{x:Bind helpers:WidgetHelpers.GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize), Mode=OneWay}">
         <ContentPresenter Content="{x:Bind WidgetSource.WidgetUIElement, Mode=OneWay}"/>
         <Button Tag="{x:Bind}" FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xE712;" 
-                VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 30 3 0" BorderThickness="0"
+                VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0 15 15 0" BorderThickness="0"
                 Click="OpenWidgetMenu">
             <Button.Flyout>
                 <MenuFlyout/>
