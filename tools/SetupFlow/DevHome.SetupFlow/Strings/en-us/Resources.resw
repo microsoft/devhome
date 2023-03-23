@@ -321,6 +321,14 @@
     <value>{0} Result(s)</value>
     <comment>{Locked="{0}"} Label for a search result counter. {0} is replaced by the number of result items.</comment>
   </data>
+  <data name="RestorePackagesTitle" xml:space="preserve">
+    <value>Restore from {0}</value>
+    <comment>{Locked="{0}"} Header text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
+  </data>
+  <data name="RestorePackagesDescription" xml:space="preserve">
+    <value>The following applications are recovered from {0}</value>
+    <comment>{Locked="{0}"} Description text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
+  </data>
   <data name="PackagesCount" xml:space="preserve">
     <value>{0} packages</value>
     <comment>{Locked="{0}"} Display the number of packages. {0} is replaced by the number of packages.</comment>
