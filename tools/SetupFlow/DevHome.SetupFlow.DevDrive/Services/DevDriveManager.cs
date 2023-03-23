@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.SetupFlow.DevDrive.Models;
@@ -11,7 +12,14 @@ using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
-using Microsoft.UI.Xaml;
+using Windows.Foundation;
+using Windows.Media.Playback;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.Security;
+using Windows.Win32.Storage.FileSystem;
+using Windows.Win32.Storage.Vhd;
+using Windows.Win32.System.Ioctl;
 
 namespace DevHome.Common.Services;
 
@@ -44,7 +52,10 @@ public class DevDriveManager : IDevDriveManager
     }
 
     /// <inheritdoc/>
-    public Task<bool> CreateDevDrive(IDevDrive devDrive) => throw new NotImplementedException();
+    public Task<int> CreateDevDrive(IDevDrive devDrive)
+    {
+        throw new NotImplementedException();
+    }
 
     /// <inheritdoc/>
     public Task<bool> LaunchDevDriveWindow(IDevDrive devDrive)
@@ -85,10 +96,7 @@ public class DevDriveManager : IDevDriveManager
     {
         return Task.Run(() =>
         {
-            // TODO: Return empty list so code does not throw.
-            // SHould fix with implementation.
-            IEnumerable<IDevDrive> toReturn = new List<IDevDrive>();
-            return toReturn;
+            return _devDriveStorageOperator.GetAllExistingDevDrives();
         });
     }
 }
