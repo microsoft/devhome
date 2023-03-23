@@ -144,6 +144,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private void PinButton_Click(object sender, RoutedEventArgs e)
     {
         AddedWidget = _currentWidget;
+        ViewModel = null;
 
         this.Hide();
     }
