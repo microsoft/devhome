@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Runtime.CompilerServices;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
@@ -82,10 +83,27 @@ public partial class SecondaryWindowExtension : WindowEx
     public SecondaryWindowExtension()
     {
         // By default, set the primary window as the main window
-         PrimaryWindow = Application.Current.GetService<WindowEx>();
-         Backdrop = PrimaryWindow.Backdrop;
-         Closed += OnSecondaryWindowClosed;
-         Activated += OnSecondaryWindowActivated;
+        PrimaryWindow = Application.Current.GetService<WindowEx>();
+        Backdrop = PrimaryWindow.Backdrop;
+        Closed += OnSecondaryWindowClosed;
+        Activated += OnSecondaryWindowActivated;
+        CenterAndElevateWindow();
+    }
+
+    public void CenterAndElevateWindow()
+    {
+        if (PrimaryWindow != null)
+        {
+            // first get half the size of the of the current window then get the center point
+            // of the primary window and substract primary windows y by half of secondary windows
+            // y. This will show the secondary winddow in the center slight elevated above the content.
+            var secondaryY = Height / 4D;
+            var primaryX = (double)PrimaryWindow.AppWindow.Position.X;
+            var primaryY = (double)PrimaryWindow.AppWindow.Position.Y;
+            primaryX += PrimaryWindow.Width / 2D;
+            primaryY += PrimaryWindow.Height / 2D;
+            this.MoveAndResize(primaryX, primaryY - secondaryY, Width, Height);
+        }
     }
 
     public void OnPrimaryWindowClosed(object? sender, WindowEventArgs args)
