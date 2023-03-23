@@ -137,14 +137,6 @@
     <value>Get started</value>
     <comment>Button text for getting started with transferring settings from a developer machine</comment>
   </data>
-  <data name="AppManagement.Description" xml:space="preserve">
-    <value>Install Applications</value>
-    <comment>Description for the application management page</comment>
-  </data>
-  <data name="AppManagement.Title" xml:space="preserve">
-    <value>Install Applications</value>
-    <comment>Title for the application management page</comment>
-  </data>
   <data name="AgreeOnAbovePolicy.Content" xml:space="preserve">
     <value>I have read, understand and agree to the above policy</value>
     <comment>Checkbox label for reading, understanding and agreeing to policies presented above this label</comment>
@@ -393,6 +385,34 @@
     <value>Set up</value>
     <comment>Label for the button that starts the setup</comment>
   </data>
+  <data name="SetupShell_AppManagement.Description" xml:space="preserve">
+    <value>Search for apps and packages to install or select them below.</value>
+    <comment>Description for the application management page</comment>
+  </data>
+  <data name="SetupShell_AppManagement.Title" xml:space="preserve">
+    <value>Install Apps</value>
+    <comment>Title for the application management page</comment>
+  </data>
+  <data name="SetupShell_EndToEndTitle.Text" xml:space="preserve">
+    <value>End-to-end setup</value>
+    <comment>Title for all the pages during an end-to-end setup flow</comment>
+  </data>
+  <data name="SetupShell_RepoConfig.Description" xml:space="preserve">
+    <value>Add private or public repositories to clone to you computer.</value>
+    <comment>Description for the application management page</comment>
+  </data>
+  <data name="SetupShell_RepoConfig.Title" xml:space="preserve">
+    <value>Clone Repos</value>
+    <comment>Title for the application management page</comment>
+  </data>
+  <data name="SetupShell_Review.Description" xml:space="preserve">
+    <value>Review the terms and setup details below before applying these changes to your computer.</value>
+    <comment>Description for the review page</comment>
+  </data>
+  <data name="SetupShell_Review.Title" xml:space="preserve">
+    <value>Review &amp; setup</value>
+    <comment>Title for the application management page</comment>
+  </data>
   <data name="Applications" xml:space="preserve">
     <value>Applications</value>
     <comment>Header for a section showing a summary of applications to be installed</comment>
@@ -421,6 +441,22 @@
     <value>+ Add repository</value>
     <comment>Add repository button text</comment>
   </data>
+
+
+
+  <data name="ReposConfigPageTitle" xml:space="preserve">
+    <value>Clone Repos</value>
+    <comment>Clone Repo label for the stepper</comment>
+  </data>
+  <data name="ApplicationsPageTitle" xml:space="preserve">
+    <value>Install Apps</value>
+    <comment>Install Apps label for the stepper</comment>
+  </data>
+  <data name="ReviewPageTitle" xml:space="preserve">
+    <value>Review &amp; setup</value>
+    <comment>Review and Setup label for the stepper</comment>
+  </data>
+
   <data name="StepperCloneRepos.Text" xml:space="preserve">
     <value>Clone Repos</value>
     <comment>Clone Repo label for the stepper</comment>

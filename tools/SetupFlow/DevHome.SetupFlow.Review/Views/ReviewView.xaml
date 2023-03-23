@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:appManagementViews="using:DevHome.SetupFlow.AppManagement.Views"
+    xmlns:controls="using:DevHome.SetupFlow.Common.Controls"
     xmlns:commonViewModels="using:DevHome.SetupFlow.Common.ViewModels"
     xmlns:devVolumeViews="using:DevHome.SetupFlow.DevDrive.Views"
     xmlns:repoConfigViews="using:DevHome.SetupFlow.RepoConfig.Views"
@@ -23,65 +24,67 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <StackPanel>
-        <TextBlock Text="Review and Set up"/>
+    <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
+                         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
         <StackPanel>
-            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_SetUpDetailsTitle" />
-            <NavigationView x:Name="ReviewNavigationView"
+            <StackPanel>
+                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_SetUpDetailsTitle" />
+                <NavigationView x:Name="ReviewNavigationView"
                             PaneDisplayMode="Top" SelectionFollowsFocus="Enabled" IsBackButtonVisible="Collapsed" IsSettingsVisible="False"
                             MenuItemsSource="{x:Bind ViewModel.ReviewTabs, Mode=OneWay}"
                             SelectedItem="{x:Bind ViewModel.SelectedReviewTab, Mode=TwoWay}" >
-                <NavigationView.MenuItemTemplate>
-                    <DataTemplate x:DataType="commonViewModels:ReviewTabViewModelBase">
-                        <TextBlock Text="{x:Bind TabTitle}"/>
-                    </DataTemplate>
-                </NavigationView.MenuItemTemplate>
-                <Frame MinHeight="100">
-                    <ContentControl Content="{x:Bind ViewModel.SelectedReviewTab, Mode=OneWay}"
+                    <NavigationView.MenuItemTemplate>
+                        <DataTemplate x:DataType="commonViewModels:ReviewTabViewModelBase">
+                            <TextBlock Text="{x:Bind TabTitle}"/>
+                        </DataTemplate>
+                    </NavigationView.MenuItemTemplate>
+                    <Frame MinHeight="100">
+                        <ContentControl Content="{x:Bind ViewModel.SelectedReviewTab, Mode=OneWay}"
                                     HorizontalContentAlignment="Stretch"
                                     VerticalContentAlignment="Stretch" >
-                        <ContentControl.ContentTemplateSelector>
-                            <selectors:ReviewTabViewSelector>
-                                <selectors:ReviewTabViewSelector.DevDriveTabTemplate>
-                                    <DataTemplate>
-                                        <devVolumeViews:DevDriveReviewView />
-                                    </DataTemplate>
-                                </selectors:ReviewTabViewSelector.DevDriveTabTemplate>
-                                <selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
-                                    <DataTemplate>
-                                        <repoConfigViews:RepoConfigReviewView />
-                                    </DataTemplate>
-                                </selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
-                                <selectors:ReviewTabViewSelector.AppManagementTabTemplate>
-                                    <DataTemplate>
-                                        <appManagementViews:AppManagementReviewView />
-                                    </DataTemplate>
-                                </selectors:ReviewTabViewSelector.AppManagementTabTemplate>
-                            </selectors:ReviewTabViewSelector>
-                        </ContentControl.ContentTemplateSelector>
-                    </ContentControl>
-                </Frame>
-            </NavigationView>
-        </StackPanel>
+                            <ContentControl.ContentTemplateSelector>
+                                <selectors:ReviewTabViewSelector>
+                                    <selectors:ReviewTabViewSelector.DevDriveTabTemplate>
+                                        <DataTemplate>
+                                            <devVolumeViews:DevDriveReviewView />
+                                        </DataTemplate>
+                                    </selectors:ReviewTabViewSelector.DevDriveTabTemplate>
+                                    <selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
+                                        <DataTemplate>
+                                            <repoConfigViews:RepoConfigReviewView />
+                                        </DataTemplate>
+                                    </selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
+                                    <selectors:ReviewTabViewSelector.AppManagementTabTemplate>
+                                        <DataTemplate>
+                                            <appManagementViews:AppManagementReviewView />
+                                        </DataTemplate>
+                                    </selectors:ReviewTabViewSelector.AppManagementTabTemplate>
+                                </selectors:ReviewTabViewSelector>
+                            </ContentControl.ContentTemplateSelector>
+                        </ContentControl>
+                    </Frame>
+                </NavigationView>
+            </StackPanel>
 
-        <StackPanel>
-            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_EulaTitle" />
-            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_EulaText" />
-            <CheckBox IsChecked="{x:Bind ViewModel.IsEulaAccepted, Mode=TwoWay}"
+            <StackPanel>
+                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_EulaTitle" />
+                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_EulaText" />
+                <CheckBox IsChecked="{x:Bind ViewModel.IsEulaAccepted, Mode=TwoWay}"
                       x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_AcceptEula" />
-        </StackPanel>
+            </StackPanel>
 
-        <StackPanel Visibility="{x:Bind ViewModel.IsRebootRequired, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
-            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_RebootTitle" />
-            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_RebootText" />
-            <CheckBox IsChecked="{x:Bind ViewModel.IsRebootAccepted, Mode=TwoWay}"
+            <StackPanel Visibility="{x:Bind ViewModel.IsRebootRequired, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_RebootTitle" />
+                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_RebootText" />
+                <CheckBox IsChecked="{x:Bind ViewModel.IsRebootAccepted, Mode=TwoWay}"
                       x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_AcceptReboot" />
-        </StackPanel>
+            </StackPanel>
 
-        <StackPanel>
-            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsTitle" />
-            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsText" />
-            <!-- TODO: Add hyperlinks for Terms of use, Privacy policy -->
+            <StackPanel>
+                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsTitle" />
+                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsText" />
+                <!-- TODO: Add hyperlinks for Terms of use, Privacy policy -->
+            </StackPanel>
         </StackPanel>
-    </StackPanel>
+    </controls:SetupShell>
 </UserControl>

@@ -34,18 +34,23 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ReviewTabViewModelBase _selectedReviewTab;
 
-    public ReviewViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host, SetupFlowOrchestrator orchestrator)
-        : base(stringResource)
+    public ReviewViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger,
+        IHost host)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         _host = host;
         _orchestrator = orchestrator;
 
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
+        PageTitle = StringResource.GetLocalized(StringResourceKey.ReviewPageTitle);
         CanGoToNextPage = false;
     }
 
-    public async override void OnNavigateToPageAsync()
+    protected async override Task OnFirstNavigateToAsync()
     {
         IsRebootRequired = _orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresReboot));
         ReviewTabs = _orchestrator.TaskGroups.Select(taskGroup => taskGroup.GetReviewTabViewModel()).ToList();

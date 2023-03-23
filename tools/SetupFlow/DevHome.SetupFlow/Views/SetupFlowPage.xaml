@@ -4,21 +4,21 @@
 <pg:ToolPage
     x:Class="DevHome.SetupFlow.Views.SetupFlowPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:pg="using:DevHome.Common"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:appManagementViews="using:DevHome.SetupFlow.AppManagement.Views"
+    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Common.Behaviors"
+    xmlns:selectors="using:DevHome.SetupFlow.Common.Selectors"
+    xmlns:configurationFileViews="using:DevHome.SetupFlow.ConfigurationFile.Views"
+    xmlns:loadingViews="using:DevHome.SetupFlow.Loading.Views"
     xmlns:mainPageViews="using:DevHome.SetupFlow.MainPage.Views"
     xmlns:repoConfigViews="using:DevHome.SetupFlow.RepoConfig.Views"
-    xmlns:appManagementViews="using:DevHome.SetupFlow.AppManagement.Views"
     xmlns:reviewViews="using:DevHome.SetupFlow.Review.Views"
-    xmlns:loadingViews="using:DevHome.SetupFlow.Loading.Views"
     xmlns:summaryViews="using:DevHome.SetupFlow.Summary.Views"
-    xmlns:configurationFileViews="using:DevHome.SetupFlow.ConfigurationFile.Views"
-    xmlns:selectors="using:DevHome.SetupFlow.Common.Selectors"
-    xmlns:behaviors="using:DevHome.Common.Behaviors"
-    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Common.Behaviors"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
@@ -34,9 +34,10 @@
 
         <!-- Display view for the current view-model -->
         <ContentControl
+            Grid.Row="0"
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
-            Content="{x:Bind ViewModel.CurrentPageViewModel, Mode=OneWay}">
+            Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel, Mode=OneWay}">
             <ContentControl.ContentTemplateSelector>
                 <selectors:SetupFlowViewSelector>
                     <selectors:SetupFlowViewSelector.MainPageTemplate>
@@ -82,7 +83,7 @@
               Padding="0 24"
               BorderThickness="0 1 0 0"
               BorderBrush="{ThemeResource ControlStrokeColorDefault}"
-              Visibility="{x:Bind ViewModel.CurrentPageViewModel.IsNavigationBarVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" >
+              Visibility="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.IsNavigationBarVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
@@ -99,12 +100,12 @@
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
                 <HyperlinkButton Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
                                  x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel" />
-                <Button Command="{x:Bind ViewModel.GoToPreviousPageCommand, Mode=OneWay}"
-                        Visibility="{x:Bind ViewModel.IsPreviousButtonVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
+                <Button Command="{x:Bind ViewModel.Orchestrator.GoToPreviousPageCommand, Mode=OneWay}"
+                        Visibility="{x:Bind ViewModel.Orchestrator.HasPreviousPage, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Previous" />
-                <Button Command="{x:Bind ViewModel.GoToNextPageCommand, Mode=OneWay}"
+                <Button Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
                         Style="{StaticResource AccentButtonStyle}"
-                        Content="{x:Bind ViewModel.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}" />
+                        Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}" />
             </StackPanel>
         </Grid>
     </Grid>

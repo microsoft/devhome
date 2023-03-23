@@ -43,8 +43,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// </summary>
     public event EventHandler<IList<ISetupTaskGroup>> StartSetupFlow;
 
-    public MainPageViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host)
-        : base(stringResource)
+    public MainPageViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger,
+        IHost host)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         _host = host;
