@@ -30,16 +30,22 @@ public abstract class WinGetPackageDataSource
     }
 
     /// <summary>
+    /// Initialize the data source
+    /// </summary>
+    public abstract Task InitializeAsync();
+
+    /// <summary>
     /// Load catalogs from the data source
     /// </summary>
     /// <returns>List of package catalogs</returns>
     public abstract Task<IList<PackageCatalog>> LoadCatalogsAsync();
 
     /// <summary>
-    /// Get a list of packages from WinGet catalog ordered based on the input list
+    /// Get a list of packages from WinGet catalog ordered based on the input
+    /// list and processes them according to the provided function
     /// </summary>
     /// <typeparam name="T">Input type</typeparam>
-    /// <param name="items">List of objects that contains the package id</param>
+    /// <param name="items">List of objects that can be mapped to package IDs</param>
     /// <param name="packageIdFunc">Function for retrieving the package id</param>
     /// <param name="packageProcessorFunc">Function for processing the package</param>
     /// <returns>List of packages</returns>

@@ -12,6 +12,7 @@ using DevHome.SetupFlow.AppManagement.Services;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Storage.Streams;
 using Windows.System;
 
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
@@ -106,28 +107,22 @@ public partial class PackageViewModel : ObservableObject
     /// <returns>Package icon</returns>
     private BitmapImage GetIconByTheme(RestoreApplicationIconTheme theme)
     {
-        if (theme == RestoreApplicationIconTheme.Dark)
+        return theme switch
         {
             // Get default dark theme icon if corresponding package icon was not found
-            if (_package.DarkThemeIcon == null)
-            {
-                return DefaultDarkPackageIconSource;
-            }
+            RestoreApplicationIconTheme.Dark =>
+                _package.DarkThemeIcon == null ? DefaultDarkPackageIconSource : CreateBitmapImage(_package.DarkThemeIcon),
 
-            var darkThemeBitmapImage = new BitmapImage();
-            darkThemeBitmapImage.SetSource(_package.DarkThemeIcon);
-            return darkThemeBitmapImage;
-        }
+            // Get default light theme icon if corresponding package icon was not found
+            _ => _package.LightThemeIcon == null ? DefaultLightPackageIconSource : CreateBitmapImage(_package.LightThemeIcon),
+        };
+    }
 
-        // Get default light theme icon if corresponding package icon was not found
-        if (_package.LightThemeIcon == null)
-        {
-            return DefaultLightPackageIconSource;
-        }
-
-        var lightThemeBitmapImage = new BitmapImage();
-        lightThemeBitmapImage.SetSource(_package.LightThemeIcon);
-        return lightThemeBitmapImage;
+    private BitmapImage CreateBitmapImage(IRandomAccessStream stream)
+    {
+        var bitmapImage = new BitmapImage();
+        bitmapImage.SetSource(stream);
+        return bitmapImage;
     }
 
     /// <summary>

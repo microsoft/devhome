@@ -115,7 +115,7 @@
                                 <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
                             </ctControls:SettingsCard.Resources>
                             <ctControls:SettingsCard.HeaderIcon>
-                                <ImageIcon Source="{x:Bind Icon,Mode=OneWay}"/>
+                                <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
                             </ctControls:SettingsCard.HeaderIcon>
                             <ctControls:SettingsCard.ActionIcon>
                                 <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE10A;"/>

@@ -105,8 +105,8 @@ public class WinGetPackageJsonDataSourceTest : BaseSetupFlowTest
 
         // Act/Assert
         var fileName = TestHelpers.GetTestFilePath("file_not_found");
-        var jsonDataSource = TestHost!.GetService<WinGetPackageJsonDataSource>();
-        Assert.ThrowsException<FileNotFoundException>(() => jsonDataSource.DeserializeJsonCatalogsAsync(fileName).GetAwaiter().GetResult());
+        var jsonDataSource = TestHost.CreateInstance<WinGetPackageJsonDataSource>(fileName);
+        Assert.ThrowsException<FileNotFoundException>(() => jsonDataSource.InitializeAsync().GetAwaiter().GetResult());
         Assert.AreEqual(0, jsonDataSource.CatalogCount);
         Assert.AreEqual(0, jsonDataSource.LoadCatalogsAsync().GetAwaiter().GetResult().Count);
     }
@@ -130,8 +130,8 @@ public class WinGetPackageJsonDataSourceTest : BaseSetupFlowTest
     private IList<AppManagement.Models.PackageCatalog> LoadCatalogsFromJsonDataSource(string fileName)
     {
         var fileNamePath = TestHelpers.GetTestFilePath(fileName);
-        var jsonDataSource = TestHost!.GetService<WinGetPackageJsonDataSource>();
-        jsonDataSource.DeserializeJsonCatalogsAsync(fileNamePath).GetAwaiter().GetResult();
+        var jsonDataSource = TestHost.CreateInstance<WinGetPackageJsonDataSource>(fileNamePath);
+        jsonDataSource.InitializeAsync().GetAwaiter().GetResult();
         return jsonDataSource.LoadCatalogsAsync().GetAwaiter().GetResult();
     }
 }

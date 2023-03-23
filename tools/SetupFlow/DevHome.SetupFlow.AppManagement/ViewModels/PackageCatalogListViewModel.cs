@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -20,7 +19,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
     private readonly IWindowsPackageManager _wpm;
     private readonly WinGetPackageJsonDataSource _jsonDataSource;
     private readonly WinGetPackageRestoreDataSource _restoreDataSource;
-    private readonly string _packageCollectionsPath = Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "DevHome.SetupFlow", "Assets", "AppManagementPackages.json");
+    private bool _initialized;
 
     /// <summary>
     /// Gets a list of package catalogs to display
@@ -38,11 +37,6 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// </summary>
     public event EventHandler<PackageCatalogViewModel> CatalogLoaded;
 
-    /// <summary>
-    /// Gets a value indicating whether data sources are already initialized
-    /// </summary>
-    private bool IsInitialized => _jsonDataSource.CatalogCount + _restoreDataSource.CatalogCount > 0;
-
     public PackageCatalogListViewModel(IHost host, ILogger logger, WinGetPackageJsonDataSource jsonDataSource, WinGetPackageRestoreDataSource restoreDataSource, IWindowsPackageManager wpm)
     {
         _host = host;
@@ -57,10 +51,13 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// </summary>
     public async Task LoadCatalogsAsync()
     {
-        if (!IsInitialized)
+        if (!_initialized)
         {
+            _initialized = true;
+
             // Initialize all data sources and load package ids into memory
-            await InitializeDataSourcesAsync();
+            await InitializeDataSourceAsync(_jsonDataSource);
+            await InitializeDataSourceAsync(_restoreDataSource);
 
             // Connect to winget catalog on a separate (non-UI) thread to prevent lagging the UI.
             await Task.Run(async () => await _wpm.WinGetCatalog.ConnectAsync());
@@ -72,52 +69,22 @@ public partial class PackageCatalogListViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Initialize all data sources by loading the package ids in memory (without
-    /// resolving them) and adding the corresponding number of catalog shimmers
-    /// </summary>
-    private async Task InitializeDataSourcesAsync()
-    {
-        await InitializeJsonDataSourceAsync();
-        await InitializeRestoreDataSourceAsync();
-    }
-
-    /// <summary>
     /// Initialize JSON data source
     /// </summary>
-    private async Task InitializeJsonDataSourceAsync()
+    private async Task InitializeDataSourceAsync(WinGetPackageDataSource dataSource)
     {
         try
         {
-            await _jsonDataSource.DeserializeJsonCatalogsAsync(_packageCollectionsPath);
+            await dataSource.InitializeAsync();
         }
         catch (Exception e)
         {
-            _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while initializing json data source");
+            _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while initializing data source of type {dataSource.GetType().Name}");
             _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Local, e.Message);
         }
         finally
         {
-            AddShimmers(_jsonDataSource.CatalogCount);
-        }
-    }
-
-    /// <summary>
-    /// Initialize restore data source
-    /// </summary>
-    private async Task InitializeRestoreDataSourceAsync()
-    {
-        try
-        {
-            await _restoreDataSource.GetRestoreDeviceInfoAsync();
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while initializing restore data source");
-            _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Local, e.Message);
-        }
-        finally
-        {
-            AddShimmers(_restoreDataSource.CatalogCount);
+            AddShimmers(dataSource.CatalogCount);
         }
     }
 

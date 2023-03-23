@@ -34,25 +34,27 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 
     private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
+    private readonly string _fileName;
     private IList<JsonWinGetPackageCatalog> _jsonCatalogs = new List<JsonWinGetPackageCatalog>();
 
     public override int CatalogCount => _jsonCatalogs.Count;
 
-    public WinGetPackageJsonDataSource(ILogger logger, ISetupFlowStringResource stringResource, IWindowsPackageManager wpm)
+    public WinGetPackageJsonDataSource(
+        ILogger logger,
+        ISetupFlowStringResource stringResource,
+        IWindowsPackageManager wpm,
+        string fileName)
         : base(wpm)
     {
         _logger = logger;
         _stringResource = stringResource;
+        _fileName = fileName;
     }
 
-    /// <summary>
-    /// Deserialize JSON catalogs from an input file
-    /// </summary>
-    /// <param name="fileName">JSON file name</param>
-    public async Task DeserializeJsonCatalogsAsync(string fileName)
+    public async override Task InitializeAsync()
     {
         // Open and deserialize JSON file
-        using var fileStream = File.OpenRead(fileName);
+        using var fileStream = File.OpenRead(_fileName);
         var options = new JsonSerializerOptions() { ReadCommentHandling = JsonCommentHandling.Skip };
         _jsonCatalogs = await JsonSerializer.DeserializeAsync<IList<JsonWinGetPackageCatalog>>(fileStream, options);
     }

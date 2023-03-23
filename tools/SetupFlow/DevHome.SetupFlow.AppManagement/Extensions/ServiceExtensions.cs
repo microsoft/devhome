@@ -1,10 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.IO;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 
@@ -27,8 +30,13 @@ public static class ServiceExtensions
         services.AddSingleton(new WindowsPackageManagerFactory(ClsidContext.Prod));
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddTransient<AppManagementTaskGroup>();
-        services.AddTransient<WinGetPackageJsonDataSource>();
         services.AddTransient<WinGetPackageRestoreDataSource>();
+        services.AddTransient<WinGetPackageJsonDataSource>(sp =>
+        {
+            var dataSourcePath = sp.GetService<IOptions<SetupFlowOptions>>().Value.WinGetPackageJsonDataSourcePath;
+            var dataSourceFullPath = Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, dataSourcePath);
+            return ActivatorUtilities.CreateInstance<WinGetPackageJsonDataSource>(sp, dataSourceFullPath);
+        });
 
         return services;
     }

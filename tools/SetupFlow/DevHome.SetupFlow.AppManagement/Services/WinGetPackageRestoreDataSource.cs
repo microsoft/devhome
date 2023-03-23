@@ -43,7 +43,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
     /// <summary>
     /// Gets the restore device information
     /// </summary>
-    public async Task GetRestoreDeviceInfoAsync()
+    public async override Task InitializeAsync()
     {
         var restoreDeviceInfoResult = await _restoreInfo.GetRestoreDeviceInfoAsync();
         if (restoreDeviceInfoResult.Status == RestoreDeviceInfoStatus.Ok)
