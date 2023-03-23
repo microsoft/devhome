@@ -20,6 +20,8 @@ public partial class WidgetViewModel : ObservableObject
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly AdaptiveCardRenderer _renderer;
 
+    private RenderedAdaptiveCard _renderedCard;
+
     [ObservableProperty]
     private Widget _widget;
 
@@ -136,11 +138,16 @@ public partial class WidgetViewModel : ObservableObject
         {
             try
             {
-                var renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
-                if (renderedCard != null && renderedCard.FrameworkElement != null)
+                if (_renderedCard != null)
                 {
-                    renderedCard.Action += HandleAdaptiveAction;
-                    WidgetFrameworkElement = renderedCard.FrameworkElement;
+                    _renderedCard.Action -= HandleAdaptiveAction;
+                }
+
+                _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
+                if (_renderedCard != null && _renderedCard.FrameworkElement != null)
+                {
+                    _renderedCard.Action += HandleAdaptiveAction;
+                    WidgetFrameworkElement = _renderedCard.FrameworkElement;
                 }
             }
             catch (Exception e)
