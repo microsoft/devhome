@@ -130,44 +130,6 @@ public partial class DashboardView : ToolPage
         PinnedWidgets.Add(wvm);
     }
 
-    private void OpenWidgetMenu(object sender, RoutedEventArgs e)
-    {
-        if (sender as Button is Button widgetMenuButton)
-        {
-            var widgetMenuFlyout = widgetMenuButton.Flyout as MenuFlyout;
-            widgetMenuFlyout.Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.BottomEdgeAlignedLeft;
-            if (widgetMenuFlyout?.Items.Count == 0)
-            {
-                if (widgetMenuButton?.Tag is WidgetViewModel widgetViewModel)
-                {
-                    var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-                    var text = resourceLoader.GetString("RemoveWidgetMenuText");
-                    var menuItemClose = new MenuFlyoutItem
-                    {
-                        Tag = widgetViewModel,
-                        Text = text,
-                    };
-                    menuItemClose.Click += DeleteWidgetClick;
-                    widgetMenuFlyout.Items.Add(menuItemClose);
-                }
-            }
-        }
-    }
-
-    private async void DeleteWidgetClick(object sender, RoutedEventArgs e)
-    {
-        if (sender is MenuFlyoutItem deleteMenuItem)
-        {
-            if (deleteMenuItem?.Tag is WidgetViewModel widgetViewModel)
-            {
-                // Remove the widget from the list before deleting, otherwise the widget will
-                // have changed and the collection won't be able to find it to remove it.
-                PinnedWidgets.Remove(widgetViewModel);
-                await widgetViewModel.Widget.DeleteAsync();
-            }
-        }
-    }
-
     // Remove widget(s) from the Dashboard if the provider deletes the widget definition, or the provider is uninstalled.
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
