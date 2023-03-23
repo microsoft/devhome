@@ -85,6 +85,7 @@ public partial class App : Application, IApp
             services.AddTransient<ShellPage>();
             services.AddTransient<ShellViewModel>();
             services.AddTransient<WhatsNewViewModel>();
+            services.AddTransient<SecondaryWindowExtension>();
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));
