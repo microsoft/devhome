@@ -16,7 +16,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
 {
     private readonly WidgetHost _widgetHost;
     private readonly WidgetCatalog _widgetCatalog;
-    private readonly AdaptiveCardRenderer _renderer;
     private Widget _currentWidget;
 
     public Widget AddedWidget { get; set; }
@@ -30,7 +29,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         _widgetHost = host;
         _widgetCatalog = catalog;
-        _renderer = renderer;
 
         FillAvailableWidgets();
     }
