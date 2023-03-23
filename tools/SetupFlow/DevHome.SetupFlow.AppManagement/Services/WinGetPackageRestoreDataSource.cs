@@ -80,8 +80,8 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
             {
                 result.Add(new PackageCatalog()
                 {
-                    Name = _stringResource.GetLocalized(StringResourceKey.RestoreTitle, _restoreDeviceInfo.DisplayName),
-                    Description = _stringResource.GetLocalized(StringResourceKey.RestoreDescription, _restoreDeviceInfo.DisplayName),
+                    Name = _stringResource.GetLocalized(StringResourceKey.RestorePackagesTitle, _restoreDeviceInfo.DisplayName),
+                    Description = _stringResource.GetLocalized(StringResourceKey.RestorePackagesDescription, _restoreDeviceInfo.DisplayName),
                     Packages = orderedPackages.ToReadOnlyCollection(),
                 });
             }
