@@ -120,6 +120,7 @@ public partial class DashboardView : ToolPage
         {
             var widgetDef = _widgetCatalog.GetWidgetDefinition(newWidget.DefinitionId);
             var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
+            await newWidget.SetSizeAsync(size);
             AddWidgetToPinnedWidgets(newWidget, size);
         }
     }
