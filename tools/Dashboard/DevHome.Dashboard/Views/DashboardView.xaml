@@ -24,7 +24,7 @@
         </StackPanel>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
-            <StackPanel Spacing="30">
+            <StackPanel Spacing="5">
                 <!-- Top Banner - Default/First run experience - shown until user dismissed -->
                 <commonviews:Banner x:Name="DashboardBanner"
                     Visibility="{x:Bind ViewModel.ShowDashboardBanner,Mode=OneWay}"
