@@ -24,7 +24,7 @@
         </StackPanel>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
-            <StackPanel Spacing="30">
+            <StackPanel>
                 <!-- Top Banner - Default/First run experience - shown until user dismissed -->
                 <commonviews:Banner x:Name="DashboardBanner"
                     Visibility="{x:Bind ViewModel.ShowDashboardBanner,Mode=OneWay}"
@@ -32,10 +32,12 @@
                     HideButtonCommand="{x:Bind ViewModel.HideDashboardBannerButtonCommand,Mode=OneWay}"
                     ButtonCommand="{x:Bind ViewModel.DashboardBannerButtonCommand,Mode=OneWay}"
                     x:Uid="ms-resource:///DevHome.Dashboard/Resources/DashboardBanner"
-                    ImageSource="ms-appx:///DevHome.Dashboard/Assets/DashboardBanner.png"/>
+                    ImageSource="ms-appx:///DevHome.Dashboard/Assets/DashboardBanner.png"
+                    Margin="0, 20, 0, 5"/>
 
                 <!-- Widget grid -->
-                <GridView x:Name="MainGridView" ItemsSource="{x:Bind views:DashboardView.PinnedWidgets}">
+                <GridView x:Name="MainGridView" ItemsSource="{x:Bind views:DashboardView.PinnedWidgets}"
+                          SelectionMode="None">
                     <GridView.ItemTemplate>
                         <DataTemplate x:DataType="vm:WidgetViewModel">
                             <views:WidgetControl WidgetSource="{x:Bind}" />
