@@ -42,7 +42,7 @@ public sealed partial class RepoConfigView : UserControl
             ViewModel.SaveSetupTaskInformation(addRepoDialog.AddRepoViewModel.EverythingToClone);
         }
 
-        if (addRepoDialog.EditDevDriveViewModel.IsWindowOpened)
+        if (addRepoDialog.EditDevDriveViewModel.IsWindowOpen)
         {
             ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(addRepoDialog.EditDevDriveViewModel.DevDrive);
         }
@@ -67,7 +67,7 @@ public sealed partial class RepoConfigView : UserControl
             ViewModel.UpdateCollection();
         }
 
-        if (editClonePathDialog.EditDevDriveViewModel.IsWindowOpened)
+        if (editClonePathDialog.EditDevDriveViewModel.IsWindowOpen)
         {
             ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(editClonePathDialog.EditDevDriveViewModel.DevDrive);
         }

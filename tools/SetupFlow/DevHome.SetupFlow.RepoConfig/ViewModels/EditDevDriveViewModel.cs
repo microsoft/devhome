@@ -41,7 +41,10 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </summary>
     private readonly IDevDriveManager _devDriveManager;
 
-    public bool IsWindowOpened
+    /// <summary>
+    /// Gets whether the Dev Drive window is opened or closed.
+    /// </summary>
+    public bool IsWindowOpen
     {
         get; private set;
     }
@@ -99,6 +102,7 @@ public partial class EditDevDriveViewModel : ObservableObject
             return true;
         }
 
+        // TODO: Maybe we should show some UI to say that we couldn't make a default Dev Drive.
         return false;
     }
 
@@ -118,6 +122,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     public void RemoveNewDevDrive()
     {
         _devDriveManager.RequestToCloseDevDriveWindow(DevDrive);
+        _devDriveManager.RemoveDevDrive(DevDrive);
         ShowCustomizeOption = Visibility.Collapsed;
     }
 
@@ -150,13 +155,13 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </summary>
     public async void PopDevDriveCustomizationAsync()
     {
-        if (IsWindowOpened)
+        if (IsWindowOpen)
         {
             return;
         }
 
-        IsWindowOpened = await _devDriveManager.LaunchDevDriveWindow(DevDrive);
-        if (IsWindowOpened)
+        IsWindowOpen = await _devDriveManager.LaunchDevDriveWindow(DevDrive);
+        if (IsWindowOpen)
         {
             _devDriveManager.ViewModelWindowClosed += DevDriveCustomizationWindowClosed;
             IsDevDriveCheckboxEnabled = false;
@@ -201,7 +206,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     {
         if (devDrive.ID == DevDrive.ID)
         {
-            IsWindowOpened = false;
+            IsWindowOpen = false;
             IsDevDriveCheckboxEnabled = true;
             DevDrive = devDrive;
             ClonePathUpdated();

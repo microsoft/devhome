@@ -30,7 +30,7 @@ public partial class FolderPickerViewModel : ObservableObject
     private string _cloneLocation;
 
     /// <summary>
-    /// The clone location alias, this is for displaying the formated Dev Drive text. While allowing
+    /// The clone location alias, this is for displaying the formatted Dev Drive text. While allowing
     /// the clone location to only have the a path inside of it.
     /// </summary>
     [ObservableProperty]
@@ -43,8 +43,13 @@ public partial class FolderPickerViewModel : ObservableObject
     private bool _isBrowseButtonEnabled;
 
     /// <summary>
-    /// Browse button can be disabled if the user checked to make a new dev drive.
+    /// Used to show different content in the textbox based on whether the checkbox is checked or unchecked.
     /// </summary>
+    /// <remarks>
+    /// When true shows the clone path textbox in a readonly state with the Dev Drives clone location alias.
+    /// When false the clone path's text box is enabled and the user can type/copy and paste a
+    /// path into the textbox freely. For dev drives we clone to the root of the drive.
+    /// </remarks>
     [ObservableProperty]
     private bool _inDevDriveScenario;
 

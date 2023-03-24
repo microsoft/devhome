@@ -98,7 +98,6 @@ public class DevDriveManager : IDevDriveManager
     public void RequestToCloseDevDriveWindow(IDevDrive devDrive)
     {
         RequestToCloseViewModelWindow(null, devDrive);
-        RemoveDevDrive(devDrive);
     }
 
     /// <summary>
