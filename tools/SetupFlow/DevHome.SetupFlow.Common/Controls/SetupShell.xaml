@@ -23,7 +23,13 @@
             <TextBlock
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 TextWrapping="WrapWholeWords"
+                Visibility="{x:Bind UseDefaultTitle, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_EndToEndTitle" />
+            <TextBlock
+                Style="{ThemeResource SubtitleTextBlockStyle}"
+                TextWrapping="WrapWholeWords"
+                Visibility="{x:Bind Title, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
+                Text="{x:Bind Title, Mode=OneWay}" />
         </StackPanel>
         <Grid
             Grid.Row="1"
