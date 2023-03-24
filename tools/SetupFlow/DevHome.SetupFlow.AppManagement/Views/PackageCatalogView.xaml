@@ -65,7 +65,7 @@
                         </GridView.ItemsPanel>
                         <GridView.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                                <views:PackageView Width="190" Height="120"/>
+                                <views:PackageView Width="190" Height="120" Package="{x:Bind Mode=OneWay}"/>
                             </DataTemplate>
                         </GridView.ItemTemplate>
                     </GridView>

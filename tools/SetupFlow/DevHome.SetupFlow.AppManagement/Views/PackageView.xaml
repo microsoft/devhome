@@ -12,94 +12,71 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE106;" FalseValue="&#xE109;" />
+            <converters:BoolToObjectConverter x:Key="ImageOpacityConverter" TrueValue="0.4" FalseValue="1" />
+            <converters:BoolToObjectConverter x:Key="TextEnableDisableConverter" TrueValue="{ThemeResource TextFillColorDisabledBrush}" FalseValue="{ThemeResource TextFillColorPrimaryBrush}" />
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
 
     <!-- Package card -->
-    <ContentControl Name="PackageControl">
-        <ContentControl.Template>
-            <ControlTemplate>
-                <Grid Style="{ThemeResource CardGridSecondaryStyle}" Padding="12" RowSpacing="12">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
+    <Grid Style="{ThemeResource CardGridSecondaryStyle}" Padding="12" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-                    <VisualStateManager.VisualStateGroups>
-                        <VisualStateGroup x:Name="CommonStates">
-                            <VisualState>
-                                <VisualState.StateTriggers>
-                                    <StateTrigger IsActive="{Binding IsInstalled}" />
-                                    <StateTrigger IsActive="{Binding IsSelected}" />
-                                </VisualState.StateTriggers>
-                                <VisualState.Setters>
-                                    <Setter Target="Image.Opacity" Value="0.4"/>
-                                    <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
-                                    <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
-                                    <Setter Target="LearnMoreButton.IsEnabled" Value="False"/>
-                                </VisualState.Setters>
-                            </VisualState>
-                        </VisualStateGroup>
-                    </VisualStateManager.VisualStateGroups>
+        <!-- Package card header layout -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-                    <!-- Package card header layout -->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+            <!-- Package image -->
+            <ImageIcon
+                Width="24"
+                VerticalAlignment="Center"
+                Opacity="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource ImageOpacityConverter}}"
+                Source="{x:Bind Package.Icon,Mode=OneWay}"/>
 
-                        <!-- Package image -->
-                        <ImageIcon
-                            Name="Image"
-                            Width="24"
-                            VerticalAlignment="Center"
-                            Source="{Binding Icon,Mode=OneWay}"/>
+            <!-- Select button -->
+            <Button
+                Grid.Column="1"
+                Background="Transparent"
+                BorderThickness="0"
+                Command="{x:Bind Package.ToggleSelectionCommand,Mode=OneWay}"
+                HorizontalAlignment="Right"
+                Padding="5">
+                <FontIcon
+                    Glyph="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource SelectButtonGlyphConverter}}"
+                    FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                    FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
+            </Button>
+        </Grid>
 
-                        <!-- Select button -->
-                        <Button
-                            Grid.Column="1"
-                            IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Command="{Binding ToggleSelectionCommand,Mode=OneWay}"
-                            HorizontalAlignment="Right"
-                            Padding="5">
-                            <FontIcon
-                                Glyph="{Binding IsSelected, Mode=OneWay, Converter={StaticResource SelectButtonGlyphConverter}}"
-                                FontSize="{ThemeResource CaptionTextBlockFontSize}"
-                                FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
-                        </Button>
-                    </Grid>
+        <!-- Package card body layout -->
+        <StackPanel Grid.Row="1">
+            <!-- Package title -->
+            <TextBlock
+                Foreground="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource TextEnableDisableConverter}}"
+                Style="{ThemeResource CaptionTextBlockStyle}"
+                Text="{x:Bind Package.Name,Mode=OneWay}"/>
 
-                    <!-- Package card body layout -->
-                    <StackPanel Grid.Row="1">
-                        <!-- Package title -->
-                        <TextBlock
-                            Name="Title"
-                            Style="{ThemeResource CaptionTextBlockStyle}"
-                            Text="{Binding Name,Mode=OneWay}"/>
+            <!-- Package Version -->
+            <TextBlock
+                Foreground="{x:Bind Package.IsSelected,Mode=OneWay, Converter={StaticResource TextEnableDisableConverter}}"
+                Style="{ThemeResource CaptionTextBlockStyle}"
+                Text="{x:Bind Package.Version,Mode=OneWay}"/>
 
-                        <!-- Package Version -->
-                        <TextBlock
-                            Name="Version"
-                            Style="{ThemeResource CaptionTextBlockStyle}"
-                            Text="{Binding Version,Mode=OneWay}"/>
-
-                        <!-- Package link -->
-                        <HyperlinkButton
-                            Name="LearnMoreButton"
-                            IsEnabled="{Binding IsSelected,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
-                            Command="{Binding LearnMoreCommand, Mode=OneWay}"
-                            Style="{ThemeResource TextBlockButtonStyle}">
-                            <TextBlock
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"
-                                Style="{ThemeResource CaptionTextBlockStyle}"/>
-                        </HyperlinkButton>
-                    </StackPanel>
-                </Grid>
-            </ControlTemplate>
-        </ContentControl.Template>
-    </ContentControl>
+            <!-- Package link -->
+            <HyperlinkButton
+                IsEnabled="{x:Bind Package.IsSelected,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
+                Command="{x:Bind Package.LearnMoreCommand, Mode=OneWay}"
+                Style="{ThemeResource TextBlockButtonStyle}">
+                <TextBlock
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"
+                    Style="{ThemeResource CaptionTextBlockStyle}"/>
+            </HyperlinkButton>
+        </StackPanel>
+    </Grid>
 </UserControl>
