@@ -12,7 +12,6 @@ public class PackageHelper
         var package = new Mock<IWinGetPackage>();
         package.Setup(p => p.Id).Returns(id);
         package.Setup(p => p.Name).Returns("Mock Package Name");
-        package.Setup(p => p.ImageUri).Returns(new Uri("https://mock/"));
         package.Setup(p => p.PackageUrl).Returns(new Uri("https://packageUrl"));
         package.Setup(p => p.PublisherUrl).Returns(new Uri("https://publisherUrl"));
         package.Setup(p => p.Version).Returns("Mock Version");

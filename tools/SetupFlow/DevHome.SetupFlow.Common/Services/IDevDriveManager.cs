@@ -34,8 +34,7 @@ public interface IDevDriveManager
     /// Starts off the Dev Drive creation operations for the requested IDevDrive object.
     /// </summary>
     /// <param name="devDrive">IDevDrive to create</param>
-    /// <returns>Returns true if the Dev Drive was created successfully</returns>
-    public Task<bool> CreateDevDrive(IDevDrive devDrive);
+    public Task<int> CreateDevDrive(IDevDrive devDrive);
 
     /// <summary>
     /// Allows objects to request a Dev Drive window be created.
