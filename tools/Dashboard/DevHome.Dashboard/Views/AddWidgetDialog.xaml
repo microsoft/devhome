@@ -24,7 +24,8 @@
         <!-- Title and Close button -->
         <Grid>
             <TextBlock x:Uid="PinWidgetsTitle" HorizontalAlignment="Left" />
-            <Button HorizontalAlignment="Right" Click="CancelButton_Click" BorderThickness="0" >
+            <Button HorizontalAlignment="Right" Click="CancelButton_Click"
+                    BorderThickness="0" Background="Transparent">
                 <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}" 
                            FontSize="{ThemeResource BodyTextBlockFontSize}" 
                            Text="&#xE10A;" />
