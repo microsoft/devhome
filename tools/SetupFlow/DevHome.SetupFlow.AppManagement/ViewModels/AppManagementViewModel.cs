@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -65,10 +66,12 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        // Connect to catalogs on a separate (non-UI) thread to prevent lagging the UI.
-        await Task.Run(async () => await _wpm.ConnectToAllCatalogsAsync());
-
+        // Load catalogs from all data sources
         await _packageCatalogListViewModel.LoadCatalogsAsync();
+
+        // Connect to composite catalog used for searching on a separate
+        // (non-UI) thread to prevent lagging the UI.
+        await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
     }
 
     [RelayCommand(AllowConcurrentExecutions = true)]

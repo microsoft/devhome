@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using DevHome.Contracts.Services;
+using DevHome.Helpers;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Services;
@@ -31,7 +32,10 @@ public class AccountsService : IAccountsService
 
             if (devIdProvider is IDevIdProvider iDevIdProvider)
             {
-                _accountsDictionary.Add(iDevIdProvider, iDevIdProvider.GetLoggedInDeveloperIds().ToList());
+                var devIds = iDevIdProvider.GetLoggedInDeveloperIds().ToList();
+                _accountsDictionary.Add(iDevIdProvider, devIds);
+
+                LoggingHelper.AccountStartupEvent("Startup_DevId_Event", iDevIdProvider.GetName(), devIds);
 
                 iDevIdProvider.LoggedIn += LoggedInEventHandler;
                 iDevIdProvider.LoggedOut += LoggedOutEventHandler;
@@ -58,6 +62,7 @@ public class AccountsService : IAccountsService
         if (sender is IDevIdProvider iDevIdProvider)
         {
             _accountsDictionary[iDevIdProvider].Add(developerId);
+            LoggingHelper.AccountEvent("Login_DevId_Event", iDevIdProvider.GetName(), developerId.LoginId());
         }
     }
 
@@ -66,6 +71,7 @@ public class AccountsService : IAccountsService
         if (sender is IDevIdProvider iDevIdProvider)
         {
             _accountsDictionary[iDevIdProvider].Remove(developerId);
+            LoggingHelper.AccountEvent("Logout_DevId_Event", iDevIdProvider.GetName(), developerId.LoginId());
         }
     }
 }

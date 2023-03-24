@@ -135,9 +135,9 @@ WARNING: Cert signing requires admin privileges.  To sign, run the following in 
 "@ -ForegroundColor GREEN
   foreach ($platform in $env:Build_Platform.Split(",")) {
     foreach ($configuration in $env:Build_Configuration.Split(",")) {
-      $appxPackageDir = (Join-Path $env:Build_RootDirectory "AppxPackages\$platform\$configuration")
+      $appxPackageFile = (Join-Path $env:Build_RootDirectory "AppxPackages\$configuration\DevHome-$platform.msix")
         Write-Host @"
-powershell -command "& { . build\scripts\CertSignAndInstall.ps1; Invoke-SignPackage $appxPackageDir\DevHome.msix }"
+powershell -command "& { . build\scripts\CertSignAndInstall.ps1; Invoke-SignPackage $appxPackageFile }"
 "@ -ForegroundColor GREEN
     }
   }
