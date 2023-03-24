@@ -48,7 +48,7 @@
             <!-- Widget configuration UI -->
             <!-- TODO: This is a bare-bones representation of the configuration UI -->
             <!--       Should have better layout / possibly be a user control -->
-            <Grid>
+            <Grid x:Name="ConfigurationContentGrid" Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="auto" />
