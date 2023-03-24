@@ -31,7 +31,6 @@ public class AccountsService : IAccountsService
                 _accountsDictionary.Add(devIdProvider, devIds);
 
                 LoggingHelper.AccountStartupEvent("Startup_DevId_Event", devIdProvider.GetName(), devIds);
-                _accountsDictionary.Add(devIdProvider, devIdProvider.GetLoggedInDeveloperIds().ToList());
 
                 devIdProvider.LoggedIn += LoggedInEventHandler;
                 devIdProvider.LoggedOut += LoggedOutEventHandler;
