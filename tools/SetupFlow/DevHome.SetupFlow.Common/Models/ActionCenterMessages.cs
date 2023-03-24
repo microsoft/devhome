@@ -23,20 +23,4 @@ public class ActionCenterMessages
     {
         get; set;
     }
-
-    /// <summary>
-    /// Gets or sets the content for the primary button in the action center.
-    /// </summary>
-    public string PrimaryButtonContent
-    {
-        get; set;
-    }
-
-    /// <summary>
-    /// Gets or sets the content for the secondary button in the action cneter.
-    /// </summary>
-    public string SecondaryButtonContent
-    {
-        get; set;
-    }
 }

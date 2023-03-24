@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Windows.Input;
 using DevHome.SetupFlow.Common.Models;
 using Windows.Foundation;
 
@@ -22,7 +23,7 @@ internal class ConfigureTask : ISetupTask
 
     public TaskMessages GetLoadingMessages() => throw new NotImplementedException();
 
-    public ActionCenterMessages GetNeedsAttentionMessages() => throw new NotImplementedException();
+    public ActionCenterMessages GetRebootMessage() => throw new NotImplementedException();
 
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute() => throw new NotImplementedException();
 }

@@ -39,17 +39,9 @@ public class TaskMessages
     }
 
     /// <summary>
-    /// Gets or sets the message to display when the task finished, but needs attention.
+    /// Gets or sets the message that is displayed when the task requires a reboot of the machine.
     /// </summary>
-    public string NeedsAttention
-    {
-        get; set;
-    }
-
-    /// <summary>
-    /// Gets or sets the content of the primary button for action center items.
-    /// </summary>
-    public string PrimaryBuittonContent
+    public string NeedsReboot
     {
         get; set;
     }
@@ -58,11 +50,11 @@ public class TaskMessages
     {
     }
 
-    public TaskMessages(string executingMessage, string finishedMessage, string errorMessage, string needsAttention)
+    public TaskMessages(string executingMessage, string finishedMessage, string errorMessage, string needsReboot)
     {
         Executing = executingMessage;
         Finished = finishedMessage;
         Error = errorMessage;
-        NeedsAttention = needsAttention;
+        NeedsReboot = needsReboot;
     }
 }

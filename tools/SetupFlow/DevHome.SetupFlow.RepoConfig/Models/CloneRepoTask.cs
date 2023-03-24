@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
@@ -47,13 +48,13 @@ internal class CloneRepoTask : ISetupTask
 
     public TaskMessages GetLoadingMessages() => _taskMessage;
 
-    private ActionCenterMessages _actionCenterMessages;
+    private ActionCenterMessages _actionCenterErrorMessage;
 
-    public ActionCenterMessages GetErrorMessages() => _actionCenterMessages;
+    public ActionCenterMessages GetErrorMessages() => _actionCenterErrorMessage;
 
-    private ActionCenterMessages _needsAttentionMessages;
+    private ActionCenterMessages _needsRebootMessage;
 
-    public ActionCenterMessages GetNeedsAttentionMessages() => _needsAttentionMessages;
+    public ActionCenterMessages GetRebootMessage() => _needsRebootMessage;
 
     public bool DependsOnDevDriveToBeInstalled
     {
@@ -91,32 +92,20 @@ internal class CloneRepoTask : ISetupTask
     {
         var executingMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryMainText, repositoryToClone.DisplayName);
         var finishedMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryFinished, cloneLocation.FullName);
-        var errorMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryErrorText, repositoryToClone.DisplayName);
-        var needsAttention = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningReposityNeedsAttention, repositoryToClone.DisplayName);
-        _taskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsAttention);
+        var errorMessage = stringResource.GetLocalized(StringResourceKey.CloningRepositoryErrorText, repositoryToClone.DisplayName);
+        var needsRebootMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloneRepositoryNeedsRebootText, repositoryToClone.DisplayName);
+        _taskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsRebootMessage);
 
-        var errorSubMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryErrorTestSecondary, "Because I force it to fail");
-        var errorPrimaryButtonContent = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryErrorMainButtonContent);
-        var errorSecondaryButtonContent = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryErrorSecondaryButtonContent);
+        var errorSubMessage = stringResource.GetLocalized(StringResourceKey.ActionCenterCloningRepositoryErrorTextSecondary, "Because I force it to fail");
 
         var actionCenterErrorMessage = new ActionCenterMessages();
         actionCenterErrorMessage.PrimaryMessage = errorMessage;
         actionCenterErrorMessage.SecondaryMessage = errorSubMessage;
-        actionCenterErrorMessage.PrimaryButtonContent = errorPrimaryButtonContent;
-        actionCenterErrorMessage.SecondaryButtonContent = errorSecondaryButtonContent;
-        _actionCenterMessages = actionCenterErrorMessage;
+        _actionCenterErrorMessage = actionCenterErrorMessage;
 
-        var needsAttentionMain = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryNeedsAttentionMainMessage);
-        var needsAttentionSub = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryNeedsAttentionSubMessage, repositoryToClone.DisplayName);
-        var needsAttentionPrimary = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryNeedsAttentionPrimaryButtonContent);
-        var needsAttentionSecondary = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryNeedsAttentionSecondaryButtonContent);
-
-        var needsAttentionMessage = new ActionCenterMessages();
-        actionCenterErrorMessage.PrimaryMessage = needsAttentionMain;
-        actionCenterErrorMessage.SecondaryMessage = needsAttentionSub;
-        actionCenterErrorMessage.PrimaryButtonContent = needsAttentionPrimary;
-        actionCenterErrorMessage.SecondaryButtonContent = needsAttentionSecondary;
-        _needsAttentionMessages = needsAttentionMessage;
+        _needsRebootMessage = new ActionCenterMessages();
+        _needsRebootMessage.PrimaryMessage = needsRebootMessage;
+        _needsRebootMessage.SecondaryMessage = string.Empty;
     }
 
     /// <summary>

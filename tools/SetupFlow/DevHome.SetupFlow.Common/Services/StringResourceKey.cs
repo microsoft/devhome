@@ -33,14 +33,7 @@ public static class StringResourceKey
     // Action center and loading screen
     public static readonly string LoadingScreenCloningRepositoryMainText = nameof(LoadingScreenCloningRepositoryMainText);
     public static readonly string LoadingScreenCloningRepositoryFinished = nameof(LoadingScreenCloningRepositoryFinished);
-    public static readonly string LoadingScreenCloningRepositoryErrorText = nameof(LoadingScreenCloningRepositoryErrorText);
-    public static readonly string LoadingScreenCloningReposityNeedsAttention = nameof(LoadingScreenCloningReposityNeedsAttention);
-    public static readonly string LoadingScreenCloningRepositoryErrorTestSecondary = nameof(LoadingScreenCloningRepositoryErrorTestSecondary);
-    public static readonly string LoadingScreenCloningRepositoryErrorMainButtonContent = nameof(LoadingScreenCloningRepositoryErrorMainButtonContent);
-    public static readonly string LoadingScreenCloningRepositoryErrorSecondaryButtonContent = nameof(LoadingScreenCloningRepositoryErrorSecondaryButtonContent);
-
-    public static readonly string LoadingScreenCloningRepositoryNeedsAttentionSubMessage = nameof(LoadingScreenCloningRepositoryNeedsAttentionSubMessage);
-    public static readonly string LoadingScreenCloningRepositoryNeedsAttentionMainMessage = nameof(LoadingScreenCloningRepositoryNeedsAttentionMainMessage);
-    public static readonly string LoadingScreenCloningRepositoryNeedsAttentionPrimaryButtonContent = nameof(LoadingScreenCloningRepositoryNeedsAttentionPrimaryButtonContent);
-    public static readonly string LoadingScreenCloningRepositoryNeedsAttentionSecondaryButtonContent = nameof(LoadingScreenCloningRepositoryNeedsAttentionSecondaryButtonContent);
+    public static readonly string CloningRepositoryErrorText = nameof(CloningRepositoryErrorText);
+    public static readonly string LoadingScreenCloneRepositoryNeedsRebootText = nameof(LoadingScreenCloneRepositoryNeedsRebootText);
+    public static readonly string ActionCenterCloningRepositoryErrorTextSecondary = nameof(ActionCenterCloningRepositoryErrorTextSecondary);
 }

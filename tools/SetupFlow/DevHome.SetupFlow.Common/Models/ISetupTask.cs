@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Windows.Input;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Common.Models;
@@ -61,10 +62,10 @@ public interface ISetupTask
     public abstract ActionCenterMessages GetErrorMessages();
 
     /// <summary>
-    /// Gets an object that contains all the data needed to display a "Needs Attention" in the action center of the loading screen.
+    /// Gets an object that contains all the data needed to display a "Needs reboot" in the action center of the loading screen.
     /// </summary>
     /// <returns>An object of strings.</returns>
-    public abstract ActionCenterMessages GetNeedsAttentionMessages();
+    public abstract ActionCenterMessages GetRebootMessage();
 
     /// <summary>
     /// Gets or sets a value indicating whether a dev drive needs to be installed before this task can start.

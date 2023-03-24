@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Windows.Input;
 using DevHome.SetupFlow.Common.Models;
 using Windows.Foundation;
 
@@ -20,11 +21,21 @@ internal class InstallPackageTask : ISetupTask
         get; set;
     }
 
+    public ICommand NeedAttentionPrimaryButtonCommand => throw new NotImplementedException();
+
+    public ICommand NeedAttentionSecondaryButtonCommand => throw new NotImplementedException();
+
+    public ICommand ErrorPrimaryButtonCommand => throw new NotImplementedException();
+
+    public ICommand ErrorSecondaryButtonCommand => throw new NotImplementedException();
+
     public ActionCenterMessages GetErrorMessages() => throw new NotImplementedException();
 
     public TaskMessages GetLoadingMessages() => throw new NotImplementedException();
 
     public ActionCenterMessages GetNeedsAttentionMessages() => throw new NotImplementedException();
+
+    public ActionCenterMessages GetRebootMessage() => throw new NotImplementedException();
 
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute() => throw new NotImplementedException();
 }
