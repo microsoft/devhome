@@ -16,7 +16,7 @@ public class AccountsService : IAccountsService
         _accountsDictionary = new ();
     }
 
-    public async void InitializeAsync()
+    public async Task InitializeAsync()
     {
         var pluginService = new PluginService();
         var plugins = pluginService.GetInstalledPluginsAsync(ProviderType.DevId).Result;
