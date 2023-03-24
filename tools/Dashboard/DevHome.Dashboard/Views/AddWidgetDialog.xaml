@@ -46,7 +46,28 @@
             </NavigationView.MenuItems>
 
             <!-- Widget configuration UI -->
-            <Frame x:Name="ConfigurationContentFrame" />
+            <!-- TODO: This is a bare-bones representation of the configuration UI -->
+            <!--       Should have better layout / possibly be a user control -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch" Grid.Row="0"
+                              MinHeight="480" MaxHeight="480">
+                    <Frame x:Name="ConfigurationContentFrame" 
+                            Content="{x:Bind ViewModel.WidgetUIElement, Mode=OneWay}" />
+                </ScrollViewer>
+
+                <Button x:Name="PinButton" x:Uid="PinButton" Content="Pin"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                        Visibility="Collapsed"
+                        Height="32" Width="118"
+                        Click="PinButton_Click"
+                        Grid.Row="1"
+                        Margin="0,43" />
+            </Grid>
         </NavigationView>
     </StackPanel>
 </ContentDialog>

@@ -21,8 +21,8 @@ public class PageService : IPageService
     public PageService()
     {
         Configure<SettingsViewModel, SettingsPage>();
-
         Configure<FeedbackViewModel, FeedbackPage>();
+        Configure<WhatsNewViewModel, WhatsNewPage>();
 
         foreach (var group in App.NavConfig.NavMenu.Groups)
         {

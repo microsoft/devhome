@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.Labs.WinUI"
-    xmlns:viewmodels="using:DevHome.SetupFlow.AppManagement.ViewModels"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -98,12 +97,12 @@
                                             <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
                                         </controls:SettingsCard.Resources>
                                         <controls:SettingsCard.HeaderIcon>
-                                            <ImageIcon Name="Image" Source="{Binding ImageUri.AbsoluteUri, Mode=OneWay}"/>
+                                            <ImageIcon Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
                                         </controls:SettingsCard.HeaderIcon>
                                         <StackPanel Orientation="Horizontal" Spacing="10">
                                             <HyperlinkButton
                                                 Name="LearnMoreButton"
-                                                NavigateUri="{Binding PackageUri}">
+                                                Command="{Binding LearnMoreCommand,Mode=OneWay}">
                                                 <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
                                             </HyperlinkButton>
                                             <Button

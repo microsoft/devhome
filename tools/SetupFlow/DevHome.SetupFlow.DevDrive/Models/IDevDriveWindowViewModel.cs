@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using DevHome.Common.Models;
 
 namespace DevHome.SetupFlow.DevDrive.Models;
 

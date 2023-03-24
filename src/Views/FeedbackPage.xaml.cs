@@ -35,7 +35,18 @@ public sealed partial class FeedbackPage : Page
         InitializeComponent();
     }
 
-    private async void DisplaySugestFeature(object sender, RoutedEventArgs e)
+    private void OpenFeedbackHub(object sender, RoutedEventArgs e)
+    {
+        // Opens feedback hub session with the correct context
+        const string feedbackUrl = "feedback-hub:?contextid=1330&tabid=2&newFeedback=true";
+
+        var psi = new System.Diagnostics.ProcessStartInfo();
+        psi.FileName = feedbackUrl;
+        psi.UseShellExecute = true;
+        System.Diagnostics.Process.Start(psi);
+    }
+
+    private async void DisplaySuggestFeature(object sender, RoutedEventArgs e)
     {
         var result = await suggestFeatureDialog.ShowAsync();
 

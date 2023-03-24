@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Services;
+using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.AppManagement.Models;
 
@@ -21,7 +22,7 @@ public interface IWinGetPackage
     }
 
     /// <summary>
-    /// Gets the package catalog id
+    /// Gets the package catalog Id
     /// </summary>
     public string CatalogId
     {
@@ -64,17 +65,33 @@ public interface IWinGetPackage
     }
 
     /// <summary>
-    /// Gets the package image uri
+    /// Gets or sets the package's light theme icon
     /// </summary>
-    public Uri ImageUri
+    public IRandomAccessStream LightThemeIcon
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the package's dark theme icon
+    /// </summary>
+    public IRandomAccessStream DarkThemeIcon
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets the package url
+    /// </summary>
+    public Uri PackageUrl
     {
         get;
     }
 
     /// <summary>
-    /// Gets the package "learn more" uri
+    /// Gets the publisher url
     /// </summary>
-    public Uri PackageUri
+    public Uri PublisherUrl
     {
         get;
     }

@@ -3,12 +3,12 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
@@ -40,7 +40,13 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     /// </summary>
     public string ApplicationsSelectedCountText => StringResource.GetLocalized(StringResourceKey.ApplicationsSelectedCount, SelectedPackages.Count);
 
-    public AppManagementViewModel(ILogger logger, IStringResource stringResource, IHost host, IWindowsPackageManager wpm, AppManagementTaskGroup taskGroup, PackageProvider packageProvider)
+    public AppManagementViewModel(
+        ILogger logger,
+        ISetupFlowStringResource stringResource,
+        IHost host,
+        IWindowsPackageManager wpm,
+        PackageProvider packageProvider,
+        AppManagementTaskGroup taskGroup)
         : base(stringResource)
     {
         _logger = logger;
@@ -59,10 +65,12 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
 
     public async override void OnNavigateToPageAsync()
     {
-        // Connect to catalogs on a separate (non-UI) thread to prevent lagging the UI.
-        await Task.Run(async () => await _wpm.ConnectToAllCatalogsAsync());
-
+        // Load catalogs from all data sources
         await _packageCatalogListViewModel.LoadCatalogsAsync();
+
+        // Connect to composite catalog used for searching on a separate
+        // (non-UI) thread to prevent lagging the UI.
+        await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
     }
 
     [RelayCommand(AllowConcurrentExecutions = true)]

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
@@ -35,7 +34,7 @@ public partial class SearchViewModel : ObservableObject
 
     private readonly ILogger _logger;
     private readonly IWindowsPackageManager _wpm;
-    private readonly IStringResource _stringResource;
+    private readonly ISetupFlowStringResource _stringResource;
     private readonly PackageProvider _packageProvider;
     private const int SearchResultLimit = 20;
 
@@ -63,7 +62,7 @@ public partial class SearchViewModel : ObservableObject
     /// </summary>
     public string NoSearchResultsText => _stringResource.GetLocalized(StringResourceKey.NoSearchResultsFoundTitle, SearchText);
 
-    public SearchViewModel(ILogger logger, IWindowsPackageManager wpm, IStringResource stringResource, PackageProvider packageProvider)
+    public SearchViewModel(ILogger logger, IWindowsPackageManager wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider)
     {
         _wpm = wpm;
         _logger = logger;

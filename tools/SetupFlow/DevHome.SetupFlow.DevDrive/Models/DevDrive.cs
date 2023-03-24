@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using DevHome.Common.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
 
 namespace DevHome.SetupFlow.DevDrive.Models;

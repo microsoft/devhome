@@ -261,40 +261,28 @@
     <value>Learn more</value>
     <comment>Text for a clickable learn more button</comment>
   </data>
-  <data name="MainPage_CloneRepos.Description" xml:space="preserve">
-    <value>Get started on a project by cloning a repository</value>
-    <comment>Body text description for a card that when clicked takes the user to a page for cloning git repositories</comment>
-  </data>
   <data name="MainPage_CloneRepos.Header" xml:space="preserve">
-    <value>Clone a repository</value>
+    <value>Clone repositories</value>
     <comment>Header for a card that when clicked takes the user to a page for cloning git repositories</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Description" xml:space="preserve">
-    <value>Use one or more configuration (YAML) files</value>
+    <value>Set up you machine directly from one or multiple configuration files</value>
     <comment>Body text description for a card that when clicked allows the user to select a configuration file and run it</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Header" xml:space="preserve">
-    <value>Use a configuration file</value>
+    <value>Run a configuration file for an existing setup</value>
     <comment>Header for a card that when clicked allows the user to select a configuration file and run it</comment>
   </data>
-  <data name="MainPage_DevVolume.Description" xml:space="preserve">
-    <value>Create a new virtual hard disk for development projects</value>
-    <comment>Body text description for a card that when clicked takes the user to a page for creating a developer drive/volume</comment>
-  </data>
-  <data name="MainPage_DevVolume.Header" xml:space="preserve">
-    <value>Add a developer drive</value>
+  <data name="MainPage_DevDrive.Header" xml:space="preserve">
+    <value>Add a Dev Drive</value>
     <comment>Header for a card that when clicked takes the user to a page for creating a developer drive (virtual hard disk)</comment>
   </data>
   <data name="MainPage_EnvironmentSetup.Text" xml:space="preserve">
     <value>Set up development environment</value>
     <comment>Header text for a group of controls giving multiple choices to set up the environment/machine</comment>
   </data>
-  <data name="MainPage_InstallApps.Description" xml:space="preserve">
-    <value>Download apps and packages from the WinGet library</value>
-    <comment>Body text description for a card that when clicked takes the user to a page for installing apps. WinGet refers to the Windows Package Manager command line tool. {StrContains=WinGet}</comment>
-  </data>
   <data name="MainPage_InstallApps.Header" xml:space="preserve">
-    <value>Install apps and packages</value>
+    <value>Install applications</value>
     <comment>Header for a card that when clicked takes the user to a page for installing apps</comment>
   </data>
   <data name="MainPage_QuickConfiguration.Text" xml:space="preserve">
@@ -302,11 +290,11 @@
     <comment>Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
   </data>
   <data name="MainPage_SetupFlow.Description" xml:space="preserve">
-    <value>Use an end-to-end- setup flow</value>
+    <value>Clone repositories and install applications at once</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_SetupFlow.Header" xml:space="preserve">
-    <value>Step-by-step</value>
+    <value>End-to-end setup</value>
     <comment>Header for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="NoAppsToInstall.Text" xml:space="preserve">
@@ -332,6 +320,14 @@
   <data name="ResultCount" xml:space="preserve">
     <value>{0} Result(s)</value>
     <comment>{Locked="{0}"} Label for a search result counter. {0} is replaced by the number of result items.</comment>
+  </data>
+  <data name="RestorePackagesTitle" xml:space="preserve">
+    <value>Restore from {0}</value>
+    <comment>{Locked="{0}"} Header text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
+  </data>
+  <data name="RestorePackagesDescription" xml:space="preserve">
+    <value>The following applications are recovered from {0}</value>
+    <comment>{Locked="{0}"} Description text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
   </data>
   <data name="PackagesCount" xml:space="preserve">
     <value>{0} packages</value>
@@ -420,5 +416,113 @@
   <data name="ViewConfiguration" xml:space="preserve">
     <value>View {0}</value>
     <comment>{Locked="{0}"} Text for the view action of a file content. {0} is replaced by a file name.</comment>
+  </data>
+  <data name="MainPage_RepoReviewDescription.Text" xml:space="preserve">
+    <value>Add private or public repositories to clone to your compuer</value>
+    <comment>Description for the repo review page</comment>
+  </data>
+  <data name="MainPage_RepoReviewHeader.Text" xml:space="preserve">
+    <value>End-to-end flow</value>
+    <comment>Header for the repo review page</comment>
+  </data>
+  <data name="MainPage_RepoReview_AddRepository.Content" xml:space="preserve">
+    <value>+ Add repository</value>
+    <comment>Add repository button text</comment>
+  </data>
+  <data name="StepperCloneRepos.Text" xml:space="preserve">
+    <value>Clone Repos</value>
+    <comment>Clone Repo label for the stepper</comment>
+  </data>
+  <data name="StepperInstallApps.Text" xml:space="preserve">
+    <value>Install Apps</value>
+    <comment>Install Apps label for the stepper</comment>
+  </data>
+  <data name="StepperReviewAndSetup.Text" xml:space="preserve">
+    <value>Review &amp; setup</value>
+    <comment>Review and Setup label for the stepper</comment>
+  </data>
+  <data name="AddDevDriveLabel.Text" xml:space="preserve">
+    <value>Optimize repo performance with a new Dev Drive</value>
+    <comment>Text for the use to choose to make a dev drive</comment>
+  </data>
+  <data name="ClonePath.Header" xml:space="preserve">
+    <value>Clone Path</value>
+    <comment>Header for choosing a clone path</comment>
+  </data>
+  <data name="ClonePath.PlaceholderText" xml:space="preserve">
+    <value>Choose a clone path</value>
+    <comment>Prompts the user to choose a path</comment>
+  </data>
+  <data name="ClonePath_Button.Content" xml:space="preserve">
+    <value>Browse</value>
+    <comment>Browse button for opening the storage picker</comment>
+  </data>
+  <data name="RepoUrl.Header" xml:space="preserve">
+    <value>Repository URL</value>
+    <comment>Header for the textbox for entering in a URL</comment>
+  </data>
+  <data name="RepoUrl.PlaceholderText" xml:space="preserve">
+    <value>URL</value>
+    <comment>Text to appear in the textbox for entering in a URL</comment>
+  </data>
+  <data name="CloneRepoDialog.Title" xml:space="preserve">
+    <value>Clone a Repository</value>
+    <comment>Header for the dialog bos to clone repositories</comment>
+  </data>
+  <data name="NewDevDriveComboBox.Content" xml:space="preserve">
+    <value>Optimimize repo performance with a new DevDrive</value>
+    <comment>Check box label to notify users of making a new dev drive</comment>
+  </data>
+  <data name="RepositoryDisplay.Header" xml:space="preserve">
+    <value>Account Type</value>
+    <comment>Header to prompt users to choose an account</comment>
+  </data>
+  <data name="RepoTool_AddViaAccountButton.Content" xml:space="preserve">
+    <value>Account</value>
+    <comment>Content for account toggle button </comment>
+  </data>
+  <data name="RepoTool_AddViaUrlButton.Content" xml:space="preserve">
+    <value>URL</value>
+    <comment>Content for URL button</comment>
+  </data>
+  <data name="RepoTool_FilterTextBox.PlaceholderText" xml:space="preserve">
+    <value>Filter</value>
+    <comment>Prompt user to filter</comment>
+  </data>
+  <data name="Repo_ToolClonePathError.Text" xml:space="preserve">
+    <value>Please enter an absolute path</value>
+    <comment>Shown when Clone Location isn't an absolute path</comment>
+  </data>
+  <data name="RepoReview_NoReposSelected.Text" xml:space="preserve">
+    <value>No repository is added yet</value>
+    <comment>Shown when no repos are selected when the user gets to the repo page</comment>
+  </data>
+  <data name="RepoReview_NoReposSelectedLink.Content" xml:space="preserve">
+    <value>+ Add repository</value>
+    <comment>The hyperlink to bring the user to the repo clone dialog.  Shows if the user hasn't selected any repos to clone.</comment>
+  </data>
+  <data name="EditClonePathDialog.Title" xml:space="preserve">
+    <value>Edit clone path</value>
+    <comment>Header for the edit clone path dialog</comment>
+  </data>
+  <data name="RepositoriesList.Text" xml:space="preserve">
+    <value>Your repositories</value>
+    <comment>Shown above the list of user repositories</comment>
+  </data>
+  <data name="CloneRepoDialog.CloseButtonText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Content for the secondary button in the repo review tool.</comment>
+  </data>
+  <data name="CloneRepoDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Add</value>
+    <comment>Content for the primary button in the repo review tool</comment>
+  </data>
+  <data name="EditClonePathDialog.CloseButtonText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Content for the close button in the edit clone path dialog.</comment>
+  </data>
+  <data name="EditClonePathDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Add</value>
+    <comment>Content for the primary button in the edit clone path dialog.</comment>
   </data>
 </root>

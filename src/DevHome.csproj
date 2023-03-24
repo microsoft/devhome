@@ -4,7 +4,7 @@
 		<TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
 		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 		<RootNamespace>DevHome</RootNamespace>
-		<ApplicationIcon>Assets/WindowIcon.ico</ApplicationIcon>
+		<ApplicationIcon>Assets/DevHome.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Platforms>x86;x64;arm64</Platforms>
 		<RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
@@ -35,7 +35,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\tools\SampleTool\src\SampleTool.csproj" />
+		<ProjectReference Include="..\tools\SampleTool\src\SampleTool.csproj" />
 		<ProjectReference Include="..\tools\SampleTool\src\SampleTool.csproj" />
 		<ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
 		<ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
@@ -58,6 +58,10 @@
 
 	<ItemGroup>
 		<None Remove="Styles\Feedback_ThemeResources.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Assets\Tiles\" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">

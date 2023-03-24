@@ -3,18 +3,25 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
+using DevHome.Common.Models;
 using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Windows.Foundation;
+using Windows.Media.Playback;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.Security;
+using Windows.Win32.Storage.FileSystem;
+using Windows.Win32.Storage.Vhd;
+using Windows.Win32.System.Ioctl;
 
-namespace DevHome.SetupFlow.DevDrive.Services;
+namespace DevHome.Common.Services;
 
 /// <summary>
 /// Class for Dev Drive manager. The Dev Drive manager is the mediator between objects that will be a viewmodel for
@@ -45,7 +52,10 @@ public class DevDriveManager : IDevDriveManager
     }
 
     /// <inheritdoc/>
-    public Task<bool> CreateDevDrive(IDevDrive devDrive) => throw new NotImplementedException();
+    public Task<int> CreateDevDrive(IDevDrive devDrive)
+    {
+        throw new NotImplementedException();
+    }
 
     /// <inheritdoc/>
     public Task<bool> LaunchDevDriveWindow(IDevDrive devDrive)
@@ -82,5 +92,11 @@ public class DevDriveManager : IDevDriveManager
     }
 
     /// <inheritdoc/>
-    public Task<IEnumerable<IDevDrive>> GetAllDevDrivesThatExistOnSystem() => throw new NotImplementedException();
+    public Task<IEnumerable<IDevDrive>> GetAllDevDrivesThatExistOnSystem()
+    {
+        return Task.Run(() =>
+        {
+            return _devDriveStorageOperator.GetAllExistingDevDrives();
+        });
+    }
 }

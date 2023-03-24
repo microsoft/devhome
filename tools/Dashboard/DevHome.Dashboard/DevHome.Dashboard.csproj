@@ -9,13 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\HostConfigDark.json" />
+    <None Remove="Assets\HostConfigLight.json" />
     <None Remove="Views\AddWidgetDialog.xaml" />
     <None Remove="Views\DashboardView.xaml" />
+    <None Remove="Views\WidgetControl.xaml" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
-    <PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
     <PackageReference Include="Microsoft.Windows.Widgets" Version="0.3.3" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
@@ -24,8 +26,23 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
-    <None Include=".\BuildAssets\Microsoft.Windows.Widgets.Internal.winmd" Link="Microsoft.Windows.Widgets.Internal.winmd" CopyToOutputDirectory="PreserveNewest" />
-    <None Include=".\BuildAssets\Microsoft.Windows.Widgets.Hosts.winmd" Link="Microsoft.Windows.Widgets.Hosts.winmd" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Internal.winmd" Link="Microsoft.Windows.Widgets.Internal.winmd" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Hosts.winmd" Link="Microsoft.Windows.Widgets.Hosts.winmd" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Assets\HostConfigLight.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\HostConfigDark.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\WidgetControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>
@@ -37,7 +54,7 @@
     </Page>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Assets\" />
-  </ItemGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+  </PropertyGroup>
 </Project>

@@ -13,14 +13,18 @@ namespace DevHome.SetupFlow.AppManagement.ViewModels;
 public partial class AppManagementReviewViewModel : ReviewTabViewModelBase
 {
     private readonly ILogger _logger;
-    private readonly IStringResource _stringResource;
+    private readonly ISetupFlowStringResource _stringResource;
     private readonly AppManagementTaskGroup _taskGroup;
     private readonly PackageProvider _packageProvider;
 
     // TODO Use the selected packages for the review list once available.
     public ReadOnlyObservableCollection<PackageViewModel> ReviewPackages => _packageProvider.SelectedPackages;
 
-    public AppManagementReviewViewModel(ILogger logger, IStringResource stringResource, PackageProvider packageProvider, AppManagementTaskGroup taskGroup)
+    public AppManagementReviewViewModel(
+        ILogger logger,
+        ISetupFlowStringResource stringResource,
+        PackageProvider packageProvider,
+        AppManagementTaskGroup taskGroup)
     {
         _logger = logger;
         _stringResource = stringResource;

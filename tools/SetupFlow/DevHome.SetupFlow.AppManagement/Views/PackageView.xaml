@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters" xmlns:views="using:DevHome.SetupFlow.AppManagement.Views" xmlns:viewmodels="using:DevHome.SetupFlow.AppManagement.ViewModels"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -55,7 +55,7 @@
                             Name="Image"
                             Width="24"
                             VerticalAlignment="Center"
-                            Source="{Binding ImageUri.AbsoluteUri,Mode=OneWay}"/>
+                            Source="{Binding Icon,Mode=OneWay}"/>
 
                         <!-- Select button -->
                         <Button
@@ -90,7 +90,8 @@
                         <!-- Package link -->
                         <HyperlinkButton
                             Name="LearnMoreButton"
-                            NavigateUri="{Binding PackageUri}"
+                            IsEnabled="{Binding IsSelected,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
+                            Command="{Binding LearnMoreCommand, Mode=OneWay}"
                             Style="{ThemeResource TextBlockButtonStyle}">
                             <TextBlock
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"
