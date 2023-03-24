@@ -15,12 +15,6 @@ namespace DevHome.SetupFlow.Common.Controls;
 [ContentProperty(Name = nameof(SetupShellContent))]
 public sealed partial class SetupShell : UserControl
 {
-    public string Title
-    {
-        get => (string)GetValue(TitleProperty);
-        set => SetValue(TitleProperty, value);
-    }
-
     public string Description
     {
         get => (string)GetValue(DescriptionProperty);
@@ -50,7 +44,6 @@ public sealed partial class SetupShell : UserControl
         this.InitializeComponent();
     }
 
-    public static readonly DependencyProperty TitleProperty = DependencyProperty.RegisterAttached(nameof(Title), typeof(string), typeof(SetupShell), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty DescriptionProperty = DependencyProperty.RegisterAttached(nameof(Description), typeof(string), typeof(SetupShell), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty SetupShellContentProperty = DependencyProperty.RegisterAttached(nameof(SetupShellContent), typeof(object), typeof(SetupShell), new PropertyMetadata(null));
     public static readonly DependencyProperty HeaderTemplateProperty = DependencyProperty.RegisterAttached(nameof(HeaderTemplate), typeof(ControlTemplate), typeof(SetupShell), new PropertyMetadata(null));

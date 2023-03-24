@@ -149,7 +149,7 @@ public partial class SetupPageViewModelBase : ObservableObject
     /// </summary>
     /// <remarks>
     /// The orchestrator takes care of calling this when appropriate through <see cref="OnNavigateFromAsync"/>.
-    /// This runs on the UI thread, any time-consuming task should ne non-blocking.
+    /// This runs on the UI thread, any time-consuming task should be non-blocking.
     /// Example of uses include starting the elevated background process when leaving
     /// the review page.
     /// </remarks>

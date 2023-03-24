@@ -23,12 +23,19 @@ public partial class SetupFlowOrchestrator
     /// Relay commands associated with the navigation buttons in the UI.
     /// </summary>
     private readonly List<IRelayCommand> _navigationButtonsCommands = new ();
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CurrentPageViewModel))]
+    [NotifyPropertyChangedFor(nameof(SetupStepPages))]
+    [NotifyPropertyChangedFor(nameof(HasPreviousPage))]
+    [NotifyCanExecuteChangedFor(nameof(GoToPreviousPageCommand))]
+    [NotifyCanExecuteChangedFor(nameof(GoToNextPageCommand))]
     private int _currentPageIndex;
 
     /// <summary>
     /// Gets the view model for the current page, or null if the pages have not been set.
     /// </summary>
-    public SetupPageViewModelBase CurrentPageViewModel => FlowPages.Any() ? FlowPages[_currentPageIndex] : null;
+    public SetupPageViewModelBase CurrentPageViewModel => FlowPages.Any() ? FlowPages[CurrentPageIndex] : null;
 
     /// <summary>
     /// Gets or sets the task groups that are to be executed on the flow.
@@ -55,8 +62,7 @@ public partial class SetupFlowOrchestrator
         {
             _flowPages.Clear();
             _flowPages.AddRange(value);
-            _currentPageIndex = 0;
-            NotifyPageChanged();
+            CurrentPageIndex = 0;
         }
     }
 
@@ -65,7 +71,7 @@ public partial class SetupFlowOrchestrator
     /// </summary>
     public IEnumerable<SetupPageViewModelBase> SetupStepPages => FlowPages.Where(page => page.IsStepPage);
 
-    public bool HasPreviousPage => _currentPageIndex > 0;
+    public bool HasPreviousPage => CurrentPageIndex > 0;
 
     /// <summary>
     /// Sets the list of commands associated with the navigation buttons.
@@ -93,47 +99,22 @@ public partial class SetupFlowOrchestrator
     /// <summary>
     /// Determines whether a given page is one that was shown previously on the flow.
     /// </summary>
-    public bool IsPastPage(SetupPageViewModelBase page)
-    {
-        for (var i = 0; i < _currentPageIndex; i++)
-        {
-            if (page == FlowPages[i])
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    public bool IsPastPage(SetupPageViewModelBase page) => FlowPages.Take(CurrentPageIndex - 1).Contains(page);
 
     /// <summary>
     /// Determines whether a given page is the one currently being shown.
     /// </summary>
-    public bool IsCurrentPage(SetupPageViewModelBase page)
-    {
-        return page == CurrentPageViewModel;
-    }
+    public bool IsCurrentPage(SetupPageViewModelBase page) => page == CurrentPageViewModel;
 
     /// <summary>
     /// Determines whether a given page is one that will be shown later in the flow.
     /// </summary>
-    public bool IsUpcomingPage(SetupPageViewModelBase page)
-    {
-        for (var i = _currentPageIndex + 1; i < FlowPages.Count; i++)
-        {
-            if (page == FlowPages[i])
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    public bool IsUpcomingPage(SetupPageViewModelBase page) => FlowPages.Skip(CurrentPageIndex + 1).Contains(page);
 
     [RelayCommand(CanExecute = nameof(CanGoToPreviousPage))]
     public async Task GoToPreviousPage()
     {
-        await SetCurrentPageIndex(_currentPageIndex - 1);
+        await SetCurrentPageIndex(CurrentPageIndex - 1);
     }
 
     private bool CanGoToPreviousPage()
@@ -144,41 +125,29 @@ public partial class SetupFlowOrchestrator
     [RelayCommand(CanExecute = nameof(CanGoToNextPage))]
     public async Task GoToNextPage()
     {
-        await SetCurrentPageIndex(_currentPageIndex + 1);
+        await SetCurrentPageIndex(CurrentPageIndex + 1);
     }
 
     private bool CanGoToNextPage()
     {
-        return _currentPageIndex + 1 < _flowPages.Count && CurrentPageViewModel.CanGoToNextPage;
+        return CurrentPageIndex + 1 < _flowPages.Count && CurrentPageViewModel.CanGoToNextPage;
     }
 
     private async Task SetCurrentPageIndex(int index)
     {
-        var movingForward = index > _currentPageIndex;
+        var movingForward = index > CurrentPageIndex;
 
         SetupPageViewModelBase previousPage = CurrentPageViewModel;
 
         // Update current page
-        _currentPageIndex = index;
+        CurrentPageIndex = index;
 
-        NotifyPageChanged();
-
-        // Do pre and post-navigation tasks when moving forward
+        // Do post-navigation tasks only when moving forwards, not when going back to a previous page.
         if (movingForward)
         {
             await previousPage?.OnNavigateFromAsync();
-            await CurrentPageViewModel?.OnNavigateToAsync();
         }
-    }
 
-    /// <summary>
-    /// Notifies of all the changes that happen when changing page.
-    /// </summary>
-    private void NotifyPageChanged()
-    {
-        NotifyNavigationCanExecuteChanged();
-        OnPropertyChanged(nameof(CurrentPageViewModel));
-        OnPropertyChanged(nameof(SetupStepPages));
-        OnPropertyChanged(nameof(HasPreviousPage));
+        await CurrentPageViewModel?.OnNavigateToAsync();
     }
 }

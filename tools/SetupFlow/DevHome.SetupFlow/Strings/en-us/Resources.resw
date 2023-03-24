@@ -389,10 +389,6 @@
     <value>Search for apps and packages to install or select them below.</value>
     <comment>Description for the application management page</comment>
   </data>
-  <data name="SetupShell_AppManagement.Title" xml:space="preserve">
-    <value>Install Apps</value>
-    <comment>Title for the application management page</comment>
-  </data>
   <data name="SetupShell_EndToEndTitle.Text" xml:space="preserve">
     <value>End-to-end setup</value>
     <comment>Title for all the pages during an end-to-end setup flow</comment>
@@ -401,17 +397,9 @@
     <value>Add private or public repositories to clone to you computer.</value>
     <comment>Description for the application management page</comment>
   </data>
-  <data name="SetupShell_RepoConfig.Title" xml:space="preserve">
-    <value>Clone Repos</value>
-    <comment>Title for the application management page</comment>
-  </data>
   <data name="SetupShell_Review.Description" xml:space="preserve">
     <value>Review the terms and setup details below before applying these changes to your computer.</value>
     <comment>Description for the review page</comment>
-  </data>
-  <data name="SetupShell_Review.Title" xml:space="preserve">
-    <value>Review &amp; setup</value>
-    <comment>Title for the application management page</comment>
   </data>
   <data name="Applications" xml:space="preserve">
     <value>Applications</value>
@@ -441,9 +429,6 @@
     <value>+ Add repository</value>
     <comment>Add repository button text</comment>
   </data>
-
-
-
   <data name="ReposConfigPageTitle" xml:space="preserve">
     <value>Clone Repos</value>
     <comment>Clone Repo label for the stepper</comment>
@@ -453,19 +438,6 @@
     <comment>Install Apps label for the stepper</comment>
   </data>
   <data name="ReviewPageTitle" xml:space="preserve">
-    <value>Review &amp; setup</value>
-    <comment>Review and Setup label for the stepper</comment>
-  </data>
-
-  <data name="StepperCloneRepos.Text" xml:space="preserve">
-    <value>Clone Repos</value>
-    <comment>Clone Repo label for the stepper</comment>
-  </data>
-  <data name="StepperInstallApps.Text" xml:space="preserve">
-    <value>Install Apps</value>
-    <comment>Install Apps label for the stepper</comment>
-  </data>
-  <data name="StepperReviewAndSetup.Text" xml:space="preserve">
     <value>Review &amp; setup</value>
     <comment>Review and Setup label for the stepper</comment>
   </data>
