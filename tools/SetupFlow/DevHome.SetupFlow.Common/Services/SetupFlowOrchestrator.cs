@@ -94,7 +94,7 @@ public partial class SetupFlowOrchestrator
     /// <summary>
     /// Determines whether a given page is one that was shown previously on the flow.
     /// </summary>
-    public bool IsPastPage(SetupPageViewModelBase page) => FlowPages.Take(_currentPageIndex - 1).Contains(page);
+    public bool IsPastPage(SetupPageViewModelBase page) => FlowPages.Take(_currentPageIndex).Contains(page);
 
     /// <summary>
     /// Determines whether a given page is the one currently being shown.
