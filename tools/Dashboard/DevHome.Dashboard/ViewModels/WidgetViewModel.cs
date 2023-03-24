@@ -21,6 +21,18 @@ public partial class WidgetViewModel : ObservableObject
     [ObservableProperty]
     private Widget _widget;
 
+    [ObservableProperty]
+    private WidgetSize _widgetSize;
+
+    [ObservableProperty]
+    private FrameworkElement _widgetUIElement;
+
+    [ObservableProperty]
+    private string _widgetDisplayName;
+
+    [ObservableProperty]
+    private Microsoft.UI.Xaml.Media.Brush _widgetBackground;
+
     partial void OnWidgetChanging(Widget value)
     {
         if (Widget != null)
@@ -38,11 +50,13 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    [ObservableProperty]
-    private WidgetSize _widgetSize;
-
-    [ObservableProperty]
-    private FrameworkElement _widgetUIElement;
+    partial void OnWidgetUIElementChanged(FrameworkElement value)
+    {
+        if (WidgetUIElement != null && WidgetUIElement as Grid != null)
+        {
+            WidgetBackground = (WidgetUIElement as Grid).Background;
+        }
+    }
 
     public WidgetViewModel(
         Widget widget,
