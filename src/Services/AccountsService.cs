@@ -3,6 +3,7 @@
 
 using DevHome.Contracts.Services;
 using Microsoft.Windows.DevHome.SDK;
+using WinRT;
 
 namespace DevHome.Services;
 
@@ -18,23 +19,17 @@ public class AccountsService : IAccountsService
     public async void InitializeAsync()
     {
         var pluginService = new PluginService();
-        var plugins = pluginService.GetInstalledPluginsAsync(ProviderType.DevId).Result;
+        var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DevId);
         foreach (var plugin in plugins)
         {
-            if (!plugin.IsRunning())
+            var devIdProvider = await plugin.GetProviderAsync<IDevIdProvider>();
+
+            if (devIdProvider is not null)
             {
-                await plugin.StartPlugin();
-            }
+                _accountsDictionary.Add(devIdProvider, devIdProvider.GetLoggedInDeveloperIds().ToList());
 
-            var pluginObj = plugin.GetPluginObject();
-            var devIdProvider = pluginObj?.GetProvider(ProviderType.DevId);
-
-            if (devIdProvider is IDevIdProvider iDevIdProvider)
-            {
-                _accountsDictionary.Add(iDevIdProvider, iDevIdProvider.GetLoggedInDeveloperIds().ToList());
-
-                iDevIdProvider.LoggedIn += LoggedInEventHandler;
-                iDevIdProvider.LoggedOut += LoggedOutEventHandler;
+                devIdProvider.LoggedIn += LoggedInEventHandler;
+                devIdProvider.LoggedOut += LoggedOutEventHandler;
             }
         }
     }

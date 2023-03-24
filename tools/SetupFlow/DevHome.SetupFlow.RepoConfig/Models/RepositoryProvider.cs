@@ -52,18 +52,8 @@ internal class RepositoryProvider
     /// <returns>An awaitable task</returns>
     public async Task StartIfNotRunningAsync()
     {
-        if (!_pluginWrapper.IsRunning())
-        {
-            await _pluginWrapper.StartPlugin();
-        }
-
-        var provider = _pluginWrapper.GetPluginObject();
-        if (provider != null)
-        {
-            _developerId = provider.GetProvider(ProviderType.DevId) as IDevIdProvider;
-            var repositoryProvider = provider.GetProvider(ProviderType.Repository);
-            _repositoryProvider = repositoryProvider as IRepositoryProvider;
-        }
+        _developerId = await _pluginWrapper.GetProviderAsync<IDevIdProvider>();
+        _repositoryProvider = await _pluginWrapper.GetProviderAsync<IRepositoryProvider>();
     }
 
     /// <summary>

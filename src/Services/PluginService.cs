@@ -91,6 +91,30 @@ public class PluginService : IPluginService
         return installedPlugins;
     }
 
+    public async Task StartAllPluginsAsync()
+    {
+        var installedPlugins = await GetInstalledPluginsAsync();
+        foreach (var installedPlugin in installedPlugins)
+        {
+            if (!installedPlugin.IsRunning())
+            {
+                await installedPlugin.StartPluginAsync();
+            }
+        }
+    }
+
+    public async Task SignalStopPlugins()
+    {
+        var installedPlugins = await GetInstalledPluginsAsync();
+        foreach (var installedPlugin in installedPlugins)
+        {
+            if (installedPlugin.IsRunning())
+            {
+                installedPlugin.SignalDispose();
+            }
+        }
+    }
+
     public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(ProviderType providerType)
     {
         var installedPlugins = await GetInstalledPluginsAsync();
@@ -116,22 +140,4 @@ public class PluginService : IPluginService
     {
         return propSet[name] as string;
     }
-}
-
-public class Ole32
-{
-    // https://docs.microsoft.com/windows/win32/api/wtypesbase/ne-wtypesbase-clsctx
-    public const int CLSCTXLOCALSERVER = 0x4;
-
-    // https://docs.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-cocreateinstance
-    [DllImport(nameof(Ole32))]
-
-#pragma warning disable CA1401 // P/Invokes should not be visible
-    public static extern int CoCreateInstance(
-        [In, MarshalAs(UnmanagedType.LPStruct)] Guid rclsid,
-        IntPtr pUnkOuter,
-        uint dwClsContext,
-        [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid,
-        out IntPtr ppv);
-#pragma warning restore CA1401 // P/Invokes should not be visible
 }
