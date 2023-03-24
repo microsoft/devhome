@@ -94,9 +94,10 @@ public partial class SecondaryWindowExtension : WindowEx
     {
         if (PrimaryWindow != null)
         {
-            // first get half the size of the of the current window then get the center point
-            // of the primary window and substract primary windows y by half of secondary windows
-            // y. This will show the secondary winddow in the center slight elevated above the content.
+            // first get a quarter of the size of the of the current window then get the center point
+            // of the primary window. Substract primary windows Y by a quarter of the secondary windows
+            // Y to move the secondary window upwards. This will show the secondary winddow in the center
+            // of the app, slightly elevated above the content.
             var secondaryY = Height / 4D;
             var primaryX = (double)PrimaryWindow.AppWindow.Position.X;
             var primaryY = (double)PrimaryWindow.AppWindow.Position.Y;

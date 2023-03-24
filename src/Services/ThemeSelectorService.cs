@@ -33,22 +33,11 @@ public class ThemeSelectorService : IThemeSelectorService
     {
         Theme = theme;
 
-        await SetRequestedThemeAsync();
-        ThemeChanged(null, theme);
+        SetRequestedTheme();
         await SaveThemeInSettingsAsync(Theme);
     }
 
-    public async Task SetRequestedThemeAsync()
-    {
-        if (App.MainWindow.Content is FrameworkElement rootElement)
-        {
-            rootElement.RequestedTheme = Theme;
-
-            TitleBarHelper.UpdateTitleBar(App.MainWindow, Theme);
-        }
-
-        await Task.CompletedTask;
-    }
+    public void SetRequestedTheme() => ThemeChanged(null, Theme);
 
     public bool IsDarkTheme()
     {
