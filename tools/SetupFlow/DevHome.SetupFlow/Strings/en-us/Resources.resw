@@ -470,7 +470,7 @@
     <comment>Header for the dialog bos to clone repositories</comment>
   </data>
   <data name="NewDevDriveComboBox.Content" xml:space="preserve">
-    <value>Optimimize repo performance with a new DevDrive</value>
+    <value>Optimize repo performance with a new DevDrive</value>
     <comment>Check box label to notify users of making a new dev drive</comment>
   </data>
   <data name="RepositoryDisplay.Header" xml:space="preserve">

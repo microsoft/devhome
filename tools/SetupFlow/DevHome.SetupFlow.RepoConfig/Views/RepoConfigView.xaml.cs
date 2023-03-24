@@ -4,6 +4,7 @@
 using System;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
 using Microsoft.UI.Xaml;
@@ -36,15 +37,20 @@ public sealed partial class RepoConfigView : UserControl
         addRepoDialog.XamlRoot = RepoConfigStackPanel.XamlRoot;
         addRepoDialog.RequestedTheme = themeService.Theme;
         var result = await addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
+        var devDrive = addRepoDialog.EditDevDriveViewModel.DevDrive;
+
+        if (addRepoDialog.EditDevDriveViewModel.IsWindowOpen)
+        {
+            ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(devDrive);
+        }
 
         if (result == ContentDialogResult.Primary)
         {
             ViewModel.SaveSetupTaskInformation(addRepoDialog.AddRepoViewModel.EverythingToClone);
         }
-
-        if (addRepoDialog.EditDevDriveViewModel.IsWindowOpen)
+        else if (devDrive != null)
         {
-            ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(addRepoDialog.EditDevDriveViewModel.DevDrive);
+            ViewModel.DevDriveManager.RemoveDevDrive(devDrive);
         }
     }
 
