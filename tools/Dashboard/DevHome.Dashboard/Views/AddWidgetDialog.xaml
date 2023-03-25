@@ -58,7 +58,7 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch" Grid.Row="0"
                               MinHeight="480" MaxHeight="480">
                     <Frame x:Name="ConfigurationContentFrame" 
-                            Content="{x:Bind ViewModel.WidgetUIElement, Mode=OneWay}" />
+                            Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}" />
                 </ScrollViewer>
 
                 <Button x:Name="PinButton" x:Uid="PinButton" Content="Pin"

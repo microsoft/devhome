@@ -25,7 +25,7 @@ public partial class WidgetViewModel : ObservableObject
     private WidgetSize _widgetSize;
 
     [ObservableProperty]
-    private FrameworkElement _widgetUIElement;
+    private FrameworkElement _widgetFrameworkElement;
 
     [ObservableProperty]
     private string _widgetDisplayName;
@@ -46,15 +46,15 @@ public partial class WidgetViewModel : ObservableObject
         if (Widget != null)
         {
             Widget.WidgetUpdated += HandleWidgetUpdated;
-            RenderWidgetUIElement();
+            RenderWidgetFrameworkElement();
         }
     }
 
-    partial void OnWidgetUIElementChanged(FrameworkElement value)
+    partial void OnWidgetFrameworkElementChanged(FrameworkElement value)
     {
-        if (WidgetUIElement != null && WidgetUIElement as Grid != null)
+        if (WidgetFrameworkElement != null && WidgetFrameworkElement is Grid grid)
         {
-            WidgetBackground = (WidgetUIElement as Grid).Background;
+            WidgetBackground = grid.Background;
         }
     }
 
@@ -71,7 +71,7 @@ public partial class WidgetViewModel : ObservableObject
         WidgetSize = widgetSize;
     }
 
-    private async void RenderWidgetUIElement()
+    private async void RenderWidgetFrameworkElement()
     {
         var cardTemplate = await _widget.GetCardTemplateAsync();
         var cardData = await _widget.GetCardDataAsync();
@@ -92,7 +92,7 @@ public partial class WidgetViewModel : ObservableObject
                     if (renderedCard != null && renderedCard.FrameworkElement != null)
                     {
                         renderedCard.Action += HandleInvokedAction;
-                        WidgetUIElement = renderedCard.FrameworkElement;
+                        WidgetFrameworkElement = renderedCard.FrameworkElement;
                     }
                 }
                 catch (Exception)
@@ -100,7 +100,7 @@ public partial class WidgetViewModel : ObservableObject
                     // TODO: LogError("WidgetViewModel", "Error rendering widget card", e);
 
                     // TODO: Create nice fallback element with localized text.
-                    WidgetUIElement = new TextBlock
+                    WidgetFrameworkElement = new TextBlock
                     {
                         Text = "This widget could not be rendered",
                     };
@@ -136,6 +136,6 @@ public partial class WidgetViewModel : ObservableObject
 
     private void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
     {
-        RenderWidgetUIElement();
+        RenderWidgetFrameworkElement();
     }
 }
