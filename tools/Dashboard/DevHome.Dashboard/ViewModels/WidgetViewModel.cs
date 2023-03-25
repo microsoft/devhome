@@ -21,6 +21,18 @@ public partial class WidgetViewModel : ObservableObject
     [ObservableProperty]
     private Widget _widget;
 
+    [ObservableProperty]
+    private WidgetSize _widgetSize;
+
+    [ObservableProperty]
+    private FrameworkElement _widgetFrameworkElement;
+
+    [ObservableProperty]
+    private string _widgetDisplayName;
+
+    [ObservableProperty]
+    private Microsoft.UI.Xaml.Media.Brush _widgetBackground;
+
     partial void OnWidgetChanging(Widget value)
     {
         if (Widget != null)
@@ -34,15 +46,17 @@ public partial class WidgetViewModel : ObservableObject
         if (Widget != null)
         {
             Widget.WidgetUpdated += HandleWidgetUpdated;
-            RenderWidgetUIElement();
+            RenderWidgetFrameworkElement();
         }
     }
 
-    [ObservableProperty]
-    private WidgetSize _widgetSize;
-
-    [ObservableProperty]
-    private FrameworkElement _widgetUIElement;
+    partial void OnWidgetFrameworkElementChanged(FrameworkElement value)
+    {
+        if (WidgetFrameworkElement != null && WidgetFrameworkElement is Grid grid)
+        {
+            WidgetBackground = grid.Background;
+        }
+    }
 
     public WidgetViewModel(
         Widget widget,
@@ -57,7 +71,7 @@ public partial class WidgetViewModel : ObservableObject
         WidgetSize = widgetSize;
     }
 
-    private async void RenderWidgetUIElement()
+    private async void RenderWidgetFrameworkElement()
     {
         var cardTemplate = await _widget.GetCardTemplateAsync();
         var cardData = await _widget.GetCardDataAsync();
@@ -78,7 +92,7 @@ public partial class WidgetViewModel : ObservableObject
                     if (renderedCard != null && renderedCard.FrameworkElement != null)
                     {
                         renderedCard.Action += HandleInvokedAction;
-                        WidgetUIElement = renderedCard.FrameworkElement;
+                        WidgetFrameworkElement = renderedCard.FrameworkElement;
                     }
                 }
                 catch (Exception)
@@ -86,7 +100,7 @@ public partial class WidgetViewModel : ObservableObject
                     // TODO: LogError("WidgetViewModel", "Error rendering widget card", e);
 
                     // TODO: Create nice fallback element with localized text.
-                    WidgetUIElement = new TextBlock
+                    WidgetFrameworkElement = new TextBlock
                     {
                         Text = "This widget could not be rendered",
                     };
@@ -122,6 +136,6 @@ public partial class WidgetViewModel : ObservableObject
 
     private void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
     {
-        RenderWidgetUIElement();
+        RenderWidgetFrameworkElement();
     }
 }

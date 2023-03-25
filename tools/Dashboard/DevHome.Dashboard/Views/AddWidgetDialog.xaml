@@ -24,7 +24,8 @@
         <!-- Title and Close button -->
         <Grid>
             <TextBlock x:Uid="PinWidgetsTitle" HorizontalAlignment="Left" />
-            <Button HorizontalAlignment="Right" Click="CancelButton_Click" BorderThickness="0" >
+            <Button HorizontalAlignment="Right" Click="CancelButton_Click"
+                    BorderThickness="0" Background="Transparent">
                 <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}" 
                            FontSize="{ThemeResource BodyTextBlockFontSize}" 
                            Text="&#xE10A;" />
@@ -48,7 +49,7 @@
             <!-- Widget configuration UI -->
             <!-- TODO: This is a bare-bones representation of the configuration UI -->
             <!--       Should have better layout / possibly be a user control -->
-            <Grid>
+            <Grid x:Name="ConfigurationContentGrid" Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="auto" />
@@ -57,7 +58,7 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch" Grid.Row="0"
                               MinHeight="480" MaxHeight="480">
                     <Frame x:Name="ConfigurationContentFrame" 
-                            Content="{x:Bind ViewModel.WidgetUIElement, Mode=OneWay}" />
+                            Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}" />
                 </ScrollViewer>
 
                 <Button x:Name="PinButton" x:Uid="PinButton" Content="Pin"
