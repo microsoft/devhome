@@ -132,8 +132,8 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
 
             // Mock restore application icon not found by throwing an exception
             restoreAppInfo
-            .Setup(appInfo => appInfo.GetIconAsync(It.IsAny<RestoreApplicationIconTheme>()))
-            .Throws(new ArgumentOutOfRangeException());
+                .Setup(appInfo => appInfo.GetIconAsync(It.IsAny<RestoreApplicationIconTheme>()))
+                .Throws(new ArgumentOutOfRangeException());
 
             return restoreAppInfo.Object;
         }).ToList();
