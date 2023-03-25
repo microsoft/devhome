@@ -51,7 +51,7 @@ public class AccountsService : IAccountsService
     {
         if (plugin.GetProvider(ProviderType.DevId) is IDevIdProvider iDevIdProvider)
         {
-            return GetDeveloperIds(iDevIdProvider);
+            return .GetDeveloperIds(iDevIdProvider);
         }
 
         return new List<IDeveloperId>();
