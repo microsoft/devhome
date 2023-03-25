@@ -5,6 +5,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.Common.Services;
+using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 using Windows.Storage.Streams;
 
@@ -18,12 +20,14 @@ public class WinGetPackage : IWinGetPackage
     private readonly CatalogPackage _package;
     private readonly Lazy<Uri> _packageUrl;
     private readonly Lazy<Uri> _publisherUrl;
+    private readonly PackageUniqueKey _uniqueKey;
 
     public WinGetPackage(CatalogPackage package)
     {
         _package = package;
         _packageUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PackageUrl), null));
         _publisherUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PublisherUrl), null));
+        _uniqueKey = new (Id, CatalogId);
     }
 
     public CatalogPackage CatalogPackage => _package;
@@ -32,7 +36,7 @@ public class WinGetPackage : IWinGetPackage
 
     public string CatalogId => _package.DefaultInstallVersion.PackageCatalog.Info.Id;
 
-    public (string, string) CompositeKey => (Id, CatalogId);
+    public PackageUniqueKey UniqueKey => _uniqueKey;
 
     public string Name => _package.Name;
 
@@ -54,14 +58,9 @@ public class WinGetPackage : IWinGetPackage
 
     public Uri PublisherUrl => _publisherUrl.Value;
 
-    public async Task InstallAsync(IWindowsPackageManager wpm)
+    public InstallPackageTask CreateInstallTask(ILogger logger, IWindowsPackageManager wpm, ISetupFlowStringResource stringResource)
     {
-        await wpm.InstallPackageAsync(this);
-    }
-
-    public InstallPackageTask CreateInstallTask(IWindowsPackageManager wpm)
-    {
-        return new InstallPackageTask(wpm, this);
+        return new InstallPackageTask(logger, wpm, stringResource, this);
     }
 
     /// <summary>

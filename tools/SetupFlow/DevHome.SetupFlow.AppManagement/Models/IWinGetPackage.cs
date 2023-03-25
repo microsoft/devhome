@@ -4,9 +4,18 @@
 using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.Common.Services;
+using DevHome.Telemetry;
 using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.AppManagement.Models;
+
+/// <summary>
+/// Record for a package unique key following a value-based equality semantics
+/// </summary>
+/// <param name="packageId">Package id</param>
+/// <param name="catalogId">Catalog id</param>
+public record class PackageUniqueKey(string packageId, string catalogId);
 
 /// <summary>
 /// Interface for a winget package.
@@ -30,10 +39,12 @@ public interface IWinGetPackage
     }
 
     /// <summary>
-    /// Gets a globally unique composite key for the package.
-    /// This property can be used as a key in a dictionary, hashset, etc ...
+    /// Gets a globally unique key for the package.
     /// </summary>
-    public (string, string) CompositeKey
+    /// <remarks>
+    /// This property can be used as a key in a dictionary, hashset, etc ...
+    /// </remarks>
+    public PackageUniqueKey UniqueKey
     {
         get;
     }
@@ -97,10 +108,11 @@ public interface IWinGetPackage
     }
 
     /// <summary>
-    /// Install this package
+    /// Create an install task for this package
     /// </summary>
+    /// <param name="logger">Logger service</param>
     /// <param name="wpm">Windows package manager service</param>
-    Task InstallAsync(IWindowsPackageManager wpm);
-
-    InstallPackageTask CreateInstallTask(IWindowsPackageManager wpm);
+    /// <param name="stringResource">String resource service</param>
+    /// <returns>Task object for installing this package</returns>
+    InstallPackageTask CreateInstallTask(ILogger logger, IWindowsPackageManager wpm, ISetupFlowStringResource stringResource);
 }

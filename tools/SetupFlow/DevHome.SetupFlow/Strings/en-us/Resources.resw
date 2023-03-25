@@ -257,6 +257,22 @@
     <value>File type not supported</value>
     <comment>File type not supported error message</comment>
   </data>
+  <data name="InstallingPackage" xml:space="preserve">
+    <value>Installing {0}</value>
+    <comment>{Locked="{0}"} Label displayed when a package is being installed. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstalledPackage" xml:space="preserve">
+    <value>Installed {0}</value>
+    <comment>{Locked="{0}"} Label displayed when a package is installed. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageError" xml:space="preserve">
+    <value>Error installing {0}</value>
+    <comment>{Locked="{0}"} Label displayed when a package failed to install. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstalledPackage" xml:space="preserve">
+    <value>Installed {0}</value>
+    <comment>{Locked="{0}"} Label displayed when a package is installed. {0} is replaced by the package name.</comment>
+  </data>
   <data name="LearnMore.Text" xml:space="preserve">
     <value>Learn more</value>
     <comment>Text for a clickable learn more button</comment>

@@ -29,7 +29,7 @@ public static class ServiceExtensions
         services.AddSingleton<IWindowsPackageManager, WindowsPackageManager>();
         services.AddSingleton(new WindowsPackageManagerFactory(ClsidContext.Prod));
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
-        services.AddScoped<PackageProvider>();
+        services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();
         services.AddTransient<WinGetPackageRestoreDataSource>();
         services.AddTransient<WinGetPackageJsonDataSource>(sp =>

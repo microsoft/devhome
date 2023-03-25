@@ -52,7 +52,7 @@ public partial class PackageViewModel : ObservableObject
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
     }
 
-    public (string, string) CompositeKey => _package.CompositeKey;
+    public PackageUniqueKey UniqueKey => _package.UniqueKey;
 
     public IWinGetPackage Package => _package;
 
