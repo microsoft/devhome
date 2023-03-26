@@ -2,12 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Widgets;
+using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Views;
 public sealed partial class WidgetControl : UserControl
@@ -38,15 +40,8 @@ public sealed partial class WidgetControl : UserControl
                 if (widgetControl != null && widgetControl.WidgetSource is WidgetViewModel widgetViewModel)
                 {
                     var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-                    var removeWidgetText = resourceLoader.GetString("RemoveWidgetMenuText");
-                    var menuItemClose = new MenuFlyoutItem
-                    {
-                        Tag = widgetViewModel,
-                        Text = removeWidgetText,
-                    };
-                    menuItemClose.Click += DeleteWidgetClick;
-                    widgetMenuFlyout.Items.Add(menuItemClose);
 
+                    AddRemoveToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
                     AddSizesToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
                 }
             }
@@ -70,14 +65,29 @@ public sealed partial class WidgetControl : UserControl
         }
     }
 
+    private void AddRemoveToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    {
+        var removeWidgetText = resourceLoader.GetString("RemoveWidgetMenuText");
+        var menuItemClose = new MenuFlyoutItem
+        {
+            Tag = widgetViewModel,
+            Text = removeWidgetText,
+        };
+        menuItemClose.Click += DeleteWidgetClick;
+        widgetMenuFlyout.Items.Add(menuItemClose);
+    }
+
     private void AddSizesToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
     {
-        // Add all three sizes to the menu, but disable them for now.
+        var widgetDefinition = WidgetCatalog.GetDefault().GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
+        var capabilities = widgetDefinition.GetWidgetCapabilities();
+
+        // Add the three possible sizes. Each side should only be enabled if it is included in the widget's capabilities.
         var menuItemSmall = new MenuFlyoutItem
         {
             Tag = WidgetSize.Small,
             Text = resourceLoader.GetString("SmallWidgetMenuText"),
-            IsEnabled = false,
+            IsEnabled = capabilities.Any(cap => cap.Size == WidgetSize.Small),
         };
         menuItemSmall.Click += MenuItemSize_Click;
         widgetMenuFlyout.Items.Add(menuItemSmall);
@@ -86,7 +96,7 @@ public sealed partial class WidgetControl : UserControl
         {
             Tag = WidgetSize.Medium,
             Text = resourceLoader.GetString("MediumWidgetMenuText"),
-            IsEnabled = false,
+            IsEnabled = capabilities.Any(cap => cap.Size == WidgetSize.Medium),
         };
         menuItemMedium.Click += MenuItemSize_Click;
         widgetMenuFlyout.Items.Add(menuItemMedium);
@@ -95,29 +105,10 @@ public sealed partial class WidgetControl : UserControl
         {
             Tag = WidgetSize.Large,
             Text = resourceLoader.GetString("LargeWidgetMenuText"),
-            IsEnabled = false,
+            IsEnabled = capabilities.Any(cap => cap.Size == WidgetSize.Large),
         };
         menuItemLarge.Click += MenuItemSize_Click;
         widgetMenuFlyout.Items.Add(menuItemLarge);
-
-        // Enable the sizes that are valid for this widget.
-        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
-        var capabilities = widgetDefinition.GetWidgetCapabilities();
-
-        if (capabilities.Any(cap => cap.Size == WidgetSize.Small))
-        {
-            menuItemSmall.IsEnabled = true;
-        }
-
-        if (capabilities.Any(cap => cap.Size == WidgetSize.Medium))
-        {
-            menuItemMedium.IsEnabled = true;
-        }
-
-        if (capabilities.Any(cap => cap.Size == WidgetSize.Large))
-        {
-            menuItemLarge.IsEnabled = true;
-        }
     }
 
     private async void MenuItemSize_Click(object sender, RoutedEventArgs e)
@@ -127,8 +118,8 @@ public sealed partial class WidgetControl : UserControl
             if (menuSizeItem.DataContext is WidgetViewModel widgetViewModel)
             {
                 var size = (WidgetSize)menuSizeItem.Tag;
-                await widgetViewModel.Widget.SetSizeAsync(size);
                 widgetViewModel.WidgetSize = size;
+                await widgetViewModel.Widget.SetSizeAsync(size);
             }
         }
     }

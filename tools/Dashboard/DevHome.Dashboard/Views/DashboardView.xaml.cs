@@ -16,7 +16,6 @@ using Microsoft.Windows.Widgets.Hosts;
 using Windows.Storage;
 
 namespace DevHome.Dashboard.Views;
-
 public partial class DashboardView : ToolPage
 {
     public override string ShortName => "Dashboard";
