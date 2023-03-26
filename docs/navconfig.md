@@ -39,3 +39,7 @@
                                 - Full class name of tool's view model
                                 - Type: `string`
                                 - <i id="/navMenu/groups/items/tools/items/viewModelFullName">path: #/navMenu/groups/items/tools/items/viewModelFullName</i>
+                            - <b id="#/navMenu/groups/items/tools/items/icon">icon</b> `required`
+                                - Unicode point of tool's icon
+                                - Type: `string`
+                                - <i id="/navMenu/groups/items/tools/items/icon">path: #/navMenu/groups/items/tools/items/icons</i>
