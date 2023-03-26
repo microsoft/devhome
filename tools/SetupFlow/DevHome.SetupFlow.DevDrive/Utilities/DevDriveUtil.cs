@@ -60,7 +60,7 @@ public static class DevDriveUtil
     /// <summary>
     /// Gets the list of the latin alphabet. Windows uses the latin letters as its drive letters.
     /// </summary>
-    public static IList<char> DriveLetterCharArray => new List<char>("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    public static IList<char> DriveLetterCharArray => new List<char>("CDEFGHIJKLMNOPQRSTUVWXYZ");
 
     /// <summary>
     /// Gets a value indicating whether the system has the ability to create Dev Drives

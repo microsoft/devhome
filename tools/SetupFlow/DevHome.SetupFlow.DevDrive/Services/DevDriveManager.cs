@@ -2,17 +2,14 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.SetupFlow.DevDrive.Windows;
@@ -24,10 +21,9 @@ using Windows.Win32.Foundation;
 namespace DevHome.SetupFlow.DevDrive.Services;
 
 /// <summary>
-/// Class for Dev Drive manager. The Dev Drive manager is the mediator between objects that will be a viewmodel for
-/// a Dev Drive window and the objects that requested the window to be launched. Message passing between the two so they do not
-/// need to know of eachothers existence. The Dev Drive manager uses a Dictionary object to keep the association between
-/// the Dev Drive and the Dev Drive window.
+/// Class for Dev Drive manager. The Dev Drive manager is the mediator between the Dev Drive view Model for
+/// the Dev Drive window and the objects that requested the window to be launched. Message passing between the two so they do not
+/// need to know of eachothers existence. The Dev Drive manager uses a set to keep track of the Dev Drives created by the user.
 /// </summary>
 public class DevDriveManager : IDevDriveManager
 {
@@ -37,14 +33,15 @@ public class DevDriveManager : IDevDriveManager
     private readonly string _defaultVhdxLocation;
     private readonly string _defaultVhdxName;
     private readonly ISetupFlowStringResource _stringResource;
+    private readonly DevDriveViewModel _devDriveViewModel;
 
     /// <summary>
-    /// Dictionary that Associates a Dev Drive object with a view model.
+    /// Set that holds Dev Drives that have been created through the Dev Drive manager.
     /// </summary>
-    private readonly Dictionary<IDevDrive, IDevDriveWindowViewModel> _devDriveToViewModelMap = new ();
+    private readonly HashSet<IDevDrive> _devDrives = new ();
 
     /// <inheritdoc/>
-    public IList<IDevDrive> DevDrivesMarkedForCreation => _devDriveToViewModelMap.Keys.Where(devDrive => devDrive.State == DevDriveState.New).ToList();
+    public IList<IDevDrive> DevDrivesMarkedForCreation => _devDrives.ToList();
 
     /// <summary>
     /// Event that requesters can subscribe to, to know when a <see cref="DevDriveWindow"/> has closed.
@@ -63,6 +60,7 @@ public class DevDriveManager : IDevDriveManager
         _stringResource = stringResource;
         _defaultVhdxLocation = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFolderName);
         _defaultVhdxName = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFileName);
+        _devDriveViewModel = _host.CreateInstance<DevDriveViewModel>(this);
     }
 
     /// <inheritdoc/>
@@ -71,27 +69,27 @@ public class DevDriveManager : IDevDriveManager
     /// <inheritdoc/>
     public Task<bool> LaunchDevDriveWindow(IDevDrive devDrive)
     {
-        try
+        // Only allow one Dev Drive window to be opened at a time.
+        if (_devDriveViewModel.IsDevDriveWindowOpen)
         {
-            IDevDriveWindowViewModel viewModel;
-            if (_devDriveToViewModelMap.TryGetValue(devDrive, out viewModel))
-            {
-                return _devDriveToViewModelMap[devDrive].LaunchDevDriveWindow();
-            }
-
             return Task.FromResult(false);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed to launch a new Dev Drive window. {ex.Message}");
-            throw;
-        }
+
+        _devDriveViewModel.UpdateDevDriveInfo(devDrive);
+        return _devDriveViewModel.LaunchDevDriveWindow();
     }
 
     /// <inheritdoc/>
-    public void NotifyDevDriveWindowClosed(IDevDrive devDrive)
+    public void NotifyDevDriveWindowClosed(IDevDrive newDevDrive)
     {
-        ViewModelWindowClosed(null, devDrive);
+        var oldDevDrive = _devDrives.FirstOrDefault(drive => drive.ID == newDevDrive.ID);
+        if (oldDevDrive != null)
+        {
+            _devDrives.Remove(oldDevDrive);
+        }
+
+        _devDrives.Add(newDevDrive);
+        ViewModelWindowClosed(null, newDevDrive);
     }
 
     /// <inheritdoc/>
@@ -110,15 +108,20 @@ public class DevDriveManager : IDevDriveManager
     /// </returns>
     public (DevDriveOperationResult, IDevDrive) GetNewDevDrive()
     {
-        var devDrive = new Models.DevDrive();
-        var result = UpdateDevDriveWithDefaultInfo(ref devDrive);
-        if (result != DevDriveOperationResult.Successful)
+        // Currently we only support creating one Dev Drive at a time. If one was
+        // produced before reuse it.
+        if (_devDrives.Any())
         {
-            return (result, devDrive);
+            return (DevDriveOperationResult.Successful, _devDrives.First());
         }
 
-        var newViewModel = _host.CreateInstance<DevDriveViewModel>(devDrive);
-        _devDriveToViewModelMap[newViewModel.AssociatedDrive] = newViewModel;
+        var devDrive = new Models.DevDrive();
+        var result = UpdateDevDriveWithDefaultInfo(ref devDrive);
+        if (result == DevDriveOperationResult.Successful)
+        {
+            _devDrives.Add(devDrive);
+        }
+
         return (result, devDrive);
     }
 
@@ -154,7 +157,7 @@ public class DevDriveManager : IDevDriveManager
                 return DevDriveOperationResult.NotEnoughFreeSpace;
             }
 
-            var availableLetters = GetAvailableDriveLetters(null);
+            var availableLetters = GetAvailableDriveLetters();
             if (!availableLetters.Any())
             {
                 return DevDriveOperationResult.NoDriveLettersAvailable;
@@ -206,14 +209,15 @@ public class DevDriveManager : IDevDriveManager
         // Only check if the drive letter isn't already being used by another Dev Drive object in memory
         // if we're not in the process of creating it on the System.
         if (devDrive.State != DevDriveState.Creating &&
-            _devDriveToViewModelMap.Keys.Where(drive => drive.DriveLetter == devDrive.DriveLetter && drive.ID != devDrive.ID).Any())
+            _devDrives.FirstOrDefault(drive => drive.DriveLetter == devDrive.DriveLetter && drive.ID != devDrive.ID) != null)
         {
             returnSet.Add(DevDriveOperationResult.DriveLetterNotAvailable);
         }
 
-        if (!IsFolderLocationValid(devDrive))
+        var result = IsPathValid(devDrive);
+        if (result != DevDriveOperationResult.Successful)
         {
-            returnSet.Add(DevDriveOperationResult.InvalidFolderLocation);
+            returnSet.Add(result);
         }
 
         var driveLetterSet = new HashSet<char>();
@@ -225,7 +229,7 @@ public class DevDriveManager : IDevDriveManager
                 returnSet.Add(DevDriveOperationResult.DriveLetterNotAvailable);
             }
 
-            // If drive location is invalid, we would have already captured this in the IsFolderLocationValid call above.
+            // If drive location is invalid, we would have already captured this in the IsPathValid call above.
             var potentialRoot = string.IsNullOrEmpty(devDrive.DriveLocation) ? '\0' : devDrive.DriveLocation[0];
             if (potentialRoot == curDriveOnSystem.Name[0] &&
                 (devDrive.DriveSizeInBytes > (ulong)curDriveOnSystem.TotalFreeSpace))
@@ -243,7 +247,7 @@ public class DevDriveManager : IDevDriveManager
     }
 
     /// <inheritdoc/>
-    public IList<char> GetAvailableDriveLetters(IDevDrive devDrive)
+    public IList<char> GetAvailableDriveLetters(char? usedLetterToKeepInList = null)
     {
         var driveLetterSet = new SortedSet<char>(DevDriveUtil.DriveLetterCharArray);
         foreach (var drive in DriveInfo.GetDrives())
@@ -251,12 +255,11 @@ public class DevDriveManager : IDevDriveManager
             driveLetterSet.Remove(drive.Name[0]);
         }
 
-        var driveLetter = devDrive?.DriveLetter;
-        foreach (var drive in _devDriveToViewModelMap.Keys)
+        foreach (var devDrive in _devDrives)
         {
-            if (driveLetter == null || driveLetter != drive.DriveLetter)
+            if (usedLetterToKeepInList == null || usedLetterToKeepInList != devDrive.DriveLetter)
             {
-                driveLetterSet.Remove(drive.DriveLetter);
+                driveLetterSet.Remove(devDrive.DriveLetter);
             }
         }
 
@@ -266,9 +269,8 @@ public class DevDriveManager : IDevDriveManager
     /// <inheritdoc/>
     public DevDriveOperationResult RemoveDevDrive(IDevDrive devDrive)
     {
-        if (_devDriveToViewModelMap.ContainsKey(devDrive))
+        if (_devDrives.Remove(devDrive))
         {
-            _devDriveToViewModelMap.Remove(devDrive);
             return DevDriveOperationResult.Successful;
         }
 
@@ -276,18 +278,18 @@ public class DevDriveManager : IDevDriveManager
     }
 
     /// <summary>
-    /// Consolidated logic that checks if a Dev Drive location string is valid. The location
-    /// has to exist on the system if it is not a network path.
+    /// Consolidated logic that checks if a Dev Drive location and combined path with Dev Drive label is valid.
+    /// The location has to exist on the system if it is not a network path.
     /// </summary>
     /// <param name="devDrive"> The IDevDrive object to be validated</param>
     /// <returns>Bool where true means the location is valid and false if invalid</returns>
-    private bool IsFolderLocationValid(IDevDrive devDrive)
+    private DevDriveOperationResult IsPathValid(IDevDrive devDrive)
     {
         if (string.IsNullOrEmpty(devDrive.DriveLocation) ||
             devDrive.DriveLocation.Length > DevDriveUtil.MaxDrivePathLength ||
             DevDriveUtil.IsInvalidFileNameOrPath(InvalidCharactersKind.Path, devDrive.DriveLocation))
         {
-            return false;
+            return DevDriveOperationResult.InvalidFolderLocation;
         }
 
         string locationRoot;
@@ -307,21 +309,29 @@ public class DevDriveManager : IDevDriveManager
                     }
                 }
 
-                if (!isNetworkPath && !Directory.Exists(fileInfo.FullName))
+                if (!isNetworkPath)
                 {
-                    return false;
+                    if (!Directory.Exists(fileInfo.FullName))
+                    {
+                        return DevDriveOperationResult.InvalidFolderLocation;
+                    }
+
+                    if (File.Exists(Path.Combine(fileInfo.FullName, devDrive.DriveLabel + ".vhdx")))
+                    {
+                        return DevDriveOperationResult.FileNameAlreadyExists;
+                    }
                 }
             }
             else
             {
-                return false;
+                return DevDriveOperationResult.InvalidFolderLocation;
             }
         }
         catch (Exception)
         {
-            return false;
+            return DevDriveOperationResult.InvalidFolderLocation;
         }
 
-        return true;
+        return DevDriveOperationResult.Successful;
     }
 }

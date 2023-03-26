@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -29,14 +30,19 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private readonly ISetupFlowStringResource _stringResource;
     private readonly DevDriveTaskGroup _taskGroup;
     private readonly IDevDriveManager _devDriveManager;
-    private readonly Models.DevDrive _concreteDevDrive;
     private readonly string _localizedBrowseButtonText;
+    private readonly ObservableCollection<string> _errorList = new ();
 
     // TODO: This icon is subject to change, when Dev Home gets a new icon along with a more global way to
     // access it since its not set programmatically currently, only through xaml.
     private readonly string _devHomeIconPath = "Assets/WindowIcon.ico";
     private readonly Dictionary<ByteUnit, string> _byteUnitList;
 
+    private Models.DevDrive _concreteDevDrive = new ();
+
+    /// <summary>
+    /// Gets a value indicating whether the DevDrive window has been opened.
+    /// </summary>
     public bool IsDevDriveWindowOpen
     {
         get; private set;
@@ -50,12 +56,28 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         get; private set;
     }
 
+    /// <summary>
+    /// Gets the dictionary mapping between a ByteUnit and the the localized string it represents.
+    /// </summary>
     public Dictionary<ByteUnit, string> ByteUnitList => _byteUnitList;
 
-    public IDevDrive AssociatedDrive => _concreteDevDrive;
+    /// <summary>
+    /// Gets or sets the value indicating the IDevDrive object for the view model.
+    /// </summary>
+    public IDevDrive AssociatedDrive
+    {
+        get => _concreteDevDrive;
+        set => _concreteDevDrive = new Models.DevDrive(value);
+    }
 
+    /// <summary>
+    /// Gets a value indicating the path to the app icon for the secondary window.
+    /// </summary>
     public string AppImage => Path.Combine(AppContext.BaseDirectory, _devHomeIconPath);
 
+    /// <summary>
+    /// Gets a value indicating the window title of the Dev Drive window.
+    /// </summary>
     public string AppTitle => Application.Current.GetService<WindowEx>().Title;
 
     public DevDriveViewModel(
@@ -63,23 +85,18 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         ILogger logger,
         ISetupFlowStringResource stringResource,
         DevDriveTaskGroup taskGroup,
-        Models.DevDrive devDrive)
+        IDevDriveManager devDriveManager)
     {
         _logger = logger;
         _taskGroup = taskGroup;
         _stringResource = stringResource;
-        _devDriveManager = host.GetService<IDevDriveManager>();
-        _concreteDevDrive = devDrive;
         _byteUnitList = new Dictionary<ByteUnit, string>
         {
             { ByteUnit.GB, stringResource.GetLocalized(StringResourceKey.DevDriveWindowByteUnitComboBoxGB) },
             { ByteUnit.TB, stringResource.GetLocalized(StringResourceKey.DevDriveWindowByteUnitComboBoxTB) },
         };
         _localizedBrowseButtonText = _stringResource.GetLocalized(StringResourceKey.BrowseTextBlock);
-        Size = DevDriveUtil.MinSizeForGbComboBox;
-        DriveLabel = devDrive.DriveLabel;
-        Location = devDrive.DriveLocation;
-        ComboBoxDriveLetter = devDrive.DriveLetter;
+        _devDriveManager = devDriveManager;
         _devDriveManager.RequestToCloseViewModelWindow += CloseRequestedDevDriveWindow;
     }
 
@@ -106,17 +123,6 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [ObservableProperty]
     private double _size;
 
-    [ObservableProperty]
-    private bool _invalidDriveLabelErrorOccurred;
-    [ObservableProperty]
-    private bool _notEnoughFreeSpaceErrorOccurred;
-    [ObservableProperty]
-    private bool _invalidDriveSizeErrorOccurred;
-    [ObservableProperty]
-    private bool _noDriveLettersAvailableErrorOccurred;
-    [ObservableProperty]
-    private bool _invalidFolderLocationErrorOccurred;
-
     /// <summary>
     /// Byte unit of mearsure combo box.
     /// </summary>
@@ -132,10 +138,10 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private char _comboBoxDriveLetter;
 
     /// <summary>
-    /// Gets the drive letters available on the system but have not already been marked for
-    /// creation by the Dev Drive Manager.
+    /// Gets the drive letters available on the system and is not already in use by a Dev Drive
+    /// that the Dev Drive manager is holding in memory.
     /// </summary>
-    public IList<char> DriveLetters => _devDriveManager.GetAvailableDriveLetters(AssociatedDrive);
+    public IList<char> DriveLetters => _devDriveManager.GetAvailableDriveLetters(AssociatedDrive.DriveLetter);
 
     /// <summary>
     /// Gets the maximum size allowed in the Number box based
@@ -171,7 +177,15 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
     }
 
+    /// <summary>
+    /// gets the localized Browse button text for the browse button.
+    /// </summary>
     public string LocalizedBrowseButtonText => _localizedBrowseButtonText;
+
+    /// <summary>
+    /// gets the list of localized error text that will be shown in the UI.
+    /// </summary>
+    public ObservableCollection<string> ErrorList => _errorList;
 
     /// <summary>
     /// Opens folder picker and adds folder to the drive location, if the user does not cancel the dialog.
@@ -197,10 +211,34 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     public void CloseRequestedDevDriveWindow(object sender, IDevDrive devDrive)
     {
-        if (devDrive.ID == AssociatedDrive.ID && IsDevDriveWindowOpen)
+        if (IsDevDriveWindowOpen)
         {
             DevDriveWindowContainer.Close();
         }
+    }
+
+    /// <summary>
+    /// Updates the associated Dev Drive and property fields for the UI with new details from another
+    /// Dev Drive.
+    /// </summary>
+    public void UpdateDevDriveInfo(IDevDrive devDrive)
+    {
+        AssociatedDrive = devDrive;
+        if (devDrive.DriveSizeInBytes > DevDriveUtil.MinDevDriveSizeInBytes)
+        {
+            ByteUnit byteUnit;
+            (Size, byteUnit) = DevDriveUtil.ConvertFromBytes(devDrive.DriveSizeInBytes);
+            ComboBoxByteUnit = (int)byteUnit;
+        }
+        else
+        {
+            _concreteDevDrive.DriveSizeInBytes = DevDriveUtil.MinDevDriveSizeInBytes;
+            Size = DevDriveUtil.MinSizeForGbComboBox;
+        }
+
+        DriveLabel = devDrive.DriveLabel;
+        Location = devDrive.DriveLocation;
+        ComboBoxDriveLetter = devDrive.DriveLetter;
     }
 
     /// <summary>
@@ -222,15 +260,6 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
 
-    private void ResetErrors()
-    {
-        InvalidDriveSizeErrorOccurred = false;
-        NotEnoughFreeSpaceErrorOccurred = false;
-        InvalidDriveLabelErrorOccurred = false;
-        InvalidFolderLocationErrorOccurred = false;
-        NoDriveLettersAvailableErrorOccurred = false;
-    }
-
     /// <summary>
     /// Save button click command sends the <see cref="Models.DevDrive"/> associated with
     /// with the view model to the  <see cref="DevDriveManager"/> to have its contents validated
@@ -239,7 +268,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [RelayCommand]
     private void SaveButton()
     {
-        ResetErrors();
+        ErrorList.Clear();
         ByteUnit driveUnitOfMeasure = (ByteUnit)_comboBoxByteUnit;
         var tempDrive = new Models.DevDrive()
         {
@@ -248,23 +277,25 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
             DriveUnitOfMeasure = driveUnitOfMeasure,
             DriveLocation = Location,
             DriveLabel = _driveLabel,
+            ID = _concreteDevDrive.ID,
         };
 
-        Models.DevDrive.SwapContent(tempDrive, _concreteDevDrive);
-        var validation = _devDriveManager.GetDevDriveValidationResults(_concreteDevDrive);
+        var validation = _devDriveManager.GetDevDriveValidationResults(tempDrive);
         if (validation.Contains(DevDriveOperationResult.Successful))
         {
+            _concreteDevDrive = tempDrive;
             _concreteDevDrive.State = DevDriveState.New;
             DevDriveWindowContainer.Close();
         }
         else
         {
-            // Validation failed, we need to swap the contents back to the original.
-            Models.DevDrive.SwapContent(tempDrive, _concreteDevDrive);
             ShowErrorInUI(validation);
         }
     }
 
+    /// <summary>
+    /// Launches a secondary window that holds the page content inside DevDriveView.xaml
+    /// </summary>
     public Task<bool> LaunchDevDriveWindow()
     {
         DevDriveWindowContainer = new (this);
@@ -274,37 +305,25 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         return Task.FromResult(IsDevDriveWindowOpen);
     }
 
+    /// <summary>
+    /// Signals to the DevDrive manager to let the object who originally requested to launch the
+    /// Dev Drive window that the window has closed.
+    /// </summary>
     private void ViewContainerClosed(object sender, WindowEventArgs args)
     {
         IsDevDriveWindowOpen = false;
         _devDriveManager.NotifyDevDriveWindowClosed(_concreteDevDrive);
     }
 
+    /// <summary>
+    /// Shows the user all errors found after clicking the save button.
+    /// </summary>
     public void ShowErrorInUI(ISet<DevDriveOperationResult> resultSet)
     {
-        if (resultSet.Contains(DevDriveOperationResult.InvalidDriveSize))
+        var prefix = "DevDrive";
+        foreach (DevDriveOperationResult result in resultSet)
         {
-            InvalidDriveSizeErrorOccurred = true;
-        }
-
-        if (resultSet.Contains(DevDriveOperationResult.NotEnoughFreeSpace))
-        {
-            NotEnoughFreeSpaceErrorOccurred = true;
-        }
-
-        if (resultSet.Contains(DevDriveOperationResult.InvalidDriveLabel))
-        {
-            InvalidDriveLabelErrorOccurred = true;
-        }
-
-        if (resultSet.Contains(DevDriveOperationResult.InvalidFolderLocation))
-        {
-            InvalidFolderLocationErrorOccurred = true;
-        }
-
-        if (resultSet.Contains(DevDriveOperationResult.NoDriveLettersAvailable))
-        {
-            NoDriveLettersAvailableErrorOccurred = true;
+            ErrorList.Add(_stringResource.GetLocalized(prefix + result.ToString()));
         }
     }
 }

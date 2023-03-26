@@ -23,7 +23,8 @@ public enum DevDriveState
 
     /// <summary>
     ///  Dev Drive does not exist on system yet and but the values were valid at the time of validation.
-    ///  When in this state we cannot use it to create a Dev Drive on the system.
+    ///  Dev drive information might become invalid because of user action outside of DevHome. For example,
+    ///  making a dev drive via settings. Please re-validate before using.
     /// </summary>
     New,
 
@@ -45,11 +46,11 @@ public enum DevDriveState
 public interface IDevDrive
 {
     /// <summary>
-    /// Gets the state associated with the Dev Drive.
+    /// Gets or sets the state associated with the Dev Drive.
     /// </summary>
     public DevDriveState State
     {
-        get;
+        get; set;
     }
 
     /// <summary>

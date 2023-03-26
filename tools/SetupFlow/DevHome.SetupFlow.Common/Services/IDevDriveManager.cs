@@ -22,6 +22,7 @@ public enum DevDriveOperationResult
     InvalidDriveLabel,
     InvalidFolderLocation,
     FolderLocationNotFound,
+    FileNameAlreadyExists,
     DefaultFolderNotAvailable,
     DriveLetterNotAvailable,
     NoDriveLettersAvailable,
@@ -44,9 +45,7 @@ public interface IDevDriveManager
     public Task<DevDriveOperationResult> CreateDevDrive(IDevDrive devDrive);
 
     /// <summary>
-    /// Allows objects to request a Dev Drive window be created. The passed in IDevDrive
-    /// must have been created by the Dev Drive manager or the return bool will be false
-    /// and the window will not launch.
+    /// Allows objects to request a Dev Drive window be created.
     /// </summary>
     /// <param name="devDrive">Dev Drive the window will be created for</param>
     /// <returns>Returns true if the Dev Drive window was launched successfully</returns>
@@ -55,14 +54,14 @@ public interface IDevDriveManager
     /// <summary>
     /// Allows objects to notify the Dev Drive Manager that a Dev Drive window was closed.
     /// </summary>
-    /// <param name="devDrive">Dev Drive object</param>
-    public void NotifyDevDriveWindowClosed(IDevDrive devDrive);
+    /// <param name="newDevDrive">Dev Drive object</param>
+    public void NotifyDevDriveWindowClosed(IDevDrive newDevDrive);
 
     /// <summary>
     /// Gets a new Dev Drive object.
     /// </summary>
     /// <returns>
-    /// An Dev Drive thats associated with a viewmodel and a result that indicates whether the operation
+    /// An Dev Drive a new Dev Drive and a result that indicates whether the operation
     /// was successful.
     /// </returns>
     public (DevDriveOperationResult, IDevDrive) GetNewDevDrive();
@@ -79,7 +78,7 @@ public interface IDevDriveManager
     public event EventHandler<IDevDrive> ViewModelWindowClosed;
 
     /// <summary>
-    /// Validates the values inside the Dev Drive against Dev Drive requirements. Dev drive is only validated
+    /// Validates the values inside the Dev Drive against Dev Drive requirements. A Dev drive is only validated
     /// if the only result returned is DevDriveOperationResult.Successful
     /// </summary>
     /// <param name="devDrive">Dev Drive object</param>
@@ -99,23 +98,21 @@ public interface IDevDriveManager
     }
 
     /// <summary>
-    /// Gets All available drive letters on the system and that haven't been used by the Dev Manager at the
-    /// current time. The list is small so using a SortedSet should be fine as there will be very few times
-    /// this method would be called.
+    /// Gets all available drive letters on the system. From these letters, those that are currently
+    /// being used by a Dev Drive created in memory by the Dev Drive manager are removed.
     /// </summary>
-    /// <param name="devDrive">
-    /// when not null the Dev Drive manager should only add a used letter if it doesn't already belong
-    /// to the IDevDrive object.
+    /// <param name="usedLetterToKeepInList">
+    /// when not null the Dev Drive manager should add the letter in usedLetterToKeepInList even if it
+    /// is in used by a Dev Drive in memory.
     /// </param>
     /// <returns>
     /// A list of sorted drive letters currently not in use by the Dev Drive manager and the system
     /// </returns>
-    public IList<char> GetAvailableDriveLetters(IDevDrive devDrive);
+    public IList<char> GetAvailableDriveLetters(char? usedLetterToKeepInList = null);
 
     /// <summary>
     /// Removes Dev Drives that were created in memory by the Dev Drive Manager. This does not detach
-    /// or remove a Dev Drive from the users machine. This is used only to disassociate a Dev Drive object
-    /// from a Dev Drive view model that was created by the Dev Drive manager in memory.
+    /// or remove a Dev Drive from the users machine.
     /// <param name="devDrive">Dev Drive object</param>
     /// <returns>
     /// A result indicating whether the operation was successful.
@@ -123,7 +120,7 @@ public interface IDevDriveManager
     public DevDriveOperationResult RemoveDevDrive(IDevDrive devDrive);
 
     /// <summary>
-    /// Allows who hold a IDevDrive object to request that the Manager tell the view model who created the window to close the
+    /// Allows objects who hold a IDevDrive object to request that the Manager tell the view model to close the
     /// Dev Drive window. In this case the requester wants to close the window, whereas in the NotifyDevDriveWindowClosed case
     /// the view model is telling the requester the window closed.
     /// </summary>
@@ -131,7 +128,7 @@ public interface IDevDriveManager
     public void RequestToCloseDevDriveWindow(IDevDrive devDrive);
 
     /// <summary>
-    /// Event that View model can subscribe to, to know if a requester wants them to close the window, without the user explicity
+    /// Event that the Dev Drive view model can subscribe to, to know if a requester wants them to close the window, without the user explicity
     /// closing the window themselves, through actions like clicking the close button.
     /// </summary>
     public event EventHandler<IDevDrive> RequestToCloseViewModelWindow;
