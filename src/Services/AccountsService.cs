@@ -33,7 +33,7 @@ public class AccountsService : IAccountsService
             if (devIdProvider is IDevIdProvider iDevIdProvider)
             {
                 var devIds = iDevIdProvider.GetLoggedInDeveloperIds().ToList();
-                _accountsDictionary.Add(iDevIdProvider, devIds);
+                _accountsDictionary.TryAdd(iDevIdProvider, devIds);
 
                 LoggingHelper.AccountStartupEvent("Startup_DevId_Event", iDevIdProvider.GetName(), devIds);
 

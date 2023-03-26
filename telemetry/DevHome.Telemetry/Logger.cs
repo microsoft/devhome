@@ -18,7 +18,7 @@ namespace DevHome.Telemetry;
 
 internal class Logger : ILogger
 {
-    private const string ProviderName = "Microsoft.DevHome";
+    private const string ProviderName = "Microsoft.Windows.DevHome";
 
     /// <summary>
     /// Time Taken Event Name
