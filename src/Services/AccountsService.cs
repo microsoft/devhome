@@ -17,7 +17,7 @@ public class AccountsService : IAccountsService
         _accountsDictionary = new ();
     }
 
-    public async void InitializeAsync()
+    public async Task InitializeAsync()
     {
         var pluginService = new PluginService();
         var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DevId);
@@ -28,7 +28,7 @@ public class AccountsService : IAccountsService
             if (devIdProvider is not null)
             {
                 var devIds = devIdProvider.GetLoggedInDeveloperIds().ToList();
-                _accountsDictionary.Add(devIdProvider, devIds);
+                _accountsDictionary.TryAdd(devIdProvider, devIds);
 
                 LoggingHelper.AccountStartupEvent("Startup_DevId_Event", devIdProvider.GetName(), devIds);
 

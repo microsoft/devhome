@@ -128,6 +128,16 @@ public partial class DashboardView : ToolPage
     private void AddWidgetToPinnedWidgets(Widget widget, WidgetSize size)
     {
         var wvm = new WidgetViewModel(widget, size, _renderer, _dispatcher);
+        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widget.DefinitionId);
+        if (widgetDefinition != null)
+        {
+            wvm.WidgetDisplayName = widgetDefinition.DisplayTitle;
+        }
+        else
+        {
+            // TODO: LogWarning("DashboardView", $"WidgetPlatform did not clean up widget defintion {widget.DefinitionId}");
+        }
+
         PinnedWidgets.Add(wvm);
     }
 

@@ -7,7 +7,7 @@ namespace DevHome.Contracts.Services;
 
 public interface IAccountsService
 {
-    void InitializeAsync();
+    Task InitializeAsync();
 
     IReadOnlyList<IDevIdProvider> GetDevIdProviders();
 
