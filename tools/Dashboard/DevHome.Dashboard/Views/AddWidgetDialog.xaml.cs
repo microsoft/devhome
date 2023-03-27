@@ -37,10 +37,15 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         AddWidgetNavigationView.MenuItems.Clear();
 
+        var providerDefs = _widgetCatalog.GetProviderDefinitions();
+        var widgetDefs = _widgetCatalog.GetWidgetDefinitions();
+
+        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefs.Length} providers and {widgetDefs.Length} widgets");
+
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
-        foreach (var providerDef in _widgetCatalog.GetProviderDefinitions())
+        foreach (var providerDef in providerDefs)
         {
             if (IsIncludedWidgetProvider(providerDef))
             {
@@ -51,7 +56,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     Content = providerDef.DisplayName,
                 };
 
-                foreach (var widgetDef in _widgetCatalog.GetWidgetDefinitions())
+                foreach (var widgetDef in widgetDefs)
                 {
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
@@ -100,7 +105,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private bool IsIncludedWidgetProvider(WidgetProviderDefinition provider)
     {
-        return provider.Id.StartsWith("Microsoft.Windows.DevHome", StringComparison.CurrentCulture);
+        var include = provider.Id.StartsWith("Microsoft.Windows.DevHome", StringComparison.CurrentCulture);
+        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Found provider Id = {provider.Id}, include = {include}");
+        return include;
     }
 
     private async void AddWidgetNavigationView_SelectionChanged(
@@ -109,6 +116,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         // Delete previously shown configuation widget.
         // Clearing the UI here results in a flash, so don't bother. It will update soon.
+        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Widget selection changed, delete widget if one exists");
         var clearWidgetTask = ClearCurrentWidget();
 
         // Load selected widget configuration.
@@ -127,10 +135,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             // Create the widget for configuration. We will need to delete it if the user closes the dialog
             // without pinning, or selects a different widget.
             var widget = await _widgetHost.CreateWidgetAsync(selectedWidgetDefinition.Id, size);
-
-            // TODO CreateWidgetAsync doesn't always seem to be "done", and returns blank templates and data.
-            // Put in small wait to avoid this.
-            System.Threading.Thread.Sleep(100);
+            Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
 
             ViewModel.Widget = widget;
             PinButton.Visibility = Visibility.Visible;
@@ -162,6 +167,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private async void CancelButton_Click(object sender, RoutedEventArgs e)
     {
         // Delete previously shown configuation card.
+        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Exiting dialog, delete widget");
         await ClearCurrentWidget();
 
         this.Hide();
@@ -171,7 +177,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         if (_currentWidget != null)
         {
+            var widgetIdToDelete = _currentWidget.Id;
             await _currentWidget.DeleteAsync();
+            Log.Logger()?.ReportInfo("AddWidgetDialog", $"Deleted Widget {widgetIdToDelete}");
             _currentWidget = null;
         }
     }

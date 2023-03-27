@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -57,8 +58,11 @@ public sealed partial class WidgetControl : UserControl
             {
                 // Remove the widget from the list before deleting, otherwise the widget will
                 // have changed and the collection won't be able to find it to remove it.
+                var widgetIdToDelete = widgetViewModel.Widget.Id;
+                Log.Logger()?.ReportDebug("WidgetControl", $"User removed widget, delete widget {widgetIdToDelete}");
                 DashboardView.PinnedWidgets.Remove(widgetViewModel);
                 await widgetViewModel.Widget.DeleteAsync();
+                Log.Logger()?.ReportInfo("WidgetControl", $"Deleted Widget {widgetIdToDelete}");
             }
         }
     }
