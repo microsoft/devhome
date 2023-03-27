@@ -91,7 +91,7 @@ public class PluginService : IPluginService
         return installedPlugins;
     }
 
-    public async Task StartAllPluginsAsync()
+    public async Task<IEnumerable<IPluginWrapper>> StartAllPluginsAsync()
     {
         var installedPlugins = await GetInstalledPluginsAsync();
         foreach (var installedPlugin in installedPlugins)
@@ -101,6 +101,8 @@ public class PluginService : IPluginService
                 await installedPlugin.StartPluginAsync();
             }
         }
+
+        return installedPlugins;
     }
 
     public async Task SignalStopPluginsAsync()

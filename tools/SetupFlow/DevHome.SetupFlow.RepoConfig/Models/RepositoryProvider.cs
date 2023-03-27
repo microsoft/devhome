@@ -29,7 +29,7 @@ internal class RepositoryProvider
     /// <summary>
     /// The DevId provider used to log a user into an account.
     /// </summary>
-    private IDevIdProvider _developerId;
+    private IDevIdProvider _devIdProvider;
 
     /// <summary>
     /// Provider used to clone a repsitory.
@@ -52,7 +52,7 @@ internal class RepositoryProvider
     /// <returns>An awaitable task</returns>
     public async Task StartIfNotRunningAsync()
     {
-        _developerId = await _pluginWrapper.GetProviderAsync<IDevIdProvider>();
+        _devIdProvider = await _pluginWrapper.GetProviderAsync<IDevIdProvider>();
         _repositoryProvider = await _pluginWrapper.GetProviderAsync<IRepositoryProvider>();
     }
 
@@ -74,7 +74,7 @@ internal class RepositoryProvider
     /// </summary>
     public async Task LogIntoProvider()
     {
-        await _developerId.LoginNewDeveloperIdAsync();
+        await _devIdProvider.LoginNewDeveloperIdAsync();
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ internal class RepositoryProvider
     /// <returns>A list of all accounts.  May be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts()
     {
-        return _developerId.GetLoggedInDeveloperIds() ?? new List<IDeveloperId>();
+        return _devIdProvider.GetLoggedInDeveloperIds() ?? new List<IDeveloperId>();
     }
 
     /// <summary>
