@@ -13,6 +13,10 @@ namespace DevHome.SetupFlow.AppManagement.Models;
 /// <summary>
 /// Record for a package unique key following a value-based equality semantics
 /// </summary>
+/// <remarks>
+/// A package id is unique in a catalog, but not across catalogs. To globally
+/// identify a package, use a composite key of package id and catalog id.
+/// </remarks>
 /// <param name="packageId">Package id</param>
 /// <param name="catalogId">Catalog id</param>
 public record class PackageUniqueKey(string packageId, string catalogId);

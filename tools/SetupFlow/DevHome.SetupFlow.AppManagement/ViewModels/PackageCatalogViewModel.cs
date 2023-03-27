@@ -12,6 +12,13 @@ using DevHome.SetupFlow.AppManagement.Services;
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 
 /// <summary>
+/// Delegate factory for creating package catalog view models
+/// </summary>
+/// <param name="catalog">Package catalog</param>
+/// <returns>Package catalog view model</returns>
+public delegate PackageCatalogViewModel PackageCatalogViewModelFactory(PackageCatalog catalog);
+
+/// <summary>
 /// ViewModel class for a <see cref="PackageCatalog"/> model.
 /// </summary>
 public partial class PackageCatalogViewModel : ObservableObject

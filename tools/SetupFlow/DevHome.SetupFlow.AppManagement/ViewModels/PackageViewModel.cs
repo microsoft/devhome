@@ -18,6 +18,13 @@ using Windows.System;
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 
 /// <summary>
+/// Delegate factory for creating package view models
+/// </summary>
+/// <param name="package">WinGet package</param>
+/// <returns>Package view model</returns>
+public delegate PackageViewModel PackageViewModelFactory(IWinGetPackage package);
+
+/// <summary>
 /// ViewModel class for the <see cref="Package"/> model.
 /// </summary>
 public partial class PackageViewModel : ObservableObject

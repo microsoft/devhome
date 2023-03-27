@@ -15,12 +15,11 @@ using Microsoft.Extensions.Hosting;
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 public partial class PackageCatalogListViewModel : ObservableObject
 {
-    private readonly IHost _host;
     private readonly ILogger _logger;
-    private readonly PackageProvider _packageProvider;
     private readonly IWindowsPackageManager _wpm;
     private readonly WinGetPackageJsonDataSource _jsonDataSource;
     private readonly WinGetPackageRestoreDataSource _restoreDataSource;
+    private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
     private bool _initialized;
 
     /// <summary>
@@ -40,19 +39,17 @@ public partial class PackageCatalogListViewModel : ObservableObject
     public event EventHandler<PackageCatalogViewModel> CatalogLoaded;
 
     public PackageCatalogListViewModel(
-        IHost host,
         ILogger logger,
         WinGetPackageJsonDataSource jsonDataSource,
         WinGetPackageRestoreDataSource restoreDataSource,
         IWindowsPackageManager wpm,
-        PackageProvider packageProvider)
+        PackageCatalogViewModelFactory packageCatalogViewModelFactory)
     {
-        _host = host;
         _logger = logger;
         _jsonDataSource = jsonDataSource;
-        _packageProvider = packageProvider;
         _restoreDataSource = restoreDataSource;
         _wpm = wpm;
+        _packageCatalogViewModelFactory = packageCatalogViewModelFactory;
     }
 
     /// <summary>
@@ -110,7 +107,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
             RemoveShimmers(dataSource.CatalogCount);
             foreach (var catalog in catalogs)
             {
-                var catalogViewModel = _host.CreateInstance<PackageCatalogViewModel>(catalog);
+                var catalogViewModel = _packageCatalogViewModelFactory(catalog);
                 catalogViewModel.CanAddAllPackages = true;
                 PackageCatalogs.Add(catalogViewModel);
                 CatalogLoaded?.Invoke(null, catalogViewModel);
