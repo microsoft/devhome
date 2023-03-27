@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
@@ -20,10 +21,11 @@ public class InstallPackageTask : ISetupTask
     private readonly IWindowsPackageManager _wpm;
     private readonly WinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
+    private readonly WindowsPackageManagerFactory _wingetFactory;
 
     private InstallPackageException _installPackageException;
 
-    public bool RequiresAdmin => false;
+    public bool RequiresAdmin => RequiresElevation();
 
     // As we don't have this information available for each package in the WinGet COM API,
     // simply assume that any package installation may need a reboot.
@@ -34,7 +36,7 @@ public class InstallPackageTask : ISetupTask
         return new LoadingMessages
         {
             Executing = _stringResource.GetLocalized(StringResourceKey.InstallingPackage, _package.Name),
-            Finished = _stringResource.GetLocalized(StringResourceKey.InstallingPackage, _package.Name),
+            Finished = _stringResource.GetLocalized(StringResourceKey.InstalledPackage, _package.Name),
             Error = _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorWithReason, _package.Name, GetErrorReason()),
         };
     }
@@ -43,11 +45,13 @@ public class InstallPackageTask : ISetupTask
         ILogger logger,
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
+        WindowsPackageManagerFactory wingetFactory,
         WinGetPackage package)
     {
         _logger = logger;
         _wpm = wpm;
         _stringResource = stringResource;
+        _wingetFactory = wingetFactory;
         _package = package;
     }
 
@@ -90,5 +94,19 @@ public class InstallPackageTask : ISetupTask
                 _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorNoApplicableInstallers),
             _ => _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownError),
         };
+    }
+
+    private bool RequiresElevation()
+    {
+        try
+        {
+            var options = _wingetFactory.CreateInstallOptions();
+            options.PackageInstallScope = PackageInstallScope.User;
+            return _package.RequiresElevation(options);
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
 using Windows.Storage.Streams;
@@ -117,6 +118,11 @@ public interface IWinGetPackage
     /// <param name="logger">Logger service</param>
     /// <param name="wpm">Windows package manager service</param>
     /// <param name="stringResource">String resource service</param>
+    /// <param name="wingetFactory">WinGet factory</param>
     /// <returns>Task object for installing this package</returns>
-    InstallPackageTask CreateInstallTask(ILogger logger, IWindowsPackageManager wpm, ISetupFlowStringResource stringResource);
+    InstallPackageTask CreateInstallTask(
+        ILogger logger,
+        IWindowsPackageManager wpm,
+        ISetupFlowStringResource stringResource,
+        WindowsPackageManagerFactory wingetFactory);
 }

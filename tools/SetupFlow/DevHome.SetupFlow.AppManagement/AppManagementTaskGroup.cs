@@ -6,6 +6,7 @@ using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;
+using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
@@ -21,29 +22,31 @@ public class AppManagementTaskGroup : ISetupTaskGroup
     private readonly IWindowsPackageManager _wpm;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly ILogger _logger;
+    private readonly WindowsPackageManagerFactory _wingetFactory;
 
     public AppManagementTaskGroup(
         IHost host,
         IWindowsPackageManager wpm,
         PackageProvider packageProvider,
         ISetupFlowStringResource stringResource,
-        ILogger logger)
+        ILogger logger,
+        WindowsPackageManagerFactory wingetFactory)
     {
         _host = host;
         _packageProvider = packageProvider;
         _wpm = wpm;
         _stringResource = stringResource;
         _logger = logger;
+        _wingetFactory = wingetFactory;
 
         // TODO Convert the package provider to a scoped instance, to avoid
         // clearing it here. This requires refactoring and adding scopes when
-        // creating task groups.
-        // Clear package provider cache
+        // creating task groups in the main page.
         _packageProvider.Clear();
     }
 
     public IEnumerable<ISetupTask> SetupTasks => _packageProvider.SelectedPackages
-        .Select(sp => sp.Package.CreateInstallTask(_logger, _wpm, _stringResource));
+        .Select(sp => sp.Package.CreateInstallTask(_logger, _wpm, _stringResource, _wingetFactory));
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _host.CreateInstance<AppManagementViewModel>(this);
 

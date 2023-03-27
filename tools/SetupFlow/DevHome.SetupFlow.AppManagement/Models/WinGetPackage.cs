@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
@@ -58,9 +59,28 @@ public class WinGetPackage : IWinGetPackage
 
     public Uri PublisherUrl => _publisherUrl.Value;
 
-    public InstallPackageTask CreateInstallTask(ILogger logger, IWindowsPackageManager wpm, ISetupFlowStringResource stringResource)
+    public InstallPackageTask CreateInstallTask(
+        ILogger logger,
+        IWindowsPackageManager wpm,
+        ISetupFlowStringResource stringResource,
+        WindowsPackageManagerFactory wingetFactory) => new (logger, wpm, stringResource, wingetFactory, this);
+
+    /// <summary>
+    /// Check if the package requires elevation
+    /// </summary>
+    /// <param name="options">Install options</param>
+    /// <returns>True if the package requires elevation</returns>
+    public bool RequiresElevation(InstallOptions options)
     {
-        return new InstallPackageTask(logger, wpm, stringResource, this);
+        try
+        {
+            var appInstaller = _package.DefaultInstallVersion.GetApplicableInstaller(options);
+            return appInstaller.ElevationRequirement == ElevationRequirement.ElevationRequired;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>
