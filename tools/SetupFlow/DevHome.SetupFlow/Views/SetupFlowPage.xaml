@@ -106,6 +106,7 @@
                 <Button Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
                         Style="{StaticResource AccentButtonStyle}"
                         Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}" />
+                        ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
             </StackPanel>
         </Grid>
     </Grid>

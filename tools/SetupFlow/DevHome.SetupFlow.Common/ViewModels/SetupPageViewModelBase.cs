@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.Common.Services;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.Common.ViewModels;
 
@@ -57,11 +58,15 @@ public partial class SetupPageViewModelBase : ObservableObject
     private string _nextPageButtonText;
 
     /// <summary>
+    /// Test shown as tool tip for the button that goes to the next page.
+    /// By default this is empty.
+    /// </summary>
+    [ObservableProperty]
+    private string _nextPageButtonToolTipText;
+
+    /// <summary>
     /// Indicates whether this page is one of the steps the user will need to complete before starting the setup.
     /// </summary>
-    /// <remarks>
-    /// This will allow us to add the "Step x of y" at the top of these pages.
-    /// </remarks>
     [ObservableProperty]
     private bool _isStepPage = true;
 

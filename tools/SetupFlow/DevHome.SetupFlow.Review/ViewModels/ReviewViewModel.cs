@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.Telemetry;
@@ -34,6 +33,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ReviewTabViewModelBase _selectedReviewTab;
 
+    public bool HasTasksToSetUp => Orchestrator.TaskGroups.Any(g => g.SetupTasks.Any());
+
     public ReviewViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
@@ -52,7 +53,11 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
+        // TODO: Do each time
         IsRebootRequired = _orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresReboot));
+        NextPageButtonToolTipText = HasTasksToSetUp ? string.Empty : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
+
+        // TODO: Do once
         ReviewTabs = _orchestrator.TaskGroups.Select(taskGroup => taskGroup.GetReviewTabViewModel()).ToList();
         SelectedReviewTab = ReviewTabs.FirstOrDefault();
         await Task.CompletedTask;
@@ -67,7 +72,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         CanGoToNextPage =
             IsEulaAccepted &&
             (!IsRebootRequired || IsRebootAccepted) &&
-            _orchestrator.TaskGroups.Any(g => g.SetupTasks.Any());
+            HasTasksToSetUp;
         _orchestrator.NotifyNavigationCanExecuteChanged();
     }
 }

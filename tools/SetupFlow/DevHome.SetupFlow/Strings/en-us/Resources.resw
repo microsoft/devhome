@@ -357,7 +357,7 @@
     <value>I allow Windows to automatically reboot my system</value>
     <comment>Checkbox text for user to accept the possibility of reboots during setup</comment>
   </data>
-  <data name="Review_SetupDetailsTitle.Text" xml:space="preserve">
+  <data name="Review_SetupDetails.Header" xml:space="preserve">
     <value>Set up details</value>
     <comment>Header for a section detailing the set up steps to be performed. "Set up" is the noun</comment>
   </data>
@@ -376,6 +376,10 @@
   <data name="Review_RebootText.Text" xml:space="preserve">
     <value>A reboot may be needed</value>
     <comment>Text indicating that a reboot may be needed to finish the setup</comment>
+  </data>
+  <data name="ReviewNothingToSetUpToolTip" xml:space="preserve">
+    <value>Nothing to set up</value>
+    <comment>Text shown on a tool tip for a "Start set up" button if there is noting to set up</comment>
   </data>
   <data name="SearchBox.PlaceholderText" xml:space="preserve">
     <value>Try "GitHub"</value>
