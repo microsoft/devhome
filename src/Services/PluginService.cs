@@ -103,7 +103,7 @@ public class PluginService : IPluginService
         }
     }
 
-    public async Task SignalStopPlugins()
+    public async Task SignalStopPluginsAsync()
     {
         var installedPlugins = await GetInstalledPluginsAsync();
         foreach (var installedPlugin in installedPlugins)

@@ -101,7 +101,7 @@ public partial class App : Application, IApp
     {
         // TODO: Log and handle exceptions as appropriate.
         // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
-        await GetService<IPluginService>().SignalStopPlugins();
+        await GetService<IPluginService>().SignalStopPluginsAsync();
     }
 
     protected async override void OnLaunched(LaunchActivatedEventArgs args)

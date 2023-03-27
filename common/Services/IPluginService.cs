@@ -16,5 +16,5 @@ public interface IPluginService
 
     Task StartAllPluginsAsync();
 
-    Task SignalStopPlugins();
+    Task SignalStopPluginsAsync();
 }

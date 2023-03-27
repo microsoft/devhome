@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 using DevHome.Common.Services;
 using DevHome.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Win32;
+using Windows.Win32.System.Com;
 using WinRT;
 
 namespace DevHome.Models;
@@ -80,7 +82,8 @@ public class PluginWrapper : IPluginWrapper
                     IntPtr pluginPtr = IntPtr.Zero;
                     try
                     {
-                        var hr = Ole32.CoCreateInstance(Guid.Parse(PluginClassId), IntPtr.Zero, Ole32.CLSCTXLOCALSERVER, typeof(IPlugin).GUID, out pluginPtr);
+                        var hr = PInvoke.CoCreateInstance(Guid.Parse(PluginClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IPlugin).GUID, out var pluginObj);
+                        pluginPtr = Marshal.GetIUnknownForObject(pluginObj);
                         if (hr < 0)
                         {
                             Marshal.ThrowExceptionForHR(hr);
@@ -145,22 +148,4 @@ public class PluginWrapper : IPluginWrapper
     {
         return _providerTypes.Contains(providerType);
     }
-}
-
-public class Ole32
-{
-    // https://docs.microsoft.com/windows/win32/api/wtypesbase/ne-wtypesbase-clsctx
-    public const int CLSCTXLOCALSERVER = 0x4;
-
-    // https://docs.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-cocreateinstance
-    [DllImport(nameof(Ole32))]
-
-#pragma warning disable CA1401 // P/Invokes should not be visible
-    public static extern int CoCreateInstance(
-        [In, MarshalAs(UnmanagedType.LPStruct)] Guid rclsid,
-        IntPtr pUnkOuter,
-        uint dwClsContext,
-        [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid,
-        out IntPtr ppv);
-#pragma warning restore CA1401 // P/Invokes should not be visible
 }
