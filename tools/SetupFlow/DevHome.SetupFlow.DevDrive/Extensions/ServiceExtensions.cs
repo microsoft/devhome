@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Services;
+using DevHome.SetupFlow.DevDrive.Services;
 using DevHome.SetupFlow.DevDrive.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 

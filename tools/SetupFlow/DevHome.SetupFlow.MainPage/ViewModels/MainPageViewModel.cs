@@ -14,6 +14,7 @@ using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.ConfigurationFile;
 using DevHome.SetupFlow.DevDrive;
+using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.RepoConfig;
 using DevHome.Telemetry;
@@ -85,7 +86,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartRepoConfig()
     {
-        StartSetupFlowForTaskGroups(_host.GetService<RepoConfigTaskGroup>());
+        StartSetupFlowForTaskGroups(
+            _host.GetService<DevDriveTaskGroup>(),
+            _host.GetService<RepoConfigTaskGroup>());
     }
 
     /// <summary>
