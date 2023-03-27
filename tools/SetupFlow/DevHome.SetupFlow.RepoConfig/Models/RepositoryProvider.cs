@@ -76,7 +76,7 @@ internal class RepositoryProvider
     /// </remarks>
     public IRepository ParseRepositoryFromUri(Uri uri)
     {
-        return null; // _repositoryProvider.ParseRepositoryFromUrl(uri);
+        return _repositoryProvider.ParseRepositoryFromUrl(uri);
     }
 
     /// <summary>
