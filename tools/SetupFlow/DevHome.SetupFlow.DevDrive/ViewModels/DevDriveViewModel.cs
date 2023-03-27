@@ -33,8 +33,6 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private readonly string _localizedBrowseButtonText;
     private readonly ObservableCollection<string> _errorList = new ();
 
-    // TODO: This icon is subject to change, when Dev Home gets a new icon along with a more global way to
-    // access it since its not set programmatically currently, only through xaml.
     private readonly string _devHomeIconPath = "Assets/DevHome.ico";
     private readonly Dictionary<ByteUnit, string> _byteUnitList;
 
