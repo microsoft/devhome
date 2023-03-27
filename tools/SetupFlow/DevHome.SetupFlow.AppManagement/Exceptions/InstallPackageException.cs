@@ -18,6 +18,9 @@ public class InstallPackageException : Exception
     /// <see cref="InstallResultStatus.InstallError"/> This value's meaning
     /// will require knowledge of the specific installer or install technology.
     /// </summary>
+    /// <remarks>
+    /// Reference: https://github.com/msftrubengu/winget-cli/blob/demo/src/Microsoft.Management.Deployment/PackageManager.idl
+    /// </remarks>
     private readonly uint _installerErrorCode;
 
     public InstallPackageException(InstallResultStatus status, uint installerErrorCode)
