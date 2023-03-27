@@ -8,6 +8,13 @@
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Views\AboutPage.xaml" />
+    <None Remove="Views\AccountsPage.xaml" />
+    <None Remove="Views\NotificationsPage.xaml" />
+    <None Remove="Views\PluginsPage.xaml" />
+    <None Remove="Views\PreferencesPage.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Labs.WinUI.SettingsControls" Version="0.0.14" />
@@ -20,5 +27,26 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\common\DevHome.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\AccountsPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\AboutPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\NotificationsPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\PreferencesPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\PluginsPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
   </ItemGroup>
 </Project>

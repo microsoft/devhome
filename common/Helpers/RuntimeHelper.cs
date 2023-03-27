@@ -4,7 +4,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace DevHome.Helpers;
+namespace DevHome.Common.Helpers;
 
 public class RuntimeHelper
 {

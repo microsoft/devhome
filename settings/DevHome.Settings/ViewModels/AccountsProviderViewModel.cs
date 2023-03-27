@@ -1,13 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Settings.Models;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace DevHome.ViewModels;
+namespace DevHome.Settings.ViewModels;
 public partial class AccountsProviderViewModel : ObservableObject
 {
     [DllImport("user32.dll")]
@@ -16,14 +20,14 @@ public partial class AccountsProviderViewModel : ObservableObject
 
     private readonly IDevIdProvider _devIdProvider;
 
-    public ObservableCollection<AccountViewModel> LoggedInAccounts { get; } = new ();
+    public ObservableCollection<Account> LoggedInAccounts { get; } = new ();
 
     public AccountsProviderViewModel(IDevIdProvider devIdProvider)
     {
         _devIdProvider = devIdProvider;
         _devIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
         {
-            LoggedInAccounts.Add(new AccountViewModel(devId));
+            LoggedInAccounts.Add(new Account(devId));
         });
     }
 
@@ -40,7 +44,7 @@ public partial class AccountsProviderViewModel : ObservableObject
         // Only add to LoggedInAccounts if not already present
         if (!LoggedInAccounts.Any((account) => account.LoginId == newDeveloperId.LoginId()))
         {
-            LoggedInAccounts.Add(new AccountViewModel(newDeveloperId));
+            LoggedInAccounts.Add(new Account(newDeveloperId));
         }
 
         // Bring focus back to DevHome after login

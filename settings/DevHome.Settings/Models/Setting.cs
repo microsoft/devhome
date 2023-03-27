@@ -7,26 +7,94 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Labs.WinUI;
+using DevHome.Common.Contracts;
+using DevHome.Common.Extensions;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.Models;
 public class Setting
 {
-    public string? LinkName { get; }
+    private bool _isPluginEnabled;
 
-    public string? Header { get; }
+    private bool _isNotificationsEnabled;
 
-    public string? Description { get; }
+    public string Path { get; }
 
-    public Setting(string linkName, string header, string description)
+    public string ClassId { get; }
+
+    public string Header { get; }
+
+    public string Description { get; }
+
+    public bool HasToggleSwitch { get; }
+
+    public bool IsPluginEnabled
     {
-        LinkName = linkName;
-        Header = header;
-        Description = description;
+        get => _isPluginEnabled;
+
+        set
+        {
+            if (_isPluginEnabled != value)
+            {
+                Task.Run(() =>
+                {
+                    var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
+                    return localSettingsService.SaveSettingAsync(ClassId + "-PluginDisabled", !value);
+                }).Wait();
+
+                _isPluginEnabled = value;
+            }
+        }
     }
 
-    public string GetSettingsCard()
+    public bool IsNotificationsEnabled
     {
-        var settingsCardString = $@"<labs:SettingsCard xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:labs=""using:CommunityToolkit.Labs.WinUI"" x:Uid=""ms-resource:///DevHome.Settings/Resources/Settings_{LinkName}"" IsClickEnabled=""True"" Command=""{{x:Bind ViewModel.NavigateSettingsPreferencesCommand}}"" />";
-        return settingsCardString;
+        get => _isNotificationsEnabled;
+
+        set
+        {
+            if (_isNotificationsEnabled != value)
+            {
+                Task.Run(() =>
+                {
+                    var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
+                    return localSettingsService.SaveSettingAsync(ClassId + "-NotificationsDisabled", !value);
+                }).Wait();
+
+                _isNotificationsEnabled = value;
+            }
+        }
+    }
+
+    public Setting(string path, string classId, string header, string description, bool hasToggleSwitch)
+    {
+        Path = path;
+        ClassId = classId;
+        Header = header;
+        Description = description;
+        HasToggleSwitch = hasToggleSwitch;
+
+        _isPluginEnabled = GetIsPluginEnabled();
+        _isNotificationsEnabled = GetIsNotificationsEnabled();
+    }
+
+    private bool GetIsPluginEnabled()
+    {
+        var isDisabled = Task.Run(() =>
+        {
+            var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
+            return localSettingsService.ReadSettingAsync<bool>(ClassId + "-PluginDisabled");
+        }).Result;
+        return !isDisabled;
+    }
+
+    private bool GetIsNotificationsEnabled()
+    {
+        var isDisabled = Task.Run(() =>
+        {
+            var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
+            return localSettingsService.ReadSettingAsync<bool>(ClassId + "-NotificationsDisabled");
+        }).Result;
+        return !isDisabled;
     }
 }

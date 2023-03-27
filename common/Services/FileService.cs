@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.IO;
 using System.Text;
-using DevHome.Core.Contracts.Services;
+using DevHome.Common.Contracts;
 using Newtonsoft.Json;
 
-namespace DevHome.Core.Services;
+namespace DevHome.Common.Services;
 
 public class FileService : IFileService
 {

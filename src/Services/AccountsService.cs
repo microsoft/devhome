@@ -3,6 +3,7 @@
 
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
+using DevHome.Common.Contracts.Services;
 using Microsoft.Windows.DevHome.SDK;
 using WinRT;
 

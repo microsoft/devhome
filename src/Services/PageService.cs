@@ -23,6 +23,11 @@ public class PageService : IPageService
     public PageService()
     {
         Configure<SettingsViewModel, SettingsPage>();
+        Configure<PreferencesViewModel, PreferencesPage>();
+        Configure<AccountsViewModel, AccountsPage>();
+        Configure<NotificationsViewModel, NotificationsPage>();
+        Configure<PluginsViewModel, PluginsPage>();
+        Configure<AboutViewModel, AboutPage>();
         Configure<FeedbackViewModel, FeedbackPage>();
         Configure<WhatsNewViewModel, WhatsNewPage>();
 
