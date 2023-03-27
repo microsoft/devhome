@@ -4,6 +4,7 @@
 using System;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
 using Microsoft.UI.Xaml;
@@ -36,10 +37,20 @@ public sealed partial class RepoConfigView : UserControl
         addRepoDialog.XamlRoot = RepoConfigStackPanel.XamlRoot;
         addRepoDialog.RequestedTheme = themeService.Theme;
         var result = await addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
+        var devDrive = addRepoDialog.EditDevDriveViewModel.DevDrive;
+
+        if (addRepoDialog.EditDevDriveViewModel.IsWindowOpen)
+        {
+            ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(devDrive);
+        }
 
         if (result == ContentDialogResult.Primary)
         {
             ViewModel.SaveSetupTaskInformation(addRepoDialog.AddRepoViewModel.EverythingToClone);
+        }
+        else if (devDrive != null)
+        {
+            ViewModel.DevDriveManager.RemoveDevDrive(devDrive);
         }
     }
 
@@ -60,6 +71,11 @@ public sealed partial class RepoConfigView : UserControl
             var cloningInformation = (sender as Button).DataContext as CloningInformation;
             cloningInformation.CloningLocation = new System.IO.DirectoryInfo(editClonePathDialog.FolderPickerViewModel.CloneLocation);
             ViewModel.UpdateCollection();
+        }
+
+        if (editClonePathDialog.EditDevDriveViewModel.IsWindowOpen)
+        {
+            ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(editClonePathDialog.EditDevDriveViewModel.DevDrive);
         }
     }
 

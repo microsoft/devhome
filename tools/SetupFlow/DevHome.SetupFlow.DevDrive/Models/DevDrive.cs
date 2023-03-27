@@ -18,7 +18,8 @@ public class DevDrive : IDevDrive
         ByteUnit driveUnitOfMeasure,
         string driveLocation,
         string driveLabel,
-        DevDriveState state)
+        DevDriveState state,
+        Guid id)
         : this()
     {
         DriveLetter = driveLetter;
@@ -27,6 +28,37 @@ public class DevDrive : IDevDrive
         DriveLocation = driveLocation;
         DriveLabel = driveLabel;
         State = state;
+        ID = id;
+    }
+
+    public DevDrive(DevDrive devDrive)
+    {
+        DriveLetter = devDrive.DriveLetter;
+        DriveSizeInBytes = devDrive.DriveSizeInBytes;
+        DriveUnitOfMeasure = devDrive.DriveUnitOfMeasure;
+        DriveLocation = devDrive.DriveLocation;
+        DriveLabel = devDrive.DriveLabel;
+        State = devDrive.State;
+        ID = devDrive.ID;
+    }
+
+    public DevDrive(IDevDrive devDrive)
+    {
+        DriveLetter = devDrive.DriveLetter;
+        DriveSizeInBytes = devDrive.DriveSizeInBytes;
+        DriveLocation = devDrive.DriveLocation;
+        DriveLabel = devDrive.DriveLabel;
+        State = devDrive.State;
+        ID = devDrive.ID;
+
+        if (DriveSizeInBytes >= DevDriveUtil.OneTbInBytes)
+        {
+            DriveUnitOfMeasure = ByteUnit.TB;
+        }
+        else
+        {
+            DriveUnitOfMeasure = ByteUnit.GB;
+        }
     }
 
     public DevDrive()
@@ -84,10 +116,10 @@ public class DevDrive : IDevDrive
     }
 
     /// <summary>
-    /// Gets the app internal ID of the dev drive. This is only used within the app.
+    /// Gets or sets the app internal ID of the dev drive. This is only used within the app.
     /// </summary>
     public Guid ID
     {
-        get;
+        get; set;
     }
 }
