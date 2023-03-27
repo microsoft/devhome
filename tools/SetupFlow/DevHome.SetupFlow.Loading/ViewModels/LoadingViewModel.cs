@@ -43,43 +43,74 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     public event EventHandler ExecutionFinished;
 
+    /// <summary>
+    /// Used to get all the tasks to run.
+    /// </summary>
     private readonly SetupFlowOrchestrator orchestrator;
 
+    /// <summary>
+    /// Keep track of all failed tasks so they can be re-ran if the user wishes.
+    /// </summary>
     private IList<TaskInformation> _failedTasks;
 
+    /// <summary>
+    /// All the tasks that will be executed.
+    /// </summary>
     [ObservableProperty]
-    private ObservableCollection<TaskInformation> _setupTasks;
+    private ObservableCollection<TaskInformation> _tasksToRun;
 
+    /// <summary>
+    /// List of all messages that shows up in the "action center" of the loading screen.
+    /// </summary>
     [ObservableProperty]
     private ObservableCollection<ActionCenterMessages> _actionCenterItems;
 
+    /// <summary>
+    /// Keep track of all tasks completed to show to the user.
+    /// </summary>
     [ObservableProperty]
     private int _tasksCompleted;
 
+    /// <summary>
+    /// Number of tasks that were started for the "execution task #/#
+    /// </summary>
     [ObservableProperty]
     private int _tasksStarted;
 
+    /// <summary>
+    /// Used to tell the user the number of tasks completed successfully.
+    /// Used in the action center.
+    /// </summary>
     [ObservableProperty]
     private int _tasksFinishedSuccessfully;
 
+    /// <summary>
+    /// Used in the action center to notify the user the number of tasks that failed.
+    /// </summary>
     [ObservableProperty]
     private int _tasksFinishedUnSuccessfully;
 
-    [ObservableProperty]
-    private int _tasksThatNeedAttention;
-
+    /// <summary>
+    /// Used in the UI to show the user how many tasks have been executed.
+    /// </summary>
     [ObservableProperty]
     private string _executingTasks;
 
+    /// <summary>
+    /// Used in the UI to tell the user the number of tasks that failed and succeeded.
+    /// </summary>
     [ObservableProperty]
     private string _actionCenterDisplay;
 
+    /// <summary>
+    /// Controls if the UI for "Restart all tasks" and "Continue to summary" are shown.
+    /// </summary>
     [ObservableProperty]
     private Visibility _showRetryAndFailedButtons;
 
-    [ObservableProperty]
-    private Visibility _showNextButton;
-
+    /// <summary>
+    /// Disable the retry button while failed tasks are being re-ran.
+    /// </summary>
     [ObservableProperty]
     private bool _enableRetryButton;
 
@@ -91,13 +122,13 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         TasksStarted = 0;
         TasksFinishedUnSuccessfully = 0;
         SetExecutingTaskAndActionCenter();
-        SetupTasks = new ObservableCollection<TaskInformation>(_failedTasks);
+        TasksToRun = new ObservableCollection<TaskInformation>(_failedTasks);
 
         // Empty out the collection since all failed tasks are being re-ran
         _retryCount++;
         ActionCenterItems = new ObservableCollection<ActionCenterMessages>();
         EnableRetryButton = false;
-        await StartAllTasks(SetupTasks);
+        await StartAllTasks(TasksToRun);
     }
 
     [RelayCommand]
@@ -111,7 +142,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     {
         _logger = logger;
         _host = host;
-        _setupTasks = new ();
+        _tasksToRun = new ();
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
@@ -134,7 +165,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             foreach (var task in taskGroup.SetupTasks)
             {
-                SetupTasks.Add(new TaskInformation { TaskIndex = taskIndex++, TaskToExecute = task, MessageToShow = task.GetLoadingMessages().Executing, StatusIconGridVisibility = Visibility.Collapsed });
+                TasksToRun.Add(new TaskInformation { TaskIndex = taskIndex++, TaskToExecute = task, MessageToShow = task.GetLoadingMessages().Executing, StatusIconGridVisibility = Visibility.Collapsed });
             }
         }
 
@@ -146,7 +177,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     private void SetExecutingTaskAndActionCenter()
     {
-        ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _setupTasks.Count);
+        ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _tasksToRun.Count);
         ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, 0);
     }
 
@@ -197,7 +228,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             }
         }
 
-        /*information.StatusIconGridVisibility = Visibility.Visible;*/
         information.CircleForeground = circleBrush;
         information.StatusSymbolHex = statusSymbolHex;
         information.MessageToShow = stringToReplace;
@@ -210,7 +240,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     {
         FetchTaskInformation();
 
-        await StartAllTasks(_setupTasks);
+        await StartAllTasks(_tasksToRun);
     }
 
     /// <summary>
@@ -294,7 +324,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
-                ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _setupTasks.Count);
+                ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _tasksToRun.Count);
             });
 
             var taskFinishedState = await taskInformation.TaskToExecute.Execute();

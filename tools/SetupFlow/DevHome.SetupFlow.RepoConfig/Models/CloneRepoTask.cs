@@ -35,7 +35,7 @@ internal class CloneRepoTask : ISetupTask
     public bool RequiresAdmin => false;
 
     /// <summary>
-    /// Gets a value indicating whether the task requires rebooting their machine.
+    /// Gets or sets a value indicating whether the task requires rebooting their machine.
     /// </summary>
     public bool RequiresReboot => false;
 
@@ -73,6 +73,11 @@ internal class CloneRepoTask : ISetupTask
         this.repositoryToClone = repositoryToClone;
         _developerId = developerId;
         SetMessages(stringResource);
+
+        if (MyRandom.Next(10) == 1)
+        {
+            this.DependsOnDevDriveToBeInstalled = true;
+        }
     }
 
     /// <summary>
@@ -96,7 +101,7 @@ internal class CloneRepoTask : ISetupTask
         var needsRebootMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloneRepositoryNeedsRebootText, repositoryToClone.DisplayName);
         _taskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsRebootMessage);
 
-        var errorSubMessage = stringResource.GetLocalized(StringResourceKey.ActionCenterCloningRepositoryErrorTextSecondary, "Because I force it to fail");
+        var errorSubMessage = stringResource.GetLocalized(StringResourceKey.ActionCenterCloningRepositoryErrorTextSecondary, "Unknown error");
 
         var actionCenterErrorMessage = new ActionCenterMessages();
         actionCenterErrorMessage.PrimaryMessage = errorMessage;
