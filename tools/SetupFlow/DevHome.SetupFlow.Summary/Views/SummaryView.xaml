@@ -13,8 +13,17 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>
-        <!-- TODO -->
-        <TextBlock>Summary: Content goes here</TextBlock>
-    </Grid>
+
+    <StackPanel Orientation="Vertical">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal">
+                
+            </StackPanel>
+        </Grid>
+    </StackPanel>
 </UserControl>
