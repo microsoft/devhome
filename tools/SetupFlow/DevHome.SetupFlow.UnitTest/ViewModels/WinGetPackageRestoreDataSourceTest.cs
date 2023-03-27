@@ -21,8 +21,9 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
     {
         // Arrange
         var expectedPackages = new List<IWinGetPackage>();
+        var restoreApplicationInfoList = expectedPackages.Select(p => CreateRestoreApplicationInfo(p.Id).Object).ToList();
         ConfigureWinGetCatalogPackages(expectedPackages);
-        ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, expectedPackages.Select(p => p.Id));
+        ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act
         var loadedPackages = LoadCatalogsFromRestoreDataSource();
@@ -38,7 +39,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
         var catalogs = new Mock<IWinGetCatalog>();
         catalogs.Setup(c => c.GetPackagesAsync(It.IsAny<HashSet<string>>())).ThrowsAsync(new FindPackagesException(FindPackagesResultStatus.CatalogError));
         WindowsPackageManager!.Setup(wpm => wpm.WinGetCatalog).Returns(catalogs.Object);
-        ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, new List<string>());
+        ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, new List<IRestoreApplicationInfo>());
 
         // Act
         var loadedPackages = LoadCatalogsFromRestoreDataSource();
@@ -53,7 +54,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
     public void LoadCatalogs_NonSuccessStatus_ReturnsNoCatalogs(RestoreDeviceInfoStatus status)
     {
         // Arrange
-        ConfigureRestoreDeviceInfo(status, new List<string>());
+        ConfigureRestoreDeviceInfo(status, new List<IRestoreApplicationInfo>());
 
         // Act
         var loadedPackages = LoadCatalogsFromRestoreDataSource();
@@ -73,8 +74,9 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
             PackageHelper.CreatePackage(packageId1).Object,
             PackageHelper.CreatePackage(packageId2).Object,
         };
+        var restoreApplicationInfoList = expectedPackages.Select(p => CreateRestoreApplicationInfo(p.Id).Object).ToList();
         ConfigureWinGetCatalogPackages(expectedPackages);
-        ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, expectedPackages.Select(p => p.Id));
+        ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act
         var loadedPackages = LoadCatalogsFromRestoreDataSource();
@@ -83,7 +85,11 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
         Assert.AreEqual(1, loadedPackages.Count);
         Assert.AreEqual(expectedPackages.Count, loadedPackages[0].Packages.Count);
         Assert.AreEqual(expectedPackages[0].Id, loadedPackages[0].Packages.ElementAt(0).Id);
+        Assert.IsNotNull(expectedPackages[0].LightThemeIcon);
+        Assert.IsNotNull(expectedPackages[0].DarkThemeIcon);
         Assert.AreEqual(expectedPackages[1].Id, loadedPackages[0].Packages.ElementAt(1).Id);
+        Assert.IsNotNull(expectedPackages[1].LightThemeIcon);
+        Assert.IsNotNull(expectedPackages[1].DarkThemeIcon);
     }
 
     [TestMethod]
@@ -95,8 +101,9 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
             PackageHelper.CreatePackage("mock1").Object,
             PackageHelper.CreatePackage("mock2").Object,
         };
+        var restoreApplicationInfoList = expectedPackages.Select(p => CreateRestoreApplicationInfo(p.Id).Object).ToList();
         ConfigureWinGetCatalogPackages(expectedPackages);
-        ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, expectedPackages.Select(p => p.Id));
+        ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act
         var loadedPackages = LoadCatalogsFromRestoreDataSource();
@@ -105,7 +112,43 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
         Assert.AreEqual(1, loadedPackages.Count);
         Assert.AreEqual(expectedPackages.Count, loadedPackages[0].Packages.Count);
         Assert.AreEqual(expectedPackages[0].Id, loadedPackages[0].Packages.ElementAt(0).Id);
+        Assert.IsNotNull(expectedPackages[0].LightThemeIcon);
+        Assert.IsNotNull(expectedPackages[0].DarkThemeIcon);
         Assert.AreEqual(expectedPackages[1].Id, loadedPackages[0].Packages.ElementAt(1).Id);
+        Assert.IsNotNull(expectedPackages[1].LightThemeIcon);
+        Assert.IsNotNull(expectedPackages[1].DarkThemeIcon);
+    }
+
+    [TestMethod]
+    public void LoadCatalogs_ExceptionThrownWhenGettingRestoreApplicationIcon_ReturnsNullForIcon()
+    {
+        var expectedPackages = new List<IWinGetPackage>
+        {
+            PackageHelper.CreatePackage("mock").Object,
+        };
+        var restoreApplicationInfoList = expectedPackages.Select(p =>
+        {
+            var restoreAppInfo = CreateRestoreApplicationInfo(p.Id);
+
+            // Mock restore application icon not found by throwing an exception
+            restoreAppInfo
+                .Setup(appInfo => appInfo.GetIconAsync(It.IsAny<RestoreApplicationIconTheme>()))
+                .Throws(new ArgumentOutOfRangeException());
+
+            return restoreAppInfo.Object;
+        }).ToList();
+        ConfigureWinGetCatalogPackages(expectedPackages);
+        ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
+
+        // Act
+        var loadedPackages = LoadCatalogsFromRestoreDataSource();
+
+        // Assert
+        Assert.AreEqual(1, loadedPackages.Count);
+        Assert.AreEqual(expectedPackages.Count, loadedPackages[0].Packages.Count);
+        Assert.AreEqual(expectedPackages[0].Id, loadedPackages[0].Packages.ElementAt(0).Id);
+        Assert.IsNull(expectedPackages[0].LightThemeIcon);
+        Assert.IsNull(expectedPackages[0].DarkThemeIcon);
     }
 
     /// <summary>
@@ -134,33 +177,37 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
     /// Configure a restore device info including WinGet packages to restore
     /// </summary>
     /// <param name="status">Result status</param>
-    /// <param name="packageIds">Mock a list of WinGet package ids to restore</param>
-    private void ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus status, IEnumerable<string> packageIds)
+    /// <param name="restoreApplicationInfoList">Mock a list of application info to restore</param>
+    private void ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus status, IList<IRestoreApplicationInfo> restoreApplicationInfoList)
     {
-        // Mock list of restore application info
-        var appInfoList = new List<IRestoreApplicationInfo>();
-        foreach (var packageId in packageIds)
-        {
-            var appInfo = new Mock<IRestoreApplicationInfo>();
-
-            // Mock id
-            appInfo.Setup(app => app.Id).Returns(packageId);
-
-            // Mock icon
-            appInfo
-                .Setup(app => app.GetIconAsync(It.IsAny<RestoreApplicationIconTheme>()))
-                .Returns(Task.FromResult(new Mock<IRandomAccessStream>().Object).AsAsyncOperation());
-            appInfoList.Add(appInfo.Object);
-        }
-
         // Mock restore device info
         var deviceInfo = new Mock<IRestoreDeviceInfo>();
-        deviceInfo.Setup(di => di.WinGetApplicationsInfo).Returns(appInfoList);
+        deviceInfo.Setup(di => di.WinGetApplicationsInfo).Returns(restoreApplicationInfoList);
 
         // Mock restore device info result
         var restoreDeviceInfoResult = new Mock<IRestoreDeviceInfoResult>();
         restoreDeviceInfoResult.Setup(result => result.Status).Returns(status);
         restoreDeviceInfoResult.Setup(result => result.RestoreDeviceInfo).Returns(deviceInfo.Object);
         RestoreInfo.Setup(restore => restore.GetRestoreDeviceInfoAsync()).Returns(Task.FromResult(restoreDeviceInfoResult.Object).AsAsyncOperation());
+    }
+
+    /// <summary>
+    /// Create an application info to restore
+    /// </summary>
+    /// <param name="packageId">Id of the package corresponding to the application to restore</param>
+    /// <returns>Restore application info</returns>
+    private Mock<IRestoreApplicationInfo> CreateRestoreApplicationInfo(string packageId)
+    {
+        var appInfo = new Mock<IRestoreApplicationInfo>();
+
+        // Mock id
+        appInfo.Setup(app => app.Id).Returns(packageId);
+
+        // Mock icon
+        appInfo
+            .Setup(app => app.GetIconAsync(It.IsAny<RestoreApplicationIconTheme>()))
+            .Returns(Task.FromResult(new Mock<IRandomAccessStream>().Object).AsAsyncOperation());
+
+        return appInfo;
     }
 }
