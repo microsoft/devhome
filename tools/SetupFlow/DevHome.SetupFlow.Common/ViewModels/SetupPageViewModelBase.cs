@@ -59,10 +59,6 @@ public partial class SetupPageViewModelBase : ObservableObject
     /// <summary>
     /// Indicates whether this page is one of the steps the user will need to complete before starting the setup.
     /// </summary>
-    /// <remarks>
-    /// This needs only be aware of reasons to disable the action that are local to the page.
-    /// The containing orchestrator handles other conditions.
-    /// </remarks>
     [ObservableProperty]
     private bool _isStepPage = true;
 
@@ -98,36 +94,6 @@ public partial class SetupPageViewModelBase : ObservableObject
         StringResource = stringResource;
         Orchestrator = orchestrator;
         _nextPageButtonText = StringResource.GetLocalized(StringResourceKey.Next);
-    }
-
-    /// <summary>
-    /// Performs any work needed when navigating to a page.
-    /// </summary>
-    /// <remarks>
-    /// The orchestrator takes care of calling this when appropriate.
-    /// </remarks>
-    public async Task OnNavigateToAsync()
-    {
-        if (!_hasExecutedFirstNavigateTo)
-        {
-            _hasExecutedFirstNavigateTo = true;
-            await OnFirstNavigateToAsync();
-        }
-    }
-
-    /// <summary>
-    /// Performs any work needed when navigating away from a page.
-    /// </summary>
-    /// <remarks>
-    /// The orchestrator takes care of calling this when appropriate.
-    /// </remarks>
-    public async Task OnNavigateFromAsync()
-    {
-        if (!_hasExecutedFirstNavigateFrom)
-        {
-            _hasExecutedFirstNavigateFrom = true;
-            await OnFirstNavigateFromAsync();
-        }
     }
 
     /// <summary>
