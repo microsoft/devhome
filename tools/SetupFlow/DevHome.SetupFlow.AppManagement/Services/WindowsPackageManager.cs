@@ -70,7 +70,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options).AsTask();
         if (installResult.Status != InstallResultStatus.Ok)
         {
-            throw new InstallPackageException(installResult.Status);
+            throw new InstallPackageException(installResult.Status, installResult.InstallerErrorCode);
         }
     }
 
