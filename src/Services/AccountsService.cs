@@ -4,6 +4,7 @@
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
 using Microsoft.Windows.DevHome.SDK;
+using WinRT;
 
 namespace DevHome.Services;
 
@@ -19,26 +20,20 @@ public class AccountsService : IAccountsService
     public async Task InitializeAsync()
     {
         var pluginService = new PluginService();
-        var plugins = pluginService.GetInstalledPluginsAsync(ProviderType.DevId).Result;
+        var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DevId);
         foreach (var plugin in plugins)
         {
-            if (!plugin.IsRunning())
+            var devIdProvider = await plugin.GetProviderAsync<IDevIdProvider>();
+
+            if (devIdProvider is not null)
             {
-                await plugin.StartPlugin();
-            }
+                var devIds = devIdProvider.GetLoggedInDeveloperIds().ToList();
+                _accountsDictionary.TryAdd(devIdProvider, devIds);
 
-            var pluginObj = plugin.GetPluginObject();
-            var devIdProvider = pluginObj?.GetProvider(ProviderType.DevId);
+                LoggingHelper.AccountStartupEvent("Startup_DevId_Event", devIdProvider.GetName(), devIds);
 
-            if (devIdProvider is IDevIdProvider iDevIdProvider)
-            {
-                var devIds = iDevIdProvider.GetLoggedInDeveloperIds().ToList();
-                _accountsDictionary.TryAdd(iDevIdProvider, devIds);
-
-                LoggingHelper.AccountStartupEvent("Startup_DevId_Event", iDevIdProvider.GetName(), devIds);
-
-                iDevIdProvider.LoggedIn += LoggedInEventHandler;
-                iDevIdProvider.LoggedOut += LoggedOutEventHandler;
+                devIdProvider.LoggedIn += LoggedInEventHandler;
+                devIdProvider.LoggedOut += LoggedOutEventHandler;
             }
         }
     }
