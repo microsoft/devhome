@@ -34,9 +34,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private readonly IHost _host;
 
     [ObservableProperty]
-    private bool _showAppListBackupBanner;
-
-    [ObservableProperty]
     private bool _showDevDriveItem;
 
     /// <summary>
@@ -46,8 +43,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// </summary>
     public event EventHandler<IList<ISetupTaskGroup>> StartSetupFlow;
 
-    public MainPageViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host)
-        : base(stringResource)
+    public MainPageViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger,
+        IHost host)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         _host = host;
@@ -120,15 +121,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand]
-    private async Task DefaultBannerButtonAsync()
+    private async Task BannerButtonAsync()
     {
         // TODO Update code with the "Learn more" button behavior
         await Launcher.LaunchUriAsync(new ("https://microsoft.com"));
-    }
-
-    [RelayCommand]
-    private void AppListBackupBannerButton()
-    {
-        StartSetup();
     }
 }

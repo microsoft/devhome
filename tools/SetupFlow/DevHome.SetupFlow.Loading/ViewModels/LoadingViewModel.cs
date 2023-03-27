@@ -101,7 +101,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     [ObservableProperty]
     private string _actionCenterDisplay;
-
+    
     /// <summary>
     /// Controls if the UI for "Restart all tasks" and "Continue to summary" are shown.
     /// </summary>
@@ -137,8 +137,12 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ExecutionFinished.Invoke(null, null);
     }
 
-    public LoadingViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host)
-        : base(stringResource)
+    public LoadingViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger,
+        IHost host)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         _host = host;
@@ -147,7 +151,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
 
-        orchestrator = _host.GetService<SetupFlowOrchestrator>();
         ShowRetryAndFailedButtons = Visibility.Collapsed;
         _failedTasks = new List<TaskInformation>();
         ActionCenterItems = new ();
@@ -161,7 +164,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private void FetchTaskInformation()
     {
         var taskIndex = 0;
-        foreach (var taskGroup in orchestrator.TaskGroups)
+        foreach (var taskGroup in Orchestrator.TaskGroups)
         {
             foreach (var task in taskGroup.SetupTasks)
             {
@@ -234,9 +237,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
-    /// gGet all information needed to run all tasks and run them.
+    /// Get all information needed to run all tasks and run them.
     /// </summary>
-    public async override void OnNavigateToPageAsync()
+    protected async override Task OnFirstNavigateToAsync()
     {
         FetchTaskInformation();
 

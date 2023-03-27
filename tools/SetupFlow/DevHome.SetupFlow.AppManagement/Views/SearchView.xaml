@@ -63,7 +63,7 @@
                             <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
                         </controls:SettingsCard.Resources>
                         <controls:SettingsCard.HeaderIcon>
-                            <ImageIcon Source="{x:Bind ImageUri.AbsoluteUri, Mode=OneWay}"/>
+                            <ImageIcon Source="{x:Bind Icon}"/>
                         </controls:SettingsCard.HeaderIcon>
                         <StackPanel Orientation="Horizontal" Spacing="10">
                             <HyperlinkButton Command="{x:Bind LearnMoreCommand,Mode=OneWay}">

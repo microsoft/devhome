@@ -2,13 +2,13 @@
 <!-- Licensed under the MIT License. -->
 <UserControl
     x:Class="DevHome.SetupFlow.RepoConfig.Views.RepoConfigView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:primitives="using:CommunityToolkit.WinUI.UI.Controls.Primitives"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="using:DevHome.SetupFlow.RepoConfig.ViewModels"
+    xmlns:setupControls="using:DevHome.SetupFlow.Common.Controls"
     xmlns:models="using:DevHome.SetupFlow.RepoConfig.Models"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -19,28 +19,15 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <StackPanel x:Name="RepoConfigStackPanel" Orientation="Vertical" Spacing="10">
-        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReviewHeader
-                   " FontSize="{ThemeResource SubtitleTextBlockFontSize}" Style="{ThemeResource BodyStrongTextBlockStyle}" Margin="0, 0, 0 20"/>
-        <Grid ColumnSpacing="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="5">
-                <FontIcon  FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xEA3B;" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
-                <TextBlock VerticalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/StepperCloneRepos"/>
-                <ProgressBar Width="25" Value="50" Background="{ThemeResource AccentFillColorDisabledBrush}" />
-                <FontIcon  FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xEA3B;" Foreground="{ThemeResource AccentFillColorDisabledBrush}" />
-                <TextBlock VerticalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/StepperInstallApps" />
-                <FontIcon  FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE73C;" Foreground="{ThemeResource AccentFillColorDisabledBrush}"/>
-                <FontIcon  FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xEA3B;"  Foreground="{ThemeResource AccentFillColorDisabledBrush}"/>
-                <TextBlock VerticalAlignment="center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/StepperReviewAndSetup"/>
-            </StackPanel>
-            <Button x:Name="AddRepositoriesButton" Click="AddRepoButton_Click" Grid.Column="1" HorizontalAlignment="Right" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"/>
-        </Grid>
-        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReviewDescription" />
-        <controls:DataGrid x:Name="MyDataGrid" 
+    <setupControls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_RepoConfig"
+                               Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
+        <setupControls:SetupShell.HeaderTemplate>
+            <ControlTemplate>
+                <Button x:Name="AddRepositoriesButton" Click="AddRepoButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"/>
+            </ControlTemplate>
+        </setupControls:SetupShell.HeaderTemplate>
+        <StackPanel x:Name="RepoConfigStackPanel" Orientation="Vertical" Spacing="10">
+            <controls:DataGrid x:Name="MyDataGrid" 
                            HeadersVisibility="Column"
                            GridLinesVisibility="All"
                            AutoGenerateColumns="False"
@@ -105,6 +92,62 @@
         <StackPanel x:Name="NoRepositoryStackPanel" Visibility="{x:Bind ViewModel.ShouldShowNoRepoMessage, Mode=OneWay}" HorizontalAlignment="Center" Margin="0, 150, 0, 0">
             <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
             <HyperlinkButton Click="AddRepoButton_Click" HorizontalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
+                <controls:DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="primitives:DataGridColumnHeader">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="primitives:DataGridColumnHeader">
+                                    <ContentPresenter Background="Transparent" />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </controls:DataGrid.ColumnHeaderStyle>
+                <controls:DataGrid.Columns>
+                    <controls:DataGridTemplateColumn Header="Repository Type" MinWidth="250">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:CloningInformation">
+                                <TextBlock Text="{x:Bind ProviderName}" Width="250" HorizontalTextAlignment="Center"/>
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
+                    <controls:DataGridTemplateColumn Header="Repository ID" MinWidth="300">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:CloningInformation">
+                                <TextBlock Text="{x:Bind RepositoryId}" Width="300" HorizontalTextAlignment="Center"/>
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
+                    <controls:DataGridTemplateColumn Header="Clone Path" MinWidth="450">
+                        <controls:DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate x:DataType="models:CloningInformation">
+                                <Grid HorizontalAlignment="Left" ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="300" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Text="{x:Bind ClonePath}" Grid.Column="0" IsEnabled="False"/>
+                                    <Button Grid.Column="1" Click="EditClonePathButton_Click">
+                                        <Button.Content>
+                                            <SymbolIcon Symbol="Edit"/>
+                                        </Button.Content>
+                                    </Button>
+                                    <Button Grid.Column="2" Click="RemoveCloningInformationButton_Click">
+                                        <Button.Content>
+                                            <SymbolIcon Symbol="Cancel"/>
+                                        </Button.Content>
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </controls:DataGridTemplateColumn.CellTemplate>
+                    </controls:DataGridTemplateColumn>
+                </controls:DataGrid.Columns>
+            </controls:DataGrid>
+            <StackPanel x:Name="NoRepositoryStackPanel" Visibility="{x:Bind ViewModel.ShouldShowNoRepoMessage, Mode=OneWay}" HorizontalAlignment="Center" Margin="0, 150, 0, 0">
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
+                <HyperlinkButton Click="AddRepoButton_Click" HorizontalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
+            </StackPanel>
         </StackPanel>
-    </StackPanel>
+    </setupControls:SetupShell>
 </UserControl>
