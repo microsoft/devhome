@@ -78,8 +78,14 @@
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
 
-                                    <controls:SettingsCard
-                                        Name="PackageCard">
+                                    <controls:SettingsCard Background="Transparent" BorderThickness="0">
+                                        <controls:SettingsCard.Resources>
+                                            <Thickness x:Key="SettingsCardPadding">0, 10</Thickness>
+                                            <Thickness x:Key="SettingsCardMinHeight">0</Thickness>
+                                            <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
+                                            <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
+                                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
+                                        </controls:SettingsCard.Resources>
                                         <controls:SettingsCard.Header>
                                             <TextBlock
                                                 Name="Title"
@@ -93,9 +99,6 @@
                                                 Style="{ThemeResource CaptionTextBlockStyle}"
                                                 Text="{Binding Version}"/>
                                         </controls:SettingsCard.Description>
-                                        <controls:SettingsCard.Resources>
-                                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
-                                        </controls:SettingsCard.Resources>
                                         <controls:SettingsCard.HeaderIcon>
                                             <ImageIcon Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
                                         </controls:SettingsCard.HeaderIcon>

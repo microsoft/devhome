@@ -53,11 +53,11 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         _taskGroup = taskGroup;
         _wpm = wpm;
         _packageProvider = packageProvider;
-
         _searchViewModel = host.GetService<SearchViewModel>();
         _shimmerSearchViewModel = host.GetService<ShimmerSearchViewModel>();
-
         _packageCatalogListViewModel = host.GetService<PackageCatalogListViewModel>();
+
+        _packageProvider.PackageSelectionChanged += (_, _) => OnPropertyChanged(nameof(ApplicationsSelectedCountText));
 
         // By default, show the package catalogs
         CurrentView = _packageCatalogListViewModel;
@@ -84,7 +84,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         {
             case SearchViewModel.SearchResultStatus.Ok:
                 CurrentView = _searchViewModel;
-                SetPackageSelectionChangedHandler(packages);
                 break;
             case SearchViewModel.SearchResultStatus.EmptySearchQuery:
                 CurrentView = _packageCatalogListViewModel;
@@ -99,18 +98,5 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
                 // noop
                 break;
         }
-    }
-
-    private void SetPackageSelectionChangedHandler(List<PackageViewModel> packages)
-    {
-        foreach (var package in packages)
-        {
-            package.SelectionChanged += OnPackageSelectionChanged;
-        }
-    }
-
-    private void OnPackageSelectionChanged(object sender, PackageViewModel package)
-    {
-        OnPropertyChanged(nameof(ApplicationsSelectedCountText));
     }
 }
