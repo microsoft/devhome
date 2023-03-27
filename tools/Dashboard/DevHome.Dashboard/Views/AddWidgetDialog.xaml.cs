@@ -16,7 +16,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
 {
     private readonly WidgetHost _widgetHost;
     private readonly WidgetCatalog _widgetCatalog;
-    private readonly AdaptiveCardRenderer _renderer;
     private Widget _currentWidget;
 
     public Widget AddedWidget { get; set; }
@@ -30,7 +29,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         _widgetHost = host;
         _widgetCatalog = catalog;
-        _renderer = renderer;
 
         FillAvailableWidgets();
     }
@@ -110,9 +108,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
         NavigationViewSelectionChangedEventArgs args)
     {
         // Delete previously shown configuation widget.
+        // Clearing the UI here results in a flash, so don't bother. It will update soon.
         var clearWidgetTask = ClearCurrentWidget();
-        ConfigurationContentFrame.Content = null;
-        PinButton.Visibility = Visibility.Collapsed;
 
         // Load selected widget configuration.
         var selectedTag = (sender.SelectedItem as NavigationViewItem).Tag;
@@ -141,11 +138,23 @@ public sealed partial class AddWidgetDialog : ContentDialog
             clearWidgetTask.Wait();
             _currentWidget = widget;
         }
+        else
+        {
+            var selectedWidgetProviderDefintion = selectedTag as WidgetProviderDefinition;
+            if (selectedWidgetProviderDefintion != null)
+            {
+                // Null out the view model background so we don't bind to the old one
+                ViewModel.WidgetBackground = null;
+                ConfigurationContentFrame.Content = null;
+                PinButton.Visibility = Visibility.Collapsed;
+            }
+        }
     }
 
     private void PinButton_Click(object sender, RoutedEventArgs e)
     {
         AddedWidget = _currentWidget;
+        ViewModel = null;
 
         this.Hide();
     }

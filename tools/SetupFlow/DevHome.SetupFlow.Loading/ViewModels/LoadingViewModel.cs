@@ -29,8 +29,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     public event EventHandler ExecutionFinished;
 
-    private readonly SetupFlowOrchestrator orchestrator;
-
     [ObservableProperty]
     private ObservableCollection<TaskInformation> _setupTasks;
 
@@ -52,8 +50,12 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private string _actionCenterDisplay;
 
-    public LoadingViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host)
-        : base(stringResource)
+    public LoadingViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger,
+        IHost host)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         _host = host;
@@ -61,14 +63,12 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
-
-        orchestrator = _host.GetService<SetupFlowOrchestrator>();
     }
 
     private void FetchTaskInformation()
     {
         var taskIndex = 0;
-        foreach (var taskGroup in orchestrator.TaskGroups)
+        foreach (var taskGroup in Orchestrator.TaskGroups)
         {
             foreach (var task in taskGroup.SetupTasks)
             {

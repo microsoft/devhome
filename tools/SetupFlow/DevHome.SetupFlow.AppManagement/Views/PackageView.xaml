@@ -37,7 +37,7 @@
                 Width="24"
                 VerticalAlignment="Center"
                 Opacity="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource ImageOpacityConverter}}"
-                Source="{x:Bind Package.ImageUri.AbsoluteUri,Mode=OneWay}"/>
+                Source="{x:Bind Package.Icon,Mode=OneWay}"/>
 
             <!-- Select button -->
             <Button

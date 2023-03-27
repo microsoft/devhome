@@ -2,7 +2,9 @@
 // Licensed under the MIT license.
 
 using DevHome.Contracts.Services;
+using DevHome.Helpers;
 using Microsoft.Windows.DevHome.SDK;
+using WinRT;
 
 namespace DevHome.Services;
 
@@ -15,26 +17,23 @@ public class AccountsService : IAccountsService
         _accountsDictionary = new ();
     }
 
-    public async void InitializeAsync()
+    public async Task InitializeAsync()
     {
         var pluginService = new PluginService();
-        var plugins = pluginService.GetInstalledPluginsAsync(ProviderType.DevId).Result;
+        var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DevId);
         foreach (var plugin in plugins)
         {
-            if (!plugin.IsRunning())
+            var devIdProvider = await plugin.GetProviderAsync<IDevIdProvider>();
+
+            if (devIdProvider is not null)
             {
-                await plugin.StartPlugin();
-            }
+                var devIds = devIdProvider.GetLoggedInDeveloperIds().ToList();
+                _accountsDictionary.TryAdd(devIdProvider, devIds);
 
-            var pluginObj = plugin.GetPluginObject();
-            var devIdProvider = pluginObj?.GetProvider(ProviderType.DevId);
+                LoggingHelper.AccountStartupEvent("Startup_DevId_Event", devIdProvider.GetName(), devIds);
 
-            if (devIdProvider is IDevIdProvider iDevIdProvider)
-            {
-                _accountsDictionary.Add(iDevIdProvider, iDevIdProvider.GetLoggedInDeveloperIds().ToList());
-
-                iDevIdProvider.LoggedIn += LoggedInEventHandler;
-                iDevIdProvider.LoggedOut += LoggedOutEventHandler;
+                devIdProvider.LoggedIn += LoggedInEventHandler;
+                devIdProvider.LoggedOut += LoggedOutEventHandler;
             }
         }
     }
@@ -58,6 +57,7 @@ public class AccountsService : IAccountsService
         if (sender is IDevIdProvider iDevIdProvider)
         {
             _accountsDictionary[iDevIdProvider].Add(developerId);
+            LoggingHelper.AccountEvent("Login_DevId_Event", iDevIdProvider.GetName(), developerId.LoginId());
         }
     }
 
@@ -66,6 +66,7 @@ public class AccountsService : IAccountsService
         if (sender is IDevIdProvider iDevIdProvider)
         {
             _accountsDictionary[iDevIdProvider].Remove(developerId);
+            LoggingHelper.AccountEvent("Logout_DevId_Event", iDevIdProvider.GetName(), developerId.LoginId());
         }
     }
 }

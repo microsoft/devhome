@@ -35,14 +35,19 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ReviewTabViewModelBase _selectedReviewTab;
 
-    public ReviewViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host, SetupFlowOrchestrator orchestrator)
-        : base(stringResource)
+    public ReviewViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger,
+        IHost host)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         _host = host;
         _orchestrator = orchestrator;
 
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
+        PageTitle = StringResource.GetLocalized(StringResourceKey.ReviewPageTitle);
         CanGoToNextPage = false;
     }
 

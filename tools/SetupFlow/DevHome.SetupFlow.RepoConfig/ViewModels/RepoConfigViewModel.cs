@@ -44,12 +44,19 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
     public IDevDriveManager DevDriveManager => _devDriveManager;
 
-    public RepoConfigViewModel(ILogger logger, ISetupFlowStringResource stringResource, IDevDriveManager devDriveManager, RepoConfigTaskGroup taskGroup)
-        : base(stringResource)
+    public RepoConfigViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger,
+        IDevDriveManager devDriveManager,
+        RepoConfigTaskGroup taskGroup)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         _taskGroup = taskGroup;
         _devDriveManager = devDriveManager;
+
+        PageTitle = StringResource.GetLocalized(StringResourceKey.ReposConfigPageTitle);
     }
 
     /// <summary>

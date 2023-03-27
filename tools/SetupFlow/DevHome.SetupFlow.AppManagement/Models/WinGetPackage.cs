@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Services;
 using Microsoft.Management.Deployment;
+using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.AppManagement.Models;
 
@@ -35,7 +36,12 @@ public class WinGetPackage : IWinGetPackage
 
     public string Version => _package.DefaultInstallVersion.Version;
 
-    public Uri ImageUri
+    public IRandomAccessStream LightThemeIcon
+    {
+        get; set;
+    }
+
+    public IRandomAccessStream DarkThemeIcon
     {
         get; set;
     }

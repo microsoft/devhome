@@ -137,14 +137,6 @@
     <value>Get started</value>
     <comment>Button text for getting started with transferring settings from a developer machine</comment>
   </data>
-  <data name="AppManagement.Description" xml:space="preserve">
-    <value>Install Applications</value>
-    <comment>Description for the application management page</comment>
-  </data>
-  <data name="AppManagement.Title" xml:space="preserve">
-    <value>Install Applications</value>
-    <comment>Title for the application management page</comment>
-  </data>
   <data name="AgreeOnAbovePolicy.Content" xml:space="preserve">
     <value>I have read, understand and agree to the above policy</value>
     <comment>Checkbox label for reading, understanding and agreeing to policies presented above this label</comment>
@@ -261,40 +253,28 @@
     <value>Learn more</value>
     <comment>Text for a clickable learn more button</comment>
   </data>
-  <data name="MainPage_CloneRepos.Description" xml:space="preserve">
-    <value>Get started on a project by cloning a repository</value>
-    <comment>Body text description for a card that when clicked takes the user to a page for cloning git repositories</comment>
-  </data>
   <data name="MainPage_CloneRepos.Header" xml:space="preserve">
-    <value>Clone a repository</value>
+    <value>Clone repositories</value>
     <comment>Header for a card that when clicked takes the user to a page for cloning git repositories</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Description" xml:space="preserve">
-    <value>Use one or more configuration (YAML) files</value>
+    <value>Set up you machine directly from one or multiple configuration files</value>
     <comment>Body text description for a card that when clicked allows the user to select a configuration file and run it</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Header" xml:space="preserve">
-    <value>Use a configuration file</value>
+    <value>Run a configuration file for an existing setup</value>
     <comment>Header for a card that when clicked allows the user to select a configuration file and run it</comment>
   </data>
-  <data name="MainPage_DevVolume.Description" xml:space="preserve">
-    <value>Create a new virtual hard disk for development projects</value>
-    <comment>Body text description for a card that when clicked takes the user to a page for creating a developer drive/volume</comment>
-  </data>
-  <data name="MainPage_DevVolume.Header" xml:space="preserve">
-    <value>Add a developer drive</value>
+  <data name="MainPage_DevDrive.Header" xml:space="preserve">
+    <value>Add a Dev Drive</value>
     <comment>Header for a card that when clicked takes the user to a page for creating a developer drive (virtual hard disk)</comment>
   </data>
   <data name="MainPage_EnvironmentSetup.Text" xml:space="preserve">
     <value>Set up development environment</value>
     <comment>Header text for a group of controls giving multiple choices to set up the environment/machine</comment>
   </data>
-  <data name="MainPage_InstallApps.Description" xml:space="preserve">
-    <value>Download apps and packages from the WinGet library</value>
-    <comment>Body text description for a card that when clicked takes the user to a page for installing apps. WinGet refers to the Windows Package Manager command line tool. {StrContains=WinGet}</comment>
-  </data>
   <data name="MainPage_InstallApps.Header" xml:space="preserve">
-    <value>Install apps and packages</value>
+    <value>Install applications</value>
     <comment>Header for a card that when clicked takes the user to a page for installing apps</comment>
   </data>
   <data name="MainPage_QuickConfiguration.Text" xml:space="preserve">
@@ -302,11 +282,11 @@
     <comment>Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
   </data>
   <data name="MainPage_SetupFlow.Description" xml:space="preserve">
-    <value>Use an end-to-end- setup flow</value>
+    <value>Clone repositories and install applications at once</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_SetupFlow.Header" xml:space="preserve">
-    <value>Step-by-step</value>
+    <value>End-to-end setup</value>
     <comment>Header for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="NoAppsToInstall.Text" xml:space="preserve">
@@ -332,6 +312,14 @@
   <data name="ResultCount" xml:space="preserve">
     <value>{0} Result(s)</value>
     <comment>{Locked="{0}"} Label for a search result counter. {0} is replaced by the number of result items.</comment>
+  </data>
+  <data name="RestorePackagesTitle" xml:space="preserve">
+    <value>Restore from {0}</value>
+    <comment>{Locked="{0}"} Header text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
+  </data>
+  <data name="RestorePackagesDescription" xml:space="preserve">
+    <value>The following applications are recovered from {0}</value>
+    <comment>{Locked="{0}"} Description text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
   </data>
   <data name="PackagesCount" xml:space="preserve">
     <value>{0} packages</value>
@@ -405,6 +393,22 @@
     <value>Set up</value>
     <comment>Label for the button that starts the setup</comment>
   </data>
+  <data name="SetupShell_AppManagement.Description" xml:space="preserve">
+    <value>Search for apps and packages to install or select them below.</value>
+    <comment>Description for the application management page</comment>
+  </data>
+  <data name="SetupShell_EndToEndTitle.Text" xml:space="preserve">
+    <value>End-to-end setup</value>
+    <comment>Title for all the pages during an end-to-end setup flow</comment>
+  </data>
+  <data name="SetupShell_RepoConfig.Description" xml:space="preserve">
+    <value>Add private or public repositories to clone to you computer.</value>
+    <comment>Description for the application management page</comment>
+  </data>
+  <data name="SetupShell_Review.Description" xml:space="preserve">
+    <value>Review the terms and setup details below before applying these changes to your computer.</value>
+    <comment>Description for the review page</comment>
+  </data>
   <data name="Applications" xml:space="preserve">
     <value>Applications</value>
     <comment>Header for a section showing a summary of applications to be installed</comment>
@@ -433,15 +437,15 @@
     <value>+ Add repository</value>
     <comment>Add repository button text</comment>
   </data>
-  <data name="StepperCloneRepos.Text" xml:space="preserve">
+  <data name="ReposConfigPageTitle" xml:space="preserve">
     <value>Clone Repos</value>
     <comment>Clone Repo label for the stepper</comment>
   </data>
-  <data name="StepperInstallApps.Text" xml:space="preserve">
+  <data name="ApplicationsPageTitle" xml:space="preserve">
     <value>Install Apps</value>
     <comment>Install Apps label for the stepper</comment>
   </data>
-  <data name="StepperReviewAndSetup.Text" xml:space="preserve">
+  <data name="ReviewPageTitle" xml:space="preserve">
     <value>Review &amp; setup</value>
     <comment>Review and Setup label for the stepper</comment>
   </data>
