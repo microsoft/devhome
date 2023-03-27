@@ -4,6 +4,7 @@
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.ViewModels;
+using DevHome.SetupFlow.UnitTest.Helpers;
 using Moq;
 
 namespace DevHome.SetupFlow.UnitTest.ViewModels;
@@ -75,7 +76,7 @@ public class SearchViewModelTest : BaseSetupFlowTest
         allcatalogs.Setup(c => c.SearchAsync(It.IsAny<string>(), It.IsAny<uint>())).ReturnsAsync(new List<IWinGetPackage>()
         {
             // Mock a single result package
-            new Mock<IWinGetPackage>().Object,
+            PackageHelper.CreatePackage("mock").Object,
         });
         WindowsPackageManager!.Setup(wpm => wpm.AllCatalogs).Returns(allcatalogs.Object);
         var searchViewModel = TestHost!.GetService<SearchViewModel>();

@@ -70,6 +70,10 @@ public class BaseSetupFlowTest
                 services.AddTransient<WinGetPackageRestoreDataSource>();
                 services.AddSingleton<IRestoreInfo>(RestoreInfo.Object);
                 services.AddSingleton<PackageProvider>();
+
+                // DI factory pattern
+                services.AddSingleton<PackageViewModelFactory>(sp => package => ActivatorUtilities.CreateInstance<PackageViewModel>(sp, package));
+                services.AddSingleton<PackageCatalogViewModelFactory>(sp => catalog => ActivatorUtilities.CreateInstance<PackageCatalogViewModel>(sp, catalog));
             }).Build();
     }
 }

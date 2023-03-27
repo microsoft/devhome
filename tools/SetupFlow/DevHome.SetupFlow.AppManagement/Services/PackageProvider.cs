@@ -33,9 +33,9 @@ public class PackageProvider
 
         /// <summary>
         /// Gets or sets a value indicating whether the package
-        /// should be cached temporarly or permanently.
+        /// should be cached temporarily or permanently.
         /// </summary>
-        public bool IsTemporary { get; set; }
+        public bool IsPermanent { get; set; }
     }
 
     private readonly PackageViewModelFactory _packageViewModelFactory;
@@ -81,16 +81,18 @@ public class PackageProvider
     /// otherwise return the one form the cache
     /// </summary>
     /// <param name="package">WinGet package model</param>
-    /// <param name="cache">
+    /// <param name="cachePermanently">
     /// True, if the package should be cached permanently.
     /// False, if the package should not be cached.
     /// </param>
     /// <returns>Package view model</returns>
-    public PackageViewModel CreateOrGet(IWinGetPackage package, bool cache = false)
+    public PackageViewModel CreateOrGet(IWinGetPackage package, bool cachePermanently = false)
     {
         // Check if package is cached
         if (_packageViewModelCache.TryGetValue(package.UniqueKey, out var value))
         {
+            // Promote to permanent cache if requested
+            value.IsPermanent = value.IsPermanent || cachePermanently;
             return value.PackageViewModel;
         }
 
@@ -99,13 +101,13 @@ public class PackageProvider
         viewModel.SelectionChanged += OnPackageSelectionChanged;
         viewModel.SelectionChanged += (sender, package) => PackageSelectionChanged?.Invoke(sender, package);
 
-        // If cache is set to true, cache the package permanently
-        if (cache)
+        // Cache if requested
+        if (cachePermanently)
         {
             _packageViewModelCache.TryAdd(package.UniqueKey, new PackageCache()
             {
                 PackageViewModel = viewModel,
-                IsTemporary = false,
+                IsPermanent = true,
             });
         }
 
@@ -121,7 +123,7 @@ public class PackageProvider
             _packageViewModelCache.TryAdd(packageViewModel.UniqueKey, new PackageCache()
             {
                 PackageViewModel = packageViewModel,
-                IsTemporary = true,
+                IsPermanent = false,
             });
 
             // Add to the selected package collection
@@ -129,9 +131,9 @@ public class PackageProvider
         }
         else
         {
-            // If a package is unselected and is cached temporarly, remove it
+            // If a package is unselected and is cached temporarily, remove it
             // from the cache
-            if (_packageViewModelCache.TryGetValue(packageViewModel.UniqueKey, out var value) && value.IsTemporary)
+            if (_packageViewModelCache.TryGetValue(packageViewModel.UniqueKey, out var value) && !value.IsPermanent)
             {
                 _packageViewModelCache.Remove(packageViewModel.UniqueKey);
             }
