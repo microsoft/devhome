@@ -23,6 +23,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     // Custom composite catalogs
     private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
     private readonly Lazy<WinGetCompositeCatalog> _wingetCatalog;
+    private readonly Lazy<WinGetCompositeCatalog> _msStoreCatalog;
 
     // Predefined catalog ids
     private readonly Lazy<string> _wingetCatalogId;
@@ -36,6 +37,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         // Lazy-initialize custom composite catalogs
         _allCatalogs = new (CreateAllCatalogs);
         _wingetCatalog = new (CreateWinGetCatalog);
+        _msStoreCatalog = new (CreateMsStoreCatalog);
 
         // Lazy-initialize predefined catalog ids
         _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
@@ -49,6 +51,8 @@ public class WindowsPackageManager : IWindowsPackageManager
     public IWinGetCatalog AllCatalogs => _allCatalogs.Value;
 
     public IWinGetCatalog WinGetCatalog => _wingetCatalog.Value;
+
+    public IWinGetCatalog MsStoreCatalog => _msStoreCatalog.Value;
 
     public async Task ConnectToAllCatalogsAsync()
     {
@@ -109,6 +113,11 @@ public class WindowsPackageManager : IWindowsPackageManager
     private WinGetCompositeCatalog CreateWinGetCatalog()
     {
         return CreatePredefinedCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
+    }
+
+    private WinGetCompositeCatalog CreateMsStoreCatalog()
+    {
+        return CreatePredefinedCatalog(PredefinedPackageCatalog.MicrosoftStore);
     }
 
     /// <summary>

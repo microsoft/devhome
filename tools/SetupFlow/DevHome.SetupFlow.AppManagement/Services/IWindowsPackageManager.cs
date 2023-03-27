@@ -45,6 +45,11 @@ public interface IWindowsPackageManager
         get;
     }
 
+    public IWinGetCatalog MsStoreCatalog
+    {
+        get;
+    }
+
     /// <summary>
     /// Opens all custom composite catalogs.
     /// </summary>
