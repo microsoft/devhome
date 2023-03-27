@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-namespace DevHome.Core.Contracts.Services;
+namespace DevHome.Common.Contracts;
 
 public interface IFileService
 {

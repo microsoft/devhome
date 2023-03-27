@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
 
-namespace DevHome.Helpers;
+namespace DevHome.Common.Helpers;
 
 public class EnumToBooleanConverter : IValueConverter
 {

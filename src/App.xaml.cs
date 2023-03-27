@@ -2,11 +2,12 @@
 // Licensed under the MIT license.
 
 using DevHome.Activation;
+using DevHome.Common.Contracts;
+using DevHome.Common.Contracts.Services;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.Core.Contracts.Services;
-using DevHome.Core.Services;
 using DevHome.Helpers;
 using DevHome.Models;
 using DevHome.Services;
@@ -82,7 +83,16 @@ public partial class App : Application, IApp
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
-            services.AddTransient<AccountsPageViewModel>();
+            services.AddTransient<PreferencesViewModel>();
+            services.AddTransient<PreferencesPage>();
+            services.AddTransient<AccountsViewModel>();
+            services.AddTransient<AccountsPage>();
+            services.AddTransient<NotificationsViewModel>();
+            services.AddTransient<NotificationsPage>();
+            services.AddTransient<PluginsViewModel>();
+            services.AddTransient<PluginsPage>();
+            services.AddTransient<AboutViewModel>();
+            services.AddTransient<AboutPage>();
             services.AddTransient<FeedbackViewModel>();
             services.AddTransient<FeedbackPage>();
             services.AddTransient<ShellPage>();
