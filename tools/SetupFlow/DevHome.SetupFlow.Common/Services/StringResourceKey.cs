@@ -29,4 +29,8 @@ public static class StringResourceKey
     public static readonly string SelectedPackagesCount = nameof(SelectedPackagesCount);
     public static readonly string SetUpButton = nameof(SetUpButton);
     public static readonly string ViewConfiguration = nameof(ViewConfiguration);
+
+    public static readonly string ApplicationsPageTitle = nameof(ApplicationsPageTitle);
+    public static readonly string ReposConfigPageTitle = nameof(ReposConfigPageTitle);
+    public static readonly string ReviewPageTitle = nameof(ReviewPageTitle);
 }
