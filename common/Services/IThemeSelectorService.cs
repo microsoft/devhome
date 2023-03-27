@@ -20,6 +20,7 @@ public interface IThemeSelectorService
 
     Task SetThemeAsync(ElementTheme theme);
 
+    void SetRequestedTheme();
 
     /// <summary>
     /// Checks if the <see cref="Theme"/> value resolves to dark
