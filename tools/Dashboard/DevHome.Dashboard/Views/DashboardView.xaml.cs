@@ -11,7 +11,6 @@ using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.Storage;
@@ -48,6 +47,8 @@ public partial class DashboardView : ToolPage
 
     private void InitializeWidgetHost()
     {
+        Log.Logger()?.ReportInfo("DashboardView", "Register with WidgetHost");
+
         // The GUID is this app's Host GUID that Widget Platform will use to identify this host.
         _widgetHost = WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031"));
         _widgetCatalog = WidgetCatalog.GetDefault();
@@ -68,13 +69,14 @@ public partial class DashboardView : ToolPage
         var hostConfigFileName = (ActualTheme == ElementTheme.Light) ? "HostConfigLight.json" : "HostConfigDark.json";
         try
         {
+            Log.Logger()?.ReportInfo("DashboardView", $"Get HostConfig file '{hostConfigFileName}'");
             var uri = new Uri($"ms-appx:///DevHome.Dashboard/Assets/{hostConfigFileName}");
             var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
             hostConfigContents = await FileIO.ReadTextAsync(file);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            // TODO: LogError("DashboardView", "Error rettrieving HostConfig", e);
+            Log.Logger()?.ReportError("DashboardView", "Error retrieving HostConfig", e);
         }
 
         _dispatcher.TryEnqueue(() =>
@@ -82,6 +84,10 @@ public partial class DashboardView : ToolPage
             if (!string.IsNullOrEmpty(hostConfigContents))
             {
                 _renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+            }
+            else
+            {
+                Log.Logger()?.ReportError("DashboardView", $"HostConfig contents are {hostConfigContents}");
             }
         });
 
@@ -93,9 +99,12 @@ public partial class DashboardView : ToolPage
         // TODO: Ideally there would be some sort of visual loading indicator while the renderer gets set up.
         SetHostConfigOnWidgetRenderer().Wait();
 
+        Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
         var pinnedWidgets = _widgetHost.GetWidgets();
         if (pinnedWidgets != null)
         {
+            Log.Logger()?.ReportInfo("DashboardView", $"Found {pinnedWidgets.Length} widgets for this host");
+
             foreach (var widget in pinnedWidgets)
             {
                 var size = await widget.GetSizeAsync();
@@ -131,11 +140,12 @@ public partial class DashboardView : ToolPage
         var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widget.DefinitionId);
         if (widgetDefinition != null)
         {
+            Log.Logger()?.ReportInfo("DashboardView", $"Add widget to pinned widgets, id = {widget.Id}");
             wvm.WidgetDisplayName = widgetDefinition.DisplayTitle;
         }
         else
         {
-            // TODO: LogWarning("DashboardView", $"WidgetPlatform did not clean up widget defintion {widget.DefinitionId}");
+            Log.Logger()?.ReportWarn("DashboardView", $"WidgetPlatform did not clean up widget defintion '{widget.DefinitionId}'");
         }
 
         PinnedWidgets.Add(wvm);
@@ -146,8 +156,10 @@ public partial class DashboardView : ToolPage
     {
         _dispatcher.TryEnqueue(() =>
         {
+            Log.Logger()?.ReportInfo("DashboardView", $"WidgetDefinitionDeleted {args.DefinitionId}");
             foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == args.DefinitionId).ToList())
             {
+                Log.Logger()?.ReportInfo("DashboardView", $"Remove widget {widgetToRemove.Widget.Id}");
                 PinnedWidgets.Remove(widgetToRemove);
             }
         });
