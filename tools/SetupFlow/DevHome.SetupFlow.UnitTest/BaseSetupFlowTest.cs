@@ -4,6 +4,7 @@
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;
+using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.DependencyInjection;
@@ -70,6 +71,7 @@ public class BaseSetupFlowTest
                 services.AddTransient<WinGetPackageRestoreDataSource>();
                 services.AddSingleton<IRestoreInfo>(RestoreInfo.Object);
                 services.AddSingleton<PackageProvider>();
+                services.AddSingleton<WindowsPackageManagerFactory>();
 
                 // DI factory pattern
                 services.AddSingleton<PackageViewModelFactory>(sp => package => ActivatorUtilities.CreateInstance<PackageViewModel>(sp, package));
