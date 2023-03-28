@@ -137,14 +137,6 @@
     <value>Get started</value>
     <comment>Button text for getting started with transferring settings from a developer machine</comment>
   </data>
-  <data name="AppManagement.Description" xml:space="preserve">
-    <value>Install Applications</value>
-    <comment>Description for the application management page</comment>
-  </data>
-  <data name="AppManagement.Title" xml:space="preserve">
-    <value>Install Applications</value>
-    <comment>Title for the application management page</comment>
-  </data>
   <data name="AgreeOnAbovePolicy.Content" xml:space="preserve">
     <value>I have read, understand and agree to the above policy</value>
     <comment>Checkbox label for reading, understanding and agreeing to policies presented above this label</comment>
@@ -261,40 +253,28 @@
     <value>Learn more</value>
     <comment>Text for a clickable learn more button</comment>
   </data>
-  <data name="MainPage_CloneRepos.Description" xml:space="preserve">
-    <value>Get started on a project by cloning a repository</value>
-    <comment>Body text description for a card that when clicked takes the user to a page for cloning git repositories</comment>
-  </data>
   <data name="MainPage_CloneRepos.Header" xml:space="preserve">
-    <value>Clone a repository</value>
+    <value>Clone repositories</value>
     <comment>Header for a card that when clicked takes the user to a page for cloning git repositories</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Description" xml:space="preserve">
-    <value>Use one or more configuration (YAML) files</value>
+    <value>Set up you machine directly from one or multiple configuration files</value>
     <comment>Body text description for a card that when clicked allows the user to select a configuration file and run it</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Header" xml:space="preserve">
-    <value>Use a configuration file</value>
+    <value>Run a configuration file for an existing setup</value>
     <comment>Header for a card that when clicked allows the user to select a configuration file and run it</comment>
   </data>
-  <data name="MainPage_DevVolume.Description" xml:space="preserve">
-    <value>Create a new virtual hard disk for development projects</value>
-    <comment>Body text description for a card that when clicked takes the user to a page for creating a developer drive/volume</comment>
-  </data>
-  <data name="MainPage_DevVolume.Header" xml:space="preserve">
-    <value>Add a developer drive</value>
+  <data name="MainPage_DevDrive.Header" xml:space="preserve">
+    <value>Add a Dev Drive</value>
     <comment>Header for a card that when clicked takes the user to a page for creating a developer drive (virtual hard disk)</comment>
   </data>
   <data name="MainPage_EnvironmentSetup.Text" xml:space="preserve">
     <value>Set up development environment</value>
     <comment>Header text for a group of controls giving multiple choices to set up the environment/machine</comment>
   </data>
-  <data name="MainPage_InstallApps.Description" xml:space="preserve">
-    <value>Download apps and packages from the WinGet library</value>
-    <comment>Body text description for a card that when clicked takes the user to a page for installing apps. WinGet refers to the Windows Package Manager command line tool. {StrContains=WinGet}</comment>
-  </data>
   <data name="MainPage_InstallApps.Header" xml:space="preserve">
-    <value>Install apps and packages</value>
+    <value>Install applications</value>
     <comment>Header for a card that when clicked takes the user to a page for installing apps</comment>
   </data>
   <data name="MainPage_QuickConfiguration.Text" xml:space="preserve">
@@ -302,11 +282,11 @@
     <comment>Header text for a group of controls giving multiple choices for configuring the machine, but not a full setup flow</comment>
   </data>
   <data name="MainPage_SetupFlow.Description" xml:space="preserve">
-    <value>Use an end-to-end- setup flow</value>
+    <value>Clone repositories and install applications at once</value>
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_SetupFlow.Header" xml:space="preserve">
-    <value>Step-by-step</value>
+    <value>End-to-end setup</value>
     <comment>Header for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="NoAppsToInstall.Text" xml:space="preserve">
@@ -332,6 +312,14 @@
   <data name="ResultCount" xml:space="preserve">
     <value>{0} Result(s)</value>
     <comment>{Locked="{0}"} Label for a search result counter. {0} is replaced by the number of result items.</comment>
+  </data>
+  <data name="RestorePackagesTitle" xml:space="preserve">
+    <value>Restore from {0}</value>
+    <comment>{Locked="{0}"} Header text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
+  </data>
+  <data name="RestorePackagesDescription" xml:space="preserve">
+    <value>The following applications are recovered from {0}</value>
+    <comment>{Locked="{0}"} Description text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
   </data>
   <data name="PackagesCount" xml:space="preserve">
     <value>{0} packages</value>
@@ -405,6 +393,22 @@
     <value>Set up</value>
     <comment>Label for the button that starts the setup</comment>
   </data>
+  <data name="SetupShell_AppManagement.Description" xml:space="preserve">
+    <value>Search for apps and packages to install or select them below.</value>
+    <comment>Description for the application management page</comment>
+  </data>
+  <data name="SetupShell_EndToEndTitle.Text" xml:space="preserve">
+    <value>End-to-end setup</value>
+    <comment>Title for all the pages during an end-to-end setup flow</comment>
+  </data>
+  <data name="SetupShell_RepoConfig.Description" xml:space="preserve">
+    <value>Add private or public repositories to clone to you computer.</value>
+    <comment>Description for the application management page</comment>
+  </data>
+  <data name="SetupShell_Review.Description" xml:space="preserve">
+    <value>Review the terms and setup details below before applying these changes to your computer.</value>
+    <comment>Description for the review page</comment>
+  </data>
   <data name="Applications" xml:space="preserve">
     <value>Applications</value>
     <comment>Header for a section showing a summary of applications to be installed</comment>
@@ -433,15 +437,15 @@
     <value>+ Add repository</value>
     <comment>Add repository button text</comment>
   </data>
-  <data name="StepperCloneRepos.Text" xml:space="preserve">
+  <data name="ReposConfigPageTitle" xml:space="preserve">
     <value>Clone Repos</value>
     <comment>Clone Repo label for the stepper</comment>
   </data>
-  <data name="StepperInstallApps.Text" xml:space="preserve">
+  <data name="ApplicationsPageTitle" xml:space="preserve">
     <value>Install Apps</value>
     <comment>Install Apps label for the stepper</comment>
   </data>
-  <data name="StepperReviewAndSetup.Text" xml:space="preserve">
+  <data name="ReviewPageTitle" xml:space="preserve">
     <value>Review &amp; setup</value>
     <comment>Review and Setup label for the stepper</comment>
   </data>
@@ -474,7 +478,7 @@
     <comment>Header for the dialog bos to clone repositories</comment>
   </data>
   <data name="NewDevDriveComboBox.Content" xml:space="preserve">
-    <value>Optimimize repo performance with a new DevDrive</value>
+    <value>Optimize repo performance with a new Dev Drive</value>
     <comment>Check box label to notify users of making a new dev drive</comment>
   </data>
   <data name="RepositoryDisplay.Header" xml:space="preserve">
@@ -528,5 +532,77 @@
   <data name="EditClonePathDialog.PrimaryButtonText" xml:space="preserve">
     <value>Add</value>
     <comment>Content for the primary button in the edit clone path dialog.</comment>
+  </data>
+  <data name="DevDriveDefaultFileName" xml:space="preserve">
+    <value>Dev Disk</value>
+    <comment>file name for the virtual disk file we will create the Dev Drive in if the user keeps the defaults</comment>
+  </data>
+  <data name="DevDriveDefaultFolderName" xml:space="preserve">
+    <value>Dev Drives</value>
+    <comment>folder name for the folder we will create the Dev Drive in if the user keeps the defaults</comment>
+  </data>
+  <data name="DevDriveReviewPageDevDriveDetailsTitle.Text" xml:space="preserve">
+    <value>Dev Drive details</value>
+    <comment>Text that will be the description of a section in the review page where the user will see a list of details about the Dev Drives they are about to create. The name, size and the virtual disk file location are the details shows.</comment>
+  </data>
+  <data name="DevDriveReviewPageNoDevDrives.Text" xml:space="preserve">
+    <value>No Dev Drives will be created.</value>
+    <comment>Text that lets the user know that they did not select a previous option to create a Dev Drive so therefore none will be created in the next step</comment>
+  </data>
+  <data name="DevDriveReviewPageNumberOfDevDrives" xml:space="preserve">
+    <value>{0} created</value>
+    <comment>{Locked="{0}"} Text that shows the number of Dev Drives that the user will be creating on the review page</comment>
+  </data>
+  <data name="DevDriveReviewPageNumberOfDevDrivesTitle" xml:space="preserve">
+    <value>Dev Drive creation</value>
+    <comment>Test that will be the decription to a section of the review page where the user will see the number of Dev Drives they are about to create</comment>
+  </data>
+  <data name="PathWithColon.Text" xml:space="preserve">
+    <value>Path:</value>
+    <comment>label for any item that will display a file or folder path to the user</comment>
+  </data>
+  <data name="Size.Header" xml:space="preserve">
+    <value>Size</value>
+    <comment>Header for items like text and number boxes where the user can enter values that represent the size of something.</comment>
+  </data>
+  <data name="BrowseTextBlock" xml:space="preserve">
+    <value>Browse</value>
+    <comment>Label for browse button that can be used in a body of text instead of directly in the button content</comment>
+  </data>
+  <data name="DevDriveInvalidDriveLabel" xml:space="preserve">
+    <value>The file name must be 32 characters or less and can't include any of the following \ / : * ? " &lt; &gt; |</value>
+    <comment>Tells the user which characters are invalid for the Dev Drive file name. Should show, A file name can't include any of the followingspecial characters \ / : * ? "&lt; &gt; |</comment>
+  </data>
+  <data name="DevDriveInvalidDriveSize" xml:space="preserve">
+    <value>A Dev Drive must be at least 50 GB and at most 64 TB.</value>
+    <comment>Text that tells the user the minimum and maximum size they can use to create a Dev Drive. </comment>
+  </data>
+  <data name="DevDriveInvalidFolderLocation" xml:space="preserve">
+    <value>Make sure the path is fully qualified and try again.</value>
+    <comment>Tells the user how the location path should be structured. </comment>
+  </data>
+  <data name="DevDriveNoDriveLettersAvailable" xml:space="preserve">
+    <value>No drive letters are available</value>
+    <comment>Text that tells the user they have no drive letters that can be used to create a Dev Drive</comment>
+  </data>
+  <data name="DevDriveNotEnoughFreeSpace" xml:space="preserve">
+    <value>Not enough free space. Free at least 50 GB and try again.</value>
+    <comment>Text that tells the user that they don't have enough space available on their machines to create a Dev Drive.</comment>
+  </data>
+  <data name="Save.Content" xml:space="preserve">
+    <value>Save</value>
+    <comment>content for a save button</comment>
+  </data>
+  <data name="SizeWithColon.Text" xml:space="preserve">
+    <value>Size:</value>
+    <comment>Text label for any item that will display a number size. Example could be a using this with a textblock to make a label that is on the same line as another textblock that displays the amount of free storage space on a computer.</comment>
+  </data>
+  <data name="DevDriveFilenameAlreadyExists" xml:space="preserve">
+    <value>The filename already exists in the selected location. Enter a new file name and try again.</value>
+    <comment>Text that advises the user that the file name of the virtual hard disk they were trying to create already exists in the location they selected and that they should enter a new name.</comment>
+  </data>
+  <data name="DevDriveUnableToCreateError" xml:space="preserve">
+    <value>The Dev Drive couldn't be created.</value>
+    <comment>Text that advises the user that there was an error and we couldn't create the Dev Drive on their machine.</comment>
   </data>
 </root>

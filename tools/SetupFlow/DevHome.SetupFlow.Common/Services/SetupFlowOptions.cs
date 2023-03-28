@@ -15,4 +15,12 @@ public class SetupFlowOptions
     {
         get; set;
     }
+
+    /// <summary>
+    /// Gets or sets the path for the WinGet package JSON data source
+    /// </summary>
+    public string WinGetPackageJsonDataSourcePath
+    {
+        get; set;
+    }
 }

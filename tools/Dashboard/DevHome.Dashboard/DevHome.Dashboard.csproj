@@ -13,6 +13,7 @@
     <None Remove="Assets\HostConfigLight.json" />
     <None Remove="Views\AddWidgetDialog.xaml" />
     <None Remove="Views\DashboardView.xaml" />
+    <None Remove="Views\WidgetControl.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +44,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\DashboardView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\WidgetControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

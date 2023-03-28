@@ -2,11 +2,8 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.UnitTest.Helpers;
-using Microsoft.Management.Deployment;
-using Moq;
 
 namespace DevHome.SetupFlow.UnitTest.ViewModels;
 
@@ -29,7 +26,6 @@ public class PackageViewModelTest : BaseSetupFlowTest
         for (var i = 0; i < expectedPackages.Count; ++i)
         {
             Assert.AreEqual(expectedPackages[i].Name, packages[i].Name);
-            Assert.AreEqual(expectedPackages[i].ImageUri, packages[i].ImageUri);
             Assert.AreEqual(expectedPackages[i].Version, packages[i].Version);
         }
     }

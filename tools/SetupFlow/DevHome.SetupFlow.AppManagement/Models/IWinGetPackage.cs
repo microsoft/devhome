@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Services;
+using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.AppManagement.Models;
 
@@ -47,11 +48,19 @@ public interface IWinGetPackage
     }
 
     /// <summary>
-    /// Gets the package image uri
+    /// Gets or sets the package's light theme icon
     /// </summary>
-    public Uri ImageUri
+    public IRandomAccessStream LightThemeIcon
     {
-        get;
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the package's dark theme icon
+    /// </summary>
+    public IRandomAccessStream DarkThemeIcon
+    {
+        get; set;
     }
 
     /// <summary>

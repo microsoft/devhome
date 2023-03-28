@@ -5,21 +5,36 @@ using System.Runtime.InteropServices;
 using DevHome.Common.Services;
 using DevHome.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Win32;
+using Windows.Win32.System.Com;
 using WinRT;
 
 namespace DevHome.Models;
 
 public class PluginWrapper : IPluginWrapper
 {
-    private readonly string _classId;
+    private const int HResultRpcServerNotRunning = -2147023174;
+
     private readonly object _lock = new ();
     private readonly List<ProviderType> _providerTypes = new ();
+
+    private readonly Dictionary<Type, ProviderType> _providerTypeMap = new ()
+    {
+        [typeof(IDevIdProvider)] = ProviderType.DevId,
+        [typeof(IRepositoryProvider)] = ProviderType.Repository,
+        [typeof(INotificationsProvider)] = ProviderType.Notifications,
+        [typeof(IWidgetProvider)] = ProviderType.Widget,
+        [typeof(ISettingsProvider)] = ProviderType.Settings,
+        [typeof(IDevDoctorProvider)] = ProviderType.DevDoctor,
+        [typeof(ISetupFlowProvider)] = ProviderType.SetupFlow,
+    };
+
     private IPlugin? _pluginObject;
 
     public PluginWrapper(string name, string classId)
     {
         Name = name ?? throw new ArgumentNullException(nameof(name));
-        _classId = classId ?? throw new ArgumentNullException(nameof(classId));
+        PluginClassId = classId ?? throw new ArgumentNullException(nameof(classId));
     }
 
     public string Name
@@ -27,14 +42,36 @@ public class PluginWrapper : IPluginWrapper
         get;
     }
 
-    public bool IsRunning()
+    public string PluginClassId
     {
-        // TODO : We also need to check if the underlying ptr is still alive
-        // to make sure the other process is still running
-        return _pluginObject is not null;
+        get;
     }
 
-    public async Task StartPlugin()
+    public bool IsRunning()
+    {
+        if (_pluginObject is null)
+        {
+            return false;
+        }
+
+        try
+        {
+            _pluginObject.As<IInspectable>().GetRuntimeClassName();
+        }
+        catch (COMException e)
+        {
+            if (e.ErrorCode == HResultRpcServerNotRunning)
+            {
+                return false;
+            }
+
+            throw;
+        }
+
+        return true;
+    }
+
+    public async Task StartPluginAsync()
     {
         await Task.Run(() =>
         {
@@ -45,7 +82,8 @@ public class PluginWrapper : IPluginWrapper
                     IntPtr pluginPtr = IntPtr.Zero;
                     try
                     {
-                        var hr = Ole32.CoCreateInstance(Guid.Parse(_classId), IntPtr.Zero, Ole32.CLSCTXLOCALSERVER, typeof(IPlugin).GUID, out pluginPtr);
+                        var hr = PInvoke.CoCreateInstance(Guid.Parse(PluginClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IPlugin).GUID, out var pluginObj);
+                        pluginPtr = Marshal.GetIUnknownForObject(pluginObj);
                         if (hr < 0)
                         {
                             Marshal.ThrowExceptionForHR(hr);
@@ -65,15 +103,16 @@ public class PluginWrapper : IPluginWrapper
         });
     }
 
-    public void Kill()
+    public void SignalDispose()
     {
         lock (_lock)
         {
             if (IsRunning())
             {
-                // TODO : Should we kill the process as well?
-                _pluginObject = null;
+                _pluginObject?.Dispose();
             }
+
+            _pluginObject = null;
         }
     }
 
@@ -90,6 +129,14 @@ public class PluginWrapper : IPluginWrapper
                 return null;
             }
         }
+    }
+
+    public async Task<T?> GetProviderAsync<T>()
+        where T : class
+    {
+        await StartPluginAsync();
+
+        return GetPluginObject()?.GetProvider(_providerTypeMap[typeof(T)]) as T;
     }
 
     public void AddProviderType(ProviderType providerType)

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.Telemetry;
@@ -13,8 +11,11 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _logger;
 
-    public SummaryViewModel(ILogger logger, ISetupFlowStringResource stringResource)
-        : base(stringResource)
+    public SummaryViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         IsNavigationBarVisible = false;

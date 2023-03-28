@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.Common.Helpers;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
 using Microsoft.UI.Xaml;
@@ -10,6 +11,8 @@ namespace DevHome.Services;
 public class ThemeSelectorService : IThemeSelectorService
 {
     private const string SettingsKey = "AppBackgroundRequestedTheme";
+
+    public event EventHandler<ElementTheme> ThemeChanged = (_, _) => { };
 
     public ElementTheme Theme { get; set; } = ElementTheme.Default;
 
@@ -30,20 +33,18 @@ public class ThemeSelectorService : IThemeSelectorService
     {
         Theme = theme;
 
-        await SetRequestedThemeAsync();
+        SetRequestedTheme();
         await SaveThemeInSettingsAsync(Theme);
     }
 
-    public async Task SetRequestedThemeAsync()
+    public void SetRequestedTheme() => ThemeChanged(null, Theme);
+
+    public bool IsDarkTheme()
     {
-        if (App.MainWindow.Content is FrameworkElement rootElement)
-        {
-            rootElement.RequestedTheme = Theme;
-
-            TitleBarHelper.UpdateTitleBar(Theme);
-        }
-
-        await Task.CompletedTask;
+        // If theme is Default, use the Application.RequestedTheme value
+        // https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.elementtheme?view=windows-app-sdk-1.2#fields
+        return Theme == ElementTheme.Dark ||
+            (Theme == ElementTheme.Default && Application.Current.RequestedTheme == ApplicationTheme.Dark);
     }
 
     private async Task<ElementTheme> LoadThemeFromSettingsAsync()

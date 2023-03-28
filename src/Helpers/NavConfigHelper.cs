@@ -41,6 +41,9 @@ internal class Tool
 
     [JsonProperty("viewModelFullName")]
     public string ViewModelFullName { get; set; }
+
+    [JsonProperty("icon")]
+    public string Icon { get; set; }
 }
 
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

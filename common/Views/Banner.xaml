@@ -9,7 +9,8 @@
         <Grid.Background>
             <ImageBrush Stretch="UniformToFill" ImageSource="{x:Bind ImageSource, Mode=OneWay}" />
         </Grid.Background>
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" BorderThickness="0" 
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" 
+                BorderThickness="0" Background="Transparent"
                 Command="{x:Bind HideButtonCommand, Mode=OneWay}"
                 Visibility="{x:Bind HideButtonVisibility, Mode=OneWay}">
             <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}" 
