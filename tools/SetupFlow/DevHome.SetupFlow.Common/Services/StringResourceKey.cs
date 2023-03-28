@@ -54,6 +54,7 @@ public static class StringResourceKey
     public static readonly string ViewConfiguration = nameof(ViewConfiguration);
     public static readonly string LoadingExecutingProgress = nameof(LoadingExecutingProgress);
     public static readonly string ActionCenterDisplay = nameof(ActionCenterDisplay);
+    public static readonly string NeedsRebootMessage = nameof(NeedsRebootMessage);
 
     // Action center and loading screen
     public static readonly string LoadingScreenCloningRepositoryMainText = nameof(LoadingScreenCloningRepositoryMainText);

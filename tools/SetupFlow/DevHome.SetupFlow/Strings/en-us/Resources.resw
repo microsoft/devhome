@@ -715,4 +715,8 @@
     <value>The Dev Drive couldn't be created.</value>
     <comment>Text that advises the user that there was an error and we couldn't create the Dev Drive on their machine.</comment>
   </data>
+  <data name="NeedsRebootMessage" xml:space="preserve">
+    <value>{0} Needs to reboot the machine to finish</value>
+    <comment>Message to tell the user that the machine needs to reboot</comment>
+  </data>
 </root>
