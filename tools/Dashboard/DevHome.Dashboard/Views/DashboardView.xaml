@@ -33,7 +33,7 @@
                     ButtonCommand="{x:Bind ViewModel.DashboardBannerButtonCommand,Mode=OneWay}"
                     x:Uid="ms-resource:///DevHome.Dashboard/Resources/DashboardBanner"
                     ImageSource="ms-appx:///DevHome.Dashboard/Assets/DashboardBanner.png"
-                    Margin="0, 20, 0, 5"/>
+                    Margin="0, 20"/>
 
                 <!-- Widget grid -->
                 <GridView x:Name="MainGridView" ItemsSource="{x:Bind views:DashboardView.PinnedWidgets}"
@@ -45,7 +45,7 @@
                     </GridView.ItemTemplate>
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
+                            <views:WidgetBoard />
                         </ItemsPanelTemplate>
                     </GridView.ItemsPanel>
                 </GridView>

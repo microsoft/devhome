@@ -61,6 +61,10 @@ public interface ISetupTask
     /// <summary>
     /// Gets a string to show in the loading page while executing this task.
     /// </summary>
+    /// <remarks>
+    /// This method is called before a task execution to resolve <see cref="LoadingMessages.Executing"/>
+    /// and again after a task execution to resolve the final message
+    /// </remarks>
     /// <returns>A localized string indicating that this task is being executed.</returns>
     public abstract LoadingMessages GetLoadingMessages();
 }

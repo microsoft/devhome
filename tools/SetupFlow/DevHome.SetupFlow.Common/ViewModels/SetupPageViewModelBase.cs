@@ -57,6 +57,13 @@ public partial class SetupPageViewModelBase : ObservableObject
     private string _nextPageButtonText;
 
     /// <summary>
+    /// Test shown as tool tip for the button that goes to the next page.
+    /// By default this is empty.
+    /// </summary>
+    [ObservableProperty]
+    private string _nextPageButtonToolTipText;
+
+    /// <summary>
     /// Indicates whether this page is one of the steps the user will need to complete before starting the setup.
     /// </summary>
     [ObservableProperty]
@@ -101,6 +108,10 @@ public partial class SetupPageViewModelBase : ObservableObject
     /// </summary>
     /// <remarks>
     /// The orchestrator takes care of calling this when appropriate.
+    /// This performs actions that need to be done only the first time we
+    /// navigate to the page, and actions that need to be done each time.
+    /// On the first run, the actions that only need to be done once are
+    /// performed first.
     /// </remarks>
     public async Task OnNavigateToAsync()
     {
@@ -109,6 +120,8 @@ public partial class SetupPageViewModelBase : ObservableObject
             _hasExecutedFirstNavigateTo = true;
             await OnFirstNavigateToAsync();
         }
+
+        await OnEachNavigateToAsync();
     }
 
     /// <summary>
@@ -124,6 +137,19 @@ public partial class SetupPageViewModelBase : ObservableObject
             _hasExecutedFirstNavigateFrom = true;
             await OnFirstNavigateFromAsync();
         }
+    }
+
+    /// <summary>
+    /// Hook for actions to execute each time the page is shown.
+    /// </summary>
+    /// <remarks>
+    /// This runs on the UI thread, any time-consuming task should be non-blocking.
+    /// The first time the page is shown, this is executed after <see cref="OnFirstNavigateToAsync"/>
+    /// </remarks>
+    protected async virtual Task OnEachNavigateToAsync()
+    {
+        // Do nothing
+        await Task.CompletedTask;
     }
 
     /// <summary>
