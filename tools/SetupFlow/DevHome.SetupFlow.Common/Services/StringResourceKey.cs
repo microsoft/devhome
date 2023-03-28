@@ -30,6 +30,15 @@ public static class StringResourceKey
     public static readonly string DevDriveWindowByteUnitComboBoxGB = nameof(DevDriveWindowByteUnitComboBoxGB);
     public static readonly string DevDriveWindowByteUnitComboBoxTB = nameof(DevDriveWindowByteUnitComboBoxTB);
     public static readonly string FileTypeNotSupported = nameof(FileTypeNotSupported);
+    public static readonly string InstalledPackage = nameof(InstalledPackage);
+    public static readonly string InstallingPackage = nameof(InstallingPackage);
+    public static readonly string InstallPackageErrorBlockedByPolicy = nameof(InstallPackageErrorBlockedByPolicy);
+    public static readonly string InstallPackageErrorDownloadError = nameof(InstallPackageErrorDownloadError);
+    public static readonly string InstallPackageErrorInternalError = nameof(InstallPackageErrorInternalError);
+    public static readonly string InstallPackageErrorInstallError = nameof(InstallPackageErrorInstallError);
+    public static readonly string InstallPackageErrorNoApplicableInstallers = nameof(InstallPackageErrorNoApplicableInstallers);
+    public static readonly string InstallPackageErrorWithReason = nameof(InstallPackageErrorWithReason);
+    public static readonly string InstallPackageErrorUnknownError = nameof(InstallPackageErrorUnknownError);
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
     public static readonly string PackagesCount = nameof(PackagesCount);

@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -25,6 +23,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
     private readonly AppManagementTaskGroup _taskGroup;
     private readonly IWindowsPackageManager _wpm;
+    private readonly PackageProvider _packageProvider;
 
     /// <summary>
     /// Current view to display in the main content control
@@ -32,7 +31,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ObservableObject _currentView;
 
-    public ObservableCollection<PackageViewModel> SelectedPackages { get; } = new ();
+    public ReadOnlyObservableCollection<PackageViewModel> SelectedPackages => _packageProvider.SelectedPackages;
 
     /// <summary>
     /// Gets the localized string for <see cref="StringResourceKey.ApplicationsSelectedCount"/>
@@ -40,23 +39,24 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     public string ApplicationsSelectedCountText => StringResource.GetLocalized(StringResourceKey.ApplicationsSelectedCount, SelectedPackages.Count);
 
     public AppManagementViewModel(
+        ILogger logger,
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        ILogger logger,
         IHost host,
         IWindowsPackageManager wpm,
+        PackageProvider packageProvider,
         AppManagementTaskGroup taskGroup)
         : base(stringResource, orchestrator)
     {
         _logger = logger;
         _taskGroup = taskGroup;
         _wpm = wpm;
-
+        _packageProvider = packageProvider;
         _searchViewModel = host.GetService<SearchViewModel>();
         _shimmerSearchViewModel = host.GetService<ShimmerSearchViewModel>();
-
         _packageCatalogListViewModel = host.GetService<PackageCatalogListViewModel>();
-        _packageCatalogListViewModel.CatalogLoaded += OnCatalogLoaded;
+
+        _packageProvider.PackageSelectionChanged += (_, _) => OnPropertyChanged(nameof(ApplicationsSelectedCountText));
 
         PageTitle = StringResource.GetLocalized(StringResourceKey.ApplicationsPageTitle);
 
@@ -85,7 +85,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         {
             case SearchViewModel.SearchResultStatus.Ok:
                 CurrentView = _searchViewModel;
-                SetPackageSelectionChangedHandler(packages);
                 break;
             case SearchViewModel.SearchResultStatus.EmptySearchQuery:
                 CurrentView = _packageCatalogListViewModel;
@@ -100,32 +99,5 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
                 // noop
                 break;
         }
-    }
-
-    private void SetPackageSelectionChangedHandler(List<PackageViewModel> packages)
-    {
-        foreach (var package in packages)
-        {
-            package.SelectionChanged += OnPackageSelectionChanged;
-        }
-    }
-
-    private void OnCatalogLoaded(object sender, PackageCatalogViewModel packageCatalog)
-    {
-        packageCatalog.PackageSelectionChanged += OnPackageSelectionChanged;
-    }
-
-    private void OnPackageSelectionChanged(object sender, PackageViewModel package)
-    {
-        if (package.IsSelected)
-        {
-            SelectedPackages.Add(package);
-        }
-        else
-        {
-            SelectedPackages.Remove(package);
-        }
-
-        OnPropertyChanged(nameof(ApplicationsSelectedCountText));
     }
 }
