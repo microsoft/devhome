@@ -11,25 +11,21 @@ namespace DevHome.SetupFlow.AppManagement.Exceptions;
 /// </summary>
 public class InstallPackageException : Exception
 {
-    private readonly InstallResultStatus _status;
-
     /// <summary>
-    /// The error code from the install attempt. Only valid if the Status is
+    /// Gets the error code from the install attempt. Only valid if the Status is
     /// <see cref="InstallResultStatus.InstallError"/> This value's meaning
     /// will require knowledge of the specific installer or install technology.
     /// </summary>
     /// <remarks>
     /// Reference: https://github.com/msftrubengu/winget-cli/blob/demo/src/Microsoft.Management.Deployment/PackageManager.idl
     /// </remarks>
-    private readonly uint _installerErrorCode;
+    public uint InstallerErrorCode { get; }
+
+    public InstallResultStatus Status { get; }
 
     public InstallPackageException(InstallResultStatus status, uint installerErrorCode)
     {
-        _status = status;
-        _installerErrorCode = installerErrorCode;
+        Status = status;
+        InstallerErrorCode = installerErrorCode;
     }
-
-    public InstallResultStatus Status => _status;
-
-    public uint InstallerErrorCode => _installerErrorCode;
 }

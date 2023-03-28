@@ -31,16 +31,6 @@ public class InstallPackageTask : ISetupTask
     // simply assume that any package installation may need a reboot.
     public bool RequiresReboot => true;
 
-    public LoadingMessages GetLoadingMessages()
-    {
-        return new LoadingMessages
-        {
-            Executing = _stringResource.GetLocalized(StringResourceKey.InstallingPackage, _package.Name),
-            Finished = _stringResource.GetLocalized(StringResourceKey.InstalledPackage, _package.Name),
-            Error = _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorWithReason, _package.Name, GetErrorReason()),
-        };
-    }
-
     public InstallPackageTask(
         ILogger logger,
         IWindowsPackageManager wpm,
@@ -53,6 +43,16 @@ public class InstallPackageTask : ISetupTask
         _stringResource = stringResource;
         _wingetFactory = wingetFactory;
         _package = package;
+    }
+
+    LoadingMessages ISetupTask.GetLoadingMessages()
+    {
+        return new LoadingMessages
+        {
+            Executing = _stringResource.GetLocalized(StringResourceKey.InstallingPackage, _package.Name),
+            Finished = _stringResource.GetLocalized(StringResourceKey.InstalledPackage, _package.Name),
+            Error = _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorWithReason, _package.Name, GetErrorReason()),
+        };
     }
 
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
@@ -89,7 +89,7 @@ public class InstallPackageTask : ISetupTask
             InstallResultStatus.DownloadError =>
                 _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorDownloadError),
             InstallResultStatus.InstallError =>
-                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorInstallError, _installPackageException.InstallerErrorCode.ToString("X", CultureInfo.InvariantCulture)),
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorInstallError, $"0x{_installPackageException.InstallerErrorCode.ToString("X", CultureInfo.InvariantCulture)}"),
             InstallResultStatus.NoApplicableInstallers =>
                 _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorNoApplicableInstallers),
             _ => _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownError),
@@ -98,15 +98,8 @@ public class InstallPackageTask : ISetupTask
 
     private bool RequiresElevation()
     {
-        try
-        {
-            var options = _wingetFactory.CreateInstallOptions();
-            options.PackageInstallScope = PackageInstallScope.User;
-            return _package.RequiresElevation(options);
-        }
-        catch
-        {
-            return false;
-        }
+        var options = _wingetFactory.CreateInstallOptions();
+        options.PackageInstallScope = PackageInstallScope.User;
+        return _package.RequiresElevation(options);
     }
 }

@@ -259,7 +259,7 @@
   </data>
   <data name="InstalledPackage" xml:space="preserve">
     <value>Installed {0}</value>
-    <comment>{Locked="{0}"} Label displayed when a package is installed. {0} is replaced by the package name.</comment>
+    <comment>{Locked="{0}"} Label displayed when a package has been installed. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallingPackage" xml:space="preserve">
     <value>Installing {0}</value>
@@ -278,8 +278,8 @@
     <comment>Label displayed when a package installation fails because of an internal error</comment>
   </data>
   <data name="InstallPackageErrorInstallError" xml:space="preserve">
-    <value>Install error code (0x{0})</value>
-    <comment>{Locked="(0x{0})"}Label displayed when a package installation fails because of an error</comment>
+    <value>Install error code ({0})</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because of an error. {0} is replaced by a numeric value</comment>
   </data>
   <data name="InstallPackageErrorDownloadError" xml:space="preserve">
     <value>Downloading installer failed</value>

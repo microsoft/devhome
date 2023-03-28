@@ -63,7 +63,7 @@ public abstract class WinGetPackageDataSource
     /// <typeparam name="T">Input type</typeparam>
     /// <param name="items">List of objects that can be mapped to package IDs</param>
     /// <param name="packageIdCallback">Callback for retrieving the package id</param>
-    /// <param name="packageProcessorCallback">Callback for processing the package</param>
+    /// <param name="packageProcessorCallback">Callback for processing a non-installed package</param>
     /// <returns>List of packages</returns>
     protected async Task<IList<IWinGetPackage>> GetPackagesAsync<T>(
         IList<T> items,

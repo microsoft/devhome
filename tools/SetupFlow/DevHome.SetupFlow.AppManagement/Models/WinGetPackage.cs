@@ -74,6 +74,8 @@ public class WinGetPackage : IWinGetPackage
     {
         try
         {
+            // TODO Use the API contract version to check if this method can be
+            // called instead of a try/catch
             var appInstaller = _package.DefaultInstallVersion.GetApplicableInstaller(options);
             return appInstaller.ElevationRequirement == ElevationRequirement.ElevationRequired;
         }
