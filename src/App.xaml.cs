@@ -83,16 +83,6 @@ public partial class App : Application, IApp
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
             services.AddTransient<SettingsPage>();
-            services.AddTransient<PreferencesViewModel>();
-            services.AddTransient<PreferencesPage>();
-            services.AddTransient<AccountsViewModel>();
-            services.AddTransient<AccountsPage>();
-            services.AddTransient<NotificationsViewModel>();
-            services.AddTransient<NotificationsPage>();
-            services.AddTransient<PluginsViewModel>();
-            services.AddTransient<PluginsPage>();
-            services.AddTransient<AboutViewModel>();
-            services.AddTransient<AboutPage>();
             services.AddTransient<FeedbackViewModel>();
             services.AddTransient<FeedbackPage>();
             services.AddTransient<ShellPage>();

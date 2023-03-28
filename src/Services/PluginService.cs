@@ -74,7 +74,7 @@ public class PluginService : IPluginService
                     var isDisabled = Task.Run(() =>
                     {
                         var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                        return localSettingsService.ReadSettingAsync<bool>(classId + "-PluginDisabled");
+                        return localSettingsService.ReadSettingAsync<bool>(classId + "-ExtensionDisabled");
                     }).Result;
                     if (isDisabled)
                     {

@@ -14,7 +14,7 @@ using Microsoft.UI.Xaml;
 namespace DevHome.Settings.Models;
 public class Setting
 {
-    private bool _isPluginEnabled;
+    private bool _isExtensionEnabled;
 
     private bool _isNotificationsEnabled;
 
@@ -28,21 +28,21 @@ public class Setting
 
     public bool HasToggleSwitch { get; }
 
-    public bool IsPluginEnabled
+    public bool IsExtensionEnabled
     {
-        get => _isPluginEnabled;
+        get => _isExtensionEnabled;
 
         set
         {
-            if (_isPluginEnabled != value)
+            if (_isExtensionEnabled != value)
             {
                 Task.Run(() =>
                 {
                     var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                    return localSettingsService.SaveSettingAsync(ClassId + "-PluginDisabled", !value);
+                    return localSettingsService.SaveSettingAsync(ClassId + "-ExtensionDisabled", !value);
                 }).Wait();
 
-                _isPluginEnabled = value;
+                _isExtensionEnabled = value;
             }
         }
     }
@@ -74,16 +74,16 @@ public class Setting
         Description = description;
         HasToggleSwitch = hasToggleSwitch;
 
-        _isPluginEnabled = GetIsPluginEnabled();
+        _isExtensionEnabled = GetIsExtensionEnabled();
         _isNotificationsEnabled = GetIsNotificationsEnabled();
     }
 
-    private bool GetIsPluginEnabled()
+    private bool GetIsExtensionEnabled()
     {
         var isDisabled = Task.Run(() =>
         {
             var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-            return localSettingsService.ReadSettingAsync<bool>(ClassId + "-PluginDisabled");
+            return localSettingsService.ReadSettingAsync<bool>(ClassId + "-ExtensionDisabled");
         }).Result;
         return !isDisabled;
     }

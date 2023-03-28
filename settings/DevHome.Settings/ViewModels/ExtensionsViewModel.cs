@@ -23,16 +23,16 @@ using Windows.System;
 
 namespace DevHome.Settings.ViewModels;
 
-public partial class PluginViewModel : ObservableRecipient
+public partial class ExtensionViewModel : ObservableRecipient
 {
     private readonly Setting _setting;
 
-    private readonly PluginsViewModel _pluginsViewModel;
+    private readonly ExtensionsViewModel _extensionsViewModel;
 
-    public PluginViewModel(Setting setting, PluginsViewModel pluginsViewModel)
+    public ExtensionViewModel(Setting setting, ExtensionsViewModel extensionsViewModel)
     {
         _setting = setting;
-        _pluginsViewModel = pluginsViewModel;
+        _extensionsViewModel = extensionsViewModel;
     }
 
     public string Path => _setting.Path;
@@ -45,23 +45,23 @@ public partial class PluginViewModel : ObservableRecipient
 
     public bool IsEnabled
     {
-        get => _setting.IsPluginEnabled;
-        set => _setting.IsPluginEnabled = value;
+        get => _setting.IsExtensionEnabled;
+        set => _setting.IsExtensionEnabled = value;
     }
 
     [RelayCommand]
     private void NavigateSettings()
     {
-        _pluginsViewModel.Navigate(_setting.Path);
+        _extensionsViewModel.Navigate(_setting.Path);
     }
 }
 
-public partial class PluginsViewModel : ObservableRecipient
+public partial class ExtensionsViewModel : ObservableRecipient
 {
     [ObservableProperty]
-    private ObservableCollection<PluginViewModel> _settingsList = new ();
+    private ObservableCollection<ExtensionViewModel> _settingsList = new ();
 
-    public PluginsViewModel()
+    public ExtensionsViewModel()
     {
         var pluginWrappers = Task.Run(() =>
         {
@@ -80,7 +80,7 @@ public partial class PluginsViewModel : ObservableRecipient
         foreach (var pluginWrapper in pluginWrappers)
         {
             var setting = new Setting("Plugins/" + pluginWrapper.PluginClassId, pluginWrapper.PluginClassId, pluginWrapper.Name, string.Empty, true);
-            SettingsList.Add(new PluginViewModel(setting, this));
+            SettingsList.Add(new ExtensionViewModel(setting, this));
         }
     }
 

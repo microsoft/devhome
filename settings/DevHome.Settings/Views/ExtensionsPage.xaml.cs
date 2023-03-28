@@ -16,16 +16,16 @@ using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace DevHome.Settings.Views;
 
-public sealed partial class PluginsPage : Page
+public sealed partial class ExtensionsPage : Page
 {
-    public PluginsViewModel ViewModel
+    public ExtensionsViewModel ViewModel
     {
         get;
     }
 
-    public PluginsPage()
+    public ExtensionsPage()
     {
-        ViewModel = new PluginsViewModel();
+        ViewModel = new ExtensionsViewModel();
         this.InitializeComponent();
     }
 }

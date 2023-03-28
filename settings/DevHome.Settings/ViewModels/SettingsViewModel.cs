@@ -62,7 +62,7 @@ public partial class SettingsViewModel : ObservableRecipient
             new Setting("Preferences", string.Empty, stringResource.GetLocalized("Settings_Preferences_Header"), stringResource.GetLocalized("Settings_Preferences_Description"), false),
             new Setting("Accounts", string.Empty, stringResource.GetLocalized("Settings_Accounts_Header"), stringResource.GetLocalized("Settings_Accounts_Description"), false),
             // new Setting("Notifications", string.Empty, stringResource.GetLocalized("Settings_Notifications_Header"), stringResource.GetLocalized("Settings_Notifications_Description"), false),
-            new Setting("Plugins", string.Empty, stringResource.GetLocalized("Settings_Plugins_Header"), stringResource.GetLocalized("Settings_Plugins_Description"), false),
+            new Setting("Extensions", string.Empty, stringResource.GetLocalized("Settings_Extensions_Header"), stringResource.GetLocalized("Settings_Extensions_Description"), false),
             new Setting("About", string.Empty, stringResource.GetLocalized("Settings_About_Header"), stringResource.GetLocalized("Settings_About_Description"), false),
         };
 #pragma warning restore SA1515 // Single-line comment should be preceded by blank line
@@ -88,8 +88,8 @@ public partial class SettingsViewModel : ObservableRecipient
             case "Notifications":
                 navigationService.NavigateTo(typeof(NotificationsViewModel).FullName!);
                 return;
-            case "Plugins":
-                navigationService.NavigateTo(typeof(PluginsViewModel).FullName!);
+            case "Extensions":
+                navigationService.NavigateTo(typeof(ExtensionsViewModel).FullName!);
                 return;
             case "About":
                 navigationService.NavigateTo(typeof(AboutViewModel).FullName!);

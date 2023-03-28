@@ -26,7 +26,7 @@ public class PageService : IPageService
         Configure<PreferencesViewModel, PreferencesPage>();
         Configure<AccountsViewModel, AccountsPage>();
         Configure<NotificationsViewModel, NotificationsPage>();
-        Configure<PluginsViewModel, PluginsPage>();
+        Configure<ExtensionsViewModel, ExtensionsPage>();
         Configure<AboutViewModel, AboutPage>();
         Configure<FeedbackViewModel, FeedbackPage>();
         Configure<WhatsNewViewModel, WhatsNewPage>();

@@ -11,8 +11,8 @@
   <ItemGroup>
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\AccountsPage.xaml" />
+    <None Remove="Views\ExtensionsPage.xaml" />
     <None Remove="Views\NotificationsPage.xaml" />
-    <None Remove="Views\PluginsPage.xaml" />
     <None Remove="Views\PreferencesPage.xaml" />
   </ItemGroup>
 
@@ -45,7 +45,7 @@
     <Page Update="Views\PreferencesPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
-    <Page Update="Views\PluginsPage.xaml">
+    <Page Update="Views\ExtensionsPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>

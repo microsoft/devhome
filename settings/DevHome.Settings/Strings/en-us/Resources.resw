@@ -145,13 +145,13 @@
     <value>Notifications</value>
     <comment>Header for a card than when clicked takes the user to the Notifications settings page</comment>
   </data>
-  <data name="Settings_Plugins_Description" xml:space="preserve">
-    <value>Description: Plugins</value>
-    <comment>Body text description for a card than when clicked takes the user to the Plugins settings page</comment>
+  <data name="Settings_Extensions_Description" xml:space="preserve">
+    <value>Description: Extensions</value>
+    <comment>Body text description for a card than when clicked takes the user to the Extensions settings page</comment>
   </data>
-  <data name="Settings_Plugins_Header" xml:space="preserve">
-    <value>Plugins</value>
-    <comment>Header for a card than when clicked takes the user to the Plugins settings page</comment>
+  <data name="Settings_Extensions_Header" xml:space="preserve">
+    <value>Extensions</value>
+    <comment>Header for a card than when clicked takes the user to the Extensions settings page</comment>
   </data>
   <data name="Settings_About_Description" xml:space="preserve">
     <value>Description: About</value>
