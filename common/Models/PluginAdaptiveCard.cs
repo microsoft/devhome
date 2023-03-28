@@ -42,7 +42,7 @@ public class PluginAdaptiveCard : IPluginAdaptiveCard
 
         if (parseResult.AdaptiveCard is null)
         {
-            throw new ArgumentException(System.Text.Json.JsonSerializer.Serialize(parseResult.Errors));
+            return;
         }
 
         TemplateJson = templateJson ?? TemplateJson;

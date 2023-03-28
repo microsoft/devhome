@@ -152,6 +152,48 @@
   <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
     <value>https://YourPrivacyUrlGoesHere/</value>
   </data>
+  <data name="Settings_Accounts_AddAccountButton.Content" xml:space="preserve">
+    <value>Add Account</value>
+  </data>
+  <data name="Settings_Accounts_AddAccountText.Text" xml:space="preserve">
+    <value>Add Account</value>
+  </data>
+  <data name="Settings_Accounts_AfterLogoutContentDialog_Content" xml:space="preserve">
+    <value>has successfully logged out of Dev Home.</value>
+  </data>
+  <data name="Settings_Accounts_AfterLogoutContentDialog_PrimaryButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Settings_Accounts_AfterLogoutContentDialog_Title" xml:space="preserve">
+    <value>Logout Successful!</value>
+  </data>
+  <data name="Settings_Accounts_ConfirmLogoutContentDialog_Content" xml:space="preserve">
+    <value>Dev Home will no longer be able to access online resources that use this account.</value>
+  </data>
+  <data name="Settings_Accounts_ConfirmLogoutContentDialog_PrimaryButtonText" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="Settings_Accounts_ConfirmLogoutContentDialog_SecondaryButtonText" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Settings_Accounts_ConfirmLogoutContentDialog_Title" xml:space="preserve">
+    <value>Are you sure?</value>
+  </data>
+  <data name="Settings_Accounts_LogoutButton.Content" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Settings_Accounts_NoProvidersContentDialog_Content" xml:space="preserve">
+    <value>Please install a Dev Home Plugin and restart Dev Home to add an account.</value>
+  </data>
+  <data name="Settings_Accounts_NoProvidersContentDialog_PrimaryButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Settings_Accounts_NoProvidersContentDialog_Title" xml:space="preserve">
+    <value>No Dev Home Plugins found!</value>
+  </data>
+  <data name="Settings_Accounts_SubTitle.Text" xml:space="preserve">
+    <value>Accounts</value>
+  </data>
   <data name="Feedback_OpenSource.Text" xml:space="preserve">
     <value>Dev Home follows the </value>
     <comment>Dev Home abides by Microsoft Open Source guidance</comment>
@@ -168,11 +210,11 @@
     <value>Get Started</value>
     <comment>Begin to fill out the feature request content dialog</comment>
   </data>
-	<data name="Feedback_ReportBug_Internal.Description" xml:space="preserve">
+  <data name="Feedback_ReportBug_Internal.Description" xml:space="preserve">
     <value>Report errors or unexpected behavior via Feedback Hub prior to May 1st, 2023</value>
     <comment>Tell us about issues internally prior to May 1st</comment>
   </data>
-	<data name="Feedback_ReportBug_Internal.Header" xml:space="preserve">
+  <data name="Feedback_ReportBug_Internal.Header" xml:space="preserve">
     <value>***Internal*** Report a Bug in Feedback Hub</value>
     <comment>Tell us about an error that is happening using Feedback Hub</comment>
   </data>
@@ -436,5 +478,23 @@
   </data>
   <data name="WhatsNewPage_NotifCard.Title" xml:space="preserve">
     <value>Notifications on your Repositories</value>
+  </data>
+  <data name="WhatsNewPage_ConnectToGitHub_AlreadyConnectedContentDialog_CloseButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="WhatsNewPage_ConnectToGitHub_AlreadyConnectedContentDialog_Title" xml:space="preserve">
+    <value>You are already connected to GitHub!</value>
+  </data>
+  <data name="WhatsNewPage_ConnectToGitHub_NoPluginsContentDialog_CloseButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="WhatsNewPage_ConnectToGitHub_NoPluginsContentDialog_Title" xml:space="preserve">
+    <value>Extension not found. Install Dev Home GitHub Extension from Microsoft Store and try again.</value>
+  </data>
+  <data name="WhatsNewPage_ConnectToGitHub_SuccessContentDialog_CloseButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="WhatsNewPage_ConnectToGitHub_SuccessContentDialog_Title" xml:space="preserve">
+    <value>has connected to GitHub!</value>
   </data>
 </root>

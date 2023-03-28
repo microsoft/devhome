@@ -47,6 +47,9 @@
 		<None Update="navConfig.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<Page Update="Views\LoginUIDialog.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</Page>
 		<Page Update="Styles\Feedback_ThemeResources.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Page>
@@ -58,6 +61,7 @@
 
 	<ItemGroup>
 		<None Remove="Styles\Feedback_ThemeResources.xaml" />
+		<None Remove="Views\LoginUIDialog.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>

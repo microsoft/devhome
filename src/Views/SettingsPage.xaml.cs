@@ -39,15 +39,15 @@ public sealed partial class SettingsPage : Page
     {
         if (AccountsPageViewModel.AccountsProviders.Count == 0)
         {
-            var confirmLogoutContentDialog = new ContentDialog
+            var resourceLoader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            var noProvidersContentDialog = new ContentDialog
             {
-                Title = "No Dev Home Plugins found!",
-                Content = "Please install a Dev Home Plugin and restart Dev Home to add an account.",
-                PrimaryButtonText = "Ok",
+                Title = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_Title"),
+                Content = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_Content"),
+                PrimaryButtonText = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_PrimaryButtonText"),
                 XamlRoot = XamlRoot,
             };
-
-            await confirmLogoutContentDialog.ShowAsync();
+            await noProvidersContentDialog.ShowAsync();
             return;
         }
 
@@ -58,7 +58,7 @@ public sealed partial class SettingsPage : Page
             {
                 try
                 {
-                    await accountProvider.ShowLoginUI("Settings", this);
+                    await accountProvider.ShowLoginUIAsync("Settings", this);
                 }
                 catch (Exception ex)
                 {
@@ -77,41 +77,38 @@ public sealed partial class SettingsPage : Page
 
     private async void Logout_Click(object sender, RoutedEventArgs e)
     {
+        var resourceLoader = new Windows.ApplicationModel.Resources.ResourceLoader();
         var confirmLogoutContentDialog = new ContentDialog
         {
-            Title = "Are you sure?",
-            Content = "Are you sure you want to remove this user account?"
-                    + Environment.NewLine
-                    + Environment.NewLine
-                    + "Dev Home will no longer be able to access online resources that use this account.",
-            PrimaryButtonText = "Yes",
-            SecondaryButtonText = "No",
+            Title = resourceLoader.GetString("Settings_Accounts_ConfirmLogoutContentDialog_Title"),
+            Content = resourceLoader.GetString("Settings_Accounts_ConfirmLogoutContentDialog_Content"),
+            PrimaryButtonText = resourceLoader.GetString("Settings_Accounts_ConfirmLogoutContentDialog_PrimaryButtonText"),
+            SecondaryButtonText = resourceLoader.GetString("Settings_Accounts_ConfirmLogoutContentDialog_SecondaryButtonText"),
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = XamlRoot,
         };
         var contentDialogResult = await confirmLogoutContentDialog.ShowAsync();
 
+        // No action if declined
         if (contentDialogResult.Equals(ContentDialogResult.Secondary))
         {
             return;
         }
 
-        var loginIdToRemove = (sender as Button)?.Tag.ToString();
-        if (string.IsNullOrEmpty(loginIdToRemove))
+        // Remove the account
+        if (sender is Button { Tag: AccountViewModel accountToRemove })
         {
-            return;
+            accountToRemove.RemoveAccount();
+
+            // Confirmation of removal Content Dialog
+            var afterLogoutContentDialog = new ContentDialog
+            {
+                Title = resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_Title"),
+                Content = $"{accountToRemove.LoginId} " + resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_Content"),
+                CloseButtonText = resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_PrimaryButtonText"),
+                XamlRoot = XamlRoot,
+            };
+            _ = await afterLogoutContentDialog.ShowAsync();
         }
-
-        AccountsPageViewModel.AccountsProviders.First().RemoveAccount(loginIdToRemove);
-        AccountsPageViewModel.AccountsProviders.First().RefreshLoggedInAccounts();
-
-        var afterLogoutContentDialog = new ContentDialog
-        {
-            Title = "Logout Successful",
-            Content = loginIdToRemove + " has successfully logged out",
-            PrimaryButtonText = "OK",
-            XamlRoot = XamlRoot,
-        };
-        _ = await afterLogoutContentDialog.ShowAsync();
     }
 }

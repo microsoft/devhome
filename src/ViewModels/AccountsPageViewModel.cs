@@ -14,7 +14,7 @@ public class AccountsPageViewModel
 
     public AccountsPageViewModel()
     {
-        var devIdProviders = Application.Current.GetService<IAccountsService>().GetDevIdProviders();
+        var devIdProviders = Task.Run(async () => await Application.Current.GetService<IAccountsService>().GetDevIdProviders()).Result;
         devIdProviders.ToList().ForEach((devIdProvider) =>
         {
             AccountsProviders.Add(new AccountsProviderViewModel(devIdProvider));

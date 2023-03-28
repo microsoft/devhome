@@ -11,6 +11,7 @@ using DevHome.Common.Views;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
 using DevHome.Telemetry;
+using DevHome.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
@@ -19,40 +20,30 @@ namespace DevHome.ViewModels;
 public partial class AccountsProviderViewModel : ObservableObject
 {
     private readonly IDevIdProvider _devIdProvider;
-    private readonly IAccountsService _accountsService;
 
     public ObservableCollection<AccountViewModel> LoggedInAccounts { get; } = new ();
 
     public AccountsProviderViewModel(IDevIdProvider devIdProvider)
     {
         _devIdProvider = devIdProvider;
-        _accountsService = Application.Current.GetService<IAccountsService>();
         RefreshLoggedInAccounts();
     }
 
     public string ProviderName => _devIdProvider.GetName();
 
-    public async Task ShowLoginUI(string loginEntryPoint, Page page)
+    public async Task ShowLoginUIAsync(string loginEntryPoint, Page parentPage)
     {
         string[] args = { loginEntryPoint };
         var loginUIAdaptiveCardController = _devIdProvider.GetAdaptiveCardController(args);
         var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
         pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, AdaptiveCardRendererHelper.GetLoginUIRenderer());
-        pluginAdaptiveCardPanel.RequestedTheme = page.ActualTheme;
+        pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
 
-        var loginUIContentDialog = new ContentDialog
+        var loginUIContentDialog = new LoginUIDialog
         {
             Content = pluginAdaptiveCardPanel,
-            XamlRoot = page.XamlRoot,
-            RequestedTheme = page.ActualTheme,
-            CloseButtonText = "X",
-            CloseButtonStyle = (Style)page.Resources["CloseButton"],
-            MinWidth = 350,
-            MaxWidth = 350,
-            MinHeight = 900,
-            MaxHeight = 900,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
+            XamlRoot = parentPage.XamlRoot,
+            RequestedTheme = parentPage.ActualTheme,
         };
         await loginUIContentDialog.ShowAsync();
         RefreshLoggedInAccounts();
@@ -64,7 +55,7 @@ public partial class AccountsProviderViewModel : ObservableObject
     public void RefreshLoggedInAccounts()
     {
         LoggedInAccounts.Clear();
-        _accountsService.GetDeveloperIds(_devIdProvider).ToList().ForEach((devId) =>
+        _devIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
         {
             LoggedInAccounts.Add(new AccountViewModel(this, devId));
         });
@@ -85,5 +76,7 @@ public partial class AccountsProviderViewModel : ObservableObject
                 throw;
             }
         }
+
+        RefreshLoggedInAccounts();
     }
 }
