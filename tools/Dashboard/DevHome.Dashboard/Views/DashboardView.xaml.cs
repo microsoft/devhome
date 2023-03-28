@@ -10,6 +10,7 @@ using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
@@ -102,12 +103,14 @@ public partial class DashboardView : ToolPage
                 try
                 {
                     var size = await widget.GetSizeAsync();
-
                     AddWidgetToPinnedWidgets(widget, size);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    Debug.WriteLine("as");
+                    LoggerFactory.Get<ILogger>().LogError(
+                        $"RestorePinnedWidgets(): widget.GetSizeAsync() failed",
+                        LogLevel.Local,
+                        $"Error: {ex} Sender: {sender} RoutedEventArgs: {e}");
                 }
             }
         }
