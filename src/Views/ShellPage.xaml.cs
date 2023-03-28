@@ -6,7 +6,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.Core.Helpers;
 using DevHome.Helpers;
 using DevHome.Services;
 using DevHome.ViewModels;

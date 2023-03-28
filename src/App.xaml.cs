@@ -2,14 +2,17 @@
 // Licensed under the MIT license.
 
 using DevHome.Activation;
+using DevHome.Common.Contracts;
+using DevHome.Common.Contracts.Services;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.Core.Contracts.Services;
-using DevHome.Core.Services;
 using DevHome.Helpers;
 using DevHome.Models;
 using DevHome.Services;
+using DevHome.Settings.ViewModels;
+using DevHome.Settings.Views;
 using DevHome.SetupFlow.Extensions;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
@@ -19,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Newtonsoft.Json;
+using Windows.UI.ApplicationSettings;
 using WinRT;
 
 namespace DevHome;
@@ -78,7 +82,6 @@ public partial class App : Application, IApp
 
             // Views and ViewModels
             services.AddTransient<SettingsViewModel>();
-            services.AddTransient<AccountsPageViewModel>();
             services.AddTransient<SettingsPage>();
             services.AddTransient<FeedbackViewModel>();
             services.AddTransient<FeedbackPage>();

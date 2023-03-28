@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-namespace DevHome.Contracts.Services;
+using System.Threading.Tasks;
+
+namespace DevHome.Common.Contracts;
 
 public interface ILocalSettingsService
 {

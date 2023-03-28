@@ -1,38 +1,38 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation and Contributors.
+// Licensed under the MIT License.
 
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.Labs.WinUI;
+using DevHome.Common;
 using DevHome.Common.Extensions;
-using DevHome.Contracts.Services;
-using DevHome.Services;
-using DevHome.ViewModels;
+using DevHome.Settings.Models;
+using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Markup;
+using Microsoft.Windows.ApplicationModel.Resources;
 
-namespace DevHome.Views;
+namespace DevHome.Settings.Views;
 
-// TODO: Set the URL for your privacy policy by updating SettingsPage_PrivacyTermsLink.NavigateUri in Resources.resw.
-public sealed partial class SettingsPage : Page
+public sealed partial class AccountsPage : Page
 {
-    public SettingsViewModel ViewModel
+    public AccountsViewModel ViewModel
     {
         get;
     }
 
-    public AccountsPageViewModel AccountsPageViewModel
+    public AccountsPage()
     {
-        get;
-    }
-
-    public SettingsPage()
-    {
-        ViewModel = Application.Current.GetService<SettingsViewModel>();
-        AccountsPageViewModel = Application.Current.GetService<AccountsPageViewModel>();
-        InitializeComponent();
+        ViewModel = Application.Current.GetService<AccountsViewModel>();
+        this.InitializeComponent();
     }
 
     private async void AddDeveloperId_Click(object sender, RoutedEventArgs e)
     {
-        if (AccountsPageViewModel.AccountsProviders.Count == 0)
+        if (ViewModel.AccountsProviders.Count == 0)
         {
             var confirmLogoutContentDialog = new ContentDialog
             {
@@ -47,7 +47,7 @@ public sealed partial class SettingsPage : Page
         }
 
         // TODO: expand this for multiple providers after their buttons are added
-        AccountsPageViewModel.AccountsProviders.First().AddAccount();
+        ViewModel.AccountsProviders.First().AddAccount();
     }
 
     private async void Logout_Click(object sender, RoutedEventArgs e)
@@ -77,7 +77,7 @@ public sealed partial class SettingsPage : Page
             return;
         }
 
-        AccountsPageViewModel.AccountsProviders.First().RemoveAccount(loginIdToRemove);
+        ViewModel.AccountsProviders.First().RemoveAccount(loginIdToRemove);
 
         var afterLogoutContentDialog = new ContentDialog
         {

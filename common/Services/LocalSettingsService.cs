@@ -1,16 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.Contracts.Services;
-using DevHome.Core.Contracts.Services;
-using DevHome.Core.Helpers;
-using DevHome.Helpers;
-using DevHome.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using DevHome.Common.Contracts;
+using DevHome.Common.Helpers;
+using DevHome.Common.Models;
 using Microsoft.Extensions.Options;
-using Windows.ApplicationModel;
 using Windows.Storage;
 
-namespace DevHome.Services;
+namespace DevHome.Common.Services;
 
 public class LocalSettingsService : ILocalSettingsService
 {
