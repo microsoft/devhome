@@ -22,10 +22,11 @@ public class InstallPackageTask : ISetupTask
     private readonly WinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly WindowsPackageManagerFactory _wingetFactory;
+    private readonly Lazy<bool> _requiresElevation;
 
     private InstallPackageException _installPackageException;
 
-    public bool RequiresAdmin => RequiresElevation();
+    public bool RequiresAdmin => _requiresElevation.Value;
 
     // As we don't have this information available for each package in the WinGet COM API,
     // simply assume that any package installation may need a reboot.
@@ -43,6 +44,7 @@ public class InstallPackageTask : ISetupTask
         _stringResource = stringResource;
         _wingetFactory = wingetFactory;
         _package = package;
+        _requiresElevation = new (RequiresElevation);
     }
 
     LoadingMessages ISetupTask.GetLoadingMessages()

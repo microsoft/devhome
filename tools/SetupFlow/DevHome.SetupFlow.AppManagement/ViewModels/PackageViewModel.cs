@@ -5,12 +5,13 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.Services;
+using DevHome.Telemetry;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using Windows.System;
@@ -34,10 +35,14 @@ public partial class PackageViewModel : ObservableObject
 
     private readonly Lazy<BitmapImage> _packageDarkThemeIcon;
     private readonly Lazy<BitmapImage> _packageLightThemeIcon;
+    private readonly Lazy<InstallPackageTask> _installPackageTask;
 
+    private readonly ILogger _logger;
+    private readonly ISetupFlowStringResource _stringResource;
     private readonly IWinGetPackage _package;
     private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
+    private readonly WindowsPackageManagerFactory _wingetFactory;
 
     /// <summary>
     /// Occurrs after the package selection changes
@@ -50,13 +55,23 @@ public partial class PackageViewModel : ObservableObject
     [ObservableProperty]
     private bool _isSelected;
 
-    public PackageViewModel(IWindowsPackageManager wpm, IWinGetPackage package, IThemeSelectorService themeSelector)
+    public PackageViewModel(
+        ILogger logger,
+        ISetupFlowStringResource stringResource,
+        IWindowsPackageManager wpm,
+        IWinGetPackage package,
+        IThemeSelectorService themeSelector,
+        WindowsPackageManagerFactory wingetFactory)
     {
+        _logger = logger;
+        _stringResource = stringResource;
         _wpm = wpm;
         _package = package;
         _themeSelector = themeSelector;
+        _wingetFactory = wingetFactory;
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
+        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask);
     }
 
     public PackageUniqueKey UniqueKey => _package.UniqueKey;
@@ -70,6 +85,8 @@ public partial class PackageViewModel : ObservableObject
     public string Version => _package.Version;
 
     public bool IsInstalled => _package.IsInstalled;
+
+    public InstallPackageTask InstallPackageTask => _installPackageTask.Value;
 
     /// <summary>
     /// Gets the URI for the "Learn more" button
@@ -136,6 +153,11 @@ public partial class PackageViewModel : ObservableObject
         var bitmapImage = new BitmapImage();
         bitmapImage.SetSource(stream);
         return bitmapImage;
+    }
+
+    private InstallPackageTask CreateInstallTask()
+    {
+        return _package.CreateInstallTask(_logger, _wpm, _stringResource, _wingetFactory);
     }
 
     /// <summary>
