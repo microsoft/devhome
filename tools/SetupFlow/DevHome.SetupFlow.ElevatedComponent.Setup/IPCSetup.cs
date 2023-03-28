@@ -113,9 +113,10 @@ public static class IPCSetup
     /// app process.
     /// </summary>
     /// <returns>A factory that creates WinRT objects in the background process.</returns>
-    public static RemoteObject<T> CreateOutOfProcessObject<T>()
+    public static async Task<RemoteObject<T>> CreateOutOfProcessObject<T>()
     {
-        (var remoteObject, _) = CreateOutOfProcessObjectAndGetProcess<T>();
+        // Run this in the background since it may take a while
+        (var remoteObject, _) = await Task.Run(() => CreateOutOfProcessObjectAndGetProcess<T>());
         return remoteObject;
     }
 
