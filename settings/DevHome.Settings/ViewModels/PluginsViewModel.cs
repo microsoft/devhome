@@ -79,7 +79,7 @@ public partial class PluginsViewModel : ObservableRecipient
 
         foreach (var pluginWrapper in pluginWrappers)
         {
-            var setting = new Setting("Plugins/" + pluginWrapper.ClassId, pluginWrapper.ClassId, pluginWrapper.Name, string.Empty, true);
+            var setting = new Setting("Plugins/" + pluginWrapper.PluginClassId, pluginWrapper.PluginClassId, pluginWrapper.Name, string.Empty, true);
             SettingsList.Add(new PluginViewModel(setting, this));
         }
     }
