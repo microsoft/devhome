@@ -57,7 +57,7 @@ public partial class SettingsViewModel : ObservableRecipient
         var stringResource = new StringResource("DevHome.Settings/Resources");
 
 #pragma warning disable SA1515 // Single-line comment should be preceded by blank line
-        Setting[] settings = new[]
+        var settings = new[]
         {
             new Setting("Preferences", string.Empty, stringResource.GetLocalized("Settings_Preferences_Header"), stringResource.GetLocalized("Settings_Preferences_Description"), false),
             new Setting("Accounts", string.Empty, stringResource.GetLocalized("Settings_Accounts_Header"), stringResource.GetLocalized("Settings_Accounts_Description"), false),
