@@ -47,6 +47,7 @@ public static class StringResourceKey
     public static readonly string RestorePackagesTitle = nameof(RestorePackagesTitle);
     public static readonly string RestorePackagesDescription = nameof(RestorePackagesDescription);
     public static readonly string Repository = nameof(Repository);
+    public static readonly string ReviewNothingToSetUpToolTip = nameof(ReviewNothingToSetUpToolTip);
     public static readonly string SelectedPackagesCount = nameof(SelectedPackagesCount);
     public static readonly string SetUpButton = nameof(SetUpButton);
     public static readonly string SizeWithColon = nameof(SizeWithColon);
