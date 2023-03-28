@@ -1,12 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
 using DevHome.Services;
+using DevHome.Telemetry;
 using DevHome.ViewModels;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.Views;
 
@@ -47,7 +52,27 @@ public sealed partial class SettingsPage : Page
         }
 
         // TODO: expand this for multiple providers after their buttons are added
-        AccountsPageViewModel.AccountsProviders.First().AddAccount();
+        if (sender as Button is Button addAccountButton)
+        {
+            if (addAccountButton.Tag is AccountsProviderViewModel accountProvider)
+            {
+                try
+                {
+                    await accountProvider.ShowLoginUI("Settings", this);
+                }
+                catch (Exception ex)
+                {
+                    LoggerFactory.Get<ILogger>().Log($"AddAccount_Click(): loginUIContentDialog failed", LogLevel.Local, $"Error: {ex} Sender: {sender} RoutedEventArgs: {e}");
+                }
+
+                accountProvider.RefreshLoggedInAccounts();
+            }
+            else
+            {
+                LoggerFactory.Get<ILogger>().Log($"AddAccount_Click(): addAccountButton.Tag is not AccountsProviderViewModel", LogLevel.Local, $"Sender: {sender} RoutedEventArgs: {e}");
+                return;
+            }
+        }
     }
 
     private async void Logout_Click(object sender, RoutedEventArgs e)
@@ -78,6 +103,7 @@ public sealed partial class SettingsPage : Page
         }
 
         AccountsPageViewModel.AccountsProviders.First().RemoveAccount(loginIdToRemove);
+        AccountsPageViewModel.AccountsProviders.First().RefreshLoggedInAccounts();
 
         var afterLogoutContentDialog = new ContentDialog
         {

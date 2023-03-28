@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
@@ -98,8 +99,16 @@ public partial class DashboardView : ToolPage
         {
             foreach (var widget in pinnedWidgets)
             {
-                var size = await widget.GetSizeAsync();
-                AddWidgetToPinnedWidgets(widget, size);
+                try
+                {
+                    var size = await widget.GetSizeAsync();
+
+                    AddWidgetToPinnedWidgets(widget, size);
+                }
+                catch
+                {
+                    Debug.WriteLine("as");
+                }
             }
         }
     }

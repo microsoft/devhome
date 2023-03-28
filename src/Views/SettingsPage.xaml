@@ -15,6 +15,19 @@
             <Setter Property="VerticalAlignment" Value="Bottom"/>
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
+        <Style x:Key="CloseButton" TargetType="Button">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Background" Value="OrangeRed" />
+            <Setter Property="Height" Value="35"/>
+            <Setter Property="Width" Value="35"/>
+            <Setter Property="Margin" Value= "0,-890,-260,0" />
+        </Style>
+        <DataTemplate x:Key="AccountsProviderButtonTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
+            <StackPanel>
+                <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Right" Click="AddDeveloperId_Click" Tag="{x:Bind}"/>
+            </StackPanel>
+        </DataTemplate>
 
         <DataTemplate x:Key="AccountsProviderViewTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
             <StackPanel>
@@ -64,7 +77,21 @@
                                     <TextBlock Text="Add account" Style="{ThemeResource BodyTextStyle}" HorizontalAlignment="Left"/>
                                 </StackPanel>
                                 <StackPanel RelativePanel.AlignRightWithPanel="True">
-                                    <Button Content ="Add account" HorizontalAlignment="Right" Click="AddDeveloperId_Click"/>
+                                    <Button x:Uid="Add account" HorizontalAlignment="Right" Content="Add Account">
+                                        <Button.Flyout>
+                                            <Flyout>
+                                                <ItemsRepeater ItemsSource="{x:Bind AccountsPageViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
+                                                </ItemsRepeater>
+                                                <Flyout.FlyoutPresenterStyle>
+                                                    <Style TargetType="FlyoutPresenter">
+                                                        <Setter Property="IsTabStop" Value="True"/>
+                                                        <Setter Property="TabNavigation" Value="Cycle"/>
+                                                    </Style>
+                                                </Flyout.FlyoutPresenterStyle>
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
                                 </StackPanel>
                             </RelativePanel>
                         </Expander.Header>

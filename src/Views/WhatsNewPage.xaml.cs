@@ -80,16 +80,10 @@ public sealed partial class WhatsNewPage : Page
 
             try
             {
-                // TODO: Replace this flow with LoginUI
-                var devId = await iDevIdProvider.LoginNewDeveloperIdAsync();
+                var githubAccountsProvider = new AccountsProviderViewModel(iDevIdProvider);
+                await githubAccountsProvider.ShowLoginUI("WhatsNew", this);
 
-                var connectToGitHubSuccessContentDialog = new ContentDialog
-                {
-                    Title = $"{devId.LoginId()} has connected to GitHub!",
-                    CloseButtonText = "OK",
-                    XamlRoot = XamlRoot,
-                };
-                _ = await connectToGitHubSuccessContentDialog.ShowAsync();
+                // TODO: Get new DevId from ShowLoginUI and act on it
             }
             catch (Exception ex)
             {

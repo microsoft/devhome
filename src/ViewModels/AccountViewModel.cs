@@ -10,12 +10,17 @@ public partial class AccountViewModel : ObservableObject
 {
     private readonly IDeveloperId _devId;
 
+    private readonly AccountsProviderViewModel _accountsProvider;
+
     internal IDeveloperId GetDevId() => _devId;
 
-    public AccountViewModel(IDeveloperId devId)
+    public AccountViewModel(AccountsProviderViewModel accountsProviderViewModel, IDeveloperId devId)
     {
         _devId = devId;
+        _accountsProvider = accountsProviderViewModel;
     }
 
     public string LoginId => _devId.LoginId();
+
+    public void RemoveAccount() => _accountsProvider.RemoveAccount(_devId.LoginId());
 }

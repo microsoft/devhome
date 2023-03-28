@@ -1,14 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
+using DevHome.ViewModels;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Services;
 
 public class AccountsService : IAccountsService
 {
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
     private readonly Dictionary<IDevIdProvider, List<IDeveloperId>> _accountsDictionary;
 
     public AccountsService()
@@ -64,6 +71,9 @@ public class AccountsService : IAccountsService
             _accountsDictionary[iDevIdProvider].Add(developerId);
             LoggingHelper.AccountEvent("Login_DevId_Event", iDevIdProvider.GetName(), developerId.LoginId());
         }
+
+        // Bring focus back to DevHome after login
+        SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
     }
 
     public void LoggedOutEventHandler(object? sender, IDeveloperId developerId)
