@@ -65,7 +65,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         foreach (var jsonCatalog in _jsonCatalogs)
         {
             var packageCatalog = await LoadCatalogAsync(jsonCatalog);
-            if (packageCatalog?.Packages.Any() ?? false)
+            if (packageCatalog != null)
             {
                 result.Add(packageCatalog);
             }
@@ -84,18 +84,22 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     {
         try
         {
-            var orderedPackages = await GetOrderedPackagesAsync(jsonCatalog.WinGetPackageIds, id => id);
-            return new PackageCatalog()
+            var packages = await GetPackagesAsync(jsonCatalog.WinGetPackageIds, id => id);
+            if (packages.Any())
             {
-                Name = _stringResource.GetLocalized(jsonCatalog.NameResourceKey),
-                Description = _stringResource.GetLocalized(jsonCatalog.DescriptionResourceKey),
-                Packages = orderedPackages.ToReadOnlyCollection(),
-            };
+                return new PackageCatalog()
+                {
+                    Name = _stringResource.GetLocalized(jsonCatalog.NameResourceKey),
+                    Description = _stringResource.GetLocalized(jsonCatalog.DescriptionResourceKey),
+                    Packages = packages.ToReadOnlyCollection(),
+                };
+            }
         }
         catch (Exception e)
         {
             _logger.LogError(nameof(WinGetPackageJsonDataSource), LogLevel.Info, $"Error loading packages from winget catalog: {e.Message}");
-            return null;
         }
+
+        return null;
     }
 }

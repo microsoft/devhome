@@ -249,6 +249,42 @@
     <value>File type not supported</value>
     <comment>File type not supported error message</comment>
   </data>
+  <data name="InstalledPackage" xml:space="preserve">
+    <value>Installed {0}</value>
+    <comment>{Locked="{0}"} Label displayed when a package has been installed. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallingPackage" xml:space="preserve">
+    <value>Installing {0}</value>
+    <comment>{Locked="{0}"} Label displayed when a package is being installed. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorWithReason" xml:space="preserve">
+    <value>Error installing {0}: {1}</value>
+    <comment>{Locked="{0}","{1}"} Label displayed when a package failed to install. {0} is replaced by the package name. {1} is replaced by the error reason.</comment>
+  </data>
+  <data name="InstallPackageErrorBlockedByPolicy" xml:space="preserve">
+    <value>Operation is blocked by Group Policy</value>
+    <comment>Label displayed when a package installation fails because it is blocked by group policy</comment>
+  </data>
+  <data name="InstallPackageErrorInternalError" xml:space="preserve">
+    <value>Internal error</value>
+    <comment>Label displayed when a package installation fails because of an internal error</comment>
+  </data>
+  <data name="InstallPackageErrorInstallError" xml:space="preserve">
+    <value>Install error code ({0})</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because of an error. {0} is replaced by a numeric value</comment>
+  </data>
+  <data name="InstallPackageErrorDownloadError" xml:space="preserve">
+    <value>Downloading installer failed</value>
+    <comment>{Locked="(0x{0})"}Label displayed when a package installation fails because the downloading the installer failed</comment>
+  </data>
+  <data name="InstallPackageErrorNoApplicableInstallers" xml:space="preserve">
+    <value>None of the installers are applicable for the current system</value>
+    <comment>Label displayed when a package installation fails because no applicable installer found for the current system</comment>
+  </data>
+  <data name="InstallPackageErrorUnknownError" xml:space="preserve">
+    <value>Unknown error</value>
+    <comment>Label displayed when a package installation fails because of an unknown error</comment>
+  </data>
   <data name="LearnMore.Text" xml:space="preserve">
     <value>Learn more</value>
     <comment>Text for a clickable learn more button</comment>
@@ -357,7 +393,7 @@
     <value>I allow Windows to automatically reboot my system</value>
     <comment>Checkbox text for user to accept the possibility of reboots during setup</comment>
   </data>
-  <data name="Review_SetupDetailsTitle.Text" xml:space="preserve">
+  <data name="Review_SetupDetails.Text" xml:space="preserve">
     <value>Set up details</value>
     <comment>Header for a section detailing the set up steps to be performed. "Set up" is the noun</comment>
   </data>
@@ -376,6 +412,10 @@
   <data name="Review_RebootText.Text" xml:space="preserve">
     <value>A reboot may be needed</value>
     <comment>Text indicating that a reboot may be needed to finish the setup</comment>
+  </data>
+  <data name="ReviewNothingToSetUpToolTip" xml:space="preserve">
+    <value>Nothing to set up</value>
+    <comment>Text shown on a tool tip for a "Start set up" button if there is noting to set up</comment>
   </data>
   <data name="SearchBox.PlaceholderText" xml:space="preserve">
     <value>Try "GitHub"</value>

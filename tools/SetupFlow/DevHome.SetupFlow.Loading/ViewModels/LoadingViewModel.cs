@@ -251,12 +251,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         var window = Application.Current.GetService<WindowEx>();
         await Task.Run(async () =>
         {
-            var tasksToRunFirst = new List<TaskInformation>();
-            var tasksToRunSecond = new List<TaskInformation>();
-
-            // Most likely need a better way to figure out dependncies.
-            // However, right now, the only dependency is "does this need to wait for a dev drive"
-            foreach (var taskInformation in tasks)
+            await Parallel.ForEachAsync(_setupTasks, async (task, _) =>
             {
                 if (taskInformation.TaskToExecute.DependsOnDevDriveToBeInstalled)
                 {

@@ -6,6 +6,7 @@ using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Dashboard.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
@@ -73,11 +74,26 @@ public partial class WidgetViewModel : ObservableObject
 
     private async void RenderWidgetFrameworkElement()
     {
-        var cardTemplate = await _widget.GetCardTemplateAsync();
-        var cardData = await _widget.GetCardDataAsync();
+        Log.Logger()?.ReportDebug("WidgetViewModel", "RenderWidgetFrameworkElement");
+
+        var cardTemplate = await Widget.GetCardTemplateAsync();
+        var cardData = await Widget.GetCardDataAsync();
+
+        if (string.IsNullOrEmpty(cardTemplate))
+        {
+            // TODO CreateWidgetAsync doesn't always seem to be "done", and returns blank templates and data.
+            // Put in small wait to avoid this.
+            Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardTemplateAsync returned empty, try wait");
+            System.Threading.Thread.Sleep(100);
+            cardTemplate = await Widget.GetCardTemplateAsync();
+            cardData = await Widget.GetCardDataAsync();
+        }
 
         if (!string.IsNullOrEmpty(cardData))
         {
+            Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
+            Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
+
             // Use the data to fill in the template.
             var template = new AdaptiveCardTemplate(cardTemplate);
             var json = template.Expand(cardData);
@@ -95,9 +111,9 @@ public partial class WidgetViewModel : ObservableObject
                         WidgetFrameworkElement = renderedCard.FrameworkElement;
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    // TODO: LogError("WidgetViewModel", "Error rendering widget card", e);
+                    Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card", e);
 
                     // TODO: Create nice fallback element with localized text.
                     WidgetFrameworkElement = new TextBlock
@@ -106,6 +122,10 @@ public partial class WidgetViewModel : ObservableObject
                     };
                 }
             });
+        }
+        else
+        {
+            Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, didn't render card");
         }
     }
 
@@ -129,13 +149,14 @@ public partial class WidgetViewModel : ObservableObject
                 }
             }
 
-            // TODO: LogInfo("WidgetViewModel", $"Notify widget {Widget.Id} of action {actionExecute.Verb} with data {dataToSend}");
-            await _widget.NotifyActionInvokedAsync(actionExecute.Verb, dataToSend);
+            Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction for widget {Widget.Id}. Action = {actionExecute.Verb}, Data = {dataToSend}");
+            await Widget.NotifyActionInvokedAsync(actionExecute.Verb, dataToSend);
         }
     }
 
     private void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
     {
+        Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
         RenderWidgetFrameworkElement();
     }
 }

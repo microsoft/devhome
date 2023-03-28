@@ -7,10 +7,12 @@ using Moq;
 namespace DevHome.SetupFlow.UnitTest.Helpers;
 public class PackageHelper
 {
-    public static Mock<IWinGetPackage> CreatePackage(string id)
+    public static Mock<IWinGetPackage> CreatePackage(string id, string catalogId = "mock catalog id")
     {
         var package = new Mock<IWinGetPackage>();
         package.Setup(p => p.Id).Returns(id);
+        package.Setup(p => p.CatalogId).Returns(catalogId);
+        package.Setup(p => p.UniqueKey).Returns(new PackageUniqueKey(id, catalogId));
         package.Setup(p => p.Name).Returns("Mock Package Name");
         package.Setup(p => p.PackageUrl).Returns(new Uri("https://packageUrl"));
         package.Setup(p => p.PublisherUrl).Returns(new Uri("https://publisherUrl"));

@@ -29,6 +29,7 @@ public static class ServiceExtensions
         services.AddSingleton<IWindowsPackageManager, WindowsPackageManager>();
         services.AddSingleton(new WindowsPackageManagerFactory(ClsidContext.Prod));
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
+        services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();
         services.AddTransient<WinGetPackageRestoreDataSource>();
         services.AddTransient<WinGetPackageJsonDataSource>(sp =>
@@ -37,6 +38,10 @@ public static class ServiceExtensions
             var dataSourceFullPath = Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, dataSourcePath);
             return ActivatorUtilities.CreateInstance<WinGetPackageJsonDataSource>(sp, dataSourceFullPath);
         });
+
+        // DI factory pattern
+        services.AddSingleton<PackageViewModelFactory>(sp => package => ActivatorUtilities.CreateInstance<PackageViewModel>(sp, package));
+        services.AddSingleton<PackageCatalogViewModelFactory>(sp => catalog => ActivatorUtilities.CreateInstance<PackageCatalogViewModel>(sp, catalog));
 
         return services;
     }

@@ -5,6 +5,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.Services;
+using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 using Windows.Storage.Streams;
 
@@ -18,12 +21,14 @@ public class WinGetPackage : IWinGetPackage
     private readonly CatalogPackage _package;
     private readonly Lazy<Uri> _packageUrl;
     private readonly Lazy<Uri> _publisherUrl;
+    private readonly PackageUniqueKey _uniqueKey;
 
     public WinGetPackage(CatalogPackage package)
     {
         _package = package;
         _packageUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PackageUrl), null));
         _publisherUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PublisherUrl), null));
+        _uniqueKey = new (Id, CatalogId);
     }
 
     public CatalogPackage CatalogPackage => _package;
@@ -32,9 +37,13 @@ public class WinGetPackage : IWinGetPackage
 
     public string CatalogId => _package.DefaultInstallVersion.PackageCatalog.Info.Id;
 
+    public PackageUniqueKey UniqueKey => _uniqueKey;
+
     public string Name => _package.Name;
 
     public string Version => _package.DefaultInstallVersion.Version;
+
+    public bool IsInstalled => _package.InstalledVersion != null;
 
     public IRandomAccessStream LightThemeIcon
     {
@@ -50,9 +59,30 @@ public class WinGetPackage : IWinGetPackage
 
     public Uri PublisherUrl => _publisherUrl.Value;
 
-    public async Task InstallAsync(IWindowsPackageManager wpm)
+    public InstallPackageTask CreateInstallTask(
+        ILogger logger,
+        IWindowsPackageManager wpm,
+        ISetupFlowStringResource stringResource,
+        WindowsPackageManagerFactory wingetFactory) => new (logger, wpm, stringResource, wingetFactory, this);
+
+    /// <summary>
+    /// Check if the package requires elevation
+    /// </summary>
+    /// <param name="options">Install options</param>
+    /// <returns>True if the package requires elevation</returns>
+    public bool RequiresElevation(InstallOptions options)
     {
-        await wpm.InstallPackageAsync(this);
+        try
+        {
+            // TODO Use the API contract version to check if this method can be
+            // called instead of a try/catch
+            var appInstaller = _package.DefaultInstallVersion.GetApplicableInstaller(options);
+            return appInstaller.ElevationRequirement == ElevationRequirement.ElevationRequired;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>
