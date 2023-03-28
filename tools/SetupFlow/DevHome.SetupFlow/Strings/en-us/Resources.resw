@@ -249,6 +249,42 @@
     <value>File type not supported</value>
     <comment>File type not supported error message</comment>
   </data>
+  <data name="InstalledPackage" xml:space="preserve">
+    <value>Installed {0}</value>
+    <comment>{Locked="{0}"} Label displayed when a package has been installed. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallingPackage" xml:space="preserve">
+    <value>Installing {0}</value>
+    <comment>{Locked="{0}"} Label displayed when a package is being installed. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorWithReason" xml:space="preserve">
+    <value>Error installing {0}: {1}</value>
+    <comment>{Locked="{0}","{1}"} Label displayed when a package failed to install. {0} is replaced by the package name. {1} is replaced by the error reason.</comment>
+  </data>
+  <data name="InstallPackageErrorBlockedByPolicy" xml:space="preserve">
+    <value>Operation is blocked by Group Policy</value>
+    <comment>Label displayed when a package installation fails because it is blocked by group policy</comment>
+  </data>
+  <data name="InstallPackageErrorInternalError" xml:space="preserve">
+    <value>Internal error</value>
+    <comment>Label displayed when a package installation fails because of an internal error</comment>
+  </data>
+  <data name="InstallPackageErrorInstallError" xml:space="preserve">
+    <value>Install error code ({0})</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because of an error. {0} is replaced by a numeric value</comment>
+  </data>
+  <data name="InstallPackageErrorDownloadError" xml:space="preserve">
+    <value>Downloading installer failed</value>
+    <comment>{Locked="(0x{0})"}Label displayed when a package installation fails because the downloading the installer failed</comment>
+  </data>
+  <data name="InstallPackageErrorNoApplicableInstallers" xml:space="preserve">
+    <value>None of the installers are applicable for the current system</value>
+    <comment>Label displayed when a package installation fails because no applicable installer found for the current system</comment>
+  </data>
+  <data name="InstallPackageErrorUnknownError" xml:space="preserve">
+    <value>Unknown error</value>
+    <comment>Label displayed when a package installation fails because of an unknown error</comment>
+  </data>
   <data name="LearnMore.Text" xml:space="preserve">
     <value>Learn more</value>
     <comment>Text for a clickable learn more button</comment>
@@ -482,7 +518,7 @@
     <comment>Header for the dialog bos to clone repositories</comment>
   </data>
   <data name="NewDevDriveComboBox.Content" xml:space="preserve">
-    <value>Optimimize repo performance with a new DevDrive</value>
+    <value>Optimize repo performance with a new Dev Drive</value>
     <comment>Check box label to notify users of making a new dev drive</comment>
   </data>
   <data name="RepositoryDisplay.Header" xml:space="preserve">
@@ -536,5 +572,77 @@
   <data name="EditClonePathDialog.PrimaryButtonText" xml:space="preserve">
     <value>Add</value>
     <comment>Content for the primary button in the edit clone path dialog.</comment>
+  </data>
+  <data name="DevDriveDefaultFileName" xml:space="preserve">
+    <value>Dev Disk</value>
+    <comment>file name for the virtual disk file we will create the Dev Drive in if the user keeps the defaults</comment>
+  </data>
+  <data name="DevDriveDefaultFolderName" xml:space="preserve">
+    <value>Dev Drives</value>
+    <comment>folder name for the folder we will create the Dev Drive in if the user keeps the defaults</comment>
+  </data>
+  <data name="DevDriveReviewPageDevDriveDetailsTitle.Text" xml:space="preserve">
+    <value>Dev Drive details</value>
+    <comment>Text that will be the description of a section in the review page where the user will see a list of details about the Dev Drives they are about to create. The name, size and the virtual disk file location are the details shows.</comment>
+  </data>
+  <data name="DevDriveReviewPageNoDevDrives.Text" xml:space="preserve">
+    <value>No Dev Drives will be created.</value>
+    <comment>Text that lets the user know that they did not select a previous option to create a Dev Drive so therefore none will be created in the next step</comment>
+  </data>
+  <data name="DevDriveReviewPageNumberOfDevDrives" xml:space="preserve">
+    <value>{0} created</value>
+    <comment>{Locked="{0}"} Text that shows the number of Dev Drives that the user will be creating on the review page</comment>
+  </data>
+  <data name="DevDriveReviewPageNumberOfDevDrivesTitle" xml:space="preserve">
+    <value>Dev Drive creation</value>
+    <comment>Test that will be the decription to a section of the review page where the user will see the number of Dev Drives they are about to create</comment>
+  </data>
+  <data name="PathWithColon.Text" xml:space="preserve">
+    <value>Path:</value>
+    <comment>label for any item that will display a file or folder path to the user</comment>
+  </data>
+  <data name="Size.Header" xml:space="preserve">
+    <value>Size</value>
+    <comment>Header for items like text and number boxes where the user can enter values that represent the size of something.</comment>
+  </data>
+  <data name="BrowseTextBlock" xml:space="preserve">
+    <value>Browse</value>
+    <comment>Label for browse button that can be used in a body of text instead of directly in the button content</comment>
+  </data>
+  <data name="DevDriveInvalidDriveLabel" xml:space="preserve">
+    <value>The file name must be 32 characters or less and can't include any of the following \ / : * ? " &lt; &gt; |</value>
+    <comment>Tells the user which characters are invalid for the Dev Drive file name. Should show, A file name can't include any of the followingspecial characters \ / : * ? "&lt; &gt; |</comment>
+  </data>
+  <data name="DevDriveInvalidDriveSize" xml:space="preserve">
+    <value>A Dev Drive must be at least 50 GB and at most 64 TB.</value>
+    <comment>Text that tells the user the minimum and maximum size they can use to create a Dev Drive. </comment>
+  </data>
+  <data name="DevDriveInvalidFolderLocation" xml:space="preserve">
+    <value>Make sure the path is fully qualified and try again.</value>
+    <comment>Tells the user how the location path should be structured. </comment>
+  </data>
+  <data name="DevDriveNoDriveLettersAvailable" xml:space="preserve">
+    <value>No drive letters are available</value>
+    <comment>Text that tells the user they have no drive letters that can be used to create a Dev Drive</comment>
+  </data>
+  <data name="DevDriveNotEnoughFreeSpace" xml:space="preserve">
+    <value>Not enough free space. Free at least 50 GB and try again.</value>
+    <comment>Text that tells the user that they don't have enough space available on their machines to create a Dev Drive.</comment>
+  </data>
+  <data name="Save.Content" xml:space="preserve">
+    <value>Save</value>
+    <comment>content for a save button</comment>
+  </data>
+  <data name="SizeWithColon.Text" xml:space="preserve">
+    <value>Size:</value>
+    <comment>Text label for any item that will display a number size. Example could be a using this with a textblock to make a label that is on the same line as another textblock that displays the amount of free storage space on a computer.</comment>
+  </data>
+  <data name="DevDriveFilenameAlreadyExists" xml:space="preserve">
+    <value>The filename already exists in the selected location. Enter a new file name and try again.</value>
+    <comment>Text that advises the user that the file name of the virtual hard disk they were trying to create already exists in the location they selected and that they should enter a new name.</comment>
+  </data>
+  <data name="DevDriveUnableToCreateError" xml:space="preserve">
+    <value>The Dev Drive couldn't be created.</value>
+    <comment>Text that advises the user that there was an error and we couldn't create the Dev Drive on their machine.</comment>
   </data>
 </root>

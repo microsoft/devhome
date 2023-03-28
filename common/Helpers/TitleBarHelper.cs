@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Runtime.InteropServices;
 
 using Microsoft.UI;
@@ -9,12 +10,12 @@ using Microsoft.UI.Xaml.Media;
 
 using Windows.UI;
 
-namespace DevHome.Helpers;
+namespace DevHome.Common.Helpers;
 
 // Helper class to workaround custom title bar bugs.
 // DISCLAIMER: The resource key names and color values used below are subject to change. Do not depend on them.
 // https://github.com/microsoft/TemplateStudio/issues/4516
-internal class TitleBarHelper
+public class TitleBarHelper
 {
     private const int WAINACTIVE = 0x00;
     private const int WAACTIVE = 0x01;
@@ -26,9 +27,9 @@ internal class TitleBarHelper
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
     private static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
 
-    public static void UpdateTitleBar(ElementTheme theme)
+    public static void UpdateTitleBar(Window window, ElementTheme theme)
     {
-        if (App.MainWindow.ExtendsContentIntoTitleBar)
+        if (window.ExtendsContentIntoTitleBar)
         {
             if (theme != ElementTheme.Default)
             {
@@ -78,7 +79,7 @@ internal class TitleBarHelper
             Application.Current.Resources["WindowCaptionBackground"] = new SolidColorBrush(Colors.Transparent);
             Application.Current.Resources["WindowCaptionBackgroundDisabled"] = new SolidColorBrush(Colors.Transparent);
 
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
             if (hwnd == GetActiveWindow())
             {
                 SendMessage(hwnd, WMACTIVATE, WAINACTIVE, IntPtr.Zero);
@@ -90,5 +91,16 @@ internal class TitleBarHelper
                 SendMessage(hwnd, WMACTIVATE, WAINACTIVE, IntPtr.Zero);
             }
         }
+    }
+
+    /// <summary>
+    /// Gets the title bar text color brush based on the window activation state.
+    /// </summary>
+    /// <param name="state">Window activation state</param>
+    /// <returns>Corresponding color brush for the title bar text</returns>
+    public static SolidColorBrush GetTitleBarTextColorBrush(WindowActivationState state)
+    {
+        var resource = state == WindowActivationState.Deactivated ? "WindowCaptionForegroundDisabled" : "WindowCaptionForeground";
+        return (SolidColorBrush)Application.Current.Resources[resource];
     }
 }

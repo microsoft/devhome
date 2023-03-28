@@ -9,12 +9,17 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/EditClonePathDialog"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d"
     IsPrimaryButtonEnabled="{x:Bind EditClonePathViewModel.IsPrimaryButtonEnabled, Mode=OneWay}">
     <ContentDialog.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow.Common/Styles/SetupToolStyles.xaml" />
+                <ResourceDictionary>
+                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+                    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ContentDialog.Resources>
@@ -26,7 +31,16 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <!--WINUI3 does not have a folder/file picker control.  Lets make one that looks like it.-->
-            <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath" Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"  Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"/>
+            <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
+                     Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"
+                     Text="{x:Bind FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
+                     IsReadOnly="True"
+                     Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
+            <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
+                     Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"
+                     Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
+                     IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
+                     Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
             <Button IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click"  Grid.Column="1" Margin="5, 25, 0, 0"/>
         </Grid>
         <Grid Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" ColumnSpacing="10">

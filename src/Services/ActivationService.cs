@@ -69,7 +69,9 @@ public class ActivationService : IActivationService
 
     private async Task StartupAsync()
     {
-        await _themeSelectorService.SetRequestedThemeAsync();
+        // Subscribe to theme changes.
+        _themeSelectorService.ThemeChanged += (_, theme) => App.MainWindow.SetRequestedTheme(theme);
+        _themeSelectorService.SetRequestedTheme();
         await Task.CompletedTask;
     }
 }
