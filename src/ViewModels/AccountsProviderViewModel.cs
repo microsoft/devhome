@@ -44,6 +44,7 @@ public partial class AccountsProviderViewModel : ObservableObject
             Content = pluginAdaptiveCardPanel,
             XamlRoot = parentPage.XamlRoot,
             RequestedTheme = parentPage.ActualTheme,
+            CloseButtonText = "Close",
         };
         await loginUIContentDialog.ShowAsync();
         RefreshLoggedInAccounts();

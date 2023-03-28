@@ -1,17 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
-using DevHome.Contracts.Services;
-using DevHome.Services;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
-using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.Views;
 
