@@ -357,7 +357,7 @@
     <value>I allow Windows to automatically reboot my system</value>
     <comment>Checkbox text for user to accept the possibility of reboots during setup</comment>
   </data>
-  <data name="Review_SetupDetails.Header" xml:space="preserve">
+  <data name="Review_SetupDetails.Text" xml:space="preserve">
     <value>Set up details</value>
     <comment>Header for a section detailing the set up steps to be performed. "Set up" is the noun</comment>
   </data>

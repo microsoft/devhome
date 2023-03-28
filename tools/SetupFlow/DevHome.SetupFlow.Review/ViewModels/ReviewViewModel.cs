@@ -51,13 +51,15 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         CanGoToNextPage = false;
     }
 
-    protected async override Task OnFirstNavigateToAsync()
+    protected async override Task OnEachNavigateToAsync()
     {
-        // TODO: Do each time
         IsRebootRequired = _orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresReboot));
         NextPageButtonToolTipText = HasTasksToSetUp ? string.Empty : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
+        await Task.CompletedTask;
+    }
 
-        // TODO: Do once
+    protected async override Task OnFirstNavigateToAsync()
+    {
         ReviewTabs = _orchestrator.TaskGroups.Select(taskGroup => taskGroup.GetReviewTabViewModel()).ToList();
         SelectedReviewTab = ReviewTabs.FirstOrDefault();
         await Task.CompletedTask;

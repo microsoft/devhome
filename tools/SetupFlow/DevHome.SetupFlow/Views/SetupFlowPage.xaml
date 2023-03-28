@@ -99,13 +99,16 @@
             <!-- Right buttons -->
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
                 <HyperlinkButton Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
+                                 MinWidth="120"
                                  x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel" />
                 <Button Command="{x:Bind ViewModel.Orchestrator.GoToPreviousPageCommand, Mode=OneWay}"
+                        MinWidth="120"
                         Visibility="{x:Bind ViewModel.Orchestrator.HasPreviousPage, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Previous" />
                 <Button Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
                         Style="{StaticResource AccentButtonStyle}"
-                        Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}" />
+                        MinWidth="120"
+                        Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
                         ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
             </StackPanel>
         </Grid>

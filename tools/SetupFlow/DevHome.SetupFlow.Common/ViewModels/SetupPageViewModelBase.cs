@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.Common.Services;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.Common.ViewModels;
 
@@ -112,6 +111,8 @@ public partial class SetupPageViewModelBase : ObservableObject
     /// </remarks>
     public async Task OnNavigateToAsync()
     {
+        await OnEachNavigateToAsync();
+
         if (!_hasExecutedFirstNavigateTo)
         {
             _hasExecutedFirstNavigateTo = true;
@@ -132,6 +133,18 @@ public partial class SetupPageViewModelBase : ObservableObject
             _hasExecutedFirstNavigateFrom = true;
             await OnFirstNavigateFromAsync();
         }
+    }
+
+    /// <summary>
+    /// Hook for actions to execute each time the page is shown.
+    /// </summary>
+    /// <remarks>
+    /// This runs on the UI thread, any time-consuming task should be non-blocking.
+    /// </remarks>
+    protected async virtual Task OnEachNavigateToAsync()
+    {
+        // Do nothing
+        await Task.CompletedTask;
     }
 
     /// <summary>
