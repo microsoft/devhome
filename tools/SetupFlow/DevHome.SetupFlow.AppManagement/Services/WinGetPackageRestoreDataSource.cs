@@ -68,7 +68,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
 
         try
         {
-            var orderedPackages = await GetOrderedPackagesAsync(
+            var packages = await GetPackagesAsync(
                 _restoreDeviceInfo.WinGetApplicationsInfo,
                 appInfo => appInfo.Id,
                 async (package, appInfo) =>
@@ -77,13 +77,13 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
                 package.DarkThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Dark);
             });
 
-            if (orderedPackages.Any())
+            if (packages.Any())
             {
                 result.Add(new PackageCatalog()
                 {
                     Name = _stringResource.GetLocalized(StringResourceKey.RestorePackagesTitle, _restoreDeviceInfo.DisplayName),
                     Description = _stringResource.GetLocalized(StringResourceKey.RestorePackagesDescription, _restoreDeviceInfo.DisplayName),
-                    Packages = orderedPackages.ToReadOnlyCollection(),
+                    Packages = packages.ToReadOnlyCollection(),
                 });
             }
         }
