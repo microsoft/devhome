@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -43,11 +41,12 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     public AppManagementViewModel(
         ILogger logger,
         ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
         IHost host,
         IWindowsPackageManager wpm,
         PackageProvider packageProvider,
         AppManagementTaskGroup taskGroup)
-        : base(stringResource)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         _taskGroup = taskGroup;
@@ -59,11 +58,13 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
 
         _packageProvider.PackageSelectionChanged += (_, _) => OnPropertyChanged(nameof(ApplicationsSelectedCountText));
 
+        PageTitle = StringResource.GetLocalized(StringResourceKey.ApplicationsPageTitle);
+
         // By default, show the package catalogs
         CurrentView = _packageCatalogListViewModel;
     }
 
-    public async override void OnNavigateToPageAsync()
+    protected async override Task OnFirstNavigateToAsync()
     {
         // Load catalogs from all data sources
         await _packageCatalogListViewModel.LoadCatalogsAsync();

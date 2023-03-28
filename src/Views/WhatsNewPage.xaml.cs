@@ -51,50 +51,52 @@ public sealed partial class WhatsNewPage : Page
 
         if (plugin is null)
         {
-            // Nothing to do if there are no plugins for GitHub
+            var connectToGitHubContentDialog = new ContentDialog
+            {
+                Title = "Extension not found. Install Dev Home GitHub Extension from Store and try again.",
+                CloseButtonText = "OK",
+                XamlRoot = XamlRoot,
+            };
+            _ = await connectToGitHubContentDialog.ShowAsync();
             return;
         }
 
-        if (!plugin.IsRunning())
+        var iDevIdProvider = await plugin.GetProviderAsync<IDevIdProvider>();
+
+        if (iDevIdProvider is null)
         {
-            await plugin.StartPlugin();
+            return;
         }
 
-        var pluginObj = plugin.GetPluginObject();
-        var devIdProvider = pluginObj?.GetProvider(ProviderType.DevId);
-
-        if (devIdProvider is IDevIdProvider iDevIdProvider)
+        if (iDevIdProvider.GetLoggedInDeveloperIds().Any())
         {
-            if (iDevIdProvider.GetLoggedInDeveloperIds().Any())
+            // DevId already connected
+            var connectToGitHubContentDialog = new ContentDialog
             {
-                // DevId already connected
-                var connectToGitHubContentDialog = new ContentDialog
-                {
-                    Title = "You are already connected to GitHub!",
-                    CloseButtonText = "OK",
-                    XamlRoot = XamlRoot,
-                };
-                _ = await connectToGitHubContentDialog.ShowAsync();
-                return;
-            }
+                Title = "You are already connected to GitHub!",
+                CloseButtonText = "OK",
+                XamlRoot = XamlRoot,
+            };
+            _ = await connectToGitHubContentDialog.ShowAsync();
+            return;
+        }
 
-            try
-            {
-                // TODO: Replace this flow with LoginUI
-                var devId = await iDevIdProvider.LoginNewDeveloperIdAsync();
+        try
+        {
+            // TODO: Replace this flow with LoginUI
+            var devId = await iDevIdProvider.LoginNewDeveloperIdAsync();
 
-                var connectToGitHubSuccessContentDialog = new ContentDialog
-                {
-                    Title = $"{devId.LoginId()} has connected to GitHub!",
-                    CloseButtonText = "OK",
-                    XamlRoot = XamlRoot,
-                };
-                _ = await connectToGitHubSuccessContentDialog.ShowAsync();
-            }
-            catch (Exception ex)
+            var connectToGitHubSuccessContentDialog = new ContentDialog
             {
-                LoggerFactory.Get<ILogger>().LogError<string>($"ConnectToGitHubButton_Click_Failure", LogLevel.Local, $"Error: {ex}");
-            }
+                Title = $"{devId.LoginId()} has connected to GitHub!",
+                CloseButtonText = "OK",
+                XamlRoot = XamlRoot,
+            };
+            _ = await connectToGitHubSuccessContentDialog.ShowAsync();
+        }
+        catch (Exception ex)
+        {
+            LoggerFactory.Get<ILogger>().LogError<string>($"ConnectToGitHubButton_Click_Failure", LogLevel.Local, $"Error: {ex}");
         }
     }
 }

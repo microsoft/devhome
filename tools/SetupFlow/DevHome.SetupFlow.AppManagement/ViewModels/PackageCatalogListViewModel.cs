@@ -33,11 +33,6 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// </summary>
     public ObservableCollection<int> PackageCatalogShimmers { get; } = new ();
 
-    /// <summary>
-    /// Occurrs when a package catalog is loaded
-    /// </summary>
-    public event EventHandler<PackageCatalogViewModel> CatalogLoaded;
-
     public PackageCatalogListViewModel(
         ILogger logger,
         WinGetPackageJsonDataSource jsonDataSource,
@@ -110,7 +105,6 @@ public partial class PackageCatalogListViewModel : ObservableObject
                 var catalogViewModel = _packageCatalogViewModelFactory(catalog);
                 catalogViewModel.CanAddAllPackages = true;
                 PackageCatalogs.Add(catalogViewModel);
-                CatalogLoaded?.Invoke(null, catalogViewModel);
             }
         }
     }

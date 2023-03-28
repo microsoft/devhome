@@ -20,18 +20,21 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _logger;
     private readonly IHost _host;
-    private readonly SetupFlowOrchestrator _orchestrator;
 
-    public ConfigurationFileViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host, SetupFlowOrchestrator orchestrator)
-        : base(stringResource)
+    public ConfigurationFileViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger,
+        IHost host)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         _host = host;
-        _orchestrator = orchestrator;
 
         // Configure navigation bar
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         CanGoToNextPage = false;
+        IsStepPage = false;
     }
 
     /// <summary>
@@ -51,7 +54,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     partial void OnReadAndAgreeChanged(bool value)
     {
         CanGoToNextPage = value;
-        _orchestrator.NotifyNavigationCanExecuteChanged();
+        Orchestrator.NotifyNavigationCanExecuteChanged();
     }
 
     /// <summary>

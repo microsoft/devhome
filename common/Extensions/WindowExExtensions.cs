@@ -3,6 +3,8 @@
 
 using System;
 using System.Threading.Tasks;
+using DevHome.Common.Helpers;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using WinUIEx;
 
@@ -50,5 +52,19 @@ public static class WindowExExtensions
         };
         action(dialog);
         await dialog.ShowAsync();
+    }
+
+    /// <summary>
+    /// Set the window requested theme.
+    /// </summary>
+    /// <param name="window">Target window</param>
+    /// <param name="theme">New theme.</param>
+    public static void SetRequestedTheme(this WindowEx window, ElementTheme theme)
+    {
+        if (window.Content is FrameworkElement rootElement)
+        {
+            rootElement.RequestedTheme = theme;
+            TitleBarHelper.UpdateTitleBar(window, theme);
+        }
     }
 }
