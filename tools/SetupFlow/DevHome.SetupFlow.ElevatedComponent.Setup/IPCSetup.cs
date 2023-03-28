@@ -51,6 +51,10 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 ////   waits to acquire the mutex before exiting, ensuring that it only
 ////   terminates when it is no longer needed.
 ////
+////   Conceptually, we use a mutex, but in reality we use a semaphore.
+////   Mutexes are owned by threads, so it's hard to keep one in the main
+////   process due to async calls.
+////
 //// * The methods that set up the remote object are generic due to some
 ////   behaviors of CsWinRT we need to work around. The ElevatedServer
 ////   process needs the actual types from the ElevatedComponent to
@@ -135,16 +139,16 @@ public static class IPCSetup
     /// </returns>
     public static (RemoteObject<T>, Process) CreateOutOfProcessObjectAndGetProcess<T>(bool isForTesting = false)
     {
-        // The shared memory block, initialization event and completion mutex all need a name
+        // The shared memory block, initialization event and completion semaphore all need a name
         // that will be used by the child process to find them. We use new random GUIDs for them.
         // For the memory block, we also set the handle inheritability so that only descendant
         // process can access it.
         var mappedFileName = Guid.NewGuid().ToString();
         var initEventName = Guid.NewGuid().ToString();
-        var completionMutexName = Guid.NewGuid().ToString();
+        var completionSemaphoreName = Guid.NewGuid().ToString();
 
         // Create shared memory block.
-        var mappedFile = MemoryMappedFile.CreateNew(
+        using var mappedFile = MemoryMappedFile.CreateNew(
             mappedFileName,
             MappedMemoryCapacityInBytes,
             MemoryMappedFileAccess.ReadWrite,
@@ -162,15 +166,15 @@ public static class IPCSetup
 
         // Create an event that the background process will signal to indicate it has completed
         // creating the object and writing it to the shared block.
-        var initEvent = new EventWaitHandle(initialState: false, EventResetMode.AutoReset, initEventName);
+        using var initEvent = new EventWaitHandle(initialState: false, EventResetMode.AutoReset, initEventName);
 
-        // Create a mutex to hold on to to ensure keep the background process alive.
-        var completionMutex = new Mutex(initiallyOwned: true, completionMutexName);
+        // Create a semaphore to hold on to to ensure keep the background process alive.
+        var completionSemaphore = new Semaphore(initialCount: 0, maximumCount: 1, completionSemaphoreName);
         try
         {
             // Start the elevated process.
-            // Command is: <server>.exe <mapped memory name> <event name> <mutex name>
-            var serverArgs = $"{mappedFileName} {initEventName} {completionMutexName}";
+            // Command is: <server>.exe <mapped memory name> <event name> <semaphore name>
+            var serverArgs = $"{mappedFileName} {initEventName} {completionSemaphoreName}";
             var serverPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DevHome.SetupFlow.ElevatedServer.exe");
 
             // We need to start the process with ShellExecute to run elevated
@@ -178,7 +182,7 @@ public static class IPCSetup
             {
                 FileName = serverPath,
                 Arguments = serverArgs,
-                //// CreateNoWindow = true,
+                CreateNoWindow = true,
                 UseShellExecute = true,
                 Verb = "runas",
             };
@@ -255,13 +259,13 @@ public static class IPCSetup
             Marshal.ThrowExceptionForHR(PInvoke.CoUnmarshalInterface(stream, GetMarshalInterfaceGUID<T>(), out var obj));
             var value = MarshalInterface<T>.FromAbi(Marshal.GetIUnknownForObject(obj));
 
-            return (new RemoteObject<T>(value, completionMutex), process);
+            return (new RemoteObject<T>(value, completionSemaphore), process);
         }
         catch
         {
-            // Release the mutex if there is any error.
+            // Release the "mutex" if there is any error.
             // On success, we will release it after we're done with the work.
-            completionMutex.ReleaseMutex();
+            completionSemaphore.Release();
             throw;
         }
     }
@@ -270,7 +274,7 @@ public static class IPCSetup
     /// Completes the remote object initialization from the background process.
     /// This means writing the result to the shared memory block, signaling
     /// to the caller that the initialization is complete, and waiting for
-    /// the completion mutex to be released to signal that we can return.
+    /// the completion semaphore to be released to signal that we can return.
     /// This is to be called from the elevated background process.
     /// </summary>
     /// <param name="defaultHResult">HResult to write to the shared memory.</param>
@@ -282,12 +286,12 @@ public static class IPCSetup
         T? value,
         string mappedFileName,
         string initEventName,
-        string completionMutexName)
+        string completionSemaphoreName)
     {
         // Open the shared resources
         var mappedFile = MemoryMappedFile.OpenExisting(mappedFileName, MemoryMappedFileRights.Write);
         var initEvent = EventWaitHandle.OpenExisting(initEventName);
-        var completionMutex = Mutex.OpenExisting(completionMutexName);
+        var completionSemaphore = Semaphore.OpenExisting(completionSemaphoreName);
 
         MappedMemoryValue mappedMemory = default;
 
@@ -358,6 +362,6 @@ public static class IPCSetup
         initEvent.Set();
 
         // Wait until the caller releases the object
-        completionMutex.WaitOne();
+        completionSemaphore.WaitOne();
     }
 }

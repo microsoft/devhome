@@ -5,15 +5,15 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 
 public class RemoteObject<T> : IDisposable
 {
-    private readonly Mutex _completionMutex;
+    private readonly Semaphore _completionSemaphore;
     private bool _disposedValue;
 
     public T Value { get; }
 
-    public RemoteObject(T value, Mutex completionMutex)
+    public RemoteObject(T value, Semaphore completionSemaphore)
     {
         Value = value;
-        _completionMutex = completionMutex;
+        _completionSemaphore = completionSemaphore;
     }
 
     protected virtual void Dispose(bool disposing)
@@ -22,7 +22,7 @@ public class RemoteObject<T> : IDisposable
         {
             if (disposing)
             {
-                _completionMutex.ReleaseMutex();
+                _completionSemaphore.Release();
             }
 
             _disposedValue = true;
