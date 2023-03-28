@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -8,10 +10,24 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.DevDrive.Models;
+using DevHome.SetupFlow.DevDrive.Services;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Shapes;
+using Windows.UI.StartScreen;
 
 namespace DevHome.SetupFlow.RepoConfig.ViewModels;
+
+/// <summary>
+/// Represents the type of display name that should appear in the clone repo textbox
+/// 1.DriveRootKind in the form of "D:\"
+/// 2.FormattedKind in the form of "DriveLabel (DriveLetter:\) [Size in gigabytes] . e.g Dev Disk (D:\) [50 GB]
+/// </summary>
+public enum DevDriveDisplayNameKind
+{
+    DriveRootKind,
+    FormattedDriveLabelKind,
+}
 
 /// <summary>
 /// The view model to handle
@@ -24,6 +40,14 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// The manager to handle dev drives.
     /// </summary>
     private readonly IDevDriveManager _devDriveManager;
+
+    /// <summary>
+    /// Gets whether the Dev Drive window is opened or closed.
+    /// </summary>
+    public bool IsWindowOpen
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Gets or sets the dev drive to make.
@@ -60,11 +84,26 @@ public partial class EditDevDriveViewModel : ObservableObject
         IsDevDriveCheckboxEnabled = true;
     }
 
-    public void MakeDefaultDevDrive()
+    public event EventHandler<string> DevDriveClonePathUpdated = (_, path) => { };
+
+    public void ClonePathUpdated()
+    {
+        DevDriveClonePathUpdated(this, GetDriveDisplayName());
+    }
+
+    public bool MakeDefaultDevDrive()
     {
         // DevDrive SetToDefaults
         ShowCustomizeOption = Visibility.Visible;
-        DevDrive = _devDriveManager.GetNewDevDrive();
+        var (result, devDrive) = _devDriveManager.GetNewDevDrive();
+        if (result == DevDriveOperationResult.Successful)
+        {
+            DevDrive = devDrive;
+            return true;
+        }
+
+        // TODO: Maybe we should show some UI to say that we couldn't make a default Dev Drive.
+        return false;
     }
 
     public void ShowDevDriveUIIfEnabled()
@@ -82,12 +121,32 @@ public partial class EditDevDriveViewModel : ObservableObject
 
     public void RemoveNewDevDrive()
     {
+        _devDriveManager.RequestToCloseDevDriveWindow(DevDrive);
+        _devDriveManager.RemoveDevDrive(DevDrive);
         ShowCustomizeOption = Visibility.Collapsed;
     }
 
-    public string GetDriveDisplayName()
+    /// <summary>
+    /// Get the display name for the Dev Drive. By default no arguments will return the Rooth path of the Dev Drive
+    /// this is in the form of "DriveLetter:\" e.g D:\
+    /// </summary>
+    public string GetDriveDisplayName(DevDriveDisplayNameKind useDriveLetterOnly = DevDriveDisplayNameKind.DriveRootKind)
     {
-        return "OS_VHD (" + DevDrive.DriveLetter + ":) [" + DevDrive.DriveSizeInBytes + "]";
+        if (useDriveLetterOnly == DevDriveDisplayNameKind.DriveRootKind)
+        {
+            // Uses the actual place where we'll be cloning to
+            return $@"{DevDrive.DriveLetter}:\";
+        }
+
+        var size = DevDriveUtil.ConvertBytesToString(DevDrive.DriveSizeInBytes);
+
+        // For the case when an explicit terminating character is left at the end.
+        if (size.Last() == '\0')
+        {
+            size = size.Remove(size.Length - 1);
+        }
+
+        return $@"{DevDrive.DriveLabel} ({DevDrive.DriveLetter}:) [{size}]";
     }
 
     /// <summary>
@@ -96,10 +155,15 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </summary>
     public async void PopDevDriveCustomizationAsync()
     {
-        var windowOpened = await _devDriveManager.LaunchDevDriveWindow(DevDrive);
-        if (windowOpened)
+        if (IsWindowOpen)
         {
-            _devDriveManager.OnViewModelWindowClosed += DevDriveCustomizationWindowClosed;
+            return;
+        }
+
+        IsWindowOpen = await _devDriveManager.LaunchDevDriveWindow(DevDrive);
+        if (IsWindowOpen)
+        {
+            _devDriveManager.ViewModelWindowClosed += DevDriveCustomizationWindowClosed;
             IsDevDriveCheckboxEnabled = false;
         }
     }
@@ -138,13 +202,14 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// <summary>
     /// Clean up when the customization window is closed.
     /// </summary>
-    private void DevDriveCustomizationWindowClosed(object sender, DevDriveWindowClosedEventArgs args)
+    private void DevDriveCustomizationWindowClosed(object sender, IDevDrive devDrive)
     {
-        IsDevDriveCheckboxEnabled = true;
-
-        if (DevDriveUtil.ValidateDevDrive(args.DevDrive))
+        if (devDrive.ID == DevDrive.ID)
         {
-            DevDrive = args.DevDrive;
+            IsWindowOpen = false;
+            IsDevDriveCheckboxEnabled = true;
+            DevDrive = devDrive;
+            ClonePathUpdated();
         }
     }
 }

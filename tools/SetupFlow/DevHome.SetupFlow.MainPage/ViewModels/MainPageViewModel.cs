@@ -14,6 +14,7 @@ using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.ConfigurationFile;
 using DevHome.SetupFlow.DevDrive;
+using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.RepoConfig;
 using DevHome.Telemetry;
@@ -43,8 +44,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// </summary>
     public event EventHandler<IList<ISetupTaskGroup>> StartSetupFlow;
 
-    public MainPageViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host)
-        : base(stringResource)
+    public MainPageViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger,
+        IHost host)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         _host = host;
@@ -81,7 +86,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartRepoConfig()
     {
-        StartSetupFlowForTaskGroups(_host.GetService<RepoConfigTaskGroup>());
+        StartSetupFlowForTaskGroups(
+            _host.GetService<DevDriveTaskGroup>(),
+            _host.GetService<RepoConfigTaskGroup>());
     }
 
     /// <summary>

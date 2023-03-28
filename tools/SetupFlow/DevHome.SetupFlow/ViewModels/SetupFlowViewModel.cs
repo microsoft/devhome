@@ -23,107 +23,54 @@ public partial class SetupFlowViewModel : ObservableObject
 {
     private readonly IHost _host;
     private readonly ILogger _logger;
-    private readonly SetupFlowOrchestrator _orchestrator;
     private readonly MainPageViewModel _mainPageViewModel;
-    private readonly List<SetupPageViewModelBase> _flowPages;
-    private int _currentPageIndex;
 
-    [ObservableProperty]
-    private SetupPageViewModelBase _currentPageViewModel;
-
-    public bool IsPreviousButtonVisible => _currentPageIndex > 0;
-
-    private int CurrentPageIndex
-    {
-        get => _currentPageIndex;
-        set
-        {
-            _currentPageIndex = value;
-            CurrentPageViewModel = _flowPages[_currentPageIndex];
-            CurrentPageViewModel.OnNavigateToPageAsync();
-            _orchestrator.NotifyNavigationCanExecuteChanged();
-            OnPropertyChanged(nameof(IsPreviousButtonVisible));
-        }
-    }
+    public SetupFlowOrchestrator Orchestrator { get; }
 
     public SetupFlowViewModel(IHost host, ILogger logger, SetupFlowOrchestrator orchestrator)
     {
         _host = host;
         _logger = logger;
-        _orchestrator = orchestrator;
-
-        _orchestrator.SetNavigationButtonsCommands(new List<IRelayCommand> { GoToNextPageCommand, GoToPreviousPageCommand, CancelCommand });
+        Orchestrator = orchestrator;
 
         // Set initial view
         _mainPageViewModel = _host.GetService<MainPageViewModel>();
-        _flowPages = new List<SetupPageViewModelBase>
+        Orchestrator.FlowPages = new List<SetupPageViewModelBase>
         {
             _mainPageViewModel,
         };
 
-        CurrentPageIndex = 0;
-
         _mainPageViewModel.StartSetupFlow += (object sender, IList<ISetupTaskGroup> taskGroups) =>
         {
-            _orchestrator.TaskGroups = taskGroups;
-            StartSetupFlowWithCurrentTaskGroups();
+            Orchestrator.TaskGroups = taskGroups;
+            SetFlowPagesFromCurrentTaskGroups();
         };
     }
 
-    private void StartSetupFlowWithCurrentTaskGroups()
+    public void SetFlowPagesFromCurrentTaskGroups()
     {
-        _flowPages.Clear();
-        _flowPages.AddRange(_orchestrator.TaskGroups.Select(flow => flow.GetSetupPageViewModel()).Where(page => page is not null));
-        _flowPages.Add(_host.GetService<ReviewViewModel>());
+        List<SetupPageViewModelBase> flowPages = new ();
+        flowPages.AddRange(Orchestrator.TaskGroups.Select(flow => flow.GetSetupPageViewModel()).Where(page => page is not null));
+        flowPages.Add(_host.GetService<ReviewViewModel>());
 
         // The Loading page can advance to the next page
         // without user interaction once it is complete
         var loadingPageViewModel = _host.GetService<LoadingViewModel>();
-        _flowPages.Add(loadingPageViewModel);
+        flowPages.Add(loadingPageViewModel);
 
-        loadingPageViewModel.ExecutionFinished += (object _, EventArgs _) =>
+        loadingPageViewModel.ExecutionFinished += async (object _, EventArgs _) =>
         {
-            GoToNextPage();
+            await Orchestrator.GoToNextPage();
         };
 
-        _flowPages.Add(_host.GetService<SummaryViewModel>());
+        flowPages.Add(_host.GetService<SummaryViewModel>());
 
-        CurrentPageIndex = 0;
+        Orchestrator.FlowPages = flowPages;
     }
 
-    [RelayCommand(CanExecute = nameof(CanGoToPreviousPage))]
-    public void GoToPreviousPage()
-    {
-        CurrentPageIndex--;
-    }
-
-    private bool CanGoToPreviousPage()
-    {
-        return CurrentPageIndex > 0 && CurrentPageViewModel.CanGoToPreviousPage;
-    }
-
-    [RelayCommand(CanExecute = nameof(CanGoToNextPage))]
-    public void GoToNextPage()
-    {
-        CurrentPageIndex++;
-    }
-
-    private bool CanGoToNextPage()
-    {
-        return CurrentPageIndex + 1 < _flowPages.Count && CurrentPageViewModel.CanGoToNextPage;
-    }
-
-    [RelayCommand(CanExecute = nameof(CanCancel))]
+    [RelayCommand]
     public void Cancel()
     {
-        _flowPages.Clear();
-        _flowPages.Add(_mainPageViewModel);
-
-        CurrentPageIndex = 0;
-    }
-
-    private bool CanCancel()
-    {
-        return CurrentPageViewModel.CanCancel;
+        Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };
     }
 }

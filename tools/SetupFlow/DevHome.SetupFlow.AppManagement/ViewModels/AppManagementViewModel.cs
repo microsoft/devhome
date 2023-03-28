@@ -39,8 +39,14 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     /// </summary>
     public string ApplicationsSelectedCountText => StringResource.GetLocalized(StringResourceKey.ApplicationsSelectedCount, SelectedPackages.Count);
 
-    public AppManagementViewModel(ILogger logger, ISetupFlowStringResource stringResource, IHost host, IWindowsPackageManager wpm, AppManagementTaskGroup taskGroup)
-        : base(stringResource)
+    public AppManagementViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger,
+        IHost host,
+        IWindowsPackageManager wpm,
+        AppManagementTaskGroup taskGroup)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         _taskGroup = taskGroup;
@@ -52,11 +58,13 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         _packageCatalogListViewModel = host.GetService<PackageCatalogListViewModel>();
         _packageCatalogListViewModel.CatalogLoaded += OnCatalogLoaded;
 
+        PageTitle = StringResource.GetLocalized(StringResourceKey.ApplicationsPageTitle);
+
         // By default, show the package catalogs
         CurrentView = _packageCatalogListViewModel;
     }
 
-    public async override void OnNavigateToPageAsync()
+    protected async override Task OnFirstNavigateToAsync()
     {
         // Load catalogs from all data sources
         await _packageCatalogListViewModel.LoadCatalogsAsync();
