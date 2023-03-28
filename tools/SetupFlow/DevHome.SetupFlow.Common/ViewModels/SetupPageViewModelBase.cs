@@ -108,16 +108,20 @@ public partial class SetupPageViewModelBase : ObservableObject
     /// </summary>
     /// <remarks>
     /// The orchestrator takes care of calling this when appropriate.
+    /// This performs actions that need to be done only the first time we
+    /// navigate to the page, and actions that need to be done each time.
+    /// On the first run, the actions that only need to be done once are
+    /// performed first.
     /// </remarks>
     public async Task OnNavigateToAsync()
     {
-        await OnEachNavigateToAsync();
-
         if (!_hasExecutedFirstNavigateTo)
         {
             _hasExecutedFirstNavigateTo = true;
             await OnFirstNavigateToAsync();
         }
+
+        await OnEachNavigateToAsync();
     }
 
     /// <summary>
@@ -140,6 +144,7 @@ public partial class SetupPageViewModelBase : ObservableObject
     /// </summary>
     /// <remarks>
     /// This runs on the UI thread, any time-consuming task should be non-blocking.
+    /// The first time the page is shown, this is executed after <see cref="OnFirstNavigateToAsync"/>
     /// </remarks>
     protected async virtual Task OnEachNavigateToAsync()
     {
