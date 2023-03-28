@@ -37,61 +37,6 @@
                            CanUserSortColumns="False"
                            ItemsSource="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay}"
                            Margin="0, 50, 0, 0">
-            <controls:DataGrid.ColumnHeaderStyle>
-                <Style TargetType="primitives:DataGridColumnHeader">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="primitives:DataGridColumnHeader">
-                                <ContentPresenter Background="Transparent" />
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </controls:DataGrid.ColumnHeaderStyle>
-            <controls:DataGrid.Columns>
-                <controls:DataGridTemplateColumn Header="Repository Type" MinWidth="250">
-                    <controls:DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate x:DataType="models:CloningInformation">
-                            <TextBlock Text="{x:Bind ProviderName}" Width="200" HorizontalTextAlignment="Center"/>
-                        </DataTemplate>
-                    </controls:DataGridTemplateColumn.CellTemplate>
-                </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="Repository ID" MinWidth="300">
-                    <controls:DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate x:DataType="models:CloningInformation">
-                            <TextBlock Text="{x:Bind RepositoryId}" Width="250" HorizontalTextAlignment="Center"/>
-                        </DataTemplate>
-                    </controls:DataGridTemplateColumn.CellTemplate>
-                </controls:DataGridTemplateColumn>
-                <controls:DataGridTemplateColumn Header="Clone Path" MinWidth="400">
-                    <controls:DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate x:DataType="models:CloningInformation">
-                            <Grid HorizontalAlignment="Left" ColumnSpacing="10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="250" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox Text="{x:Bind ClonePath}" Grid.Column="0" IsEnabled="False"/>
-                                <Button Grid.Column="1" Click="EditClonePathButton_Click">
-                                    <Button.Content>
-                                        <SymbolIcon Symbol="Edit"/>
-                                    </Button.Content>
-                                </Button>
-                                <Button Grid.Column="2" Click="RemoveCloningInformationButton_Click">
-                                    <Button.Content>
-                                        <SymbolIcon Symbol="Cancel"/>
-                                    </Button.Content>
-                                </Button>
-                            </Grid>
-                        </DataTemplate>
-                    </controls:DataGridTemplateColumn.CellTemplate>
-                </controls:DataGridTemplateColumn>
-            </controls:DataGrid.Columns>
-        </controls:DataGrid>
-        <StackPanel x:Name="NoRepositoryStackPanel" Visibility="{x:Bind ViewModel.ShouldShowNoRepoMessage, Mode=OneWay}" HorizontalAlignment="Center" Margin="0, 150, 0, 0">
-            <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
-            <HyperlinkButton Click="AddRepoButton_Click" HorizontalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
                 <controls:DataGrid.ColumnHeaderStyle>
                     <Style TargetType="primitives:DataGridColumnHeader">
                         <Setter Property="Template">
@@ -107,23 +52,23 @@
                     <controls:DataGridTemplateColumn Header="Repository Type" MinWidth="250">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:CloningInformation">
-                                <TextBlock Text="{x:Bind ProviderName}" Width="250" HorizontalTextAlignment="Center"/>
+                                <TextBlock Text="{x:Bind ProviderName}" Width="200" HorizontalTextAlignment="Center"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
                     <controls:DataGridTemplateColumn Header="Repository ID" MinWidth="300">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:CloningInformation">
-                                <TextBlock Text="{x:Bind RepositoryId}" Width="300" HorizontalTextAlignment="Center"/>
+                                <TextBlock Text="{x:Bind RepositoryId}" Width="250" HorizontalTextAlignment="Center"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
-                    <controls:DataGridTemplateColumn Header="Clone Path" MinWidth="450">
+                    <controls:DataGridTemplateColumn Header="Clone Path" MinWidth="400">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:CloningInformation">
                                 <Grid HorizontalAlignment="Left" ColumnSpacing="10">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="300" />
+                                        <ColumnDefinition Width="250" />
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>

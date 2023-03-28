@@ -44,11 +44,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     public event EventHandler ExecutionFinished;
 
     /// <summary>
-    /// Used to get all the tasks to run.
-    /// </summary>
-    private readonly SetupFlowOrchestrator orchestrator;
-
-    /// <summary>
     /// Keep track of all failed tasks so they can be re-ran if the user wishes.
     /// </summary>
     private IList<TaskInformation> _failedTasks;
@@ -101,7 +96,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     [ObservableProperty]
     private string _actionCenterDisplay;
-    
+
     /// <summary>
     /// Controls if the UI for "Restart all tasks" and "Continue to summary" are shown.
     /// </summary>

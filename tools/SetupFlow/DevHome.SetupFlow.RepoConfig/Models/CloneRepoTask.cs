@@ -73,11 +73,6 @@ internal class CloneRepoTask : ISetupTask
         this.repositoryToClone = repositoryToClone;
         _developerId = developerId;
         SetMessages(stringResource);
-
-        if (MyRandom.Next(10) == 1)
-        {
-            this.DependsOnDevDriveToBeInstalled = true;
-        }
     }
 
     /// <summary>
