@@ -36,7 +36,7 @@ public class PluginService : IPluginService
     private static List<IPluginWrapper> installedPlugins = new ();
 #pragma warning restore IDE0044 // Add readonly modifier
 
-    public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins)
+    public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins = false)
     {
         if (installedPlugins.Count == 0)
         {

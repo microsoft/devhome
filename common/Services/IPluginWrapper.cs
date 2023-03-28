@@ -22,7 +22,7 @@ public interface IPluginWrapper
         get;
     }
 
-\    /// <summary>
+    /// <summary>
     /// Gets class id (GUID) of the plugin class (which implements IPlugin) as mentioned in the manifest
     /// </summary>
     string PluginClassId
