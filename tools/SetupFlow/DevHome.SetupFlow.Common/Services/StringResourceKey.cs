@@ -62,6 +62,7 @@ public static class StringResourceKey
     public static readonly string CloningRepositoryErrorText = nameof(CloningRepositoryErrorText);
     public static readonly string LoadingScreenCloneRepositoryNeedsRebootText = nameof(LoadingScreenCloneRepositoryNeedsRebootText);
     public static readonly string ActionCenterCloningRepositoryErrorTextSecondary = nameof(ActionCenterCloningRepositoryErrorTextSecondary);
+    public static readonly string UnknownError = nameof(UnknownError);
 
     public static readonly string ApplicationsPageTitle = nameof(ApplicationsPageTitle);
     public static readonly string ReposConfigPageTitle = nameof(ReposConfigPageTitle);

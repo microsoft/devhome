@@ -14,10 +14,7 @@ internal class ConfigureTask : ISetupTask
 
     public bool RequiresReboot => throw new NotImplementedException();
 
-    public bool DependsOnDevDriveToBeInstalled
-    {
-        get; set;
-    }
+    public bool DependsOnDevDriveToBeInstalled => false;
 
     public ActionCenterMessages GetErrorMessages() => throw new NotImplementedException();
 

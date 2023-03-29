@@ -83,7 +83,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// Used in the action center to notify the user the number of tasks that failed.
     /// </summary>
     [ObservableProperty]
-    private int _tasksFinishedUnSuccessfully;
+    private int _tasksFailed;
 
     /// <summary>
     /// Used in the UI to show the user how many tasks have been executed.
@@ -109,7 +109,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // Keep the number of successful tasks and needs attention tasks the same.
         // Change failed tasks to 0 becuase, once restarted all tasks haven't failed yet.
         TasksStarted = 0;
-        TasksFinishedUnSuccessfully = 0;
+        TasksFailed = 0;
         SetExecutingTaskAndActionCenter();
         TasksToRun = new ObservableCollection<TaskInformation>(_failedTasks);
 
@@ -212,7 +212,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             circleBrush.Color = Microsoft.UI.Colors.Red;
             statusSymbolHex = "\xF78A";
             ActionCenterItems.Add(information.TaskToExecute.GetErrorMessages());
-            TasksFinishedUnSuccessfully++;
+            TasksFailed++;
 
             if (_retryCount < MAX_RETRIES)
             {
@@ -248,7 +248,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             var tasksToRunFirst = new List<TaskInformation>();
             var tasksToRunSecond = new List<TaskInformation>();
 
-            // Most likely need a better way to figure out dependncies.
+            // TODO: Most likely need a better way to figure out dependencies.
             // However, right now, the only dependency is "does this need to wait for a dev drive"
             foreach (var taskInformation in tasks)
             {
@@ -322,7 +322,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 ChangeMessage(taskInformation, taskFinishedState);
 
                 TasksCompleted++;
-                ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, TasksFinishedUnSuccessfully);
+                ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, TasksFailed);
             });
         }
         catch

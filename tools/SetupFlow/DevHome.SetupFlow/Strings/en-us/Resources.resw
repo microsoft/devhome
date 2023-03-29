@@ -461,9 +461,9 @@
     <value>Repository</value>
     <comment>Header for a section showing a summary of repositories to be cloned to the machine</comment>
   </data>
-  <data name="ViewConfiguration" xml:space="preserve">
-    <value>View {0}</value>
-    <comment>{Locked="{0}"} Text for the view action of a file content. {0} is replaced by a file name.</comment>
+  <data name="LoadingScreenRetry.Content" xml:space="preserve">
+    <value>Retry</value>
+    <comment>Button to re-run all failed tasks.</comment>
   </data>
   <data name="MainPage_RepoReviewDescription.Text" xml:space="preserve">
     <value>Add private or public repositories to clone to your compuer</value>
@@ -722,5 +722,9 @@
   <data name="LogFileName" xml:space="preserve">
     <value>DevHomeTasks.Log</value>
     <comment>The log file name for failed tasks.</comment>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Unknown Error</value>
+    <comment>Text to display when an error is unknwon</comment>
   </data>
 </root>

@@ -34,8 +34,7 @@ public class InstallPackageTask : ISetupTask
 
     public bool DependsOnDevDriveToBeInstalled
     {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
+        get;
     }
 
     public InstallPackageTask(

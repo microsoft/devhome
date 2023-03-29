@@ -58,12 +58,8 @@ internal class CloneRepoTask : ISetupTask
 
     public bool DependsOnDevDriveToBeInstalled
     {
-        get; set;
+        get;
     }
-
-    private static readonly Random MyRandom = new ();
-
-    private bool _shouldFail;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CloneRepoTask"/> class.
@@ -100,7 +96,7 @@ internal class CloneRepoTask : ISetupTask
         var needsRebootMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloneRepositoryNeedsRebootText, repositoryToClone.DisplayName);
         _taskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsRebootMessage);
 
-        var errorSubMessage = stringResource.GetLocalized(StringResourceKey.ActionCenterCloningRepositoryErrorTextSecondary, "Unknown error");
+        var errorSubMessage = stringResource.GetLocalized(StringResourceKey.ActionCenterCloningRepositoryErrorTextSecondary, StringResourceKey.UnknownError);
 
         var actionCenterErrorMessage = new ActionCenterMessages();
         actionCenterErrorMessage.PrimaryMessage = errorMessage;
@@ -110,11 +106,6 @@ internal class CloneRepoTask : ISetupTask
         _needsRebootMessage = new ActionCenterMessages();
         _needsRebootMessage.PrimaryMessage = needsRebootMessage;
         _needsRebootMessage.SecondaryMessage = string.Empty;
-
-        if (MyRandom.Next(10) < 4)
-        {
-            _shouldFail = true;
-        }
     }
 
     /// <summary>
@@ -145,11 +136,6 @@ internal class CloneRepoTask : ISetupTask
             {
                 Console.WriteLine($"Something happened while trying to clone {cloneLocation.FullName}");
                 Console.WriteLine(e.ToString());
-                return TaskFinishedState.Failure;
-            }
-
-            if (_shouldFail)
-            {
                 return TaskFinishedState.Failure;
             }
 

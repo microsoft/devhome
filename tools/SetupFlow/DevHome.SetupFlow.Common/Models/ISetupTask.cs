@@ -72,10 +72,10 @@ public interface ISetupTask
     public abstract ActionCenterMessages GetRebootMessage();
 
     /// <summary>
-    /// Gets or sets a value indicating whether a dev drive needs to be installed before this task can start.
+    /// Gets a value indicating whether a dev drive needs to be installed before this task can start.
     /// </summary>
-    public bool DependsOnDevDriveToBeInstalled
+    public abstract bool DependsOnDevDriveToBeInstalled
     {
-        get; set;
+        get;
     }
 }

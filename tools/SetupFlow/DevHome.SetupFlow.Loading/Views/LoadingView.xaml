@@ -68,7 +68,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter"/>
-                    <HyperlinkButton Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" Content="Retry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}"/>
+                    <HyperlinkButton Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}"/>
                 </Grid>
                 <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}"/>
                 <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
