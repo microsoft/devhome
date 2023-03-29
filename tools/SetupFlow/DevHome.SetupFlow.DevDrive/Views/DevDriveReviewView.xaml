@@ -40,6 +40,7 @@
                     Grid.Row="0"
                     Grid.Column="0"
                     Text="{x:Bind ViewModel.NumberOfItemsTitle}"
+                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"
                     Margin="0 5 15 5"
                     TextWrapping="Wrap"/>
                 <TextBlock
@@ -52,6 +53,7 @@
                     Grid.Row="1"
                     Grid.Column="0"
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveReviewPageDevDriveDetailsTitle"
+                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"
                     Margin="0 5 15 5"
                     TextWrapping="Wrap"/>
                 <Grid
@@ -64,41 +66,43 @@
                                 <StackPanel>
                                     <TextBlock
                                         Text="{x:Bind FormattedLabelAndDriveLetter}"
+                                        IsTextSelectionEnabled="True"
                                         Margin="0 5 0 0"
                                         TextWrapping="Wrap"/>
-                                        <Grid
-                                            ColumnDefinitions="Auto, Auto, Auto, Auto"
-                                            Margin="0 5 45 2">
-                                            <TextBlock
-                                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SizeWithColon"
-                                                Grid.Column="0"
-                                                Margin="0 0 0 0"
-                                                TextWrapping="Wrap"/>
-                                            <TextBlock
-                                                Text="{x:Bind Size}"
-                                                Grid.Column="1"
-                                                Margin="10 0 10 0"
-                                                TextWrapping="Wrap"/>
-                                            <TextBlock
-                                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/PathWithColon"
-                                                Grid.Column="2"
-                                                Margin="0 0 0 0"
-                                                TextWrapping="Wrap"/>
-                                            <TextBlock
-                                                Text="{x:Bind Location}"
-                                                Grid.Column="3"
-                                                Margin="10 0 10 0"
-                                                TextWrapping="Wrap"/>
-                                        </Grid>
+                                    <Grid
+                                        ColumnDefinitions="Auto, Auto, Auto, Auto"
+                                        Margin="0 5 45 2">
+                                        <TextBlock
+                                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SizeWithColon"
+                                            Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                            Grid.Column="0"
+                                            Margin="0 0 0 0"
+                                            TextWrapping="Wrap"/>
+                                        <TextBlock
+                                            Text="{x:Bind Size}"
+                                            IsTextSelectionEnabled="True"
+                                            Grid.Column="1"
+                                            Margin="10 0 10 0"
+                                            TextWrapping="Wrap"/>
+                                        <TextBlock
+                                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/PathWithColon"
+                                            Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                            Grid.Column="2"
+                                            Margin="0 0 0 0"
+                                            TextWrapping="Wrap"/>
+                                        <TextBlock
+                                            Text="{x:Bind Location}"
+                                            IsTextSelectionEnabled="True"
+                                            Grid.Column="3"
+                                            Margin="10 0 10 0"
+                                            TextWrapping="Wrap"/>
+                                    </Grid>
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsRepeater.ItemTemplate>
                     </ItemsRepeater>
                 </Grid>
-
             </Grid>
-
         </ScrollViewer>
-
     </Grid>
 </UserControl>

@@ -645,4 +645,8 @@
     <value>The Dev Drive couldn't be created.</value>
     <comment>Text that advises the user that there was an error and we couldn't create the Dev Drive on their machine.</comment>
   </data>
+  <data name="DevDriveDriveLetterNotAvailable" xml:space="preserve">
+    <value>The requested drive letter is not available. Select another one and try again.</value>
+    <comment>Error text that tells the user that the drive letter they selected in the drive letter combo box, is not available.</comment>
+  </data>
 </root>

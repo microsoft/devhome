@@ -296,6 +296,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     public Task<bool> LaunchDevDriveWindow()
     {
+        ErrorList.Clear();
         DevDriveWindowContainer = new (this);
         DevDriveWindowContainer.Closed += ViewContainerClosed;
         DevDriveWindowContainer.Activate();
