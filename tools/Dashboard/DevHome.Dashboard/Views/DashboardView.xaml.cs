@@ -115,6 +115,7 @@ public partial class DashboardView : ToolPage
                 }
                 catch (Exception ex)
                 {
+                    // TODO: update to use new logger when available
                     LoggerFactory.Get<ILogger>().LogError(
                         $"RestorePinnedWidgets(): widget.GetSizeAsync() failed",
                         LogLevel.Local,
