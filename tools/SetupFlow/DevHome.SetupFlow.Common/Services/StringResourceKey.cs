@@ -46,4 +46,32 @@ public static class StringResourceKey
     public static readonly string ApplicationsPageTitle = nameof(ApplicationsPageTitle);
     public static readonly string ReposConfigPageTitle = nameof(ReposConfigPageTitle);
     public static readonly string ReviewPageTitle = nameof(ReviewPageTitle);
+
+    // Repository loading screen messages
+    public static readonly string CloneRepoCreating = nameof(CloneRepoCreating);
+    public static readonly string CloneRepoCreated = nameof(CloneRepoCreated);
+    public static readonly string CloneRepoError = nameof(CloneRepoError);
+    public static readonly string CloneRepoRestart = nameof(CloneRepoRestart);
+
+    // Configure task loading screen messages
+    public static readonly string ConfigureTaskCreating = nameof(ConfigureTaskCreating);
+    public static readonly string ConfigureTaskCreated = nameof(ConfigureTaskCreated);
+    public static readonly string ConfigureTaskError = nameof(ConfigureTaskError);
+    public static readonly string ConfigureTaskRestart = nameof(ConfigureTaskRestart);
+
+    // App download loading screen messages
+    public static readonly string DownloadAppCreating = nameof(DownloadAppCreating);
+    public static readonly string DownloadAppCreated = nameof(DownloadAppCreated);
+    public static readonly string DownloadAppError = nameof(DownloadAppError);
+    public static readonly string DownloadAppRestart = nameof(DownloadAppRestart);
+
+    // Dev drive loading screen messages
+    public static readonly string DevDriveCreating = nameof(DevDriveCreating);
+    public static readonly string DevDriveCreated = nameof(DevDriveCreated);
+    public static readonly string DevDriveError = nameof(DevDriveError);
+    public static readonly string DevDriveRestart = nameof(DevDriveRestart);
+
+    // Loading screen
+    public static readonly string LoadingScreenActionCenterErrors = nameof(LoadingScreenActionCenterErrors);
+    public static readonly string LoadingPageSteps = nameof(LoadingPageSteps);
 }

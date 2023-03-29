@@ -669,11 +669,15 @@
     <value>Downloaded {0} (restart required)</value>
     <comment>Message when an app downloaded and needs to reboot the comuter. Param: App name</comment>
   </data>
+  <data name="LoadingPageSteps" xml:space="preserve">
+    <value>Step {0} of {1}</value>
+    <comment>Keeps track of how many tasks have been started. Param: Number of started tasks, total number of tasks</comment>
+  </data>
   <data name="LoadingPage_ActionCenter.Text" xml:space="preserve">
     <value>Action needed</value>
     <comment>Header for the action center</comment>
   </data>
-  <data name="LoadingPage_ActionCenter_Errors.Text" xml:space="preserve">
+  <data name="LoadingPage_ActionCenterErrors" xml:space="preserve">
     <value>Errors: {0}</value>
     <comment>Number of tasks that failed. Param: number of failed tasks</comment>
   </data>
@@ -688,10 +692,6 @@
   <data name="LoadingPage_Header.Text" xml:space="preserve">
     <value>Hold on while we set things up</value>
     <comment>Header for the loading screen</comment>
-  </data>
-  <data name="LoadingPage_Steps.Text" xml:space="preserve">
-    <value>Step {0} of {1}</value>
-    <comment>Keeps track of how many tasks have been started. Param: Number of started tasks, total number of tasks</comment>
   </data>
   <data name="LoadingPage_Tasks.Text" xml:space="preserve">
     <value>Tasks</value>
