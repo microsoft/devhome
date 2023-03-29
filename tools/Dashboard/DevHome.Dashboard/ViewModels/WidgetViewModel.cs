@@ -34,6 +34,9 @@ public partial class WidgetViewModel : ObservableObject
     [ObservableProperty]
     private Microsoft.UI.Xaml.Media.Brush _widgetBackground;
 
+    [ObservableProperty]
+    private bool _isInEditMode;
+
     partial void OnWidgetChanging(Widget value)
     {
         if (Widget != null)
