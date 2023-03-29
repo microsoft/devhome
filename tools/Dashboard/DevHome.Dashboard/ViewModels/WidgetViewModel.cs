@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Windows.System;
 
 namespace DevHome.Dashboard.ViewModels;
 
@@ -110,7 +111,7 @@ public partial class WidgetViewModel : ObservableObject
                     var renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
                     if (renderedCard != null && renderedCard.FrameworkElement != null)
                     {
-                        renderedCard.Action += HandleInvokedAction;
+                        renderedCard.Action += HandleAdaptiveAction;
                         WidgetFrameworkElement = renderedCard.FrameworkElement;
                     }
                 }
@@ -132,16 +133,20 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    private async void HandleInvokedAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
+    private async void HandleAdaptiveAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
     {
-        var actionExecute = args.Action as AdaptiveExecuteAction;
-        if (actionExecute != null)
+        if (args.Action is AdaptiveOpenUrlAction openUrlAction)
+        {
+            Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction for widget {Widget.Id}. OpenUrl = {openUrlAction.Url}");
+            await Launcher.LaunchUriAsync(openUrlAction.Url);
+        }
+        else if (args.Action is AdaptiveExecuteAction executeAction)
         {
             var dataToSend = string.Empty;
-            var dataType = actionExecute.DataJson.ValueType;
+            var dataType = executeAction.DataJson.ValueType;
             if (dataType != Windows.Data.Json.JsonValueType.Null)
             {
-                dataToSend = actionExecute.DataJson.Stringify();
+                dataToSend = executeAction.DataJson.Stringify();
             }
             else
             {
@@ -152,9 +157,13 @@ public partial class WidgetViewModel : ObservableObject
                 }
             }
 
-            Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction for widget {Widget.Id}. Action = {actionExecute.Verb}, Data = {dataToSend}");
-            await Widget.NotifyActionInvokedAsync(actionExecute.Verb, dataToSend);
+            Log.Logger()?.ReportInfo(
+                "WidgetViewModel",
+                $"HandleInvokedAction for widget {Widget.Id}. Excecute action = {executeAction.Verb}, Data = {dataToSend}");
+            await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
         }
+
+        // TODO: Handle other ActionTypes
     }
 
     private void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
