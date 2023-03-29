@@ -24,19 +24,18 @@ namespace Microsoft.Windows.DevHome.SDK
     [version(1.0)]
     interface IRepositoryProvider 
     {
-        String GetDisplayName();
+        String DisplayName { get; };
 
         Windows.Foundation.IAsyncOperation<IIterable<IRepository> > GetRepositoriesAsync(IDeveloperId developerId);
 
         IRepository ParseRepositoryFromUrl(Windows.Foundation.Uri uri);
     };
 
-    [version(1.0)]
-    interface IRepository 
-    {
-        String DisplayName();
+    [version(1.0)] interface IRepository {
 
-        String GetOwningAccountName();
+        String DisplayName { get; };
+
+        String OwningAccountName { get; };
 
         Windows.Foundation.IAsyncAction CloneRepositoryAsync(String cloneDestination, IDeveloperId developerId);
 
