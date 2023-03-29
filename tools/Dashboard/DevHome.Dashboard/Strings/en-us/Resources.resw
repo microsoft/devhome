@@ -86,6 +86,14 @@
     <value>Pin Widgets</value>
     <comment>Title for "Pin Widgets" dialog</comment>
   </data>
+  <data name="PinButton.Content" xml:space="preserve">
+    <value>Pin</value>
+    <comment>Label for button that pins the widget</comment>
+  </data>
+  <data name="UpdateWidgetButton.Content" xml:space="preserve">
+    <value>Update</value>
+    <comment>Label for button that updates the widget</comment>
+  </data>
   <data name="RemoveWidgetMenuText" xml:space="preserve">
     <value>Remove widget</value>
     <comment>Menu item that will remove the Widget from being displayed on the dashboard if it is selected</comment>
@@ -101,5 +109,9 @@
   <data name="SmallWidgetMenuText" xml:space="preserve">
     <value>Small</value>
     <comment>The size of a small widget</comment>
+  </data>
+  <data name="CustomizeWidgetMenuText" xml:space="preserve">
+    <value>Customize</value>
+    <comment>A menu option that will bring up a dialog that lets the user customize the widget</comment>
   </data>
 </root>

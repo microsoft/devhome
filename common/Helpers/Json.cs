@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace DevHome.Core.Helpers;
+namespace DevHome.Common.Helpers;
 
 public static class Json
 {

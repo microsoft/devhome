@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
+using DevHome.Settings.ViewModels;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 

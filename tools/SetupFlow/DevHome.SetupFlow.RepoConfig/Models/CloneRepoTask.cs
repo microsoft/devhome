@@ -4,7 +4,10 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
+using DevHome.SetupFlow.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 
@@ -37,38 +40,39 @@ internal class CloneRepoTask : ISetupTask
     public bool RequiresReboot => false;
 
     /// <summary>
-    /// The message to show during the loading screen.
-    /// </summary>
-    private readonly LoadingMessages _loadingMessage;
-
-    /// <summary>
     /// The developer ID that is used when a repository is being cloned.
     /// </summary>
     private readonly IDeveloperId _developerId;
 
-    /// <summary>
-    /// Get all messages to show in the loading screen.
-    /// </summary>
-    /// <returns>All loading messages for the </returns>
-    public LoadingMessages GetLoadingMessages() => _loadingMessage;
+    private TaskMessages _taskMessage;
+
+    public TaskMessages GetLoadingMessages() => _taskMessage;
+
+    private ActionCenterMessages _actionCenterErrorMessage;
+
+    public ActionCenterMessages GetErrorMessages() => _actionCenterErrorMessage;
+
+    private ActionCenterMessages _needsRebootMessage;
+
+    public ActionCenterMessages GetRebootMessage() => _needsRebootMessage;
+
+    public bool DependsOnDevDriveToBeInstalled
+    {
+        get;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CloneRepoTask"/> class.
-    /// Task to clone a repository with provided credentials.
     /// </summary>
     /// <param name="cloneLocation">Repository will be placed here. at cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
     /// <param name="developerId">Credentials needed to clone a private repo</param>
-    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId)
+    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource)
     {
         this.cloneLocation = cloneLocation;
         this.repositoryToClone = repositoryToClone;
         _developerId = developerId;
-
-        _loadingMessage = new ("Cloning Repository " + repositoryToClone.DisplayName(),
-            "Done cloning repository " + repositoryToClone.DisplayName(),
-            "Something happened to repository " + repositoryToClone.DisplayName() + ", oh no!",
-            "Repository " + repositoryToClone.DisplayName() + " needs your attention.");
+        SetMessages(stringResource);
     }
 
     /// <summary>
@@ -77,15 +81,31 @@ internal class CloneRepoTask : ISetupTask
     /// </summary>
     /// <param name="cloneLocation">Repository will be placed here. at cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The reposptyr to clone</param>
-    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone)
+    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource)
     {
         this.cloneLocation = cloneLocation;
         this.repositoryToClone = repositoryToClone;
+        SetMessages(stringResource);
+    }
 
-        _loadingMessage = new ("Cloning Repository " + repositoryToClone.DisplayName(),
-            "Done cloning repository " + repositoryToClone.DisplayName(),
-            "Something happened to repository " + repositoryToClone.DisplayName() + ", oh no!",
-            "Repository " + repositoryToClone.DisplayName() + " needs your attention.");
+    private void SetMessages(IStringResource stringResource)
+    {
+        var executingMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryMainText, repositoryToClone.DisplayName);
+        var finishedMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryFinished, cloneLocation.FullName);
+        var errorMessage = stringResource.GetLocalized(StringResourceKey.CloningRepositoryErrorText, repositoryToClone.DisplayName);
+        var needsRebootMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloneRepositoryNeedsRebootText, repositoryToClone.DisplayName);
+        _taskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsRebootMessage);
+
+        var errorSubMessage = stringResource.GetLocalized(StringResourceKey.ActionCenterCloningRepositoryErrorTextSecondary, StringResourceKey.UnknownError);
+
+        var actionCenterErrorMessage = new ActionCenterMessages();
+        actionCenterErrorMessage.PrimaryMessage = errorMessage;
+        actionCenterErrorMessage.SecondaryMessage = errorSubMessage;
+        _actionCenterErrorMessage = actionCenterErrorMessage;
+
+        _needsRebootMessage = new ActionCenterMessages();
+        _needsRebootMessage.PrimaryMessage = needsRebootMessage;
+        _needsRebootMessage.SecondaryMessage = string.Empty;
     }
 
     /// <summary>

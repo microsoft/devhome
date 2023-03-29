@@ -90,11 +90,14 @@ public partial class FolderPickerViewModel : ObservableObject
     /// </summary>
     public async Task ChooseCloneLocation()
     {
+        DisableBrowseButton();
         var maybeCloneLocation = await PickCloneDirectoryAsync();
         if (maybeCloneLocation != null)
         {
             CloneLocation = maybeCloneLocation.FullName;
         }
+
+        EnableBrowseButton();
     }
 
     /// <summary>

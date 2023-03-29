@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using DevHome.Telemetry;
+using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Helpers;
@@ -28,7 +28,11 @@ public static class LoggingHelper
         }
 
         // TODO: Instead of LoginId, hash a globally unique id of DeveloperId (like url)
-        LoggerFactory.Get<ILogger>().Log($"{eventName}", LogLevel.Critical, $"{telemetryMessage}");
+        LoggerFactory.Get<ILogger>().Log($"{eventName}", LogLevel.Critical, new
+        {
+            PartA_PrivTags = PrivTags.ProductAndServiceUsage,
+            field1 = $"{telemetryMessage}",
+        });
     }
 
     public static void AccountEvent(string eventName, string providerName, string loginId)
@@ -44,6 +48,10 @@ public static class LoggingHelper
         var hashedLoginIdString = BitConverter.ToString(hashedLoginId).Replace("-", string.Empty);
 
         // TODO: Instead of LoginId, hash a globally unique id of DeveloperId (like url)
-        LoggerFactory.Get<ILogger>().Log($"{eventName}", LogLevel.Critical, $" developerId: {hashedLoginIdString}_{providerName}");
+        LoggerFactory.Get<ILogger>().Log($"{eventName}", LogLevel.Critical, new
+        {
+            PartA_PrivTags = PrivTags.ProductAndServiceUsage,
+            field1 = $" developerId: {hashedLoginIdString}_{providerName}",
+        });
     }
 }

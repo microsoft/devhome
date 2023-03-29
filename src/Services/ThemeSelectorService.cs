@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.Common.Contracts;
 using DevHome.Common.Helpers;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;

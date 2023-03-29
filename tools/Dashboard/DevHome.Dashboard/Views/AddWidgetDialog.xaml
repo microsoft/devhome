@@ -61,7 +61,7 @@
                             Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}" />
                 </ScrollViewer>
 
-                <Button x:Name="PinButton" x:Uid="PinButton" Content="Pin"
+                <Button x:Name="PinButton" x:Uid="PinButton"
                         VerticalAlignment="Bottom" HorizontalAlignment="Center"
                         Visibility="Collapsed"
                         Height="32" Width="118"

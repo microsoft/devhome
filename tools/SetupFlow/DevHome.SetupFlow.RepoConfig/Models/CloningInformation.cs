@@ -11,9 +11,9 @@ using static DevHome.SetupFlow.RepoConfig.Models.Common;
 
 namespace DevHome.SetupFlow.RepoConfig.Models;
 
-/// <summary>.
-/// Contains all information needed to clone repositories to a user's machine.
-/// One CloneInformation per repository
+/// <summary>
+/// Used to shuttle information between RepoConfigView and AddRepoDialog.
+/// Specifically this contains all information needed to clone repositories to a user's machine.
 /// </summary>
 public partial class CloningInformation : ObservableObject, IEquatable<CloningInformation>
 {
@@ -52,7 +52,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// <summary>
     /// Gets the repo name and formats it for the Repo Review view.
     /// </summary>
-    public string RepositoryId => $"{RepositoryToClone.DisplayName() ?? string.Empty}";
+    public string RepositoryId => $"{RepositoryToClone.DisplayName ?? string.Empty}";
 
     /// <summary>
     /// Gets the clone path the user wants ot clone the repo to.
@@ -76,7 +76,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
 
         return ProviderName.Equals(other.ProviderName, StringComparison.OrdinalIgnoreCase) &&
             OwningAccount.LoginId().Equals(other.OwningAccount.LoginId(), StringComparison.OrdinalIgnoreCase) &&
-            RepositoryToClone.DisplayName().Equals(other.RepositoryToClone.DisplayName(), StringComparison.OrdinalIgnoreCase);
+            RepositoryToClone.DisplayName.Equals(other.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase);
     }
 
     public override bool Equals(object obj)
@@ -86,6 +86,6 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
 
     public override int GetHashCode()
     {
-        return (ProviderName + OwningAccount.LoginId() + RepositoryToClone.DisplayName()).GetHashCode();
+        return (ProviderName + OwningAccount.LoginId() + RepositoryToClone.DisplayName).GetHashCode();
     }
 }
