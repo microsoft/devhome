@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Helpers;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
 using Microsoft.UI.Xaml;

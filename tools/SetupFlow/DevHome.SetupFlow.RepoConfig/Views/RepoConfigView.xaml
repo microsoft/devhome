@@ -63,14 +63,14 @@
                         </controls:DataGridTemplateColumn.HeaderStyle>
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:CloningInformation">
-                                <TextBlock Text="{x:Bind ProviderName}" Width="250" HorizontalTextAlignment="Center"/>
+                                <TextBlock Text="{x:Bind ProviderName}" Width="200" HorizontalTextAlignment="Center"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>
                     <controls:DataGridTemplateColumn Header="Repository ID" MinWidth="300">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:CloningInformation">
-                                <TextBlock Text="{x:Bind RepositoryId}" Width="300" HorizontalTextAlignment="Center"/>
+                                <TextBlock Text="{x:Bind RepositoryId}" Width="250" HorizontalTextAlignment="Center"/>
                             </DataTemplate>
                         </controls:DataGridTemplateColumn.CellTemplate>
                     </controls:DataGridTemplateColumn>

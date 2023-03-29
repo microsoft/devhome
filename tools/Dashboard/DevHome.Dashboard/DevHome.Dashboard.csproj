@@ -12,6 +12,7 @@
     <None Remove="Assets\HostConfigDark.json" />
     <None Remove="Assets\HostConfigLight.json" />
     <None Remove="Views\AddWidgetDialog.xaml" />
+    <None Remove="Views\CustomizeWidgetDialog.xaml" />
     <None Remove="Views\DashboardView.xaml" />
     <None Remove="Views\WidgetControl.xaml" />
   </ItemGroup>
@@ -26,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+    <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
     <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Internal.winmd" Link="Microsoft.Windows.Widgets.Internal.winmd" CopyToOutputDirectory="PreserveNewest" />
     <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Hosts.winmd" Link="Microsoft.Windows.Widgets.Hosts.winmd" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
@@ -40,16 +42,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Views\WidgetControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-
-  <ItemGroup>
     <Page Update="Views\AddWidgetDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Update="Views\CustomizeWidgetDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Views\DashboardView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\WidgetControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

@@ -4,9 +4,23 @@
 using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.Services;
+using DevHome.Telemetry;
 using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.AppManagement.Models;
+
+/// <summary>
+/// Record for a package unique key following a value-based equality semantics
+/// </summary>
+/// <remarks>
+/// A package id is unique in a catalog, but not across catalogs. To globally
+/// identify a package, use a composite key of package id and catalog id.
+/// </remarks>
+/// <param name="packageId">Package id</param>
+/// <param name="catalogId">Catalog id</param>
+public record class PackageUniqueKey(string packageId, string catalogId);
 
 /// <summary>
 /// Interface for a winget package.
@@ -30,6 +44,17 @@ public interface IWinGetPackage
     }
 
     /// <summary>
+    /// Gets a globally unique key for the package.
+    /// </summary>
+    /// <remarks>
+    /// This property can be used as a key in a dictionary, hashset, etc ...
+    /// </remarks>
+    public PackageUniqueKey UniqueKey
+    {
+        get;
+    }
+
+    /// <summary>
     /// Gets the package display name
     /// </summary>
     public string Name
@@ -43,6 +68,14 @@ public interface IWinGetPackage
     /// <seealso cref="https://github.com/microsoft/winget-cli/blob/master/src/Microsoft.Management.Deployment/PackageManager.idl"/>
     /// </summary>
     public string Version
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether the package is installed
+    /// </summary>
+    public bool IsInstalled
     {
         get;
     }
@@ -80,8 +113,16 @@ public interface IWinGetPackage
     }
 
     /// <summary>
-    /// Install this package
+    /// Create an install task for this package
     /// </summary>
+    /// <param name="logger">Logger service</param>
     /// <param name="wpm">Windows package manager service</param>
-    Task InstallAsync(IWindowsPackageManager wpm);
+    /// <param name="stringResource">String resource service</param>
+    /// <param name="wingetFactory">WinGet factory</param>
+    /// <returns>Task object for installing this package</returns>
+    InstallPackageTask CreateInstallTask(
+        ILogger logger,
+        IWindowsPackageManager wpm,
+        ISetupFlowStringResource stringResource,
+        WindowsPackageManagerFactory wingetFactory);
 }

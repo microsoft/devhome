@@ -12,12 +12,12 @@
     mc:Ignorable="d">
 
     <Grid Width="300" Height="{x:Bind helpers:WidgetHelpers.GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize), Mode=OneWay}" 
-          CornerRadius="7" Margin="5" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}">
+          CornerRadius="7" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ContentPresenter Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}" Grid.Row="1" Margin="5,0"/>
+        <ContentPresenter Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}" Grid.Row="1" />
         <Grid Grid.Row="0">
             <TextBlock Text="{x:Bind WidgetSource.WidgetDisplayName, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,10,15,5"
                        FontSize="{ThemeResource CaptionTextBlockFontSize}"/>

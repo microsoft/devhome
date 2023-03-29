@@ -3,9 +3,9 @@
 
 using System.Collections.ObjectModel;
 using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.Core.Helpers;
 using DevHome.Helpers;
 using DevHome.Services;
 using DevHome.ViewModels;
@@ -47,7 +47,7 @@ public sealed partial class ShellPage : Page
 
     private void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        TitleBarHelper.UpdateTitleBar(RequestedTheme);
+        TitleBarHelper.UpdateTitleBar(App.MainWindow, RequestedTheme);
 
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));

@@ -246,7 +246,7 @@ public partial class AddRepoViewModel : ObservableObject
             var cloningInformation = new CloningInformation();
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName() == repositoryToRemove);
+            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName == repositoryToRemove);
 
             EverythingToClone.Remove(cloningInformation);
         }
@@ -256,7 +256,7 @@ public partial class AddRepoViewModel : ObservableObject
             var cloningInformation = new CloningInformation();
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName() == repositoryToAdd);
+            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName == repositoryToAdd);
 
             EverythingToClone.Add(cloningInformation);
         }
@@ -277,8 +277,12 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         var repository = providerNameAndRepo.Item2;
+<<<<<<< HEAD
         var developerId = new DeveloperId("dahoehna", string.Empty, "dhoehna", Url);
         /*var developerId = new DeveloperId(repository.GetOwningAccountName(), string.Empty, repository.GetOwningAccountName(), Url);*/
+=======
+        var developerId = new DeveloperId(repository.OwningAccountName, string.Empty, repository.OwningAccountName, Url);
+>>>>>>> main
         var cloningInformation = new CloningInformation();
         cloningInformation.ProviderName = providerNameAndRepo.Item1;
         cloningInformation.OwningAccount = developerId;
@@ -301,7 +305,7 @@ public partial class AddRepoViewModel : ObservableObject
     {
         var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
         _repositoriesForAccount = await _providers.GetAllRepositoriesAsync(repositoryProvider, loggedInDeveloper);
-        Repositories = new ObservableCollection<string>(_repositoriesForAccount.Select(x => x.DisplayName()));
+        Repositories = new ObservableCollection<string>(_repositoriesForAccount.Select(x => x.DisplayName));
     }
 
     /// <summary>
