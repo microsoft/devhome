@@ -57,6 +57,7 @@ public partial class DashboardView : ToolPage
         _renderer = new AdaptiveCardRenderer();
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
+        _widgetCatalog.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
         _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
     }
 
@@ -151,19 +152,60 @@ public partial class DashboardView : ToolPage
 
     private void InsertWidgetInPinnedWidgets(Widget widget, WidgetSize size, int index)
     {
-        var wvm = new WidgetViewModel(widget, size, _renderer, _dispatcher);
         var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widget.DefinitionId);
         if (widgetDefinition != null)
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widget.Id}, index = {index}");
-            wvm.WidgetDisplayName = widgetDefinition.DisplayTitle;
+            var wvm = new WidgetViewModel(widget, size, widgetDefinition, _renderer, _dispatcher);
+            PinnedWidgets.Insert(index, wvm);
         }
         else
         {
-            Log.Logger()?.ReportWarn("DashboardView", $"WidgetPlatform did not clean up widget defintion '{widget.DefinitionId}'");
+            Log.Logger()?.ReportWarn("DashboardView", $"WidgetPlatform did not clean up widgets with defintion '{widget.DefinitionId}'");
         }
+    }
 
-        PinnedWidgets.Insert(index, wvm);
+    private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
+    {
+        foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == args.Definition.Id).ToList())
+        {
+            // Things in the definition that we need to update to if they have changed:
+            // AllowMultiple, DisplayTitle, Capabilities (size), ThemeResource (icons)
+            var oldDef = widgetToUpdate.WidgetDefinition;
+            var newDef = args.Definition;
+
+            // If we're no longer allowed to have multiple instances of this widget, delete all of them.
+            if (newDef.AllowMultiple == false && oldDef.AllowMultiple == true)
+            {
+                _dispatcher.TryEnqueue(async () =>
+                {
+                    Log.Logger()?.ReportInfo("DashboardView", $"No longer allowed to have multiple of widget {newDef.Id}");
+                    Log.Logger()?.ReportInfo("DashboardView", $"Delete widget {widgetToUpdate.Widget.Id}");
+                    PinnedWidgets.Remove(widgetToUpdate);
+                    await widgetToUpdate.Widget.DeleteAsync();
+                    Log.Logger()?.ReportInfo("DashboardView", $"Deleted Widget {widgetToUpdate.Widget.Id}");
+                });
+            }
+            else
+            {
+                // Changing the definition updates the DisplayTitle.
+                widgetToUpdate.WidgetDefinition = newDef;
+
+                // If the size the widget is currently set to is no longer supported by the widget, revert to its default size.
+                // TODO: handle the case where this change is made while Dev Home is not running -- how do we restore?
+                if (oldDef.GetWidgetCapabilities() != newDef.GetWidgetCapabilities())
+                {
+                    if (!newDef.GetWidgetCapabilities().Any(cap => cap.Size == widgetToUpdate.WidgetSize))
+                    {
+                        var newDefaultSize = WidgetHelpers.GetDefaultWidgetSize(newDef.GetWidgetCapabilities());
+                        widgetToUpdate.WidgetSize = newDefaultSize;
+                        await widgetToUpdate.Widget.SetSizeAsync(newDefaultSize);
+                    }
+                }
+            }
+
+            // TODO: ThemeResource (icons) changed.
+        }
     }
 
     // Remove widget(s) from the Dashboard if the provider deletes the widget definition, or the provider is uninstalled.
