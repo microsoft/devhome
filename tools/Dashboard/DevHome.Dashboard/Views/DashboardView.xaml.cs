@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
@@ -36,6 +38,7 @@ public partial class DashboardView : ToolPage
         InitializeWidgetHost();
 
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
+        PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
 
         ActualThemeChanged += OnActualThemeChanged;
         Loaded += RestorePinnedWidgets;
@@ -135,11 +138,17 @@ public partial class DashboardView : ToolPage
 
     private void AddWidgetToPinnedWidgets(Widget widget, WidgetSize size)
     {
+        Log.Logger()?.ReportDebug("DashboardView", $"Add widget to pinned widgets, id = {widget.Id}");
+        InsertWidgetInPinnedWidgets(widget, size, PinnedWidgets.Count);
+    }
+
+    private void InsertWidgetInPinnedWidgets(Widget widget, WidgetSize size, int index)
+    {
         var wvm = new WidgetViewModel(widget, size, _renderer, _dispatcher);
         var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widget.DefinitionId);
         if (widgetDefinition != null)
         {
-            Log.Logger()?.ReportInfo("DashboardView", $"Add widget to pinned widgets, id = {widget.Id}");
+            Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widget.Id}, index = {index}");
             wvm.WidgetDisplayName = widgetDefinition.DisplayTitle;
         }
         else
@@ -147,7 +156,7 @@ public partial class DashboardView : ToolPage
             Log.Logger()?.ReportWarn("DashboardView", $"WidgetPlatform did not clean up widget defintion '{widget.DefinitionId}'");
         }
 
-        PinnedWidgets.Add(wvm);
+        PinnedWidgets.Insert(index, wvm);
     }
 
     // Remove widget(s) from the Dashboard if the provider deletes the widget definition, or the provider is uninstalled.
@@ -162,6 +171,72 @@ public partial class DashboardView : ToolPage
                 PinnedWidgets.Remove(widgetToRemove);
             }
         });
+    }
+
+    // Listen for widgets being added or removed, so we can add or remove listeners on the WidgetViewModels' properties.
+    private void OnPinnedWidgetsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (e.OldItems != null)
+        {
+            foreach (INotifyPropertyChanged item in e.OldItems)
+            {
+                item.PropertyChanged -= PinnedWidgetsPropertyChanged;
+            }
+        }
+
+        if (e.NewItems != null)
+        {
+            foreach (INotifyPropertyChanged item in e.NewItems)
+            {
+                item.PropertyChanged += PinnedWidgetsPropertyChanged;
+            }
+        }
+    }
+
+    private async void PinnedWidgetsPropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName.Equals(nameof(WidgetViewModel.IsInEditMode), StringComparison.Ordinal))
+        {
+            var widgetViewModel = sender as WidgetViewModel;
+            if (widgetViewModel.IsInEditMode == true)
+            {
+                // If the WidgetControl has marked this widget as in edit mode, bring up the edit widget dialog.
+                await EditWidget(widgetViewModel);
+            }
+        }
+    }
+
+    // We can't truly edit a widget once it has been pinned. Instead, simulate editing by
+    // removing the old widget and creating a new one.
+    private async Task EditWidget(WidgetViewModel widgetViewModel)
+    {
+        // Get info about the widget we're "editing".
+        var index = PinnedWidgets.IndexOf(widgetViewModel);
+        var originalSize = widgetViewModel.WidgetSize;
+        var widgetDef = _widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
+
+        var dialog = new CustomizeWidgetDialog(_widgetHost, _renderer, _dispatcher, widgetDef)
+        {
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
+            XamlRoot = this.XamlRoot,
+            RequestedTheme = this.ActualTheme,
+        };
+        _ = await dialog.ShowAsync();
+
+        var newWidget = dialog.EditedWidget;
+
+        if (newWidget != null)
+        {
+            // Remove and delete the old widget.
+            PinnedWidgets.RemoveAt(index);
+            await widgetViewModel.Widget.DeleteAsync();
+
+            // Set the original size on the new widget and add it to the list.
+            await newWidget.SetSizeAsync(originalSize);
+            InsertWidgetInPinnedWidgets(newWidget, originalSize, index);
+        }
+
+        widgetViewModel.IsInEditMode = false;
     }
 
 #if DEBUG
