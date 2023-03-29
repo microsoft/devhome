@@ -35,7 +35,7 @@ internal class CloneRepoTask : ISetupTask
     public bool RequiresAdmin => false;
 
     /// <summary>
-    /// Gets or sets a value indicating whether the task requires rebooting their machine.
+    /// Gets a value indicating whether the task requires rebooting their machine.
     /// </summary>
     public bool RequiresReboot => false;
 
@@ -60,6 +60,10 @@ internal class CloneRepoTask : ISetupTask
     {
         get; set;
     }
+
+    private static readonly Random MyRandom = new ();
+
+    private bool _shouldFail;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CloneRepoTask"/> class.
@@ -106,6 +110,11 @@ internal class CloneRepoTask : ISetupTask
         _needsRebootMessage = new ActionCenterMessages();
         _needsRebootMessage.PrimaryMessage = needsRebootMessage;
         _needsRebootMessage.SecondaryMessage = string.Empty;
+
+        if (MyRandom.Next(10) < 4)
+        {
+            _shouldFail = true;
+        }
     }
 
     /// <summary>
@@ -136,6 +145,11 @@ internal class CloneRepoTask : ISetupTask
             {
                 Console.WriteLine($"Something happened while trying to clone {cloneLocation.FullName}");
                 Console.WriteLine(e.ToString());
+                return TaskFinishedState.Failure;
+            }
+
+            if (_shouldFail)
+            {
                 return TaskFinishedState.Failure;
             }
 

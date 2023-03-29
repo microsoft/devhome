@@ -62,8 +62,15 @@
                 </ScrollViewer>
             </StackPanel>
             <StackPanel x:Name="ActionCenterStackPanel" Grid.Column="1">
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter"/>
-                <TextBlock Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}" Margin="0, 0, 0, 10"/>
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter"/>
+                    <HyperlinkButton Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" Content="Retry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}"/>
+                </Grid>
+                <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}"/>
                 <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <StackPanel.Resources>
@@ -81,10 +88,7 @@
                         </ItemsRepeater>
                     </StackPanel>
                 </ScrollViewer>
-                <StackPanel Orientation="Horizontal">
-                    <Button Visibility="{x:Bind ViewModel.ShowRetryAndFailedButtons, Mode=OneWay}" IsEnabled="{x:Bind ViewModel.EnableRetryButton, Mode=OneWay}" Command="{x:Bind ViewModel.RestartFailedTasksCommand, Mode=OneWay}" Content="Restart all failed tasks" />
-                    <Button Visibility="{x:Bind ViewModel.ShowRetryAndFailedButtons, Mode=OneWay}" IsEnabled="{x:Bind ViewModel.CanGoToNextPage, Mode=OneWay}" Command="{x:Bind ViewModel.NextButtonClickedCommand}" Content="Continue to summary" />
-                </StackPanel>
+                <Button Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" IsEnabled="{x:Bind ViewModel.CanGoToNextPage, Mode=OneWay}" Command="{x:Bind ViewModel.NextButtonClickedCommand}" Content="Continue to summary" />
             </StackPanel>
         </Grid>
     </StackPanel>

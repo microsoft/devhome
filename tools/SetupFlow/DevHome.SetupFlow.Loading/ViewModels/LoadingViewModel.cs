@@ -101,13 +101,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// Controls if the UI for "Restart all tasks" and "Continue to summary" are shown.
     /// </summary>
     [ObservableProperty]
-    private Visibility _showRetryAndFailedButtons;
-
-    /// <summary>
-    /// Disable the retry button while failed tasks are being re-ran.
-    /// </summary>
-    [ObservableProperty]
-    private bool _enableRetryButton;
+    private Visibility _showRetryButton;
 
     [RelayCommand]
     public async void RestartFailedTasks()
@@ -122,7 +116,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // Empty out the collection since all failed tasks are being re-ran
         _retryCount++;
         ActionCenterItems = new ObservableCollection<ActionCenterMessages>();
-        EnableRetryButton = false;
+        ShowRetryButton = Visibility.Collapsed;
         await StartAllTasks(TasksToRun);
     }
 
@@ -146,7 +140,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
 
-        ShowRetryAndFailedButtons = Visibility.Collapsed;
+        ShowRetryButton = Visibility.Collapsed;
         _failedTasks = new List<TaskInformation>();
         ActionCenterItems = new ();
         CanGoToNextPage = false;
@@ -298,10 +292,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             // At this point some tasks ran into an error.
             // Give the user the option to re try them all or move to the next screen.
-            ShowRetryAndFailedButtons = Visibility.Visible;
-
-            // tasks were re-tried once.  Don't let users try again.
-            EnableRetryButton = _retryCount < MAX_RETRIES;
+            ShowRetryButton = Visibility.Visible;
 
             // Allow user to retry all failed tasks or go to the next page.
             CanGoToNextPage = true;

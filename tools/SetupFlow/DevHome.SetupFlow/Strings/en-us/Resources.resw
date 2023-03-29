@@ -719,4 +719,8 @@
     <value>{0} Needs to reboot the machine to finish</value>
     <comment>Message to tell the user that the machine needs to reboot</comment>
   </data>
+  <data name="LogFileName" xml:space="preserve">
+    <value>DevHomeTasks.Log</value>
+    <comment>The log file name for failed tasks.</comment>
+  </data>
 </root>
