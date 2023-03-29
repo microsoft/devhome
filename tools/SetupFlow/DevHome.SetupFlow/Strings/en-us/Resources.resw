@@ -605,4 +605,136 @@
     <value>The Dev Drive couldn't be created.</value>
     <comment>Text that advises the user that there was an error and we couldn't create the Dev Drive on their machine.</comment>
   </data>
+  <data name="CloneRepoCreated" xml:space="preserve">
+    <value>Cloned {0}</value>
+    <comment>Message when a repository finished cloning.  Param:repo name</comment>
+  </data>
+  <data name="CloneRepoCreating" xml:space="preserve">
+    <value>Cloning {0}</value>
+    <comment>Message when a repository is cloning.  Param:Clone Path</comment>
+  </data>
+  <data name="CloneRepoError" xml:space="preserve">
+    <value>Couldn't clone  {0}</value>
+    <comment>Message when a repository encountered an error when cloning. Param: Repo Name</comment>
+  </data>
+  <data name="CloneRepoRestart" xml:space="preserve">
+    <value>Cloned to  {0} (restart required)</value>
+    <comment>Message when a repository is cloned but needs to reboot the computer. Param: Repo name</comment>
+  </data>
+  <data name="ConfigureTaskCreated" xml:space="preserve">
+    <value>Applied settings from configuration file</value>
+    <comment>Message when the configure task finished successfully</comment>
+  </data>
+  <data name="ConfigureTaskCreating" xml:space="preserve">
+    <value>Applying settings from configuration file...</value>
+    <comment>Message when the configure task is executing</comment>
+  </data>
+  <data name="ConfigureTaskError" xml:space="preserve">
+    <value>Couldn't apply settings from configuration file</value>
+    <comment>Message when the configuration task failed</comment>
+  </data>
+  <data name="ConfigureTaskRestart" xml:space="preserve">
+    <value>Applied settings from the configuration file (restart required)</value>
+    <comment>Message when the configuration task needs the computer to reboot</comment>
+  </data>
+  <data name="DevDriveCreated" xml:space="preserve">
+    <value>Created DevDrive</value>
+    <comment>Task message when a Dev Drive is finished</comment>
+  </data>
+  <data name="DevDriveCreating" xml:space="preserve">
+    <value>Creating Dev Drive...</value>
+    <comment>Task message when a Dev Drive is being created</comment>
+  </data>
+  <data name="DevDriveError" xml:space="preserve">
+    <value>Couldn't create Dev Drive</value>
+    <comment>Task Message when a DevDrive failed</comment>
+  </data>
+  <data name="DevDriveRestart" xml:space="preserve">
+    <value>Created Dev Drive (restart required)</value>
+    <comment>Task message when a Dev Drive needs the computer to restart</comment>
+  </data>
+  <data name="DownloadAppCreated" xml:space="preserve">
+    <value>Downloaded {0}</value>
+    <comment>Message when an app has downloaded. Param: App name</comment>
+  </data>
+  <data name="DownloadAppCreating" xml:space="preserve">
+    <value>Downloading {0}</value>
+    <comment>Message when an app is downloading. Param: App name</comment>
+  </data>
+  <data name="DownloadAppError" xml:space="preserve">
+    <value>Couldn't download {0}</value>
+    <comment>Message when an app encountered an error. Param: App name</comment>
+  </data>
+  <data name="DownloadAppRestart" xml:space="preserve">
+    <value>Downloaded {0} (restart required)</value>
+    <comment>Message when an app downloaded and needs to reboot the comuter. Param: App name</comment>
+  </data>
+  <data name="LoadingPage_ActionCenter.Text" xml:space="preserve">
+    <value>Action needed</value>
+    <comment>Header for the action center</comment>
+  </data>
+  <data name="LoadingPage_ActionCenter_Errors.Text" xml:space="preserve">
+    <value>Errors: {0}</value>
+    <comment>Number of tasks that failed. Param: number of failed tasks</comment>
+  </data>
+  <data name="LoadingPage_ActionCenter_GoToSummary.Content" xml:space="preserve">
+    <value>View Summary</value>
+    <comment>Button content to let users go to the summary page</comment>
+  </data>
+  <data name="LoadingPage_ActionCenter_Retry.Content" xml:space="preserve">
+    <value>Retry</value>
+    <comment>Hyper link button content to allow users to retry all failed tasks</comment>
+  </data>
+  <data name="LoadingPage_Header.Text" xml:space="preserve">
+    <value>Hold on while we set things up</value>
+    <comment>Header for the loading screen</comment>
+  </data>
+  <data name="LoadingPage_Steps.Text" xml:space="preserve">
+    <value>Step {0} of {1}</value>
+    <comment>Keeps track of how many tasks have been started. Param: Number of started tasks, total number of tasks</comment>
+  </data>
+  <data name="LoadingPage_Tasks.Text" xml:space="preserve">
+    <value>Tasks</value>
+    <comment>Header for the Tasks scroll viewer</comment>
+  </data>
+  <data name="SummaryPage_AppCount.text" xml:space="preserve">
+    <value>Applications installed</value>
+    <comment>Bottom foote of the number of apps downloaded</comment>
+  </data>
+  <data name="SummaryPage_AppDownlodedDisplay.Text" xml:space="preserve">
+    <value>Installed applications</value>
+    <comment>Header for the section that shows all the downloaded apps</comment>
+  </data>
+  <data name="SummaryPage_Header.Text" xml:space="preserve">
+    <value>Here's what we set up for you.</value>
+    <comment>Header text for the summary page</comment>
+  </data>
+  <data name="SummaryPage_NextSteps.Text" xml:space="preserve">
+    <value>Next Steps</value>
+    <comment>Text for the "Next steps" section of the summary page</comment>
+  </data>
+  <data name="SummaryPage_OpenDashboard.Content" xml:space="preserve">
+    <value>Open Dashboard</value>
+    <comment>Button content to let user go to the dashboard</comment>
+  </data>
+  <data name="SummaryPage_ReposClonedDisplay.Text" xml:space="preserve">
+    <value>Cloned repositories</value>
+    <comment>Header of the section that shows all cloned repositories</comment>
+  </data>
+  <data name="SummaryPage_ReposCount.Text" xml:space="preserve">
+    <value>Repositories cloned</value>
+    <comment>Bottom header of the count of all repos cloned</comment>
+  </data>
+  <data name="SummaryPage_RestartRequiredButton.Content" xml:space="preserve">
+    <value>Restart Now</value>
+    <comment>Content of the button to allow users to restart their machine</comment>
+  </data>
+  <data name="SummaryPage_RestartRequired_First.Text" xml:space="preserve">
+    <value>Restart Required</value>
+    <comment>First part of the message notifying users to restart.  Split because this portion is in bold</comment>
+  </data>
+  <data name="SummaryPage_RestartRequired_Second.Text" xml:space="preserve">
+    <value>Restart your computer to finish setup</value>
+    <comment>Second part of the message notifying users to restart.</comment>
+  </data>
 </root>
