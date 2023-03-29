@@ -51,7 +51,7 @@ public static class TelemetryHelper
         LoggerFactory.Get<ILogger>().Log($"{eventName}", LogLevel.Critical, new
         {
             PartA_PrivTags = PrivTags.ProductAndServiceUsage,
-            developerId = $" developerId: {hashedLoginIdString}_{providerName}",
+            developerId = $"{hashedLoginIdString}_{providerName}",
         });
     }
 }
