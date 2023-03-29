@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -12,7 +11,6 @@ using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
