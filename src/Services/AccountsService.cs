@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.Contracts.Services;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using DevHome.Common.Contracts.Services;
 using DevHome.Helpers;
 using Microsoft.Windows.DevHome.SDK;
-using WinRT;
 
 namespace DevHome.Services;
 

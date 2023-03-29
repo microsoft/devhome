@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Settings.ViewModels;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Settings.Models;
@@ -14,10 +15,10 @@ public partial class Account : ObservableObject
 
     internal IDeveloperId GetDevId() => _devId;
 
-    public Account(IDeveloperId devId)
+    public Account(AccountsProviderViewModel accountsProvider, IDeveloperId devId)
     {
+        _accountsProvider = accountsProvider;
         _devId = devId;
-        _accountsProvider = accountsProviderViewModel;
     }
 
     public string LoginId => _devId.LoginId();

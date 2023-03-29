@@ -1,15 +1,15 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using System;
 using DevHome.Common.Extensions;
 using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
-using DevHome.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Markup;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
-using Microsoft.Windows.ApplicationModel.Resources;
-namespace DevHome.Settings.Views;
+
 namespace DevHome.Settings.Views;
 
 public sealed partial class AccountsPage : Page
@@ -29,7 +29,7 @@ public sealed partial class AccountsPage : Page
     {
         if (ViewModel.AccountsProviders.Count == 0)
         {
-            var resourceLoader = new Windows.ApplicationModel.Resources.ResourceLoader();
+            var resourceLoader = new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath(), "DevHome.Settings/Resources");
             var noProvidersContentDialog = new ContentDialog
             {
                 Title = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_Title"),
@@ -62,12 +62,11 @@ public sealed partial class AccountsPage : Page
                 return;
             }
         }
-        AccountsPageViewModel.AccountsProviders.First().AddAccount();
     }
 
     private async void Logout_Click(object sender, RoutedEventArgs e)
     {
-        var resourceLoader = new Windows.ApplicationModel.Resources.ResourceLoader();
+        var resourceLoader = new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath(), "DevHome.Settings/Resources");
         var confirmLogoutContentDialog = new ContentDialog
         {
             Title = resourceLoader.GetString("Settings_Accounts_ConfirmLogoutContentDialog_Title"),
@@ -86,9 +85,9 @@ public sealed partial class AccountsPage : Page
         }
 
         // Remove the account
-        if (sender is Button { Tag: AccountViewModel accountToRemove })
+        if (sender is Button { Tag: Account accountToRemove })
+        {
             accountToRemove.RemoveAccount();
-        AccountsPageViewModel.AccountsProviders.First().RemoveAccount(loginIdToRemove);
 
             // Confirmation of removal Content Dialog
             var afterLogoutContentDialog = new ContentDialog

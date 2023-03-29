@@ -1,12 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using AdaptiveCards.ObjectModel.WinUI3;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Views;
+using DevHome.Settings.Helpers;
 using DevHome.Settings.Models;
+using DevHome.Settings.Views;
+using DevHome.Telemetry;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Settings.ViewModels;
@@ -32,6 +37,7 @@ public partial class AccountsProviderViewModel : ObservableObject
         pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, AdaptiveCardRendererHelper.GetLoginUIRenderer());
         pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
 
+        // TODO: Replace Close button with "X"
         var loginUIContentDialog = new LoginUIDialog
         {
             Content = pluginAdaptiveCardPanel,
@@ -51,7 +57,7 @@ public partial class AccountsProviderViewModel : ObservableObject
         LoggedInAccounts.Clear();
         _devIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
         {
-            LoggedInAccounts.Add(new AccountViewModel(this, devId));
+            LoggedInAccounts.Add(new Account(this, devId));
         });
     }
 

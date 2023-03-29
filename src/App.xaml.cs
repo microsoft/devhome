@@ -11,8 +11,7 @@ using DevHome.Contracts.Services;
 using DevHome.Helpers;
 using DevHome.Models;
 using DevHome.Services;
-using DevHome.Settings.ViewModels;
-using DevHome.Settings.Views;
+using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
@@ -81,13 +80,14 @@ public partial class App : Application, IApp
             services.AddSingleton<WindowEx>(_ => MainWindow);
 
             // Views and ViewModels
-            services.AddTransient<SettingsViewModel>();
-            services.AddTransient<SettingsPage>();
             services.AddTransient<FeedbackViewModel>();
             services.AddTransient<FeedbackPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<ShellViewModel>();
             services.AddTransient<WhatsNewViewModel>();
+
+            // Settings
+            services.AddSettings(context);
 
             // Configuration
             services.Configure<LocalSettingsOptions>(context.Configuration.GetSection(nameof(LocalSettingsOptions)));

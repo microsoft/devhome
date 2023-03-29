@@ -4,6 +4,7 @@
 using DevHome.Common.Extensions;
 using DevHome.Models;
 using DevHome.Services;
+using DevHome.Settings.ViewModels;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
@@ -86,8 +87,6 @@ public sealed partial class WhatsNewPage : Page
         try
         {
             await new AccountsProviderViewModel(devIdProvider).ShowLoginUIAsync("WhatsNew", this);
-
-            // TODO: Get new devId from ShowLoginUI() and do subsequent actions here
         }
         catch (Exception ex)
         {

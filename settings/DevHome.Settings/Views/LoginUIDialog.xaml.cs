@@ -4,7 +4,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.Views;
+namespace DevHome.Settings.Views;
 public sealed partial class LoginUIDialog : ContentDialog
 {
     public LoginUIDialog()

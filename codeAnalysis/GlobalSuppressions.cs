@@ -57,3 +57,5 @@ using System.Diagnostics.CodeAnalysis;
 
 // Generated code
 [assembly: SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1636:FileHeaderCopyrightTextMustMatch", Justification = "CommunityToolkit generated files are causing analyzer error because the file header does not match the expected value.")]
+
+[assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "< Pending >")]

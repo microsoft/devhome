@@ -3,7 +3,7 @@
 
 using AdaptiveCards.Rendering.WinUI3;
 
-namespace DevHome.Helpers;
+namespace DevHome.Settings.Helpers;
 
 public static class AdaptiveCardRendererHelper
 {
