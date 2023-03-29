@@ -1,22 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Resources;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Settings.Models;
-using DevHome.Settings.Views;
 using Microsoft.UI.Xaml;
-using Windows.Devices.Display.Core;
-using Windows.Storage;
-using Windows.System;
 
 namespace DevHome.Settings.ViewModels;
 

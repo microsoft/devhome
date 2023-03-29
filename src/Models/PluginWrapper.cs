@@ -3,7 +3,6 @@
 
 using System.Runtime.InteropServices;
 using DevHome.Common.Services;
-using DevHome.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Win32;
 using Windows.Win32.System.Com;

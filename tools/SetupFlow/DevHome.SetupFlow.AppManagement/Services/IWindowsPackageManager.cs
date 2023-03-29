@@ -3,7 +3,6 @@
 
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Models;
-using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.AppManagement.Services;
 

@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
@@ -14,7 +13,6 @@ using DevHome.SetupFlow.Loading.Models;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Windows.UI.Core;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.Loading.ViewModels;

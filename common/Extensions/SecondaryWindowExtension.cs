@@ -1,17 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Runtime.CompilerServices;
-using DevHome.Common.Extensions;
-using DevHome.Common.Helpers;
-using DevHome.Common.Services;
-using DevHome.Common.Views;
 using DevHome.Contracts.Services;
-using Microsoft.UI;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Windows.Win32;
-using Windows.Win32.Foundation;
 using WinUIEx;
 
 namespace DevHome.Common.Extensions;

@@ -3,11 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.ApplicationModel.DataTransfer;
 
 namespace DevHome.SetupFlow.RepoConfig.Models;
 

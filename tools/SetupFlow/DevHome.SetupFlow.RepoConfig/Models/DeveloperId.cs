@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.RepoConfig.Models;

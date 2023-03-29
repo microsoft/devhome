@@ -3,14 +3,9 @@
 
 using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Helpers;
-using DevHome.Contracts.Services;
-using Microsoft.UI.Xaml;
 using Windows.ApplicationModel;
 
 namespace DevHome.Settings.ViewModels;

@@ -2,12 +2,9 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Windows.DevHome.SDK;
-using static DevHome.SetupFlow.RepoConfig.Models.Common;
 
 namespace DevHome.SetupFlow.RepoConfig.Models;
 

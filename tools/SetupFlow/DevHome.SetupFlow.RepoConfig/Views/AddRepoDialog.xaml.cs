@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-using System.IO;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.RepoConfig.ViewModels;

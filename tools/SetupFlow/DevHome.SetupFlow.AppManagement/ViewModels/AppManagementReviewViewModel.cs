@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using System.Collections.ObjectModel;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
