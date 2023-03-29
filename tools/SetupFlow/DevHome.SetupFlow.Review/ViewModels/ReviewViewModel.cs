@@ -71,7 +71,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         var isAdminRequired = _orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresAdmin));
         if (isAdminRequired)
         {
-            _orchestrator.RemoteElevatedFactory = await IPCSetup.CreateOutOfProcessObject<IElevatedComponentFactory>();
+            _orchestrator.RemoteElevatedFactory = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentFactory>();
         }
 
         await Task.CompletedTask;

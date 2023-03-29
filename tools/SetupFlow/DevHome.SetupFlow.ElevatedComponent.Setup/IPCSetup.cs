@@ -37,7 +37,7 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 //// * We use a MemoryMappedFile to share a block of memory between the
 ////   app process and the background process we start. On this block we
 ////   write, in order: an HResult to report failures, the size of the
-////   marshall information for the factory object, and finally the
+////   marshal information for the factory object, and finally the
 ////   marshaler object itself.
 ////
 //// * To have the main app process wait for the initialization done in the
@@ -117,7 +117,7 @@ public static class IPCSetup
     /// app process.
     /// </summary>
     /// <returns>A factory that creates WinRT objects in the background process.</returns>
-    public static async Task<RemoteObject<T>> CreateOutOfProcessObject<T>()
+    public static async Task<RemoteObject<T>> CreateOutOfProcessObjectAsync<T>()
     {
         // Run this in the background since it may take a while
         (var remoteObject, _) = await Task.Run(() => CreateOutOfProcessObjectAndGetProcess<T>());
@@ -131,7 +131,7 @@ public static class IPCSetup
     /// </summary>
     /// <remarks>
     /// This is intended to be used for tests. For anything else we
-    /// should use <see cref="IPCSetup.CreateOutOfProcessObject{T}"/>
+    /// should use <see cref="IPCSetup.CreateOutOfProcessObjectAsync{T}"/>
     /// </remarks>
     /// <returns>
     /// A factory that creates WinRT objects in the background process,
@@ -168,7 +168,7 @@ public static class IPCSetup
         // creating the object and writing it to the shared block.
         using var initEvent = new EventWaitHandle(initialState: false, EventResetMode.AutoReset, initEventName);
 
-        // Create a semaphore to hold on to to ensure keep the background process alive.
+        // Create a semaphore that the background process will wait on to keep it alive.
         var completionSemaphore = new Semaphore(initialCount: 0, maximumCount: 1, completionSemaphoreName);
         try
         {

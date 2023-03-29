@@ -98,6 +98,16 @@ public partial class SetupFlowOrchestrator
     }
 
     /// <summary>
+    /// Releases the remote factory, terminating the background process.
+    /// </summary>
+    public void ReleaseRemoteFactory()
+    {
+        // Disposing of this object signals the background process to terminate.
+        RemoteElevatedFactory?.Dispose();
+        RemoteElevatedFactory = null;
+    }
+
+    /// <summary>
     /// Determines whether a given page is one that was shown previously on the flow.
     /// </summary>
     public bool IsPastPage(SetupPageViewModelBase page) => FlowPages.Take(_currentPageIndex).Contains(page);

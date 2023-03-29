@@ -18,7 +18,8 @@ public class BackgroundProcessTest
     /// </remarks>
     //// TODO: This test works locally but not on the pipeline.
     ////       Disabling it for now to get the change in and unblock consumers.
-    //// [TestMethod]
+    [TestMethod]
+    [Ignore]
     public void BackgroundProcessIPCSetup()
     {
         (var remoteElevatedFactory, var backgroundProcess) =

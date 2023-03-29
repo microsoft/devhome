@@ -30,9 +30,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        // Disposing of this object allows signals the background process to terminate.
-        _orchestrator.RemoteElevatedFactory?.Dispose();
-        _orchestrator.RemoteElevatedFactory = null;
+        _orchestrator.ReleaseRemoteFactory();
         await Task.CompletedTask;
     }
 }

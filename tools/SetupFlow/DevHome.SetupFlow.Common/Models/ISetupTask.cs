@@ -14,7 +14,7 @@ public interface ISetupTask
     /// <summary>
     /// Gets a value indicating whether this task requires admin privileges to be executed.
     /// </summary>
-    public abstract bool RequiresAdmin
+    public bool RequiresAdmin
     {
         get;
     }
@@ -29,7 +29,7 @@ public interface ISetupTask
     ///       Setting up WSL (future) will require us to reboot the machine to finish, but other
     ///       tasks like installing an app may trigger a reboot out of our control.
     /// </remarks>
-    public abstract bool RequiresReboot
+    public bool RequiresReboot
     {
         get;
     }
@@ -47,7 +47,7 @@ public interface ISetupTask
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
-    public abstract IAsyncOperation<TaskFinishedState> Execute();
+    public IAsyncOperation<TaskFinishedState> Execute();
 
     /// <summary>
     /// Executes this setup task as admin.
@@ -56,7 +56,7 @@ public interface ISetupTask
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
-    public abstract IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory);
+    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory);
 
     /// <summary>
     /// Gets a string to show in the loading page while executing this task.
@@ -66,5 +66,5 @@ public interface ISetupTask
     /// and again after a task execution to resolve the final message
     /// </remarks>
     /// <returns>A localized string indicating that this task is being executed.</returns>
-    public abstract LoadingMessages GetLoadingMessages();
+    public LoadingMessages GetLoadingMessages();
 }

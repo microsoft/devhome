@@ -8,7 +8,7 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 /// </summary>
 public sealed class ElevatedComponentFactory : IElevatedComponentFactory
 {
-    void IElevatedComponentFactory.WriteToStdOut(string value)
+    public void WriteToStdOut(string value)
     {
         Console.WriteLine(value);
     }
