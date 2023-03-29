@@ -192,9 +192,11 @@ public partial class DashboardView : ToolPage
                 widgetToUpdate.WidgetDefinition = newDef;
 
                 // If the size the widget is currently set to is no longer supported by the widget, revert to its default size.
-                // TODO: handle the case where this change is made while Dev Home is not running -- how do we restore?
+                // TODO: Need to update WidgetControl with now-valid sizes.
+                // TODO: Properly compare widget capabilities.
                 if (oldDef.GetWidgetCapabilities() != newDef.GetWidgetCapabilities())
                 {
+                    // TODO: handle the case where this change is made while Dev Home is not running -- how do we restore?
                     if (!newDef.GetWidgetCapabilities().Any(cap => cap.Size == widgetToUpdate.WidgetSize))
                     {
                         var newDefaultSize = WidgetHelpers.GetDefaultWidgetSize(newDef.GetWidgetCapabilities());
