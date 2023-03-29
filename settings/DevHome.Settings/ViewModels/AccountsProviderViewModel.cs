@@ -3,21 +3,20 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Views;
+using DevHome.Settings.Helpers;
 using DevHome.Settings.Models;
+using DevHome.Settings.Views;
+using DevHome.Telemetry;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Settings.ViewModels;
 public partial class AccountsProviderViewModel : ObservableObject
 {
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetForegroundWindow(IntPtr hWnd);
-
     private readonly IDevIdProvider _devIdProvider;
 
     public ObservableCollection<Account> LoggedInAccounts { get; } = new ();
@@ -25,39 +24,59 @@ public partial class AccountsProviderViewModel : ObservableObject
     public AccountsProviderViewModel(IDevIdProvider devIdProvider)
     {
         _devIdProvider = devIdProvider;
-        _devIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
-        {
-            LoggedInAccounts.Add(new Account(devId));
-        });
+        RefreshLoggedInAccounts();
     }
 
     public string ProviderName => _devIdProvider.GetName();
 
-    public async void AddAccount()
+    public async Task ShowLoginUIAsync(string loginEntryPoint, Page parentPage)
     {
-        // Currently, we directly open the browser rather than the AdaptiveCard flyout
-        var newDeveloperId = await Task.Run(async () =>
+        string[] args = { loginEntryPoint };
+        var loginUIAdaptiveCardController = _devIdProvider.GetAdaptiveCardController(args);
+        var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
+        pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, AdaptiveCardRendererHelper.GetLoginUIRenderer());
+        pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
+
+        // TODO: Replace Close button with "X"
+        var loginUIContentDialog = new LoginUIDialog
         {
-            return await _devIdProvider.LoginNewDeveloperIdAsync();
+            Content = pluginAdaptiveCardPanel,
+            XamlRoot = parentPage.XamlRoot,
+            RequestedTheme = parentPage.ActualTheme,
+            CloseButtonText = "Close",
+        };
+        await loginUIContentDialog.ShowAsync();
+        RefreshLoggedInAccounts();
+
+        // TODO: Await Login event to match up the loginEntryPoint and return DeveloperId
+        loginUIAdaptiveCardController.Dispose();
+    }
+
+    public void RefreshLoggedInAccounts()
+    {
+        LoggedInAccounts.Clear();
+        _devIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
+        {
+            LoggedInAccounts.Add(new Account(this, devId));
         });
-
-        // Only add to LoggedInAccounts if not already present
-        if (!LoggedInAccounts.Any((account) => account.LoginId == newDeveloperId.LoginId()))
-        {
-            LoggedInAccounts.Add(new Account(newDeveloperId));
-        }
-
-        // Bring focus back to DevHome after login
-        SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
     }
 
     public void RemoveAccount(string loginId)
     {
-        var accountToRemove = LoggedInAccounts?.FirstOrDefault(x => x.LoginId == loginId);
+        var accountToRemove = LoggedInAccounts.FirstOrDefault(x => x.LoginId == loginId);
         if (accountToRemove != null)
         {
-            Task.Run(() => _devIdProvider.LogoutDeveloperId(accountToRemove.GetDevId()));
-            LoggedInAccounts?.Remove(accountToRemove);
+            try
+            {
+                _devIdProvider.LogoutDeveloperId(accountToRemove.GetDevId());
+            }
+            catch (Exception ex)
+            {
+                LoggerFactory.Get<ILogger>().Log($"RemoveAccount() failed", LogLevel.Local, $"developerId: {loginId} Error: {ex}");
+                throw;
+            }
         }
+
+        RefreshLoggedInAccounts();
     }
 }

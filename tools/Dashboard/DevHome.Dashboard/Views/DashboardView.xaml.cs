@@ -109,8 +109,15 @@ public partial class DashboardView : ToolPage
 
             foreach (var widget in pinnedWidgets)
             {
-                var size = await widget.GetSizeAsync();
-                AddWidgetToPinnedWidgets(widget, size);
+                try
+                {
+                    var size = await widget.GetSizeAsync();
+                    AddWidgetToPinnedWidgets(widget, size);
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger()?.ReportError("DashboardView", $"RestorePinnedWidgets(): widget.GetSizeAsync() failed", ex);
+                }
             }
         }
     }

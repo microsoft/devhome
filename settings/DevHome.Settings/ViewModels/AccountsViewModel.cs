@@ -3,6 +3,7 @@
 
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Extensions;
@@ -16,7 +17,7 @@ public class AccountsViewModel : ObservableRecipient
 
     public AccountsViewModel()
     {
-        var devIdProviders = Application.Current.GetService<IAccountsService>().GetDevIdProviders();
+        var devIdProviders = Task.Run(async () => await Application.Current.GetService<IAccountsService>().GetDevIdProviders()).Result;
         devIdProviders.ToList().ForEach((devIdProvider) =>
         {
             AccountsProviders.Add(new AccountsProviderViewModel(devIdProvider));

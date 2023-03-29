@@ -11,7 +11,7 @@ public interface IAccountsService
 {
     Task InitializeAsync();
 
-    IReadOnlyList<IDevIdProvider> GetDevIdProviders();
+    Task<IReadOnlyList<IDevIdProvider>> GetDevIdProviders();
 
     IReadOnlyList<IDeveloperId> GetDeveloperIds(IDevIdProvider iDevIdProvider);
 

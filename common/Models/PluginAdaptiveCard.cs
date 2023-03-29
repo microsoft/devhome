@@ -2,16 +2,10 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using AdaptiveCards.ObjectModel.WinUI3;
-using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -42,7 +36,11 @@ public class PluginAdaptiveCard : IPluginAdaptiveCard
 
         if (parseResult.AdaptiveCard is null)
         {
-            throw new ArgumentException(System.Text.Json.JsonSerializer.Serialize(parseResult.Errors));
+            LoggerFactory.Get<ILogger>().LogError(
+                $"PluginAdaptiveCard.Update(): AdaptiveCard is null",
+                LogLevel.Local,
+                $"templateJson: {templateJson} dataJson: {dataJson} state: {state}");
+            return;
         }
 
         TemplateJson = templateJson ?? TemplateJson;
