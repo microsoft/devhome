@@ -2,6 +2,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+#define TELEMETRYEVENTSOURCE_PUBLIC
+
 #if TELEMETRYEVENTSOURCE_USE_NUGET
 using Microsoft.Diagnostics.Tracing;
 #else
