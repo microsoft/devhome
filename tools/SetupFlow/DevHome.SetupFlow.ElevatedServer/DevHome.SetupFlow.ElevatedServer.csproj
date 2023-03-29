@@ -2,10 +2,13 @@
 <!-- Licensed under the MIT License. -->
 
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <ApplicationIcon>$(SolutionDir)\src\Assets\DevHome.ico</ApplicationIcon>
+    <Platforms>x86;x64;arm64</Platforms>
+    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <PublishProfile>$(SolutionDir)\src\Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <StartupObject>DevHome.SetupFlow.ElevatedServer.Program</StartupObject>

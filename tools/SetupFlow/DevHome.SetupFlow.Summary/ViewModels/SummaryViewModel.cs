@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 
 using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.Telemetry;
