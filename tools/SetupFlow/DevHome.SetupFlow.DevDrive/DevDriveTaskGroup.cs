@@ -15,6 +15,8 @@ public class DevDriveTaskGroup : ISetupTaskGroup
 {
     private readonly IHost _host;
 
+    public bool RequiresReview => true;
+
     public DevDriveTaskGroup(IHost host)
     {
         _host = host;

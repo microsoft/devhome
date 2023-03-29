@@ -17,6 +17,8 @@ public class AppManagementTaskGroup : ISetupTaskGroup
     private readonly IHost _host;
     private readonly PackageProvider _packageProvider;
 
+    public bool RequiresReview => true;
+
     public AppManagementTaskGroup(IHost host, PackageProvider packageProvider)
     {
         _host = host;

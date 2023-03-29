@@ -20,6 +20,11 @@ namespace DevHome.SetupFlow.Common.Models;
 public interface ISetupTaskGroup
 {
     /// <summary>
+    /// Gets a value indicating whether a task group requires the review page before executing tasks
+    /// </summary>
+    public bool RequiresReview { get; }
+
+    /// <summary>
     /// Gets the view model for the setup page containing all the options for this setup task group.
     /// </summary>
     public SetupPageViewModelBase GetSetupPageViewModel();

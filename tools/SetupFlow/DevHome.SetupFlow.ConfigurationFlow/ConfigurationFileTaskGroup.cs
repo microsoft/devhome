@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.ConfigurationFile.Models;
 using DevHome.SetupFlow.ConfigurationFile.ViewModels;
 using Microsoft.Extensions.Hosting;
 
@@ -14,9 +13,10 @@ namespace DevHome.SetupFlow.ConfigurationFile;
 
 public class ConfigurationFileTaskGroup : ISetupTaskGroup
 {
-    private readonly IList<ConfigureTask> _configurationTasks = new List<ConfigureTask>();
     private readonly IHost _host;
     private readonly ConfigurationFileViewModel _viewModel;
+
+    public bool RequiresReview => false;
 
     public ConfigurationFileTaskGroup(IHost host)
     {
@@ -26,9 +26,13 @@ public class ConfigurationFileTaskGroup : ISetupTaskGroup
 
     public async Task<bool> PickConfigurationFileAsync() => await _viewModel.PickConfigurationFileAsync();
 
-    public IEnumerable<ISetupTask> SetupTasks => _configurationTasks;
+    public IEnumerable<ISetupTask> SetupTasks => _viewModel.TaskList;
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _viewModel;
 
-    public ReviewTabViewModelBase GetReviewTabViewModel() => throw new System.NotImplementedException();
+    public ReviewTabViewModelBase GetReviewTabViewModel()
+    {
+        // Configuration file does not have a review tab
+        return null;
+    }
 }

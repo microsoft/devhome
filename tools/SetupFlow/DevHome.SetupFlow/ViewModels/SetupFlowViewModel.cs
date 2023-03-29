@@ -51,7 +51,12 @@ public partial class SetupFlowViewModel : ObservableObject
     {
         List<SetupPageViewModelBase> flowPages = new ();
         flowPages.AddRange(Orchestrator.TaskGroups.Select(flow => flow.GetSetupPageViewModel()).Where(page => page is not null));
-        flowPages.Add(_host.GetService<ReviewViewModel>());
+
+        // Check if the review page should be added as a step
+        if (Orchestrator.TaskGroups.Any(flow => flow.RequiresReview))
+        {
+            flowPages.Add(_host.GetService<ReviewViewModel>());
+        }
 
         // The Loading page can advance to the next page
         // without user interaction once it is complete

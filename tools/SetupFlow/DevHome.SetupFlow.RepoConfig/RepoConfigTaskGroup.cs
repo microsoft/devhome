@@ -19,6 +19,8 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
 {
     private readonly IHost _host;
 
+    public bool RequiresReview => true;
+
     public RepoConfigTaskGroup(IHost host)
     {
         _host = host;

@@ -2,15 +2,18 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.ConfigurationFile.Models;
 using DevHome.Telemetry;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Management.Configuration;
+using Microsoft.Management.Configuration.Processor;
 using Microsoft.UI.Xaml;
 using WinUIEx;
 
@@ -19,23 +22,8 @@ namespace DevHome.SetupFlow.ConfigurationFile.ViewModels;
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _logger;
-    private readonly IHost _host;
 
-    public ConfigurationFileViewModel(
-        ISetupFlowStringResource stringResource,
-        SetupFlowOrchestrator orchestrator,
-        ILogger logger,
-        IHost host)
-        : base(stringResource, orchestrator)
-    {
-        _logger = logger;
-        _host = host;
-
-        // Configure navigation bar
-        NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
-        CanGoToNextPage = false;
-        IsStepPage = false;
-    }
+    public List<ISetupTask> TaskList { get; } = new List<ISetupTask>();
 
     /// <summary>
     /// Configuration file
@@ -50,6 +38,20 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// </summary>
     [ObservableProperty]
     private bool _readAndAgree;
+
+    public ConfigurationFileViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger)
+        : base(stringResource, orchestrator)
+    {
+        _logger = logger;
+
+        // Configure navigation bar
+        NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
+        CanGoToNextPage = false;
+        IsStepPage = false;
+    }
 
     partial void OnReadAndAgreeChanged(bool value)
     {
@@ -88,9 +90,8 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             try
             {
                 Configuration = new (file.Path);
+                TaskList.Add(new ConfigureTask(_logger, file));
 
-                // TODO Call Configuration COM API once implemented to validate
-                // the input file.
                 return true;
             }
             catch
