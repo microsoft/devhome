@@ -90,4 +90,16 @@
     <value>Remove widget</value>
     <comment>Menu item that will remove the Widget from being displayed on the dashboard if it is selected</comment>
   </data>
+  <data name="LargeWidgetMenuText" xml:space="preserve">
+    <value>Large</value>
+    <comment>The size of a large widget</comment>
+  </data>
+  <data name="MediumWidgetMenuText" xml:space="preserve">
+    <value>Medium</value>
+    <comment>The size of a medium widget</comment>
+  </data>
+  <data name="SmallWidgetMenuText" xml:space="preserve">
+    <value>Small</value>
+    <comment>The size of a small widget</comment>
+  </data>
 </root>

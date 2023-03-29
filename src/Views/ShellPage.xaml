@@ -43,7 +43,7 @@
                 https://docs.microsoft.com/windows/apps/design/style/segoe-fluent-icons-font#icon-list
                 -->
                 <!-- The navigation menu is populated dynamically, but must have one static entry.  This NavigationViewItem is invisible and ignored -->
-                <NavigationViewItem x:Uid="Shell_IGNORE" helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.SettingsViewModel" Visibility="Collapsed"/>
+                <NavigationViewItem x:Uid="Shell_IGNORE" helpers:NavigationHelper.NavigateTo="DevHome.Settings.ViewModels.SettingsViewModel" Visibility="Collapsed"/>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
                 <NavigationViewItem x:Uid="Feedback" helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.FeedbackViewModel" Content="Give Feedback">

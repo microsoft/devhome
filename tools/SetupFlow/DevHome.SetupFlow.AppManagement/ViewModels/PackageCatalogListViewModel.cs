@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
@@ -14,11 +15,11 @@ using Microsoft.Extensions.Hosting;
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 public partial class PackageCatalogListViewModel : ObservableObject
 {
-    private readonly IHost _host;
     private readonly ILogger _logger;
     private readonly IWindowsPackageManager _wpm;
     private readonly WinGetPackageJsonDataSource _jsonDataSource;
     private readonly WinGetPackageRestoreDataSource _restoreDataSource;
+    private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
     private bool _initialized;
 
     /// <summary>
@@ -32,18 +33,18 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// </summary>
     public ObservableCollection<int> PackageCatalogShimmers { get; } = new ();
 
-    /// <summary>
-    /// Occurrs when a package catalog is loaded
-    /// </summary>
-    public event EventHandler<PackageCatalogViewModel> CatalogLoaded;
-
-    public PackageCatalogListViewModel(IHost host, ILogger logger, WinGetPackageJsonDataSource jsonDataSource, WinGetPackageRestoreDataSource restoreDataSource, IWindowsPackageManager wpm)
+    public PackageCatalogListViewModel(
+        ILogger logger,
+        WinGetPackageJsonDataSource jsonDataSource,
+        WinGetPackageRestoreDataSource restoreDataSource,
+        IWindowsPackageManager wpm,
+        PackageCatalogViewModelFactory packageCatalogViewModelFactory)
     {
-        _host = host;
         _logger = logger;
         _jsonDataSource = jsonDataSource;
         _restoreDataSource = restoreDataSource;
         _wpm = wpm;
+        _packageCatalogViewModelFactory = packageCatalogViewModelFactory;
     }
 
     /// <summary>
@@ -101,10 +102,9 @@ public partial class PackageCatalogListViewModel : ObservableObject
             RemoveShimmers(dataSource.CatalogCount);
             foreach (var catalog in catalogs)
             {
-                var catalogViewModel = _host.CreateInstance<PackageCatalogViewModel>(catalog);
+                var catalogViewModel = _packageCatalogViewModelFactory(catalog);
                 catalogViewModel.CanAddAllPackages = true;
                 PackageCatalogs.Add(catalogViewModel);
-                CatalogLoaded?.Invoke(null, catalogViewModel);
             }
         }
     }
