@@ -63,7 +63,7 @@ public class WinGetPackage : IWinGetPackage
         ILogger logger,
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory) => new (logger, wpm, stringResource, wingetFactory, this);
+        IWindowsPackageManagerFactory wingetFactory) => new (logger, wpm, stringResource, wingetFactory, this);
 
     /// <summary>
     /// Check if the package requires elevation

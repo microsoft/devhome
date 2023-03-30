@@ -16,6 +16,7 @@ using DevHome.SetupFlow.ConfigurationFile;
 using DevHome.SetupFlow.DevDrive;
 using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
+using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.SetupFlow.RepoConfig;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;

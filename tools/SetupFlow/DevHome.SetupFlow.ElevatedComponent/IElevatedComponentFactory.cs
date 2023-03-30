@@ -26,4 +26,6 @@ public interface IElevatedComponentFactory
     /// This is intended for tests only.
     /// </remarks>
     public void WriteToStdOut(string value);
+
+    public PackageInstaller CreatePackageInstaller();
 }

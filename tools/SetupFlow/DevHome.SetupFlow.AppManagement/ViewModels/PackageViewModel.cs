@@ -42,7 +42,7 @@ public partial class PackageViewModel : ObservableObject
     private readonly IWinGetPackage _package;
     private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
-    private readonly WindowsPackageManagerFactory _wingetFactory;
+    private readonly IWindowsPackageManagerFactory _wingetFactory;
 
     /// <summary>
     /// Occurrs after the package selection changes
@@ -61,7 +61,7 @@ public partial class PackageViewModel : ObservableObject
         IWindowsPackageManager wpm,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
-        WindowsPackageManagerFactory wingetFactory)
+        IWindowsPackageManagerFactory wingetFactory)
     {
         _logger = logger;
         _stringResource = stringResource;

@@ -14,7 +14,7 @@ namespace DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 /// Details about each method can be found in the source IDL:
 /// https://github.com/microsoft/winget-cli/blob/master/src/Microsoft.Management.Deployment/PackageManager.idl
 /// </summary>
-public class WindowsPackageManagerFactory
+public class WindowsPackageManagerFactory : IWindowsPackageManagerFactory
 {
     private readonly ClsidContext _clsidContext;
 

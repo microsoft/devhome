@@ -124,5 +124,5 @@ public interface IWinGetPackage
         ILogger logger,
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory);
+        IWindowsPackageManagerFactory wingetFactory);
 }

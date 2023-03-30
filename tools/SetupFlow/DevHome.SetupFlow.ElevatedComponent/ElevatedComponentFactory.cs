@@ -12,4 +12,9 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
     {
         Console.WriteLine(value);
     }
+
+    public PackageInstaller CreatePackageInstaller()
+    {
+        return new PackageInstaller();
+    }
 }

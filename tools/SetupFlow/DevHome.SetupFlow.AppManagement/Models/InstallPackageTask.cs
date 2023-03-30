@@ -12,6 +12,7 @@ using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
+using Windows.ApplicationModel.UserDataTasks;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.AppManagement.Models;
@@ -22,7 +23,7 @@ public class InstallPackageTask : ISetupTask
     private readonly IWindowsPackageManager _wpm;
     private readonly WinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly WindowsPackageManagerFactory _wingetFactory;
+    private readonly IWindowsPackageManagerFactory _wingetFactory;
     private readonly Lazy<bool> _requiresElevation;
 
     private InstallPackageException _installPackageException;
@@ -42,7 +43,7 @@ public class InstallPackageTask : ISetupTask
         ILogger logger,
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory,
+        IWindowsPackageManagerFactory wingetFactory,
         WinGetPackage package)
     {
         _logger = logger;
@@ -116,5 +117,10 @@ public class InstallPackageTask : ISetupTask
 
     public ActionCenterMessages GetRebootMessage() => throw new NotImplementedException();
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
+    {
+        var packageInstaller = elevatedComponentFactory.CreatePackageInstaller();
+        packageInstaller.Install(_package.Id, _package.CatalogId);
+        return Task.FromResult(TaskFinishedState.Success).AsAsyncOperation();
+    }
 }
