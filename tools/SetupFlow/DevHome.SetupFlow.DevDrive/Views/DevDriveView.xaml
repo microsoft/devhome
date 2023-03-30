@@ -47,17 +47,14 @@
                     Text="{x:Bind ViewModel.AppTitle, Mode=OneWay}"
                     Margin="35,5,5,0"/>
             </Grid>
-            <ScrollViewer 
-                VerticalScrollBarVisibility="Auto"
-                HorizontalScrollBarVisibility="Auto"
+            <StackPanel
                 Margin="10 30 10 20"
                 Canvas.ZIndex="1">
-                <StackPanel
+                <ScrollViewer 
+                    VerticalScrollBarVisibility="Auto"
                     Margin="10 0 10 0">
-                    <Grid
-                        Margin="0 0 0 10"
-                        RowDefinitions="*, Auto, Auto, Auto, Auto"
-                        ColumnDefinitions="Auto">
+                    <StackPanel
+                        Margin="0 0 0 10">
                         <TextBlock
                             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowTitle"
                             FontSize="22"
@@ -103,7 +100,7 @@
                                 </Hyperlink>
                             </TextBlock>
                         </Grid>
-                    </Grid>
+                    
                     <Grid
                         Margin="0 10 0 10"
                         ColumnDefinitions="4*, *, Auto">
@@ -234,9 +231,10 @@
                             VerticalAlignment="Bottom"
                             Padding="50 10 50 10"
                             Command="{x:Bind ViewModel.CancelButtonCommand, Mode=OneWay}"/>
-                    </Grid>
-                </StackPanel>
-            </ScrollViewer>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </StackPanel>
         </Grid>
     </UserControl>
 </Page>

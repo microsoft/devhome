@@ -16,21 +16,15 @@ namespace DevHome.SetupFlow.DevDrive.ViewModels;
 public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
 {
     private readonly ILogger _logger;
+    private readonly IHost _host;
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly DevDriveTaskGroup _taskGroup;
-    private readonly List<IDevDrive> _devDrives;
-    private readonly string _localizedCountOfDevDrives;
-    private readonly string _numberOfItemsTitle;
 
     public DevDriveReviewViewModel(IHost host, ILogger logger, ISetupFlowStringResource stringResource, DevDriveTaskGroup taskGroup)
     {
         _logger = logger;
         _stringResource = stringResource;
-        _taskGroup = taskGroup;
-        TabTitle = stringResource.GetLocalized(StringResourceKey.Basics);
-        _devDrives = new (host.GetService<IDevDriveManager>().DevDrivesMarkedForCreation);
-        _numberOfItemsTitle = stringResource.GetLocalized(StringResourceKey.DevDriveReviewPageNumberOfDevDrivesTitle);
-        _localizedCountOfDevDrives = _stringResource.GetLocalized(StringResourceKey.DevDriveReviewPageNumberOfDevDrives, _devDrives.Count);
+        TabTitle = stringResource.GetLocalized(StringResourceKey.DevDriveReviewTitle);
+        _host = host;
     }
 
     /// <summary>
@@ -41,8 +35,9 @@ public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
     {
         get
         {
+            var devDrives = _host.GetService<IDevDriveManager>().DevDrivesMarkedForCreation;
             ObservableCollection<DevDriveReviewTabItem> devDriveReviewTabItem = new ();
-            foreach (var devDrive in _devDrives)
+            foreach (var devDrive in devDrives)
             {
                 devDriveReviewTabItem.Add(new DevDriveReviewTabItem(devDrive));
             }
@@ -50,8 +45,4 @@ public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
             return devDriveReviewTabItem;
         }
     }
-
-    public string LocalizedCountOfDevices => _localizedCountOfDevDrives;
-
-    public string NumberOfItemsTitle => _numberOfItemsTitle;
 }

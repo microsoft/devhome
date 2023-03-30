@@ -96,7 +96,7 @@ public partial class EditDevDriveViewModel : ObservableObject
         // DevDrive SetToDefaults
         ShowCustomizeOption = Visibility.Visible;
         var (result, devDrive) = _devDriveManager.GetNewDevDrive();
-        if (result == DevDriveOperationResult.Successful)
+        if (result == DevDriveValidationResult.Successful)
         {
             DevDrive = devDrive;
             return true;

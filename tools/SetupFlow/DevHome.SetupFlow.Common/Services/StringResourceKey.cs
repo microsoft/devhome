@@ -17,6 +17,7 @@ public static class StringResourceKey
     public static readonly string BrowseTextBlock = nameof(BrowseTextBlock);
     public static readonly string Close = nameof(Close);
     public static readonly string ConfigurationFileTypeNotSupported = nameof(ConfigurationFileTypeNotSupported);
+    public static readonly string DevDriveReviewTitle = nameof(DevDriveReviewTitle);
     public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
     public static readonly string DevDriveDefaultFolderName = nameof(DevDriveDefaultFolderName);
     public static readonly string DevDriveFilenameAlreadyExists = nameof(DevDriveFilenameAlreadyExists);

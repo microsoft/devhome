@@ -9,12 +9,11 @@ using DevHome.Common.Models;
 namespace DevHome.Common.Services;
 
 /// <summary>
-/// Enum Operation results when the Dev Drive manager performs an operation
-/// related to a Dev Drive such as validating its contents. This is only to
-/// allow us to know which error to show in the UI. These do not replace any
-/// established error coding system.
+/// Enum validation results when the Dev Drive manager performs a validates
+/// a Dev Drive. This is only to allow us to know which error to show in the UI.
+/// These do not replace established error coding system.
 /// </summary>
-public enum DevDriveOperationResult
+public enum DevDriveValidationResult
 {
     Successful,
     ObjectWasNull,
@@ -27,7 +26,6 @@ public enum DevDriveOperationResult
     DriveLetterNotAvailable,
     NoDriveLettersAvailable,
     NotEnoughFreeSpace,
-    CreateDevDriveFailed,
     DevDriveNotFound,
 }
 
@@ -37,13 +35,6 @@ public enum DevDriveOperationResult
 /// </summary>
 public interface IDevDriveManager
 {
-    /// <summary>
-    /// Starts off the Dev Drive creation operations for the requested IDevDrive object.
-    /// </summary>
-    /// <param name="devDrive">IDevDrive to create</param>
-    /// <returns>Returns true if the Dev Drive was created successfully</returns>
-    public Task<DevDriveOperationResult> CreateDevDrive(IDevDrive devDrive);
-
     /// <summary>
     /// Allows objects to request a Dev Drive window be created.
     /// </summary>
@@ -64,7 +55,7 @@ public interface IDevDriveManager
     /// An Dev Drive a new Dev Drive and a result that indicates whether the operation
     /// was successful.
     /// </returns>
-    public (DevDriveOperationResult, IDevDrive) GetNewDevDrive();
+    public (DevDriveValidationResult, IDevDrive) GetNewDevDrive();
 
     /// <summary>
     /// Gets a list of all Dev Drives currently on the local system. This will cause storage calls
@@ -79,14 +70,14 @@ public interface IDevDriveManager
 
     /// <summary>
     /// Validates the values inside the Dev Drive against Dev Drive requirements. A Dev drive is only validated
-    /// if the only result returned is DevDriveOperationResult.Successful
+    /// if the only result returned is DevDriveValidationResult.Successful
     /// </summary>
     /// <param name="devDrive">Dev Drive object</param>
     /// <returns>
     /// A set of operation results from the Dev Drive manager attempting to validate the contents
     /// of the Dev Drive.
     /// </returns>
-    public ISet<DevDriveOperationResult> GetDevDriveValidationResults(IDevDrive devDrive);
+    public ISet<DevDriveValidationResult> GetDevDriveValidationResults(IDevDrive devDrive);
 
     /// <summary>
     /// Gets a list of drive letters that have been marked for creation by the Dev Drive Manager.
@@ -117,7 +108,7 @@ public interface IDevDriveManager
     /// <returns>
     /// A result indicating whether the operation was successful.
     /// </returns>
-    public DevDriveOperationResult RemoveDevDrive(IDevDrive devDrive);
+    public DevDriveValidationResult RemoveDevDrive(IDevDrive devDrive);
 
     /// <summary>
     /// Allows objects who hold a IDevDrive object to request that the Manager tell the view model to close the
