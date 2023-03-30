@@ -16,6 +16,13 @@ public static class StringResourceKey
     public static readonly string Basics = nameof(Basics);
     public static readonly string BrowseTextBlock = nameof(BrowseTextBlock);
     public static readonly string Close = nameof(Close);
+    public static readonly string ConfigurationFileApplyError = nameof(ConfigurationFileApplyError);
+    public static readonly string ConfigurationFileApplySuccess = nameof(ConfigurationFileApplySuccess);
+    public static readonly string ConfigurationFileApplySuccessReboot = nameof(ConfigurationFileApplySuccessReboot);
+    public static readonly string ConfigurationFileApplying = nameof(ConfigurationFileApplying);
+    public static readonly string ConfigurationFieldInvalid = nameof(ConfigurationFieldInvalid);
+    public static readonly string ConfigurationFileInvalid = nameof(ConfigurationFileInvalid);
+    public static readonly string ConfigurationFileVersionUnknown = nameof(ConfigurationFileVersionUnknown);
     public static readonly string ConfigurationFileTypeNotSupported = nameof(ConfigurationFileTypeNotSupported);
     public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
     public static readonly string DevDriveDefaultFolderName = nameof(DevDriveDefaultFolderName);

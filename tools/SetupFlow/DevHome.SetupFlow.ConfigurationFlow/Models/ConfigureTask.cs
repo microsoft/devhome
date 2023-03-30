@@ -3,8 +3,11 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Models;
+using DevHome.SetupFlow.Common.Services;
+using DevHome.SetupFlow.ConfigurationFile.Exceptions;
 using DevHome.Telemetry;
 using Microsoft.Management.Configuration;
 using Microsoft.Management.Configuration.Processor;
@@ -17,24 +20,52 @@ internal class ConfigureTask : ISetupTask
 {
     private readonly StorageFile _file;
     private readonly ILogger _logger;
+    private readonly ISetupFlowStringResource _stringResource;
+    private ConfigurationProcessor _processor;
+    private ConfigurationSet _configSet;
 
     public bool RequiresAdmin => false;
 
-    public bool RequiresReboot => false;
+    public bool RequiresReboot { get; private set; }
 
-    public ConfigureTask(ILogger logger, StorageFile file)
+    public ConfigureTask(ILogger logger, ISetupFlowStringResource stringResource, StorageFile file)
     {
         _logger = logger;
+        _stringResource = stringResource;
         _file = file;
     }
 
-    public LoadingMessages GetLoadingMessages()
+    public async Task OpenConfigurationSetAsync()
+    {
+        try
+        {
+            var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, null);
+            _processor = new ConfigurationProcessor(factory);
+            var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
+            _configSet = openResult.Set;
+            if (_configSet is null)
+            {
+                throw new OpenConfigurationSetException(openResult.ResultCode, openResult.Field);
+            }
+        }
+        catch
+        {
+            _processor = null;
+            _configSet = null;
+            _logger.LogError(nameof(ConfigureTask), LogLevel.Local, "Failed to open configuration set");
+            throw;
+        }
+    }
+
+    LoadingMessages ISetupTask.GetLoadingMessages()
     {
         return new ()
         {
-            Executing = "Applying configuration",
-            Error = "Failed to apply configuration",
-            Finished = "Applied configuration successfully",
+            Executing = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplying),
+            Error = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplyError),
+            Finished = RequiresReboot ?
+                _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplySuccessReboot) :
+                _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplySuccess),
         };
     }
 
@@ -44,27 +75,18 @@ internal class ConfigureTask : ISetupTask
         {
             try
             {
-                var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, null);
-                var processor = new ConfigurationProcessor(factory);
-                var openResult = processor.OpenConfigurationSet(await _file.OpenReadAsync());
-                if (openResult.Set is null)
+                if (_processor is null || _configSet is null)
                 {
-                    throw new InvalidOperationException($"{openResult.ResultCode}, {openResult.Field}");
+                    return TaskFinishedState.Failure;
                 }
 
-                var set = openResult.Set;
-                var apply = processor.ApplySetAsync(openResult.Set, ApplyConfigurationSetFlags.None);
-                apply.Progress += (a, b) =>
-                {
-                    Debug.WriteLine(a);
-                    Debug.WriteLine(b);
-                };
-                var result = await apply;
+                var result = await _processor.ApplySetAsync(_configSet, ApplyConfigurationSetFlags.None);
                 if (result.ResultCode != null)
                 {
                     throw result.ResultCode;
                 }
 
+                RequiresReboot = result.UnitResults.Any(result => result.RebootRequired);
                 return TaskFinishedState.Success;
             }
             catch

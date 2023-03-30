@@ -157,6 +157,34 @@
     <value>Close</value>
     <comment>Label for a close button</comment>
   </data>
+  <data name="ConfigurationFieldInvalid" xml:space="preserve">
+    <value>The field '{0}' in the configuration file is invalid</value>
+    <comment>{Locked="{0}"} An error in reading a configuration file. {0} is a placeholder replaced by the field name from the file.</comment>
+  </data>
+  <data name="ConfigurationFileInvalid" xml:space="preserve">
+    <value>The configuration file is invalid.</value>
+    <comment>An error in reading a configuration file.</comment>
+  </data>
+  <data name="ConfigurationFileVersionUnknown" xml:space="preserve">
+    <value>Configuration file version {0} is not known.</value>
+    <comment>{Locked="{0}"} An error in reading a configuration file. {0} is a placeholder replaced by the version of the configuration file.</comment>
+  </data>
+  <data name="ConfigurationFileApplyError" xml:space="preserve">
+    <value>Couldn't apply settings from configuration file</value>
+    <comment>Label displayed when a configuration file has not been applied successfully</comment>
+  </data>
+  <data name="ConfigurationFileApplySuccess" xml:space="preserve">
+    <value>Applied settings from configuration file</value>
+    <comment>Label displayed when a configuration file has been applied successfully</comment>
+  </data>
+  <data name="ConfigurationFileApplySuccessReboot" xml:space="preserve">
+    <value>Applied settings from configuration file (restart required)</value>
+    <comment>Label displayed when a configuration file has been applied successfully and a system restart is required</comment>
+  </data>
+  <data name="ConfigurationFileApplying" xml:space="preserve">
+    <value>Applying settings from configuration file ...</value>
+    <comment>Label displayed when a configuration file is being applied</comment>
+  </data>
   <data name="ConfigurationFileWindow.Title" xml:space="preserve">
     <value>Configuration file name (Preview)</value>
     <comment>Title of the configuration file window</comment>

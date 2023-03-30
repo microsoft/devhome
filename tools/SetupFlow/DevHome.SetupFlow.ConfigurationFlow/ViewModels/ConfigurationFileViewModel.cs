@@ -3,17 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
+using DevHome.SetupFlow.ConfigurationFile.Exceptions;
 using DevHome.SetupFlow.ConfigurationFile.Models;
 using DevHome.Telemetry;
-using Microsoft.Management.Configuration;
-using Microsoft.Management.Configuration.Processor;
 using Microsoft.UI.Xaml;
 using WinUIEx;
 
@@ -90,19 +88,42 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             try
             {
                 Configuration = new (file.Path);
-                TaskList.Add(new ConfigureTask(_logger, file));
-
+                var task = new ConfigureTask(_logger, StringResource, file);
+                await task.OpenConfigurationSetAsync();
+                TaskList.Add(task);
                 return true;
             }
-            catch
+            catch (OpenConfigurationSetException e)
             {
                 await mainWindow.ShowErrorMessageDialogAsync(
-                    StringResource.GetLocalized(StringResourceKey.FileTypeNotSupported),
-                    StringResource.GetLocalized(StringResourceKey.ConfigurationFileTypeNotSupported),
+                    "Configuration file", // TODO Update title
+                    GetErrorMessage(e),
+                    StringResource.GetLocalized(StringResourceKey.Close));
+            }
+            catch (Exception e)
+            {
+                _logger.Log(nameof(ConfigurationFileViewModel), LogLevel.Local, $"Unknown error while opening configuration set: {e.Message}");
+
+                // TODO Update
+                await mainWindow.ShowErrorMessageDialogAsync(
+                    "Configuration file", // TODO Update title
+                    "Unknown error",
                     StringResource.GetLocalized(StringResourceKey.Close));
             }
         }
 
         return false;
+    }
+
+    private string GetErrorMessage(OpenConfigurationSetException exception)
+    {
+        return exception?.ResultCode?.HResult switch
+        {
+            OpenConfigurationSetException.WingetConfigErrorInvalidField =>
+                StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalid, exception.Field),
+            OpenConfigurationSetException.WingetConfigErrorUnknownConfigurationFileVersion =>
+                StringResource.GetLocalized(StringResourceKey.ConfigurationFileVersionUnknown, exception.Field),
+            _ => StringResource.GetLocalized(StringResourceKey.ConfigurationFileInvalid),
+        };
     }
 }
