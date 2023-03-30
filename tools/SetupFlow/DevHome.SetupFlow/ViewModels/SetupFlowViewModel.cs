@@ -53,7 +53,7 @@ public partial class SetupFlowViewModel : ObservableObject
         flowPages.AddRange(Orchestrator.TaskGroups.Select(flow => flow.GetSetupPageViewModel()).Where(page => page is not null));
 
         // Check if the review page should be added as a step
-        if (Orchestrator.TaskGroups.Any(flow => flow.RequiresReview))
+        if (Orchestrator.TaskGroups.Any(flow => flow.GetReviewTabViewModel() != null))
         {
             flowPages.Add(_host.GetService<ReviewViewModel>());
         }

@@ -3,25 +3,19 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.ConfigurationFile.ViewModels;
-using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.ConfigurationFile;
 
 public class ConfigurationFileTaskGroup : ISetupTaskGroup
 {
-    private readonly IHost _host;
     private readonly ConfigurationFileViewModel _viewModel;
 
-    public bool RequiresReview => false;
-
-    public ConfigurationFileTaskGroup(IHost host)
+    public ConfigurationFileTaskGroup(ConfigurationFileViewModel configurationFileViewModel)
     {
-        _host = host;
-        _viewModel = _host.GetService<ConfigurationFileViewModel>();
+        _viewModel = configurationFileViewModel;
     }
 
     public async Task<bool> PickConfigurationFileAsync() => await _viewModel.PickConfigurationFileAsync();

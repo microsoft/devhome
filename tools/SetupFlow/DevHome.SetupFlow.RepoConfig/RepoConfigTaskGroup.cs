@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Extensions;
@@ -18,12 +19,18 @@ namespace DevHome.SetupFlow.RepoConfig;
 public class RepoConfigTaskGroup : ISetupTaskGroup
 {
     private readonly IHost _host;
-
-    public bool RequiresReview => true;
+    private readonly Lazy<RepoConfigReviewViewModel> _repoConfigReviewViewModel;
+    private readonly Lazy<RepoConfigViewModel> _repoConfigViewModel;
 
     public RepoConfigTaskGroup(IHost host)
     {
         _host = host;
+
+        // TODO Remove `this` argument from CreateInstance since this task
+        // group is a registered type. This requires updating dependent classes
+        // correspondingly.
+        _repoConfigViewModel = new (() => _host.CreateInstance<RepoConfigViewModel>(this));
+        _repoConfigReviewViewModel = new (() => _host.CreateInstance<RepoConfigReviewViewModel>(this));
     }
 
     /// <summary>
@@ -31,9 +38,9 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     /// </summary>
     public IEnumerable<ISetupTask> SetupTasks => _cloneTasks;
 
-    public SetupPageViewModelBase GetSetupPageViewModel() => _host.CreateInstance<RepoConfigViewModel>(this);
+    public SetupPageViewModelBase GetSetupPageViewModel() => _repoConfigViewModel.Value;
 
-    public ReviewTabViewModelBase GetReviewTabViewModel() => _host.CreateInstance<RepoConfigReviewViewModel>();
+    public ReviewTabViewModelBase GetReviewTabViewModel() => _repoConfigReviewViewModel.Value;
 
     /// <summary>
     /// All tasks that need to be ran.
