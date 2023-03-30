@@ -19,7 +19,7 @@
         </Grid.RowDefinitions>
         <ContentPresenter Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}" Grid.Row="1" />
         <Grid Grid.Row="0">
-            <TextBlock Text="{x:Bind WidgetSource.WidgetDisplayName, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,10,15,5"
+            <TextBlock Text="{x:Bind WidgetSource.WidgetDisplayTitle, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,10,15,5"
                        FontSize="{ThemeResource CaptionTextBlockFontSize}"/>
             <Button Tag="{x:Bind}" Content="&#xE712;" 
                     FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{ThemeResource CaptionTextBlockFontSize}"
