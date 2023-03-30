@@ -1,4 +1,4 @@
-name: "Bug report 🐛"
+name: "Report a bug 🐛"
 description: Report errors or unexpected behavior
 labels: [Issue-Bug]
 body:
@@ -38,25 +38,25 @@ body:
 - id: repro
   type: textarea
   attributes:
-    label: Steps to reproduce
-    placeholder: Tell us the steps required to trigger your bug.
+    label: Steps to reproduce the bug
+    placeholder: Enter detailed steps to tell us what you were doing when you encountered the bug.
   validations:
     required: true
 
 - id: expectedbehavior
   type: textarea
   attributes:
-    label: Expected behavior
+    label: Expected result
     description: If you want to include screenshots, paste them into the markdown editor below.
-    placeholder: What were you expecting?
+    placeholder: Tell us what you were expecting to happen.
   validations:
     required: false
 
 - id: actualbehavior
   type: textarea
   attributes:
-    label: Actual behavior
-    placeholder: What happened instead?
+    label: Actual result
+    placeholder: Tell us what happened.
   validations:
     required: true
 
