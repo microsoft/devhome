@@ -7,6 +7,7 @@ using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
@@ -26,7 +27,7 @@ public sealed partial class WidgetControl : UserControl
     }
 
     public static readonly DependencyProperty WidgetSourceProperty = DependencyProperty.Register(
-        "WidgetSource", typeof(WidgetViewModel), typeof(WidgetControl), new PropertyMetadata(null));
+        nameof(WidgetSource), typeof(WidgetViewModel), typeof(WidgetControl), new PropertyMetadata(null));
 
     private void OpenWidgetMenu(object sender, RoutedEventArgs e)
     {
@@ -41,14 +42,33 @@ public sealed partial class WidgetControl : UserControl
                 {
                     var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
 
-                    AddRemoveToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
                     AddSizesToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                    widgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
+                    AddCustomizeToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                    AddRemoveToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
                 }
             }
         }
     }
 
-    private async void DeleteWidgetClick(object sender, RoutedEventArgs e)
+    private void AddRemoveToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    {
+        var removeWidgetText = resourceLoader.GetString("RemoveWidgetMenuText");
+        var icon = new FontIcon()
+        {
+            FontFamily = new FontFamily("Segoe MDL2 Assets"),
+            Glyph = "\uE77A;",
+        };
+        var menuItemClose = new MenuFlyoutItem
+        {
+            Tag = widgetViewModel,
+            Text = removeWidgetText,
+        };
+        menuItemClose.Click += OnRemoveWidgetClick;
+        widgetMenuFlyout.Items.Add(menuItemClose);
+    }
+
+    private async void OnRemoveWidgetClick(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem deleteMenuItem)
         {
@@ -65,18 +85,6 @@ public sealed partial class WidgetControl : UserControl
         }
     }
 
-    private void AddRemoveToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
-    {
-        var removeWidgetText = resourceLoader.GetString("RemoveWidgetMenuText");
-        var menuItemClose = new MenuFlyoutItem
-        {
-            Tag = widgetViewModel,
-            Text = removeWidgetText,
-        };
-        menuItemClose.Click += DeleteWidgetClick;
-        widgetMenuFlyout.Items.Add(menuItemClose);
-    }
-
     private void AddSizesToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
     {
         var widgetDefinition = WidgetCatalog.GetDefault().GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
@@ -89,7 +97,7 @@ public sealed partial class WidgetControl : UserControl
             Text = resourceLoader.GetString("SmallWidgetMenuText"),
             IsEnabled = capabilities.Any(cap => cap.Size == WidgetSize.Small),
         };
-        menuItemSmall.Click += MenuItemSize_Click;
+        menuItemSmall.Click += OnMenuItemSizeClick;
         widgetMenuFlyout.Items.Add(menuItemSmall);
 
         var menuItemMedium = new MenuFlyoutItem
@@ -98,7 +106,7 @@ public sealed partial class WidgetControl : UserControl
             Text = resourceLoader.GetString("MediumWidgetMenuText"),
             IsEnabled = capabilities.Any(cap => cap.Size == WidgetSize.Medium),
         };
-        menuItemMedium.Click += MenuItemSize_Click;
+        menuItemMedium.Click += OnMenuItemSizeClick;
         widgetMenuFlyout.Items.Add(menuItemMedium);
 
         var menuItemLarge = new MenuFlyoutItem
@@ -107,11 +115,11 @@ public sealed partial class WidgetControl : UserControl
             Text = resourceLoader.GetString("LargeWidgetMenuText"),
             IsEnabled = capabilities.Any(cap => cap.Size == WidgetSize.Large),
         };
-        menuItemLarge.Click += MenuItemSize_Click;
+        menuItemLarge.Click += OnMenuItemSizeClick;
         widgetMenuFlyout.Items.Add(menuItemLarge);
     }
 
-    private async void MenuItemSize_Click(object sender, RoutedEventArgs e)
+    private async void OnMenuItemSizeClick(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem menuSizeItem)
         {
@@ -120,6 +128,34 @@ public sealed partial class WidgetControl : UserControl
                 var size = (WidgetSize)menuSizeItem.Tag;
                 widgetViewModel.WidgetSize = size;
                 await widgetViewModel.Widget.SetSizeAsync(size);
+            }
+        }
+    }
+
+    private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    {
+        var customizeWidgetText = resourceLoader.GetString("CustomizeWidgetMenuText");
+        var icon = new FontIcon()
+        {
+            FontFamily = new FontFamily("Segoe MDL2 Assets"),
+            Glyph = "\uE70F;",
+        };
+        var menuItemCustomize = new MenuFlyoutItem
+        {
+            Tag = widgetViewModel,
+            Text = customizeWidgetText,
+        };
+        menuItemCustomize.Click += OnCustomizeWidgetClick;
+        widgetMenuFlyout.Items.Add(menuItemCustomize);
+    }
+
+    private void OnCustomizeWidgetClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem customizeMenuItem)
+        {
+            if (customizeMenuItem?.Tag is WidgetViewModel widgetViewModel)
+            {
+                widgetViewModel.IsInEditMode = true;
             }
         }
     }

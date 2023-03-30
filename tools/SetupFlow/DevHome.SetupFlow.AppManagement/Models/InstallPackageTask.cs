@@ -33,6 +33,11 @@ public class InstallPackageTask : ISetupTask
     // simply assume that any package installation may need a reboot.
     public bool RequiresReboot => true;
 
+    public bool DependsOnDevDriveToBeInstalled
+    {
+        get;
+    }
+
     public InstallPackageTask(
         ILogger logger,
         IWindowsPackageManager wpm,
@@ -48,13 +53,14 @@ public class InstallPackageTask : ISetupTask
         _requiresElevation = new (RequiresElevation);
     }
 
-    LoadingMessages ISetupTask.GetLoadingMessages()
+    public TaskMessages GetLoadingMessages()
     {
-        return new LoadingMessages
+        return new TaskMessages
         {
             Executing = _stringResource.GetLocalized(StringResourceKey.InstallingPackage, _package.Name),
             Finished = _stringResource.GetLocalized(StringResourceKey.InstalledPackage, _package.Name),
             Error = _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorWithReason, _package.Name, GetErrorReason()),
+            NeedsReboot = _stringResource.GetLocalized(StringResourceKey.NeedsRebootMessage, _package.Name),
         };
     }
 
@@ -105,6 +111,10 @@ public class InstallPackageTask : ISetupTask
         options.PackageInstallScope = PackageInstallScope.User;
         return _package.RequiresElevation(options);
     }
+
+    public ActionCenterMessages GetErrorMessages() => throw new NotImplementedException();
+
+    public ActionCenterMessages GetRebootMessage() => throw new NotImplementedException();
 
     IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
 }

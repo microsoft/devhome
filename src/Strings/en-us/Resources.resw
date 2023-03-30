@@ -141,11 +141,11 @@
     <value>Get Started</value>
     <comment>Begin to fill out the feature request content dialog</comment>
   </data>
-	<data name="Feedback_ReportBug_Internal.Description" xml:space="preserve">
+  <data name="Feedback_ReportBug_Internal.Description" xml:space="preserve">
     <value>Report errors or unexpected behavior via Feedback Hub prior to May 1st, 2023</value>
     <comment>Tell us about issues internally prior to May 1st</comment>
   </data>
-	<data name="Feedback_ReportBug_Internal.Header" xml:space="preserve">
+  <data name="Feedback_ReportBug_Internal.Header" xml:space="preserve">
     <value>***Internal*** Report a Bug in Feedback Hub</value>
     <comment>Tell us about an error that is happening using Feedback Hub</comment>
   </data>
@@ -409,5 +409,23 @@
   </data>
   <data name="WhatsNewPage_NotifCard.Title" xml:space="preserve">
     <value>Notifications on your Repositories</value>
+  </data>
+  <data name="WhatsNewPage_ConnectToGitHub_AlreadyConnectedContentDialog_CloseButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="WhatsNewPage_ConnectToGitHub_AlreadyConnectedContentDialog_Title" xml:space="preserve">
+    <value>You are already connected to GitHub!</value>
+  </data>
+  <data name="WhatsNewPage_ConnectToGitHub_NoPluginsContentDialog_CloseButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="WhatsNewPage_ConnectToGitHub_NoPluginsContentDialog_Title" xml:space="preserve">
+    <value>Extension not found. Install Dev Home GitHub Extension from Microsoft Store and try again.</value>
+  </data>
+  <data name="WhatsNewPage_ConnectToGitHub_SuccessContentDialog_CloseButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="WhatsNewPage_ConnectToGitHub_SuccessContentDialog_Title" xml:space="preserve">
+    <value>has connected to GitHub!</value>
   </data>
 </root>

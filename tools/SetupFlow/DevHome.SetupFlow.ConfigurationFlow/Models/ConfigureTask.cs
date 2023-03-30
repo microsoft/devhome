@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Windows.Input;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
@@ -14,7 +15,13 @@ internal class ConfigureTask : ISetupTask
 
     public bool RequiresReboot => throw new NotImplementedException();
 
-    public LoadingMessages GetLoadingMessages() => throw new NotImplementedException();
+    public bool DependsOnDevDriveToBeInstalled => false;
+
+    public ActionCenterMessages GetErrorMessages() => throw new NotImplementedException();
+
+    public TaskMessages GetLoadingMessages() => throw new NotImplementedException();
+
+    public ActionCenterMessages GetRebootMessage() => throw new NotImplementedException();
 
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute() => throw new NotImplementedException();
 

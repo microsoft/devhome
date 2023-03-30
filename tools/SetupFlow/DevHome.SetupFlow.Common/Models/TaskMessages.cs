@@ -12,7 +12,7 @@ namespace DevHome.SetupFlow.Common.Models;
 /// <summary>
 /// Messages to display in the loading screen.
 /// </summary>
-public class LoadingMessages
+public class TaskMessages
 {
     /// <summary>
     /// Gets or sets the message to display when the task is executing.
@@ -39,22 +39,22 @@ public class LoadingMessages
     }
 
     /// <summary>
-    /// Gets or sets the message to display when the task finished, but needs attention.
+    /// Gets or sets the message that is displayed when the task requires a reboot of the machine.
     /// </summary>
-    public string NeedsAttention
+    public string NeedsReboot
     {
         get; set;
     }
 
-    public LoadingMessages()
+    public TaskMessages()
     {
     }
 
-    public LoadingMessages(string executingMessage, string finishedMessage, string errorMessage, string needsAttention)
+    public TaskMessages(string executingMessage, string finishedMessage, string errorMessage, string needsReboot)
     {
         Executing = executingMessage;
         Finished = finishedMessage;
         Error = errorMessage;
-        NeedsAttention = needsAttention;
+        NeedsReboot = needsReboot;
     }
 }

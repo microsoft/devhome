@@ -14,6 +14,12 @@
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
         </Style>
 
+        <DataTemplate x:Key="AccountsProviderButtonTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
+            <StackPanel>
+                <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Stretch" Click="AddDeveloperId_Click" Tag="{x:Bind}" />
+            </StackPanel>
+        </DataTemplate>
+
         <DataTemplate x:Key="AccountsProviderViewTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
             <StackPanel>
                 <StackPanel>
@@ -37,7 +43,7 @@
                                 <TextBlock Text="{x:Bind LoginId}"  Style="{ThemeResource BodyTextStyle}" HorizontalAlignment="Left"/>
                             </StackPanel>
                             <StackPanel RelativePanel.AlignRightWithPanel="True">
-                                <Button Tag="{x:Bind LoginId}" Content="Logout" HorizontalAlignment="Right" Click="Logout_Click"/>
+                                <Button Tag="{x:Bind}" x:Uid="Settings_Accounts_LogoutButton" Content="Logout" HorizontalAlignment="Right" Click="Logout_Click"/>
                             </StackPanel>
                         </RelativePanel>
                     </Expander.Header>
@@ -49,7 +55,7 @@
         <StackPanel x:Name="MainStackPanel">
             <StackPanel x:Name="AccountsContentArea">
                 <StackPanel x:Name="AccountsTitleStackPanel" Margin="{StaticResource XSmallTopMargin}">
-                    <TextBlock Text="Accounts" Style="{ThemeResource TitleTextBlockStyle}" />
+                    <TextBlock x:Uid="Settings_Accounts_SubTitle" Style="{ThemeResource TitleTextBlockStyle}" />
                 </StackPanel>
 
                 <StackPanel x:Name="AddAccountMainStackPanel" Margin="{StaticResource XSmallTopMargin}">
@@ -57,10 +63,25 @@
                         <Expander.Header>
                             <RelativePanel Margin="{StaticResource XSmallLeftTopRightBottomMargin}">
                                 <StackPanel>
-                                    <TextBlock Text="Add account" Style="{ThemeResource BodyTextStyle}" HorizontalAlignment="Left"/>
+                                    <TextBlock x:Uid="Settings_Accounts_AddAccountText" Style="{ThemeResource BodyTextStyle}" HorizontalAlignment="Left"/>
                                 </StackPanel>
                                 <StackPanel RelativePanel.AlignRightWithPanel="True">
-                                    <Button Content ="Add account" HorizontalAlignment="Right" Click="AddDeveloperId_Click"/>
+                                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right">
+                                        <Button.Flyout>
+                                            <Flyout Placement="Bottom">
+                                                <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
+                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
+                                                </ItemsRepeater>
+                                                <Flyout.FlyoutPresenterStyle>
+                                                    <Style TargetType="FlyoutPresenter">
+                                                        <Setter Property="IsTabStop" Value="True"/>
+                                                        <Setter Property="TabNavigation" Value="Cycle"/>
+                                                        <Setter Property="MinWidth" Value="150" />
+                                                    </Style>
+                                                </Flyout.FlyoutPresenterStyle>
+                                            </Flyout>
+                                        </Button.Flyout>
+                                    </Button>
                                 </StackPanel>
                             </RelativePanel>
                         </Expander.Header>

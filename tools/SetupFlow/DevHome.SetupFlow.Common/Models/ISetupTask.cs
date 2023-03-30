@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Windows.Input;
 using DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
@@ -59,12 +60,32 @@ public interface ISetupTask
     public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory);
 
     /// <summary>
-    /// Gets a string to show in the loading page while executing this task.
+    /// Gets the object used to display all messages in the loading screen.
     /// </summary>
     /// <remarks>
     /// This method is called before a task execution to resolve <see cref="LoadingMessages.Executing"/>
     /// and again after a task execution to resolve the final message
     /// </remarks>
     /// <returns>A localized string indicating that this task is being executed.</returns>
-    public LoadingMessages GetLoadingMessages();
+    public abstract TaskMessages GetLoadingMessages();
+
+    /// <summary>
+    /// Gets an object that contains all the data needed to display an error message in the action center of the loading screen.
+    /// </summary>
+    /// <returns>An object with strings to display in the action center.</returns>
+    public abstract ActionCenterMessages GetErrorMessages();
+
+    /// <summary>
+    /// Gets an object that contains all the data needed to display a "Needs reboot" in the action center of the loading screen.
+    /// </summary>
+    /// <returns>An object of strings.</returns>
+    public abstract ActionCenterMessages GetRebootMessage();
+
+    /// <summary>
+    /// Gets a value indicating whether a dev drive needs to be installed before this task can start.
+    /// </summary>
+    public abstract bool DependsOnDevDriveToBeInstalled
+    {
+        get;
+    }
 }

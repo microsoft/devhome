@@ -6,11 +6,103 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:DevHome.SetupFlow.DevDrive.Views"
+    xmlns:viewmodels="using:DevHome.SetupFlow.DevDrive.ViewModels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverterWhenEmpty" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
+            <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverterWhenNotEmpty" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
 
-    <Grid>
-        <TextBlock>Dev volume review</TextBlock>
+    <Grid
+        Margin="0 5 0 5">
+        <!-- No Dev Drives message-->
+        <TextBlock
+            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveReviewPageNoDevDrives"
+            Visibility="{x:Bind ViewModel.DevDrives, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverterWhenEmpty}}"
+            HorizontalAlignment="Left"
+            Margin="10 10 10 10"/>
+        <ScrollViewer 
+            HorizontalScrollBarVisibility="Auto"
+            VerticalScrollBarVisibility="Auto"
+            VerticalScrollMode="Auto"
+            HorizontalScrollMode="Auto"
+            Visibility="{x:Bind ViewModel.DevDrives, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverterWhenNotEmpty}}">
+            <Grid
+                RowDefinitions="Auto, *"
+                ColumnDefinitions="Auto, *"
+                Margin="10 0 0 10">
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Text="{x:Bind ViewModel.NumberOfItemsTitle}"
+                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                    Margin="0 5 15 5"
+                    TextWrapping="Wrap"/>
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Text="{x:Bind ViewModel.LocalizedCountOfDevices}"
+                    Margin="0 5 5 5"
+                    TextWrapping="Wrap"/>
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveReviewPageDevDriveDetailsTitle"
+                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                    Margin="0 5 15 5"
+                    TextWrapping="Wrap"/>
+                <Grid
+                    Grid.Row="1"
+                    Grid.Column="1">
+                    <ItemsRepeater
+                       ItemsSource="{x:Bind ViewModel.DevDrives, Mode=OneWay}">
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate x:DataType="viewmodels:DevDriveReviewTabItem">
+                                <StackPanel>
+                                    <TextBlock
+                                        Text="{x:Bind FormattedLabelAndDriveLetter}"
+                                        IsTextSelectionEnabled="True"
+                                        Margin="0 5 0 0"
+                                        TextWrapping="Wrap"/>
+                                    <Grid
+                                        ColumnDefinitions="Auto, Auto, Auto, Auto"
+                                        Margin="0 5 45 2">
+                                        <TextBlock
+                                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SizeWithColon"
+                                            Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                            Grid.Column="0"
+                                            Margin="0 0 0 0"
+                                            TextWrapping="Wrap"/>
+                                        <TextBlock
+                                            Text="{x:Bind Size}"
+                                            IsTextSelectionEnabled="True"
+                                            Grid.Column="1"
+                                            Margin="10 0 10 0"
+                                            TextWrapping="Wrap"/>
+                                        <TextBlock
+                                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/PathWithColon"
+                                            Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                            Grid.Column="2"
+                                            Margin="0 0 0 0"
+                                            TextWrapping="Wrap"/>
+                                        <TextBlock
+                                            Text="{x:Bind Location}"
+                                            IsTextSelectionEnabled="True"
+                                            Grid.Column="3"
+                                            Margin="10 0 10 0"
+                                            TextWrapping="Wrap"/>
+                                    </Grid>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>
