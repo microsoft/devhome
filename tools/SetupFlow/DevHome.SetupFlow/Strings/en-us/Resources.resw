@@ -808,4 +808,8 @@
     <value>Restart your computer to finish setup</value>
     <comment>Second part of the message notifying users to restart.</comment>
   </data>
+  <data name="DevDriveErrorWithReason" xml:space="preserve">
+    <value>Dev Drive couldn't be created because {0}</value>
+    <comment>Message when the dev drive could not be created. Param: reason.</comment>
+  </data>
 </root>

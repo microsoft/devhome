@@ -74,17 +74,8 @@
                 <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" HorizontalAlignment="Center" />
 
                 <!-- Next steps section -->
+                <!-- LEaving empty because we don't have the finilized strings, or options for this section.-->
                 <StackPanel Orientation="Vertical" Spacing="2" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" Padding="0, 30, 0, 0">
-                    <StackPanel.BorderBrush>
-                        <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
-                    </StackPanel.BorderBrush>
-                    <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_NextSteps" Padding="12, 0, 0, 0"/>
-                    <TextBlock Text="TODO: Replace with strings from designer when they come in."/>
-                    <HyperlinkButton Content="Set up another project"/>
-                    <HyperlinkButton Content="Go to DevHub Settings"/>
-                    <HyperlinkButton Content="Set up Git Notifications"/>
-                    <HyperlinkButton Content="Open Visual Studio Code"/>
-                    <HyperlinkButton Content="Loarn more about Developer Hub"/>
                 </StackPanel>
             </StackPanel>
 
