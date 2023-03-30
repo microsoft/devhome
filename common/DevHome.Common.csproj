@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.Primitives" Version="7.1.2" />
-    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.199.85" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.199.87" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.*-*" />

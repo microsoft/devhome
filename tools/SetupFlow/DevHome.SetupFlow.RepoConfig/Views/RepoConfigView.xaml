@@ -43,7 +43,7 @@
                 <controls:DataGrid.VerticalGridLinesBrush>
                     <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
                 </controls:DataGrid.VerticalGridLinesBrush>
-                <!--<controls:DataGrid.ColumnHeaderStyle>
+                <controls:DataGrid.ColumnHeaderStyle>
                     <Style TargetType="primitives:DataGridColumnHeader">
                         <Setter Property="Template">
                             <Setter.Value>
@@ -53,14 +53,9 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-                </controls:DataGrid.ColumnHeaderStyle>-->
+                </controls:DataGrid.ColumnHeaderStyle>
                 <controls:DataGrid.Columns>
                     <controls:DataGridTemplateColumn Header="Repository Type" MinWidth="250">
-                        <controls:DataGridTemplateColumn.HeaderStyle>
-                            <Style>
-                                
-                            </Style>
-                        </controls:DataGridTemplateColumn.HeaderStyle>
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:CloningInformation">
                                 <TextBlock Text="{x:Bind ProviderName}" Width="200" HorizontalTextAlignment="Center"/>
