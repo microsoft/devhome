@@ -47,7 +47,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
 
-        _showRestartNeeded = Visibility.Visible;
+        _showRestartNeeded = Visibility.Collapsed;
         _repositoriesCloned = new ();
         _appsDownloaded = new ();
     }
