@@ -277,12 +277,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         var repository = providerNameAndRepo.Item2;
-<<<<<<< HEAD
-        var developerId = new DeveloperId("dahoehna", string.Empty, "dhoehna", Url);
-        /*var developerId = new DeveloperId(repository.GetOwningAccountName(), string.Empty, repository.GetOwningAccountName(), Url);*/
-=======
         var developerId = new DeveloperId(repository.OwningAccountName, string.Empty, repository.OwningAccountName, Url);
->>>>>>> main
         var cloningInformation = new CloningInformation();
         cloningInformation.ProviderName = providerNameAndRepo.Item1;
         cloningInformation.OwningAccount = developerId;
