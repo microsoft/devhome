@@ -55,15 +55,6 @@ public static class StringResourceKey
     public static readonly string LoadingExecutingProgress = nameof(LoadingExecutingProgress);
     public static readonly string ActionCenterDisplay = nameof(ActionCenterDisplay);
     public static readonly string NeedsRebootMessage = nameof(NeedsRebootMessage);
-
-    // Action center and loading screen
-    public static readonly string LoadingScreenCloningRepositoryMainText = nameof(LoadingScreenCloningRepositoryMainText);
-    public static readonly string LoadingScreenCloningRepositoryFinished = nameof(LoadingScreenCloningRepositoryFinished);
-    public static readonly string CloningRepositoryErrorText = nameof(CloningRepositoryErrorText);
-    public static readonly string LoadingScreenCloneRepositoryNeedsRebootText = nameof(LoadingScreenCloneRepositoryNeedsRebootText);
-    public static readonly string ActionCenterCloningRepositoryErrorTextSecondary = nameof(ActionCenterCloningRepositoryErrorTextSecondary);
-    public static readonly string UnknownError = nameof(UnknownError);
-
     public static readonly string ApplicationsPageTitle = nameof(ApplicationsPageTitle);
     public static readonly string ReposConfigPageTitle = nameof(ReposConfigPageTitle);
     public static readonly string ReviewPageTitle = nameof(ReviewPageTitle);

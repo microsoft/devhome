@@ -23,11 +23,11 @@
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="5">
                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF167;" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" />
-                <TextBlock Text="Restart needed" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
-                <TextBlock Text="Restart needed" VerticalAlignment="Center"/>
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequired_First" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequired_Second" VerticalAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5">
-                <Button Content="Restart" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
+                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequiredButton" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
                 <Button Command="{x:Bind ViewModel.RemoveRestartGridCommand}" Style="{ThemeResource AlternateCloseButtonStyle}">
                     <Button.Content>
                         <SymbolIcon Symbol="Cancel"/>
@@ -37,8 +37,7 @@
         </Grid>
         
         <!-- Intoduction to the summary page -->
-        <TextBlock Text="Hi there," Margin="0, 20, 0, 0"/>
-        <TextBlock Text="Here's what we set up for you" Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}" Margin="0, 0, 0, 40"/>
+        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Header" Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}" Margin="0, 20, 0, 40"/>
         
         <!-- Grid with information on tasks completed-->
         <Grid ColumnSpacing="50">
@@ -51,7 +50,7 @@
             <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="30">
 
                 <!-- Number of apps and repos cloned.-->
-                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Spacing="20" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" Padding="0, 30, 0, 0">
+                <StackPanel Orientation="Horizontal" Spacing="20" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" HorizontalAlignment="Center">
                     <StackPanel.BorderBrush>
                         <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
                     </StackPanel.BorderBrush>
@@ -61,7 +60,7 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.AppsDownloaded.Count}" FontSize="{StaticResource TitleLargeTextBlockFontSize}" FontWeight="{StaticResource InfoBarTitleFontWeight}" HorizontalAlignment="center"/>
-                        <TextBlock Grid.Row="1" Text="Apps &amp; Packages Installed" />
+                        <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownloadedCount" />
                     </Grid>
                     <Grid>
                         <Grid.RowDefinitions>
@@ -69,17 +68,18 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.RepositoriesCloned.Count}" FontSize="{StaticResource TitleLargeTextBlockFontSize}" FontWeight="{StaticResource InfoBarTitleFontWeight}" HorizontalAlignment="center"/>
-                        <TextBlock Grid.Row="1" Text="Repository Cloned" />
+                        <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedCount" />
                     </Grid>
                 </StackPanel>
-                <Button Content="Open Dashboard" HorizontalAlignment="Center" />
+                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" HorizontalAlignment="Center" />
 
                 <!-- Next steps section -->
                 <StackPanel Orientation="Vertical" Spacing="2" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" Padding="0, 30, 0, 0">
                     <StackPanel.BorderBrush>
                         <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
                     </StackPanel.BorderBrush>
-                    <TextBlock Text="Next steps" Padding="12, 0, 0, 0"/>
+                    <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_NextSteps" Padding="12, 0, 0, 0"/>
+                    <TextBlock Text="TODO: Replace with strings from designer when they come in."/>
                     <HyperlinkButton Content="Set up another project"/>
                     <HyperlinkButton Content="Go to DevHub Settings"/>
                     <HyperlinkButton Content="Set up Git Notifications"/>
@@ -96,7 +96,7 @@
                     <StackPanel.BorderBrush>
                         <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
                     </StackPanel.BorderBrush>
-                    <TextBlock Text="repositories cloned" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
+                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
                     <ScrollViewer Grid.Column="1" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" Height="90">
                         <StackPanel>
                             <StackPanel.Resources>
@@ -118,7 +118,7 @@
                     <StackPanel.BorderBrush>
                         <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
                     </StackPanel.BorderBrush>
-                    <TextBlock Text="Installed apps &amp; packages" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
+                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
                     <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto"  Height="300">
                         <StackPanel>
                             <StackPanel.Resources>

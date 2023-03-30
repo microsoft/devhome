@@ -807,11 +807,11 @@
     <value>Tasks</value>
     <comment>Header for the Tasks scroll viewer</comment>
   </data>
-  <data name="SummaryPage_AppCount.text" xml:space="preserve">
+  <data name="SummaryPage_AppsDownloadedCount.Text" xml:space="preserve">
     <value>Applications installed</value>
-    <comment>Bottom foote of the number of apps downloaded</comment>
+    <comment>Bottom footer of the number of apps downloaded</comment>
   </data>
-  <data name="SummaryPage_AppDownlodedDisplay.Text" xml:space="preserve">
+  <data name="SummaryPage_AppsDownlodedDisplay.Text" xml:space="preserve">
     <value>Installed applications</value>
     <comment>Header for the section that shows all the downloaded apps</comment>
   </data>
@@ -831,7 +831,7 @@
     <value>Cloned repositories</value>
     <comment>Header of the section that shows all cloned repositories</comment>
   </data>
-  <data name="SummaryPage_ReposCount.Text" xml:space="preserve">
+  <data name="SummaryPage_ReposClonedCount.Text" xml:space="preserve">
     <value>Repositories cloned</value>
     <comment>Bottom header of the count of all repos cloned</comment>
   </data>

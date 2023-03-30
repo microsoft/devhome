@@ -78,7 +78,6 @@
                             <DataTemplate x:Key="SecondHorizontalBarTemplate" x:DataType="commonModels:ActionCenterMessages">
                                 <StackPanel Orientation="Vertical" Spacing="10" Background="{ThemeResource CardBackgroundFillColorDefault}" CornerRadius="10" Padding="20">
                                     <TextBlock Text="{x:Bind PrimaryMessage, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                    <TextBlock Text="{x:Bind SecondaryMessage, Mode=OneWay}"/>
                                 </StackPanel>
                             </DataTemplate>
                         </StackPanel.Resources>
