@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.RepoConfig.Models;
@@ -107,6 +109,25 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private bool _shouldPrimaryButtonBeEnabled;
+
+    [ObservableProperty]
+    private string _textToFilterBy;
+
+    [RelayCommand]
+    private void FilterRepositories(string text)
+    {
+        IEnumerable<string> filteredRepositories;
+        if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
+        {
+            filteredRepositories = _repositoriesForAccount.Select(x => x.DisplayName);
+        }
+        else
+        {
+            filteredRepositories = _repositoriesForAccount.Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase)).Select(x => x.DisplayName);
+        }
+
+        Repositories = new ObservableCollection<string>(filteredRepositories);
+    }
 
     /// <summary>
     /// Gets or sets what page the user is currently on.  Used to branch logic depending on the page.
@@ -293,14 +314,13 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="repositoryProvider">The provider.  This should match IRepositoryProvider.LoginId</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
     /// <returns>A list of all repositories the account has for the provider.</returns>
-    /// <remarks>
-    /// Repositories are presented as [loginId]\[Repo Display Name]
-    /// </remarks>
     public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
     {
         var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
         _repositoriesForAccount = await _providers.GetAllRepositoriesAsync(repositoryProvider, loggedInDeveloper);
-        Repositories = new ObservableCollection<string>(_repositoriesForAccount.Select(x => x.DisplayName));
+
+        // TODO: What if the user comes back here with repos selected?
+        Repositories = new ObservableCollection<string>(_repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => x.DisplayName));
     }
 
     /// <summary>

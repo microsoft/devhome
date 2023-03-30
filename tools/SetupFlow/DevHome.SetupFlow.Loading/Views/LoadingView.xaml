@@ -29,7 +29,6 @@
                 <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderTopRow"/>
                 <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderBottomRow"/>
             </StackPanel>
-            <Button Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_StopButton"/>
         </Grid>
         <ProgressBar x:Name="SetupTaskProgressBar" Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
         <TextBlock Text="{x:Bind ViewModel.ExecutingTasks, Mode=OneWay}" />

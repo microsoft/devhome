@@ -37,6 +37,10 @@ namespace Microsoft.Windows.DevHome.SDK
 
         String OwningAccountName { get; };
 
+        Boolean IsPrivate { get; };
+
+        Windows.Foundation.DateTime LastUpdated { get; };
+
         Windows.Foundation.IAsyncAction CloneRepositoryAsync(String cloneDestination, IDeveloperId developerId);
 
         Windows.Foundation.IAsyncAction CloneRepositoryAsync(String cloneDestination);
