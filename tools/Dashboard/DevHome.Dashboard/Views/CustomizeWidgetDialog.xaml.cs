@@ -22,7 +22,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
 
     public CustomizeWidgetDialog(WidgetHost host, AdaptiveCardRenderer renderer, DispatcherQueue dispatcher, WidgetDefinition widgetDefinition)
     {
-        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, renderer, dispatcher);
+        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, renderer, dispatcher);
         this.InitializeComponent();
 
         _widgetHost = host;

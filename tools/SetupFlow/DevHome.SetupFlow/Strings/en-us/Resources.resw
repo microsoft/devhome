@@ -812,4 +812,8 @@
     <value>Dev Drive couldn't be created because {0}</value>
     <comment>Message when the dev drive could not be created. Param: reason.</comment>
   </data>
+  <data name="DevDriveDriveLetterNotAvailable" xml:space="preserve">
+    <value>The requested drive letter is not available. Select another one and try again.</value>
+    <comment>Error text that tells the user that the drive letter they selected in the drive letter combo box, is not available.</comment>
+  </data>
 </root>
