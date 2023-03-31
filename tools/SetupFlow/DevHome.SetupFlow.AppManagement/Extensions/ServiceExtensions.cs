@@ -27,7 +27,7 @@ public static class ServiceExtensions
 
         // Services
         services.AddSingleton<IWindowsPackageManager, WindowsPackageManager>();
-        services.AddSingleton(new WindowsPackageManagerFactory(ClsidContext.Prod));
+        services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory(ClsidContext.Prod));
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();
