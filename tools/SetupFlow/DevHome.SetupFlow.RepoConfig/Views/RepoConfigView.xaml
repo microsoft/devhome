@@ -26,7 +26,7 @@
                 <Button x:Name="AddRepositoriesButton" Click="AddRepoButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"/>
             </ControlTemplate>
         </setupControls:SetupShell.HeaderTemplate>
-        <StackPanel x:Name="RepoConfigStackPanel" Orientation="Vertical" Spacing="10">
+        <StackPanel x:Name="RepoConfigStackPanel" Orientation="Vertical" Spacing="150">
             <controls:DataGrid x:Name="MyDataGrid" 
                            HeadersVisibility="Column"
                            GridLinesVisibility="All"
@@ -37,6 +37,12 @@
                            CanUserSortColumns="False"
                            ItemsSource="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay}"
                            Margin="0, 50, 0, 0">
+                <controls:DataGrid.HorizontalGridLinesBrush>
+                    <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
+                </controls:DataGrid.HorizontalGridLinesBrush>
+                <controls:DataGrid.VerticalGridLinesBrush>
+                    <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
+                </controls:DataGrid.VerticalGridLinesBrush>
                 <controls:DataGrid.ColumnHeaderStyle>
                     <Style TargetType="primitives:DataGridColumnHeader">
                         <Setter Property="Template">
@@ -66,11 +72,11 @@
                     <controls:DataGridTemplateColumn Header="Clone Path" MinWidth="400">
                         <controls:DataGridTemplateColumn.CellTemplate>
                             <DataTemplate x:DataType="models:CloningInformation">
-                                <Grid HorizontalAlignment="Left" ColumnSpacing="10">
+                                <Grid HorizontalAlignment="Left" ColumnSpacing="10" Padding="15, 0, 0, 0">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="250" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="300" />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
                                     <TextBox Text="{x:Bind ClonePath}" Grid.Column="0" IsEnabled="False"/>
                                     <Button Grid.Column="1" Click="EditClonePathButton_Click">
@@ -78,7 +84,7 @@
                                             <SymbolIcon Symbol="Edit"/>
                                         </Button.Content>
                                     </Button>
-                                    <Button Grid.Column="2" Click="RemoveCloningInformationButton_Click">
+                                    <Button Grid.Column="2" Click="RemoveCloningInformationButton_Click" Style="{ThemeResource AlternateCloseButtonStyle}">
                                         <Button.Content>
                                             <SymbolIcon Symbol="Cancel"/>
                                         </Button.Content>
@@ -89,7 +95,7 @@
                     </controls:DataGridTemplateColumn>
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
-            <StackPanel x:Name="NoRepositoryStackPanel" Visibility="{x:Bind ViewModel.ShouldShowNoRepoMessage, Mode=OneWay}" HorizontalAlignment="Center" Margin="0, 150, 0, 0">
+            <StackPanel x:Name="NoRepositoryStackPanel" Visibility="{x:Bind ViewModel.ShouldShowNoRepoMessage, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
                 <HyperlinkButton Click="AddRepoButton_Click" HorizontalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
             </StackPanel>
