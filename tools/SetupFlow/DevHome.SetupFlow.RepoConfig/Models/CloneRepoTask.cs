@@ -60,7 +60,7 @@ internal class CloneRepoTask : ISetupTask
 
     public bool DependsOnDevDriveToBeInstalled
     {
-        get;
+        get; set;
     }
 
     /// <summary>

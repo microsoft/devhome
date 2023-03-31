@@ -19,4 +19,9 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
     {
         return new PackageInstaller();
     }
+
+    public DevDriveStorageOperator CreateDevDriveStorageOperator()
+    {
+        return new DevDriveStorageOperator();
+    }
 }

@@ -7,9 +7,11 @@ using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.SetupFlow.Common.Models;
+using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.DevDrive;
@@ -18,8 +20,10 @@ public class DevDriveTaskGroup : ISetupTaskGroup
 {
     private readonly IHost _host;
     private readonly Lazy<DevDriveReviewViewModel> _devDriveReviewViewModel;
+    private readonly ISetupFlowStringResource _stringResource;
+    private readonly ILogger _logger;
 
-    public DevDriveTaskGroup(IHost host)
+    public DevDriveTaskGroup(IHost host, ILogger logger, ISetupFlowStringResource stringResource)
     {
         _host = host;
 
@@ -27,6 +31,8 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         // group is a registered type. This requires updating dependent classes
         // correspondingly.
         _devDriveReviewViewModel = new (() => _host.CreateInstance<DevDriveReviewViewModel>(this));
+        _stringResource = stringResource;
+        _logger = logger;
     }
 
     /// <summary>
@@ -44,7 +50,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         }
         else
         {
-            _devDriveTasks.Add(new CreateDevDriveTask(devDrive));
+            _devDriveTasks.Add(new CreateDevDriveTask(devDrive, _host, _logger, _stringResource));
         }
     }
 

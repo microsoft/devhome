@@ -1,13 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using DevHome.Common.Models;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -16,12 +11,12 @@ using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.Storage.Vhd;
 using Windows.Win32.System.Ioctl;
 
-namespace DevHome.SetupFlow.DevDrive.Utilities;
+namespace DevHome.SetupFlow.ElevatedComponent;
 
 /// <summary>
 /// Class that will perform storage operations related to Dev Drives.
 /// </summary>
-internal class DevDriveStorageOperator : IDevDriveStorageOperator
+public sealed class DevDriveStorageOperator
 {
     /// <summary>
     /// Windows already uses 1024 bytes to represent a Kilobyte, so we'll stick with this.
@@ -30,10 +25,6 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
     public static readonly long _oneMb = _oneKb * _oneKb;
     public static readonly long _fourKb = _oneKb * 4;
     public static readonly string _fileSytem = "ReFS";
-
-    // Query flag for persistent state info of the volume, the presense of this flag will let us know
-    // its a Dev drive.
-    public static readonly uint _volumeStateFlag = 0x00002000;
 
     /// <summary>
     /// We need a way to hold the partition information, when we call IoDeviceControl with IOCTL_DISK_GET_DRIVE_LAYOUT_EX.
@@ -48,17 +39,13 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
     /// <summary>
     /// Since CsWin32 doesn't generate this macro from Ntdddisk.h we need to do it manually.
     /// The IOCTL_DISK_ARE_VOLUMES_READY when used with ioDeviceControl, is used so that we
-    /// wait until all volumes have been have completed work, e.g creating the partition, before
-    /// trying to use it again. This is public in Ntdddisk.h.
+    /// wait until all volumes have completed any work assigned to them before using them.
+    /// e.g creating the partition, before trying to use it again.
     /// see https://learn.microsoft.com/en-us/windows/win32/fileio/ioctl-disk-are-volumes-ready
-    /// https://github.com/tpn/winsdk-10/blob/master/Include/10.0.14393.0/shared/ntdddisk.h
+    /// https://learn.microsoft.com/en-us/windows/win32/fileio/disk-management-control-codes
     /// </summary>
-    public struct IOCTL_DISK_ARE_VOLUMES_READY
+    private struct IOCTL_DISK_ARE_VOLUMES_READY
     {
-        public IOCTL_DISK_ARE_VOLUMES_READY()
-        {
-        }
-
         public static readonly int _deviceType = 0x00000007;
         public static readonly int _function = 0x0087;
         public static readonly int _access = 0x0001;
@@ -70,31 +57,49 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
     {
     }
 
-    /// <inheritdoc/>
-    public HRESULT CreateDevDrive(string virtDiskPath, ulong sizeInBytes, char newDriveLetter, string driveLabel)
+    /// <summary>
+    /// Callers wanting to create a Dev Drive should call this method. The createDevDrive method kicks off
+    /// all the operations and methods needed to create a Dev Drive. Note: The implementation of this may
+    /// change.
+    /// </summary>
+    /// <param name="virtDiskPath">The place in the file system the vhdx file will be saved to</param>
+    /// <param name="sizeInBytes">The size the drive will be created with</param>
+    /// <param name="newDriveLetter">The drive letter to format the new drive</param>
+    /// <param name="driveLabel">The label that will be given to the drive during formatting</param>
+    /// <returns>An int which is the Hresult code that indicates whether the operation succeeded or failed</returns>
+    public int CreateDevDrive(string virtDiskPath, ulong sizeInBytes, char newDriveLetter, string driveLabel)
     {
         string virtDiskPhysicalPath;
         var result = CreateAndAttachVhdx(virtDiskPath, sizeInBytes, out virtDiskPhysicalPath);
-        if (result.Succeeded)
+        if (result.Failed)
         {
-            uint diskNumber;
-            result = CreatePartition(virtDiskPhysicalPath, out diskNumber);
-
-            if (result.Succeeded)
-            {
-                result = AssignDriveLetterToPartition(diskNumber, newDriveLetter);
-                if (result.Succeeded)
-                {
-                    result = FormatPartitionAsDevDrive(newDriveLetter, driveLabel);
-                }
-            }
+            return result.Value;
         }
 
-        return result;
+        uint diskNumber;
+        result = CreatePartition(virtDiskPhysicalPath, out diskNumber);
+        if (result.Failed)
+        {
+            return result.Value;
+        }
+
+        result = AssignDriveLetterToPartition(diskNumber, newDriveLetter);
+        if (result.Failed)
+        {
+            return result.Value;
+        }
+
+        return FormatPartitionAsDevDrive(newDriveLetter, driveLabel).Value;
     }
 
-    /// <inheritdoc/>
-    public HRESULT CreateAndAttachVhdx(string virtDiskPath, ulong sizeInBytes, out string virtDiskPhysicalPath)
+    /// <summary>
+    /// Creates the virtual disk and also attaches it so that its lifespan is permanant and survives reboots.
+    /// </summary>
+    /// <param name="virtDiskPath">The place in the file system the vhdx file will be saved to</param>
+    /// <param name="sizeInBytes">The size the drive will be created with</param>
+    /// <param name="virtDiskPhysicalPath">The logical representation of the virtual disks physical path on the system</param>
+    /// <returns>An Hresult that indicates whether the operation succeeded or failed</returns>
+    private HRESULT CreateAndAttachVhdx(string virtDiskPath, ulong sizeInBytes, out string virtDiskPhysicalPath)
     {
         virtDiskPhysicalPath = string.Empty;
 
@@ -163,9 +168,14 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
         return PInvoke.HRESULT_FROM_WIN32(result);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Creates a single new Guid Partition table style partition on the virtual disk.
+    /// </summary>
+    /// <param name="virtDiskPhysicalPath">The logical representation of the virtual disks physical path on the system</param>
+    /// <param name="diskNumber">The current number of the new virtual disk</param>
+    /// <returns>An Hresult that indicates whether the operation succeeded or failed</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1119:Statement should not use unnecessary parenthesis", Justification = "For math, 10 - 3 - 7 is alot different than 10  - (3 - 7)")]
-    public HRESULT CreatePartition(string virtDiskPhysicalPath, out uint diskNumber)
+    private HRESULT CreatePartition(string virtDiskPhysicalPath, out uint diskNumber)
     {
         diskNumber = 0;
         SafeFileHandle diskHandle = PInvoke.CreateFile(
@@ -310,8 +320,13 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
         return new HRESULT(0);
     }
 
-    /// <inheritdoc/>
-    public HRESULT AssignDriveLetterToPartition(uint diskNumber, char newDriveLetter)
+    /// <summary>
+    /// Performs the operations needed to update the auto generated drive letter to one that is provided by a caller.
+    /// </summary>
+    /// <param name="diskNumber">The disk number the method uses to located the correct disk</param>
+    /// <param name="newDriveLetter">The new drive letter provided by the caller</param>
+    /// <returns>An Hresult that indicates whether the operation succeeded or failed</returns>
+    private HRESULT AssignDriveLetterToPartition(uint diskNumber, char newDriveLetter)
     {
         // Since we have just created the virtual disk and created a single partition, we don't have to worry about there
         // being multiple on the disk. However in win32 to get the correct volume, we still need to use the FindFirstVolume
@@ -430,13 +445,19 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
     /// Helper method that results in the the HRESULT class wrapping GetHRForLastWin32Error return value.
     /// </summary>
     /// <returns>Returns errorcode indicating success or failure</returns>
-    public HRESULT ReturnLastErrorAsHR()
+    private HRESULT ReturnLastErrorAsHR()
     {
         return new HRESULT(Marshal.GetHRForLastWin32Error());
     }
 
-    /// <inheritdoc/>
-    public HRESULT FormatPartitionAsDevDrive(char curDriveLetter, string driveLabel)
+    /// <summary>
+    /// Uses WMI to and the storage Api to format the drive as a Dev Drive. Note: the implementation
+    /// is subject to change in the future.
+    /// </summary>
+    /// <param name="curDriveLetter">The drive letter the method will use when attempting to find a volume and format it</param>
+    /// <param name="driveLabel">The new drive label the Dev Drive will have after formatting completes.</param>
+    /// <returns>An Hresult that indicates whether the operation succeeded or failed</returns>
+    private HRESULT FormatPartitionAsDevDrive(char curDriveLetter, string driveLabel)
     {
         try
         {
@@ -468,102 +489,22 @@ internal class DevDriveStorageOperator : IDevDriveStorageOperator
                     ManagementBaseObject outParams =
                         queryObj.InvokeMethod("Format", inParams, new InvokeMethodOptions());
 
-                    var returnValue = outParams["ReturnValue"] as int?;
-                    return new HRESULT(returnValue.Value);
+                    var returnValue = (uint)outParams["ReturnValue"];
+                    if (returnValue == 0)
+                    {
+                        return new HRESULT(0);
+                    }
                 }
             }
 
-            // If we got here that means the partition was never created with the drive letter passed into this method.
-            // Using a generic failure here but we should never actually get to this part of the method, as we fail early before
-            // this method is called.
+            // If we got here that means the returnValue was not successful. We give this a specific error but this will need need
+            // to be changed. WMI can return different status and error codes based on the function. The actual returnValue will need
+            // to be converted. https://learn.microsoft.com/en-us/windows/win32/wmisdk/wmi-return-codes
             return PInvoke.HRESULT_FROM_WIN32(WIN32_ERROR.ERROR_FUNCTION_FAILED);
         }
         catch (ManagementException e)
         {
-            // TODO: Add logging
             return new HRESULT(e.HResult);
-        }
-    }
-
-    public IEnumerable<IDevDrive> GetAllExistingDevDrives()
-    {
-        try
-        {
-            var devDrives = new List<IDevDrive>();
-            ManagementObjectSearcher searcher =
-                    new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage", "SELECT * FROM MSFT_Volume");
-
-            foreach (ManagementObject queryObj in searcher.Get())
-            {
-                var volumePath = queryObj["Path"] as string;
-                var volumeLabel = queryObj["FileSystemLabel"] as string;
-                var volumeSize = queryObj["Size"];
-                var volumeLetter = queryObj["DriveLetter"];
-                uint outputSize;
-                var volumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
-                var inputVolumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
-                inputVolumeInfo.FlagMask = _volumeStateFlag;
-                inputVolumeInfo.Version = 1;
-
-                SafeFileHandle volumeFileHandle = PInvoke.CreateFile(
-                   volumePath,
-                   FILE_ACCESS_FLAGS.FILE_READ_ATTRIBUTES | FILE_ACCESS_FLAGS.FILE_WRITE_ATTRIBUTES,
-                   FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
-                   null,
-                   FILE_CREATION_DISPOSITION.OPEN_EXISTING,
-                   FILE_FLAGS_AND_ATTRIBUTES.FILE_FLAG_BACKUP_SEMANTICS,
-                   null);
-
-                if (volumeFileHandle.IsInvalid)
-                {
-                    continue;
-                }
-
-                unsafe
-                {
-                    var result = PInvoke.DeviceIoControl(
-                        volumeFileHandle,
-                        PInvoke.FSCTL_QUERY_PERSISTENT_VOLUME_STATE,
-                        &inputVolumeInfo,
-                        (uint)sizeof(FILE_FS_PERSISTENT_VOLUME_INFORMATION),
-                        &volumeInfo,
-                        (uint)sizeof(FILE_FS_PERSISTENT_VOLUME_INFORMATION),
-                        &outputSize,
-                        null);
-
-                    if (!result)
-                    {
-                        continue;
-                    }
-
-                    if ((volumeInfo.VolumeFlags & _volumeStateFlag) > 0 &&
-                        volumeLetter is char newLetter && volumeSize is ulong newSize)
-                    {
-                        // volume size is over 1 Tb, so we'll use tb as the default byte unit when
-                        // this appears in the UI.
-                        var byteUnit = newSize >= (1ul << 40);
-                        var newDevDrive = new Models.DevDrive
-                        {
-                            DriveLetter = newLetter,
-                            DriveSizeInBytes = newSize,
-                            DriveUnitOfMeasure = byteUnit ? ByteUnit.TB : ByteUnit.GB,
-                            DriveLocation = string.Empty,
-                            DriveLabel = volumeLabel,
-                            State = DevDriveState.ExistsOnSystem,
-                        };
-
-                        devDrives.Add(newDevDrive);
-                    }
-                }
-            }
-
-            return devDrives;
-        }
-        catch (ManagementException)
-        {
-            // TODO: Add logging, I don't think rethrowing here is ideal, so log then return empty list, as this
-            // only means we don't show the user their existing dev drive. Not catastrophic failure.
-            return new List<IDevDrive>();
         }
     }
 }
