@@ -87,6 +87,16 @@ public class InstallPackageTask : ISetupTask
         }).AsAsyncOperation();
     }
 
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(ElevatedComponentFactory elevatedComponentFactory)
+    {
+        return Task.Run(async () =>
+        {
+            var packageInstaller = elevatedComponentFactory.CreatePackageInstaller();
+            var installResult = await packageInstaller.InstallPackage(_package.Id, _package.CatalogName);
+            return installResult.InstallSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
+        }).AsAsyncOperation();
+    }
+
     private string GetErrorReason()
     {
         return _installPackageException?.Status switch
@@ -115,11 +125,4 @@ public class InstallPackageTask : ISetupTask
     public ActionCenterMessages GetErrorMessages() => throw new NotImplementedException();
 
     public ActionCenterMessages GetRebootMessage() => throw new NotImplementedException();
-
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
-    {
-        var packageInstaller = elevatedComponentFactory.CreatePackageInstaller();
-        packageInstaller.Install(_package.Id, _package.CatalogId);
-        return Task.FromResult(TaskFinishedState.Success).AsAsyncOperation();
-    }
 }

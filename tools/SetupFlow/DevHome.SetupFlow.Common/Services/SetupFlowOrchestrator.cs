@@ -50,7 +50,7 @@ public partial class SetupFlowOrchestrator
         get; set;
     }
 
-    public RemoteObject<IElevatedComponentFactory> RemoteElevatedFactory
+    public RemoteObject<ElevatedComponentFactory> RemoteElevatedFactory
     {
         get; set;
     }
