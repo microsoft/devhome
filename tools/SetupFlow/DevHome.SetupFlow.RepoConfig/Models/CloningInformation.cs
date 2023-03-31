@@ -50,6 +50,23 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the repository is to be cloned on a Dev Drive.
+    /// </summary>
+    public bool CloneToDevDrive
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating the alias associated with the Dev drive in the form of
+    /// "Drive label" (Drive letter:) [Size GB/TB]. E.g Dev Drive (D:) [50.0 GB]
+    /// </summary>
+    public string CloneLocationAlias
+    {
+        get; set;
+    }
+
+    /// <summary>
     /// Gets the repo name and formats it for the Repo Review view.
     /// </summary>
     public string RepositoryId => $"{RepositoryToClone.DisplayName ?? string.Empty}";

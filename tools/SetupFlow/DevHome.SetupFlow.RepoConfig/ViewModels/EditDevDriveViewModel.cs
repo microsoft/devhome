@@ -122,7 +122,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     public void RemoveNewDevDrive()
     {
         _devDriveManager.RequestToCloseDevDriveWindow(DevDrive);
-        _devDriveManager.RemoveDevDrive(DevDrive);
+        DevDrive = null;
         ShowCustomizeOption = Visibility.Collapsed;
     }
 

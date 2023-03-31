@@ -10,6 +10,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
+using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.SetupFlow.DevDrive.Windows;
@@ -41,9 +42,29 @@ public class DevDriveManager : IDevDriveManager
 
     private DevDriveViewModel _devDriveViewModel;
 
+    /// <summary>
+    /// Gets or sets the previous Dev Drive object that the user saved.
+    /// </summary>
+    /// <remarks>
+    /// Used only when the Repo tool cancels their dialog even after selecting save from the Dev Drive Window.
+    /// </remarks>
+    public IDevDrive PreviousDevDrive
+    {
+        get; set;
+    }
+
+    /// <inheritdoc/>
+    public int RepositoriesUsingDevDrive
+    {
+        get; private set;
+    }
+
     /// <inheritdoc/>
     public IList<IDevDrive> DevDrivesMarkedForCreation => _devDrives.ToList();
 
+    /// <summary>
+    /// Gets a view model that will show information related to a Dev Drive we create
+    /// </summary>
     public DevDriveViewModel ViewModel
     {
         get
@@ -70,8 +91,6 @@ public class DevDriveManager : IDevDriveManager
         _stringResource = stringResource;
         _defaultVhdxLocation = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFolderName);
         _defaultVhdxName = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFileName);
-
-        // _devDriveViewModel = _host.CreateInstance<DevDriveViewModel>(this);
     }
 
     /// <inheritdoc/>
@@ -90,12 +109,8 @@ public class DevDriveManager : IDevDriveManager
     /// <inheritdoc/>
     public void NotifyDevDriveWindowClosed(IDevDrive newDevDrive)
     {
-        var oldDevDrive = _devDrives.FirstOrDefault(drive => drive.ID == newDevDrive.ID);
-        if (oldDevDrive != null)
-        {
-            _devDrives.Remove(oldDevDrive);
-        }
-
+        PreviousDevDrive = _devDrives.First();
+        _devDrives.Clear();
         _devDrives.Add(newDevDrive);
         ViewModelWindowClosed(null, newDevDrive);
     }
@@ -354,5 +369,53 @@ public class DevDriveManager : IDevDriveManager
         }
 
         return DevDriveValidationResult.Successful;
+    }
+
+    /// <inheritdoc/>
+    public void RemoveAllDevDrives()
+    {
+        _devDrives.Clear();
+        ViewModel.RemoveTasks();
+        RepositoriesUsingDevDrive = 0;
+    }
+
+    /// <inheritdoc/>
+    public void CancelChangesToDevDrive()
+    {
+        if (PreviousDevDrive != null)
+        {
+            _devDrives.Clear();
+            _devDrives.Add(PreviousDevDrive);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void ConfirmChangesToDevDrive()
+    {
+        if (_devDrives.Any())
+        {
+            PreviousDevDrive = _devDrives.First();
+        }
+    }
+
+    /// <inheritdoc/>
+    public void IncreaseRepositoriesCount(int count)
+    {
+        RepositoriesUsingDevDrive += count;
+    }
+
+    /// <inheritdoc/>
+    public void DecreaseRepositoriesCount()
+    {
+        if (RepositoriesUsingDevDrive > 0)
+        {
+            RepositoriesUsingDevDrive--;
+            if (RepositoriesUsingDevDrive == 0)
+            {
+                _devDrives.Clear();
+                PreviousDevDrive = null;
+                ViewModel.RemoveTasks();
+            }
+        }
     }
 }

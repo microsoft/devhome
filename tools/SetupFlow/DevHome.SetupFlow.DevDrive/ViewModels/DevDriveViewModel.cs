@@ -175,6 +175,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
     }
 
+    public DevDriveTaskGroup TaskGroup => _taskGroup;
+
     /// <summary>
     /// gets the localized Browse button text for the browse button.
     /// </summary>

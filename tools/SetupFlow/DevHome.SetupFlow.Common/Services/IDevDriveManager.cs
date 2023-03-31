@@ -123,4 +123,47 @@ public interface IDevDriveManager
     /// closing the window themselves, through actions like clicking the close button.
     /// </summary>
     public event EventHandler<IDevDrive> RequestToCloseViewModelWindow;
+
+    /// <summary>
+    /// Removes all Dev Drives that were created in memory by the Dev Drive Manager. This does not detach
+    /// or remove a Dev Drive from the users machine.
+    /// </summary>
+    public void RemoveAllDevDrives();
+
+    /// <summary>
+    /// Allows the Dev Drive manager to subscribe to events where changes to a Dev Drive object were cancelled.
+    /// </summary>
+    public void CancelChangesToDevDrive();
+
+    /// <summary>
+    /// Allows the Dev Drive manager to subscribe to events where changes to a Dev Drive object were made.
+    /// </summary>
+    public void ConfirmChangesToDevDrive();
+
+    /// <summary>
+    /// Allows the Dev Drive manager to increase the amount of repositories that will be using the Dev Drive to clone to.
+    /// </summary>
+    /// <param name="count">the amount to increase by</param>
+    public void IncreaseRepositoriesCount(int count);
+
+    /// <summary>
+    /// Allows the Dev Drive manager to reduce the amount of repositories that will be using the Dev Drive to clone to.
+    /// </summary>
+    /// <remarks>
+    /// When this value is 0 the dev Drive manager will clear the Dev Drive task group, as there are no items that
+    /// need to use the Dev drive. No Dev Drive will be created when the task group is empty.
+    /// </remarks>
+    public void DecreaseRepositoriesCount();
+
+    /// <summary>
+    /// Gets the amount of times the Dev Drive object is being used.
+    /// </summary>
+    /// <remarks>
+    /// When this count goes to zero, we clear the view models task group, as there are no repositories that
+    /// will be cloned to the Dev Drive.
+    /// </remarks>
+    public int RepositoriesUsingDevDrive
+    {
+        get;
+    }
 }

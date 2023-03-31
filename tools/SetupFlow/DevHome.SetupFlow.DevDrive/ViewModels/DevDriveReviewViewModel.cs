@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
@@ -35,11 +36,14 @@ public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
     {
         get
         {
-            var devDrives = _host.GetService<IDevDriveManager>().DevDrivesMarkedForCreation;
+            var manager = _host.GetService<IDevDriveManager>();
             ObservableCollection<DevDriveReviewTabItem> devDriveReviewTabItem = new ();
-            foreach (var devDrive in devDrives)
+            if (manager.RepositoriesUsingDevDrive > 0)
             {
-                devDriveReviewTabItem.Add(new DevDriveReviewTabItem(devDrive));
+                foreach (var devDrive in manager.DevDrivesMarkedForCreation)
+                {
+                    devDriveReviewTabItem.Add(new DevDriveReviewTabItem(devDrive));
+                }
             }
 
             return devDriveReviewTabItem;

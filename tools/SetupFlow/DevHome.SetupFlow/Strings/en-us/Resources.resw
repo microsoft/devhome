@@ -656,7 +656,7 @@
     <comment>Text that will be the description of a section in the review page where the user will see a list of details about the Dev Drives they are about to create. The name, size and the virtual disk file location are the details shows.</comment>
   </data>
   <data name="DevDriveReviewPageNoDevDrives.Text" xml:space="preserve">
-    <value>No Dev Drives will be created.</value>
+    <value>Nothing added</value>
     <comment>Text that lets the user know that they did not select a previous option to create a Dev Drive so therefore none will be created in the next step</comment>
   </data>
   <data name="DevDriveReviewPageNumberOfDevDrives" xml:space="preserve">

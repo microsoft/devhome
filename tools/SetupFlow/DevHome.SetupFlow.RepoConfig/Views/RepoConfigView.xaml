@@ -10,11 +10,16 @@
     xmlns:primitives="using:CommunityToolkit.WinUI.UI.Controls.Primitives"
     xmlns:setupControls="using:DevHome.SetupFlow.Common.Controls"
     xmlns:models="using:DevHome.SetupFlow.RepoConfig.Models"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
+                <ResourceDictionary>
+                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+                    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -72,7 +77,10 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBox Text="{x:Bind ClonePath}" Grid.Column="0" IsEnabled="False"/>
+                                    <TextBox Text="{x:Bind CloneLocationAlias}" Grid.Column="0" IsEnabled="False"
+                                             Visibility="{x:Bind CloneToDevDrive, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <TextBox Text="{x:Bind ClonePath}" Grid.Column="0" IsEnabled="False"
+                                             Visibility="{x:Bind CloneToDevDrive, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
                                     <Button Grid.Column="1" Click="EditClonePathButton_Click">
                                         <Button.Content>
                                             <SymbolIcon Symbol="Edit"/>

@@ -30,8 +30,7 @@ internal class CreateDevDriveTask : ISetupTask
     public CreateDevDriveTask(IDevDrive devDrive)
     {
         DevDrive = devDrive;
-        _taskMessages = new TaskMessages("Creating Dev Drive...", "Dev Drive created", "Couldn’t create Dev Drive", "Created Dev Drive (restart required)");
-        _actionCenterMessages.PrimaryMessage = "Couldn’t create Dev Drive";
+        _taskMessages = new TaskMessages();
     }
 
     public ActionCenterMessages GetErrorMessages() => new ();
@@ -40,6 +39,9 @@ internal class CreateDevDriveTask : ISetupTask
 
     public ActionCenterMessages GetRebootMessage() => new ();
 
+    /// <summary>
+    /// Not used, as Dev Drive creation requires elevation
+    /// </summary>
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
     {
         return Task.Run(() =>
