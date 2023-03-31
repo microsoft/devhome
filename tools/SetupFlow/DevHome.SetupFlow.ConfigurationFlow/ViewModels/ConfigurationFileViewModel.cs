@@ -116,7 +116,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
     private string GetErrorMessage(OpenConfigurationSetException exception)
     {
-        return exception?.ResultCode?.HResult switch
+        return exception.ResultCode?.HResult switch
         {
             OpenConfigurationSetException.WingetConfigErrorInvalidField =>
                 StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalid, exception.Field),
