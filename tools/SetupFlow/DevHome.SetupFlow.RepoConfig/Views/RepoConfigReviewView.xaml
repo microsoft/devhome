@@ -28,7 +28,7 @@
         <!-- Grid view of the selected apps to install -->
         <GridView
             ScrollViewer.VerticalScrollMode="Enabled"
-            ScrollViewer.VerticalScrollBarVisibility="Enabled"
+            ScrollViewer.VerticalScrollBarVisibility="Visible"
             ItemsSource="{x:Bind ViewModel.RepositoriesToClone, Mode=OneWay}"
             SelectionMode="None">
             <GridView.ItemsPanel>
