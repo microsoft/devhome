@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.ElevatedComponent;
@@ -17,7 +18,7 @@ public sealed class PackageInstaller
         Console.WriteLine($"Installing {packageId} from {catalogId}");
         try
         {
-            var factory = new ElevatedWindowsPackageManagerFactory();
+            var factory = new WindowsPackageManagerManualActivationFactory();
             var pm = factory.CreatePackageManager();
             var catalogs = pm.GetPackageCatalogs();
             PackageCatalogReference? catalog = default;

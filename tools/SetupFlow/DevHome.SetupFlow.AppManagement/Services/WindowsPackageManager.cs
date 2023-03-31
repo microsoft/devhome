@@ -17,7 +17,7 @@ namespace DevHome.SetupFlow.AppManagement.Services;
 public class WindowsPackageManager : IWindowsPackageManager
 {
     private readonly ILogger _logger;
-    private readonly IWindowsPackageManagerFactory _wingetFactory;
+    private readonly WindowsPackageManagerFactory _wingetFactory;
 
     // Custom composite catalogs
     private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
@@ -27,7 +27,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     private readonly Lazy<string> _wingetCatalogId;
     private readonly Lazy<string> _msStoreCatalogId;
 
-    public WindowsPackageManager(ILogger logger, IWindowsPackageManagerFactory wingetFactory)
+    public WindowsPackageManager(ILogger logger, WindowsPackageManagerFactory wingetFactory)
     {
         _logger = logger;
         _wingetFactory = wingetFactory;

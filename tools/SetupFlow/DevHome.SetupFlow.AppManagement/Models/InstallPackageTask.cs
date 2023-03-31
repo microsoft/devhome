@@ -23,7 +23,7 @@ public class InstallPackageTask : ISetupTask
     private readonly IWindowsPackageManager _wpm;
     private readonly WinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly IWindowsPackageManagerFactory _wingetFactory;
+    private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly Lazy<bool> _requiresElevation;
 
     private InstallPackageException _installPackageException;
@@ -43,7 +43,7 @@ public class InstallPackageTask : ISetupTask
         ILogger logger,
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        IWindowsPackageManagerFactory wingetFactory,
+        WindowsPackageManagerFactory wingetFactory,
         WinGetPackage package)
     {
         _logger = logger;

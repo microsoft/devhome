@@ -1,27 +1,34 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Runtime.InteropServices;
+using System;
 using Microsoft.Management.Deployment;
-using Windows.Win32;
-using Windows.Win32.System.Com;
-using WinRT;
 
 namespace DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 
 /// <summary>
-/// Factory class for creating WinGet COM objects.
+/// Factory for creating WinGet COM objects.
 /// Details about each method can be found in the source IDL:
 /// https://github.com/microsoft/winget-cli/blob/master/src/Microsoft.Management.Deployment/PackageManager.idl
 /// </summary>
-public class WindowsPackageManagerFactory : IWindowsPackageManagerFactory
+public abstract class WindowsPackageManagerFactory
 {
     private readonly ClsidContext _clsidContext;
 
-    public WindowsPackageManagerFactory(ClsidContext clsidContext = ClsidContext.Prod)
+    public WindowsPackageManagerFactory(ClsidContext clsidContext)
     {
         _clsidContext = clsidContext;
     }
+
+    /// <summary>
+    /// Creates an instance of the class <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// Type <typeparamref name="T"/> must be one of the types defined in the winget COM API.
+    /// Implementations of this method can assume that <paramref name="clsid"/> and <paramref name="iid"/>
+    /// are the right GUIDs for the class in the given context.
+    /// </remarks>
+    protected abstract T CreateInstance<T>(Guid clsid, Guid iid);
 
     public PackageManager CreatePackageManager() => CreateInstance<PackageManager>();
 
@@ -35,11 +42,17 @@ public class WindowsPackageManagerFactory : IWindowsPackageManagerFactory
 
     public PackageMatchFilter CreatePackageMatchFilter() => CreateInstance<PackageMatchFilter>();
 
-    private TClass CreateInstance<TClass>()
+    /// <summary>
+    /// Creates an instance of the class <typeparamref name="T"/>.
+    /// </summary>
+    /// <remarks>
+    /// This is a helper for calling the derived class's <see cref="CreateInstance{T}(Guid, Guid)"/>
+    /// method with the appropriate GUIDs.
+    /// </remarks>
+    private T CreateInstance<T>()
     {
-        var clsid = ClassesDefinition.GetClsid<TClass>(_clsidContext);
-        var iid = ClassesDefinition.GetIid<TClass>();
-        PInvoke.CoCreateInstance(clsid, null, CLSCTX.CLSCTX_LOCAL_SERVER, iid, out var result);
-        return MarshalGeneric<TClass>.FromAbi(Marshal.GetIUnknownForObject(result));
+        var clsid = ClassesDefinition.GetClsid<T>(_clsidContext);
+        var iid = ClassesDefinition.GetIid<T>();
+        return CreateInstance<T>(clsid, iid);
     }
 }

@@ -17,13 +17,13 @@ namespace DevHome.SetupFlow.AppManagement.Models;
 public class WinGetCompositeCatalog : IWinGetCatalog
 {
     private readonly ILogger _logger;
-    private readonly IWindowsPackageManagerFactory _wingetFactory;
+    private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly CreateCompositePackageCatalogOptions _compositeCatalogOptions;
     private Microsoft.Management.Deployment.PackageCatalog _catalog;
 
     public bool IsConnected => _catalog != null;
 
-    public WinGetCompositeCatalog(ILogger logger, IWindowsPackageManagerFactory wingetFactory)
+    public WinGetCompositeCatalog(ILogger logger, WindowsPackageManagerFactory wingetFactory)
     {
         _logger = logger;
         _wingetFactory = wingetFactory;
