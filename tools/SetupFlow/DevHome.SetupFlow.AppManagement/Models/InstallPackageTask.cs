@@ -64,6 +64,23 @@ public class InstallPackageTask : ISetupTask
         };
     }
 
+    public ActionCenterMessages GetErrorMessages()
+    {
+        return new ()
+        {
+            PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.InstallPackageError, _package.Name),
+            SecondaryMessage = GetErrorReason(),
+        };
+    }
+
+    public ActionCenterMessages GetRebootMessage()
+    {
+        return new ()
+        {
+            PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.InstalledPackageReboot, _package.Name),
+        };
+    }
+
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
     {
         return Task.Run(async () =>
@@ -86,6 +103,8 @@ public class InstallPackageTask : ISetupTask
             }
         }).AsAsyncOperation();
     }
+
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
 
     private string GetErrorReason()
     {
@@ -111,23 +130,4 @@ public class InstallPackageTask : ISetupTask
         options.PackageInstallScope = PackageInstallScope.User;
         return _package.RequiresElevation(options);
     }
-
-    public ActionCenterMessages GetErrorMessages()
-    {
-        return new ()
-        {
-            PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.InstallPackageError, _package.Name),
-            SecondaryMessage = GetErrorReason(),
-        };
-    }
-
-    public ActionCenterMessages GetRebootMessage()
-    {
-        return new ()
-        {
-            PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.InstalledPackageReboot, _package.Name),
-        };
-    }
-
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
 }

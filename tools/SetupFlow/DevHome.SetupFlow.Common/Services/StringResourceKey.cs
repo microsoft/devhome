@@ -22,8 +22,8 @@ public static class StringResourceKey
     public static readonly string ConfigurationFileApplying = nameof(ConfigurationFileApplying);
     public static readonly string ConfigurationFieldInvalid = nameof(ConfigurationFieldInvalid);
     public static readonly string ConfigurationFileInvalid = nameof(ConfigurationFileInvalid);
+    public static readonly string ConfigurationFileOpenUnknownError = nameof(ConfigurationFileOpenUnknownError);
     public static readonly string ConfigurationFileVersionUnknown = nameof(ConfigurationFileVersionUnknown);
-    public static readonly string ConfigurationFileTypeNotSupported = nameof(ConfigurationFileTypeNotSupported);
     public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
     public static readonly string DevDriveDefaultFolderName = nameof(DevDriveDefaultFolderName);
     public static readonly string DevDriveFilenameAlreadyExists = nameof(DevDriveFilenameAlreadyExists);

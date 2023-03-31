@@ -45,7 +45,7 @@ internal class ConfigureTask : ISetupTask
             _processor = new ConfigurationProcessor(factory);
             var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
             _configSet = openResult.Set;
-            if (_configSet is null)
+            if (_configSet == null)
             {
                 throw new OpenConfigurationSetException(openResult.ResultCode, openResult.Field);
             }
@@ -92,7 +92,7 @@ internal class ConfigureTask : ISetupTask
         {
             try
             {
-                if (_processor is null || _configSet is null)
+                if (_processor == null || _configSet == null)
                 {
                     return TaskFinishedState.Failure;
                 }

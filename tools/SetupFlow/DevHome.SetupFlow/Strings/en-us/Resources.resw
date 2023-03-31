@@ -185,13 +185,13 @@
     <value>Applying settings from configuration file ...</value>
     <comment>Label displayed when a configuration file is being applied</comment>
   </data>
+  <data name="ConfigurationFileOpenUnknownError" xml:space="preserve">
+    <value>Unknown error</value>
+    <comment>Label displayed when opening a configuration fails because of an unknown error.</comment>
+  </data>
   <data name="ConfigurationFileWindow.Title" xml:space="preserve">
     <value>Configuration file name (Preview)</value>
     <comment>Title of the configuration file window</comment>
-  </data>
-  <data name="ConfigurationFileTypeNotSupported" xml:space="preserve">
-    <value>The configuration file should be a YAML file. Windows 11 marks a visual evolutions of the operating system.</value>
-    <comment>Configuration file type not supported error message</comment>
   </data>
   <data name="ConfigurationFileWarning.Title" xml:space="preserve">
     <value>Configuration file warning</value>
