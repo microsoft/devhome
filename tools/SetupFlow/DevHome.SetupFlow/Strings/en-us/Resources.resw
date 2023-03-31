@@ -281,13 +281,17 @@
     <value>Installed {0}</value>
     <comment>{Locked="{0}"} Label displayed when a package has been installed. {0} is replaced by the package name.</comment>
   </data>
+  <data name="InstalledPackageReboot" xml:space="preserve">
+    <value>Installed {0} (restart required)</value>
+    <comment>{Locked="{0}"} Label displayed when a package has been installed. {0} is replaced by the package name.</comment>
+  </data>
   <data name="InstallingPackage" xml:space="preserve">
-    <value>Installing {0}</value>
+    <value>Installing {0} ...</value>
     <comment>{Locked="{0}"} Label displayed when a package is being installed. {0} is replaced by the package name.</comment>
   </data>
-  <data name="InstallPackageErrorWithReason" xml:space="preserve">
-    <value>Error installing {0}: {1}</value>
-    <comment>{Locked="{0}","{1}"} Label displayed when a package failed to install. {0} is replaced by the package name. {1} is replaced by the error reason.</comment>
+  <data name="InstallPackageError" xml:space="preserve">
+    <value>Couldn't install {0}</value>
+    <comment>{Locked="{0}"} Label displayed when a package failed to install. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorBlockedByPolicy" xml:space="preserve">
     <value>Operation is blocked by Group Policy</value>

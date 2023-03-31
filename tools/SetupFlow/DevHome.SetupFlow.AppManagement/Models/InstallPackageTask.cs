@@ -58,9 +58,9 @@ public class InstallPackageTask : ISetupTask
         return new TaskMessages
         {
             Executing = _stringResource.GetLocalized(StringResourceKey.InstallingPackage, _package.Name),
+            Error = _stringResource.GetLocalized(StringResourceKey.InstallPackageError, _package.Name),
             Finished = _stringResource.GetLocalized(StringResourceKey.InstalledPackage, _package.Name),
-            Error = _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorWithReason, _package.Name, GetErrorReason()),
-            NeedsReboot = _stringResource.GetLocalized(StringResourceKey.NeedsRebootMessage, _package.Name),
+            NeedsReboot = _stringResource.GetLocalized(StringResourceKey.InstalledPackageReboot, _package.Name),
         };
     }
 
@@ -112,9 +112,22 @@ public class InstallPackageTask : ISetupTask
         return _package.RequiresElevation(options);
     }
 
-    public ActionCenterMessages GetErrorMessages() => throw new NotImplementedException();
+    public ActionCenterMessages GetErrorMessages()
+    {
+        return new ()
+        {
+            PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.InstallPackageError, _package.Name),
+            SecondaryMessage = GetErrorReason(),
+        };
+    }
 
-    public ActionCenterMessages GetRebootMessage() => throw new NotImplementedException();
+    public ActionCenterMessages GetRebootMessage()
+    {
+        return new ()
+        {
+            PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.InstalledPackageReboot, _package.Name),
+        };
+    }
 
     IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
 }

@@ -18,15 +18,17 @@ namespace DevHome.SetupFlow.ConfigurationFile.Models;
 
 internal class ConfigureTask : ISetupTask
 {
-    private readonly StorageFile _file;
     private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
+    private readonly StorageFile _file;
     private ConfigurationProcessor _processor;
     private ConfigurationSet _configSet;
 
     public bool RequiresAdmin => false;
 
     public bool RequiresReboot { get; private set; }
+
+    public bool DependsOnDevDriveToBeInstalled => false;
 
     public ConfigureTask(ILogger logger, ISetupFlowStringResource stringResource, StorageFile file)
     {
@@ -63,9 +65,24 @@ internal class ConfigureTask : ISetupTask
         {
             Executing = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplying),
             Error = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplyError),
-            Finished = RequiresReboot ?
-                _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplySuccessReboot) :
-                _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplySuccess),
+            Finished = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplySuccess),
+            NeedsReboot = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplySuccessReboot),
+        };
+    }
+
+    public ActionCenterMessages GetErrorMessages()
+    {
+        return new ()
+        {
+            PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplyError),
+        };
+    }
+
+    public ActionCenterMessages GetRebootMessage()
+    {
+        return new ()
+        {
+            PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplySuccessReboot),
         };
     }
 
@@ -104,10 +121,4 @@ internal class ConfigureTask : ISetupTask
         // Noop
         return Task.FromResult(TaskFinishedState.Failure).AsAsyncOperation();
     }
-
-    public bool DependsOnDevDriveToBeInstalled => false;
-
-    public ActionCenterMessages GetErrorMessages() => throw new NotImplementedException();
-
-    public ActionCenterMessages GetRebootMessage() => throw new NotImplementedException();
 }
