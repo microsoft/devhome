@@ -29,7 +29,9 @@ public class InstallPackageTask : ISetupTask
 
     public bool RequiresAdmin => _requiresElevation.Value;
 
-    // By default, assume that any package installation may need a reboot.
+    // As we don't have this information available for each package before
+    // installation in the WinGet COM API, simply assume that any package
+    // installation may need a reboot by default.
     public bool RequiresReboot { get; set; } = true;
 
     public bool DependsOnDevDriveToBeInstalled
