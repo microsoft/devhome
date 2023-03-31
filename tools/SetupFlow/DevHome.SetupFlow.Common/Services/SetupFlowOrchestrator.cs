@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.ViewModels;
+using DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.Common.Services;
 
@@ -45,6 +46,11 @@ public partial class SetupFlowOrchestrator
     /// Gets or sets the task groups that are to be executed on the flow.
     /// </summary>
     public IList<ISetupTaskGroup> TaskGroups
+    {
+        get; set;
+    }
+
+    public RemoteObject<IElevatedComponentFactory> RemoteElevatedFactory
     {
         get; set;
     }
@@ -89,6 +95,16 @@ public partial class SetupFlowOrchestrator
     {
         GoToPreviousPageCommand.NotifyCanExecuteChanged();
         GoToNextPageCommand.NotifyCanExecuteChanged();
+    }
+
+    /// <summary>
+    /// Releases the remote factory, terminating the background process.
+    /// </summary>
+    public void ReleaseRemoteFactory()
+    {
+        // Disposing of this object signals the background process to terminate.
+        RemoteElevatedFactory?.Dispose();
+        RemoteElevatedFactory = null;
     }
 
     /// <summary>

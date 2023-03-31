@@ -489,9 +489,9 @@
     <value>Repository</value>
     <comment>Header for a section showing a summary of repositories to be cloned to the machine</comment>
   </data>
-  <data name="ViewConfiguration" xml:space="preserve">
-    <value>View {0}</value>
-    <comment>{Locked="{0}"} Text for the view action of a file content. {0} is replaced by a file name.</comment>
+  <data name="LoadingScreenRetry.Content" xml:space="preserve">
+    <value>Retry</value>
+    <comment>Button to re-run all failed tasks.</comment>
   </data>
   <data name="MainPage_RepoReviewDescription.Text" xml:space="preserve">
     <value>Add private or public repositories to clone to your compuer</value>
@@ -601,6 +601,76 @@
     <value>Add</value>
     <comment>Content for the primary button in the edit clone path dialog.</comment>
   </data>
+  <data name="LoadingPage_HeaderBottomRow.Text" xml:space="preserve">
+    <value>stay tuned for the magic...</value>
+    <comment>Bottom row of the header for the loading page.</comment>
+  </data>
+  <data name="LoadingPage_HeaderTopRow.Text" xml:space="preserve">
+    <value>Setup initiated</value>
+    <comment>Top row of the header for the loading page</comment>
+  </data>
+  <data name="LoadingExecutingProgress" xml:space="preserve">
+    <value>Executing Task {0}/{1}</value>
+    <comment>Shows ot the user how many tasks have been completed</comment>
+  </data>
+  <data name="Loading_StopButton.Content" xml:space="preserve">
+    <value>Stop</value>
+    <comment>Content to stop loading tasks.</comment>
+  </data>
+  <data name="ActionCenterDisplay" xml:space="preserve">
+    <value>Failed tasks: {0}</value>
+    <comment>Action center display to see status of all tasks that have finished.</comment>
+  </data>
+  <data name="Loading_ActionCenter.Text" xml:space="preserve">
+    <value>Action Center</value>
+    <comment>Header for action center</comment>
+  </data>
+  <data name="Loading_ExecutingTasks.Text" xml:space="preserve">
+    <value>Tasks</value>
+    <comment>Header for executing tasks</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryErrorTestSecondary" xml:space="preserve">
+    <value>Repository failed because {0}</value>
+    <comment>Sub text that will show up in the action center</comment>
+  </data>
+  <data name="CloningRepositoryErrorText" xml:space="preserve">
+    <value>Failed to clone repository {0}</value>
+    <comment>Main tex tto show in the loading screen that a repo failed to clone</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryFinished" xml:space="preserve">
+    <value>Repository Cloned, and location set to  {0}</value>
+    <comment>Notify the user that a repository has been cloned</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryMainText" xml:space="preserve">
+    <value>Cloning Repository {0}</value>
+    <comment>Text to notify the user what repository is being clones</comment>
+  </data>
+  <data name="LoadingScreenCloningReposityNeedsAttention" xml:space="preserve">
+    <value>Repository {0} needs your attention</value>
+    <comment>Task message when a cloning task needs a users attention</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryNeedsAttentionMainMessage" xml:space="preserve">
+    <value>Something needs your attention</value>
+    <comment>Sub message in the "Needs Attention" window</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryNeedsAttentionPrimaryButtonContent" xml:space="preserve">
+    <value>Okay</value>
+    <comment>Main message in the "Needs attention" window</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryNeedsAttentionSecondaryButtonContent" xml:space="preserve">
+    <value>Not Okay</value>
+    <comment>Content of the primary button in the "Needs Attention" window</comment>
+  </data>
+  <data name="LoadingScreenCloningRepositoryNeedsAttentionSubMessage" xml:space="preserve">
+    <value>Repository {0} needs your attention</value>
+  </data>
+  <data name="ActionCenterCloningRepositoryErrorTextSecondary" xml:space="preserve">
+    <value>Error message: {0}</value>
+  </data>
+  <data name="LoadingScreenCloneRepositoryNeedsRebootText" xml:space="preserve">
+    <value>Repository {0} requires  a reboot to finish cloning.</value>
+    <comment>Message notifying the user that a repo requires the machine to reboot</comment>
+  </data>
   <data name="DevDriveDefaultFileName" xml:space="preserve">
     <value>Dev Disk</value>
     <comment>file name for the virtual disk file we will create the Dev Drive in if the user keeps the defaults</comment>
@@ -672,5 +742,21 @@
   <data name="DevDriveUnableToCreateError" xml:space="preserve">
     <value>The Dev Drive couldn't be created.</value>
     <comment>Text that advises the user that there was an error and we couldn't create the Dev Drive on their machine.</comment>
+  </data>
+  <data name="NeedsRebootMessage" xml:space="preserve">
+    <value>{0} Needs to reboot the machine to finish</value>
+    <comment>Message to tell the user that the machine needs to reboot</comment>
+  </data>
+  <data name="LogFileName" xml:space="preserve">
+    <value>DevHomeTasks.Log</value>
+    <comment>The log file name for failed tasks.</comment>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Unknown Error</value>
+    <comment>Text to display when an error is unknwon</comment>
+  </data>
+  <data name="DevDriveDriveLetterNotAvailable" xml:space="preserve">
+    <value>The requested drive letter is not available. Select another one and try again.</value>
+    <comment>Error text that tells the user that the drive letter they selected in the drive letter combo box, is not available.</comment>
   </data>
 </root>

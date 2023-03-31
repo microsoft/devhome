@@ -1,0 +1,23 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<Page
+    x:Class="DevHome.Settings.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:settings="using:DevHome.Settings.ViewModels"
+    mc:Ignorable="d">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ItemsRepeater ItemsSource="{x:Bind ViewModel.SettingsList, Mode=OneWay}">
+            <ItemsRepeater.ItemTemplate>
+                <DataTemplate x:DataType="settings:SettingViewModel">
+                    <labs:SettingsCard Header="{x:Bind Header}" Description="{x:Bind Description}"
+                                   IsClickEnabled="True" Command="{x:Bind NavigateSettingsCommand}" />
+                </DataTemplate>
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
+    </ScrollViewer>
+</Page>

@@ -44,6 +44,14 @@
     <ProjectReference Include="..\DevHome.SetupFlow.RepoConfig\DevHome.SetupFlow.RepoConfig.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Review\DevHome.SetupFlow.Review.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Summary\DevHome.SetupFlow.Summary.csproj" />
+
+    <!-- Including this project reference ensures that the outputs from the project are copied to the output directory.
+         Setting ReferenceOutputAssembly to false prevents the same outputs from being passed to the compiler when
+         building this project, which prevents conflicts as it defines the same classes as
+         DevHome.SetupFlow.ElevatedComponent.Projection -->
+    <ProjectReference Include="..\DevHome.SetupFlow.ElevatedServer\DevHome.SetupFlow.ElevatedServer.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

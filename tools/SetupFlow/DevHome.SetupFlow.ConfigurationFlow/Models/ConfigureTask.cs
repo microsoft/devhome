@@ -2,12 +2,12 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.ConfigurationFile.Exceptions;
+using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.Telemetry;
 using Microsoft.Management.Configuration;
 using Microsoft.Management.Configuration.Processor;
@@ -57,7 +57,7 @@ internal class ConfigureTask : ISetupTask
         }
     }
 
-    LoadingMessages ISetupTask.GetLoadingMessages()
+    TaskMessages ISetupTask.GetLoadingMessages()
     {
         return new ()
         {
@@ -96,4 +96,18 @@ internal class ConfigureTask : ISetupTask
             }
         }).AsAsyncOperation();
     }
+
+    /// <inheritdoc/>
+    /// <remarks><seealso cref="RequiresAdmin"/></remarks>
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
+    {
+        // Noop
+        return Task.FromResult(TaskFinishedState.Failure).AsAsyncOperation();
+    }
+
+    public bool DependsOnDevDriveToBeInstalled => false;
+
+    public ActionCenterMessages GetErrorMessages() => throw new NotImplementedException();
+
+    public ActionCenterMessages GetRebootMessage() => throw new NotImplementedException();
 }

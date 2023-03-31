@@ -76,6 +76,7 @@ public partial class SetupFlowViewModel : ObservableObject
     [RelayCommand]
     public void Cancel()
     {
+        Orchestrator.ReleaseRemoteFactory();
         Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };
     }
 }

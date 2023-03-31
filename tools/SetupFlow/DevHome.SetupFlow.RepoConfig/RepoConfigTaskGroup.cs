@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
+using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
@@ -22,9 +24,12 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     private readonly Lazy<RepoConfigReviewViewModel> _repoConfigReviewViewModel;
     private readonly Lazy<RepoConfigViewModel> _repoConfigViewModel;
 
-    public RepoConfigTaskGroup(IHost host)
+    private readonly ISetupFlowStringResource _stringResource;
+
+    public RepoConfigTaskGroup(IHost host, ISetupFlowStringResource stringResource)
     {
         _host = host;
+        _stringResource = stringResource;
 
         // TODO Remove `this` argument from CreateInstance since this task
         // group is a registered type. This requires updating dependent classes
@@ -56,8 +61,8 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         _cloneTasks.Clear();
         foreach (var cloningInformation in cloningInformations)
         {
-            var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.RepositoryToClone.DisplayName());
-            _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount));
+            var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.RepositoryToClone.DisplayName);
+            _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource));
         }
     }
 }

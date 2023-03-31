@@ -16,5 +16,4 @@ public enum TaskFinishedState
 {
     Success,
     Failure,
-    NeedsAttention,
 }
