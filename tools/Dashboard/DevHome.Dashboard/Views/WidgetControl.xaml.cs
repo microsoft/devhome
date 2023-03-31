@@ -2,10 +2,15 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
+using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.Widgets;
+using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Views;
 public sealed partial class WidgetControl : UserControl
@@ -22,7 +27,7 @@ public sealed partial class WidgetControl : UserControl
     }
 
     public static readonly DependencyProperty WidgetSourceProperty = DependencyProperty.Register(
-        "WidgetSource", typeof(WidgetViewModel), typeof(WidgetControl), new PropertyMetadata(null));
+        nameof(WidgetSource), typeof(WidgetViewModel), typeof(WidgetControl), new PropertyMetadata(null));
 
     private void OpenWidgetMenu(object sender, RoutedEventArgs e)
     {
@@ -36,20 +41,34 @@ public sealed partial class WidgetControl : UserControl
                 if (widgetControl != null && widgetControl.WidgetSource is WidgetViewModel widgetViewModel)
                 {
                     var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-                    var text = resourceLoader.GetString("RemoveWidgetMenuText");
-                    var menuItemClose = new MenuFlyoutItem
-                    {
-                        Tag = widgetViewModel,
-                        Text = text,
-                    };
-                    menuItemClose.Click += DeleteWidgetClick;
-                    widgetMenuFlyout.Items.Add(menuItemClose);
+
+                    AddSizesToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                    widgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
+                    AddCustomizeToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                    AddRemoveToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
                 }
             }
         }
     }
 
-    private async void DeleteWidgetClick(object sender, RoutedEventArgs e)
+    private void AddRemoveToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    {
+        var removeWidgetText = resourceLoader.GetString("RemoveWidgetMenuText");
+        var icon = new FontIcon()
+        {
+            FontFamily = new FontFamily("Segoe MDL2 Assets"),
+            Glyph = "\uE77A;",
+        };
+        var menuItemClose = new MenuFlyoutItem
+        {
+            Tag = widgetViewModel,
+            Text = removeWidgetText,
+        };
+        menuItemClose.Click += OnRemoveWidgetClick;
+        widgetMenuFlyout.Items.Add(menuItemClose);
+    }
+
+    private async void OnRemoveWidgetClick(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem deleteMenuItem)
         {
@@ -57,8 +76,86 @@ public sealed partial class WidgetControl : UserControl
             {
                 // Remove the widget from the list before deleting, otherwise the widget will
                 // have changed and the collection won't be able to find it to remove it.
+                var widgetIdToDelete = widgetViewModel.Widget.Id;
+                Log.Logger()?.ReportDebug("WidgetControl", $"User removed widget, delete widget {widgetIdToDelete}");
                 DashboardView.PinnedWidgets.Remove(widgetViewModel);
                 await widgetViewModel.Widget.DeleteAsync();
+                Log.Logger()?.ReportInfo("WidgetControl", $"Deleted Widget {widgetIdToDelete}");
+            }
+        }
+    }
+
+    private void AddSizesToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    {
+        var widgetDefinition = WidgetCatalog.GetDefault().GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
+        var capabilities = widgetDefinition.GetWidgetCapabilities();
+
+        // Add the three possible sizes. Each side should only be enabled if it is included in the widget's capabilities.
+        var menuItemSmall = new MenuFlyoutItem
+        {
+            Tag = WidgetSize.Small,
+            Text = resourceLoader.GetString("SmallWidgetMenuText"),
+            IsEnabled = capabilities.Any(cap => cap.Size == WidgetSize.Small),
+        };
+        menuItemSmall.Click += OnMenuItemSizeClick;
+        widgetMenuFlyout.Items.Add(menuItemSmall);
+
+        var menuItemMedium = new MenuFlyoutItem
+        {
+            Tag = WidgetSize.Medium,
+            Text = resourceLoader.GetString("MediumWidgetMenuText"),
+            IsEnabled = capabilities.Any(cap => cap.Size == WidgetSize.Medium),
+        };
+        menuItemMedium.Click += OnMenuItemSizeClick;
+        widgetMenuFlyout.Items.Add(menuItemMedium);
+
+        var menuItemLarge = new MenuFlyoutItem
+        {
+            Tag = WidgetSize.Large,
+            Text = resourceLoader.GetString("LargeWidgetMenuText"),
+            IsEnabled = capabilities.Any(cap => cap.Size == WidgetSize.Large),
+        };
+        menuItemLarge.Click += OnMenuItemSizeClick;
+        widgetMenuFlyout.Items.Add(menuItemLarge);
+    }
+
+    private async void OnMenuItemSizeClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem menuSizeItem)
+        {
+            if (menuSizeItem.DataContext is WidgetViewModel widgetViewModel)
+            {
+                var size = (WidgetSize)menuSizeItem.Tag;
+                widgetViewModel.WidgetSize = size;
+                await widgetViewModel.Widget.SetSizeAsync(size);
+            }
+        }
+    }
+
+    private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    {
+        var customizeWidgetText = resourceLoader.GetString("CustomizeWidgetMenuText");
+        var icon = new FontIcon()
+        {
+            FontFamily = new FontFamily("Segoe MDL2 Assets"),
+            Glyph = "\uE70F;",
+        };
+        var menuItemCustomize = new MenuFlyoutItem
+        {
+            Tag = widgetViewModel,
+            Text = customizeWidgetText,
+        };
+        menuItemCustomize.Click += OnCustomizeWidgetClick;
+        widgetMenuFlyout.Items.Add(menuItemCustomize);
+    }
+
+    private void OnCustomizeWidgetClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem customizeMenuItem)
+        {
+            if (customizeMenuItem?.Tag is WidgetViewModel widgetViewModel)
+            {
+                widgetViewModel.IsInEditMode = true;
             }
         }
     }

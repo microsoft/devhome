@@ -4,6 +4,7 @@
 using DevHome.Common.Extensions;
 using DevHome.Models;
 using DevHome.Services;
+using DevHome.Settings.ViewModels;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
@@ -44,37 +45,39 @@ public sealed partial class WhatsNewPage : Page
 
     private async void ConnectToGitHubButton_Click(object sender, RoutedEventArgs e)
     {
+        var resourceLoader = new Windows.ApplicationModel.Resources.ResourceLoader();
         var pluginService = new PluginService();
         var plugins = pluginService.GetInstalledPluginsAsync(ProviderType.DevId).Result;
 
+        // TODO: Replace this with a check for KnownPluginsGuid got Github plugin
         var plugin = plugins.Where(p => p.Name.Contains("Github")).FirstOrDefault();
 
         if (plugin is null)
         {
             var connectToGitHubContentDialog = new ContentDialog
             {
-                Title = "Extension not found. Install Dev Home GitHub Extension from Store and try again.",
-                CloseButtonText = "OK",
+                Title = resourceLoader.GetString("WhatsNewPage_ConnectToGitHub_NoPluginsContentDialog_Title"),
+                CloseButtonText = resourceLoader.GetString("WhatsNewPage_ConnectToGitHub_NoPluginsContentDialog_CloseButtonText"),
                 XamlRoot = XamlRoot,
             };
             _ = await connectToGitHubContentDialog.ShowAsync();
             return;
         }
 
-        var iDevIdProvider = await plugin.GetProviderAsync<IDevIdProvider>();
+        var devIdProvider = await plugin.GetProviderAsync<IDevIdProvider>();
 
-        if (iDevIdProvider is null)
+        if (devIdProvider is null)
         {
             return;
         }
 
-        if (iDevIdProvider.GetLoggedInDeveloperIds().Any())
+        if (devIdProvider.GetLoggedInDeveloperIds().Any())
         {
             // DevId already connected
             var connectToGitHubContentDialog = new ContentDialog
             {
-                Title = "You are already connected to GitHub!",
-                CloseButtonText = "OK",
+                Title = resourceLoader.GetString("WhatsNewPage_ConnectToGitHub_AlreadyConnectedContentDialog_Title"),
+                CloseButtonText = resourceLoader.GetString("WhatsNewPage_ConnectToGitHub_AlreadyConnectedContentDialog_CloseButtonText"),
                 XamlRoot = XamlRoot,
             };
             _ = await connectToGitHubContentDialog.ShowAsync();
@@ -83,16 +86,7 @@ public sealed partial class WhatsNewPage : Page
 
         try
         {
-            // TODO: Replace this flow with LoginUI
-            var devId = await iDevIdProvider.LoginNewDeveloperIdAsync();
-
-            var connectToGitHubSuccessContentDialog = new ContentDialog
-            {
-                Title = $"{devId.LoginId()} has connected to GitHub!",
-                CloseButtonText = "OK",
-                XamlRoot = XamlRoot,
-            };
-            _ = await connectToGitHubSuccessContentDialog.ShowAsync();
+            await new AccountsProviderViewModel(devIdProvider).ShowLoginUIAsync("WhatsNew", this);
         }
         catch (Exception ex)
         {

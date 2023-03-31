@@ -20,9 +20,9 @@ public class PluginAdaptiveCardPanel : StackPanel
 {
     public event EventHandler<FrameworkElement>? UiUpdate;
 
-    public void Bind(IPluginAdaptiveCardController pluginAdaptiveCardController)
+    public void Bind(IPluginAdaptiveCardController pluginAdaptiveCardController, AdaptiveCardRenderer? customRenderer)
     {
-        var adaptiveCardRenderer = new AdaptiveCardRenderer();
+        var adaptiveCardRenderer = customRenderer ?? new AdaptiveCardRenderer();
 
         if (Children.Count != 0)
         {
