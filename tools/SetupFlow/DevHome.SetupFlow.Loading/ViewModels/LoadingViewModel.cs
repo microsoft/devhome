@@ -316,7 +316,16 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _tasksToRun.Count);
             });
 
-            var taskFinishedState = await taskInformation.TaskToExecute.Execute();
+            TaskFinishedState taskFinishedState;
+            if (taskInformation.TaskToExecute.RequiresAdmin)
+            {
+                taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedFactory.Value);
+            }
+            else
+            {
+                taskFinishedState = await taskInformation.TaskToExecute.Execute();
+            }
+
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 ChangeMessage(taskInformation, taskFinishedState);

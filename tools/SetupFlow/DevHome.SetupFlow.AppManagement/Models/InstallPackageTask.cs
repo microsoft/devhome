@@ -9,6 +9,7 @@ using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
+using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 using Windows.Foundation;
@@ -114,4 +115,6 @@ public class InstallPackageTask : ISetupTask
     public ActionCenterMessages GetErrorMessages() => throw new NotImplementedException();
 
     public ActionCenterMessages GetRebootMessage() => throw new NotImplementedException();
+
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
 }

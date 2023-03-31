@@ -1,4 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
@@ -8,7 +11,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Platforms>x86;x64;arm64</Platforms>
 		<RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
-		<PublishProfile>Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
+		<PublishProfile Condition="'$(BuildingInsideVisualStudio)' != 'True'">Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<UseWinUI>true</UseWinUI>
@@ -35,7 +38,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\common\DevHome.Common.csproj" />
-        <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
+		<ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
 		<ProjectReference Include="..\tools\SampleTool\src\SampleTool.csproj" />
 		<ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
 		<ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
@@ -66,5 +69,13 @@
 
 	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
 		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+	</PropertyGroup>
+
+	<!-- In the setup flow there is a WinRT component that gets consumed by project reference
+	     in some places and by referencing the .winmd in others. This results in multiple
+	     projects having the .winmd as output, which causes a build error. We disable that
+	     check for now, but we should find a solution that doesn't require it. -->
+	<PropertyGroup>
+		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
 	</PropertyGroup>
 </Project>

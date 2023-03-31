@@ -21,6 +21,8 @@
     <ProjectReference Include="..\DevHome.SetupFlow.AppManagement\DevHome.SetupFlow.AppManagement.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.DevDrive\DevHome.SetupFlow.DevDrive.csproj" />
+    <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Projection\DevHome.SetupFlow.ElevatedComponent.Projection.csproj" />
+    <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Setup\DevHome.SetupFlow.ElevatedComponent.Setup.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.RepoConfig\DevHome.SetupFlow.RepoConfig.csproj" />
   </ItemGroup>
 
