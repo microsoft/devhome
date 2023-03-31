@@ -24,12 +24,12 @@ internal sealed class Program
 
         try
         {
-            IPCSetup.CompleteRemoteObjectInitialization(0, factory, mappedFileName, initEventName, completionSemaphoreName);
+            IPCSetup.CompleteRemoteObjectInitialization<IElevatedComponentFactory>(0, factory, mappedFileName, initEventName, completionSemaphoreName);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Remote factory initialization failed: {ex}");
-            IPCSetup.CompleteRemoteObjectInitialization<ElevatedComponentFactory>(ex.HResult, null, mappedFileName, initEventName, completionSemaphoreName);
+            IPCSetup.CompleteRemoteObjectInitialization<IElevatedComponentFactory>(ex.HResult, null, mappedFileName, initEventName, completionSemaphoreName);
             throw;
         }
     }

@@ -87,7 +87,7 @@ public class InstallPackageTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(ElevatedComponentFactory elevatedComponentFactory)
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
     {
         return Task.Run(async () =>
         {
