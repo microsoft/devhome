@@ -25,7 +25,7 @@ public class AccountsService : IAccountsService
         {
             var devIds = devIdProvider.GetLoggedInDeveloperIds().ToList();
 
-            LoggingHelper.AccountStartupEvent("Startup_DevId_Event", devIdProvider.GetName(), devIds);
+            TelemetryHelper.AccountStartupEvent("Startup_DevId_Event", devIdProvider.GetName(), devIds);
 
             devIdProvider.LoggedIn += LoggedInEventHandler;
             devIdProvider.LoggedOut += LoggedOutEventHandler;
@@ -65,7 +65,7 @@ public class AccountsService : IAccountsService
     {
         if (sender is IDevIdProvider devIdProvider)
         {
-            LoggingHelper.AccountEvent("Login_DevId_Event", devIdProvider.GetName(), developerId.LoginId());
+            TelemetryHelper.AccountEvent("Login_DevId_Event", devIdProvider.GetName(), developerId.LoginId());
         }
 
         // Bring focus back to DevHome after login
@@ -76,7 +76,7 @@ public class AccountsService : IAccountsService
     {
         if (sender is IDevIdProvider devIdProvider)
         {
-            LoggingHelper.AccountEvent("Logout_DevId_Event", devIdProvider.GetName(), developerId.LoginId());
+            TelemetryHelper.AccountEvent("Logout_DevId_Event", devIdProvider.GetName(), developerId.LoginId());
         }
     }
 }
