@@ -12,7 +12,6 @@ using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
-using Windows.ApplicationModel.UserDataTasks;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.AppManagement.Models;

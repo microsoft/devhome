@@ -71,7 +71,7 @@ public class BaseSetupFlowTest
                 services.AddTransient<WinGetPackageRestoreDataSource>();
                 services.AddSingleton<IRestoreInfo>(RestoreInfo.Object);
                 services.AddSingleton<PackageProvider>();
-                services.AddSingleton<WindowsPackageManagerDefaultFactory>();
+                services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory());
 
                 // DI factory pattern
                 services.AddSingleton<PackageViewModelFactory>(sp => package => ActivatorUtilities.CreateInstance<PackageViewModel>(sp, package));

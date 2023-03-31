@@ -7,7 +7,7 @@ using Microsoft.Management.Deployment;
 namespace DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 
 /// <summary>
-/// Factory for creating WinGet COM objects.
+/// Factory class for creating WinGet COM objects.
 /// Details about each method can be found in the source IDL:
 /// https://github.com/microsoft/winget-cli/blob/master/src/Microsoft.Management.Deployment/PackageManager.idl
 /// </summary>

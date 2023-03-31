@@ -6,6 +6,20 @@ using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.ElevatedComponent;
 
+/// <summary>
+/// Class for installing winget packages.
+/// </summary>
+/// <remarks>
+/// This is intended to install packages that require admin permissions.
+/// Running in an elevated context should prevent us from getting a
+/// UAC prompt when starting the installer.
+///
+/// We cannot use the objects we winget COM objects we already created
+/// during the Setup flow here because those live in a different
+/// non-elevated process. Since we cannot pass complicated objects
+/// unless they can be projected by CsWinRT, we go the easy route
+/// and install given the package and catalog IDs.
+/// </remarks>
 public sealed class PackageInstaller
 {
     public void Install(string packageId, string catalogId)
