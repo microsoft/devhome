@@ -16,7 +16,7 @@ public class SetupFlowScenarioStandard : SetupFlowSession
     [TestMethod]
     public void SetupFlowTest1()
     {
-        session.FindElementByName("Dev Setup tool").Click();
+        session.FindElementByName("Machine Configuration").Click();
         WindowsElement title = session.FindElementByName("Add packages");
         Assert.AreEqual("Add packages", title.Text);
     }

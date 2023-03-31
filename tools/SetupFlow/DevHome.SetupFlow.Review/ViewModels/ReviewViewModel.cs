@@ -55,7 +55,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     protected async override Task OnEachNavigateToAsync()
     {
         IsRebootRequired = _orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresReboot));
-        NextPageButtonToolTipText = HasTasksToSetUp ? string.Empty : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
+        NextPageButtonToolTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
         await Task.CompletedTask;
     }
 

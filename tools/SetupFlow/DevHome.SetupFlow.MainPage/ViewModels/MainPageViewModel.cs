@@ -7,14 +7,12 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.ConfigurationFile;
 using DevHome.SetupFlow.DevDrive;
-using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.RepoConfig;
 using DevHome.Telemetry;
@@ -33,6 +31,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _logger;
     private readonly IHost _host;
+
+    [ObservableProperty]
+    private bool _showBanner = true;
 
     [ObservableProperty]
     private bool _showDevDriveItem;
@@ -57,6 +58,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
+    }
+
+    [RelayCommand]
+    private void HideBanner()
+    {
+        ShowBanner = false;
     }
 
     /// <summary>
