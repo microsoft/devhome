@@ -29,9 +29,8 @@ public class InstallPackageTask : ISetupTask
 
     public bool RequiresAdmin => _requiresElevation.Value;
 
-    // As we don't have this information available for each package in the WinGet COM API,
-    // simply assume that any package installation may need a reboot.
-    public bool RequiresReboot => true;
+    // By default, assume that any package installation may need a reboot.
+    public bool RequiresReboot { get; set; } = true;
 
     public bool DependsOnDevDriveToBeInstalled
     {
@@ -87,7 +86,8 @@ public class InstallPackageTask : ISetupTask
         {
             try
             {
-                await _wpm.InstallPackageAsync(_package);
+                var installResult = await _wpm.InstallPackageAsync(_package);
+                RequiresReboot = installResult.RebootRequired;
                 return TaskFinishedState.Success;
             }
             catch (InstallPackageException e)

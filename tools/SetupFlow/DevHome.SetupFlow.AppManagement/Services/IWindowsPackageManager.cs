@@ -55,5 +55,6 @@ public interface IWindowsPackageManager
     /// Install a winget package
     /// </summary>
     /// <param name="package">Package to install</param>
-    public Task InstallPackageAsync(WinGetPackage package);
+    /// <returns>Install package result</returns>
+    public Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package);
 }
