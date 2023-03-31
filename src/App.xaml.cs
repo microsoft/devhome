@@ -10,15 +10,12 @@ using DevHome.Core.Services;
 using DevHome.Helpers;
 using DevHome.Models;
 using DevHome.Services;
-using DevHome.SetupFlow.AppManagement.Models;
-using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.Extensions;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Management.Deployment;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Newtonsoft.Json;
@@ -86,6 +83,7 @@ public partial class App : Application, IApp
             services.AddTransient<FeedbackViewModel>();
             services.AddTransient<FeedbackPage>();
             services.AddTransient<ShellPage>();
+            services.AddTransient<InitializationPage>();
             services.AddTransient<ShellViewModel>();
             services.AddTransient<WhatsNewViewModel>();
 
