@@ -2,7 +2,10 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
@@ -41,7 +44,13 @@ internal class ConfigureTask : ISetupTask
     {
         try
         {
-            var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, null);
+            var assemblyDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new InvalidDataException();
+            var rootDirectory = Path.GetDirectoryName(assemblyDirectory) ?? throw new InvalidDataException();
+            var modulesPath = Path.Combine(rootDirectory, "ExternalModules");
+
+            var properties = new ConfigurationProcessorFactoryProperties();
+            properties.AdditionalModulePaths = new List<string>() { modulesPath };
+            var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
             _processor = new ConfigurationProcessor(factory);
             var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
             _configSet = openResult.Set;
