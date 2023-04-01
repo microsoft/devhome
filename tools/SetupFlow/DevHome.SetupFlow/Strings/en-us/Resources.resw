@@ -171,7 +171,7 @@
   </data>
   <data name="ConfigurationFileApplyError" xml:space="preserve">
     <value>Couldn't apply settings from configuration file</value>
-    <comment>Label displayed when a configuration file has not been applied successfully</comment>
+    <comment>Label displayed when the settings listed in a configuration file have not been applied successfully</comment>
   </data>
   <data name="ConfigurationFileApplySuccess" xml:space="preserve">
     <value>Applied settings from configuration file</value>
