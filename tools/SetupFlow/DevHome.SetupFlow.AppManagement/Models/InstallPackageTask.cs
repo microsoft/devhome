@@ -70,7 +70,6 @@ public class InstallPackageTask : ISetupTask
         return new ()
         {
             PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.InstallPackageError, _package.Name),
-            SecondaryMessage = GetErrorReason(),
         };
     }
 
@@ -106,7 +105,15 @@ public class InstallPackageTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
+    {
+        return Task.Run(async () =>
+        {
+            var packageInstaller = elevatedComponentFactory.CreatePackageInstaller();
+            var installResult = await packageInstaller.InstallPackage(_package.Id, _package.CatalogName);
+            return installResult.InstallSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
+        }).AsAsyncOperation();
+    }
 
     private string GetErrorReason()
     {

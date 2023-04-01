@@ -20,12 +20,13 @@
 
     <Grid
         Margin="0 5 0 5">
-        <!-- No Dev Drives message-->
+        <!-- No Dev Drive message-->
         <TextBlock
             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveReviewPageNoDevDrives"
             Visibility="{x:Bind ViewModel.DevDrives, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverterWhenEmpty}}"
             HorizontalAlignment="Left"
             Margin="10 10 10 10"/>
+        <!-- Dev Drive Available-->
         <ScrollViewer 
             HorizontalScrollBarVisibility="Auto"
             VerticalScrollBarVisibility="Auto"
@@ -33,31 +34,15 @@
             HorizontalScrollMode="Auto"
             Visibility="{x:Bind ViewModel.DevDrives, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverterWhenNotEmpty}}">
             <Grid
-                RowDefinitions="Auto, *"
                 ColumnDefinitions="Auto, *"
                 Margin="10 0 0 10">
                 <TextBlock
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Text="{x:Bind ViewModel.NumberOfItemsTitle}"
-                    Foreground="{ThemeResource TextFillColorTertiaryBrush}"
-                    Margin="0 5 15 5"
-                    TextWrapping="Wrap"/>
-                <TextBlock
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Text="{x:Bind ViewModel.LocalizedCountOfDevices}"
-                    Margin="0 5 5 5"
-                    TextWrapping="Wrap"/>
-                <TextBlock
-                    Grid.Row="1"
                     Grid.Column="0"
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveReviewPageDevDriveDetailsTitle"
                     Foreground="{ThemeResource TextFillColorTertiaryBrush}"
                     Margin="0 5 15 5"
                     TextWrapping="Wrap"/>
                 <Grid
-                    Grid.Row="1"
                     Grid.Column="1">
                     <ItemsRepeater
                        ItemsSource="{x:Bind ViewModel.DevDrives, Mode=OneWay}">

@@ -3,12 +3,10 @@
 
 using System;
 using System.Threading.Tasks;
-using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.Telemetry;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.AppManagement.Services;

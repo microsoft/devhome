@@ -7,6 +7,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
@@ -49,6 +50,7 @@ public partial class SetupFlowViewModel : ObservableObject
 
     public void SetFlowPagesFromCurrentTaskGroups()
     {
+        _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
         List<SetupPageViewModelBase> flowPages = new ();
         flowPages.AddRange(Orchestrator.TaskGroups.Select(flow => flow.GetSetupPageViewModel()).Where(page => page is not null));
 
@@ -77,6 +79,7 @@ public partial class SetupFlowViewModel : ObservableObject
     public void Cancel()
     {
         Orchestrator.ReleaseRemoteFactory();
+        _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
         Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };
     }
 }

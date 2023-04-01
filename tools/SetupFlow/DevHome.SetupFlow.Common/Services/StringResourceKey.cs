@@ -24,6 +24,8 @@ public static class StringResourceKey
     public static readonly string ConfigurationFileInvalid = nameof(ConfigurationFileInvalid);
     public static readonly string ConfigurationFileOpenUnknownError = nameof(ConfigurationFileOpenUnknownError);
     public static readonly string ConfigurationFileVersionUnknown = nameof(ConfigurationFileVersionUnknown);
+    public static readonly string ConfigurationFileTypeNotSupported = nameof(ConfigurationFileTypeNotSupported);
+    public static readonly string DevDriveReviewTitle = nameof(DevDriveReviewTitle);
     public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
     public static readonly string DevDriveDefaultFolderName = nameof(DevDriveDefaultFolderName);
     public static readonly string DevDriveFilenameAlreadyExists = nameof(DevDriveFilenameAlreadyExists);
@@ -63,16 +65,35 @@ public static class StringResourceKey
     public static readonly string LoadingExecutingProgress = nameof(LoadingExecutingProgress);
     public static readonly string ActionCenterDisplay = nameof(ActionCenterDisplay);
     public static readonly string NeedsRebootMessage = nameof(NeedsRebootMessage);
-
-    // Action center and loading screen
-    public static readonly string LoadingScreenCloningRepositoryMainText = nameof(LoadingScreenCloningRepositoryMainText);
-    public static readonly string LoadingScreenCloningRepositoryFinished = nameof(LoadingScreenCloningRepositoryFinished);
-    public static readonly string CloningRepositoryErrorText = nameof(CloningRepositoryErrorText);
-    public static readonly string LoadingScreenCloneRepositoryNeedsRebootText = nameof(LoadingScreenCloneRepositoryNeedsRebootText);
-    public static readonly string ActionCenterCloningRepositoryErrorTextSecondary = nameof(ActionCenterCloningRepositoryErrorTextSecondary);
-    public static readonly string UnknownError = nameof(UnknownError);
-
     public static readonly string ApplicationsPageTitle = nameof(ApplicationsPageTitle);
     public static readonly string ReposConfigPageTitle = nameof(ReposConfigPageTitle);
     public static readonly string ReviewPageTitle = nameof(ReviewPageTitle);
+
+    // Repository loading screen messages
+    public static readonly string CloneRepoCreating = nameof(CloneRepoCreating);
+    public static readonly string CloneRepoCreated = nameof(CloneRepoCreated);
+    public static readonly string CloneRepoError = nameof(CloneRepoError);
+    public static readonly string CloneRepoRestart = nameof(CloneRepoRestart);
+
+    // Configure task loading screen messages
+    public static readonly string ConfigureTaskCreating = nameof(ConfigureTaskCreating);
+    public static readonly string ConfigureTaskCreated = nameof(ConfigureTaskCreated);
+    public static readonly string ConfigureTaskError = nameof(ConfigureTaskError);
+    public static readonly string ConfigureTaskRestart = nameof(ConfigureTaskRestart);
+
+    // App download loading screen messages
+    public static readonly string DownloadAppCreating = nameof(DownloadAppCreating);
+    public static readonly string DownloadAppCreated = nameof(DownloadAppCreated);
+    public static readonly string DownloadAppError = nameof(DownloadAppError);
+    public static readonly string DownloadAppRestart = nameof(DownloadAppRestart);
+
+    // Dev drive loading screen messages
+    public static readonly string DevDriveCreating = nameof(DevDriveCreating);
+    public static readonly string DevDriveCreated = nameof(DevDriveCreated);
+    public static readonly string DevDriveError = nameof(DevDriveError);
+    public static readonly string DevDriveRestart = nameof(DevDriveRestart);
+
+    // Loading screen
+    public static readonly string LoadingScreenActionCenterErrors = nameof(LoadingScreenActionCenterErrors);
+    public static readonly string LoadingPageSteps = nameof(LoadingPageSteps);
 }
