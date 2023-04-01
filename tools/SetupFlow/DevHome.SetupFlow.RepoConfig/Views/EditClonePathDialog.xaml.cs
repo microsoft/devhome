@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Services;
+using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -37,7 +38,7 @@ public sealed partial class EditClonePathDialog
         get; set;
     }
 
-    public EditClonePathDialog(IDevDriveManager devDriveManager)
+    public EditClonePathDialog(IDevDriveManager devDriveManager, CloningInformation cloningInfo)
     {
         this.InitializeComponent();
         EditClonePathViewModel = new EditClonePathViewModel();
@@ -49,6 +50,12 @@ public sealed partial class EditClonePathDialog
             FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
         };
         IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
+        if (cloningInfo.CloneToDevDrive)
+        {
+            AddDevDriveInfo();
+        }
+
+        FolderPickerViewModel.CloneLocation = cloningInfo.CloningLocation.FullName;
     }
 
     /// <summary>
@@ -72,22 +79,12 @@ public sealed partial class EditClonePathDialog
         var isChecked = (sender as CheckBox).IsChecked;
         if (isChecked.Value)
         {
-            if (EditDevDriveViewModel.MakeDefaultDevDrive())
-            {
-                FolderPickerViewModel.InDevDriveScenario = true;
-                FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
-                FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-                FolderPickerViewModel.DisableBrowseButton();
-            }
-            else
-            {
-                // TODO: Add simple error Text in UI, e.g MakeDefaultDevDrive could return
-                // the actual result and we could display the error text related to it from the .resw file.
-            }
+            AddDevDriveInfo();
         }
         else
         {
             FolderPickerViewModel.CloneLocationAlias = string.Empty;
+            FolderPickerViewModel.CloneLocation = string.Empty;
             FolderPickerViewModel.InDevDriveScenario = false;
             EditDevDriveViewModel.RemoveNewDevDrive();
             FolderPickerViewModel.EnableBrowseButton();
@@ -108,5 +105,25 @@ public sealed partial class EditClonePathDialog
     private void CloneLocationTextBox_TextChanged(object sender, RoutedEventArgs e)
     {
         IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
+    }
+
+    /// <summary>
+    /// Update dialog to show Dev Drive information.
+    /// </summary>
+    private void AddDevDriveInfo()
+    {
+        if (EditDevDriveViewModel.MakeDefaultDevDrive())
+        {
+            DevDriveCheckBox.IsChecked = true;
+            FolderPickerViewModel.InDevDriveScenario = true;
+            FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
+            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+            FolderPickerViewModel.DisableBrowseButton();
+        }
+        else
+        {
+            // TODO: Add simple error Text in UI, e.g MakeDefaultDevDrive could return
+            // the actual result and we could display the error text related to it from the .resw file.
+        }
     }
 }

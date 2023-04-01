@@ -210,11 +210,11 @@
     <comment>Text to Advise the user that the disks and volumes page in the Windows settings app has more advanced options for creating a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink.Text" xml:space="preserve">
-    <value>Open disks and volumes setting</value>
+    <value>Open Disks and volumes settings</value>
     <comment>Hyperlink text, so when clicked the user will be redirected to the disks and volumes Windows settings page.</comment>
   </data>
   <data name="DevDriveWindowLocationTextBox.Header" xml:space="preserve">
-    <value>Dev Drive location</value>
+    <value>Location</value>
     <comment>Header for the Dev Drive location text box. This location can be on the location system or on a network share</comment>
   </data>
   <data name="DevDriveWindowLocationTextBox.PlaceholderText" xml:space="preserve">
@@ -230,7 +230,7 @@
     <comment>Placeholder drive label value that will be used as the file name within the Dev Drive name text box. VHD stands for virtual hard disk, which is what will be created when the user goes to create a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowOnlyOneDevDriveAllowedHeader.Text" xml:space="preserve">
-    <value>You can only create one Dev Drive in Dev Home at a time.</value>
+    <value>A Dev Drive optimizes performance for development. You can only create one in Dev Home.</value>
     <comment>Text to advise users that they are only allowed the create one Dev Drive at a time.</comment>
   </data>
   <data name="DevDriveWindowSaveButton.Content" xml:space="preserve">
@@ -621,7 +621,7 @@
     <comment>Text that will be the description of a section in the review page where the user will see a list of details about the Dev Drives they are about to create. The name, size and the virtual disk file location are the details shows.</comment>
   </data>
   <data name="DevDriveReviewPageNoDevDrives.Text" xml:space="preserve">
-    <value>No Dev Drives will be created.</value>
+    <value>Nothing added</value>
     <comment>Text that lets the user know that they did not select a previous option to create a Dev Drive so therefore none will be created in the next step</comment>
   </data>
   <data name="DevDriveReviewPageNumberOfDevDrives" xml:space="preserve">
@@ -815,5 +815,9 @@
   <data name="DevDriveDriveLetterNotAvailable" xml:space="preserve">
     <value>The requested drive letter is not available. Select another one and try again.</value>
     <comment>Error text that tells the user that the drive letter they selected in the drive letter combo box, is not available.</comment>
+  </data>
+  <data name="DevDriveReviewTitle" xml:space="preserve">
+    <value>Drive</value>
+    <comment>Text that shows the title of a tab in the review page where users can see the details of the Dev Drive they are about to create.</comment>
   </data>
 </root>

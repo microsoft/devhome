@@ -175,6 +175,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
     }
 
+    public DevDriveTaskGroup TaskGroup => _taskGroup;
+
     /// <summary>
     /// gets the localized Browse button text for the browse button.
     /// </summary>
@@ -237,6 +239,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         DriveLabel = devDrive.DriveLabel;
         Location = devDrive.DriveLocation;
         ComboBoxDriveLetter = devDrive.DriveLetter;
+        _taskGroup.AddDevDriveTask(AssociatedDrive);
     }
 
     /// <summary>
@@ -279,16 +282,26 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         };
 
         var validation = _devDriveManager.GetDevDriveValidationResults(tempDrive);
-        if (validation.Contains(DevDriveOperationResult.Successful))
+        if (validation.Contains(DevDriveValidationResult.Successful))
         {
             _concreteDevDrive = tempDrive;
             _concreteDevDrive.State = DevDriveState.New;
+            _taskGroup.AddDevDriveTask(AssociatedDrive);
             DevDriveWindowContainer.Close();
         }
         else
         {
             ShowErrorInUI(validation);
         }
+    }
+
+    /// <summary>
+    /// Allows the view model to remove the current tasks related to creating
+    /// a Dev drive.
+    /// </summary>
+    public void RemoveTasks()
+    {
+        _taskGroup.RemoveDevDriveTasks();
     }
 
     /// <summary>
@@ -317,10 +330,10 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <summary>
     /// Shows the user all errors found after clicking the save button.
     /// </summary>
-    public void ShowErrorInUI(ISet<DevDriveOperationResult> resultSet)
+    public void ShowErrorInUI(ISet<DevDriveValidationResult> resultSet)
     {
         var prefix = "DevDrive";
-        foreach (DevDriveOperationResult result in resultSet)
+        foreach (DevDriveValidationResult result in resultSet)
         {
             ErrorList.Add(_stringResource.GetLocalized(prefix + result.ToString()));
         }

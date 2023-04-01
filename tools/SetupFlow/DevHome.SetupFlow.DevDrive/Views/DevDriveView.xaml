@@ -67,6 +67,7 @@
                         <TextBlock
                             Margin="0 20 20 5"
                             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowOnlyOneDevDriveAllowedHeader"
+                            MaxWidth="500"
                             Grid.Row="1" 
                             TextWrapping="Wrap" />
                         <Grid
@@ -240,3 +241,4 @@
         </Grid>
     </UserControl>
 </Page>
+    
