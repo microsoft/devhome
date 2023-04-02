@@ -4,11 +4,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ctControls="using:CommunityToolkit.Labs.WinUI"
+    xmlns:appviewmodels="using:DevHome.SetupFlow.AppManagement.ViewModels"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
+                <ResourceDictionary>
+                    <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -92,8 +98,19 @@
                         <StackPanel>
                             <StackPanel.Resources>
                                 <StackLayout x:Name="LayoutForRepos" Orientation="Vertical" Spacing="10"/>
-                                <DataTemplate x:Key="repoTemplate" x:DataType="x:String">
-                                    <TextBlock Text="{x:Bind}"/>
+                                <DataTemplate x:Key="repoTemplate">
+                                    <Grid
+                                        ColumnDefinitions="Auto, *">
+                                        <FontIcon 
+                                            Grid.Column="0"
+                                            Glyph="{Binding Path=Key}"
+                                            Margin="3 0 5 0"/>
+                                        <TextBlock 
+                                            Grid.Column="1"
+                                            Text="{Binding Path=Value}"
+                                            Margin="5 0 0 0"
+                                            TextWrapping="Wrap"/>
+                                    </Grid>
                                 </DataTemplate>
                             </StackPanel.Resources>
                             <ItemsRepeater x:Name="TasksItemsRepeater" ItemsSource="{x:Bind ViewModel.RepositoriesCloned, Mode=OneWay}"
@@ -111,18 +128,42 @@
                     </StackPanel.BorderBrush>
                     <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
                     <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto"  Height="300">
-                        <StackPanel>
-                            <StackPanel.Resources>
-                                <UniformGridLayout x:Name="LayoutForApps" MaximumRowsOrColumns="3" MinColumnSpacing="120" MinRowSpacing="30" Orientation="Horizontal"/>
-                                <DataTemplate x:Key="appsTemplate" x:DataType="x:String">
-                                    <TextBlock Text="{x:Bind}"/>
+                        <GridView
+                            ScrollViewer.VerticalScrollMode="Auto"
+                            ScrollViewer.HorizontalScrollMode="Auto"
+                            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                            ItemsSource="{x:Bind ViewModel.AppsDownloaded, Mode=OneWay}"
+                            SelectionMode="None">
+                            <GridView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </GridView.ItemsPanel>
+                            <GridView.ItemTemplate>
+                                <DataTemplate x:DataType="appviewmodels:PackageViewModel">
+                                    <ctControls:SettingsCard Width="320" Padding="5" Background="Transparent">
+                                        <ctControls:SettingsCard.Resources>
+                                            <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
+                                            <Thickness x:Key="SettingsCardPadding">0</Thickness>
+                                            <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
+                                            <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
+                                            <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
+                                            <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
+                                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
+                                        </ctControls:SettingsCard.Resources>
+                                        <ctControls:SettingsCard.Header>
+                                            <TextBlock Text="{x:Bind Name, Mode=OneWay}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                                        </ctControls:SettingsCard.Header>
+                                        <ctControls:SettingsCard.Description>
+                                            <TextBlock Text="{x:Bind Version, Mode=OneWay}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                                        </ctControls:SettingsCard.Description>
+                                        <ctControls:SettingsCard.HeaderIcon>
+                                            <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
+                                        </ctControls:SettingsCard.HeaderIcon>
+                                    </ctControls:SettingsCard>
                                 </DataTemplate>
-                            </StackPanel.Resources>
-                            <ItemsRepeater x:Name="AppsItemsRepeater" ItemsSource="{x:Bind ViewModel.AppsDownloaded, Mode=OneWay}"
-                           Layout="{StaticResource LayoutForApps}" 
-                           ItemTemplate="{StaticResource appsTemplate}">
-                            </ItemsRepeater>
-                        </StackPanel>
+                            </GridView.ItemTemplate>
+                        </GridView>
                     </ScrollViewer>
                 </StackPanel>
             </StackPanel>

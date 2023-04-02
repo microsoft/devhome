@@ -63,7 +63,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         foreach (var cloningInformation in cloningInformations)
         {
             var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.RepositoryToClone.DisplayName);
-            var task = new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource);
+            var task = new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.ProviderName);
             if (cloningInformation.CloneToDevDrive)
             {
                 task.DependsOnDevDriveToBeInstalled = true;

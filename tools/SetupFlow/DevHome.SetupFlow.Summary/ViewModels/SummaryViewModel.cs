@@ -2,14 +2,23 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
+using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
+using DevHome.SetupFlow.RepoConfig;
+using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Windows.ApplicationModel;
 
 namespace DevHome.SetupFlow.Summary.ViewModels;
 
@@ -17,15 +26,50 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _logger;
     private readonly SetupFlowOrchestrator _orchestrator;
+    private readonly IHost _host;
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
 
-    [ObservableProperty]
-    private ObservableCollection<string> _repositoriesCloned;
+    // TODO: refactor setup flow so CloneRepoTask can be used without having to
+    // add the app management project.
+    public ObservableCollection<KeyValuePair<string, string>> RepositoriesCloned
+    {
+        get
+        {
+            var repositoriesCloned = new ObservableCollection<KeyValuePair<string, string>>();
+            var tasks = _host.GetService<SetupFlowOrchestrator>().TaskGroups[1].SetupTasks;
+            foreach (var task in tasks)
+            {
+                if (task is CloneRepoTask repoTask && repoTask.WasCloningSuccessful)
+                {
+                    repositoriesCloned.Add(
+                        new KeyValuePair<string, string>(GetFontIconForProvider(repoTask.ProviderName), repoTask.RepositoryName));
+                }
+            }
 
-    [ObservableProperty]
-    private ObservableCollection<string> _appsDownloaded;
+            return repositoriesCloned;
+        }
+    }
+
+    // TODO: refactor setup flow so PackageViewModel and PackageProvider can be used without having to
+    // add the app management project.
+    public ObservableCollection<PackageViewModel> AppsDownloaded
+    {
+        get
+        {
+            var packagesInstalled = new ObservableCollection<PackageViewModel>();
+            var packages = _host.GetService<PackageProvider>()
+                .SelectedPackages
+                .Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true);
+            foreach (var package in packages)
+            {
+                packagesInstalled.Add(package);
+            }
+
+            return packagesInstalled;
+        }
+    }
 
     [RelayCommand]
     public void OpenDashboard()
@@ -42,18 +86,18 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     public SummaryViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        ILogger logger)
+        ILogger logger,
+        IHost host)
         : base(stringResource, orchestrator)
     {
         _logger = logger;
         _orchestrator = orchestrator;
+        _host = host;
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
 
         _showRestartNeeded = Visibility.Collapsed;
-        _repositoriesCloned = new ();
-        _appsDownloaded = new ();
     }
 
     protected async override Task OnFirstNavigateToAsync()
@@ -61,4 +105,11 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _orchestrator.ReleaseRemoteFactory();
         await Task.CompletedTask;
     }
+
+    // This can possibly be moved to a more central location
+    public string GetFontIconForProvider(string providerName) => providerName switch
+    {
+        // Puzzle piece icon
+        _ => "\uEA86",
+    };
 }

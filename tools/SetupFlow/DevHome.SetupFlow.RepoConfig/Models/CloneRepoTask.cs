@@ -19,7 +19,7 @@ namespace DevHome.SetupFlow.RepoConfig.Models;
 /// Object to hold all information needed to clone a repository.
 /// 1:1 CloningInformation to repository.
 /// </summary>
-internal class CloneRepoTask : ISetupTask
+public class CloneRepoTask : ISetupTask
 {
     /// <summary>
     /// Absolute path the user wants to clone their repository to.
@@ -30,6 +30,19 @@ internal class CloneRepoTask : ISetupTask
     /// The repository the user wants to clone.
     /// </summary>
     private readonly IRepository repositoryToClone;
+
+    /// <summary>
+    /// Gets the display name of the repository.
+    /// </summary>
+    public string RepositoryName => repositoryToClone.DisplayName;
+
+    /// <summary>
+    /// Gets the provider name the repository is cloning from.
+    /// </summary>
+    public string ProviderName
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Gets a value indicating whether the task requires being admin.
@@ -45,6 +58,12 @@ internal class CloneRepoTask : ISetupTask
     /// The developer ID that is used when a repository is being cloned.
     /// </summary>
     private readonly IDeveloperId _developerId;
+
+    // May potentially be moved to a central list in the future.
+    public bool WasCloningSuccessful
+    {
+        get; private set;
+    }
 
     private TaskMessages _taskMessage;
 
@@ -69,12 +88,13 @@ internal class CloneRepoTask : ISetupTask
     /// <param name="cloneLocation">Repository will be placed here. at cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
     /// <param name="developerId">Credentials needed to clone a private repo</param>
-    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource)
+    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName)
     {
         this.cloneLocation = cloneLocation;
         this.repositoryToClone = repositoryToClone;
         _developerId = developerId;
         SetMessages(stringResource);
+        ProviderName = providerName;
     }
 
     /// <summary>
@@ -137,6 +157,7 @@ internal class CloneRepoTask : ISetupTask
                 return TaskFinishedState.Failure;
             }
 
+            WasCloningSuccessful = true;
             return TaskFinishedState.Success;
         }).AsAsyncOperation();
     }
