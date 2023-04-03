@@ -102,10 +102,10 @@ internal partial class AddRepoDialog
     /// <remarks>
     /// Fired when the combo box on the account page is changed.
     /// </remarks>
-    private async void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
-        await AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
+        AddRepoViewModel.GetAccounts(repositoryProviderName);
         AddRepoViewModel.ChangeToRepoPage();
         FolderPickerViewModel.ShowFolderPicker();
         EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
@@ -166,11 +166,11 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Adds the repository from the URL screen to the list of repos to be cloned.
     /// </summary>
-    private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
-            await AddRepoViewModel.AddRepositoryViaUriAsync(FolderPickerViewModel.CloneLocation);
+            AddRepoViewModel.AddRepositoryViaUri(FolderPickerViewModel.CloneLocation);
         }
     }
 

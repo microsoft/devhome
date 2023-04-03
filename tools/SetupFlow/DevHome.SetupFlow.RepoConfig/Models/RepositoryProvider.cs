@@ -49,11 +49,12 @@ internal class RepositoryProvider
     /// <summary>
     /// Starts the plugin if it isn't running.
     /// </summary>
-    /// <returns>An awaitable task</returns>
-    public async Task StartIfNotRunningAsync()
+    public void StartIfNotRunning()
     {
-        _devIdProvider = await _pluginWrapper.GetProviderAsync<IDevIdProvider>();
-        _repositoryProvider = await _pluginWrapper.GetProviderAsync<IRepositoryProvider>();
+        // The task.run inside GetProvider makes a deadlock when .Result is called.
+        // https://stackoverflow.com/a/17248813.  Solution is to wrap in Task.Run().
+        _devIdProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IDevIdProvider>()).Result;
+        _repositoryProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
     }
 
     /// <summary>
@@ -72,9 +73,9 @@ internal class RepositoryProvider
     /// <summary>
     /// Logs the current user into this provider
     /// </summary>
-    public async Task LogIntoProvider()
+    public IDeveloperId LogIntoProvider()
     {
-        await _devIdProvider.LoginNewDeveloperIdAsync();
+        return _devIdProvider.LoginNewDeveloperIdAsync().AsTask().Result;
     }
 
     /// <summary>

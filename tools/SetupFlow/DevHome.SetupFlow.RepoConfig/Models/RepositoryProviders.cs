@@ -32,12 +32,11 @@ internal class RepositoryProviders
     /// Starts a provider if it isn't running.
     /// </summary>
     /// <param name="providerName">The provider to start.</param>
-    /// <returns>An awaitable task</returns>
-    public async Task StartIfNotRunningAsync(string providerName)
+    public void StartIfNotRunning(string providerName)
     {
         if (_providers.ContainsKey(providerName))
         {
-            await _providers[providerName].StartIfNotRunningAsync();
+            _providers[providerName].StartIfNotRunning();
         }
     }
 
@@ -47,12 +46,12 @@ internal class RepositoryProviders
     /// <param name="uri">The Uri to parse.</param>
     /// <returns>If a provider was found that can parse the Uri then (providerName, repository) in not
     /// (string.empty, null)</returns>
-    public async Task<(string, IRepository)> ParseRepositoryFromUriAsync(Uri uri)
+    public (string, IRepository) ParseRepositoryFromUri(Uri uri)
     {
         foreach (var provider in _providers)
         {
-            await provider.Value.StartIfNotRunningAsync();
-            var repository = await provider.Value.ParseRepositoryFromUri(uri);
+            provider.Value.StartIfNotRunning();
+            var repository = provider.Value.ParseRepositoryFromUri(uri).Result;
             if (repository != null)
             {
                 return (provider.Key, repository);
@@ -66,9 +65,9 @@ internal class RepositoryProviders
     /// Logs the user into a certain provider.
     /// </summary>
     /// <param name="providerName">The provider to log the user into.  Must match IRepositoryProvider.GetDisplayName</param>
-    public async Task LogInToProvider(string providerName)
+    public IDeveloperId LogInToProvider(string providerName)
     {
-        await _providers.GetValueOrDefault(providerName)?.LogIntoProvider();
+        return _providers.GetValueOrDefault(providerName)?.LogIntoProvider();
     }
 
     /// <summary>

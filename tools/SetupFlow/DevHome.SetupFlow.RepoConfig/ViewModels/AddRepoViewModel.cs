@@ -236,15 +236,15 @@ public partial class AddRepoViewModel : ObservableObject
     /// Gets all the accounts for a provider and updates the UI.
     /// </summary>
     /// <param name="repositoryProviderName">The provider the user wants to use.</param>
-    /// <returns>An awaitable task</returns>
-    public async Task GetAccountsAsync(string repositoryProviderName)
+    public void GetAccounts(string repositoryProviderName)
     {
-        await _providers.StartIfNotRunningAsync(repositoryProviderName);
+        _providers.StartIfNotRunning(repositoryProviderName);
         var loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
         if (!loggedInAccounts.Any())
         {
-            await _providers.LogInToProvider(repositoryProviderName);
-
+            // Throw away developer id becase we're calling GetAllLoggedInAccounts in anticipation
+            // of 1 Provider : N DeveloperIds
+            _providers.LogInToProvider(repositoryProviderName);
             loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
         }
 
@@ -287,11 +287,11 @@ public partial class AddRepoViewModel : ObservableObject
     /// Adds a repository from the URL page.
     /// </summary>
     /// <param name="cloneLocation">The location to clone the repo to</param>
-    public async Task AddRepositoryViaUriAsync(string cloneLocation)
+    public void AddRepositoryViaUri(string cloneLocation)
     {
         // Try to parse repo from Uri
         // null means no providers were able to parse the Uri.
-        var providerNameAndRepo = await _providers.ParseRepositoryFromUriAsync(new Uri(Url));
+        var providerNameAndRepo = _providers.ParseRepositoryFromUri(new Uri(Url));
         if (providerNameAndRepo.Item2 == null)
         {
             return;
