@@ -191,43 +191,43 @@
   <data name="Settings_Accounts_AddAccountButton.Content" xml:space="preserve">
     <value>Add Account</value>
   </data>
-	<data name="Settings_Accounts_AddAccountText.Text" xml:space="preserve">
+  <data name="Settings_Accounts_AddAccountText.Text" xml:space="preserve">
     <value>Add Account</value>
   </data>
-	<data name="Settings_Accounts_AfterLogoutContentDialog_Content" xml:space="preserve">
+  <data name="Settings_Accounts_AfterLogoutContentDialog_Content" xml:space="preserve">
     <value>has successfully logged out of Dev Home.</value>
   </data>
-	<data name="Settings_Accounts_AfterLogoutContentDialog_PrimaryButtonText" xml:space="preserve">
+  <data name="Settings_Accounts_AfterLogoutContentDialog_PrimaryButtonText" xml:space="preserve">
     <value>OK</value>
   </data>
-	<data name="Settings_Accounts_AfterLogoutContentDialog_Title" xml:space="preserve">
+  <data name="Settings_Accounts_AfterLogoutContentDialog_Title" xml:space="preserve">
     <value>Logout Successful!</value>
   </data>
-	<data name="Settings_Accounts_ConfirmLogoutContentDialog_Content" xml:space="preserve">
+  <data name="Settings_Accounts_ConfirmLogoutContentDialog_Content" xml:space="preserve">
     <value>Dev Home will no longer be able to access online resources that use this account.</value>
   </data>
-	<data name="Settings_Accounts_ConfirmLogoutContentDialog_PrimaryButtonText" xml:space="preserve">
+  <data name="Settings_Accounts_ConfirmLogoutContentDialog_PrimaryButtonText" xml:space="preserve">
     <value>Yes</value>
   </data>
-	<data name="Settings_Accounts_ConfirmLogoutContentDialog_SecondaryButtonText" xml:space="preserve">
+  <data name="Settings_Accounts_ConfirmLogoutContentDialog_SecondaryButtonText" xml:space="preserve">
     <value>No</value>
   </data>
-	<data name="Settings_Accounts_ConfirmLogoutContentDialog_Title" xml:space="preserve">
+  <data name="Settings_Accounts_ConfirmLogoutContentDialog_Title" xml:space="preserve">
     <value>Are you sure?</value>
   </data>
-	<data name="Settings_Accounts_LogoutButton.Content" xml:space="preserve">
+  <data name="Settings_Accounts_LogoutButton.Content" xml:space="preserve">
     <value>Logout</value>
   </data>
-	<data name="Settings_Accounts_NoProvidersContentDialog_Content" xml:space="preserve">
+  <data name="Settings_Accounts_NoProvidersContentDialog_Content" xml:space="preserve">
     <value>Please install a Dev Home Plugin and restart Dev Home to add an account.</value>
   </data>
-	<data name="Settings_Accounts_NoProvidersContentDialog_PrimaryButtonText" xml:space="preserve">
+  <data name="Settings_Accounts_NoProvidersContentDialog_PrimaryButtonText" xml:space="preserve">
     <value>OK</value>
   </data>
-	<data name="Settings_Accounts_NoProvidersContentDialog_Title" xml:space="preserve">
+  <data name="Settings_Accounts_NoProvidersContentDialog_Title" xml:space="preserve">
     <value>No Dev Home Plugins found!</value>
   </data>
-	<data name="Settings_Accounts_SubTitle.Text" xml:space="preserve">
+  <data name="Settings_Accounts_SubTitle.Text" xml:space="preserve">
     <value>Accounts</value>
   </data>
 </root>
