@@ -149,9 +149,14 @@ public class DevDriveManager : IDevDriveManager
         var result = UpdateDevDriveWithDefaultInfo(ref devDrive);
         if (result == DevDriveValidationResult.Successful)
         {
+            var taskGroups = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
+            var group = taskGroups.Single(x => x.GetType() == typeof(DevDriveTaskGroup));
+            if (group is DevDriveTaskGroup driveTaskGroup)
+            {
+                ViewModel.TaskGroup = driveTaskGroup;
+            }
+
             ViewModel.UpdateDevDriveInfo(devDrive);
-            var orchestrator = _host.GetService<SetupFlowOrchestrator>();
-            orchestrator.TaskGroups[0] = ViewModel.TaskGroup;
             _devDrives.Add(devDrive);
         }
 

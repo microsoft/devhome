@@ -13,6 +13,7 @@ using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
+using DevHome.SetupFlow.DevDrive;
 using DevHome.SetupFlow.RepoConfig;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.Telemetry;
@@ -38,13 +39,17 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         get
         {
             var repositoriesCloned = new ObservableCollection<KeyValuePair<string, string>>();
-            var tasks = _host.GetService<SetupFlowOrchestrator>().TaskGroups[1].SetupTasks;
-            foreach (var task in tasks)
+            var taskGroup = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
+            var group = taskGroup.Single(x => x.GetType() == typeof(RepoConfigTaskGroup));
+            if (group is RepoConfigTaskGroup repoTaskGroup)
             {
-                if (task is CloneRepoTask repoTask && repoTask.WasCloningSuccessful)
+                foreach (var task in repoTaskGroup.SetupTasks)
                 {
-                    repositoriesCloned.Add(
-                        new KeyValuePair<string, string>(GetFontIconForProvider(repoTask.ProviderName), repoTask.RepositoryName));
+                    if (task is CloneRepoTask repoTask && repoTask.WasCloningSuccessful)
+                    {
+                        repositoriesCloned.Add(
+                            new KeyValuePair<string, string>(GetFontIconForProvider(repoTask.ProviderName), repoTask.RepositoryName));
+                    }
                 }
             }
 
