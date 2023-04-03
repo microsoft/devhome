@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Windows.Input;
+using DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Common.Models;
@@ -13,7 +15,7 @@ public interface ISetupTask
     /// <summary>
     /// Gets a value indicating whether this task requires admin privileges to be executed.
     /// </summary>
-    public abstract bool RequiresAdmin
+    public bool RequiresAdmin
     {
         get;
     }
@@ -28,7 +30,7 @@ public interface ISetupTask
     ///       Setting up WSL (future) will require us to reboot the machine to finish, but other
     ///       tasks like installing an app may trigger a reboot out of our control.
     /// </remarks>
-    public abstract bool RequiresReboot
+    public bool RequiresReboot
     {
         get;
     }
@@ -46,11 +48,44 @@ public interface ISetupTask
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
-    public abstract IAsyncOperation<TaskFinishedState> Execute();
+    public IAsyncOperation<TaskFinishedState> Execute();
 
     /// <summary>
-    /// Gets a string to show in the loading page while executing this task.
+    /// Executes this setup task as admin.
     /// </summary>
+    /// <param name="elevatedComponentFactory">Helper object to create the needed objects on the elevated process.</param>
+    /// <returns>
+    /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
+    /// </returns>
+    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory);
+
+    /// <summary>
+    /// Gets the object used to display all messages in the loading screen.
+    /// </summary>
+    /// <remarks>
+    /// This method is called before a task execution to resolve <see cref="LoadingMessages.Executing"/>
+    /// and again after a task execution to resolve the final message
+    /// </remarks>
     /// <returns>A localized string indicating that this task is being executed.</returns>
-    public abstract LoadingMessages GetLoadingMessages();
+    public abstract TaskMessages GetLoadingMessages();
+
+    /// <summary>
+    /// Gets an object that contains all the data needed to display an error message in the action center of the loading screen.
+    /// </summary>
+    /// <returns>An object with strings to display in the action center.</returns>
+    public abstract ActionCenterMessages GetErrorMessages();
+
+    /// <summary>
+    /// Gets an object that contains all the data needed to display a "Needs reboot" in the action center of the loading screen.
+    /// </summary>
+    /// <returns>An object of strings.</returns>
+    public abstract ActionCenterMessages GetRebootMessage();
+
+    /// <summary>
+    /// Gets a value indicating whether a dev drive needs to be installed before this task can start.
+    /// </summary>
+    public abstract bool DependsOnDevDriveToBeInstalled
+    {
+        get;
+    }
 }

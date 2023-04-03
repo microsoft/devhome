@@ -2,29 +2,38 @@
 // Licensed under the MIT license.
 
 using System.Collections.Generic;
-using DevHome.Common.Extensions;
-using DevHome.SetupFlow.AppManagement.Models;
+using System.Linq;
+using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.ViewModels;
-using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.AppManagement;
 
 public class AppManagementTaskGroup : ISetupTaskGroup
 {
-    private readonly IHost _host;
+    private readonly PackageProvider _packageProvider;
+    private readonly AppManagementViewModel _appManagementViewModel;
+    private readonly AppManagementReviewViewModel _appManagementReviewViewModel;
 
-    public AppManagementTaskGroup(IHost host)
+    public AppManagementTaskGroup(
+        PackageProvider packageProvider,
+        AppManagementViewModel appManagementViewModel,
+        AppManagementReviewViewModel appManagementReviewViewModel)
     {
-        _host = host;
+        _packageProvider = packageProvider;
+        _appManagementViewModel = appManagementViewModel;
+        _appManagementReviewViewModel = appManagementReviewViewModel;
+
+        // TODO Convert the package provider to a scoped instance, to avoid
+        // clearing it here. This requires refactoring and adding scopes when
+        // creating task groups in the main page.
+        _packageProvider.Clear();
     }
 
-    private readonly IList<InstallPackageTask> _installTasks = new List<InstallPackageTask>();
+    public IEnumerable<ISetupTask> SetupTasks => _packageProvider.SelectedPackages.Select(sp => sp.InstallPackageTask);
 
-    public IEnumerable<ISetupTask> SetupTasks => _installTasks;
+    public SetupPageViewModelBase GetSetupPageViewModel() => _appManagementViewModel;
 
-    public SetupPageViewModelBase GetSetupPageViewModel() => _host.CreateInstance<AppManagementViewModel>(this);
-
-    public ReviewTabViewModelBase GetReviewTabViewModel() => _host.CreateInstance<AppManagementReviewViewModel>(this);
+    public ReviewTabViewModelBase GetReviewTabViewModel() => _appManagementReviewViewModel;
 }

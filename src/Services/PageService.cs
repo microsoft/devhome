@@ -6,6 +6,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
+using DevHome.Settings.ViewModels;
+using DevHome.Settings.Views;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.UI.Xaml.Controls;
@@ -21,8 +23,13 @@ public class PageService : IPageService
     public PageService()
     {
         Configure<SettingsViewModel, SettingsPage>();
-
+        Configure<PreferencesViewModel, PreferencesPage>();
+        Configure<AccountsViewModel, AccountsPage>();
+        Configure<NotificationsViewModel, NotificationsPage>();
+        Configure<ExtensionsViewModel, ExtensionsPage>();
+        Configure<AboutViewModel, AboutPage>();
         Configure<FeedbackViewModel, FeedbackPage>();
+        Configure<WhatsNewViewModel, WhatsNewPage>();
 
         foreach (var group in App.NavConfig.NavMenu.Groups)
         {

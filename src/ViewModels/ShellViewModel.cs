@@ -4,6 +4,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Services;
+using DevHome.Settings.Views;
 using DevHome.Views;
 using Microsoft.UI.Xaml.Navigation;
 

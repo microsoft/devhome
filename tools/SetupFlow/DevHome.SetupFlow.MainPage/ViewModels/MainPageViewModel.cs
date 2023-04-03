@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement;
 using DevHome.SetupFlow.Common.Models;
+using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.DevVolume;
+using DevHome.SetupFlow.ConfigurationFile;
+using DevHome.SetupFlow.DevDrive;
+using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.RepoConfig;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
@@ -31,7 +33,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private readonly IHost _host;
 
     [ObservableProperty]
-    private bool _showAppListBackupBanner;
+    private bool _showDevDriveItem;
 
     /// <summary>
     /// Event raised when the user elects to start the setup flow.
@@ -40,14 +42,19 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// </summary>
     public event EventHandler<IList<ISetupTaskGroup>> StartSetupFlow;
 
-    public MainPageViewModel(ILogger logger, IStringResource stringResource, IHost host)
-        : base(stringResource)
+    public MainPageViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger,
+        IHost host)
+        : base(stringResource, orchestrator)
     {
         _logger = logger;
         _host = host;
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
+        ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
     }
 
     /// <summary>
@@ -66,7 +73,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private void StartSetup()
     {
         StartSetupFlowForTaskGroups(
-            _host.GetService<DevVolumeTaskGroup>(),
+            _host.GetService<DevDriveTaskGroup>(),
             _host.GetService<RepoConfigTaskGroup>(),
             _host.GetService<AppManagementTaskGroup>());
     }
@@ -77,7 +84,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartRepoConfig()
     {
-        StartSetupFlowForTaskGroups(_host.GetService<RepoConfigTaskGroup>());
+        StartSetupFlowForTaskGroups(
+            _host.GetService<DevDriveTaskGroup>(),
+            _host.GetService<RepoConfigTaskGroup>());
     }
 
     /// <summary>
@@ -90,12 +99,13 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
-    /// Starts a setup flow that only includes dev volume.
+    /// Opens the Windows settings app and redirects the user to the disks and volumes page.
     /// </summary>
     [RelayCommand]
-    private void StartDevVolume()
+    private async void LaunchDisksAndVolumesSettingsPage()
     {
-        StartSetupFlowForTaskGroups(_host.GetService<DevVolumeTaskGroup>());
+        // TODO: Add telemetry.
+        await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
 
     /// <summary>
@@ -112,15 +122,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand]
-    private async Task DefaultBannerButtonAsync()
+    private async Task BannerButtonAsync()
     {
         // TODO Update code with the "Learn more" button behavior
         await Launcher.LaunchUriAsync(new ("https://microsoft.com"));
-    }
-
-    [RelayCommand]
-    private void AppListBackupBannerButton()
-    {
-        StartSetup();
     }
 }

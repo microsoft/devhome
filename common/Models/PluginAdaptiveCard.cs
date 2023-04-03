@@ -2,46 +2,50 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using AdaptiveCards.ObjectModel.WinUI3;
-using AdaptiveCards.Rendering.WinUI3;
-using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+using AdaptiveCards.Templating;
+using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DevHome.Common.Models;
 public class PluginAdaptiveCard : IPluginAdaptiveCard
 {
     public event EventHandler<AdaptiveCard>? UiUpdate;
 
-    public string Data { get; private set; }
+    public string DataJson { get; private set; }
 
     public string State { get; private set; }
 
-    public string Template { get; private set; }
+    public string TemplateJson { get; private set; }
 
     public PluginAdaptiveCard()
     {
-        Template = new JsonObject().ToJsonString();
-        Data = new JsonObject().ToJsonString();
+        TemplateJson = new JsonObject().ToJsonString();
+        DataJson = new JsonObject().ToJsonString();
         State = string.Empty;
     }
 
-    public void Update(string template, string data, string state)
+    public void Update(string templateJson, string dataJson, string state)
     {
-        var parseResult = AdaptiveCard.FromJsonString(template);
+        var template = new AdaptiveCardTemplate(templateJson ?? TemplateJson);
+        var adaptiveCardString = template.Expand(JsonConvert.DeserializeObject<JObject>(dataJson ?? DataJson));
+        var parseResult = AdaptiveCard.FromJsonString(adaptiveCardString);
+
         if (parseResult.AdaptiveCard is null)
         {
-            throw new ArgumentException(JsonSerializer.Serialize(parseResult.Errors));
+            LoggerFactory.Get<ILogger>().LogError(
+                $"PluginAdaptiveCard.Update(): AdaptiveCard is null",
+                LogLevel.Local,
+                $"templateJson: {templateJson} dataJson: {dataJson} state: {state}");
+            return;
         }
 
-        Template = template;
-        Data = data;
-        State = state;
+        TemplateJson = templateJson ?? TemplateJson;
+        DataJson = dataJson ?? DataJson;
+        State = state ?? State;
 
         if (UiUpdate is not null)
         {

@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common;
+using DevHome.Common.Contracts;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
@@ -14,9 +16,11 @@ using DevHome.Models;
 using DevHome.SetupFlow.RepoConfig;
 using DevHome.ViewModels;
 using DevHome.Views;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Newtonsoft.Json;
+using SampleTool;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.ApplicationModel.Background;
 using Windows.Foundation;
@@ -32,7 +36,7 @@ public class PluginService : IPluginService
     private static List<IPluginWrapper> installedPlugins = new ();
 #pragma warning restore IDE0044 // Add readonly modifier
 
-    public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync()
+    public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins = false)
     {
         if (installedPlugins.Count == 0)
         {
@@ -40,6 +44,7 @@ public class PluginService : IPluginService
             foreach (var extension in extensions)
             {
                 var properties = await extension.GetExtensionPropertiesAsync();
+
                 var devHomeProvider = GetSubPropertySet(properties, "DevHomeProvider");
                 if (devHomeProvider is null)
                 {
@@ -62,6 +67,19 @@ public class PluginService : IPluginService
                 if (classId is null)
                 {
                     continue;
+                }
+
+                if (!includeDisabledPlugins)
+                {
+                    var isDisabled = Task.Run(() =>
+                    {
+                        var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
+                        return localSettingsService.ReadSettingAsync<bool>(classId + "-ExtensionDisabled");
+                    }).Result;
+                    if (isDisabled)
+                    {
+                        continue;
+                    }
                 }
 
                 var name = extension.DisplayName;
@@ -91,9 +109,35 @@ public class PluginService : IPluginService
         return installedPlugins;
     }
 
-    public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(ProviderType providerType)
+    public async Task<IEnumerable<IPluginWrapper>> StartAllPluginsAsync()
     {
         var installedPlugins = await GetInstalledPluginsAsync();
+        foreach (var installedPlugin in installedPlugins)
+        {
+            if (!installedPlugin.IsRunning())
+            {
+                await installedPlugin.StartPluginAsync();
+            }
+        }
+
+        return installedPlugins;
+    }
+
+    public async Task SignalStopPluginsAsync()
+    {
+        var installedPlugins = await GetInstalledPluginsAsync();
+        foreach (var installedPlugin in installedPlugins)
+        {
+            if (installedPlugin.IsRunning())
+            {
+                installedPlugin.SignalDispose();
+            }
+        }
+    }
+
+    public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(ProviderType providerType, bool includeDisabledPlugins = false)
+    {
+        var installedPlugins = await GetInstalledPluginsAsync(includeDisabledPlugins);
 
         List<IPluginWrapper> filteredPlugins = new ();
         foreach (var installedPlugin in installedPlugins)
@@ -116,22 +160,4 @@ public class PluginService : IPluginService
     {
         return propSet[name] as string;
     }
-}
-
-public class Ole32
-{
-    // https://docs.microsoft.com/windows/win32/api/wtypesbase/ne-wtypesbase-clsctx
-    public const int CLSCTXLOCALSERVER = 0x4;
-
-    // https://docs.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-cocreateinstance
-    [DllImport(nameof(Ole32))]
-
-#pragma warning disable CA1401 // P/Invokes should not be visible
-    public static extern int CoCreateInstance(
-        [In, MarshalAs(UnmanagedType.LPStruct)] Guid rclsid,
-        IntPtr pUnkOuter,
-        uint dwClsContext,
-        [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid,
-        out IntPtr ppv);
-#pragma warning restore CA1401 // P/Invokes should not be visible
 }

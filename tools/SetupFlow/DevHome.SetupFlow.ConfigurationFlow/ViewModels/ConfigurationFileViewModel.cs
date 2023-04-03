@@ -2,15 +2,16 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
+using DevHome.SetupFlow.ConfigurationFile.Exceptions;
 using DevHome.SetupFlow.ConfigurationFile.Models;
 using DevHome.Telemetry;
-using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using WinUIEx;
 
@@ -19,20 +20,8 @@ namespace DevHome.SetupFlow.ConfigurationFile.ViewModels;
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
     private readonly ILogger _logger;
-    private readonly IHost _host;
-    private readonly SetupFlowOrchestrator _orchestrator;
 
-    public ConfigurationFileViewModel(ILogger logger, IStringResource stringResource, IHost host, SetupFlowOrchestrator orchestrator)
-        : base(stringResource)
-    {
-        _logger = logger;
-        _host = host;
-        _orchestrator = orchestrator;
-
-        // Configure navigation bar
-        NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
-        CanGoToNextPage = false;
-    }
+    public List<ISetupTask> TaskList { get; } = new List<ISetupTask>();
 
     /// <summary>
     /// Configuration file
@@ -48,10 +37,24 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private bool _readAndAgree;
 
+    public ConfigurationFileViewModel(
+        ISetupFlowStringResource stringResource,
+        SetupFlowOrchestrator orchestrator,
+        ILogger logger)
+        : base(stringResource, orchestrator)
+    {
+        _logger = logger;
+
+        // Configure navigation bar
+        NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
+        CanGoToNextPage = false;
+        IsStepPage = false;
+    }
+
     partial void OnReadAndAgreeChanged(bool value)
     {
         CanGoToNextPage = value;
-        _orchestrator.NotifyNavigationCanExecuteChanged();
+        Orchestrator.NotifyNavigationCanExecuteChanged();
     }
 
     /// <summary>
@@ -85,20 +88,41 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             try
             {
                 Configuration = new (file.Path);
-
-                // TODO Call Configuration COM API once implemented to validate
-                // the input file.
+                var task = new ConfigureTask(_logger, StringResource, file);
+                await task.OpenConfigurationSetAsync();
+                TaskList.Add(task);
                 return true;
             }
-            catch
+            catch (OpenConfigurationSetException e)
             {
                 await mainWindow.ShowErrorMessageDialogAsync(
-                    StringResource.GetLocalized(StringResourceKey.FileTypeNotSupported),
-                    StringResource.GetLocalized(StringResourceKey.ConfigurationFileTypeNotSupported),
+                    file.Name,
+                    GetErrorMessage(e),
+                    StringResource.GetLocalized(StringResourceKey.Close));
+            }
+            catch (Exception e)
+            {
+                _logger.Log(nameof(ConfigurationFileViewModel), LogLevel.Local, $"Unknown error while opening configuration set: {e.Message}");
+
+                await mainWindow.ShowErrorMessageDialogAsync(
+                    file.Name,
+                    StringResource.GetLocalized(StringResourceKey.ConfigurationFileOpenUnknownError),
                     StringResource.GetLocalized(StringResourceKey.Close));
             }
         }
 
         return false;
+    }
+
+    private string GetErrorMessage(OpenConfigurationSetException exception)
+    {
+        return exception.ResultCode?.HResult switch
+        {
+            OpenConfigurationSetException.WingetConfigErrorInvalidField =>
+                StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalid, exception.Field),
+            OpenConfigurationSetException.WingetConfigErrorUnknownConfigurationFileVersion =>
+                StringResource.GetLocalized(StringResourceKey.ConfigurationFileVersionUnknown, exception.Field),
+            _ => StringResource.GetLocalized(StringResourceKey.ConfigurationFileInvalid),
+        };
     }
 }

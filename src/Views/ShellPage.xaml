@@ -15,7 +15,7 @@
               Height="{Binding ElementName=NavigationViewControl, Path=CompactPaneLength}"
               IsHitTestVisible="True"
               VerticalAlignment="Top">
-            <Image Source="/Assets/WindowIcon.ico"
+            <Image Source="/Assets/DevHome.ico"
                    HorizontalAlignment="Left"
                    Width="16"
                    Height="16" />
@@ -43,12 +43,17 @@
                 https://docs.microsoft.com/windows/apps/design/style/segoe-fluent-icons-font#icon-list
                 -->
                 <!-- The navigation menu is populated dynamically, but must have one static entry.  This NavigationViewItem is invisible and ignored -->
-                <NavigationViewItem x:Uid="Shell_IGNORE" helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.SettingsViewModel" Visibility="Collapsed"/>
+                <NavigationViewItem x:Uid="Shell_IGNORE" helpers:NavigationHelper.NavigateTo="DevHome.Settings.ViewModels.SettingsViewModel" Visibility="Collapsed"/>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
                 <NavigationViewItem x:Uid="Feedback" helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.FeedbackViewModel" Content="Give Feedback">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE939;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Uid="WhatsNew" helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.WhatsNewViewModel" Content="What's New">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE789;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>

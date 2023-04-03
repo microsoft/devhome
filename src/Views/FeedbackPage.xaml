@@ -7,7 +7,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:helpers="using:DevHome.Helpers"
+    xmlns:helpers="using:DevHome.Common.Helpers"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:xaml="using:Microsoft.UI.Xaml"
     mc:Ignorable="d"
@@ -106,6 +106,13 @@
                 </Hyperlink>
             </TextBlock>
             <StackPanel>
+                <labs:SettingsCard x:Uid="Feedback_ReportBug_Internal">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                  Glyph="&#xebe8;"/>
+                    </labs:SettingsCard.HeaderIcon>
+                    <Button x:Uid="Feedback_ReportBug_Button" Click="OpenFeedbackHub"/>
+                </labs:SettingsCard>                
                 <labs:SettingsCard x:Uid="Feedback_ReportBug">
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
@@ -118,7 +125,7 @@
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea80;"/>
                     </labs:SettingsCard.HeaderIcon>
-                    <Button x:Uid="Feedback_FeatureImprovement_Button" Click="DisplaySugestFeature"/>
+                    <Button x:Uid="Feedback_FeatureImprovement_Button" Click="DisplaySuggestFeature"/>
                 </labs:SettingsCard>
                 <labs:SettingsCard x:Uid="Feedback_LocalizationIssue">
                     <labs:SettingsCard.HeaderIcon>

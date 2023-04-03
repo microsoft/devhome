@@ -4,7 +4,6 @@
 using System;
 using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.ConfigurationFile.ViewModels;
-using DevHome.SetupFlow.DevVolume.ViewModels;
 using DevHome.SetupFlow.Loading.ViewModels;
 using DevHome.SetupFlow.MainPage.ViewModels;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
@@ -23,8 +22,6 @@ namespace DevHome.SetupFlow.Common.Selectors;
 public class SetupFlowViewSelector : DataTemplateSelector
 {
     public DataTemplate MainPageTemplate { get; set; }
-
-    public DataTemplate DevVolumeTemplate { get; set; }
 
     public DataTemplate RepoConfigTemplate { get; set; }
 
@@ -59,7 +56,6 @@ public class SetupFlowViewSelector : DataTemplateSelector
         return item switch
         {
             MainPageViewModel => MainPageTemplate,
-            DevVolumeViewModel => DevVolumeTemplate,
             RepoConfigViewModel => RepoConfigTemplate,
             AppManagementViewModel => AppManagementTemplate,
             ReviewViewModel => ReviewTemplate,

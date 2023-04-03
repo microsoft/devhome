@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
@@ -35,7 +34,9 @@ public partial class SearchViewModel : ObservableObject
 
     private readonly ILogger _logger;
     private readonly IWindowsPackageManager _wpm;
-    private readonly IStringResource _stringResource;
+    private readonly ISetupFlowStringResource _stringResource;
+    private readonly PackageProvider _packageProvider;
+    private const int SearchResultLimit = 20;
 
     /// <summary>
     /// Search query text
@@ -61,11 +62,12 @@ public partial class SearchViewModel : ObservableObject
     /// </summary>
     public string NoSearchResultsText => _stringResource.GetLocalized(StringResourceKey.NoSearchResultsFoundTitle, SearchText);
 
-    public SearchViewModel(ILogger logger, IWindowsPackageManager wpm, IStringResource stringResource)
+    public SearchViewModel(ILogger logger, IWindowsPackageManager wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider)
     {
         _wpm = wpm;
         _logger = logger;
         _stringResource = stringResource;
+        _packageProvider = packageProvider;
     }
 
     /// <summary>
@@ -91,7 +93,7 @@ public partial class SearchViewModel : ObservableObject
         try
         {
             // Run the search on a separate (non-UI) thread to prevent lagging the UI.
-            var matches = await Task.Run(async () => await _wpm.AllCatalogs.SearchAsync(text), cancellationToken);
+            var matches = await Task.Run(async () => await _wpm.AllCatalogs.SearchAsync(text, SearchResultLimit), cancellationToken);
 
             // Don't update the UI if the operation was canceled
             if (cancellationToken.IsCancellationRequested)
@@ -101,7 +103,7 @@ public partial class SearchViewModel : ObservableObject
 
             // Update the UI only if the operation was successful
             SearchText = text;
-            ResultPackages = matches.Select(m => new PackageViewModel(m)).ToList();
+            ResultPackages = matches.Select(m => _packageProvider.CreateOrGet(m)).ToList();
             return (SearchResultStatus.Ok, ResultPackages);
         }
         catch (OperationCanceledException)

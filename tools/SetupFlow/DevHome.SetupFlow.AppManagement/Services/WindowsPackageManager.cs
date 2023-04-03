@@ -3,11 +3,10 @@
 
 using System;
 using System.Threading.Tasks;
-using DevHome.Common.Extensions;
+using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.Telemetry;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.AppManagement.Services;
@@ -18,36 +17,76 @@ namespace DevHome.SetupFlow.AppManagement.Services;
 public class WindowsPackageManager : IWindowsPackageManager
 {
     private readonly ILogger _logger;
-    private readonly IHost _host;
     private readonly WindowsPackageManagerFactory _wingetFactory;
 
-    // Predefined catalogs
+    // Custom composite catalogs
     private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
     private readonly Lazy<WinGetCompositeCatalog> _wingetCatalog;
-    private readonly Lazy<WinGetCompositeCatalog> _msStoreCatalog;
 
-    public WindowsPackageManager(IHost host, ILogger logger, WindowsPackageManagerFactory wingetFactory)
+    // Predefined catalog ids
+    private readonly Lazy<string> _wingetCatalogId;
+    private readonly Lazy<string> _msStoreCatalogId;
+
+    public WindowsPackageManager(ILogger logger, WindowsPackageManagerFactory wingetFactory)
     {
-        _host = host;
         _logger = logger;
         _wingetFactory = wingetFactory;
 
-        // Lazy-initialize catalogs
+        // Lazy-initialize custom composite catalogs
         _allCatalogs = new (CreateAllCatalogs);
         _wingetCatalog = new (CreateWinGetCatalog);
-        _msStoreCatalog = new (CreateMsStoreCatalog);
+
+        // Lazy-initialize predefined catalog ids
+        _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
+        _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
     }
+
+    public string WinGetCatalogId => _wingetCatalogId.Value;
+
+    public string MsStoreId => _msStoreCatalogId.Value;
 
     public IWinGetCatalog AllCatalogs => _allCatalogs.Value;
 
     public IWinGetCatalog WinGetCatalog => _wingetCatalog.Value;
 
-    public IWinGetCatalog MsStoreCatalog => _msStoreCatalog.Value;
-
-    public async Task InstallPackageAsync(WinGetPackage package)
+    public async Task ConnectToAllCatalogsAsync()
     {
-        await Task.CompletedTask;
-        throw new NotImplementedException();
+        // Connect composite catalog for all local and remote catalogs to
+        // enable searching for pacakges from any source
+        await AllCatalogs.ConnectAsync();
+
+        // Connect predefined winget catalog to enable loading
+        // package with a known source (e.g. for restoring packages)
+        await WinGetCatalog.ConnectAsync();
+    }
+
+    public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package)
+    {
+        var packageManager = _wingetFactory.CreatePackageManager();
+        var options = _wingetFactory.CreateInstallOptions();
+        options.PackageInstallMode = PackageInstallMode.Silent;
+        var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options).AsTask();
+        if (installResult.Status != InstallResultStatus.Ok)
+        {
+            throw new InstallPackageException(installResult.Status, installResult.InstallerErrorCode);
+        }
+
+        return new ()
+        {
+            RebootRequired = installResult.RebootRequired,
+        };
+    }
+
+    /// <summary>
+    /// Gets the id of the provided predefined catalog
+    /// </summary>
+    /// <param name="catalog">Predefined catalog</param>
+    /// <returns>Catalog id</returns>
+    private string GetPredefinedCatalogId(PredefinedPackageCatalog catalog)
+    {
+        var packageManager = _wingetFactory.CreatePackageManager();
+        var packageCatalog = packageManager.GetPredefinedPackageCatalog(catalog);
+        return packageCatalog.Info.Id;
     }
 
     /// <summary>
@@ -80,16 +119,6 @@ public class WindowsPackageManager : IWindowsPackageManager
     private WinGetCompositeCatalog CreateWinGetCatalog()
     {
         return CreatePredefinedCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
-    }
-
-    /// <summary>
-    /// Create a composite catalog that can be used for finding packages in
-    /// msstore and local catalogs
-    /// </summary>
-    /// <returns>Catalog composed of msstore and local catalogs</returns>
-    private WinGetCompositeCatalog CreateMsStoreCatalog()
-    {
-        return CreatePredefinedCatalog(PredefinedPackageCatalog.MicrosoftStore);
     }
 
     /// <summary>

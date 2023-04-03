@@ -55,7 +55,7 @@
                             <TextBlock Text="{x:Bind Version, Mode=OneWay}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
                         </ctControls:SettingsCard.Description>
                         <ctControls:SettingsCard.HeaderIcon>
-                            <ImageIcon Source="{x:Bind ImageUri.AbsoluteUri,Mode=OneWay}"/>
+                            <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
                         </ctControls:SettingsCard.HeaderIcon>
                     </ctControls:SettingsCard>
                 </DataTemplate>

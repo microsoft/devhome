@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using DevHome.SetupFlow.Common.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Markup;
@@ -26,12 +27,6 @@ public sealed partial class SetupShell : UserControl
         set => SetValue(DescriptionProperty, value);
     }
 
-    public string HeaderText
-    {
-        get => (string)GetValue(HeaderTextProperty);
-        set => SetValue(HeaderTextProperty, value);
-    }
-
     public ControlTemplate HeaderTemplate
     {
         get => (ControlTemplate)GetValue(HeaderTemplateProperty) ?? defaultHeaderTemplate;
@@ -44,6 +39,14 @@ public sealed partial class SetupShell : UserControl
         set => SetValue(SetupShellContentProperty, value);
     }
 
+    public SetupFlowOrchestrator Orchestrator
+    {
+        get => (SetupFlowOrchestrator)GetValue(OrchestratorProperty);
+        set => SetValue(OrchestratorProperty, value);
+    }
+
+    public bool UseDefaultTitle => string.IsNullOrEmpty(Title);
+
     public SetupShell()
     {
         this.InitializeComponent();
@@ -52,6 +55,6 @@ public sealed partial class SetupShell : UserControl
     public static readonly DependencyProperty TitleProperty = DependencyProperty.RegisterAttached(nameof(Title), typeof(string), typeof(SetupShell), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty DescriptionProperty = DependencyProperty.RegisterAttached(nameof(Description), typeof(string), typeof(SetupShell), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty SetupShellContentProperty = DependencyProperty.RegisterAttached(nameof(SetupShellContent), typeof(object), typeof(SetupShell), new PropertyMetadata(null));
-    public static readonly DependencyProperty HeaderTextProperty = DependencyProperty.RegisterAttached(nameof(HeaderText), typeof(string), typeof(SetupShell), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty HeaderTemplateProperty = DependencyProperty.RegisterAttached(nameof(HeaderTemplate), typeof(ControlTemplate), typeof(SetupShell), new PropertyMetadata(null));
+    public static readonly DependencyProperty OrchestratorProperty = DependencyProperty.RegisterAttached(nameof(Orchestrator), typeof(SetupFlowOrchestrator), typeof(SetupShell), new PropertyMetadata(null));
 }
