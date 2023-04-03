@@ -64,9 +64,9 @@ internal class RepositoryProvider
     /// <remarks>
     /// Can be null if the provider can't parse the Uri.
     /// </remarks>
-    public IRepository ParseRepositoryFromUri(Uri uri)
+    public async Task<IRepository> ParseRepositoryFromUri(Uri uri)
     {
-        return _repositoryProvider.ParseRepositoryFromUrl(uri);
+        return await _repositoryProvider.ParseRepositoryFromUrl(uri);
     }
 
     /// <summary>

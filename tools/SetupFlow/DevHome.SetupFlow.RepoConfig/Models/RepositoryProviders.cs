@@ -52,7 +52,7 @@ internal class RepositoryProviders
         foreach (var provider in _providers)
         {
             await provider.Value.StartIfNotRunningAsync();
-            var repository = provider.Value.ParseRepositoryFromUri(uri);
+            var repository = await provider.Value.ParseRepositoryFromUri(uri);
             if (repository != null)
             {
                 return (provider.Key, repository);

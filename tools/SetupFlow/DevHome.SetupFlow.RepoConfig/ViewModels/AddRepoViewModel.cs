@@ -119,11 +119,11 @@ public partial class AddRepoViewModel : ObservableObject
         IEnumerable<string> filteredRepositories;
         if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
         {
-            filteredRepositories = _repositoriesForAccount.Select(x => x.DisplayName);
+            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => x.DisplayName);
         }
         else
         {
-            filteredRepositories = _repositoriesForAccount.Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase)).Select(x => x.DisplayName);
+            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate).Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase)).Select(x => x.DisplayName);
         }
 
         Repositories = new ObservableCollection<string>(filteredRepositories);
@@ -243,7 +243,7 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
         if (!loggedInAccounts.Any())
         {
-            _providers.LogInToProvider(repositoryProviderName).Wait();
+            await _providers.LogInToProvider(repositoryProviderName);
 
             loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
         }
