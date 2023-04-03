@@ -27,6 +27,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.ComInterop.Projection\DevHome.SetupFlow.ComInterop.Projection.csproj" />
+    <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Projection\DevHome.SetupFlow.ElevatedComponent.Projection.csproj" />
+    <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Setup\DevHome.SetupFlow.ElevatedComponent.Setup.csproj" />
   </ItemGroup>
 
   <ItemGroup>

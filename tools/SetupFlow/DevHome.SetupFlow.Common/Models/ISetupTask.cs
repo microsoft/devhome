@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System.Windows.Input;
+using DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Common.Models;
@@ -14,7 +15,7 @@ public interface ISetupTask
     /// <summary>
     /// Gets a value indicating whether this task requires admin privileges to be executed.
     /// </summary>
-    public abstract bool RequiresAdmin
+    public bool RequiresAdmin
     {
         get;
     }
@@ -29,7 +30,7 @@ public interface ISetupTask
     ///       Setting up WSL (future) will require us to reboot the machine to finish, but other
     ///       tasks like installing an app may trigger a reboot out of our control.
     /// </remarks>
-    public abstract bool RequiresReboot
+    public bool RequiresReboot
     {
         get;
     }
@@ -47,7 +48,16 @@ public interface ISetupTask
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
-    public abstract IAsyncOperation<TaskFinishedState> Execute();
+    public IAsyncOperation<TaskFinishedState> Execute();
+
+    /// <summary>
+    /// Executes this setup task as admin.
+    /// </summary>
+    /// <param name="elevatedComponentFactory">Helper object to create the needed objects on the elevated process.</param>
+    /// <returns>
+    /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
+    /// </returns>
+    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory);
 
     /// <summary>
     /// Gets the object used to display all messages in the loading screen.

@@ -24,13 +24,16 @@ public partial class WidgetViewModel : ObservableObject
     private Widget _widget;
 
     [ObservableProperty]
+    private WidgetDefinition _widgetDefinition;
+
+    [ObservableProperty]
     private WidgetSize _widgetSize;
 
     [ObservableProperty]
-    private FrameworkElement _widgetFrameworkElement;
+    private string _widgetDisplayTitle;
 
     [ObservableProperty]
-    private string _widgetDisplayName;
+    private FrameworkElement _widgetFrameworkElement;
 
     [ObservableProperty]
     private Microsoft.UI.Xaml.Media.Brush _widgetBackground;
@@ -55,6 +58,14 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
+    partial void OnWidgetDefinitionChanged(WidgetDefinition value)
+    {
+        if (WidgetDefinition != null)
+        {
+            WidgetDisplayTitle = WidgetDefinition.DisplayTitle;
+        }
+    }
+
     partial void OnWidgetFrameworkElementChanged(FrameworkElement value)
     {
         if (WidgetFrameworkElement != null && WidgetFrameworkElement is Grid grid)
@@ -66,6 +77,7 @@ public partial class WidgetViewModel : ObservableObject
     public WidgetViewModel(
         Widget widget,
         WidgetSize widgetSize,
+        WidgetDefinition widgetDefintion,
         AdaptiveCardRenderer renderer,
         Microsoft.UI.Dispatching.DispatcherQueue dispatcher)
     {
@@ -74,6 +86,7 @@ public partial class WidgetViewModel : ObservableObject
 
         Widget = widget;
         WidgetSize = widgetSize;
+        WidgetDefinition = widgetDefintion;
     }
 
     private async void RenderWidgetFrameworkElement()

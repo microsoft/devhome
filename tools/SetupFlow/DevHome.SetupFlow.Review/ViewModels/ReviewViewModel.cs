@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
+using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
@@ -62,6 +63,17 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     {
         ReviewTabs = _orchestrator.TaskGroups.Select(taskGroup => taskGroup.GetReviewTabViewModel()).ToList();
         SelectedReviewTab = ReviewTabs.FirstOrDefault();
+        await Task.CompletedTask;
+    }
+
+    protected async override Task OnFirstNavigateFromAsync()
+    {
+        var isAdminRequired = _orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresAdmin));
+        if (isAdminRequired)
+        {
+            _orchestrator.RemoteElevatedFactory = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentFactory>();
+        }
+
         await Task.CompletedTask;
     }
 

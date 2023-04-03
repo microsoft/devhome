@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
@@ -16,21 +17,15 @@ namespace DevHome.SetupFlow.DevDrive.ViewModels;
 public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
 {
     private readonly ILogger _logger;
+    private readonly IHost _host;
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly DevDriveTaskGroup _taskGroup;
-    private readonly List<IDevDrive> _devDrives;
-    private readonly string _localizedCountOfDevDrives;
-    private readonly string _numberOfItemsTitle;
 
     public DevDriveReviewViewModel(IHost host, ILogger logger, ISetupFlowStringResource stringResource, DevDriveTaskGroup taskGroup)
     {
         _logger = logger;
         _stringResource = stringResource;
-        _taskGroup = taskGroup;
-        TabTitle = stringResource.GetLocalized(StringResourceKey.Basics);
-        _devDrives = new (host.GetService<IDevDriveManager>().DevDrivesMarkedForCreation);
-        _numberOfItemsTitle = stringResource.GetLocalized(StringResourceKey.DevDriveReviewPageNumberOfDevDrivesTitle);
-        _localizedCountOfDevDrives = _stringResource.GetLocalized(StringResourceKey.DevDriveReviewPageNumberOfDevDrives, _devDrives.Count);
+        TabTitle = stringResource.GetLocalized(StringResourceKey.DevDriveReviewTitle);
+        _host = host;
     }
 
     /// <summary>
@@ -41,17 +36,17 @@ public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
     {
         get
         {
+            var manager = _host.GetService<IDevDriveManager>();
             ObservableCollection<DevDriveReviewTabItem> devDriveReviewTabItem = new ();
-            foreach (var devDrive in _devDrives)
+            if (manager.RepositoriesUsingDevDrive > 0)
             {
-                devDriveReviewTabItem.Add(new DevDriveReviewTabItem(devDrive));
+                foreach (var devDrive in manager.DevDrivesMarkedForCreation)
+                {
+                    devDriveReviewTabItem.Add(new DevDriveReviewTabItem(devDrive));
+                }
             }
 
             return devDriveReviewTabItem;
         }
     }
-
-    public string LocalizedCountOfDevices => _localizedCountOfDevDrives;
-
-    public string NumberOfItemsTitle => _numberOfItemsTitle;
 }

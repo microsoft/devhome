@@ -19,6 +19,10 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
+    <PackageReference Include="Microsoft.Management.Configuration" Version="0.0.1" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
+      <IncludeAssets>contentFiles</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

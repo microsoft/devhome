@@ -8,7 +8,7 @@ using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Helpers;
-public static class LoggingHelper
+public static class TelemetryHelper
 {
     public static void AccountStartupEvent(string eventName, string providerName, List<IDeveloperId> devIds)
     {
@@ -31,7 +31,7 @@ public static class LoggingHelper
         LoggerFactory.Get<ILogger>().Log($"{eventName}", LogLevel.Critical, new
         {
             PartA_PrivTags = PrivTags.ProductAndServiceUsage,
-            field1 = $"{telemetryMessage}",
+            developerId = $"{telemetryMessage}",
         });
     }
 
@@ -51,7 +51,7 @@ public static class LoggingHelper
         LoggerFactory.Get<ILogger>().Log($"{eventName}", LogLevel.Critical, new
         {
             PartA_PrivTags = PrivTags.ProductAndServiceUsage,
-            field1 = $" developerId: {hashedLoginIdString}_{providerName}",
+            developerId = $"{hashedLoginIdString}_{providerName}",
         });
     }
 }

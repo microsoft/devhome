@@ -37,6 +37,8 @@ public class WinGetPackage : IWinGetPackage
 
     public string CatalogId => _package.DefaultInstallVersion.PackageCatalog.Info.Id;
 
+    public string CatalogName => _package.DefaultInstallVersion.PackageCatalog.Info.Name;
+
     public PackageUniqueKey UniqueKey => _uniqueKey;
 
     public string Name => _package.Name;

@@ -8,6 +8,8 @@ using System.Windows.Input;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
+using DevHome.SetupFlow.ElevatedComponent;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 
@@ -90,22 +92,18 @@ internal class CloneRepoTask : ISetupTask
 
     private void SetMessages(IStringResource stringResource)
     {
-        var executingMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryMainText, repositoryToClone.DisplayName);
-        var finishedMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloningRepositoryFinished, cloneLocation.FullName);
-        var errorMessage = stringResource.GetLocalized(StringResourceKey.CloningRepositoryErrorText, repositoryToClone.DisplayName);
-        var needsRebootMessage = stringResource.GetLocalized(StringResourceKey.LoadingScreenCloneRepositoryNeedsRebootText, repositoryToClone.DisplayName);
+        var executingMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoCreating, repositoryToClone.DisplayName);
+        var finishedMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoCreated, cloneLocation.FullName);
+        var errorMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoError, repositoryToClone.DisplayName);
+        var needsRebootMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoRestart, repositoryToClone.DisplayName);
         _taskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsRebootMessage);
-
-        var errorSubMessage = stringResource.GetLocalized(StringResourceKey.ActionCenterCloningRepositoryErrorTextSecondary, StringResourceKey.UnknownError);
 
         var actionCenterErrorMessage = new ActionCenterMessages();
         actionCenterErrorMessage.PrimaryMessage = errorMessage;
-        actionCenterErrorMessage.SecondaryMessage = errorSubMessage;
         _actionCenterErrorMessage = actionCenterErrorMessage;
 
         _needsRebootMessage = new ActionCenterMessages();
         _needsRebootMessage.PrimaryMessage = needsRebootMessage;
-        _needsRebootMessage.SecondaryMessage = string.Empty;
     }
 
     /// <summary>
@@ -142,4 +140,6 @@ internal class CloneRepoTask : ISetupTask
             return TaskFinishedState.Success;
         }).AsAsyncOperation();
     }
+
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
 }

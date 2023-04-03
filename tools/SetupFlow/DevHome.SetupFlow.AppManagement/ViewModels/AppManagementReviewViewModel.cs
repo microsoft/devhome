@@ -14,21 +14,17 @@ public partial class AppManagementReviewViewModel : ReviewTabViewModelBase
 {
     private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly AppManagementTaskGroup _taskGroup;
     private readonly PackageProvider _packageProvider;
 
-    // TODO Use the selected packages for the review list once available.
     public ReadOnlyObservableCollection<PackageViewModel> ReviewPackages => _packageProvider.SelectedPackages;
 
     public AppManagementReviewViewModel(
         ILogger logger,
         ISetupFlowStringResource stringResource,
-        PackageProvider packageProvider,
-        AppManagementTaskGroup taskGroup)
+        PackageProvider packageProvider)
     {
         _logger = logger;
         _stringResource = stringResource;
-        _taskGroup = taskGroup;
         _packageProvider = packageProvider;
 
         TabTitle = stringResource.GetLocalized(StringResourceKey.Applications);
