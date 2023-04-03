@@ -112,7 +112,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         {
             if (item.CloneToDevDrive && item.CloningLocation != cloningInfo.CloningLocation)
             {
-                item.CloningLocation = cloningInfo.CloningLocation;
+                item.CloningLocation = new System.IO.DirectoryInfo(cloningInfo.CloningLocation.FullName);
                 item.CloneLocationAlias = cloningInfo.CloneLocationAlias;
             }
         }
