@@ -106,51 +106,74 @@ public partial class WidgetViewModel : ObservableObject
             cardData = await Widget.GetCardDataAsync();
         }
 
-        if (!string.IsNullOrEmpty(cardData))
+        if (string.IsNullOrEmpty(cardData))
         {
-            Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
-            Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
+            Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, didn't render card.");
+            ShowErrorCard("This widget could not be rendered because it has no data.");
+            return;
+        }
 
-            // Use the data to fill in the template.
+        Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
+        Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
+
+        // Use the data to fill in the template.
+        AdaptiveCardParseResult card;
+        try
+        {
             var template = new AdaptiveCardTemplate(cardTemplate);
             var json = template.Expand(cardData);
-
-            // Render card on the UI thread.
-            _dispatcher.TryEnqueue(() =>
-            {
-                try
-                {
-                    var card = AdaptiveCard.FromJsonString(json);
-                    var renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
-                    if (renderedCard != null && renderedCard.FrameworkElement != null)
-                    {
-                        renderedCard.Action += HandleAdaptiveAction;
-                        WidgetFrameworkElement = renderedCard.FrameworkElement;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card", e);
-
-                    // TODO: Create nice fallback element with localized text.
-                    WidgetFrameworkElement = new TextBlock
-                    {
-                        Text = "This widget could not be rendered",
-                    };
-                }
-            });
+            card = AdaptiveCard.FromJsonString(json);
         }
-        else
+        catch (Exception ex)
         {
-            Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, didn't render card");
+            Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data.", ex);
+            ShowErrorCard("This widget could not be rendered because the template could not be expanded with data.");
+            return;
         }
+
+        // Render card on the UI thread.
+        _dispatcher.TryEnqueue(() =>
+        {
+            try
+            {
+                var renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
+                if (renderedCard != null && renderedCard.FrameworkElement != null)
+                {
+                    renderedCard.Action += HandleAdaptiveAction;
+                    WidgetFrameworkElement = renderedCard.FrameworkElement;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card.", e);
+                WidgetFrameworkElement = GetErrorCard("This widget could not be rendered.");
+            }
+        });
+    }
+
+    private void ShowErrorCard(string message)
+    {
+        _dispatcher.TryEnqueue(() =>
+        {
+            // TODO: Create nice fallback element with localized text.
+            WidgetFrameworkElement = GetErrorCard(message);
+        });
+    }
+
+    private FrameworkElement GetErrorCard(string message)
+    {
+        return new TextBlock
+        {
+            Text = message,
+        };
     }
 
     private async void HandleAdaptiveAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
     {
+        Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction {nameof(args.Action)} for widget {Widget.Id}");
         if (args.Action is AdaptiveOpenUrlAction openUrlAction)
         {
-            Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction for widget {Widget.Id}. OpenUrl = {openUrlAction.Url}");
+            Log.Logger()?.ReportInfo("WidgetViewModel", $"Url = {openUrlAction.Url}");
             await Launcher.LaunchUriAsync(openUrlAction.Url);
         }
         else if (args.Action is AdaptiveExecuteAction executeAction)
@@ -170,9 +193,7 @@ public partial class WidgetViewModel : ObservableObject
                 }
             }
 
-            Log.Logger()?.ReportInfo(
-                "WidgetViewModel",
-                $"HandleInvokedAction for widget {Widget.Id}. Excecute action = {executeAction.Verb}, Data = {dataToSend}");
+            Log.Logger()?.ReportInfo("WidgetViewModel", $"Verb = {executeAction.Verb}, Data = {dataToSend}");
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
         }
 

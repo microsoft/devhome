@@ -26,39 +26,68 @@ public partial class DashboardView : ToolPage
 
     public static ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
 
-    private WidgetHost _widgetHost;
-    private WidgetCatalog _widgetCatalog;
-    private AdaptiveCardRenderer _renderer;
-    private Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private static WidgetHost _widgetHost;
+    private static WidgetCatalog _widgetCatalog;
+    private static AdaptiveCardRenderer _renderer;
+    private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+
+    private static bool _widgetHostInitialized;
 
     public DashboardView()
     {
         ViewModel = new DashboardViewModel();
         this.InitializeComponent();
-        InitializeWidgetHost();
 
-        PinnedWidgets = new ObservableCollection<WidgetViewModel>();
-        PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
+        // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
+        if (!_widgetHostInitialized)
+        {
+            _widgetHostInitialized = InitializeWidgetHost();
+        }
+        else
+        {
+            PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChanged;
+        }
 
-        ActualThemeChanged += OnActualThemeChanged;
-        Loaded += RestorePinnedWidgets;
+        if (_widgetHostInitialized)
+        {
+            PinnedWidgets = new ObservableCollection<WidgetViewModel>();
+            PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
+
+            ActualThemeChanged += OnActualThemeChanged;
+            Loaded += RestorePinnedWidgets;
+        }
+        else
+        {
+            // TODO: show error
+        }
+
 #if DEBUG
         Loaded += AddResetButton;
 #endif
     }
 
-    private void InitializeWidgetHost()
+    private bool InitializeWidgetHost()
     {
         Log.Logger()?.ReportInfo("DashboardView", "Register with WidgetHost");
 
-        // The GUID is this app's Host GUID that Widget Platform will use to identify this host.
-        _widgetHost = WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031"));
-        _widgetCatalog = WidgetCatalog.GetDefault();
-        _renderer = new AdaptiveCardRenderer();
-        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        try
+        {
+            // The GUID is this app's Host GUID that Widget Platform will use to identify this host.
+            _widgetHost = WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031"));
+            _widgetCatalog = WidgetCatalog.GetDefault();
+            _renderer = new AdaptiveCardRenderer();
+            _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
-        _widgetCatalog.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
-        _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+            _widgetCatalog.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
+            _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError("DashboardView", "Error in InitializeWidgetHost", ex);
+            return false;
+        }
+
+        return true;
     }
 
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
@@ -77,9 +106,9 @@ public partial class DashboardView : ToolPage
             var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
             hostConfigContents = await FileIO.ReadTextAsync(file);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Log.Logger()?.ReportError("DashboardView", "Error retrieving HostConfig", e);
+            Log.Logger()?.ReportError("DashboardView", "Error retrieving HostConfig", ex);
         }
 
         _dispatcher.TryEnqueue(() =>
@@ -120,6 +149,10 @@ public partial class DashboardView : ToolPage
                     Log.Logger()?.ReportError("DashboardView", $"RestorePinnedWidgets(): widget.GetSizeAsync() failed", ex);
                 }
             }
+        }
+        else
+        {
+            Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
         }
     }
 
@@ -252,6 +285,7 @@ public partial class DashboardView : ToolPage
             if (widgetViewModel.IsInEditMode == true)
             {
                 // If the WidgetControl has marked this widget as in edit mode, bring up the edit widget dialog.
+                Log.Logger()?.ReportInfo("DashboardView", $"EditWidget {widgetViewModel.Widget.Id}");
                 await EditWidget(widgetViewModel);
             }
         }

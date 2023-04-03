@@ -121,14 +121,14 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         // Load selected widget configuration.
         var selectedTag = (sender.SelectedItem as NavigationViewItem).Tag;
-        if (selectedTag == null)
+        if (selectedTag is null)
         {
+            Log.Logger()?.ReportError("AddWidgetDialog", $"Selected widget description did not have a tag");
             return;
         }
 
         // If the user has selected a widget, show configuration UI. If they selected a provider, leave space blank.
-        var selectedWidgetDefinition = selectedTag as WidgetDefinition;
-        if (selectedWidgetDefinition != null)
+        if (selectedTag as WidgetDefinition is WidgetDefinition selectedWidgetDefinition)
         {
             var size = WidgetHelpers.GetLargetstCapabilitySize(selectedWidgetDefinition.GetWidgetCapabilities());
 
@@ -143,16 +143,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
             clearWidgetTask.Wait();
             _currentWidget = widget;
         }
-        else
+        else if (selectedTag as WidgetProviderDefinition is not null)
         {
-            var selectedWidgetProviderDefintion = selectedTag as WidgetProviderDefinition;
-            if (selectedWidgetProviderDefintion != null)
-            {
-                // Null out the view model background so we don't bind to the old one
-                ViewModel.WidgetBackground = null;
-                ConfigurationContentFrame.Content = null;
-                PinButton.Visibility = Visibility.Collapsed;
-            }
+            // Null out the view model background so we don't bind to the old one
+            ViewModel.WidgetBackground = null;
+            ConfigurationContentFrame.Content = null;
+            PinButton.Visibility = Visibility.Collapsed;
         }
     }
 
