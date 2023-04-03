@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
 
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
@@ -70,12 +71,13 @@ public partial class PackageCatalogListViewModel : ObservableObject
     {
         try
         {
+            Log.Logger.ReportInfo(nameof(PackageCatalogListViewModel), $"Initializing package list from data source {dataSource.GetType().Name}");
             await dataSource.InitializeAsync();
         }
         catch (Exception)
         {
-            //// _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while initializing data source of type {dataSource.GetType().Name}");
-            //// _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Local, e.Message);
+            Log.Logger.ReportError(nameof(PackageCatalogListViewModel), $"Exception thrown while initializing data source of type {dataSource.GetType().Name}");
+            Log.Logger.ReportError(nameof(PackageCatalogListViewModel), e.Message);
         }
         finally
         {
@@ -92,6 +94,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
         if (dataSource.CatalogCount > 0)
         {
             // Load catalogs on a separate thread to avoid lagging the UI
+            Log.Logger.ReportInfo(nameof(PackageCatalogListViewModel), $"Loading winget packages from data source {dataSource.GetType().Name}");
             var catalogs = await Task.Run(async () => await dataSource.LoadCatalogsAsync());
             RemoveShimmers(dataSource.CatalogCount);
             foreach (var catalog in catalogs)

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
 
@@ -91,6 +92,7 @@ public partial class SearchViewModel : ObservableObject
         try
         {
             // Run the search on a separate (non-UI) thread to prevent lagging the UI.
+            Log.Logger?.ReportInfo(nameof(SearchViewModel), $"Running package search for query [{text}]");
             var matches = await Task.Run(async () => await _wpm.AllCatalogs.SearchAsync(text, SearchResultLimit), cancellationToken);
 
             // Don't update the UI if the operation was canceled
@@ -110,7 +112,7 @@ public partial class SearchViewModel : ObservableObject
         }
         catch (Exception)
         {
-            //// _logger.LogError(nameof(SearchViewModel), LogLevel.Info, $"Search error: {e.Message}");
+            Log.Logger.ReportError(nameof(SearchViewModel), $"Search error: {e.Message}");
             return (SearchResultStatus.ExceptionThrown, null);
         }
     }

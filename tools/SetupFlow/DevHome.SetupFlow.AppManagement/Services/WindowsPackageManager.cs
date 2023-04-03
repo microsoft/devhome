@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.Helpers;
+using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.AppManagement.Services;
@@ -48,6 +50,8 @@ public class WindowsPackageManager : IWindowsPackageManager
 
     public async Task ConnectToAllCatalogsAsync()
     {
+        Log.Logger?.ReportInfo(nameof(WindowsPackageManager), "Connecting to all catalogs");
+
         // Connect composite catalog for all local and remote catalogs to
         // enable searching for pacakges from any source
         await AllCatalogs.ConnectAsync();
@@ -62,7 +66,14 @@ public class WindowsPackageManager : IWindowsPackageManager
         var packageManager = _wingetFactory.CreatePackageManager();
         var options = _wingetFactory.CreateInstallOptions();
         options.PackageInstallMode = PackageInstallMode.Silent;
+
+        Log.Logger?.ReportInfo(nameof(WindowsPackageManager), $"Starting package install for {package.Id}");
         var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options).AsTask();
+
+        Log.Logger?.ReportInfo(
+            nameof(WindowsPackageManager),
+            $"Install result: Status={installResult.Status}, InstallerErrorCode={installResult.InstallerErrorCode}, RebootRequired={installResult.RebootRequired}");
+
         if (installResult.Status != InstallResultStatus.Ok)
         {
             throw new InstallPackageException(installResult.Status, installResult.InstallerErrorCode);

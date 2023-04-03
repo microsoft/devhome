@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Models;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
@@ -50,7 +51,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         }
         else
         {
-            //// _logger.Log(nameof(WinGetPackageRestoreDataSource), LogLevel.Local, $"Restore data source skipped with status: {restoreDeviceInfoResult.Status}");
+            Log.Logger?.ReportWarn(nameof(WinGetPackageRestoreDataSource), $"Restore data source skipped with status: {restoreDeviceInfoResult.Status}");
         }
     }
 
@@ -59,17 +60,19 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         var result = new List<PackageCatalog>();
         if (_restoreDeviceInfo == null)
         {
-            //// _logger.Log(nameof(WinGetPackageRestoreDataSource), LogLevel.Local, $"Load catalogs skipped because no restore device information was found");
+            Log.Logger?.ReportWarn(nameof(WinGetPackageRestoreDataSource), $"Load catalogs skipped because no restore device information was found");
             return result;
         }
 
         try
         {
+            Log.Logger?.ReportInfo(nameof(WinGetPackageRestoreDataSource), "Finding packages from restore data");
             var packages = await GetPackagesAsync(
                 _restoreDeviceInfo.WinGetApplicationsInfo,
                 appInfo => appInfo.Id,
                 async (package, appInfo) =>
             {
+                Log.Logger?.ReportInfo(nameof(WinGetPackageRestoreDataSource), $"Obtaining icon information for package {package.Id}");
                 package.LightThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Light);
                 package.DarkThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Dark);
             });
@@ -83,10 +86,14 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
                     Packages = packages.ToReadOnlyCollection(),
                 });
             }
+            else
+            {
+                Log.Logger?.ReportInfo(nameof(WinGetPackageRestoreDataSource), "No packages found from restore");
+            }
         }
         catch (Exception)
         {
-            //// _logger.LogError(nameof(WinGetPackageRestoreDataSource), LogLevel.Info, $"Error loading packages from winget catalog: {e.Message}");
+            Log.Logger?.ReportError(nameof(WinGetPackageRestoreDataSource), $"Error loading packages from winget restore catalog: {e.Message}");
         }
 
         return result;
