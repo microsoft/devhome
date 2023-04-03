@@ -1,21 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Collections.ObjectModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
-using DevHome.Contracts.Services;
 using DevHome.Helpers;
-using DevHome.Services;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Xaml.Media;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Windows.System;
 
 namespace DevHome.Views;

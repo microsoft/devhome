@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using DevHome.SetupFlow.Common.ViewModels;
-using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.Common.Models;
 

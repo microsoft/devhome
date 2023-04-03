@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.Logging;
-
 namespace DevHome.Logging.Listeners;
 
 public abstract class ListenerBase : IListener

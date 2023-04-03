@@ -5,7 +5,6 @@ using System;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
 using Microsoft.UI.Xaml;

@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using DevHome.Logging;
-using Microsoft.Extensions.Logging;
 using Windows.Storage;
 
 #nullable enable

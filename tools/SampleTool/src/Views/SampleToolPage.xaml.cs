@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
 using DevHome.Common;
 using DevHome.Telemetry;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Tools.SampleTool.ViewModels;
 
 namespace Tools.SampleTool.Views;

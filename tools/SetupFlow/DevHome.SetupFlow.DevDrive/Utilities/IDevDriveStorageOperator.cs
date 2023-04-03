@@ -1,13 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using DevHome.Common.Models;
-using Windows.Foundation;
-using Windows.Win32;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.DevDrive.Utilities;
