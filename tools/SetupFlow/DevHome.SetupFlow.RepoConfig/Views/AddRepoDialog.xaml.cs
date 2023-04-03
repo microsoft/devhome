@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
@@ -108,6 +109,12 @@ internal partial class AddRepoDialog
         AddRepoViewModel.ChangeToRepoPage();
         FolderPickerViewModel.ShowFolderPicker();
         EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+
+        if (AddRepoViewModel.Accounts.Any())
+        {
+            AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+        }
+
         ToggleCloneButton();
     }
 

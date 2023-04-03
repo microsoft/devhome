@@ -29,9 +29,10 @@ public class InstallPackageTask : ISetupTask
 
     public bool RequiresAdmin => _requiresElevation.Value;
 
-    // As we don't have this information available for each package in the WinGet COM API,
-    // simply assume that any package installation may need a reboot.
-    public bool RequiresReboot => true;
+    // As we don't have this information available for each package before
+    // installation in the WinGet COM API, simply assume that any package
+    // installation may need a reboot by default.
+    public bool RequiresReboot { get; set; } = true;
 
     public bool DependsOnDevDriveToBeInstalled
     {
@@ -58,9 +59,25 @@ public class InstallPackageTask : ISetupTask
         return new TaskMessages
         {
             Executing = _stringResource.GetLocalized(StringResourceKey.InstallingPackage, _package.Name),
+            Error = _stringResource.GetLocalized(StringResourceKey.InstallPackageError, _package.Name),
             Finished = _stringResource.GetLocalized(StringResourceKey.InstalledPackage, _package.Name),
-            Error = _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorWithReason, _package.Name, GetErrorReason()),
-            NeedsReboot = _stringResource.GetLocalized(StringResourceKey.NeedsRebootMessage, _package.Name),
+            NeedsReboot = _stringResource.GetLocalized(StringResourceKey.InstalledPackageReboot, _package.Name),
+        };
+    }
+
+    public ActionCenterMessages GetErrorMessages()
+    {
+        return new ()
+        {
+            PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.InstallPackageError, _package.Name),
+        };
+    }
+
+    public ActionCenterMessages GetRebootMessage()
+    {
+        return new ()
+        {
+            PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.InstalledPackageReboot, _package.Name),
         };
     }
 
@@ -70,7 +87,8 @@ public class InstallPackageTask : ISetupTask
         {
             try
             {
-                await _wpm.InstallPackageAsync(_package);
+                var installResult = await _wpm.InstallPackageAsync(_package);
+                RequiresReboot = installResult.RebootRequired;
                 return TaskFinishedState.Success;
             }
             catch (InstallPackageException e)
@@ -84,6 +102,16 @@ public class InstallPackageTask : ISetupTask
                 _logger.LogError(nameof(InstallPackageTask), LogLevel.Local, $"Exception thrown while installing package: {e.Message}");
                 return TaskFinishedState.Failure;
             }
+        }).AsAsyncOperation();
+    }
+
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
+    {
+        return Task.Run(async () =>
+        {
+            var packageInstaller = elevatedComponentFactory.CreatePackageInstaller();
+            var installResult = await packageInstaller.InstallPackage(_package.Id, _package.CatalogName);
+            return installResult.InstallSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }
 
@@ -111,10 +139,4 @@ public class InstallPackageTask : ISetupTask
         options.PackageInstallScope = PackageInstallScope.User;
         return _package.RequiresElevation(options);
     }
-
-    public ActionCenterMessages GetErrorMessages() => throw new NotImplementedException();
-
-    public ActionCenterMessages GetRebootMessage() => throw new NotImplementedException();
-
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
 }

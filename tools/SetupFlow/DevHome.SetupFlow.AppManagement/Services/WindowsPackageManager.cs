@@ -3,12 +3,10 @@
 
 using System;
 using System.Threading.Tasks;
-using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.Telemetry;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.AppManagement.Services;
@@ -62,7 +60,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         await WinGetCatalog.ConnectAsync();
     }
 
-    public async Task InstallPackageAsync(WinGetPackage package)
+    public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package)
     {
         var packageManager = _wingetFactory.CreatePackageManager();
         var options = _wingetFactory.CreateInstallOptions();
@@ -72,6 +70,11 @@ public class WindowsPackageManager : IWindowsPackageManager
         {
             throw new InstallPackageException(installResult.Status, installResult.InstallerErrorCode);
         }
+
+        return new ()
+        {
+            RebootRequired = installResult.RebootRequired,
+        };
     }
 
     /// <summary>

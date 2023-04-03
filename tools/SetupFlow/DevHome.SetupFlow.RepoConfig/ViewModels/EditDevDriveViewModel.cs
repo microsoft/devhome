@@ -96,7 +96,7 @@ public partial class EditDevDriveViewModel : ObservableObject
         // DevDrive SetToDefaults
         ShowCustomizeOption = Visibility.Visible;
         var (result, devDrive) = _devDriveManager.GetNewDevDrive();
-        if (result == DevDriveOperationResult.Successful)
+        if (result == DevDriveValidationResult.Successful)
         {
             DevDrive = devDrive;
             return true;
@@ -122,7 +122,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     public void RemoveNewDevDrive()
     {
         _devDriveManager.RequestToCloseDevDriveWindow(DevDrive);
-        _devDriveManager.RemoveDevDrive(DevDrive);
+        DevDrive = null;
         ShowCustomizeOption = Visibility.Collapsed;
     }
 

@@ -48,7 +48,7 @@
                 <ColumnDefinition Width="350"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <CheckBox Click="MakeNewDevDriveComboBox_Click" IsEnabled="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NewDevDriveComboBox"/>
+            <CheckBox x:Name="DevDriveCheckBox" Click="MakeNewDevDriveComboBox_Click" IsEnabled="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NewDevDriveComboBox"/>
             <HyperlinkButton Content="Customize" Grid.Column="1" Visibility="{x:Bind EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" Click="CustomizeDevDriveHyperlinkButton_Click"/>
         </Grid>
     </StackPanel>

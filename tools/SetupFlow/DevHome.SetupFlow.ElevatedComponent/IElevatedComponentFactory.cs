@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.SetupFlow.ElevatedComponent.AppManagement;
+
 namespace DevHome.SetupFlow.ElevatedComponent;
 
 /// <summary>
@@ -26,4 +28,9 @@ public interface IElevatedComponentFactory
     /// This is intended for tests only.
     /// </remarks>
     public void WriteToStdOut(string value);
+
+    /// <summary>
+    /// Creates an object that can be used to install packages from an elevated context.
+    /// </summary>
+    public PackageInstaller CreatePackageInstaller();
 }

@@ -182,7 +182,7 @@ public static class IPCSetup
             {
                 FileName = serverPath,
                 Arguments = serverArgs,
-                CreateNoWindow = true,
+                //// CreateNoWindow = true,
                 UseShellExecute = true,
                 Verb = "runas",
             };

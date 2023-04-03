@@ -15,12 +15,4 @@ public class ActionCenterMessages
     {
         get; set;
     }
-
-    /// <summary>
-    /// Gets or sets the seconday message to show to the user.
-    /// </summary>
-    public string SecondaryMessage
-    {
-        get; set;
-    }
 }

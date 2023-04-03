@@ -21,7 +21,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     private readonly ShimmerSearchViewModel _shimmerSearchViewModel;
     private readonly SearchViewModel _searchViewModel;
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
-    private readonly AppManagementTaskGroup _taskGroup;
     private readonly IWindowsPackageManager _wpm;
     private readonly PackageProvider _packageProvider;
 
@@ -44,12 +43,10 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         SetupFlowOrchestrator orchestrator,
         IHost host,
         IWindowsPackageManager wpm,
-        PackageProvider packageProvider,
-        AppManagementTaskGroup taskGroup)
+        PackageProvider packageProvider)
         : base(stringResource, orchestrator)
     {
         _logger = logger;
-        _taskGroup = taskGroup;
         _wpm = wpm;
         _packageProvider = packageProvider;
         _searchViewModel = host.GetService<SearchViewModel>();

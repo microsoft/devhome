@@ -2,7 +2,9 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using DevHome.Common.Models;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
@@ -11,22 +13,42 @@ namespace DevHome.SetupFlow.DevDrive.Models;
 
 internal class CreateDevDriveTask : ISetupTask
 {
-    public bool RequiresAdmin => throw new NotImplementedException();
+    private readonly TaskMessages _taskMessages;
+    private readonly ActionCenterMessages _actionCenterMessages = new ();
+
+    public bool RequiresAdmin => true;
 
     public bool RequiresReboot => false;
 
-    public bool DependsOnDevDriveToBeInstalled
+    public bool DependsOnDevDriveToBeInstalled => false;
+
+    public IDevDrive DevDrive
     {
         get; set;
     }
 
-    public ActionCenterMessages GetErrorMessages() => throw new NotImplementedException();
+    public CreateDevDriveTask(IDevDrive devDrive)
+    {
+        DevDrive = devDrive;
+        _taskMessages = new TaskMessages();
+    }
 
-    public TaskMessages GetLoadingMessages() => throw new NotImplementedException();
+    public ActionCenterMessages GetErrorMessages() => new ();
 
-    public ActionCenterMessages GetRebootMessage() => throw new NotImplementedException();
+    public TaskMessages GetLoadingMessages() => _taskMessages;
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.Execute() => throw new NotImplementedException();
+    public ActionCenterMessages GetRebootMessage() => new ();
+
+    /// <summary>
+    /// Not used, as Dev Drive creation requires elevation
+    /// </summary>
+    IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
+    {
+        return Task.Run(() =>
+        {
+            return TaskFinishedState.Failure;
+        }).AsAsyncOperation();
+    }
 
     IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
 }
