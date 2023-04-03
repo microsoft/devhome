@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
@@ -65,7 +66,18 @@ public class DevDriveTaskGroup : ISetupTaskGroup
 
     private readonly IList<CreateDevDriveTask> _devDriveTasks = new List<CreateDevDriveTask>();
 
-    public IEnumerable<ISetupTask> SetupTasks => _devDriveTasks;
+    public IEnumerable<ISetupTask> SetupTasks
+    {
+        get
+        {
+            if (_host.GetService<IDevDriveManager>().RepositoriesUsingDevDrive <= 0)
+            {
+                return new List<ISetupTask>();
+            }
+
+            return _devDriveTasks;
+        }
+    }
 
     public SetupPageViewModelBase GetSetupPageViewModel() => null;
 
