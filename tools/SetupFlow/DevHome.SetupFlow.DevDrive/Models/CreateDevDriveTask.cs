@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using DevHome.Common.Models;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.ElevatedComponent;

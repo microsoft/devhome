@@ -1,20 +1,12 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-using System;
-using System.IO;
-using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
-using DevHome.Common.Services;
-using DevHome.Common.Views;
 
 using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.SetupFlow.DevDrive.Views;
-using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.DevDrive.Windows;

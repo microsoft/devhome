@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using CommunityToolkit.Common;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
-using Windows.Win32;
-using Windows.Win32.UI.Shell;
 
 namespace DevHome.SetupFlow.DevDrive.ViewModels;
 

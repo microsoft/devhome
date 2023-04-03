@@ -3,7 +3,6 @@
 
 using System;
 using DevHome.Common.Extensions;
-using DevHome.Common.Models;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
