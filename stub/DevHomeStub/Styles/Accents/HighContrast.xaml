@@ -1,0 +1,96 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="TextBrush" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+    <SolidColorBrush x:Key="HyperlinkBrush" Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+    <SolidColorBrush x:Key="DisabledTextBrush" Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}" />
+
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+    <SolidColorBrush x:Key="WindowBackgroundBrush.Dark" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+    <SolidColorBrush x:Key="WindowBorderBrush" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+    <SolidColorBrush x:Key="WindowTitleBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+    <SolidColorBrush x:Key="WindowTitleBorderBrush" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+    <SolidColorBrush x:Key="WindowTitleTextBrush" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+    <SolidColorBrush x:Key="WindowCloseButton.HoverBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="WindowCloseButton.HoverForegroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}" />
+    <SolidColorBrush x:Key="DialogTitleBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+    <SolidColorBrush x:Key="DialogTitleTextBrush" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+    <SolidColorBrush x:Key="WindowOverlayBrush" Color="Transparent" />
+
+    <!--#region Button-->
+
+    <SolidColorBrush x:Key="Button.BackgroundBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+    <SolidColorBrush x:Key="Button.BorderBrush" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+    <SolidColorBrush x:Key="Button.ForegroundBrush" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+    <SolidColorBrush x:Key="Button.ActiveForegroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}" />
+    <SolidColorBrush x:Key="Button.HoverBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.HoverBorderBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.CheckedBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.CheckedBorderBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.PressedBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.PressedBorderBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.HoverPressedBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.HoverPressedBorderBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.DisabledBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+    <SolidColorBrush x:Key="Button.DisabledBorderBrush" Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}" />
+    <SolidColorBrush x:Key="Button.FocusBorderBrush" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+
+    <!--#endregion-->
+
+    <!--#region Button Dark-->
+
+    <SolidColorBrush x:Key="Button.BackgroundBrush.Dark" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+    <SolidColorBrush x:Key="Button.BorderBrush.Dark" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+    <SolidColorBrush x:Key="Button.HoverBackgroundBrush.Dark" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.HoverBorderBrush.Dark" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.CheckedBackgroundBrush.Dark" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.CheckedBorderBrush.Dark" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.PressedBackgroundBrush.Dark" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.PressedBorderBrush.Dark" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.HoverPressedBackgroundBrush.Dark" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.HoverPressedBorderBrush.Dark" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="Button.DisabledBackgroundBrush.Dark" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+    <SolidColorBrush x:Key="Button.DisabledBorderBrush.Dark" Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}" />
+    <SolidColorBrush x:Key="Button.FocusBorderBrush.Dark" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+
+    <!--#endregion-->
+
+    <!--#region Primary Button-->
+
+    <SolidColorBrush x:Key="PrimaryButton.BackgroundBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+    <SolidColorBrush x:Key="PrimaryButton.BorderBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="PrimaryButton.ForegroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="PrimaryButton.ActiveForegroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}" />
+    <SolidColorBrush x:Key="PrimaryButton.HoverBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="PrimaryButton.HoverBorderBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="PrimaryButton.PressedBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="PrimaryButton.PressedBorderBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="PrimaryButton.DisabledBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+    <SolidColorBrush x:Key="PrimaryButton.DisabledBorderBrush" Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}" />
+    <SolidColorBrush x:Key="PrimaryButton.FocusBorderBrush" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+
+    <!--#endregion-->
+
+    <!--#region SuiteHeader Button-->
+
+    <SolidColorBrush x:Key="SuiteHeaderButton.BackgroundBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+    <SolidColorBrush x:Key="SuiteHeaderButton.ForegroundBrush" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+    <SolidColorBrush x:Key="SuiteHeaderButton.BorderBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+    <SolidColorBrush x:Key="SuiteHeaderButton.ActiveForegroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}" />
+    <SolidColorBrush x:Key="SuiteHeaderButton.HoverBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="SuiteHeaderButton.PressedBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="SuiteHeaderButton.DisabledBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+    <SolidColorBrush x:Key="SuiteHeaderButton.FocusBorderBrush" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+
+    <!--#endregion-->
+
+
+    <!--#region ProgressBar-->
+
+    <SolidColorBrush x:Key="MetroProgressBar.Foreground" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="MetroProgressBar.Background" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+
+    <!--#endregion-->
+
+</ResourceDictionary>

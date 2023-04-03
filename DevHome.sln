@@ -73,9 +73,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.SetupFlow.Configura
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stub", "Stub", "{29388FDE-BD4E-48FA-9BDC-ADBA287C917B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerAutomateDesktopStub", "stub\PowerAutomateDesktopStub\PowerAutomateDesktopStub.csproj", "{11F7B61B-4AFA-47E4-88E7-291E7577558E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevHomeStub", "stub\DevHomeStub\DevHomeStub.csproj", "{11F7B61B-4AFA-47E4-88E7-291E7577558E}"
 EndProject
-Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "PowerAutomateDesktopStubPackage", "stub\PowerAutomateDesktopStubPackage\PowerAutomateDesktopStubPackage.wapproj", "{5411E4A5-0BFE-456D-B20C-6F6D71F18A4F}"
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "DevHomeStubPackage", "stub\DevHomeStubPackage\DevHomeStubPackage.wapproj", "{5411E4A5-0BFE-456D-B20C-6F6D71F18A4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
