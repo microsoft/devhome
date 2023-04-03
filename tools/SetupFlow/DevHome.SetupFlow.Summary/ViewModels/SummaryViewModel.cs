@@ -64,14 +64,14 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         get
         {
             var packagesInstalled = new ObservableCollection<PackageViewModel>();
-            var packages = _host.GetService<PackageProvider>()
-                .SelectedPackages
-                .Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true);
+            var packageProvider = _host.GetService<PackageProvider>();
+            var packages = packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true);
             foreach (var package in packages)
             {
                 packagesInstalled.Add(package);
             }
 
+            packageProvider.Clear();
             return packagesInstalled;
         }
     }
