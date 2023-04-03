@@ -92,10 +92,10 @@ public class CloneRepoTask : ISetupTask
 
     private void SetMessages(IStringResource stringResource)
     {
-        var executingMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoCreating, repositoryToClone.DisplayName);
+        var executingMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoCreating, RepositoryToClone.DisplayName);
         var finishedMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoCreated, cloneLocation.FullName);
-        var errorMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoError, repositoryToClone.DisplayName);
-        var needsRebootMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoRestart, repositoryToClone.DisplayName);
+        var errorMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoError, RepositoryToClone.DisplayName);
+        var needsRebootMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoRestart, RepositoryToClone.DisplayName);
         _taskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsRebootMessage);
 
         var actionCenterErrorMessage = new ActionCenterMessages();
