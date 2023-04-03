@@ -28,7 +28,6 @@ namespace DevHome.SetupFlow.DevDrive.Services;
 /// </summary>
 public class DevDriveManager : IDevDriveManager
 {
-    private readonly ILogger _logger;
     private readonly IHost _host;
     private readonly IDevDriveStorageOperator _devDriveStorageOperator = new DevDriveStorageOperator();
     private readonly string _defaultVhdxLocation;
@@ -84,10 +83,9 @@ public class DevDriveManager : IDevDriveManager
     /// </summary>
     public event EventHandler<IDevDrive> RequestToCloseViewModelWindow = (sender, e) => { };
 
-    public DevDriveManager(IHost host, ILogger logger, ISetupFlowStringResource stringResource)
+    public DevDriveManager(IHost host, ISetupFlowStringResource stringResource)
     {
         _host = host;
-        _logger = logger;
         _stringResource = stringResource;
         _defaultVhdxLocation = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFolderName);
         _defaultVhdxName = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFileName);
@@ -207,11 +205,11 @@ public class DevDriveManager : IDevDriveManager
 
             return DevDriveValidationResult.Successful;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // we don't need to keep the exception/crash, we need to tell the user we couldn't find the appdata
             // folder.
-            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed Get default folder for Dev Drive. {ex.Message}");
+            //// _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed Get default folder for Dev Drive. {ex.Message}");
             return DevDriveValidationResult.DefaultFolderNotAvailable;
         }
     }

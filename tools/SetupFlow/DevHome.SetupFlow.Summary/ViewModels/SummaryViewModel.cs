@@ -15,7 +15,6 @@ namespace DevHome.SetupFlow.Summary.ViewModels;
 
 public partial class SummaryViewModel : SetupPageViewModelBase
 {
-    private readonly ILogger _logger;
     private readonly SetupFlowOrchestrator _orchestrator;
 
     [ObservableProperty]
@@ -41,11 +40,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     public SummaryViewModel(
         ISetupFlowStringResource stringResource,
-        SetupFlowOrchestrator orchestrator,
-        ILogger logger)
+        SetupFlowOrchestrator orchestrator)
         : base(stringResource, orchestrator)
     {
-        _logger = logger;
         _orchestrator = orchestrator;
 
         IsNavigationBarVisible = false;

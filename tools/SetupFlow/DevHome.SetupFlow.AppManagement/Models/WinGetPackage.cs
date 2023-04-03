@@ -3,11 +3,9 @@
 
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.SetupFlow.Common.Services;
-using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 using Windows.Storage.Streams;
 
@@ -62,10 +60,9 @@ public class WinGetPackage : IWinGetPackage
     public Uri PublisherUrl => _publisherUrl.Value;
 
     public InstallPackageTask CreateInstallTask(
-        ILogger logger,
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory) => new (logger, wpm, stringResource, wingetFactory, this);
+        WindowsPackageManagerFactory wingetFactory) => new (wpm, stringResource, wingetFactory, this);
 
     /// <summary>
     /// Check if the package requires elevation

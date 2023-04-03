@@ -17,7 +17,6 @@ namespace DevHome.SetupFlow.AppManagement.ViewModels;
 
 public partial class AppManagementViewModel : SetupPageViewModelBase
 {
-    private readonly ILogger _logger;
     private readonly ShimmerSearchViewModel _shimmerSearchViewModel;
     private readonly SearchViewModel _searchViewModel;
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
@@ -38,7 +37,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     public string ApplicationsSelectedCountText => StringResource.GetLocalized(StringResourceKey.ApplicationsSelectedCount, SelectedPackages.Count);
 
     public AppManagementViewModel(
-        ILogger logger,
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         IHost host,
@@ -46,7 +44,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         PackageProvider packageProvider)
         : base(stringResource, orchestrator)
     {
-        _logger = logger;
+        _taskGroup = taskGroup;
         _wpm = wpm;
         _packageProvider = packageProvider;
         _searchViewModel = host.GetService<SearchViewModel>();
@@ -88,7 +86,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
                 break;
             case SearchViewModel.SearchResultStatus.CatalogNotConnect:
             case SearchViewModel.SearchResultStatus.ExceptionThrown:
-                _logger.LogError(nameof(AppManagementViewModel), LogLevel.Local, $"Search failed with status: {searchResultStatus}");
+                //// _logger.LogError(nameof(AppManagementViewModel), LogLevel.Local, $"Search failed with status: {searchResultStatus}");
                 CurrentView = _packageCatalogListViewModel;
                 break;
             case SearchViewModel.SearchResultStatus.Canceled:

@@ -9,20 +9,16 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.DevDrive.ViewModels;
 
 public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
 {
-    private readonly ILogger _logger;
-    private readonly IHost _host;
     private readonly ISetupFlowStringResource _stringResource;
 
-    public DevDriveReviewViewModel(IHost host, ILogger logger, ISetupFlowStringResource stringResource, DevDriveTaskGroup taskGroup)
+    public DevDriveReviewViewModel(ISetupFlowStringResource stringResource, DevDriveTaskGroup taskGroup)
     {
-        _logger = logger;
         _stringResource = stringResource;
         TabTitle = stringResource.GetLocalized(StringResourceKey.DevDriveReviewTitle);
         _host = host;

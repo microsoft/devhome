@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
-using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.AppManagement.Services;
@@ -16,7 +15,6 @@ namespace DevHome.SetupFlow.AppManagement.Services;
 /// </summary>
 public class WindowsPackageManager : IWindowsPackageManager
 {
-    private readonly ILogger _logger;
     private readonly WindowsPackageManagerFactory _wingetFactory;
 
     // Custom composite catalogs
@@ -27,9 +25,8 @@ public class WindowsPackageManager : IWindowsPackageManager
     private readonly Lazy<string> _wingetCatalogId;
     private readonly Lazy<string> _msStoreCatalogId;
 
-    public WindowsPackageManager(ILogger logger, WindowsPackageManagerFactory wingetFactory)
+    public WindowsPackageManager(WindowsPackageManagerFactory wingetFactory)
     {
-        _logger = logger;
         _wingetFactory = wingetFactory;
 
         // Lazy-initialize custom composite catalogs
@@ -96,7 +93,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// <returns>Catalog composed of all remote and local catalogs</returns>
     private WinGetCompositeCatalog CreateAllCatalogs()
     {
-        var compositeCatalog = new WinGetCompositeCatalog(_logger, _wingetFactory);
+        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory);
         compositeCatalog.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalogs = packageManager.GetPackageCatalogs();
@@ -129,7 +126,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// <returns>Catalog composed of the provided and local catalogs</returns>
     private WinGetCompositeCatalog CreatePredefinedCatalog(PredefinedPackageCatalog predefinedPackageCatalog)
     {
-        var compositeCatalog = new WinGetCompositeCatalog(_logger, _wingetFactory);
+        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory);
         compositeCatalog.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalog = packageManager.GetPredefinedPackageCatalog(predefinedPackageCatalog);

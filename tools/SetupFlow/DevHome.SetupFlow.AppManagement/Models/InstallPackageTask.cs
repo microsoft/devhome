@@ -18,7 +18,6 @@ namespace DevHome.SetupFlow.AppManagement.Models;
 
 public class InstallPackageTask : ISetupTask
 {
-    private readonly ILogger _logger;
     private readonly IWindowsPackageManager _wpm;
     private readonly WinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
@@ -40,13 +39,11 @@ public class InstallPackageTask : ISetupTask
     }
 
     public InstallPackageTask(
-        ILogger logger,
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
         WindowsPackageManagerFactory wingetFactory,
         WinGetPackage package)
     {
-        _logger = logger;
         _wpm = wpm;
         _stringResource = stringResource;
         _wingetFactory = wingetFactory;
@@ -94,12 +91,12 @@ public class InstallPackageTask : ISetupTask
             catch (InstallPackageException e)
             {
                 _installPackageException = e;
-                _logger.LogError(nameof(InstallPackageTask), LogLevel.Local, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
+                //// _logger.LogError(nameof(InstallPackageTask), LogLevel.Local, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
                 return TaskFinishedState.Failure;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _logger.LogError(nameof(InstallPackageTask), LogLevel.Local, $"Exception thrown while installing package: {e.Message}");
+                //// _logger.LogError(nameof(InstallPackageTask), LogLevel.Local, $"Exception thrown while installing package: {e.Message}");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();

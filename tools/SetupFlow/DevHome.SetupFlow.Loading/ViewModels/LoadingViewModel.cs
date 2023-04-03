@@ -4,28 +4,23 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.Loading.Models;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using Windows.UI.Core;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.Loading.ViewModels;
 
 public partial class LoadingViewModel : SetupPageViewModelBase
 {
-    private readonly ILogger _logger;
     private readonly IHost _host;
 
 #pragma warning disable SA1310 // Field names should not contain underscore
@@ -46,7 +41,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// <summary>
     /// Keep track of all failed tasks so they can be re-ran if the user wishes.
     /// </summary>
-    private IList<TaskInformation> _failedTasks;
+    private readonly IList<TaskInformation> _failedTasks;
 
     /// <summary>
     /// All the tasks that will be executed.
@@ -129,11 +124,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     public LoadingViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        ILogger logger,
         IHost host)
         : base(stringResource, orchestrator)
     {
-        _logger = logger;
         _host = host;
         _tasksToRun = new ();
 

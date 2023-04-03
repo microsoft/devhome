@@ -16,18 +16,15 @@ namespace DevHome.SetupFlow.AppManagement.Services;
 public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
 {
     private readonly IRestoreInfo _restoreInfo;
-    private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
     private IRestoreDeviceInfo _restoreDeviceInfo;
 
     public WinGetPackageRestoreDataSource(
-        ILogger logger,
         ISetupFlowStringResource stringResource,
         IWindowsPackageManager wpm,
         IRestoreInfo restoreInfo)
         : base(wpm)
     {
-        _logger = logger;
         _stringResource = stringResource;
         _restoreInfo = restoreInfo;
     }
@@ -53,7 +50,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         }
         else
         {
-            _logger.Log(nameof(WinGetPackageRestoreDataSource), LogLevel.Local, $"Restore data source skipped with status: {restoreDeviceInfoResult.Status}");
+            //// _logger.Log(nameof(WinGetPackageRestoreDataSource), LogLevel.Local, $"Restore data source skipped with status: {restoreDeviceInfoResult.Status}");
         }
     }
 
@@ -62,7 +59,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         var result = new List<PackageCatalog>();
         if (_restoreDeviceInfo == null)
         {
-            _logger.Log(nameof(WinGetPackageRestoreDataSource), LogLevel.Local, $"Load catalogs skipped because no restore device information was found");
+            //// _logger.Log(nameof(WinGetPackageRestoreDataSource), LogLevel.Local, $"Load catalogs skipped because no restore device information was found");
             return result;
         }
 
@@ -87,9 +84,9 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
                 });
             }
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            _logger.LogError(nameof(WinGetPackageRestoreDataSource), LogLevel.Info, $"Error loading packages from winget catalog: {e.Message}");
+            //// _logger.LogError(nameof(WinGetPackageRestoreDataSource), LogLevel.Info, $"Error loading packages from winget catalog: {e.Message}");
         }
 
         return result;

@@ -6,16 +6,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Extensions;
-using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.Telemetry;
-using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 public partial class PackageCatalogListViewModel : ObservableObject
 {
-    private readonly ILogger _logger;
     private readonly IWindowsPackageManager _wpm;
     private readonly WinGetPackageJsonDataSource _jsonDataSource;
     private readonly WinGetPackageRestoreDataSource _restoreDataSource;
@@ -34,13 +30,11 @@ public partial class PackageCatalogListViewModel : ObservableObject
     public ObservableCollection<int> PackageCatalogShimmers { get; } = new ();
 
     public PackageCatalogListViewModel(
-        ILogger logger,
         WinGetPackageJsonDataSource jsonDataSource,
         WinGetPackageRestoreDataSource restoreDataSource,
         IWindowsPackageManager wpm,
         PackageCatalogViewModelFactory packageCatalogViewModelFactory)
     {
-        _logger = logger;
         _jsonDataSource = jsonDataSource;
         _restoreDataSource = restoreDataSource;
         _wpm = wpm;
@@ -78,10 +72,10 @@ public partial class PackageCatalogListViewModel : ObservableObject
         {
             await dataSource.InitializeAsync();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while initializing data source of type {dataSource.GetType().Name}");
-            _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Local, e.Message);
+            //// _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Info, $"Exception thrown while initializing data source of type {dataSource.GetType().Name}");
+            //// _logger.LogError(nameof(PackageCatalogListViewModel), LogLevel.Local, e.Message);
         }
         finally
         {

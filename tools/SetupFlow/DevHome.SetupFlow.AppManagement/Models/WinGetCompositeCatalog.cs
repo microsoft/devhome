@@ -16,16 +16,14 @@ namespace DevHome.SetupFlow.AppManagement.Models;
 /// </summary>
 public class WinGetCompositeCatalog : IWinGetCatalog
 {
-    private readonly ILogger _logger;
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly CreateCompositePackageCatalogOptions _compositeCatalogOptions;
     private Microsoft.Management.Deployment.PackageCatalog _catalog;
 
     public bool IsConnected => _catalog != null;
 
-    public WinGetCompositeCatalog(ILogger logger, WindowsPackageManagerFactory wingetFactory)
+    public WinGetCompositeCatalog(WindowsPackageManagerFactory wingetFactory)
     {
-        _logger = logger;
         _wingetFactory = wingetFactory;
         _compositeCatalogOptions = _wingetFactory.CreateCreateCompositePackageCatalogOptions();
     }
@@ -56,15 +54,15 @@ public class WinGetCompositeCatalog : IWinGetCatalog
             var connection = await compositeCatalog.ConnectAsync();
             if (connection.Status != ConnectResultStatus.Ok)
             {
-                _logger.LogError(nameof(CatalogConnectionException), LogLevel.Info, $"Failed to connect to catalog with status {connection.Status}");
+                //// _logger.LogError(nameof(CatalogConnectionException), LogLevel.Info, $"Failed to connect to catalog with status {connection.Status}");
                 throw new CatalogConnectionException(connection.Status);
             }
 
             _catalog = connection.PackageCatalog;
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            _logger.LogError(nameof(WinGetCompositeCatalog), LogLevel.Info, $"Error connecting to catalog reference: {e.Message}");
+            //// _logger.LogError(nameof(WinGetCompositeCatalog), LogLevel.Info, $"Error connecting to catalog reference: {e.Message}");
             throw;
         }
     }
@@ -84,9 +82,9 @@ public class WinGetCompositeCatalog : IWinGetCatalog
 
             return await FindPackagesAsync(options);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            _logger.LogError(nameof(WinGetCompositeCatalog), LogLevel.Info, $"Error searching for packages: {e.Message}");
+            //// _logger.LogError(nameof(WinGetCompositeCatalog), LogLevel.Info, $"Error searching for packages: {e.Message}");
             throw;
         }
     }
@@ -107,9 +105,9 @@ public class WinGetCompositeCatalog : IWinGetCatalog
 
             return await FindPackagesAsync(options);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            _logger.LogError(nameof(WinGetCompositeCatalog), LogLevel.Info, $"Error searching for packages: {e.Message}");
+            //// _logger.LogError(nameof(WinGetCompositeCatalog), LogLevel.Info, $"Error searching for packages: {e.Message}");
             throw;
         }
     }
@@ -132,7 +130,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog
         var findResult = await _catalog.FindPackagesAsync(options);
         if (findResult.Status != FindPackagesResultStatus.Ok)
         {
-            _logger.LogError(nameof(FindPackagesException), LogLevel.Info, $"Failed to find packages with status {findResult.Status}");
+            //// _logger.LogError(nameof(FindPackagesException), LogLevel.Info, $"Failed to find packages with status {findResult.Status}");
             throw new FindPackagesException(findResult.Status);
         }
 

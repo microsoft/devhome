@@ -15,7 +15,6 @@ using DevHome.SetupFlow.Loading.ViewModels;
 using DevHome.SetupFlow.MainPage.ViewModels;
 using DevHome.SetupFlow.Review.ViewModels;
 using DevHome.SetupFlow.Summary.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -23,15 +22,13 @@ namespace DevHome.SetupFlow.ViewModels;
 public partial class SetupFlowViewModel : ObservableObject
 {
     private readonly IHost _host;
-    private readonly ILogger _logger;
     private readonly MainPageViewModel _mainPageViewModel;
 
     public SetupFlowOrchestrator Orchestrator { get; }
 
-    public SetupFlowViewModel(IHost host, ILogger logger, SetupFlowOrchestrator orchestrator)
+    public SetupFlowViewModel(IHost host, SetupFlowOrchestrator orchestrator)
     {
         _host = host;
-        _logger = logger;
         Orchestrator = orchestrator;
 
         // Set initial view
@@ -58,6 +55,10 @@ public partial class SetupFlowViewModel : ObservableObject
         if (Orchestrator.TaskGroups.Any(flow => flow.GetReviewTabViewModel() != null))
         {
             flowPages.Add(_host.GetService<ReviewViewModel>());
+        }
+        else
+        {
+            Log.Logger?.ReportInfo(nameof(SetupFlowViewModel), "Review page will be skipped for this flow");
         }
 
         // The Loading page can advance to the next page

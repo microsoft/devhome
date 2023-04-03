@@ -32,7 +32,6 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         public IList<string> WinGetPackageIds { get; set; }
     }
 
-    private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly string _fileName;
     private IList<JsonWinGetPackageCatalog> _jsonCatalogs = new List<JsonWinGetPackageCatalog>();
@@ -40,13 +39,11 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     public override int CatalogCount => _jsonCatalogs.Count;
 
     public WinGetPackageJsonDataSource(
-        ILogger logger,
         ISetupFlowStringResource stringResource,
         IWindowsPackageManager wpm,
         string fileName)
         : base(wpm)
     {
-        _logger = logger;
         _stringResource = stringResource;
         _fileName = fileName;
     }
@@ -95,9 +92,9 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
                 };
             }
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            _logger.LogError(nameof(WinGetPackageJsonDataSource), LogLevel.Info, $"Error loading packages from winget catalog: {e.Message}");
+            //// _logger.LogError(nameof(WinGetPackageJsonDataSource), LogLevel.Info, $"Error loading packages from winget catalog: {e.Message}");
         }
 
         return null;

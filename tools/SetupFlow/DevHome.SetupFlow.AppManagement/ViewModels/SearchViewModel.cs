@@ -32,7 +32,6 @@ public partial class SearchViewModel : ObservableObject
         ExceptionThrown,
     }
 
-    private readonly ILogger _logger;
     private readonly IWindowsPackageManager _wpm;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly PackageProvider _packageProvider;
@@ -62,10 +61,9 @@ public partial class SearchViewModel : ObservableObject
     /// </summary>
     public string NoSearchResultsText => _stringResource.GetLocalized(StringResourceKey.NoSearchResultsFoundTitle, SearchText);
 
-    public SearchViewModel(ILogger logger, IWindowsPackageManager wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider)
+    public SearchViewModel(IWindowsPackageManager wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider)
     {
         _wpm = wpm;
-        _logger = logger;
         _stringResource = stringResource;
         _packageProvider = packageProvider;
     }
@@ -110,9 +108,9 @@ public partial class SearchViewModel : ObservableObject
         {
             return (SearchResultStatus.Canceled, null);
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            _logger.LogError(nameof(SearchViewModel), LogLevel.Info, $"Search error: {e.Message}");
+            //// _logger.LogError(nameof(SearchViewModel), LogLevel.Info, $"Search error: {e.Message}");
             return (SearchResultStatus.ExceptionThrown, null);
         }
     }

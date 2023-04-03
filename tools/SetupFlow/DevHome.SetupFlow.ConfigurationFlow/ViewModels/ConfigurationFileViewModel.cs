@@ -11,17 +11,19 @@ using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.ConfigurationFile.Exceptions;
 using DevHome.SetupFlow.ConfigurationFile.Models;
-using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ConfigurationFile.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
-{
     private readonly ILogger _logger;
-
+    private readonly IHost _host;
+    private readonly IHost _host;
     public List<ISetupTask> TaskList { get; } = new List<ISetupTask>();
+        _host = host;
 
     /// <summary>
     /// Configuration file
@@ -39,12 +41,9 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
     public ConfigurationFileViewModel(
         ISetupFlowStringResource stringResource,
-        SetupFlowOrchestrator orchestrator,
-        ILogger logger)
+        SetupFlowOrchestrator orchestrator)
         : base(stringResource, orchestrator)
     {
-        _logger = logger;
-
         // Configure navigation bar
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         CanGoToNextPage = false;
