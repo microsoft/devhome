@@ -852,4 +852,7 @@
     <value>Drive</value>
     <comment>Text that shows the title of a tab in the review page where users can see the details of the Dev Drive they are about to create.</comment>
   </data>
+  <data name="NoRepositoriesToClone.Text" xml:space="preserve">
+    <value>No Repositories to clone</value>
+  </data>
 </root>

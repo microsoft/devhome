@@ -18,14 +18,11 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <!-- No apps to install message -->
         <TextBlock
-            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NoAppsToInstall"
+            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NoRepositoriesToClone"
             Visibility="{x:Bind ViewModel.RepositoriesToClone, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
             VerticalAlignment="Center"
             HorizontalAlignment="Center" />
-
-        <!-- Grid view of the selected apps to install -->
         <GridView
             ScrollViewer.VerticalScrollMode="Enabled"
             ScrollViewer.VerticalScrollBarVisibility="Visible"
