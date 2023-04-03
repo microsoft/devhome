@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.ElevatedComponent;
@@ -84,19 +85,21 @@ public class InstallPackageTask : ISetupTask
         {
             try
             {
+                Log.Logger?.ReportInfo(nameof(InstallPackageTask), $"Starting installation of package {_package.Id}");
                 var installResult = await _wpm.InstallPackageAsync(_package);
                 RequiresReboot = installResult.RebootRequired;
                 return TaskFinishedState.Success;
             }
             catch (InstallPackageException e)
             {
+                // TODO: Add telemetry for install failures
                 _installPackageException = e;
-                //// _logger.LogError(nameof(InstallPackageTask), LogLevel.Local, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
+                Log.Logger?.ReportError(nameof(InstallPackageTask), $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
                 return TaskFinishedState.Failure;
             }
             catch (Exception)
             {
-                //// _logger.LogError(nameof(InstallPackageTask), LogLevel.Local, $"Exception thrown while installing package: {e.Message}");
+                Log.Logger?.ReportError(nameof(InstallPackageTask), $"Exception thrown while installing package: {e.Message}");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -106,6 +109,7 @@ public class InstallPackageTask : ISetupTask
     {
         return Task.Run(async () =>
         {
+            Log.Logger?.ReportInfo(nameof(InstallPackageTask), $"Starting installation with elevation of package {_package.Id}");
             var packageInstaller = elevatedComponentFactory.CreatePackageInstaller();
             var installResult = await packageInstaller.InstallPackage(_package.Id, _package.CatalogName);
             return installResult.InstallSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;

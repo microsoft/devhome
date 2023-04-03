@@ -80,6 +80,7 @@ public partial class SetupFlowViewModel : ObservableObject
     [RelayCommand]
     public void Cancel()
     {
+        Log.Logger?.ReportInfo(nameof(SetupFlowViewModel), "Cancelling flow");
         Orchestrator.ReleaseRemoteFactory();
         _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
         Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };
