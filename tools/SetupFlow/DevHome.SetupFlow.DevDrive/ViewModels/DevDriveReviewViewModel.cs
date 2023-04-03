@@ -1,11 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using DevHome.Common.Extensions;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
@@ -15,13 +12,14 @@ namespace DevHome.SetupFlow.DevDrive.ViewModels;
 
 public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
 {
+    private readonly IHost _host;
     private readonly ISetupFlowStringResource _stringResource;
 
-    public DevDriveReviewViewModel(ISetupFlowStringResource stringResource, DevDriveTaskGroup taskGroup)
+    public DevDriveReviewViewModel(IHost host, ISetupFlowStringResource stringResource, DevDriveTaskGroup taskGroup)
     {
+        _host = host;
         _stringResource = stringResource;
         TabTitle = stringResource.GetLocalized(StringResourceKey.DevDriveReviewTitle);
-        _host = host;
     }
 
     /// <summary>

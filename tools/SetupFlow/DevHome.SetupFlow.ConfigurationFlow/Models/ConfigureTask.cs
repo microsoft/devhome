@@ -21,7 +21,6 @@ namespace DevHome.SetupFlow.ConfigurationFile.Models;
 
 internal class ConfigureTask : ISetupTask
 {
-    private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly StorageFile _file;
     private ConfigurationProcessor _processor;
@@ -33,9 +32,8 @@ internal class ConfigureTask : ISetupTask
 
     public bool DependsOnDevDriveToBeInstalled => false;
 
-    public ConfigureTask(ILogger logger, ISetupFlowStringResource stringResource, StorageFile file)
+    public ConfigureTask(ISetupFlowStringResource stringResource, StorageFile file)
     {
-        _logger = logger;
         _stringResource = stringResource;
         _file = file;
     }
@@ -63,7 +61,7 @@ internal class ConfigureTask : ISetupTask
         {
             _processor = null;
             _configSet = null;
-            _logger.LogError(nameof(ConfigureTask), LogLevel.Local, "Failed to open configuration set");
+            //// _logger.LogError(nameof(ConfigureTask), LogLevel.Local, "Failed to open configuration set");
             throw;
         }
     }
@@ -117,7 +115,7 @@ internal class ConfigureTask : ISetupTask
             }
             catch
             {
-                _logger.LogError(nameof(ConfigureTask), LogLevel.Local, "Failed to apply configuration");
+                //// _logger.LogError(nameof(ConfigureTask), LogLevel.Local, "Failed to apply configuration");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();

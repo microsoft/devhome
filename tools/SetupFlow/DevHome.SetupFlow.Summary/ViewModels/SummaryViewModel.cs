@@ -8,7 +8,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.SetupFlow.Summary.ViewModels;

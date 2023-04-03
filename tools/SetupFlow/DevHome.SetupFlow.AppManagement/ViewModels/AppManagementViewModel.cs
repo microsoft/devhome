@@ -10,7 +10,6 @@ using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
@@ -44,7 +43,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         PackageProvider packageProvider)
         : base(stringResource, orchestrator)
     {
-        _taskGroup = taskGroup;
         _wpm = wpm;
         _packageProvider = packageProvider;
         _searchViewModel = host.GetService<SearchViewModel>();
@@ -75,7 +73,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         // Change view to searching
         CurrentView = _shimmerSearchViewModel;
 
-        var (searchResultStatus, packages) = await _searchViewModel.SearchAsync(text, cancellationToken);
+        var (searchResultStatus, _) = await _searchViewModel.SearchAsync(text, cancellationToken);
         switch (searchResultStatus)
         {
             case SearchViewModel.SearchResultStatus.Ok:

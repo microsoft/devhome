@@ -11,19 +11,14 @@ using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.ConfigurationFile.Exceptions;
 using DevHome.SetupFlow.ConfigurationFile.Models;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ConfigurationFile.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
-    private readonly ILogger _logger;
-    private readonly IHost _host;
-    private readonly IHost _host;
+{
     public List<ISetupTask> TaskList { get; } = new List<ISetupTask>();
-        _host = host;
 
     /// <summary>
     /// Configuration file
@@ -87,7 +82,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             try
             {
                 Configuration = new (file.Path);
-                var task = new ConfigureTask(_logger, StringResource, file);
+                var task = new ConfigureTask(StringResource, file);
                 await task.OpenConfigurationSetAsync();
                 TaskList.Add(task);
                 return true;
@@ -99,9 +94,9 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
                     GetErrorMessage(e),
                     StringResource.GetLocalized(StringResourceKey.Close));
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _logger.Log(nameof(ConfigurationFileViewModel), LogLevel.Local, $"Unknown error while opening configuration set: {e.Message}");
+                //// _logger.Log(nameof(ConfigurationFileViewModel), LogLevel.Local, $"Unknown error while opening configuration set: {e.Message}");
 
                 await mainWindow.ShowErrorMessageDialogAsync(
                     file.Name,
