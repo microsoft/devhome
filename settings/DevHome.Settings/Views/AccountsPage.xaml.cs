@@ -2,8 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using DevHome.Common.Extensions;
-using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
