@@ -96,7 +96,7 @@ public sealed partial class RepoConfigView : UserControl
         if (result == ContentDialogResult.Primary)
         {
             cloningInformation.CloningLocation = new System.IO.DirectoryInfo(editClonePathDialog.FolderPickerViewModel.CloneLocation);
-            ViewModel.UpdateCollection();
+            ViewModel.UpdateCloneLocation(cloningInformation);
 
             // User intended to clone to Dev Drive before launching dialog but now they are not,
             // so decrease the Dev Managers count.

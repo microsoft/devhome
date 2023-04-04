@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
@@ -12,6 +14,7 @@ using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.RepoConfig.ViewModels;
 
@@ -37,6 +40,16 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// </summary>
     [ObservableProperty]
     private ObservableCollection<CloningInformation> _repoReviewItems = new ();
+
+    [RelayCommand]
+    public void RemoveEntry(CloningInformation cloningInformation)
+    {
+        RemoveCloningInformation(cloningInformation);
+        if (cloningInformation.CloneToDevDrive)
+        {
+            DevDriveManager.DecreaseRepositoriesCount();
+        }
+    }
 
     /// <summary>
     /// Controls if the "No repo" message is shown to the user.
@@ -99,6 +112,16 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         List<CloningInformation> repoReviewItems = new (RepoReviewItems);
         RepoReviewItems = new ObservableCollection<CloningInformation>(repoReviewItems);
         _taskGroup.SaveSetupTaskInformation(repoReviewItems);
+    }
+
+    public void UpdateCloneLocation(CloningInformation cloningInformation)
+    {
+        var location = RepoReviewItems.IndexOf(cloningInformation);
+        if (location != -1)
+        {
+            RepoReviewItems[location] = cloningInformation;
+            UpdateCollection();
+        }
     }
 
     /// <summary>
