@@ -138,6 +138,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// </remarks>
     public async Task GetPluginsAsync()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed plugins with Repository and DevId providers");
         var pluginService = Application.Current.GetService<IPluginService>();
         var pluginWrappers = await pluginService.GetInstalledPluginsAsync();
         var plugins = pluginWrappers.Where(
@@ -151,6 +152,7 @@ public partial class AddRepoViewModel : ObservableObject
 
     public void ChangeToUrlPage()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Url page");
         ShowUrlPage = Visibility.Visible;
         ShowAccountPage = Visibility.Collapsed;
         ShowRepoPage = Visibility.Collapsed;
@@ -161,6 +163,7 @@ public partial class AddRepoViewModel : ObservableObject
 
     public void ChangeToAccountPage()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Account page");
         ShowUrlPage = Visibility.Collapsed;
         ShowAccountPage = Visibility.Visible;
         ShowRepoPage = Visibility.Collapsed;
@@ -171,6 +174,7 @@ public partial class AddRepoViewModel : ObservableObject
 
     public void ChangeToRepoPage()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
         ShowUrlPage = Visibility.Collapsed;
         ShowAccountPage = Visibility.Collapsed;
         ShowRepoPage = Visibility.Visible;
@@ -241,9 +245,11 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="repositoriesToRemove">Repositories to remove.</param>
     public void AddOrRemoveRepository(string providerName, string accountName, IList<object> repositoriesToAdd, IList<object> repositoriesToRemove)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding and removing repositories");
         var developerId = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId() == accountName);
         foreach (string repositoryToRemove in repositoriesToRemove)
         {
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {repositoryToRemove}");
             var cloningInformation = new CloningInformation();
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
@@ -254,6 +260,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         foreach (string repositoryToAdd in repositoriesToAdd)
         {
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository {repositoryToAdd}");
             var cloningInformation = new CloningInformation();
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
@@ -285,6 +292,7 @@ public partial class AddRepoViewModel : ObservableObject
         cloningInformation.RepositoryToClone = repository;
         cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
 
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
         EverythingToClone.Add(cloningInformation);
     }
 

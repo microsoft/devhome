@@ -101,10 +101,12 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// <param name="cloningInfo">Cloning info that has a new path for the Dev Drive</param>
     public void UpdateCollectionWithDevDriveInfo(CloningInformation cloningInfo)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Updating dev drive location on repos to clone after change to dev drive");
         foreach (var item in RepoReviewItems)
         {
             if (item.CloneToDevDrive && item.CloningLocation != cloningInfo.CloningLocation)
             {
+                Log.Logger?.ReportDebug(Log.Component.RepoConfig, $"Updating {item.RepositoryId}");
                 item.CloningLocation = new System.IO.DirectoryInfo(cloningInfo.CloningLocation.FullName);
                 item.CloneLocationAlias = cloningInfo.CloneLocationAlias;
             }
