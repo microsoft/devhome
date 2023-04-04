@@ -45,7 +45,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _repoConfigViewModel.Value;
 
-    public ReviewTabViewModelBase GetReviewTabViewModel() => _repoConfigReviewViewModel.Value;
+    public ReviewTabViewModelBase GetReviewTabViewModel() => _host.CreateInstance<RepoConfigReviewViewModel>(_cloneTasks);
 
     /// <summary>
     /// All tasks that need to be ran.
