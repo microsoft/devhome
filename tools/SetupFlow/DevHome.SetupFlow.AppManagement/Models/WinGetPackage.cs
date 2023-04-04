@@ -25,8 +25,8 @@ public class WinGetPackage : IWinGetPackage
     public WinGetPackage(CatalogPackage package)
     {
         _package = package;
-        _packageUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PackageUrl), "PackageUrl", null));
-        _publisherUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PublisherUrl), "PublisherUrl", null));
+        _packageUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null));
+        _publisherUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PublisherUrl), nameof(CatalogPackageMetadata.PublisherUrl), null));
         _uniqueKey = new (Id, CatalogId);
     }
 

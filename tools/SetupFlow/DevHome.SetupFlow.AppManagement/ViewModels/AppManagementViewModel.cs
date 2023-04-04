@@ -66,7 +66,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
 
         // Connect to composite catalog used for searching on a separate
         // (non-UI) thread to prevent lagging the UI.
-        Log.Logger?.ReportInfo(nameof(AppManagementViewModel), "Connecting to winget composite catalog");
+        Log.Logger?.ReportInfo(nameof(AppManagementViewModel), "Connecting to composite catalog to enable searching for packages");
         await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
     }
 
