@@ -1,1 +1,2 @@
 ﻿CoCreateInstance
+HRESULT_FROM_WIN32

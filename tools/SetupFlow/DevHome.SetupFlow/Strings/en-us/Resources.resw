@@ -709,7 +709,7 @@
     <comment>Text that advises the user that the file name of the virtual hard disk they were trying to create already exists in the location they selected and that they should enter a new name.</comment>
   </data>
   <data name="DevDriveUnableToCreateError" xml:space="preserve">
-    <value>The Dev Drive couldn't be created.</value>
+    <value>Dev Drive couldn't be created</value>
     <comment>Text that advises the user that there was an error and we couldn't create the Dev Drive on their machine.</comment>
   </data>
   <data name="CloneRepoCreated" xml:space="preserve">
@@ -841,7 +841,7 @@
     <comment>Second part of the message notifying users to restart.</comment>
   </data>
   <data name="DevDriveErrorWithReason" xml:space="preserve">
-    <value>Dev Drive couldn't be created because {0}</value>
+    <value>Dev Drive couldn't be created error: {0}</value>
     <comment>Message when the dev drive could not be created. Param: reason.</comment>
   </data>
   <data name="DevDriveDriveLetterNotAvailable" xml:space="preserve">

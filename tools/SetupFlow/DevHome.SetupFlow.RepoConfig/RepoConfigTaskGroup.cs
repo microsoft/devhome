@@ -12,6 +12,7 @@ using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
 using Microsoft.Extensions.Hosting;
+using Windows.ApplicationModel.UserDataTasks;
 
 namespace DevHome.SetupFlow.RepoConfig;
 
@@ -62,7 +63,13 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         foreach (var cloningInformation in cloningInformations)
         {
             var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.RepositoryToClone.DisplayName);
-            _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource));
+            var task = new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.ProviderName);
+            if (cloningInformation.CloneToDevDrive)
+            {
+                task.DependsOnDevDriveToBeInstalled = true;
+            }
+
+            _cloneTasks.Add(task);
         }
     }
 }

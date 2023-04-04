@@ -32,6 +32,19 @@ public class CloneRepoTask : ISetupTask
     public IRepository RepositoryToClone { get; }
 
     /// <summary>
+    /// Gets the display name of the repository.
+    /// </summary>
+    public string RepositoryName => repositoryToClone.DisplayName;
+
+    /// <summary>
+    /// Gets the provider name the repository is cloning from.
+    /// </summary>
+    public string ProviderName
+    {
+        get; private set;
+    }
+
+    /// <summary>
     /// Gets a value indicating whether the task requires being admin.
     /// </summary>
     public bool RequiresAdmin => false;
@@ -45,6 +58,12 @@ public class CloneRepoTask : ISetupTask
     /// The developer ID that is used when a repository is being cloned.
     /// </summary>
     private readonly IDeveloperId _developerId;
+
+    // May potentially be moved to a central list in the future.
+    public bool WasCloningSuccessful
+    {
+        get; private set;
+    }
 
     private TaskMessages _taskMessage;
 
@@ -60,7 +79,7 @@ public class CloneRepoTask : ISetupTask
 
     public bool DependsOnDevDriveToBeInstalled
     {
-        get;
+        get; set;
     }
 
     /// <summary>
@@ -69,12 +88,13 @@ public class CloneRepoTask : ISetupTask
     /// <param name="cloneLocation">Repository will be placed here. at cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
     /// <param name="developerId">Credentials needed to clone a private repo</param>
-    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource)
+    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName)
     {
         this.cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
         _developerId = developerId;
         SetMessages(stringResource);
+        ProviderName = providerName;
     }
 
     /// <summary>
@@ -137,6 +157,7 @@ public class CloneRepoTask : ISetupTask
                 return TaskFinishedState.Failure;
             }
 
+            WasCloningSuccessful = true;
             return TaskFinishedState.Success;
         }).AsAsyncOperation();
     }
