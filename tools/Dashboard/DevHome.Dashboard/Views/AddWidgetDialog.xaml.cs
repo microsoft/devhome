@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Dashboard.Helpers;
@@ -9,6 +10,9 @@ using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Views;
@@ -22,13 +26,24 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     public WidgetViewModel ViewModel { get; set; }
 
-    public AddWidgetDialog(WidgetHost host, WidgetCatalog catalog, AdaptiveCardRenderer renderer, DispatcherQueue dispatcher)
+    private readonly SortedDictionary<string, BitmapImage> _widgetIconCache;
+    private readonly SortedDictionary<string, BitmapImage> _providerIconCache;
+
+    public AddWidgetDialog(
+        WidgetHost host,
+        WidgetCatalog catalog,
+        AdaptiveCardRenderer renderer,
+        DispatcherQueue dispatcher,
+        SortedDictionary<string, BitmapImage> providerIconCache,
+        SortedDictionary<string, BitmapImage> widgetIconCache)
     {
         ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, renderer, dispatcher);
         this.InitializeComponent();
 
         _widgetHost = host;
         _widgetCatalog = catalog;
+        _providerIconCache = providerIconCache;
+        _widgetIconCache = widgetIconCache;
 
         FillAvailableWidgets();
     }
@@ -47,28 +62,30 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // the widget if it is selected later.
         foreach (var providerDef in providerDefs)
         {
-            if (IsIncludedWidgetProvider(providerDef))
+            if (WidgetHelpers.IsIncludedWidgetProvider(providerDef))
             {
+                var itemContent = BuildProviderNavItem(providerDef);
                 var navItem = new NavigationViewItem
                 {
                     IsExpanded = true,
                     Tag = providerDef,
-                    Content = providerDef.DisplayName,
+                    Content = itemContent,
                 };
+
+                navItem.Content = itemContent;
 
                 foreach (var widgetDef in widgetDefs)
                 {
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
+                        var subItemContent = BuildWidgetNavItem(widgetDef);
+                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef);
                         var subItem = new NavigationViewItem
                         {
                             Tag = widgetDef,
-                            Content = widgetDef.DisplayTitle,
+                            Content = subItemContent,
+                            IsEnabled = enable,
                         };
-                        if (AlreadyPinnedSingleInstance(widgetDef))
-                        {
-                            subItem.IsEnabled = false;
-                        }
 
                         navItem.MenuItems.Add(subItem);
                     }
@@ -82,7 +99,51 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
-    private bool AlreadyPinnedSingleInstance(WidgetDefinition widgetDef)
+    private StackPanel BuildProviderNavItem(WidgetProviderDefinition providerDefinition)
+    {
+        _providerIconCache.TryGetValue(providerDefinition.Id, out var image);
+        return BuildNavItem(image, providerDefinition.DisplayName);
+    }
+
+    private StackPanel BuildWidgetNavItem(WidgetDefinition widgetDefinition)
+    {
+        _widgetIconCache.TryGetValue(widgetDefinition.Id, out var image);
+        return BuildNavItem(image, widgetDefinition.DisplayTitle);
+    }
+
+    private StackPanel BuildNavItem(BitmapImage image, string text)
+    {
+        var itemContent = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+        };
+
+        if (image is not null)
+        {
+            var itemSquare = new Rectangle()
+            {
+                MinWidth = 20,
+                MinHeight = 20,
+                Margin = new Thickness(0, 0, 10, 0),
+                Fill = new ImageBrush
+                {
+                    ImageSource = image,
+                },
+            };
+
+            itemContent.Children.Add(itemSquare);
+        }
+
+        var itemText = new TextBlock()
+        {
+            Text = text,
+        };
+        itemContent.Children.Add(itemText);
+
+        return itemContent;
+    }
+
+    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef)
     {
         // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
         if (!widgetDef.AllowMultiple)
@@ -101,13 +162,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
 
         return false;
-    }
-
-    private bool IsIncludedWidgetProvider(WidgetProviderDefinition provider)
-    {
-        var include = provider.Id.StartsWith("Microsoft.Windows.DevHome", StringComparison.CurrentCulture);
-        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Found provider Id = {provider.Id}, include = {include}");
-        return include;
     }
 
     private async void AddWidgetNavigationView_SelectionChanged(

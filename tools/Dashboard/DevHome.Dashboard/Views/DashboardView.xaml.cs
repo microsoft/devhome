@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -13,6 +14,8 @@ using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.Storage;
@@ -32,6 +35,9 @@ public partial class DashboardView : ToolPage
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     private static bool _widgetHostInitialized;
+
+    private static SortedDictionary<string, BitmapImage> _widgetIconCache;
+    private static SortedDictionary<string, BitmapImage> _providerIconCache;
 
     public DashboardView()
     {
@@ -54,7 +60,10 @@ public partial class DashboardView : ToolPage
             PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
 
             ActualThemeChanged += OnActualThemeChanged;
-            Loaded += RestorePinnedWidgets;
+
+            _widgetIconCache = new SortedDictionary<string, BitmapImage>();
+            _providerIconCache = new SortedDictionary<string, BitmapImage>();
+            Loaded += OnLoaded;
         }
         else
         {
@@ -92,6 +101,10 @@ public partial class DashboardView : ToolPage
 
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
+        // Widgets may have different icons for light vs dark theme, so if the theme changes, update the icons.
+        await CacheWidgetIcons();
+
+        // The app uses a different host config to render widgets (adaptive cards) in light and dark themes.
         await SetHostConfigOnWidgetRenderer();
     }
 
@@ -126,6 +139,82 @@ public partial class DashboardView : ToolPage
         return;
     }
 
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
+        await CacheWidgetIcons();
+        RestorePinnedWidgets(null, null);
+        await CacheProviderIcons();
+    }
+
+    private async Task CacheWidgetIcons()
+    {
+        // Widgets may have different icons depending on the theme. Only cache icons for the theme being currently used.
+        // If the theme changes, we'll fetch the icons for the new theme at that time.
+        var currentWidgetTheme = (this.ActualTheme == ElementTheme.Dark) ? WidgetTheme.Dark : WidgetTheme.Light;
+
+        var widgetDefs = _widgetCatalog.GetWidgetDefinitions();
+        foreach (var widgetDef in widgetDefs)
+        {
+            // Only cache icons for providers that we're including.
+            if (WidgetHelpers.IsIncludedWidgetProvider(widgetDef.ProviderDefinition))
+            {
+                try
+                {
+                    var iconStreamRef = widgetDef.GetThemeResource(currentWidgetTheme).Icon;
+
+                    using var bitmapStream = await iconStreamRef.OpenReadAsync();
+                    var itemImage = new BitmapImage();
+                    await itemImage.SetSourceAsync(bitmapStream);
+
+                    _widgetIconCache.Add(widgetDef.Id, itemImage);
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger()?.ReportError("DashboardView", $"Exception in CacheWidgetIcons:", ex);
+                    _widgetIconCache.Add(widgetDef.Id, null);
+                }
+            }
+        }
+    }
+
+    private async Task CacheProviderIcons()
+    {
+        var providerDefs = _widgetCatalog.GetProviderDefinitions();
+        foreach (var providerDef in providerDefs)
+        {
+            // Only cache icons for providers that we're including.
+            if (WidgetHelpers.IsIncludedWidgetProvider(providerDef))
+            {
+                try
+                {
+                    var iconStreamRef = providerDef.Icon;
+
+                    using var bitmapStream = await iconStreamRef.OpenReadAsync();
+                    var itemImage = new BitmapImage();
+                    await itemImage.SetSourceAsync(bitmapStream);
+
+                    _providerIconCache.Add(providerDef.Id, itemImage);
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger()?.ReportError("DashboardView", $"Exception in CacheProviderIcons:", ex);
+                    _providerIconCache.Add(providerDef.Id, null);
+                }
+            }
+        }
+    }
+
+    public static Brush GetBrushForWidgetIcon(WidgetDefinition widgetDefinition)
+    {
+        _widgetIconCache.TryGetValue(widgetDefinition.Id, out var image);
+        var brush = new Microsoft.UI.Xaml.Media.ImageBrush
+        {
+            ImageSource = image,
+        };
+        return brush;
+    }
+
     private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
     {
         // TODO: Ideally there would be some sort of visual loading indicator while the renderer gets set up.
@@ -158,7 +247,7 @@ public partial class DashboardView : ToolPage
 
     private async void AddWidgetButton_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new AddWidgetDialog(_widgetHost, _widgetCatalog, _renderer, _dispatcher)
+        var dialog = new AddWidgetDialog(_widgetHost, _widgetCatalog, _renderer, _dispatcher, _providerIconCache, _widgetIconCache)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
