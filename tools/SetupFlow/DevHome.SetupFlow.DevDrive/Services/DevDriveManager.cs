@@ -296,7 +296,7 @@ public class DevDriveManager : IDevDriveManager
         catch (Exception ex)
         {
             // we don't need to rethrow the exception/crash, we need to tell the user we couldn't find the default folder.
-            Log.Logger?.ReportError(nameof(DevDriveManager), $"Failed Get default folder for Dev Drive. {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed Get default folder for Dev Drive. {ex.Message}");
             return DevDriveValidationResult.DefaultFolderNotAvailable;
         }
     }

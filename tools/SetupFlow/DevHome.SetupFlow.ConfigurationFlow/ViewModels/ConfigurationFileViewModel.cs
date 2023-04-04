@@ -97,7 +97,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(nameof(ConfigurationFileViewModel), $"Unknown error while opening configuration set: {e.Message}");
+                Log.Logger?.ReportError(Log.Component.Configuration, $"Unknown error while opening configuration set: {e.Message}");
 
                 await mainWindow.ShowErrorMessageDialogAsync(
                     file.Name,

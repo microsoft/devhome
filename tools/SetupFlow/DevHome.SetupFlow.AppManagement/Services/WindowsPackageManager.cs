@@ -50,7 +50,7 @@ public class WindowsPackageManager : IWindowsPackageManager
 
     public async Task ConnectToAllCatalogsAsync()
     {
-        Log.Logger?.ReportInfo(nameof(WindowsPackageManager), "Connecting to all catalogs");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs");
 
         // Connect composite catalog for all local and remote catalogs to
         // enable searching for pacakges from any source
@@ -67,11 +67,11 @@ public class WindowsPackageManager : IWindowsPackageManager
         var options = _wingetFactory.CreateInstallOptions();
         options.PackageInstallMode = PackageInstallMode.Silent;
 
-        Log.Logger?.ReportInfo(nameof(WindowsPackageManager), $"Starting package install for {package.Id}");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package install for {package.Id}");
         var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options).AsTask();
 
         Log.Logger?.ReportInfo(
-            nameof(WindowsPackageManager),
+            Log.Component.AppManagement,
             $"Install result: Status={installResult.Status}, InstallerErrorCode={installResult.InstallerErrorCode}, RebootRequired={installResult.RebootRequired}");
 
         if (installResult.Status != InstallResultStatus.Ok)

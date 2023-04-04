@@ -51,6 +51,8 @@ internal class ConfigureTask : ISetupTask
             properties.AdditionalModulePaths = new List<string>() { modulesPath };
             var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
             _processor = new ConfigurationProcessor(factory);
+
+            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {_file.Path}");
             var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
             _configSet = openResult.Set;
             if (_configSet == null)
@@ -62,7 +64,7 @@ internal class ConfigureTask : ISetupTask
         {
             _processor = null;
             _configSet = null;
-            Log.Logger?.ReportError(nameof(ConfigureTask), $"Failed to open configuration set: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to open configuration set: {e.Message}");
             throw;
         }
     }
@@ -116,7 +118,7 @@ internal class ConfigureTask : ISetupTask
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(nameof(ConfigureTask), $"Failed to apply configuration: {e.Message}");
+                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration: {e.Message}");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();

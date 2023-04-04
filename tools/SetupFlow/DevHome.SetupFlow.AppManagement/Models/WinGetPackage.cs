@@ -81,7 +81,7 @@ public class WinGetPackage : IWinGetPackage
         }
         catch
         {
-            Log.Logger?.ReportWarn(nameof(WinGetPackage), $"Failed to get elevation requirement for package {_package.Id}; defaulting to not requiring elevation");
+            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get elevation requirement for package {_package.Id}; defaulting to not requiring elevation");
             return false;
         }
     }
@@ -104,7 +104,7 @@ public class WinGetPackage : IWinGetPackage
         }
         catch
         {
-            Log.Logger?.ReportWarn(nameof(WinGetPackage), $"Failed to get package metadata [{metadataFieldName}] for package {_package.Id}; defaulting to {defaultValue}");
+            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package metadata [{metadataFieldName}] for package {_package.Id}; defaulting to {defaultValue}");
             return defaultValue;
         }
     }
