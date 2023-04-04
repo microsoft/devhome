@@ -95,8 +95,8 @@ internal class RepositoryProviders
     /// <param name="providerName">The specific provider.  Must match IRepositoryProvider.GetDisplayName</param>
     /// <param name="developerId">The account to look for.  May not be logged in.</param>
     /// <returns>All the repositories for an account and provider.</returns>
-    public async Task<IEnumerable<IRepository>> GetAllRepositoriesAsync(string providerName, IDeveloperId developerId)
+    public IEnumerable<IRepository> GetAllRepositories(string providerName, IDeveloperId developerId)
     {
-        return await _providers.GetValueOrDefault(providerName)?.GetAllRepositoriesAsync(developerId) ?? new List<IRepository>();
+        return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId) ?? new List<IRepository>();
     }
 }

@@ -64,19 +64,17 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Gets all plugins that have a provider type of repository and devid.
     /// </summary>
-    /// <returns>An awaitable task</returns>
-    public async Task GetPluginsAsync()
+    public void GetPlugins()
     {
-        await AddRepoViewModel.GetPluginsAsync();
+        AddRepoViewModel.GetPlugins();
     }
 
     /// <summary>
     /// Sets up the UI for dev drives.
     /// </summary>
-    /// <returns>An awaitable task</returns>
-    public async Task SetupDevDrivesAsync()
+    public void SetupDevDrives()
     {
-        await EditDevDriveViewModel.SetUpStateIfDevDrivesIfExistsAsync();
+        EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
     }
 
     private void AddViaAccountToggleButton_Click(object sender, RoutedEventArgs e)
@@ -143,12 +141,12 @@ internal partial class AddRepoDialog
     /// <remarks>
     /// Fired when a use changes their account on a provider.
     /// </remarks>
-    private async void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // Specific provider has started.
         var loginId = (string)AccountsComboBox.SelectedValue;
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-        await AddRepoViewModel.GetRepositoriesAsync(providerName, loginId);
+        AddRepoViewModel.GetRepositories(providerName, loginId);
     }
 
     /// <summary>

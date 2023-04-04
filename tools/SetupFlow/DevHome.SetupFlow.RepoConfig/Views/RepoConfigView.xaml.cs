@@ -31,8 +31,8 @@ public sealed partial class RepoConfigView : UserControl
     private async void AddRepoButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager);
-        await addRepoDialog.GetPluginsAsync();
-        await addRepoDialog.SetupDevDrivesAsync();
+        addRepoDialog.GetPlugins();
+        addRepoDialog.SetupDevDrives();
         var themeService = Application.Current.GetService<IThemeSelectorService>();
         addRepoDialog.XamlRoot = RepoConfigStackPanel.XamlRoot;
         addRepoDialog.RequestedTheme = themeService.Theme;

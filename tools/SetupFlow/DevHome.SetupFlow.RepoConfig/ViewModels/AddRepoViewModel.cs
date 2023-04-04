@@ -152,14 +152,13 @@ public partial class AddRepoViewModel : ObservableObject
     /// <summary>
     /// Gets all the plugins the DevHome can see.
     /// </summary>
-    /// <returns>An awaitable task.</returns>
     /// <remarks>
     /// A valid plugin is one that has a repository provider and devid provider.
     /// </remarks>
-    public async Task GetPluginsAsync()
+    public void GetPlugins()
     {
         var pluginService = Application.Current.GetService<IPluginService>();
-        var pluginWrappers = await pluginService.GetInstalledPluginsAsync();
+        var pluginWrappers = pluginService.GetInstalledPluginsAsync().Result;
         var plugins = pluginWrappers.Where(
             plugin => plugin.HasProviderType(ProviderType.Repository) &&
             plugin.HasProviderType(ProviderType.DevId));
@@ -313,11 +312,10 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     /// <param name="repositoryProvider">The provider.  This should match IRepositoryProvider.LoginId</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
-    /// <returns>A list of all repositories the account has for the provider.</returns>
-    public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
+    public void GetRepositories(string repositoryProvider, string loginId)
     {
         var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
-        _repositoriesForAccount = await _providers.GetAllRepositoriesAsync(repositoryProvider, loggedInDeveloper);
+        _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
 
         // TODO: What if the user comes back here with repos selected?
         Repositories = new ObservableCollection<string>(_repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => x.DisplayName));

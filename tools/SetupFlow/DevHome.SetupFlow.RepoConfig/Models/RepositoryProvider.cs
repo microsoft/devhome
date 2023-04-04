@@ -92,11 +92,11 @@ internal class RepositoryProvider
     /// </summary>
     /// <param name="developerId">The account to search in.</param>
     /// <returns>A collection of repositories.  May be empty</returns>
-    public async Task<IEnumerable<IRepository>> GetAllRepositoriesAsync(IDeveloperId developerId)
+    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
     {
         if (!_repositories.IsValueCreated)
         {
-            _repositories = new Lazy<IEnumerable<IRepository>>(await _repositoryProvider.GetRepositoriesAsync(developerId));
+            _repositories = new Lazy<IEnumerable<IRepository>>(_repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result);
         }
 
         return _repositories.Value;
