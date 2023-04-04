@@ -29,8 +29,9 @@
 	  The ExcludeAssets=runtime is needed to prevent build errors from System.Management.dll being produced in 2 different locations.
 	  DevHome.SetupFlow.ComInterop.Projection.csproj, uses System.Management instead, so to prevent the reference from escaping into here
 	  and producing a separate dll that will break the build, this package reference overwrites the one inherited from the comInterop the project.
+	  This ComInterop was used since this project alredyady depends on it. But a beettter solution is needed once we figure out why 2 seperate dlls get produced.
 	  -->
-    <PackageReference Include="System.Management" Version="7.0.0" ExcludeAssets="runtime"/>
+    <PackageReference Include="System.Management" Version="7.0.0" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup>
