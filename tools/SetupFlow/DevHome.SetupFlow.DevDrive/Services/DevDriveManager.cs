@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
@@ -205,11 +206,11 @@ public class DevDriveManager : IDevDriveManager
 
             return DevDriveValidationResult.Successful;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             // we don't need to keep the exception/crash, we need to tell the user we couldn't find the appdata
             // folder.
-            //// _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed Get default folder for Dev Drive. {ex.Message}");
+            Log.Logger?.ReportError(nameof(DevDriveManager), $"Failed Get default folder for Dev Drive. {ex.Message}");
             return DevDriveValidationResult.DefaultFolderNotAvailable;
         }
     }

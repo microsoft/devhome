@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
@@ -94,9 +95,9 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
                     GetErrorMessage(e),
                     StringResource.GetLocalized(StringResourceKey.Close));
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //// _logger.Log(nameof(ConfigurationFileViewModel), LogLevel.Local, $"Unknown error while opening configuration set: {e.Message}");
+                Log.Logger?.ReportError(nameof(ConfigurationFileViewModel), $"Unknown error while opening configuration set: {e.Message}");
 
                 await mainWindow.ShowErrorMessageDialogAsync(
                     file.Name,
