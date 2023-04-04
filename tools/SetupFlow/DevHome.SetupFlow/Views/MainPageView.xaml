@@ -21,11 +21,11 @@
 
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
-                    <x:String x:Key="Setup_Banner">ms-appx:///DevHome.SetupFlow.MainPage/Assets/Setup_Banner_Light.png</x:String>
+                    <x:String x:Key="Setup_Banner">ms-appx:///DevHome.SetupFlow/Assets/Setup_Banner_Light.png</x:String>
                 </ResourceDictionary>
 
                 <ResourceDictionary x:Key="Dark">
-                    <x:String x:Key="Setup_Banner">ms-appx:///DevHome.SetupFlow.MainPage/Assets/Setup_Banner_Dark.png</x:String>
+                    <x:String x:Key="Setup_Banner">ms-appx:///DevHome.SetupFlow/Assets/Setup_Banner_Dark.png</x:String>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
@@ -48,14 +48,14 @@
                                    IsClickEnabled="True" Command="{x:Bind ViewModel.StartSetupCommand}"
                                    ActionIcon="{x:Null}" >
                     <labs:SettingsCard.HeaderIcon>
-                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow.MainPage/Assets/Setup_EndToEnd.png" />
+                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_EndToEnd.png" />
                     </labs:SettingsCard.HeaderIcon>
                 </labs:SettingsCard>
                 <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile"
                                    IsClickEnabled="True" Command="{x:Bind ViewModel.StartConfigurationFileCommand}"
                                    ActionIcon="{x:Null}" >
                     <labs:SettingsCard.HeaderIcon>
-                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow.MainPage/Assets/Setup_ConfigurationFile.png" />
+                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_ConfigurationFile.png" />
                     </labs:SettingsCard.HeaderIcon>
                 </labs:SettingsCard>
             </StackPanel>
@@ -66,14 +66,14 @@
                                    IsClickEnabled="True" Command="{x:Bind ViewModel.StartRepoConfigCommand}"
                                    ActionIcon="{x:Null}" >
                     <labs:SettingsCard.HeaderIcon>
-                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow.MainPage/Assets/Setup_RepoConfig.png" />
+                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_RepoConfig.png" />
                     </labs:SettingsCard.HeaderIcon>
                 </labs:SettingsCard>
                 <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
                                    IsClickEnabled="True" Command="{x:Bind ViewModel.StartAppManagementCommand}"
                                    ActionIcon="{x:Null}" >
                     <labs:SettingsCard.HeaderIcon>
-                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow.MainPage/Assets/Setup_AppManagement.png" />
+                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_AppManagement.png" />
                     </labs:SettingsCard.HeaderIcon>
                 </labs:SettingsCard>
                 <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevDrive"
@@ -84,7 +84,7 @@
                         <FontIcon Glyph="&#xE8A7;" />
                     </labs:SettingsCard.ActionIcon>
                     <labs:SettingsCard.HeaderIcon>
-                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow.MainPage/Assets/Setup_DevDrive.png" />
+                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_DevDrive.png" />
                     </labs:SettingsCard.HeaderIcon>
                 </labs:SettingsCard>
             </StackPanel>
