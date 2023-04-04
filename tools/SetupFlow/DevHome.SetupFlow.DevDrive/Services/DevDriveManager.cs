@@ -141,6 +141,7 @@ public class DevDriveManager : IDevDriveManager
         // produced before reuse it.
         if (_devDrives.Any())
         {
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Reusing existing Dev Drive");
             return (DevDriveValidationResult.Successful, _devDrives.First());
         }
 
@@ -253,22 +254,26 @@ public class DevDriveManager : IDevDriveManager
     {
         try
         {
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Setting default Dev Drive info");
             var location = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var root = Path.GetPathRoot(Environment.SystemDirectory);
             if (string.IsNullOrEmpty(location) || string.IsNullOrEmpty(root))
             {
+                Log.Logger?.ReportError(Log.Component.DevDrive, "Default Dev Drive location is not available");
                 return DevDriveValidationResult.DefaultFolderNotAvailable;
             }
 
             var drive = new DriveInfo(root);
             if (DevDriveUtil.MinDevDriveSizeInBytes > (ulong)drive.AvailableFreeSpace)
             {
+                Log.Logger?.ReportError(Log.Component.DevDrive, "Not enough space available to create a Dev Drive");
                 return DevDriveValidationResult.NotEnoughFreeSpace;
             }
 
             var availableLetters = GetAvailableDriveLetters();
             if (!availableLetters.Any())
             {
+                Log.Logger?.ReportError(Log.Component.DevDrive, "No drive letters available to assign to Dev Drive");
                 return DevDriveValidationResult.NoDriveLettersAvailable;
             }
 
@@ -291,6 +296,7 @@ public class DevDriveManager : IDevDriveManager
             devDrive.DriveLabel = fileName;
             devDrive.State = DevDriveState.New;
 
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Default Dev Drive info: DriveLetter={devDrive.DriveLetter}, DriveSize={devDrive.DriveSizeInBytes}, Location={devDrive.DriveLocation}, Label={devDrive.DriveLabel}");
             return DevDriveValidationResult.Successful;
         }
         catch (Exception ex)

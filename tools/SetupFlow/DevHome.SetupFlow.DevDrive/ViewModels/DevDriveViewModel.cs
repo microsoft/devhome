@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
@@ -193,15 +194,21 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [RelayCommand]
     public async void ChooseFolderLocation()
     {
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Opening file picker to select dev drive location");
         var folderPicker = new FolderPicker();
         WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, DevDriveWindowContainer.GetWindowHandle());
         folderPicker.FileTypeFilter.Add("*");
 
         var location = await folderPicker.PickSingleFolderAsync();
-        if (location != null && location.Path.Length > 0)
+        if (!string.IsNullOrWhiteSpace(location?.Path))
         {
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Selected Dev Drive location: {location.Path}");
             Location = location.Path;
             OnPropertyChanged(nameof(Location));
+        }
+        else
+        {
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, "No location selected for Dev Drive");
         }
     }
 
@@ -213,6 +220,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         if (IsDevDriveWindowOpen)
         {
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Closing dev drive window");
             DevDriveWindowContainer.Close();
         }
     }
@@ -223,6 +231,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     public void UpdateDevDriveInfo(IDevDrive devDrive)
     {
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Updating Dev Drive info");
         AssociatedDrive = devDrive;
         if (devDrive.DriveSizeInBytes > DevDriveUtil.MinDevDriveSizeInBytes)
         {
@@ -269,6 +278,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [RelayCommand]
     private void SaveButton()
     {
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Saving changes to Dev Drive");
         ErrorList.Clear();
         ByteUnit driveUnitOfMeasure = (ByteUnit)_comboBoxByteUnit;
         var tempDrive = new Models.DevDrive()
@@ -309,6 +319,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     public Task<bool> LaunchDevDriveWindow()
     {
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Launching window to set up Dev Drive");
         ErrorList.Clear();
         DevDriveWindowContainer = new (this);
         DevDriveWindowContainer.Closed += ViewContainerClosed;
@@ -335,6 +346,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         var prefix = "DevDrive";
         foreach (DevDriveValidationResult result in resultSet)
         {
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Error in Dev Drive setup: {result.ToString()}");
             ErrorList.Add(_stringResource.GetLocalized(prefix + result.ToString()));
         }
     }
