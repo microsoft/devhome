@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Management;
 using System.Runtime.InteropServices;
+using DevHome.SetupFlow.ComInterop.Projection.DevDriveFormatter;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -89,7 +89,7 @@ public sealed class DevDriveStorageOperator
             return result.Value;
         }
 
-        return FormatPartitionAsDevDrive(newDriveLetter, driveLabel).Value;
+        return FormatPartitionAsDevDrive(newDriveLetter, driveLabel);
     }
 
     /// <summary>
@@ -457,54 +457,9 @@ public sealed class DevDriveStorageOperator
     /// <param name="curDriveLetter">The drive letter the method will use when attempting to find a volume and format it</param>
     /// <param name="driveLabel">The new drive label the Dev Drive will have after formatting completes.</param>
     /// <returns>An Hresult that indicates whether the operation succeeded or failed</returns>
-    private HRESULT FormatPartitionAsDevDrive(char curDriveLetter, string driveLabel)
+    private int FormatPartitionAsDevDrive(char curDriveLetter, string driveLabel)
     {
-        try
-        {
-            // Since at the time of this call we don't know the unique object ID of our new volume
-            // we need to iterate through the volumes that exist to find the one that matches our
-            // drive letter. Note: the object ID here is different than what we find in AssignDriveLetterToPartition.
-            ManagementObjectSearcher searcher =
-                new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage", "SELECT * FROM MSFT_Volume");
-
-            foreach (ManagementObject queryObj in searcher.Get())
-            {
-                var objectId = queryObj["ObjectId"] as string;
-                var letter = queryObj["DriveLetter"];
-                if (letter is char foundALetter
-                    && curDriveLetter == foundALetter &&
-                    !string.IsNullOrEmpty(objectId))
-                {
-                    // Obtain in-parameters for the method
-                    ManagementBaseObject inParams =
-                        queryObj.GetMethodParameters("Format");
-
-                    // Add the default parameters.
-                    inParams["DeveloperVolume"] = true;
-                    inParams["FileSystem"] = _fileSytem;
-                    inParams["FileSystemLabel"] = driveLabel;
-                    inParams["AllocationUnitSize"] = _fourKb;
-
-                    // Execute the method and obtain the return values.
-                    ManagementBaseObject outParams =
-                        queryObj.InvokeMethod("Format", inParams, new InvokeMethodOptions());
-
-                    var returnValue = (uint)outParams["ReturnValue"];
-                    if (returnValue == 0)
-                    {
-                        return new HRESULT(0);
-                    }
-                }
-            }
-
-            // If we got here that means the returnValue was not successful. We give this a specific error but this will need need
-            // to be changed. WMI can return different status and error codes based on the function. The actual returnValue will need
-            // to be converted. https://learn.microsoft.com/en-us/windows/win32/wmisdk/wmi-return-codes
-            return PInvoke.HRESULT_FROM_WIN32(WIN32_ERROR.ERROR_FUNCTION_FAILED);
-        }
-        catch (ManagementException e)
-        {
-            return new HRESULT(e.HResult);
-        }
+        var devDriveFormatter = new DevDriveFormatter();
+        return devDriveFormatter.FormatPartitionAsDevDrive(curDriveLetter, driveLabel);
     }
 }

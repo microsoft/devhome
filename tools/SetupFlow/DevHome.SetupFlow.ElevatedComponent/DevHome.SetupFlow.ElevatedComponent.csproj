@@ -25,7 +25,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
-    <PackageReference Include="System.Management" Version="7.0.0" />
+	  <!-- 
+	  The ExcludeAssets=runtime is needed to prevent build errors from System.Management.dll being produced in 2 different locations.
+	  DevHome.SetupFlow.ComInterop.Projection.csproj, uses System.Management instead, so to prevent the reference from escaping into here
+	  and producing a separate dll that will break the build, this package reference overwrites the one inherited from the comInterop the project.
+	  -->
+    <PackageReference Include="System.Management" Version="7.0.0" ExcludeAssets="runtime"/>
   </ItemGroup>
 
   <ItemGroup>
