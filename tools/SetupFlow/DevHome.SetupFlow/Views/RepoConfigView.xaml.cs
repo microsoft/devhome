@@ -6,7 +6,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
-using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

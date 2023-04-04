@@ -29,7 +29,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         // TODO Remove `this` argument from CreateInstance since this task
         // group is a registered type. This requires updating dependent classes
         // correspondingly.
-        _devDriveReviewViewModel = new(() => _host.CreateInstance<DevDriveReviewViewModel>(this));
+        _devDriveReviewViewModel = new (() => _host.CreateInstance<DevDriveReviewViewModel>(this));
         _stringResource = stringResource;
         _logger = logger;
     }

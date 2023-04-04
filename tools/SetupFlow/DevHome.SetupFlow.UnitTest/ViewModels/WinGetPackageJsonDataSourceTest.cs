@@ -127,7 +127,7 @@ public class WinGetPackageJsonDataSourceTest : BaseSetupFlowTest
     /// </summary>
     /// <param name="fileName">Json file name</param>
     /// <returns>List of loaded package catalogs</returns>
-    private IList<AppManagement.Models.PackageCatalog> LoadCatalogsFromJsonDataSource(string fileName)
+    private IList<Models.PackageCatalog> LoadCatalogsFromJsonDataSource(string fileName)
     {
         var fileNamePath = TestHelpers.GetTestFilePath(fileName);
         var jsonDataSource = TestHost.CreateInstance<WinGetPackageJsonDataSource>(fileNamePath);

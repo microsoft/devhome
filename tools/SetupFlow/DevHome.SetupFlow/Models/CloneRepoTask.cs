@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.SetupFlow.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;

@@ -166,7 +166,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
     /// Load catalogs from restore data source
     /// </summary>
     /// <returns>List of package catalogs</returns>
-    private IList<AppManagement.Models.PackageCatalog> LoadCatalogsFromRestoreDataSource()
+    private IList<Models.PackageCatalog> LoadCatalogsFromRestoreDataSource()
     {
         var restoreDataSource = TestHost!.GetService<WinGetPackageRestoreDataSource>();
         restoreDataSource.InitializeAsync().GetAwaiter().GetResult();

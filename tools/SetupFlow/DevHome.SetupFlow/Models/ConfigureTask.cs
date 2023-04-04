@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Services;

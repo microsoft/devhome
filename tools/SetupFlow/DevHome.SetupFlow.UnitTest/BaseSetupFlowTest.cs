@@ -2,11 +2,9 @@
 // Licensed under the MIT license.
 
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.Services;
-using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
-using DevHome.Telemetry;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;

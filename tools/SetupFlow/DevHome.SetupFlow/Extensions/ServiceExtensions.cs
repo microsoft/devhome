@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
+using Windows.ApplicationModel;
 
 namespace DevHome.SetupFlow.Extensions;
 
@@ -63,7 +64,7 @@ public static class ServiceExtensions
         services.AddTransient<WinGetPackageJsonDataSource>(sp =>
         {
             var dataSourcePath = sp.GetService<IOptions<SetupFlowOptions>>().Value.WinGetPackageJsonDataSourcePath;
-            var dataSourceFullPath = Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, dataSourcePath);
+            var dataSourceFullPath = Path.Combine(Package.Current.InstalledLocation.Path, dataSourcePath);
             return ActivatorUtilities.CreateInstance<WinGetPackageJsonDataSource>(sp, dataSourceFullPath);
         });
 
