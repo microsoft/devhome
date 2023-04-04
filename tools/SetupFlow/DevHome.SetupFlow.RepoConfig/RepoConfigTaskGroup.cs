@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
@@ -59,6 +60,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     /// <param name="cloningInformations">all repositories the user wants to clone.</param>
     public void SaveSetupTaskInformation(List<CloningInformation> cloningInformations)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Saving cloning information to task group");
         _cloneTasks.Clear();
         foreach (var cloningInformation in cloningInformations)
         {

@@ -21,5 +21,6 @@ public class Log
         public static readonly string DevDrive = nameof(DevDrive);
         public static readonly string MainPage = nameof(MainPage);
         public static readonly string Orchestrator = nameof(Orchestrator);
+        public static readonly string RepoConfig = nameof(RepoConfig);
     }
 }

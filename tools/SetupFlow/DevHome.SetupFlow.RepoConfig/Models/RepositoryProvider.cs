@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel.DataTransfer;
 
@@ -52,6 +53,7 @@ internal class RepositoryProvider
     /// <returns>An awaitable task</returns>
     public async Task StartIfNotRunningAsync()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider plugins");
         _devIdProvider = await _pluginWrapper.GetProviderAsync<IDevIdProvider>();
         _repositoryProvider = await _pluginWrapper.GetProviderAsync<IRepositoryProvider>();
     }

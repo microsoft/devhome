@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.RepoConfig.Models;
@@ -35,6 +36,7 @@ internal class RepositoryProviders
     /// <returns>An awaitable task</returns>
     public async Task StartIfNotRunningAsync(string providerName)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Starting RepositoryProvider {providerName}");
         if (_providers.ContainsKey(providerName))
         {
             await _providers[providerName].StartIfNotRunningAsync();
@@ -49,12 +51,15 @@ internal class RepositoryProviders
     /// (string.empty, null)</returns>
     public async Task<(string, IRepository)> ParseRepositoryFromUriAsync(Uri uri)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Parsing repository from URI {uri}");
         foreach (var provider in _providers)
         {
             await provider.Value.StartIfNotRunningAsync();
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Attempting to parse using provider {provider.Key}");
             var repository = provider.Value.ParseRepositoryFromUri(uri);
             if (repository != null)
             {
+                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Repository parsed to {repository.DisplayName} owned by {repository.OwningAccountName}");
                 return (provider.Key, repository);
             }
         }
@@ -68,6 +73,7 @@ internal class RepositoryProviders
     /// <param name="providerName">The provider to log the user into.  Must match IRepositoryProvider.GetDisplayName</param>
     public async Task LogInToProvider(string providerName)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Logging in to provider {providerName}");
         await _providers.GetValueOrDefault(providerName)?.LogIntoProvider();
     }
 
@@ -87,6 +93,7 @@ internal class RepositoryProviders
     /// <returns>A collection of developer Ids of all logged in users.  Can be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts(string providerName)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all logged in accounts for repository provider {providerName}");
         return _providers.GetValueOrDefault(providerName)?.GetAllLoggedInAccounts() ?? new List<IDeveloperId>();
     }
 
@@ -98,6 +105,7 @@ internal class RepositoryProviders
     /// <returns>All the repositories for an account and provider.</returns>
     public async Task<IEnumerable<IRepository>> GetAllRepositoriesAsync(string providerName, IDeveloperId developerId)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all repositories for repository provider {providerName} and account {developerId.DisplayName}");
         return await _providers.GetValueOrDefault(providerName)?.GetAllRepositoriesAsync(developerId) ?? new List<IRepository>();
     }
 }

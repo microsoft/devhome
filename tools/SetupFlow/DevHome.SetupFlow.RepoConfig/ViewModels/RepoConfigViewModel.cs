@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
@@ -76,6 +76,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// <param name="cloningInformation">The cloning information to remove.</param>
     public void RemoveCloningInformation(CloningInformation cloningInformation)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {cloningInformation.RepositoryId} from repos to clone");
         RepoReviewItems.Remove(cloningInformation);
         UpdateCollection();
 
