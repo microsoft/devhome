@@ -13,11 +13,11 @@ public static class AdaptiveCardRendererHelper
 
         var hostConfigJSON = @"
 {
-	""supportsInteractivity"": true,
-	""actions"": {
-		""actionsOrientation"": ""vertical"",
-		""actionAlignment"": ""stretch""
-	}
+    ""supportsInteractivity"": true,
+    ""actions"": {
+        ""actionsOrientation"": ""vertical"",
+        ""actionAlignment"": ""stretch""
+    }
 }
 ";
         var hostConfig = AdaptiveHostConfig.FromJsonString(hostConfigJSON);
