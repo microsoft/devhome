@@ -1,31 +1,25 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using DevHome.Common.Extensions;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.DevDrive.ViewModels;
 
 public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
 {
-    private readonly ILogger _logger;
     private readonly IHost _host;
     private readonly ISetupFlowStringResource _stringResource;
 
-    public DevDriveReviewViewModel(IHost host, ILogger logger, ISetupFlowStringResource stringResource, DevDriveTaskGroup taskGroup)
+    public DevDriveReviewViewModel(IHost host, ISetupFlowStringResource stringResource, DevDriveTaskGroup taskGroup)
     {
-        _logger = logger;
+        _host = host;
         _stringResource = stringResource;
         TabTitle = stringResource.GetLocalized(StringResourceKey.DevDriveReviewTitle);
-        _host = host;
     }
 
     /// <summary>

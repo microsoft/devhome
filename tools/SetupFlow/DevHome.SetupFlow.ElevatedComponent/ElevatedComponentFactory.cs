@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using DevHome.SetupFlow.ElevatedComponent.AppManagement;
+using DevHome.SetupFlow.ElevatedComponent.Helpers;
 
 namespace DevHome.SetupFlow.ElevatedComponent;
 
@@ -17,6 +18,7 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
 
     public PackageInstaller CreatePackageInstaller()
     {
+        Log.Logger?.ReportInfo(nameof(ElevatedComponentFactory), "Creating elevated package installer");
         return new PackageInstaller();
     }
 

@@ -25,7 +25,6 @@ namespace DevHome.SetupFlow.Summary.ViewModels;
 
 public partial class SummaryViewModel : SetupPageViewModelBase
 {
-    private readonly ILogger _logger;
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly IHost _host;
 
@@ -91,11 +90,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     public SummaryViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        ILogger logger,
         IHost host)
         : base(stringResource, orchestrator)
     {
-        _logger = logger;
         _orchestrator = orchestrator;
         _host = host;
 

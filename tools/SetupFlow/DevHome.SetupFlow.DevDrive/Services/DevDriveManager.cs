@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
@@ -32,7 +33,6 @@ namespace DevHome.SetupFlow.DevDrive.Services;
 /// </summary>
 public class DevDriveManager : IDevDriveManager
 {
-    private readonly ILogger _logger;
     private readonly IHost _host;
     private readonly string _defaultVhdxLocation;
     private readonly string _defaultVhdxName;
@@ -91,10 +91,9 @@ public class DevDriveManager : IDevDriveManager
     /// </summary>
     public event EventHandler<IDevDrive> RequestToCloseViewModelWindow = (sender, e) => { };
 
-    public DevDriveManager(IHost host, ILogger logger, ISetupFlowStringResource stringResource)
+    public DevDriveManager(IHost host, ISetupFlowStringResource stringResource)
     {
         _host = host;
-        _logger = logger;
         _stringResource = stringResource;
         _defaultVhdxLocation = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFolderName);
         _defaultVhdxName = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFileName);
@@ -239,7 +238,7 @@ public class DevDriveManager : IDevDriveManager
         catch (Exception ex)
         {
             // Log then return empty list, as this only means we don't show the user their existing dev drive. Not catastrophic failure.
-            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed Get existing Dev Drives. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(nameof(DevDriveManager), $"Failed Get existing Dev Drives. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
             return new List<IDevDrive>();
         }
     }
@@ -297,7 +296,7 @@ public class DevDriveManager : IDevDriveManager
         catch (Exception ex)
         {
             // we don't need to rethrow the exception/crash, we need to tell the user we couldn't find the default folder.
-            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed Get default folder for Dev Drive. {ex.Message}");
+            Log.Logger?.ReportError(nameof(DevDriveManager), $"Failed Get default folder for Dev Drive. {ex.Message}");
             return DevDriveValidationResult.DefaultFolderNotAvailable;
         }
     }

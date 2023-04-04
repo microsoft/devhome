@@ -36,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.ComInterop.Projection\DevHome.SetupFlow.ComInterop.Projection.csproj" />
   </ItemGroup>
 </Project>

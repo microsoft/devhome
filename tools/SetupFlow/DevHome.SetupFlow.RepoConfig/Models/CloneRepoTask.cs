@@ -34,7 +34,7 @@ public class CloneRepoTask : ISetupTask
     /// <summary>
     /// Gets the display name of the repository.
     /// </summary>
-    public string RepositoryName => repositoryToClone.DisplayName;
+    public string RepositoryName => RepositoryToClone.DisplayName;
 
     /// <summary>
     /// Gets the provider name the repository is cloning from.

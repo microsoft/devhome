@@ -16,7 +16,6 @@ using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.DevDrive.Windows;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Windows.Storage.Pickers;
@@ -27,7 +26,6 @@ namespace DevHome.SetupFlow.DevDrive.ViewModels;
 
 public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewModel
 {
-    private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IDevDriveManager _devDriveManager;
     private readonly string _localizedBrowseButtonText;
@@ -80,12 +78,10 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     public string AppTitle => Application.Current.GetService<WindowEx>().Title;
 
     public DevDriveViewModel(
-        ILogger logger,
         ISetupFlowStringResource stringResource,
         DevDriveTaskGroup taskGroup,
         IDevDriveManager devDriveManager)
     {
-        _logger = logger;
         _taskGroup = taskGroup;
         _stringResource = stringResource;
         _byteUnitList = new Dictionary<ByteUnit, string>

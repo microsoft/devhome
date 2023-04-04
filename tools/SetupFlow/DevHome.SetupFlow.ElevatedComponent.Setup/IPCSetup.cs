@@ -4,6 +4,7 @@
 using System.Diagnostics;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
+using DevHome.Logging;
 using Windows.Win32;
 using Windows.Win32.System.Com;
 using WinRT;
@@ -139,6 +140,8 @@ public static class IPCSetup
     /// </returns>
     public static (RemoteObject<T>, Process) CreateOutOfProcessObjectAndGetProcess<T>(bool isForTesting = false)
     {
+        var logger = new ComponentLogger("Client", "IPCSetup").Logger;
+
         // The shared memory block, initialization event and completion semaphore all need a name
         // that will be used by the child process to find them. We use new random GUIDs for them.
         // For the memory block, we also set the handle inheritability so that only descendant
@@ -148,6 +151,7 @@ public static class IPCSetup
         var completionSemaphoreName = Guid.NewGuid().ToString();
 
         // Create shared memory block.
+        logger?.ReportInfo("Creating shared memory block");
         using var mappedFile = MemoryMappedFile.CreateNew(
             mappedFileName,
             MappedMemoryCapacityInBytes,
@@ -161,6 +165,7 @@ public static class IPCSetup
         using (var mappedFileAccessor = mappedFile.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Write))
         {
             mappedMemoryValue.HResult = unchecked((int)0x80000008); // E_FAIL
+            logger?.ReportInfo($"Writing initial value in memory with HResult={mappedMemoryValue.HResult:x}");
             mappedFileAccessor.Write(0, ref mappedMemoryValue);
         }
 
@@ -196,23 +201,32 @@ public static class IPCSetup
                 processStartInfo.RedirectStandardOutput = true;
             }
 
+            logger?.ReportInfo("Starting server process");
             var process = Process.Start(processStartInfo);
             if (process is null)
             {
+                logger?.ReportError("Failed to start background process");
                 throw new InvalidOperationException("Failed to start background process");
             }
 
             // Wait for the background process to finish initializing the object and writing
             // it to the shared memory. The timeout is arbitrary and can be changed.
             // We also stop waiting if the process exits or has already exited.
-            process.Exited += (_, _) => { initEvent.Set(); };
+            process.Exited += (_, _) =>
+            {
+                logger?.ReportInfo("Background process exited");
+                initEvent.Set();
+            };
+
             if (process.HasExited || !initEvent.WaitOne(60 * 1000))
             {
+                logger?.ReportError("Background process failed to initialized in the allowed time");
                 throw new TimeoutException("Background process failed to initialized in the allowed time");
             }
 
             if (process.HasExited)
             {
+                logger?.ReportError($"Background process terminated with error code {process.ExitCode}");
                 throw new InvalidOperationException("Background process terminated");
             }
 
@@ -220,6 +234,7 @@ public static class IPCSetup
             using (var mappedFileAccessor = mappedFile.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Read))
             {
                 mappedFileAccessor.Read(0, out mappedMemoryValue);
+                logger?.ReportInfo($"Read mapped memory value. HResult: {mappedMemoryValue.HResult:x}");
                 Marshal.ThrowExceptionForHR(mappedMemoryValue.HResult);
             }
 
@@ -235,6 +250,7 @@ public static class IPCSetup
                     uint bytesWritten;
                     try
                     {
+                        logger?.ReportInfo("Read mapped memory object into stream");
                         mappedFileAccessor.SafeMemoryMappedViewHandle.AcquirePointer(ref rawPointer);
                         Marshal.ThrowExceptionForHR(stream.Write(rawPointer + MappedMemoryValueSizeInBytes, (uint)mappedMemoryValue.MarshaledObjectSize, &bytesWritten));
                     }
@@ -248,6 +264,7 @@ public static class IPCSetup
 
                     if (bytesWritten != mappedMemoryValue.MarshaledObjectSize)
                     {
+                        logger?.ReportError("Shared memory stream has unexpected data");
                         throw new InvalidDataException("Shared memory stream has unexpected data");
                     }
 
@@ -256,13 +273,17 @@ public static class IPCSetup
                 }
             }
 
+            logger?.ReportInfo("Unmarshaling object from stream data");
             Marshal.ThrowExceptionForHR(PInvoke.CoUnmarshalInterface(stream, GetMarshalInterfaceGUID<T>(), out var obj));
             var value = MarshalInterface<T>.FromAbi(Marshal.GetIUnknownForObject(obj));
 
+            logger?.ReportInfo("Returning remote object");
             return (new RemoteObject<T>(value, completionSemaphore), process);
         }
-        catch
+        catch (Exception e)
         {
+            logger?.ReportError($"Error occuring while setting up elevated process: {e.Message}");
+
             // Release the "mutex" if there is any error.
             // On success, we will release it after we're done with the work.
             completionSemaphore.Release();
@@ -288,7 +309,10 @@ public static class IPCSetup
         string initEventName,
         string completionSemaphoreName)
     {
+        var logger = new ComponentLogger("Server", "IPCSetup").Logger;
+
         // Open the shared resources
+        logger?.ReportInfo("Opening shared resources");
         var mappedFile = MemoryMappedFile.OpenExisting(mappedFileName, MemoryMappedFileRights.Write);
         var initEvent = EventWaitHandle.OpenExisting(initEventName);
         var completionSemaphore = Semaphore.OpenExisting(completionSemaphoreName);
@@ -349,19 +373,25 @@ public static class IPCSetup
         }
         catch (Exception e)
         {
+            logger?.ReportError($"Error occurred during setup: {e.Message}");
             mappedMemory.HResult = e.HResult;
         }
 
         // Write the init result and if needed the factory object size.
         using (var accessor = mappedFile.CreateViewAccessor())
         {
+            logger?.ReportInfo($"Writing value into shared memory block");
             accessor.Write(0, ref mappedMemory);
         }
 
         // Signal to the caller that we finished initialization.
+        logger?.ReportInfo("Signaling initialization finished");
         initEvent.Set();
 
         // Wait until the caller releases the object
+        logger?.ReportInfo("Waiting to receive signal to exit");
         completionSemaphore.WaitOne();
+
+        logger?.ReportInfo("Exiting");
     }
 }

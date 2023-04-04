@@ -18,25 +18,22 @@ namespace DevHome.SetupFlow.RepoConfig.ViewModels;
 
 public partial class RepoConfigReviewViewModel : ReviewTabViewModelBase
 {
-    private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly RepoConfigTaskGroup _taskGroup;
     private readonly ReadOnlyObservableCollection<string> _repositoriesToClone;
 
     public ReadOnlyObservableCollection<string> RepositoriesToClone => _repositoriesToClone;
 
-    public RepoConfigReviewViewModel(ILogger logger, ISetupFlowStringResource stringResource, RepoConfigTaskGroup taskGroup)
+    public RepoConfigReviewViewModel(ISetupFlowStringResource stringResource, RepoConfigTaskGroup taskGroup)
     {
-        _logger = logger;
         _stringResource = stringResource;
         _taskGroup = taskGroup;
 
         TabTitle = stringResource.GetLocalized(StringResourceKey.Repository);
     }
 
-    public RepoConfigReviewViewModel(ILogger logger, ISetupFlowStringResource stringResource, List<CloneRepoTask> cloningTasks)
+    public RepoConfigReviewViewModel(ISetupFlowStringResource stringResource, List<CloneRepoTask> cloningTasks)
     {
-        _logger = logger;
         _stringResource = stringResource;
         _repositoriesToClone = new ReadOnlyObservableCollection<string>(
             new ObservableCollection<string>(cloningTasks.Select(x => x.RepositoryToClone.DisplayName)));

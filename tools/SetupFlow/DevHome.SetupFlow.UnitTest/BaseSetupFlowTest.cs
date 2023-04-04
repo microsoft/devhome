@@ -48,7 +48,6 @@ public class BaseSetupFlowTest
             .ConfigureServices(services =>
             {
                 // Common services
-                services.AddSingleton<ILogger>(new Mock<ILogger>().Object);
                 services.AddSingleton<IThemeSelectorService>(ThemeSelectorService!.Object);
                 services.AddSingleton<ISetupFlowStringResource>(_ =>
                 {

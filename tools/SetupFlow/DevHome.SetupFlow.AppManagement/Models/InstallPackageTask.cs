@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.ElevatedComponent;
@@ -18,7 +19,6 @@ namespace DevHome.SetupFlow.AppManagement.Models;
 
 public class InstallPackageTask : ISetupTask
 {
-    private readonly ILogger _logger;
     private readonly IWindowsPackageManager _wpm;
     private readonly WinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
@@ -46,13 +46,11 @@ public class InstallPackageTask : ISetupTask
     }
 
     public InstallPackageTask(
-        ILogger logger,
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
         WindowsPackageManagerFactory wingetFactory,
         WinGetPackage package)
     {
-        _logger = logger;
         _wpm = wpm;
         _stringResource = stringResource;
         _wingetFactory = wingetFactory;
@@ -93,6 +91,7 @@ public class InstallPackageTask : ISetupTask
         {
             try
             {
+                Log.Logger?.ReportInfo(nameof(InstallPackageTask), $"Starting installation of package {_package.Id}");
                 var installResult = await _wpm.InstallPackageAsync(_package);
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
@@ -100,13 +99,14 @@ public class InstallPackageTask : ISetupTask
             }
             catch (InstallPackageException e)
             {
+                // TODO: Add telemetry for install failures
                 _installPackageException = e;
-                _logger.LogError(nameof(InstallPackageTask), LogLevel.Local, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
+                Log.Logger?.ReportError(nameof(InstallPackageTask), $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
                 return TaskFinishedState.Failure;
             }
             catch (Exception e)
             {
-                _logger.LogError(nameof(InstallPackageTask), LogLevel.Local, $"Exception thrown while installing package: {e.Message}");
+                Log.Logger?.ReportError(nameof(InstallPackageTask), $"Exception thrown while installing package: {e.Message}");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -116,6 +116,7 @@ public class InstallPackageTask : ISetupTask
     {
         return Task.Run(async () =>
         {
+            Log.Logger?.ReportInfo(nameof(InstallPackageTask), $"Starting installation with elevation of package {_package.Id}");
             var packageInstaller = elevatedComponentFactory.CreatePackageInstaller();
             var installResult = await packageInstaller.InstallPackage(_package.Id, _package.CatalogName);
             WasInstallSuccessful = installResult.InstallSucceeded;
