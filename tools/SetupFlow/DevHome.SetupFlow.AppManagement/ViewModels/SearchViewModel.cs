@@ -112,7 +112,7 @@ public partial class SearchViewModel : ObservableObject
         }
         catch (Exception e)
         {
-            Log.Logger.ReportError(nameof(SearchViewModel), $"Search error: {e.Message}");
+            Log.Logger?.ReportError(nameof(SearchViewModel), $"Search error: {e.Message}");
             return (SearchResultStatus.ExceptionThrown, null);
         }
     }
