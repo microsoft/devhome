@@ -125,6 +125,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
     public void ReportDialogCancellation()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repo add/edit dialog cancelled");
         RepoDialogCancelled();
     }
 }

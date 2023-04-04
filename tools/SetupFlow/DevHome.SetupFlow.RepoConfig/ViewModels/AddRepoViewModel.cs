@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.RepoConfig.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
@@ -309,6 +310,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="cloneLocation">The location to clone all repositories to.</param>
     public void SetCloneLocation(string cloneLocation)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Setting the clone location for all repositories to {cloneLocation}");
         foreach (var cloningInformation in EverythingToClone)
         {
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);

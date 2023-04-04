@@ -149,7 +149,7 @@ public class CloneRepoTask : ISetupTask
 
             try
             {
-                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {repositoryToClone.DisplayName}");
+                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
                 await RepositoryToClone.CloneRepositoryAsync(cloneLocation.FullName, _developerId);
             }
             catch (Exception e)
