@@ -20,6 +20,12 @@ public sealed partial class Banner : UserControl
         set => SetValue(DescriptionProperty, value);
     }
 
+    public int TextWidth
+    {
+        get => (int)GetValue(TextWidthProperty);
+        set => SetValue(TextWidthProperty, value);
+    }
+
     public string ImageSource
     {
         get => (string)GetValue(ImageSourceProperty);
@@ -57,6 +63,7 @@ public sealed partial class Banner : UserControl
 
     public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(Banner), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty DescriptionProperty = DependencyProperty.Register(nameof(Description), typeof(string), typeof(Banner), new PropertyMetadata(string.Empty));
+    public static readonly DependencyProperty TextWidthProperty = DependencyProperty.Register(nameof(TextWidth), typeof(int), typeof(Banner), new PropertyMetadata(null));
     public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(nameof(ImageSource), typeof(string), typeof(Banner), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty ButtonTextProperty = DependencyProperty.Register(nameof(ButtonText), typeof(string), typeof(Banner), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty ButtonCommandProperty = DependencyProperty.Register(nameof(ButtonCommand), typeof(ICommand), typeof(Banner), new PropertyMetadata(null));

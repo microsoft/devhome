@@ -33,6 +33,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private readonly IHost _host;
 
     [ObservableProperty]
+    private bool _showBanner = true;
+
+    [ObservableProperty]
     private bool _showDevDriveItem;
 
     /// <summary>
@@ -55,6 +58,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
+    }
+
+    [RelayCommand]
+    private void HideBanner()
+    {
+        ShowBanner = false;
     }
 
     /// <summary>

@@ -206,7 +206,7 @@
     <comment>Title text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.Description" xml:space="preserve">
-    <value>Find out how you can use Dev Home to get your development machine set up quickly.</value>
+    <value>Find out how you can use Dev Home to set up your development machine more quickly.</value>
     <comment>{Locked="Dev Home"}Description text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.ButtonText" xml:space="preserve">
@@ -362,7 +362,7 @@
     <comment>Text shown if no applications were selected to install</comment>
   </data>
   <data name="NavigationPane.Content" xml:space="preserve">
-    <value>Dev Setup tool</value>
+    <value>Machine Configuration</value>
     <comment>Navigation pane content</comment>
   </data>
   <data name="NoApplicationsSelected.Text" xml:space="preserve">
@@ -446,7 +446,7 @@
     <comment>Text indicating that a reboot may be needed to finish the setup</comment>
   </data>
   <data name="ReviewNothingToSetUpToolTip" xml:space="preserve">
-    <value>Nothing to set up</value>
+    <value>There's nothing to set up​</value>
     <comment>Text shown on a tool tip for a "Start set up" button if there is noting to set up</comment>
   </data>
   <data name="SearchBox.PlaceholderText" xml:space="preserve">

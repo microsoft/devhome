@@ -105,11 +105,20 @@
                         MinWidth="120"
                         Visibility="{x:Bind ViewModel.Orchestrator.HasPreviousPage, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Previous" />
-                <Button Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
-                        Style="{StaticResource AccentButtonStyle}"
-                        MinWidth="120"
-                        Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
-                        ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
+
+                <!-- We sometimes want to show a tooltip on the button when it is disabled,
+                     but tooltips only show on enabled controls. As a hacky workaround,
+                     put the button in a container and the tooltip in the container.
+                     But for some reason the tooltip doesn't show up if the button is the
+                     only control, so add an empty control... -->
+                <Grid ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+                    <TextBlock IsTabStop="False" />
+                    <Button Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
+                            Style="{StaticResource AccentButtonStyle}"
+                            MinWidth="120"
+                            Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
+                            ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
+                </Grid>
             </StackPanel>
         </Grid>
     </Grid>
