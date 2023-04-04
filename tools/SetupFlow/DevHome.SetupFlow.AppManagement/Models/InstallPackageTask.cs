@@ -34,6 +34,12 @@ public class InstallPackageTask : ISetupTask
     // installation may need a reboot by default.
     public bool RequiresReboot { get; set; } = true;
 
+    // May potentially be moved to a central list in the future.
+    public bool WasInstallSuccessful
+    {
+        get; private set;
+    }
+
     public bool DependsOnDevDriveToBeInstalled
     {
         get;
@@ -88,6 +94,7 @@ public class InstallPackageTask : ISetupTask
                 Log.Logger?.ReportInfo(nameof(InstallPackageTask), $"Starting installation of package {_package.Id}");
                 var installResult = await _wpm.InstallPackageAsync(_package);
                 RequiresReboot = installResult.RebootRequired;
+                WasInstallSuccessful = true;
                 return TaskFinishedState.Success;
             }
             catch (InstallPackageException e)
@@ -112,6 +119,7 @@ public class InstallPackageTask : ISetupTask
             Log.Logger?.ReportInfo(nameof(InstallPackageTask), $"Starting installation with elevation of package {_package.Id}");
             var packageInstaller = elevatedComponentFactory.CreatePackageInstaller();
             var installResult = await packageInstaller.InstallPackage(_package.Id, _package.CatalogName);
+            WasInstallSuccessful = installResult.InstallSucceeded;
             return installResult.InstallSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }

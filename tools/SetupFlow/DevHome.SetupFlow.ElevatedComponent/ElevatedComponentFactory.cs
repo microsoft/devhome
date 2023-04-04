@@ -21,4 +21,9 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
         Log.Logger?.ReportInfo(nameof(ElevatedComponentFactory), "Creating elevated package installer");
         return new PackageInstaller();
     }
+
+    public DevDriveStorageOperator CreateDevDriveStorageOperator()
+    {
+        return new DevDriveStorageOperator();
+    }
 }

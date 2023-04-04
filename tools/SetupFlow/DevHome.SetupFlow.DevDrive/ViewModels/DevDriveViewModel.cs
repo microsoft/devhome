@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -26,7 +27,6 @@ namespace DevHome.SetupFlow.DevDrive.ViewModels;
 public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewModel
 {
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly DevDriveTaskGroup _taskGroup;
     private readonly IDevDriveManager _devDriveManager;
     private readonly string _localizedBrowseButtonText;
     private readonly ObservableCollection<string> _errorList = new ();
@@ -35,6 +35,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private readonly Dictionary<ByteUnit, string> _byteUnitList;
 
     private Models.DevDrive _concreteDevDrive = new ();
+    private DevDriveTaskGroup _taskGroup;
 
     /// <summary>
     /// Gets a value indicating whether the DevDrive window has been opened.
@@ -76,8 +77,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     public string AppTitle => Application.Current.GetService<WindowEx>().Title;
 
-    public DevDriveViewModel(
-        IHost host,
+    public DevDriveViewModel(,
         ISetupFlowStringResource stringResource,
         DevDriveTaskGroup taskGroup,
         IDevDriveManager devDriveManager)
@@ -171,7 +171,11 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
     }
 
-    public DevDriveTaskGroup TaskGroup => _taskGroup;
+    public DevDriveTaskGroup TaskGroup
+    {
+        get => _taskGroup;
+        set => _taskGroup = value;
+    }
 
     /// <summary>
     /// gets the localized Browse button text for the browse button.

@@ -58,10 +58,10 @@ public interface IDevDriveManager
     public (DevDriveValidationResult, IDevDrive) GetNewDevDrive();
 
     /// <summary>
-    /// Gets a list of all Dev Drives currently on the local system. This will cause storage calls
-    /// that may be slow so it is done through a task. These Dev Drives have their DevDriveState set to Exists.
+    /// Gets a list of all Dev Drives currently on the local system.
+    /// These Dev Drives have their DevDriveState set to Exists.
     /// </summary>
-    public Task<IEnumerable<IDevDrive>> GetAllDevDrivesThatExistOnSystem();
+    public IEnumerable<IDevDrive> GetAllDevDrivesThatExistOnSystem();
 
     /// <summary>
     /// Event that requesters can subscribe to, to know when a Dev Drive window has closed.
@@ -100,15 +100,6 @@ public interface IDevDriveManager
     /// A list of sorted drive letters currently not in use by the Dev Drive manager and the system
     /// </returns>
     public IList<char> GetAvailableDriveLetters(char? usedLetterToKeepInList = null);
-
-    /// <summary>
-    /// Removes Dev Drives that were created in memory by the Dev Drive Manager. This does not detach
-    /// or remove a Dev Drive from the users machine.
-    /// <param name="devDrive">Dev Drive object</param>
-    /// <returns>
-    /// A result indicating whether the operation was successful.
-    /// </returns>
-    public DevDriveValidationResult RemoveDevDrive(IDevDrive devDrive);
 
     /// <summary>
     /// Allows objects who hold a IDevDrive object to request that the Manager tell the view model to close the
