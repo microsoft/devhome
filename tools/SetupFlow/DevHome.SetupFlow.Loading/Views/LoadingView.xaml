@@ -15,6 +15,15 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
+                <ResourceDictionary>
+                    <Style x:Key="DevHomeBorderStyle" TargetType="Border" >
+                        <Setter Property="BorderBrush">
+                            <Setter.Value>
+                                <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -32,14 +41,16 @@
         </Grid>
         <ProgressBar x:Name="SetupTaskProgressBar" Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
         <TextBlock Text="{x:Bind ViewModel.ExecutingTasks, Mode=OneWay}" />
-        <Grid>
+        <Grid ColumnSpacing="50">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <StackPanel x:Name="ExecutingTasksStackPanel" Grid.Column="0">
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks"/>
-                <ScrollViewer x:Name="AllRunningTasksScrollViewer" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
+                <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
+                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Padding="0, 0, 0, 20"/>
+                </Border>
+                <ScrollViewer x:Name="AllRunningTasksScrollViewer" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" Margin="0, 20, 0, 0">
                     <StackPanel>
                         <StackPanel.Resources>
                             <StackLayout x:Name="VerticalStackLayout" Orientation="Vertical" Spacing="8"/> 
@@ -61,15 +72,17 @@
                 </ScrollViewer>
             </StackPanel>
             <StackPanel x:Name="ActionCenterStackPanel" Grid.Column="1">
-                <Grid ColumnSpacing="10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter"/>
-                    <HyperlinkButton Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}"/>
-                </Grid>
-                <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}"/>
+                <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1" >
+                    <Grid ColumnSpacing="10"  Padding="0, 0, 0, 20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter"/>
+                        <HyperlinkButton Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}"/>
+                    </Grid>
+                </Border>
+                <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}"  Margin="0, 20, 0, 0"/>
                 <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <StackPanel.Resources>
