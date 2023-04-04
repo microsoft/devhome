@@ -52,7 +52,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog
         {
             var packageManager = _wingetFactory.CreatePackageManager();
             var compositeCatalog = packageManager.CreateCompositePackageCatalog(_compositeCatalogOptions);
-            Log.Logger?.ReportInfo(nameof(WinGetCompositeCatalog), $"Connecting to catalog {compositeCatalog.Info.Name}");
+            Log.Logger?.ReportInfo(nameof(WinGetCompositeCatalog), "Connecting to composite catalog");
             var connection = await compositeCatalog.ConnectAsync();
             if (connection.Status != ConnectResultStatus.Ok)
             {

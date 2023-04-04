@@ -12,12 +12,19 @@ namespace DevHome.Logging;
 public class ComponentLogger : IDisposable
 {
     private readonly string _componentName;
+    private readonly string _folderName;
     private Logger? _logger;
     private bool disposedValue;
 
     public ComponentLogger(string componentName)
+        : this(componentName, componentName)
+    {
+    }
+
+    public ComponentLogger(string componentName, string folderName)
     {
         _componentName = componentName;
+        _folderName = folderName;
     }
 
     public Logger? Logger
@@ -52,7 +59,7 @@ public class ComponentLogger : IDisposable
         {
             LogFileFolderRoot = ApplicationData.Current.TemporaryFolder.Path,
             LogFileName = _componentName + "_{now}.log",
-            LogFileFolderName = _componentName,
+            LogFileFolderName = _folderName,
             DebugListenerEnabled = true,
 #if DEBUG
             LogStdoutEnabled = true,
