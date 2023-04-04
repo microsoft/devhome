@@ -101,7 +101,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
                 Log.Logger?.ReportWarn(nameof(WinGetPackageJsonDataSource), $"JSON package catalog [{catalogName}] is empty");
             }
         }
-        catch (Exception)
+        catch (Exception e)
         {
             Log.Logger?.ReportError(nameof(WinGetPackageJsonDataSource), $"Error loading packages from winget catalog: {e.Message}");
         }

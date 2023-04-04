@@ -97,7 +97,7 @@ public class InstallPackageTask : ISetupTask
                 Log.Logger?.ReportError(nameof(InstallPackageTask), $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
                 return TaskFinishedState.Failure;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 Log.Logger?.ReportError(nameof(InstallPackageTask), $"Exception thrown while installing package: {e.Message}");
                 return TaskFinishedState.Failure;

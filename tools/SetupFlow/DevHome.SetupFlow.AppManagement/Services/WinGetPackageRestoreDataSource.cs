@@ -91,7 +91,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
                 Log.Logger?.ReportInfo(nameof(WinGetPackageRestoreDataSource), "No packages found from restore");
             }
         }
-        catch (Exception)
+        catch (Exception e)
         {
             Log.Logger?.ReportError(nameof(WinGetPackageRestoreDataSource), $"Error loading packages from winget restore catalog: {e.Message}");
         }

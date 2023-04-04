@@ -74,7 +74,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
             Log.Logger.ReportInfo(nameof(PackageCatalogListViewModel), $"Initializing package list from data source {dataSource.GetType().Name}");
             await dataSource.InitializeAsync();
         }
-        catch (Exception)
+        catch (Exception e)
         {
             Log.Logger.ReportError(nameof(PackageCatalogListViewModel), $"Exception thrown while initializing data source of type {dataSource.GetType().Name}");
             Log.Logger.ReportError(nameof(PackageCatalogListViewModel), e.Message);

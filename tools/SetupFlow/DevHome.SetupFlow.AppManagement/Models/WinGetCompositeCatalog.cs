@@ -62,7 +62,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog
 
             _catalog = connection.PackageCatalog;
         }
-        catch (Exception)
+        catch (Exception e)
         {
             Log.Logger?.ReportError(nameof(WinGetCompositeCatalog), $"Error connecting to catalog reference: {e.Message}");
             throw;
@@ -85,7 +85,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog
 
             return await FindPackagesAsync(options);
         }
-        catch (Exception)
+        catch (Exception e)
         {
             Log.Logger?.ReportError(nameof(WinGetCompositeCatalog), $"Error searching for packages: {e.Message}");
             throw;
@@ -111,7 +111,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog
             Log.Logger?.ReportInfo(nameof(WinGetCompositeCatalog), "Starting search for packages");
             return await FindPackagesAsync(options);
         }
-        catch (Exception)
+        catch (Exception e)
         {
             Log.Logger?.ReportError(nameof(WinGetCompositeCatalog), $"Error getting packages: {e.Message}");
             throw;
