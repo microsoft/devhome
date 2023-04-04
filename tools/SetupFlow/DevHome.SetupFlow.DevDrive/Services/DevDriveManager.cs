@@ -238,7 +238,7 @@ public class DevDriveManager : IDevDriveManager
         catch (Exception ex)
         {
             // Log then return empty list, as this only means we don't show the user their existing dev drive. Not catastrophic failure.
-            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed Get existing Dev Drives. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(nameof(DevDriveManager), $"Failed Get existing Dev Drives. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
             return new List<IDevDrive>();
         }
     }

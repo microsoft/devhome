@@ -77,7 +77,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     public string AppTitle => Application.Current.GetService<WindowEx>().Title;
 
-    public DevDriveViewModel(,
+    public DevDriveViewModel(
         ISetupFlowStringResource stringResource,
         DevDriveTaskGroup taskGroup,
         IDevDriveManager devDriveManager)
