@@ -107,7 +107,9 @@ internal class ConfigureTask : ISetupTask
                     return TaskFinishedState.Failure;
                 }
 
+                Log.Logger?.ReportInfo(Log.Component.Configuration, "Starting to apply configuration set");
                 var result = await _processor.ApplySetAsync(_configSet, ApplyConfigurationSetFlags.None);
+                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
                 if (result.ResultCode != null)
                 {
                     throw result.ResultCode;
@@ -129,6 +131,7 @@ internal class ConfigureTask : ISetupTask
     IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
     {
         // Noop
+        Log.Logger?.ReportWarn(Log.Component.Configuration, "Configuration should not be applied as admin");
         return Task.FromResult(TaskFinishedState.Failure).AsAsyncOperation();
     }
 }
