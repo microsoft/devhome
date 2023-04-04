@@ -21,7 +21,7 @@
         <Grid Grid.Row="0">
             <StackPanel Orientation="Horizontal" Margin="15,10,15,5">
                 <Rectangle Width="16" Height="16" Margin="0,0,8,0"
-                           Fill="{x:Bind views:DashboardView.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition),Mode=OneWay}"/>
+                           Fill="{x:Bind views:DashboardView.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme),Mode=OneWay}"/>
                 <TextBlock Text="{x:Bind WidgetSource.WidgetDisplayTitle, Mode=OneWay}" VerticalAlignment="Center" FontSize="{ThemeResource CaptionTextBlockFontSize}"/>
             </StackPanel>
             <Button Tag="{x:Bind}" Content="&#xE712;" 

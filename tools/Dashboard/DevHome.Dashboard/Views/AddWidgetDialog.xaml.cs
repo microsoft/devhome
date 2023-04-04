@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Dashboard.Helpers;
@@ -26,24 +25,17 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     public WidgetViewModel ViewModel { get; set; }
 
-    private readonly SortedDictionary<string, BitmapImage> _widgetIconCache;
-    private readonly SortedDictionary<string, BitmapImage> _providerIconCache;
-
     public AddWidgetDialog(
         WidgetHost host,
         WidgetCatalog catalog,
         AdaptiveCardRenderer renderer,
-        DispatcherQueue dispatcher,
-        SortedDictionary<string, BitmapImage> providerIconCache,
-        SortedDictionary<string, BitmapImage> widgetIconCache)
+        DispatcherQueue dispatcher)
     {
         ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, renderer, dispatcher);
         this.InitializeComponent();
 
         _widgetHost = host;
         _widgetCatalog = catalog;
-        _providerIconCache = providerIconCache;
-        _widgetIconCache = widgetIconCache;
 
         FillAvailableWidgets();
     }
@@ -101,13 +93,13 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private StackPanel BuildProviderNavItem(WidgetProviderDefinition providerDefinition)
     {
-        _providerIconCache.TryGetValue(providerDefinition.Id, out var image);
+        var image = DashboardView.GetProviderIcon(providerDefinition);
         return BuildNavItem(image, providerDefinition.DisplayName);
     }
 
     private StackPanel BuildWidgetNavItem(WidgetDefinition widgetDefinition)
     {
-        _widgetIconCache.TryGetValue(widgetDefinition.Id, out var image);
+        var image = DashboardView.GetWidgetIconForTheme(widgetDefinition, ActualTheme);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
     }
 
