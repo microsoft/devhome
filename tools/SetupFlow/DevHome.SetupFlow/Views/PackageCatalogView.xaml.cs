@@ -4,11 +4,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.SetupFlow.AppManagement.ViewModels;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.SetupFlow.AppManagement.Views;
+namespace DevHome.SetupFlow.Views;
 
 [INotifyPropertyChanged]
 public sealed partial class PackageCatalogView : UserControl

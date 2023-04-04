@@ -3,7 +3,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace DevHome.SetupFlow.Common.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 /// <summary>
 /// Base view model class for all the tabs we show in the Review page of the Setup flow.

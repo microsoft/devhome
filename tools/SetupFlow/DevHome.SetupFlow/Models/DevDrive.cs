@@ -3,9 +3,9 @@
 
 using System;
 using DevHome.Common.Models;
-using DevHome.SetupFlow.DevDrive.Utilities;
+using DevHome.SetupFlow.Utilities;
 
-namespace DevHome.SetupFlow.DevDrive.Models;
+namespace DevHome.SetupFlow.Models;
 
 /// <summary>
 /// Model class representation for Dev Drives.

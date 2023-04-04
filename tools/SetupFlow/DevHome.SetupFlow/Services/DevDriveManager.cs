@@ -10,13 +10,11 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.DevDrive.Models;
-using DevHome.SetupFlow.DevDrive.Utilities;
-using DevHome.SetupFlow.DevDrive.ViewModels;
-using DevHome.SetupFlow.DevDrive.Windows;
-using DevHome.Telemetry;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.TaskGroups;
+using DevHome.SetupFlow.Utilities;
+using DevHome.SetupFlow.ViewModels;
+using DevHome.SetupFlow.Windows;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
@@ -24,7 +22,7 @@ using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.System.Ioctl;
 
-namespace DevHome.SetupFlow.DevDrive.Services;
+namespace DevHome.SetupFlow.Services;
 
 /// <summary>
 /// Class for Dev Drive manager. The Dev Drive manager is the mediator between the Dev Drive view Model for

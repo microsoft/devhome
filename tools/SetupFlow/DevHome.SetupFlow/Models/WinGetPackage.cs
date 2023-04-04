@@ -3,14 +3,13 @@
 
 using System;
 using System.Threading;
-using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.Services;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Services;
 using Microsoft.Management.Deployment;
 using Windows.Storage.Streams;
 
-namespace DevHome.SetupFlow.AppManagement.Models;
+namespace DevHome.SetupFlow.Models;
 
 /// <summary>
 /// Model class for a Windows Package Manager package.

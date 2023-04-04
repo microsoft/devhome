@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Services;
-using DevHome.SetupFlow.RepoConfig.Models;
-using DevHome.SetupFlow.RepoConfig.ViewModels;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.SetupFlow.RepoConfig.Views;
+namespace DevHome.SetupFlow.Views;
 
 /// <summary>
 /// Dialog to handle changing the clone path in the repo review screen.

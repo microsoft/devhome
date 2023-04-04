@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-namespace DevHome.SetupFlow.RepoConfig.Models;
+namespace DevHome.SetupFlow.Models;
 internal class Common
 {
     /// <summary>

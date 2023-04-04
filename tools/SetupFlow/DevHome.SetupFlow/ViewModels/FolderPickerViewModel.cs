@@ -10,7 +10,7 @@ using Microsoft.UI.Xaml;
 using Windows.Storage.Pickers;
 using WinUIEx;
 
-namespace DevHome.SetupFlow.RepoConfig.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 /// <summary>
 /// View Model to handle the folder picker.

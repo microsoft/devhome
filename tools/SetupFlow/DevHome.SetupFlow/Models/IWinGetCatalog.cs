@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.AppManagement.Exceptions;
+using DevHome.SetupFlow.Exceptions;
 
-namespace DevHome.SetupFlow.AppManagement.Models;
+namespace DevHome.SetupFlow.Models;
 
 /// <summary>
 /// Interface for a winget catalog

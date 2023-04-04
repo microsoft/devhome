@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.AppManagement.Models;
-using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
-using DevHome.SetupFlow.Common.Services;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
 using Windows.System;
 
-namespace DevHome.SetupFlow.AppManagement.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 /// <summary>
 /// Delegate factory for creating package view models

@@ -7,7 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.SetupFlow.AppManagement.Views;
+namespace DevHome.SetupFlow.Views;
 
 [INotifyPropertyChanged]
 public sealed partial class ShimmerSearchView : UserControl

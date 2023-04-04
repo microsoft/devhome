@@ -1,20 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using DevHome.Common.Extensions;
-using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.DevDrive.Services;
-using DevHome.SetupFlow.RepoConfig.Models;
-using DevHome.Telemetry;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskGroups;
 
-namespace DevHome.SetupFlow.RepoConfig.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 public partial class RepoConfigReviewViewModel : ReviewTabViewModelBase
 {

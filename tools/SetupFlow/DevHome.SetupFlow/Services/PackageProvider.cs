@@ -4,12 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using DevHome.SetupFlow.AppManagement.Models;
-using DevHome.SetupFlow.AppManagement.ViewModels;
-using DevHome.SetupFlow.Common.Helpers;
-using Windows.ApplicationModel;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.ViewModels;
 
-namespace DevHome.SetupFlow.AppManagement.Services;
+namespace DevHome.SetupFlow.Services;
 
 /// <summary>
 /// Class for providing and caching a subset of package view models in order to

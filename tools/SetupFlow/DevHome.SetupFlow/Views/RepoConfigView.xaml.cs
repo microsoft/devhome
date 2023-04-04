@@ -5,13 +5,13 @@ using System;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.DevDrive.Models;
-using DevHome.SetupFlow.RepoConfig.Models;
-using DevHome.SetupFlow.RepoConfig.ViewModels;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.SetupFlow.RepoConfig.Views;
+namespace DevHome.SetupFlow.Views;
 
 /// <summary>
 /// Shows the user the repositories they have sleected.

@@ -2,14 +2,13 @@
 <!-- Licensed under the MIT License. -->
 
 <ContentDialog
-    x:Class="DevHome.SetupFlow.RepoConfig.Views.EditClonePathDialog"
+    x:Class="DevHome.SetupFlow.Views.EditClonePathDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:DevHome.SetupFlow.RepoConfig.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/EditClonePathDialog"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/EditClonePathDialog"
     mc:Ignorable="d"
     IsPrimaryButtonEnabled="{x:Bind EditClonePathViewModel.IsPrimaryButtonEnabled, Mode=OneWay}">
     <ContentDialog.Resources>

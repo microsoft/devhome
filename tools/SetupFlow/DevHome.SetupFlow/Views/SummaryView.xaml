@@ -1,12 +1,12 @@
 <UserControl
-    x:Class="DevHome.SetupFlow.Summary.Views.SummaryView"
+    x:Class="DevHome.SetupFlow.Views.SummaryView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ctControls="using:CommunityToolkit.Labs.WinUI"
-    xmlns:appviewmodels="using:DevHome.SetupFlow.AppManagement.ViewModels"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -140,7 +140,7 @@
                                 </ItemsPanelTemplate>
                             </GridView.ItemsPanel>
                             <GridView.ItemTemplate>
-                                <DataTemplate x:DataType="appviewmodels:PackageViewModel">
+                                <DataTemplate x:DataType="viewModels:PackageViewModel">
                                     <ctControls:SettingsCard Width="320" Padding="5" Background="Transparent">
                                         <ctControls:SettingsCard.Resources>
                                             <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>

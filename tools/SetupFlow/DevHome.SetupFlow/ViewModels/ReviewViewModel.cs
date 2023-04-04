@@ -5,12 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.ElevatedComponent;
+using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
 
-namespace DevHome.SetupFlow.Review.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ReviewViewModel : SetupPageViewModelBase
 {

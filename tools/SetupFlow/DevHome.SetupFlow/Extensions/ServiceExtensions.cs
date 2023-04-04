@@ -3,22 +3,9 @@
 
 using System.IO;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.AppManagement;
-using DevHome.SetupFlow.AppManagement.Services;
-using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.ConfigurationFile;
-using DevHome.SetupFlow.ConfigurationFile.ViewModels;
-using DevHome.SetupFlow.DevDrive;
-using DevHome.SetupFlow.DevDrive.Services;
-using DevHome.SetupFlow.DevDrive.ViewModels;
-using DevHome.SetupFlow.Loading.ViewModels;
-using DevHome.SetupFlow.MainPage.ViewModels;
-using DevHome.SetupFlow.RepoConfig;
-using DevHome.SetupFlow.RepoConfig.ViewModels;
-using DevHome.SetupFlow.Review.ViewModels;
-using DevHome.SetupFlow.Summary.ViewModels;
+using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,6 +14,7 @@ using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 
 namespace DevHome.SetupFlow.Extensions;
+
 public static class ServiceExtensions
 {
     public static IServiceCollection AddSetupFlow(this IServiceCollection services, HostBuilderContext context)

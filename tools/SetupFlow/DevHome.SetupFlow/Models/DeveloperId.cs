@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace DevHome.SetupFlow.RepoConfig.Models;
+namespace DevHome.SetupFlow.Models;
 
 /// <summary>
 /// Concrete DeveloperId.  Used when a user selects a repo from the URL page

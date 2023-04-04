@@ -3,7 +3,7 @@
 
 using DevHome.Common.Services;
 
-namespace DevHome.SetupFlow.Common.Services;
+namespace DevHome.SetupFlow.Services;
 public interface ISetupFlowStringResource : IStringResource
 {
 }

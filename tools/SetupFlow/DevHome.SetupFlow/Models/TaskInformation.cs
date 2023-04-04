@@ -2,11 +2,10 @@
 // Licensed under the MIT license.
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.SetupFlow.Common.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 
-namespace DevHome.SetupFlow.Loading.Models;
+namespace DevHome.SetupFlow.Models;
 public partial class TaskInformation : ObservableObject
 {
     public int TaskIndex

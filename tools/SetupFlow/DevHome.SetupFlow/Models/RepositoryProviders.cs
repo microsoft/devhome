@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace DevHome.SetupFlow.RepoConfig.Models;
+namespace DevHome.SetupFlow.Models;
 
 /// <summary>
 /// A collection of all repository providers found by Dev Home.

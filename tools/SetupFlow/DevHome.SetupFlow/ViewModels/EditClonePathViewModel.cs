@@ -4,7 +4,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 
-namespace DevHome.SetupFlow.RepoConfig.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 /// <summary>
 /// View model to handle the dialog when users want to edit the clone path from the repo review page.

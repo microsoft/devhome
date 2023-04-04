@@ -9,19 +9,13 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.AppManagement.Services;
-using DevHome.SetupFlow.AppManagement.ViewModels;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.DevDrive;
-using DevHome.SetupFlow.RepoConfig;
-using DevHome.SetupFlow.RepoConfig.Models;
-using DevHome.Telemetry;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskGroups;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Windows.ApplicationModel;
 
-namespace DevHome.SetupFlow.Summary.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 public partial class SummaryViewModel : SetupPageViewModelBase
 {

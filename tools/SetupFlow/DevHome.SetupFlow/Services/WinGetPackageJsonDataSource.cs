@@ -8,12 +8,10 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.AppManagement.Models;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.Telemetry;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Models;
 
-namespace DevHome.SetupFlow.AppManagement.Services;
+namespace DevHome.SetupFlow.Services;
 
 /// <summary>
 /// Class for loading package catalogs from a JSON data source

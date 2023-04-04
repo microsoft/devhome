@@ -1,11 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Windows.Input;
-using DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
-namespace DevHome.SetupFlow.Common.Models;
+namespace DevHome.SetupFlow.Models;
 
 /// <summary>
 /// A single atomic task to perform during the setup flow.

@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Xaml.Interactivity;
 
-namespace DevHome.SetupFlow.Common.Behaviors;
+namespace DevHome.SetupFlow.Behaviors;
 
 /// <summary>
 /// Behavior class for customizing the setup flow navigation content

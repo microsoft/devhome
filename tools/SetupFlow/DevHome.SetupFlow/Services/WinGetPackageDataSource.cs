@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.AppManagement.Models;
+using DevHome.SetupFlow.Models;
 
-namespace DevHome.SetupFlow.AppManagement.Services;
+namespace DevHome.SetupFlow.Services;
 
 /// <summary>
 /// Abstract class for a WinGet package data source

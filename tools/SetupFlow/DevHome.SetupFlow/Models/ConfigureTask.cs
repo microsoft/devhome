@@ -7,18 +7,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.ConfigurationFile.Exceptions;
-using DevHome.SetupFlow.ElevatedComponent;
-using DevHome.Telemetry;
+using DevHome.SetupFlow.Exceptions;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Services;
 using Microsoft.Management.Configuration;
 using Microsoft.Management.Configuration.Processor;
 using Windows.Foundation;
 using Windows.Storage;
 
-namespace DevHome.SetupFlow.ConfigurationFile.Models;
+namespace DevHome.SetupFlow.Models;
 
 internal class ConfigureTask : ISetupTask
 {

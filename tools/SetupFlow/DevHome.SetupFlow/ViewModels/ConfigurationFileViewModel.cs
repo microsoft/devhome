@@ -6,16 +6,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.ConfigurationFile.Exceptions;
-using DevHome.SetupFlow.ConfigurationFile.Models;
+using DevHome.SetupFlow.Exceptions;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using WinUIEx;
 
-namespace DevHome.SetupFlow.ConfigurationFile.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {

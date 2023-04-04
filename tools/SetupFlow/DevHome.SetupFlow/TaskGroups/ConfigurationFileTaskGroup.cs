@@ -3,11 +3,10 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.ConfigurationFile.ViewModels;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.ViewModels;
 
-namespace DevHome.SetupFlow.ConfigurationFile;
+namespace DevHome.SetupFlow.TaskGroups;
 
 public class ConfigurationFileTaskGroup : ISetupTaskGroup
 {

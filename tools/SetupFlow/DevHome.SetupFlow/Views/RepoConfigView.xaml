@@ -1,16 +1,16 @@
 <!-- Copyright (c) Microsoft Corporation and Contributors. -->
 <!-- Licensed under the MIT License. -->
 <UserControl
-    x:Class="DevHome.SetupFlow.RepoConfig.Views.RepoConfigView"
+    x:Class="DevHome.SetupFlow.Views.RepoConfigView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     xmlns:primitives="using:CommunityToolkit.WinUI.UI.Controls.Primitives"
-    xmlns:setupControls="using:DevHome.SetupFlow.Common.Controls"
-    xmlns:models="using:DevHome.SetupFlow.RepoConfig.Models"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:setupControls="using:DevHome.SetupFlow.Controls"
+    xmlns:models="using:DevHome.SetupFlow.Models"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>

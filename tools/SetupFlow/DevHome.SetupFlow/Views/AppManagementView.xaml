@@ -2,17 +2,17 @@
 <!-- Licensed under the MIT License. -->
 
 <UserControl
-    x:Class="DevHome.SetupFlow.AppManagement.Views.AppManagementView"
+    x:Class="DevHome.SetupFlow.Views.AppManagementView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ctControls="using:CommunityToolkit.Labs.WinUI"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
-    xmlns:selectors="using:DevHome.SetupFlow.AppManagement.Selectors"
-    xmlns:viewmodels="using:DevHome.SetupFlow.AppManagement.ViewModels"
-    xmlns:views="using:DevHome.SetupFlow.AppManagement.Views"
-    xmlns:controls="using:DevHome.SetupFlow.Common.Controls"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
+    xmlns:selectors="using:DevHome.SetupFlow.Selectors"
+    xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:views="using:DevHome.SetupFlow.Views"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d">

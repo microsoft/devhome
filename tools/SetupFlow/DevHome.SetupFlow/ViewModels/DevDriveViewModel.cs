@@ -5,24 +5,23 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.DevDrive.Models;
-using DevHome.SetupFlow.DevDrive.Utilities;
-using DevHome.SetupFlow.DevDrive.Windows;
-using Microsoft.Extensions.Hosting;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskGroups;
+using DevHome.SetupFlow.Utilities;
+using DevHome.SetupFlow.Windows;
 using Microsoft.UI.Xaml;
 using Windows.Storage.Pickers;
 using Windows.System;
 using WinUIEx;
 
-namespace DevHome.SetupFlow.DevDrive.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewModel
 {

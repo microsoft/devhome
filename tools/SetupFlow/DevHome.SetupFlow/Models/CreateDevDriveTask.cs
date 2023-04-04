@@ -8,9 +8,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.ElevatedComponent;
+using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Windows.Foundation;
@@ -18,7 +16,7 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Diagnostics.Debug;
 
-namespace DevHome.SetupFlow.DevDrive.Models;
+namespace DevHome.SetupFlow.Models;
 
 internal class CreateDevDriveTask : ISetupTask
 {

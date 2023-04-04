@@ -2,11 +2,9 @@
 // Licensed under the MIT license.
 
 using System.Collections.ObjectModel;
-using DevHome.SetupFlow.AppManagement.Services;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.Common.ViewModels;
+using DevHome.SetupFlow.Services;
 
-namespace DevHome.SetupFlow.AppManagement.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 public partial class AppManagementReviewViewModel : ReviewTabViewModelBase
 {

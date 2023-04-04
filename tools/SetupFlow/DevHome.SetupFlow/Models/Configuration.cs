@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 
-namespace DevHome.SetupFlow.ConfigurationFile.Models;
+namespace DevHome.SetupFlow.Models;
 
 /// <summary>
 /// Model class for a YAML configuration file

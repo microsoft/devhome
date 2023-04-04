@@ -2,10 +2,9 @@
 // Licensed under the MIT license.
 
 using System.Threading.Tasks;
-using DevHome.SetupFlow.AppManagement.Models;
-using Microsoft.Management.Deployment;
+using DevHome.SetupFlow.Models;
 
-namespace DevHome.SetupFlow.AppManagement.Services;
+namespace DevHome.SetupFlow.Services;
 
 /// <summary>
 /// Interface for interacting with the WinGet package manager.

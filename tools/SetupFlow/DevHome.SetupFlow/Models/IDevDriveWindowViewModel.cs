@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
 using System.Threading.Tasks;
 using DevHome.Common.Models;
 
-namespace DevHome.SetupFlow.DevDrive.Models;
+namespace DevHome.SetupFlow.Models;
 
 /// <summary>
 /// Interface for objects that will be a view model to a Dev Drive window.

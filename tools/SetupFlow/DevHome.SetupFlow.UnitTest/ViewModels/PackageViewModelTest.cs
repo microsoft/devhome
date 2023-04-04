@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.AppManagement.ViewModels;
+using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.UnitTest.Helpers;
 
 namespace DevHome.SetupFlow.UnitTest.ViewModels;

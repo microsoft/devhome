@@ -1,11 +1,11 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.Review.ViewModels;
+using DevHome.SetupFlow.ViewModels;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.SetupFlow.Review.Views;
+namespace DevHome.SetupFlow.Views;
 
 public sealed partial class ReviewView : UserControl
 {

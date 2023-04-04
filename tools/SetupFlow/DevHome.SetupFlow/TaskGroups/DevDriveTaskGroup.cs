@@ -7,15 +7,13 @@ using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.DevDrive.Models;
-using DevHome.SetupFlow.DevDrive.ViewModels;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
-namespace DevHome.SetupFlow.DevDrive;
+namespace DevHome.SetupFlow.TaskGroups;
 
 public class DevDriveTaskGroup : ISetupTaskGroup
 {
@@ -31,7 +29,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         // TODO Remove `this` argument from CreateInstance since this task
         // group is a registered type. This requires updating dependent classes
         // correspondingly.
-        _devDriveReviewViewModel = new (() => _host.CreateInstance<DevDriveReviewViewModel>(this));
+        _devDriveReviewViewModel = new(() => _host.CreateInstance<DevDriveReviewViewModel>(this));
         _stringResource = stringResource;
         _logger = logger;
     }

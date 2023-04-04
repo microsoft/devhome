@@ -8,16 +8,14 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.Loading.Models;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using WinUIEx;
 
-namespace DevHome.SetupFlow.Loading.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 public partial class LoadingViewModel : SetupPageViewModelBase
 {

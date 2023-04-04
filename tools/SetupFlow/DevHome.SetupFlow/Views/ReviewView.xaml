@@ -2,19 +2,17 @@
 <!-- Licensed under the MIT License. -->
 
 <UserControl
-    x:Class="DevHome.SetupFlow.Review.Views.ReviewView"
+    x:Class="DevHome.SetupFlow.Views.ReviewView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
-    xmlns:appManagementViews="using:DevHome.SetupFlow.AppManagement.Views"
-    xmlns:controls="using:DevHome.SetupFlow.Common.Controls"
-    xmlns:commonViewModels="using:DevHome.SetupFlow.Common.ViewModels"
-    xmlns:devVolumeViews="using:DevHome.SetupFlow.DevDrive.Views"
-    xmlns:repoConfigViews="using:DevHome.SetupFlow.RepoConfig.Views"
-    xmlns:selectors="using:DevHome.SetupFlow.Review.Selectors"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
+    xmlns:selectors="using:DevHome.SetupFlow.Selectors"
+    xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:views="using:DevHome.SetupFlow.Views"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -55,7 +53,7 @@
                             <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
                         </NavigationView.Resources>
                         <NavigationView.MenuItemTemplate>
-                            <DataTemplate x:DataType="commonViewModels:ReviewTabViewModelBase">
+                            <DataTemplate x:DataType="viewModels:ReviewTabViewModelBase">
                                 <TextBlock Text="{x:Bind TabTitle}" />
                             </DataTemplate>
                         </NavigationView.MenuItemTemplate>
@@ -67,17 +65,17 @@
                                     <selectors:ReviewTabViewSelector>
                                         <selectors:ReviewTabViewSelector.DevDriveTabTemplate>
                                             <DataTemplate>
-                                                <devVolumeViews:DevDriveReviewView />
+                                                <views:DevDriveReviewView />
                                             </DataTemplate>
                                         </selectors:ReviewTabViewSelector.DevDriveTabTemplate>
                                         <selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
                                             <DataTemplate>
-                                                <repoConfigViews:RepoConfigReviewView />
+                                                <views:RepoConfigReviewView />
                                             </DataTemplate>
                                         </selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
                                         <selectors:ReviewTabViewSelector.AppManagementTabTemplate>
                                             <DataTemplate>
-                                                <appManagementViews:AppManagementReviewView />
+                                                <views:AppManagementReviewView />
                                             </DataTemplate>
                                         </selectors:ReviewTabViewSelector.AppManagementTabTemplate>
                                     </selectors:ReviewTabViewSelector>

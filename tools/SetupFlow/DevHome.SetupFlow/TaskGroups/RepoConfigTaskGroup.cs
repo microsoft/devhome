@@ -5,16 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.RepoConfig.Models;
-using DevHome.SetupFlow.RepoConfig.ViewModels;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.Hosting;
-using Windows.ApplicationModel.UserDataTasks;
 
-namespace DevHome.SetupFlow.RepoConfig;
+namespace DevHome.SetupFlow.TaskGroups;
 
 /// <summary>
 /// The task group for cloning repositories
@@ -35,8 +31,8 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         // TODO Remove `this` argument from CreateInstance since this task
         // group is a registered type. This requires updating dependent classes
         // correspondingly.
-        _repoConfigViewModel = new (() => _host.CreateInstance<RepoConfigViewModel>(this));
-        _repoConfigReviewViewModel = new (() => _host.CreateInstance<RepoConfigReviewViewModel>(this));
+        _repoConfigViewModel = new(() => _host.CreateInstance<RepoConfigViewModel>(this));
+        _repoConfigReviewViewModel = new(() => _host.CreateInstance<RepoConfigReviewViewModel>(this));
     }
 
     /// <summary>

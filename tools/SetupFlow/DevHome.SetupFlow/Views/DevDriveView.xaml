@@ -2,15 +2,15 @@
 <!-- Licensed under the MIT License. -->
 
 <Page
-    x:Class="DevHome.SetupFlow.DevDrive.Views.DevDriveView"
+    x:Class="DevHome.SetupFlow.Views.DevDriveView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:util="using:DevHome.SetupFlow.DevDrive.Utilities"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:util="using:DevHome.SetupFlow.Utilities"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d">
     <Page.Resources>
         <ResourceDictionary>

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-namespace DevHome.SetupFlow.Common.Services;
+namespace DevHome.SetupFlow.Services;
 
 /// <summary>
 /// Setup flow configuration options defined in appsettings.json

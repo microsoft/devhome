@@ -3,14 +3,13 @@
 
 using System;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.AppManagement.Exceptions;
-using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.Telemetry;
+using DevHome.SetupFlow.Exceptions;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
 
-namespace DevHome.SetupFlow.AppManagement.Services;
+namespace DevHome.SetupFlow.Services;
 
 /// <summary>
 /// Windows package manager class is an entrypoint for using the WinGet COM API.

@@ -4,7 +4,7 @@
 using DevHome.Common.Services;
 using Microsoft.Extensions.Options;
 
-namespace DevHome.SetupFlow.Common.Services;
+namespace DevHome.SetupFlow.Services;
 public class SetupFlowStringResource : StringResource, ISetupFlowStringResource
 {
     public SetupFlowStringResource(IOptions<SetupFlowOptions> setupFlowOptions)

@@ -2,10 +2,9 @@
 // Licensed under the MIT license.
 
 using System.Collections.Generic;
-using DevHome.SetupFlow.Common.ViewModels;
-using Microsoft.Extensions.Hosting;
+using DevHome.SetupFlow.ViewModels;
 
-namespace DevHome.SetupFlow.Common.Models;
+namespace DevHome.SetupFlow.Models;
 
 /// <summary>
 /// A container for a group of related setup tasks that are always handled together.

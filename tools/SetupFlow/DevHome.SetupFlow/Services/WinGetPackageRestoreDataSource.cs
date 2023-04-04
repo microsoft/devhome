@@ -6,14 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.AppManagement.Models;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.Telemetry;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Models;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Windows.Storage.Streams;
 
-namespace DevHome.SetupFlow.AppManagement.Services;
+namespace DevHome.SetupFlow.Services;
 public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
 {
     private readonly IRestoreInfo _restoreInfo;

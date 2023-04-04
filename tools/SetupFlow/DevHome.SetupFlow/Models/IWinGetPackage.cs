@@ -2,12 +2,11 @@
 // Licensed under the MIT license.
 
 using System;
-using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
-using DevHome.SetupFlow.Common.Services;
+using DevHome.SetupFlow.Services;
 using Windows.Storage.Streams;
 
-namespace DevHome.SetupFlow.AppManagement.Models;
+namespace DevHome.SetupFlow.Models;
 
 /// <summary>
 /// Record for a package unique key following a value-based equality semantics

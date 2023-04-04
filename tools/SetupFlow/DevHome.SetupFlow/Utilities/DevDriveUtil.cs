@@ -2,21 +2,15 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using CommunityToolkit.Common;
-using DevHome.Common.Models;
-using DevHome.SetupFlow.DevDrive.Models;
-using Newtonsoft.Json.Linq;
 using Windows.Win32;
-using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
 using ToolKitHelpers = CommunityToolkit.WinUI.Helpers;
 
-namespace DevHome.SetupFlow.DevDrive.Utilities;
+namespace DevHome.SetupFlow.Utilities;
 
 /// <summary>
 /// Enum Representation for a multiple of bytes.

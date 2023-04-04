@@ -7,19 +7,15 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.AppManagement;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.ConfigurationFile;
-using DevHome.SetupFlow.DevDrive;
-using DevHome.SetupFlow.DevDrive.Utilities;
-using DevHome.SetupFlow.RepoConfig;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskGroups;
+using DevHome.SetupFlow.Utilities;
 using Microsoft.Extensions.Hosting;
 using Windows.System;
 
-namespace DevHome.SetupFlow.MainPage.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 /// <summary>
 /// View model for the main page of the Setup Flow.

@@ -3,12 +3,11 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using DevHome.SetupFlow.AppManagement.Services;
-using DevHome.SetupFlow.AppManagement.ViewModels;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.ViewModels;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 
-namespace DevHome.SetupFlow.AppManagement;
+namespace DevHome.SetupFlow.TaskGroups;
 
 public class AppManagementTaskGroup : ISetupTaskGroup
 {

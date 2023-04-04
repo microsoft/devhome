@@ -4,18 +4,14 @@
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.AppManagement.Exceptions;
-using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.ElevatedComponent;
-using DevHome.Telemetry;
+using DevHome.SetupFlow.Exceptions;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Services;
 using Microsoft.Management.Deployment;
 using Windows.Foundation;
 
-namespace DevHome.SetupFlow.AppManagement.Models;
+namespace DevHome.SetupFlow.Models;
 
 public class InstallPackageTask : ISetupTask
 {

@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Management.Configuration;
 
-namespace DevHome.SetupFlow.ConfigurationFile.Exceptions;
+namespace DevHome.SetupFlow.Exceptions;
 
 public class OpenConfigurationSetException : Exception
 {

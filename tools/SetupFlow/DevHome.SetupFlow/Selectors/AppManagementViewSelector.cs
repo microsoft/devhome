@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.SetupFlow.AppManagement.ViewModels;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.SetupFlow.AppManagement.Selectors;
+namespace DevHome.SetupFlow.Selectors;
 
 /// <summary>
 /// Data template class for selecting the application management page's current

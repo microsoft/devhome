@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.RepoConfig.Models;
+using DevHome.SetupFlow.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
-using static DevHome.SetupFlow.RepoConfig.Models.Common;
+using static DevHome.SetupFlow.Models.Common;
 
-namespace DevHome.SetupFlow.RepoConfig.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 /// <summary>
 /// View model to handle the top layer of the repo tool including

@@ -4,13 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.Telemetry;
+using DevHome.SetupFlow.Exceptions;
+using DevHome.SetupFlow.Helpers;
 using Microsoft.Management.Deployment;
 
-namespace DevHome.SetupFlow.AppManagement.Models;
+namespace DevHome.SetupFlow.Models;
 
 /// <summary>
 /// Model class for a composite catalog from remote and/or local packages

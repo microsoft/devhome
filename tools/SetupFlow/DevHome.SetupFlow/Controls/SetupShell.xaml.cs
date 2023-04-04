@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-using DevHome.SetupFlow.Common.Services;
+using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Markup;
 
-namespace DevHome.SetupFlow.Common.Controls;
+namespace DevHome.SetupFlow.Controls;
 
 /// <summary>
 /// Setup shell class used by the setup flow pages to ensure a consistent

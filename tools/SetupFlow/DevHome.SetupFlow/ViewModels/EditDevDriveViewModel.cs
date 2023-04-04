@@ -2,21 +2,14 @@
 // Licensed under the MIT license.
 
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.DevDrive.Models;
-using DevHome.SetupFlow.DevDrive.Services;
-using DevHome.SetupFlow.DevDrive.Utilities;
+using DevHome.SetupFlow.Utilities;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Shapes;
-using Windows.UI.StartScreen;
 
-namespace DevHome.SetupFlow.RepoConfig.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 /// <summary>
 /// Represents the type of display name that should appear in the clone repo textbox

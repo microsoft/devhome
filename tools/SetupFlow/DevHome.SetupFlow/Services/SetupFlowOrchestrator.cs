@@ -6,12 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.ElevatedComponent;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.ViewModels;
 
-namespace DevHome.SetupFlow.Common.Services;
+namespace DevHome.SetupFlow.Services;
 
 /// <summary>
 /// Orchestrator for the Setup Flow, in charge of functionality across multiple pages.

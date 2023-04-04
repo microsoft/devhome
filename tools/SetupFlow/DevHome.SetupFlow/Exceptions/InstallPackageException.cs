@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Management.Deployment;
 
-namespace DevHome.SetupFlow.AppManagement.Exceptions;
+namespace DevHome.SetupFlow.Exceptions;
 
 /// <summary>
 /// Exception thrown if package installation failed

@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace DevHome.SetupFlow.AppManagement.Models;
+namespace DevHome.SetupFlow.Models;
 
 // TODO Rename this class to PackageCollection to avoid confusion with the COM PackageCatalog class
 

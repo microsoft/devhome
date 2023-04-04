@@ -7,13 +7,11 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.AppManagement.Services;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.Common.ViewModels;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
 
-namespace DevHome.SetupFlow.AppManagement.ViewModels;
+namespace DevHome.SetupFlow.ViewModels;
 
 public partial class AppManagementViewModel : SetupPageViewModelBase
 {

@@ -3,7 +3,7 @@
 
 using DevHome.Logging;
 
-namespace DevHome.SetupFlow.Common.Helpers;
+namespace DevHome.SetupFlow.Helpers;
 
 #nullable enable
 

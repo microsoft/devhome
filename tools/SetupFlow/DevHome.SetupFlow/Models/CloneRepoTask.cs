@@ -4,16 +4,12 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.ElevatedComponent;
-using Microsoft.UI.Xaml;
+using DevHome.SetupFlow.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 
-namespace DevHome.SetupFlow.RepoConfig.Models;
+namespace DevHome.SetupFlow.Models;
 
 /// <summary>
 /// Object to hold all information needed to clone a repository.

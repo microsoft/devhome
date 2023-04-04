@@ -6,12 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.RepoConfig.ViewModels;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using static DevHome.SetupFlow.RepoConfig.Models.Common;
+using static DevHome.SetupFlow.Models.Common;
 
-namespace DevHome.SetupFlow.RepoConfig.Views;
+namespace DevHome.SetupFlow.Views;
 
 /// <summary>
 /// Dialog to allow users to select repositories they want to clone.
