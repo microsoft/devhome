@@ -76,15 +76,13 @@ internal partial class AddRepoDialog
     public void SetupDevDrives()
     {
         EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
-<<<<<<< HEAD
-=======
+
         if (EditDevDriveViewModel.DevDrive != null &&
             EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
         {
             FolderPickerViewModel.InDevDriveScenario = true;
             EditDevDriveViewModel.ClonePathUpdated();
         }
->>>>>>> main
     }
 
     private void AddViaAccountToggleButton_Click(object sender, RoutedEventArgs e)

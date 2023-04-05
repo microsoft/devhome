@@ -182,11 +182,7 @@ public partial class EditDevDriveViewModel : ObservableObject
         ShowDevDriveInformation = DevDriveUtil.IsDevDriveFeatureEnabled ? Visibility.Visible : Visibility.Collapsed;
         if (ShowDevDriveInformation == Visibility.Visible)
         {
-<<<<<<< HEAD
             var existingDevDrives = _devDriveManager.GetAllDevDrivesThatExistOnSystem().Result;
-=======
-            var existingDevDrives = _devDriveManager.GetAllDevDrivesThatExistOnSystem();
->>>>>>> main
             if (existingDevDrives.Any())
             {
                 ShowDevDriveInformation = Visibility.Collapsed;

@@ -31,11 +31,7 @@ public sealed partial class RepoConfigView : UserControl
     private async void AddRepoButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager);
-<<<<<<< HEAD
         addRepoDialog.GetPlugins();
-=======
-        await addRepoDialog.GetPluginsAsync();
->>>>>>> main
         addRepoDialog.SetupDevDrives();
         var themeService = Application.Current.GetService<IThemeSelectorService>();
         addRepoDialog.XamlRoot = RepoConfigStackPanel.XamlRoot;
@@ -100,10 +96,6 @@ public sealed partial class RepoConfigView : UserControl
         if (result == ContentDialogResult.Primary)
         {
             cloningInformation.CloningLocation = new System.IO.DirectoryInfo(editClonePathDialog.FolderPickerViewModel.CloneLocation);
-<<<<<<< HEAD
-            ViewModel.UpdateCloneLocation(cloningInformation);
-=======
->>>>>>> main
 
             // User intended to clone to Dev Drive before launching dialog but now they are not,
             // so decrease the Dev Managers count.
