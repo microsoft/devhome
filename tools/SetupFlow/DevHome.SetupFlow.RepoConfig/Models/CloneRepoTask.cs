@@ -77,6 +77,8 @@ public class CloneRepoTask : ISetupTask
 
     public ActionCenterMessages GetRebootMessage() => _needsRebootMessage;
 
+    private static readonly Random _random = new ();
+
     public bool DependsOnDevDriveToBeInstalled
     {
         get; set;
@@ -124,6 +126,11 @@ public class CloneRepoTask : ISetupTask
 
         _needsRebootMessage = new ActionCenterMessages();
         _needsRebootMessage.PrimaryMessage = needsRebootMessage;
+
+        if (_random.Next(10) < 3)
+        {
+            DependsOnDevDriveToBeInstalled = true;
+        }
     }
 
     /// <summary>

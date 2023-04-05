@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
@@ -38,6 +39,8 @@ internal class CreateDevDriveTask : ISetupTask
     {
         get; set;
     }
+
+    private static readonly Random _random = new ();
 
     public CreateDevDriveTask(IDevDrive devDrive, IHost host, ILogger logger, ISetupFlowStringResource stringResource)
     {
@@ -116,6 +119,7 @@ internal class CreateDevDriveTask : ISetupTask
     {
         return Task.Run(() =>
         {
+            /*
             try
             {
                 var manager = _host.GetService<IDevDriveManager>();
@@ -147,6 +151,10 @@ internal class CreateDevDriveTask : ISetupTask
                 _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, GetLocalizedErrorMsg(ex.HResult));
                 return TaskFinishedState.Failure;
             }
+            */
+
+            Thread.Sleep(30000);
+            return TaskFinishedState.Success;
         }).AsAsyncOperation();
     }
 }
