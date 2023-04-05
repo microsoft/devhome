@@ -51,7 +51,7 @@ internal class RepositoryProviders
         foreach (var provider in _providers)
         {
             provider.Value.StartIfNotRunning();
-            var repository = provider.Value.ParseRepositoryFromUri(uri).Result;
+            var repository = provider.Value.ParseRepositoryFromUri(uri);
             if (repository != null)
             {
                 return (provider.Key, repository);
