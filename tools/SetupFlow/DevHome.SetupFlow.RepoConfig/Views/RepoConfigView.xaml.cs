@@ -96,6 +96,7 @@ public sealed partial class RepoConfigView : UserControl
         if (result == ContentDialogResult.Primary)
         {
             cloningInformation.CloningLocation = new System.IO.DirectoryInfo(editClonePathDialog.FolderPickerViewModel.CloneLocation);
+            ViewModel.UpdateCloneLocation(cloningInformation);
 
             // User intended to clone to Dev Drive before launching dialog but now they are not,
             // so decrease the Dev Managers count.
@@ -116,6 +117,7 @@ public sealed partial class RepoConfigView : UserControl
                 }
 
                 cloningInformation.CloneLocationAlias = editClonePathDialog.FolderPickerViewModel.CloneLocationAlias;
+                ViewModel.UpdateCloneLocation(cloningInformation);
             }
 
             // If the user launches the edit button, and changes or updates the clone path to be a Dev Drive, we need
@@ -124,8 +126,6 @@ public sealed partial class RepoConfigView : UserControl
             {
                 ViewModel.UpdateCollectionWithDevDriveInfo(cloningInformation);
             }
-
-            ViewModel.UpdateCollection();
         }
         else
         {

@@ -35,16 +35,6 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ObservableCollection<CloningInformation> _repoReviewItems = new ();
 
-    [RelayCommand]
-    public void RemoveEntry(CloningInformation cloningInformation)
-    {
-        RemoveCloningInformation(cloningInformation);
-        if (cloningInformation.CloneToDevDrive)
-        {
-            DevDriveManager.DecreaseRepositoriesCount();
-        }
-    }
-
     /// <summary>
     /// Controls if the "No repo" message is shown to the user.
     /// </summary>
