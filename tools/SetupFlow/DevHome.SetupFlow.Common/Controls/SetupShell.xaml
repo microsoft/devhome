@@ -36,7 +36,6 @@
                 Grid.Row="1"
                 ColumnDefinitions="auto,*">
                 <!-- Stepper showing the progress within the flow -->
-
                 <StackPanel Visibility="{x:Bind Orchestrator.CurrentPageViewModel.IsStepPage, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                     <ItemsRepeater ItemsSource="{x:Bind Orchestrator.SetupStepPages, Mode=OneWay}">
                         <ItemsRepeater.Layout>
@@ -44,22 +43,23 @@
                         </ItemsRepeater.Layout>
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate x:DataType="commonViewModels:SetupPageViewModelBase">
-                                <StackPanel Spacing="5" Orientation="Horizontal"
+                                <StackPanel Spacing="8" Orientation="Horizontal"
                                     Visibility="{x:Bind IsStepPage, Converter={StaticResource BoolToVisibilityConverter}}">
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"
-                                          Glyph="&#xEA3B;"
-                                          Foreground="{x:Bind IsUpcomingPage, Converter={StaticResource StepperBoolToGlyphBrushConverter}}" />
+                                              FontSize="16"
+                                              Glyph="&#xEA3B;"
+                                              Foreground="{x:Bind IsUpcomingPage, Converter={StaticResource StepperBoolToGlyphBrushConverter}}" />
                                     <TextBlock VerticalAlignment="Center" Text="{x:Bind PageTitle}" />
                                     <StackPanel VerticalAlignment="Center" Visibility="{x:Bind IsLastStepPage, Converter={StaticResource BoolToInverseVisibilityConverter}}">
-                                        <ProgressBar Width="25" Value="100"
-                                             Visibility="{x:Bind IsPastPage, Converter={StaticResource BoolToVisibilityConverter}}"
-                                             Background="{ThemeResource AccentFillColorDisabledBrush}" />
-                                        <ProgressBar Width="25" Value="50"
-                                             Visibility="{x:Bind IsCurrentPage, Converter={StaticResource BoolToVisibilityConverter}}"
-                                             Background="{ThemeResource AccentFillColorDisabledBrush}" />
-                                        <ProgressBar Width="25" Value="0"
-                                             Visibility="{x:Bind IsUpcomingPage, Converter={StaticResource BoolToVisibilityConverter}}"
-                                             Background="{ThemeResource AccentFillColorDisabledBrush}" />
+                                        <ProgressBar Width="20" Value="100"
+                                                     Visibility="{x:Bind IsPastPage, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                     Background="{ThemeResource AccentFillColorDisabledBrush}" />
+                                        <ProgressBar Width="20" Value="50"
+                                                     Visibility="{x:Bind IsCurrentPage, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                     Background="{ThemeResource AccentFillColorDisabledBrush}" />
+                                        <ProgressBar Width="20" Value="0"
+                                                     Visibility="{x:Bind IsUpcomingPage, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                     Background="{ThemeResource AccentFillColorDisabledBrush}" />
                                     </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
