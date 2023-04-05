@@ -7,7 +7,7 @@
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
-    <DevHomeSDKVersion Condition="$(DevHomeSDKVersion) == ''">0.2.*</DevHomeSDKVersion>
+    <DevHomeSDKVersion Condition="$(DevHomeSDKVersion) == ''">0.100.*</DevHomeSDKVersion>
   </PropertyGroup>
 
   <ItemGroup>
