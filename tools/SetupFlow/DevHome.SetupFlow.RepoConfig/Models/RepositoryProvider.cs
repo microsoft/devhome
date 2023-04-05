@@ -29,7 +29,7 @@ internal class RepositoryProvider
     /// <summary>
     /// The DevId provider used to log a user into an account.
     /// </summary>
-    private IDevIdProvider _devIdProvider;
+    private IDeveloperIdProvider _devIdProvider;
 
     /// <summary>
     /// Provider used to clone a repsitory.
@@ -52,7 +52,7 @@ internal class RepositoryProvider
     /// <returns>An awaitable task</returns>
     public async Task StartIfNotRunningAsync()
     {
-        _devIdProvider = await _pluginWrapper.GetProviderAsync<IDevIdProvider>();
+        _devIdProvider = await _pluginWrapper.GetProviderAsync<IDeveloperIdProvider>();
         _repositoryProvider = await _pluginWrapper.GetProviderAsync<IRepositoryProvider>();
     }
 

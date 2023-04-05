@@ -141,7 +141,7 @@ public partial class AddRepoViewModel : ObservableObject
         var pluginWrappers = await pluginService.GetInstalledPluginsAsync();
         var plugins = pluginWrappers.Where(
             plugin => plugin.HasProviderType(ProviderType.Repository) &&
-            plugin.HasProviderType(ProviderType.DevId));
+            plugin.HasProviderType(ProviderType.DeveloperId));
 
         _providers = new RepositoryProviders(plugins);
 
