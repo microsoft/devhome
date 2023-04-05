@@ -241,14 +241,9 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
         if (!loggedInAccounts.Any())
         {
-<<<<<<< HEAD
             // Throw away developer id becase we're calling GetAllLoggedInAccounts in anticipation
             // of 1 Provider : N DeveloperIds
             _providers.LogInToProvider(repositoryProviderName);
-=======
-            await _providers.LogInToProvider(repositoryProviderName);
-
->>>>>>> main
             loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
         }
 
