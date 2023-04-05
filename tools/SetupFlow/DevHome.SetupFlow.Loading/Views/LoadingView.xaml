@@ -15,6 +15,15 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
+                <ResourceDictionary>
+                    <Style x:Key="DevHomeBorderStyle" TargetType="Border" >
+                        <Setter Property="BorderBrush">
+                            <Setter.Value>
+                                <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -29,26 +38,27 @@
                 <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderTopRow"/>
                 <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderBottomRow"/>
             </StackPanel>
-            <Button Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_StopButton"/>
         </Grid>
         <ProgressBar x:Name="SetupTaskProgressBar" Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
         <TextBlock Text="{x:Bind ViewModel.ExecutingTasks, Mode=OneWay}" />
-        <Grid>
+        <Grid ColumnSpacing="50">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <StackPanel x:Name="ExecutingTasksStackPanel" Grid.Column="0">
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks"/>
-                <ScrollViewer x:Name="AllRunningTasksScrollViewer" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
+                <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
+                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Padding="0, 0, 0, 20"/>
+                </Border>
+                <ScrollViewer x:Name="AllRunningTasksScrollViewer" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" Margin="0, 20, 0, 0">
                     <StackPanel>
                         <StackPanel.Resources>
                             <StackLayout x:Name="VerticalStackLayout" Orientation="Vertical" Spacing="8"/> 
                             <DataTemplate x:Key="HorizontalBarTemplate" x:DataType="models:TaskInformation">
                                 <StackPanel Orientation="Horizontal" Spacing="5">
                                     <Grid>
-                                        <Ellipse Height="30" Width="30" Fill="{x:Bind CircleForeground, Mode=OneWay}"/>
-                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="{x:Bind StatusSymbolHex, Mode=OneWay}" Foreground="Black" Margin="2, 0, 0, 0" Height="25" Width="25"/>
+                                        <Ellipse Height="20" Width="20" Fill="{x:Bind CircleForeground, Mode=OneWay}"/>
+                                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="{x:Bind StatusSymbolHex, Mode=OneWay}" Foreground="Black" Margin="0, 0, 2, 2" Height="15" Width="15"/>
                                     </Grid>
                                     <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
                                 </StackPanel>
@@ -62,15 +72,17 @@
                 </ScrollViewer>
             </StackPanel>
             <StackPanel x:Name="ActionCenterStackPanel" Grid.Column="1">
-                <Grid ColumnSpacing="10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter"/>
-                    <HyperlinkButton Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}"/>
-                </Grid>
-                <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}"/>
+                <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1" >
+                    <Grid ColumnSpacing="10"  Padding="0, 0, 0, 20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter"/>
+                        <HyperlinkButton Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}"/>
+                    </Grid>
+                </Border>
+                <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}"  Margin="0, 20, 0, 0"/>
                 <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <StackPanel.Resources>

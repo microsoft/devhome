@@ -32,12 +32,11 @@ internal class RepositoryProviders
     /// Starts a provider if it isn't running.
     /// </summary>
     /// <param name="providerName">The provider to start.</param>
-    /// <returns>An awaitable task</returns>
-    public async Task StartIfNotRunningAsync(string providerName)
+    public void StartIfNotRunning(string providerName)
     {
         if (_providers.ContainsKey(providerName))
         {
-            await _providers[providerName].StartIfNotRunningAsync();
+            _providers[providerName].StartIfNotRunning();
         }
     }
 
@@ -47,11 +46,11 @@ internal class RepositoryProviders
     /// <param name="uri">The Uri to parse.</param>
     /// <returns>If a provider was found that can parse the Uri then (providerName, repository) in not
     /// (string.empty, null)</returns>
-    public async Task<(string, IRepository)> ParseRepositoryFromUriAsync(Uri uri)
+    public (string, IRepository) ParseRepositoryFromUri(Uri uri)
     {
         foreach (var provider in _providers)
         {
-            await provider.Value.StartIfNotRunningAsync();
+            provider.Value.StartIfNotRunning();
             var repository = provider.Value.ParseRepositoryFromUri(uri);
             if (repository != null)
             {
@@ -66,9 +65,9 @@ internal class RepositoryProviders
     /// Logs the user into a certain provider.
     /// </summary>
     /// <param name="providerName">The provider to log the user into.  Must match IRepositoryProvider.GetDisplayName</param>
-    public async Task LogInToProvider(string providerName)
+    public IDeveloperId LogInToProvider(string providerName)
     {
-        await _providers.GetValueOrDefault(providerName)?.LogIntoProvider();
+        return _providers.GetValueOrDefault(providerName)?.LogIntoProvider();
     }
 
     /// <summary>
@@ -96,8 +95,8 @@ internal class RepositoryProviders
     /// <param name="providerName">The specific provider.  Must match IRepositoryProvider.GetDisplayName</param>
     /// <param name="developerId">The account to look for.  May not be logged in.</param>
     /// <returns>All the repositories for an account and provider.</returns>
-    public async Task<IEnumerable<IRepository>> GetAllRepositoriesAsync(string providerName, IDeveloperId developerId)
+    public IEnumerable<IRepository> GetAllRepositories(string providerName, IDeveloperId developerId)
     {
-        return await _providers.GetValueOrDefault(providerName)?.GetAllRepositoriesAsync(developerId) ?? new List<IRepository>();
+        return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId) ?? new List<IRepository>();
     }
 }

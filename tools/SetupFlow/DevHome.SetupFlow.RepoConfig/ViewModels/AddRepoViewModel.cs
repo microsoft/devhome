@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.RepoConfig.Models;
@@ -108,6 +110,25 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldPrimaryButtonBeEnabled;
 
+    [ObservableProperty]
+    private string _textToFilterBy;
+
+    [RelayCommand]
+    private void FilterRepositories(string text)
+    {
+        IEnumerable<string> filteredRepositories;
+        if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
+        {
+            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => x.DisplayName);
+        }
+        else
+        {
+            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate).Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase)).Select(x => x.DisplayName);
+        }
+
+        Repositories = new ObservableCollection<string>(filteredRepositories);
+    }
+
     /// <summary>
     /// Gets or sets what page the user is currently on.  Used to branch logic depending on the page.
     /// </summary>
@@ -131,14 +152,13 @@ public partial class AddRepoViewModel : ObservableObject
     /// <summary>
     /// Gets all the plugins the DevHome can see.
     /// </summary>
-    /// <returns>An awaitable task.</returns>
     /// <remarks>
     /// A valid plugin is one that has a repository provider and devid provider.
     /// </remarks>
-    public async Task GetPluginsAsync()
+    public void GetPlugins()
     {
         var pluginService = Application.Current.GetService<IPluginService>();
-        var pluginWrappers = await pluginService.GetInstalledPluginsAsync();
+        var pluginWrappers = pluginService.GetInstalledPluginsAsync().Result;
         var plugins = pluginWrappers.Where(
             plugin => plugin.HasProviderType(ProviderType.Repository) &&
             plugin.HasProviderType(ProviderType.DevId));
@@ -215,15 +235,15 @@ public partial class AddRepoViewModel : ObservableObject
     /// Gets all the accounts for a provider and updates the UI.
     /// </summary>
     /// <param name="repositoryProviderName">The provider the user wants to use.</param>
-    /// <returns>An awaitable task</returns>
-    public async Task GetAccountsAsync(string repositoryProviderName)
+    public void GetAccounts(string repositoryProviderName)
     {
-        await _providers.StartIfNotRunningAsync(repositoryProviderName);
+        _providers.StartIfNotRunning(repositoryProviderName);
         var loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
         if (!loggedInAccounts.Any())
         {
-            await _providers.LogInToProvider(repositoryProviderName);
-
+            // Throw away developer id becase we're calling GetAllLoggedInAccounts in anticipation
+            // of 1 Provider : N DeveloperIds
+            _providers.LogInToProvider(repositoryProviderName);
             loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
         }
 
@@ -266,11 +286,11 @@ public partial class AddRepoViewModel : ObservableObject
     /// Adds a repository from the URL page.
     /// </summary>
     /// <param name="cloneLocation">The location to clone the repo to</param>
-    public async Task AddRepositoryViaUriAsync(string cloneLocation)
+    public void AddRepositoryViaUri(string cloneLocation)
     {
         // Try to parse repo from Uri
         // null means no providers were able to parse the Uri.
-        var providerNameAndRepo = await _providers.ParseRepositoryFromUriAsync(new Uri(Url));
+        var providerNameAndRepo = _providers.ParseRepositoryFromUri(new Uri(Url));
         if (providerNameAndRepo.Item2 == null)
         {
             return;
@@ -292,15 +312,13 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     /// <param name="repositoryProvider">The provider.  This should match IRepositoryProvider.LoginId</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
-    /// <returns>A list of all repositories the account has for the provider.</returns>
-    /// <remarks>
-    /// Repositories are presented as [loginId]\[Repo Display Name]
-    /// </remarks>
-    public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
+    public void GetRepositories(string repositoryProvider, string loginId)
     {
         var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
-        _repositoriesForAccount = await _providers.GetAllRepositoriesAsync(repositoryProvider, loggedInDeveloper);
-        Repositories = new ObservableCollection<string>(_repositoriesForAccount.Select(x => x.DisplayName));
+        _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
+
+        // TODO: What if the user comes back here with repos selected?
+        Repositories = new ObservableCollection<string>(_repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => x.DisplayName));
     }
 
     /// <summary>

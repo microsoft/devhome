@@ -4,13 +4,16 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.RepoConfig.ViewModels;
 
@@ -91,6 +94,16 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         List<CloningInformation> repoReviewItems = new (RepoReviewItems);
         RepoReviewItems = new ObservableCollection<CloningInformation>(repoReviewItems);
         _taskGroup.SaveSetupTaskInformation(repoReviewItems);
+    }
+
+    public void UpdateCloneLocation(CloningInformation cloningInformation)
+    {
+        var location = RepoReviewItems.IndexOf(cloningInformation);
+        if (location != -1)
+        {
+            RepoReviewItems[location] = cloningInformation;
+            UpdateCollection();
+        }
     }
 
     /// <summary>
