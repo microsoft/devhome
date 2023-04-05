@@ -9,7 +9,6 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
-using DevHome.Models;
 using DevHome.Services;
 using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
@@ -19,10 +18,7 @@ using DevHome.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.Windows.DevHome.SDK;
 using Newtonsoft.Json;
-using Windows.UI.ApplicationSettings;
-using WinRT;
 
 namespace DevHome;
 

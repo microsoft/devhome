@@ -8,9 +8,49 @@
     xmlns:local="using:DevHome.SetupFlow.RepoConfig.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:DevHome.SetupFlow.RepoConfig.Models"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:ctControls="using:CommunityToolkit.Labs.WinUI"
     mc:Ignorable="d">
-
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
-        <TextBlock>Repo config review</TextBlock>
+        <TextBlock
+            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NoRepositoriesToClone"
+            Visibility="{x:Bind ViewModel.RepositoriesToClone, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center" />
+        <GridView
+            ScrollViewer.VerticalScrollMode="Enabled"
+            ScrollViewer.VerticalScrollBarVisibility="Visible"
+            ItemsSource="{x:Bind ViewModel.RepositoriesToClone, Mode=OneWay}"
+            SelectionMode="None">
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <ctControls:SettingsCard Width="200" Padding="5" Background="Transparent">
+                        <ctControls:SettingsCard.Resources>
+                            <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
+                            <Thickness x:Key="SettingsCardPadding">0</Thickness>
+                            <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
+                            <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
+                            <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
+                            <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
+                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
+                        </ctControls:SettingsCard.Resources>
+                        <ctControls:SettingsCard.Header>
+                            <TextBlock Text="{x:Bind}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                        </ctControls:SettingsCard.Header>
+                    </ctControls:SettingsCard>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
     </Grid>
 </UserControl>

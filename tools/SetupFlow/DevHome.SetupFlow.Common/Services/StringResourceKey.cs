@@ -16,7 +16,16 @@ public static class StringResourceKey
     public static readonly string Basics = nameof(Basics);
     public static readonly string BrowseTextBlock = nameof(BrowseTextBlock);
     public static readonly string Close = nameof(Close);
+    public static readonly string ConfigurationFileApplyError = nameof(ConfigurationFileApplyError);
+    public static readonly string ConfigurationFileApplySuccess = nameof(ConfigurationFileApplySuccess);
+    public static readonly string ConfigurationFileApplySuccessReboot = nameof(ConfigurationFileApplySuccessReboot);
+    public static readonly string ConfigurationFileApplying = nameof(ConfigurationFileApplying);
+    public static readonly string ConfigurationFieldInvalid = nameof(ConfigurationFieldInvalid);
+    public static readonly string ConfigurationFileInvalid = nameof(ConfigurationFileInvalid);
+    public static readonly string ConfigurationFileOpenUnknownError = nameof(ConfigurationFileOpenUnknownError);
+    public static readonly string ConfigurationFileVersionUnknown = nameof(ConfigurationFileVersionUnknown);
     public static readonly string ConfigurationFileTypeNotSupported = nameof(ConfigurationFileTypeNotSupported);
+    public static readonly string DevDriveReviewTitle = nameof(DevDriveReviewTitle);
     public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
     public static readonly string DevDriveDefaultFolderName = nameof(DevDriveDefaultFolderName);
     public static readonly string DevDriveFilenameAlreadyExists = nameof(DevDriveFilenameAlreadyExists);
@@ -27,17 +36,19 @@ public static class StringResourceKey
     public static readonly string DevDriveNotEnoughFreeSpace = nameof(DevDriveNotEnoughFreeSpace);
     public static readonly string DevDriveReviewPageNumberOfDevDrives = nameof(DevDriveReviewPageNumberOfDevDrives);
     public static readonly string DevDriveReviewPageNumberOfDevDrivesTitle = nameof(DevDriveReviewPageNumberOfDevDrivesTitle);
+    public static readonly string DevDriveUnableToCreateError = nameof(DevDriveUnableToCreateError);
     public static readonly string DevDriveWindowByteUnitComboBoxGB = nameof(DevDriveWindowByteUnitComboBoxGB);
     public static readonly string DevDriveWindowByteUnitComboBoxTB = nameof(DevDriveWindowByteUnitComboBoxTB);
     public static readonly string FileTypeNotSupported = nameof(FileTypeNotSupported);
     public static readonly string InstalledPackage = nameof(InstalledPackage);
+    public static readonly string InstalledPackageReboot = nameof(InstalledPackageReboot);
     public static readonly string InstallingPackage = nameof(InstallingPackage);
     public static readonly string InstallPackageErrorBlockedByPolicy = nameof(InstallPackageErrorBlockedByPolicy);
     public static readonly string InstallPackageErrorDownloadError = nameof(InstallPackageErrorDownloadError);
     public static readonly string InstallPackageErrorInternalError = nameof(InstallPackageErrorInternalError);
     public static readonly string InstallPackageErrorInstallError = nameof(InstallPackageErrorInstallError);
     public static readonly string InstallPackageErrorNoApplicableInstallers = nameof(InstallPackageErrorNoApplicableInstallers);
-    public static readonly string InstallPackageErrorWithReason = nameof(InstallPackageErrorWithReason);
+    public static readonly string InstallPackageError = nameof(InstallPackageError);
     public static readonly string InstallPackageErrorUnknownError = nameof(InstallPackageErrorUnknownError);
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
@@ -80,7 +91,7 @@ public static class StringResourceKey
     // Dev drive loading screen messages
     public static readonly string DevDriveCreating = nameof(DevDriveCreating);
     public static readonly string DevDriveCreated = nameof(DevDriveCreated);
-    public static readonly string DevDriveError = nameof(DevDriveError);
+    public static readonly string DevDriveErrorWithReason = nameof(DevDriveErrorWithReason);
     public static readonly string DevDriveRestart = nameof(DevDriveRestart);
 
     // Loading screen

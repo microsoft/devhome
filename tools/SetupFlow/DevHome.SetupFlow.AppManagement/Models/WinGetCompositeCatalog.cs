@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Exceptions;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 
@@ -16,16 +17,14 @@ namespace DevHome.SetupFlow.AppManagement.Models;
 /// </summary>
 public class WinGetCompositeCatalog : IWinGetCatalog
 {
-    private readonly ILogger _logger;
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly CreateCompositePackageCatalogOptions _compositeCatalogOptions;
     private Microsoft.Management.Deployment.PackageCatalog _catalog;
 
     public bool IsConnected => _catalog != null;
 
-    public WinGetCompositeCatalog(ILogger logger, WindowsPackageManagerFactory wingetFactory)
+    public WinGetCompositeCatalog(WindowsPackageManagerFactory wingetFactory)
     {
-        _logger = logger;
         _wingetFactory = wingetFactory;
         _compositeCatalogOptions = _wingetFactory.CreateCreateCompositePackageCatalogOptions();
     }
@@ -53,10 +52,11 @@ public class WinGetCompositeCatalog : IWinGetCatalog
         {
             var packageManager = _wingetFactory.CreatePackageManager();
             var compositeCatalog = packageManager.CreateCompositePackageCatalog(_compositeCatalogOptions);
+            Log.Logger?.ReportInfo(nameof(WinGetCompositeCatalog), "Connecting to composite catalog");
             var connection = await compositeCatalog.ConnectAsync();
             if (connection.Status != ConnectResultStatus.Ok)
             {
-                _logger.LogError(nameof(CatalogConnectionException), LogLevel.Info, $"Failed to connect to catalog with status {connection.Status}");
+                Log.Logger?.ReportError(nameof(WinGetCompositeCatalog), $"Failed to connect to catalog with status {connection.Status}");
                 throw new CatalogConnectionException(connection.Status);
             }
 
@@ -64,7 +64,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog
         }
         catch (Exception e)
         {
-            _logger.LogError(nameof(WinGetCompositeCatalog), LogLevel.Info, $"Error connecting to catalog reference: {e.Message}");
+            Log.Logger?.ReportError(nameof(WinGetCompositeCatalog), $"Error connecting to catalog reference: {e.Message}");
             throw;
         }
     }
@@ -74,6 +74,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog
         try
         {
             // Use default filter criteria for searching
+            Log.Logger?.ReportInfo(nameof(WinGetCompositeCatalog), $"Searching for '{query}' on catalog {_catalog.Info.Name}. Result limit: {limit}");
             var options = _wingetFactory.CreateFindPackagesOptions();
             var filter = _wingetFactory.CreatePackageMatchFilter();
             filter.Field = PackageMatchField.CatalogDefault;
@@ -86,7 +87,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog
         }
         catch (Exception e)
         {
-            _logger.LogError(nameof(WinGetCompositeCatalog), LogLevel.Info, $"Error searching for packages: {e.Message}");
+            Log.Logger?.ReportError(nameof(WinGetCompositeCatalog), $"Error searching for packages: {e.Message}");
             throw;
         }
     }
@@ -95,9 +96,11 @@ public class WinGetCompositeCatalog : IWinGetCatalog
     {
         try
         {
+            Log.Logger?.ReportInfo(nameof(WinGetCompositeCatalog), $"Getting package set from catalog {_catalog.Info.Name}");
             var options = _wingetFactory.CreateFindPackagesOptions();
             foreach (var packageId in packageIdSet)
             {
+                Log.Logger?.ReportInfo(nameof(WinGetCompositeCatalog), $"Adding package [{packageId}] to query");
                 var filter = _wingetFactory.CreatePackageMatchFilter();
                 filter.Field = PackageMatchField.Id;
                 filter.Option = PackageFieldMatchOption.Equals;
@@ -105,11 +108,12 @@ public class WinGetCompositeCatalog : IWinGetCatalog
                 options.Selectors.Add(filter);
             }
 
+            Log.Logger?.ReportInfo(nameof(WinGetCompositeCatalog), "Starting search for packages");
             return await FindPackagesAsync(options);
         }
         catch (Exception e)
         {
-            _logger.LogError(nameof(WinGetCompositeCatalog), LogLevel.Info, $"Error searching for packages: {e.Message}");
+            Log.Logger?.ReportError(nameof(WinGetCompositeCatalog), $"Error getting packages: {e.Message}");
             throw;
         }
     }
@@ -128,19 +132,24 @@ public class WinGetCompositeCatalog : IWinGetCatalog
             throw new InvalidOperationException($"Cannot perform {FindPackagesAsync} operation because the catalog reference is not connected");
         }
 
+        Log.Logger?.ReportInfo(nameof(WinGetCompositeCatalog), "Performing search");
         var result = new List<IWinGetPackage>();
         var findResult = await _catalog.FindPackagesAsync(options);
         if (findResult.Status != FindPackagesResultStatus.Ok)
         {
-            _logger.LogError(nameof(FindPackagesException), LogLevel.Info, $"Failed to find packages with status {findResult.Status}");
+            // TODO: Report error
+            Log.Logger?.ReportError(nameof(WinGetCompositeCatalog), $"Failed to find packages with status {findResult.Status}");
             throw new FindPackagesException(findResult.Status);
         }
+
+        Log.Logger?.ReportInfo(nameof(WinGetCompositeCatalog), $"Found {findResult.Matches} results");
 
         // Cannot use foreach or Linq for out-of-process IVector
         // Bug: https://github.com/microsoft/CsWinRT/issues/1205
         for (var i = 0; i < findResult.Matches.Count; ++i)
         {
             var catalogPackage = findResult.Matches[i].CatalogPackage;
+            Log.Logger?.ReportInfo(nameof(WinGetCompositeCatalog), $"Found [{catalogPackage.Id}]");
             result.Add(new WinGetPackage(catalogPackage));
         }
 

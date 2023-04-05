@@ -157,28 +157,56 @@
     <value>Close</value>
     <comment>Label for a close button</comment>
   </data>
+  <data name="ConfigurationFieldInvalid" xml:space="preserve">
+    <value>The field '{0}' in the configuration file is invalid</value>
+    <comment>{Locked="{0}"} An error in reading a configuration file. {0} is a placeholder replaced by the field name from the file.</comment>
+  </data>
+  <data name="ConfigurationFileInvalid" xml:space="preserve">
+    <value>The configuration file is invalid.</value>
+    <comment>An error in reading a configuration file.</comment>
+  </data>
+  <data name="ConfigurationFileVersionUnknown" xml:space="preserve">
+    <value>Configuration file version {0} is not known.</value>
+    <comment>{Locked="{0}"} An error in reading a configuration file. {0} is a placeholder replaced by the version of the configuration file.</comment>
+  </data>
+  <data name="ConfigurationFileApplyError" xml:space="preserve">
+    <value>Couldn't apply settings from configuration file</value>
+    <comment>Label displayed when the settings listed in a configuration file have not been applied successfully</comment>
+  </data>
+  <data name="ConfigurationFileApplySuccess" xml:space="preserve">
+    <value>Applied settings from configuration file</value>
+    <comment>Label displayed when a configuration file has been applied successfully</comment>
+  </data>
+  <data name="ConfigurationFileApplySuccessReboot" xml:space="preserve">
+    <value>Applied settings from configuration file (restart required)</value>
+    <comment>Label displayed when a configuration file has been applied successfully and a system restart is required</comment>
+  </data>
+  <data name="ConfigurationFileApplying" xml:space="preserve">
+    <value>Applying settings from configuration file ...</value>
+    <comment>Label displayed when a configuration file is being applied</comment>
+  </data>
+  <data name="ConfigurationFileOpenUnknownError" xml:space="preserve">
+    <value>Unknown error</value>
+    <comment>Label displayed when opening a configuration fails because of an unknown error.</comment>
+  </data>
   <data name="ConfigurationFileWindow.Title" xml:space="preserve">
     <value>Configuration file name (Preview)</value>
     <comment>Title of the configuration file window</comment>
-  </data>
-  <data name="ConfigurationFileTypeNotSupported" xml:space="preserve">
-    <value>The configuration file should be a YAML file. Windows 11 marks a visual evolutions of the operating system.</value>
-    <comment>Configuration file type not supported error message</comment>
   </data>
   <data name="ConfigurationFileWarning.Title" xml:space="preserve">
     <value>Configuration file warning</value>
     <comment>Title of the configuration file warning message</comment>
   </data>
   <data name="ConfigurationFileWarning.Message" xml:space="preserve">
-    <value>This is a test feature. Windows 11 marks a visual evolution of the operating system. We have evolved our design language alongside with Fluent to create a design which is human, universal and truly feels like Windows.</value>
-    <comment>Text of the configuration file warninig message</comment>
+    <value>You are responsible for understanding the configuration settings you are choosing to execute. Microsoft is not responsible for the configuration file you have authored or imported. This configuration may change settings in Windows, install software, change software settings (including security settings), and accept user agreements to third-party packages and services on your behalf.  By running this configuration file, you acknowledge that you understand and agree to these resources and settings. Any applications installed are licensed to you by their owners. Microsoft is not responsible for, nor does it grant any licenses to, third-party packages or services.</value>
+    <comment>Legal approved. Do not change without approval.</comment>
   </data>
   <data name="DefaultBanner.Title" xml:space="preserve">
     <value>Get ready to code in minutes</value>
     <comment>Title text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.Description" xml:space="preserve">
-    <value>Find out how you can use Dev Home to get your development machine set up quickly.</value>
+    <value>Find out how you can use Dev Home to set up your development machine more quickly.</value>
     <comment>{Locked="Dev Home"}Description text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.ButtonText" xml:space="preserve">
@@ -210,11 +238,11 @@
     <comment>Text to Advise the user that the disks and volumes page in the Windows settings app has more advanced options for creating a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink.Text" xml:space="preserve">
-    <value>Open disks and volumes setting</value>
+    <value>Open Disks and volumes settings</value>
     <comment>Hyperlink text, so when clicked the user will be redirected to the disks and volumes Windows settings page.</comment>
   </data>
   <data name="DevDriveWindowLocationTextBox.Header" xml:space="preserve">
-    <value>Dev Drive location</value>
+    <value>Location</value>
     <comment>Header for the Dev Drive location text box. This location can be on the location system or on a network share</comment>
   </data>
   <data name="DevDriveWindowLocationTextBox.PlaceholderText" xml:space="preserve">
@@ -230,7 +258,7 @@
     <comment>Placeholder drive label value that will be used as the file name within the Dev Drive name text box. VHD stands for virtual hard disk, which is what will be created when the user goes to create a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowOnlyOneDevDriveAllowedHeader.Text" xml:space="preserve">
-    <value>You can only create one Dev Drive in Dev Home at a time.</value>
+    <value>A Dev Drive optimizes performance for development. You can only create one in Dev Home.</value>
     <comment>Text to advise users that they are only allowed the create one Dev Drive at a time.</comment>
   </data>
   <data name="DevDriveWindowSaveButton.Content" xml:space="preserve">
@@ -253,13 +281,17 @@
     <value>Installed {0}</value>
     <comment>{Locked="{0}"} Label displayed when a package has been installed. {0} is replaced by the package name.</comment>
   </data>
+  <data name="InstalledPackageReboot" xml:space="preserve">
+    <value>Installed {0} (restart required)</value>
+    <comment>{Locked="{0}"} Label displayed when a package has been installed. {0} is replaced by the package name.</comment>
+  </data>
   <data name="InstallingPackage" xml:space="preserve">
-    <value>Installing {0}</value>
+    <value>Installing {0} ...</value>
     <comment>{Locked="{0}"} Label displayed when a package is being installed. {0} is replaced by the package name.</comment>
   </data>
-  <data name="InstallPackageErrorWithReason" xml:space="preserve">
-    <value>Error installing {0}: {1}</value>
-    <comment>{Locked="{0}","{1}"} Label displayed when a package failed to install. {0} is replaced by the package name. {1} is replaced by the error reason.</comment>
+  <data name="InstallPackageError" xml:space="preserve">
+    <value>Couldn't install {0}</value>
+    <comment>{Locked="{0}"} Label displayed when a package failed to install. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorBlockedByPolicy" xml:space="preserve">
     <value>Operation is blocked by Group Policy</value>
@@ -330,7 +362,7 @@
     <comment>Text shown if no applications were selected to install</comment>
   </data>
   <data name="NavigationPane.Content" xml:space="preserve">
-    <value>Dev Setup tool</value>
+    <value>Machine Configuration</value>
     <comment>Navigation pane content</comment>
   </data>
   <data name="NoApplicationsSelected.Text" xml:space="preserve">
@@ -414,7 +446,7 @@
     <comment>Text indicating that a reboot may be needed to finish the setup</comment>
   </data>
   <data name="ReviewNothingToSetUpToolTip" xml:space="preserve">
-    <value>Nothing to set up</value>
+    <value>There's nothing to set up​</value>
     <comment>Text shown on a tool tip for a "Start set up" button if there is noting to set up</comment>
   </data>
   <data name="SearchBox.PlaceholderText" xml:space="preserve">
@@ -621,7 +653,7 @@
     <comment>Text that will be the description of a section in the review page where the user will see a list of details about the Dev Drives they are about to create. The name, size and the virtual disk file location are the details shows.</comment>
   </data>
   <data name="DevDriveReviewPageNoDevDrives.Text" xml:space="preserve">
-    <value>No Dev Drives will be created.</value>
+    <value>Nothing added</value>
     <comment>Text that lets the user know that they did not select a previous option to create a Dev Drive so therefore none will be created in the next step</comment>
   </data>
   <data name="DevDriveReviewPageNumberOfDevDrives" xml:space="preserve">
@@ -677,7 +709,7 @@
     <comment>Text that advises the user that the file name of the virtual hard disk they were trying to create already exists in the location they selected and that they should enter a new name.</comment>
   </data>
   <data name="DevDriveUnableToCreateError" xml:space="preserve">
-    <value>The Dev Drive couldn't be created.</value>
+    <value>Dev Drive couldn't be created</value>
     <comment>Text that advises the user that there was an error and we couldn't create the Dev Drive on their machine.</comment>
   </data>
   <data name="CloneRepoCreated" xml:space="preserve">
@@ -809,11 +841,18 @@
     <comment>Second part of the message notifying users to restart.</comment>
   </data>
   <data name="DevDriveErrorWithReason" xml:space="preserve">
-    <value>Dev Drive couldn't be created because {0}</value>
+    <value>Dev Drive couldn't be created error: {0}</value>
     <comment>Message when the dev drive could not be created. Param: reason.</comment>
   </data>
   <data name="DevDriveDriveLetterNotAvailable" xml:space="preserve">
     <value>The requested drive letter is not available. Select another one and try again.</value>
     <comment>Error text that tells the user that the drive letter they selected in the drive letter combo box, is not available.</comment>
+  </data>
+  <data name="DevDriveReviewTitle" xml:space="preserve">
+    <value>Drive</value>
+    <comment>Text that shows the title of a tab in the review page where users can see the details of the Dev Drive they are about to create.</comment>
+  </data>
+  <data name="NoRepositoriesToClone.Text" xml:space="preserve">
+    <value>No Repositories to clone</value>
   </data>
 </root>

@@ -126,19 +126,15 @@
     <comment>The name of our application</comment>
   </data>
   <data name="Feedback_OpenSource.Text" xml:space="preserve">
-    <value>Dev Home follows the </value>
+    <value>Dev Home follows the Microsoft Open Source Code of Conduct. </value>
     <comment>Dev Home abides by Microsoft Open Source guidance</comment>
   </data>
-  <data name="Feedback_FeatureImprovement.Description" xml:space="preserve">
-    <value>Propose something new</value>
-    <comment>Suggest a new feature that we don't currently have</comment>
-  </data>
   <data name="Feedback_FeatureImprovement.Header" xml:space="preserve">
-    <value>Suggest a Feature/Improvement</value>
+    <value>Suggest a Feature</value>
     <comment>FeatureImprovement is to suggest a useful feature that the app does not currently have</comment>
   </data>
   <data name="Feedback_FeatureImprovement_Button.Content" xml:space="preserve">
-    <value>Get Started</value>
+    <value>New Suggestion</value>
     <comment>Begin to fill out the feature request content dialog</comment>
   </data>
   <data name="Feedback_ReportBug_Internal.Description" xml:space="preserve">
@@ -149,16 +145,12 @@
     <value>***Internal*** Report a Bug in Feedback Hub</value>
     <comment>Tell us about an error that is happening using Feedback Hub</comment>
   </data>
-  <data name="Feedback_ReportBug.Description" xml:space="preserve">
-    <value>Report errors or unexpected behavior</value>
-    <comment>Tell us the errors that were happening</comment>
-  </data>
   <data name="Feedback_ReportBug.Header" xml:space="preserve">
-    <value>Report a Bug</value>
+    <value>Report a bug</value>
     <comment>Tell us about an error that is happening</comment>
   </data>
   <data name="Feedback_ReportBug_Button.Content" xml:space="preserve">
-    <value>Get Started</value>
+    <value>New Report</value>
     <comment>Begin to fill out the report bug content dialog</comment>
   </data>
   <data name="Feedback_ReportBug_Dialog.CloseButtonText" xml:space="preserve">
@@ -166,7 +158,7 @@
     <comment>Close out of the content dialog</comment>
   </data>
   <data name="Feedback_ReportBug_Dialog.PrimaryButtonText" xml:space="preserve">
-    <value>Preview Issue on GitHub</value>
+    <value>Preview on GitHub</value>
     <comment>Navigate to the GitHub issue to see the issue form</comment>
   </data>
   <data name="Feedback_ReportBug_Dialog.Title" xml:space="preserve">
@@ -174,27 +166,27 @@
     <comment>Tell us about an error</comment>
   </data>
   <data name="Feedback_ReportBug_ReproSteps.Header" xml:space="preserve">
-    <value>Steps to recreate</value>
+    <value>Steps to reproduce the bug</value>
     <comment>What to do to reproduce the error</comment>
   </data>
   <data name="Feedback_ReportBug_ReproSteps.PlaceholderText" xml:space="preserve">
-    <value>Detailed steps help us reproduce the bug.</value>
+    <value>Enter detailed steps to tell us what you were doing when you encountered the bug.</value>
     <comment>Specific details on how to recreate the error</comment>
   </data>
   <data name="Feedback_ReportBug_ActualBehavior.Header" xml:space="preserve">
-    <value>Actual behavior</value>
+    <value>Actual result</value>
     <comment>What is currently happening</comment>
   </data>
   <data name="Feedback_ReportBug_ActualBehavior.PlaceholderText" xml:space="preserve">
-    <value>What happened instead? </value>
+    <value>Tell us what happened.</value>
     <comment>The incorrect behavior that was happening instead of the correct behavior</comment>
   </data>
   <data name="Feedback_ReportBug_ExpectedBehavior.Header" xml:space="preserve">
-    <value>Expected behavior</value>
+    <value>Expected result</value>
     <comment>The correct behavior that was supposed to have</comment>
   </data>
   <data name="Feedback_ReportBug_ExpectedBehavior.PlaceholderText" xml:space="preserve">
-    <value>What were you expecting? </value>
+    <value>Tell us what you were expecting to happen.</value>
     <comment>What was supposed to happen</comment>
   </data>
   <data name="Feedback_ReportBug_IncludeExperimentInfo.Content" xml:space="preserve">
@@ -202,7 +194,7 @@
     <comment>Opt into including experimentation information into your issue template</comment>
   </data>
   <data name="Feedback_ReportBug_IncludePlugins.Content" xml:space="preserve">
-    <value>Include installed plugins</value>
+    <value>Include installed Dev Home plugins</value>
     <comment>Opt into including information on plugins into your issue template</comment>
   </data>
   <data name="Feedback_ReportBug_IncludeSystemInfo.Content" xml:space="preserve">
@@ -210,35 +202,31 @@
     <comment>Opt into including the computer information into your issue template</comment>
   </data>
   <data name="Feedback_ReportBug_IssueTitle.Header" xml:space="preserve">
-    <value>Subject/Title</value>
+    <value>Title</value>
     <comment>SubjectTitle is the topic of the issue that the user wants to report</comment>
   </data>
   <data name="Feedback_ReportBug_IssueTitle.PlaceholderText" xml:space="preserve">
-    <value>Title</value>
+    <value>Enter title</value>
     <comment>The topic of the issue that the user wants to report</comment>
   </data>
   <data name="Feedback_BuildExtension.Description" xml:space="preserve">
-    <value>Create a custom extension with our step-by-step guide</value>
+    <value>Learn how with our step-by-step guide</value>
     <comment>Documentation on how to create an extension</comment>
   </data>
   <data name="Feedback_BuildExtension.Header" xml:space="preserve">
-    <value>Build an Extension</value>
+    <value>Create an extension</value>
     <comment>Creating a new extension</comment>
   </data>
   <data name="Feedback_BuildExtension_Button.Content" xml:space="preserve">
-    <value>Documentation</value>
+    <value>Learn more</value>
     <comment>Description or instruction on building an extension</comment>
   </data>
-  <data name="Feedback_LocalizationIssue.Description" xml:space="preserve">
-    <value>Report incorrect translations</value>
-    <comment>Tell us about a translation that is not correct</comment>
-  </data>
   <data name="Feedback_LocalizationIssue.Header" xml:space="preserve">
-    <value>Localization/Translation Issue</value>
+    <value>Report a translation problem</value>
     <comment>LocalizationTranslation means that there are words and language being translated that are incorrect</comment>
   </data>
   <data name="Feedback_LocalizationIssue_Button.Content" xml:space="preserve">
-    <value>Get Started</value>
+    <value>New Report</value>
     <comment>Begin to fill out the translation issue content dialog</comment>
   </data>
   <data name="Feedback_LocalizationIssue_Dialog.CloseButtonText" xml:space="preserve">
@@ -246,23 +234,23 @@
     <comment>Close out of the content dialog</comment>
   </data>
   <data name="Feedback_LocalizationIssue_Dialog.PrimaryButtonText" xml:space="preserve">
-    <value>Finish Report on GitHub</value>
+    <value>Finish on GitHub</value>
     <comment>Continue the report on the GitHub template</comment>
   </data>
   <data name="Feedback_LocalizationIssue_Dialog.Title" xml:space="preserve">
-    <value>Report a Localization/Translation Issue</value>
+    <value>Report a translation problem</value>
     <comment>LocalizationTranslation means that there are words and language being translated that are incorrect</comment>
   </data>
   <data name="Feedback_LocalizationIssue_IssueTitle.Header" xml:space="preserve">
-    <value>Subject/Title</value>
+    <value>Title</value>
     <comment>SubjectTitle is the topic of the issue that the user wants to report.</comment>
   </data>
   <data name="Feedback_LocalizationIssue_IssueTitle.PlaceholderText" xml:space="preserve">
-    <value>Title</value>
+    <value>Enter title</value>
     <comment>The topic of the issue that the user wants to report</comment>
   </data>
   <data name="Feedback_ReportSecurity.Description" xml:space="preserve">
-    <value>Please review our security policy for more details</value>
+    <value>Read our security policy and learn how to report vulnerabilities</value>
     <comment>Look at the guidance on security</comment>
   </data>
   <data name="Feedback_ReportSecurity.Header" xml:space="preserve">
@@ -270,23 +258,23 @@
     <comment>Tell us about potential security concerns</comment>
   </data>
   <data name="Feedback_ReportSecurity_Button.Content" xml:space="preserve">
-    <value>View Policy</value>
+    <value>Learn more</value>
     <comment>Click on this link if you want to learn more and read the security policy. View is an action.</comment>
   </data>
   <data name="Feedback_LocalizationIssue_LanguageAffected.Header" xml:space="preserve">
-    <value>Language Affected</value>
+    <value>Language</value>
     <comment>The language that is being incorrectly translated</comment>
   </data>
   <data name="Feedback_LocalizationIssue_LanguageAffected.PlaceholderText" xml:space="preserve">
-    <value>E.g. "German"</value>
+    <value>Example: German</value>
     <comment>Example of a language is German</comment>
   </data>
   <data name="Feedback_SuggestFeature_Description.Header" xml:space="preserve">
-    <value>Description of the new feature / improvement</value>
+    <value>Suggested new feature or improvement</value>
     <comment>More details on the feature that is suggested</comment>
   </data>
   <data name="Feedback_SuggestFeature_Description.PlaceholderText" xml:space="preserve">
-    <value>What is the expected behavior of the proposed feature/improvement?</value>
+    <value>Tell us about the new feature or improvement you'd like to see.</value>
     <comment>What is the feature supposed to do and how is it important</comment>
   </data>
   <data name="Feedback_SuggestFeature_Dialog.CloseButtonText" xml:space="preserve">
@@ -294,56 +282,47 @@
     <comment>Exit out of the content dialog</comment>
   </data>
   <data name="Feedback_SuggestFeature_Dialog.PrimaryButtonText" xml:space="preserve">
-    <value>Preview Issue on GitHub</value>
+    <value>Preview on GitHub</value>
     <comment>Go to the issue on the GitHub template</comment>
   </data>
   <data name="Feedback_SuggestFeature_Dialog.Title" xml:space="preserve">
-    <value>Suggest a Feature/Improvement</value>
+    <value>Suggest a new feature or improvement</value>
     <comment>Tell us about a feature that you would like to see. FeatureImprovement is a feature that would be useful for the app to have that it doesn't currently have already.</comment>
   </data>
   <data name="Feedback_SuggestFeature_IssueTitle.Header" xml:space="preserve">
-    <value>Subject/Title</value>
+    <value>Title</value>
     <comment>SubjectTitle topic of the feature that the user wants to reccomend creating</comment>
   </data>
   <data name="Feedback_SuggestFeature_IssueTitle.PlaceholderText" xml:space="preserve">
-    <value>Title</value>
+    <value>Enter title</value>
     <comment>The topic of the feature that the user wants to reccomend creating</comment>
   </data>
   <data name="Feedback_SuggestFeature_Scenario.Header" xml:space="preserve">
-    <value>Scenario when this would be used</value>
+    <value>Scenario</value>
     <comment>When you would apply the feature that you are suggesting</comment>
   </data>
   <data name="Feedback_SuggestFeature_Scenario.PlaceholderText" xml:space="preserve">
-    <value>What is the scenario this would be used in? Why is this important to your
- workflow?</value>
+    <value>How could this new feature be used? Feel free to provide examples.</value>
     <comment>Explaining why we would need this feature</comment>
   </data>
   <data name="Feedback_SuggestFeature_SupportingInfo.Header" xml:space="preserve">
-    <value>Supporting Information</value>
+    <value>Additional details</value>
     <comment>More information you can give on suggesting a feature</comment>
   </data>
   <data name="Feedback_SuggestFeature_SupportingInfo.PlaceholderText" xml:space="preserve">
-    <value>Any additional evidence, tweets, posts, etc. that provide more context.</value>
+    <value>Enter more info or links to give us more details.</value>
     <comment>What are some additional resoures about this feature</comment>
   </data>
-  <data name="Feedback_DocumentationInfoEnd.Text" xml:space="preserve">
-    <value>to learn more.</value>
-    <comment>Go to this link to understand more about documentation</comment>
-  </data>
-  <data name="Feedback_DocumentationInfoStart.Text" xml:space="preserve">
-    <value>See</value>
-    <comment>Look at this link for more information</comment>
-  </data>
   <data name="Feedback_DocumentationInfo_LinkText.Text" xml:space="preserve">
-    <value>Documentation for Dev Home</value>
+    <value>Learn more about how we use your feedback</value>
     <comment>Guidance on the project</comment>
   </data>
   <data name="Feedback_OpenSource_LinkText.Text" xml:space="preserve">
-    <value>Microsoft Open Source of Conduct</value>
-    <comment>Open source documentaiton guidance</comment>
+    <value>View policy</value>
+    <comment>Open source documentation guidance</comment>
   </data>
   <data name="Feedback_IssueGuidance.Text" xml:space="preserve">
-    <value>Before you report an issue, you may want to review</value>
+    <value>Before you report a problem, you may want to review</value>
     <comment>View the guidance on reporting an issue</comment>
   </data>
   <data name="Feedback_Suggestion.Text" xml:space="preserve">

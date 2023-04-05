@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Extensions;
@@ -11,6 +12,7 @@ using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
 using Microsoft.Extensions.Hosting;
+using Windows.ApplicationModel.UserDataTasks;
 
 namespace DevHome.SetupFlow.RepoConfig;
 
@@ -20,6 +22,8 @@ namespace DevHome.SetupFlow.RepoConfig;
 public class RepoConfigTaskGroup : ISetupTaskGroup
 {
     private readonly IHost _host;
+    private readonly Lazy<RepoConfigReviewViewModel> _repoConfigReviewViewModel;
+    private readonly Lazy<RepoConfigViewModel> _repoConfigViewModel;
 
     private readonly ISetupFlowStringResource _stringResource;
 
@@ -27,6 +31,12 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     {
         _host = host;
         _stringResource = stringResource;
+
+        // TODO Remove `this` argument from CreateInstance since this task
+        // group is a registered type. This requires updating dependent classes
+        // correspondingly.
+        _repoConfigViewModel = new (() => _host.CreateInstance<RepoConfigViewModel>(this));
+        _repoConfigReviewViewModel = new (() => _host.CreateInstance<RepoConfigReviewViewModel>(this));
     }
 
     /// <summary>
@@ -34,9 +44,9 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     /// </summary>
     public IEnumerable<ISetupTask> SetupTasks => _cloneTasks;
 
-    public SetupPageViewModelBase GetSetupPageViewModel() => _host.CreateInstance<RepoConfigViewModel>(this);
+    public SetupPageViewModelBase GetSetupPageViewModel() => _repoConfigViewModel.Value;
 
-    public ReviewTabViewModelBase GetReviewTabViewModel() => _host.CreateInstance<RepoConfigReviewViewModel>();
+    public ReviewTabViewModelBase GetReviewTabViewModel() => _host.CreateInstance<RepoConfigReviewViewModel>(_cloneTasks);
 
     /// <summary>
     /// All tasks that need to be ran.
@@ -53,7 +63,13 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         foreach (var cloningInformation in cloningInformations)
         {
             var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.RepositoryToClone.DisplayName);
-            _cloneTasks.Add(new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource));
+            var task = new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.ProviderName);
+            if (cloningInformation.CloneToDevDrive)
+            {
+                task.DependsOnDevDriveToBeInstalled = true;
+            }
+
+            _cloneTasks.Add(task);
         }
     }
 }

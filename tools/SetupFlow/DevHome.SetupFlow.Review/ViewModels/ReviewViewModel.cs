@@ -8,14 +8,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.ElevatedComponent;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.Review.ViewModels;
 
 public partial class ReviewViewModel : SetupPageViewModelBase
 {
-    private readonly ILogger _logger;
     private readonly IHost _host;
     private readonly SetupFlowOrchestrator _orchestrator;
 
@@ -39,11 +37,9 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     public ReviewViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        ILogger logger,
         IHost host)
         : base(stringResource, orchestrator)
     {
-        _logger = logger;
         _host = host;
         _orchestrator = orchestrator;
 
@@ -55,7 +51,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     protected async override Task OnEachNavigateToAsync()
     {
         IsRebootRequired = _orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresReboot));
-        NextPageButtonToolTipText = HasTasksToSetUp ? string.Empty : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
+        NextPageButtonToolTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
         await Task.CompletedTask;
     }
 

@@ -222,7 +222,7 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
         if (!loggedInAccounts.Any())
         {
-            _providers.LogInToProvider(repositoryProviderName).Wait();
+            await _providers.LogInToProvider(repositoryProviderName);
 
             loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
         }

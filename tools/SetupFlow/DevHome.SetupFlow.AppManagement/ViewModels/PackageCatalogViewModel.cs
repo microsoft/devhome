@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.Common.Helpers;
 
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 
@@ -43,6 +44,7 @@ public partial class PackageCatalogViewModel : ObservableObject
     [RelayCommand]
     private void AddAllPackages()
     {
+        Log.Logger?.ReportInfo(nameof(PackageCatalogViewModel), $"Adding all packages from catalog {Name} to selection");
         foreach (var package in Packages)
         {
             package.IsSelected = true;

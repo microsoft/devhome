@@ -29,12 +29,6 @@ public enum DevDriveState
     New,
 
     /// <summary>
-    ///  Dev Drive does not exist on system yet and but is in the process of being created.
-    ///  When in this state we can use it to create a Dev Drive on the system.
-    /// </summary>
-    Creating,
-
-    /// <summary>
     ///  Dev Drive exists on system. We cannot use it to create a new Dev Drive on the system.
     /// </summary>
     ExistsOnSystem,

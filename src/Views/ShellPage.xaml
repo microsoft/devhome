@@ -46,7 +46,7 @@
                 <NavigationViewItem x:Uid="Shell_IGNORE" helpers:NavigationHelper.NavigateTo="DevHome.Settings.ViewModels.SettingsViewModel" Visibility="Collapsed"/>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem x:Uid="Feedback" helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.FeedbackViewModel" Content="Give Feedback">
+                <NavigationViewItem x:Uid="Feedback" helpers:NavigationHelper.NavigateTo="DevHome.ViewModels.FeedbackViewModel" Content="Feedback">
                     <NavigationViewItem.Icon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE939;"/>
                     </NavigationViewItem.Icon>

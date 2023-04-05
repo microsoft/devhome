@@ -3,11 +3,10 @@
 
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Services;
-using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 using Windows.Storage.Streams;
 
@@ -26,8 +25,8 @@ public class WinGetPackage : IWinGetPackage
     public WinGetPackage(CatalogPackage package)
     {
         _package = package;
-        _packageUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PackageUrl), null));
-        _publisherUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PublisherUrl), null));
+        _packageUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null));
+        _publisherUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PublisherUrl), nameof(CatalogPackageMetadata.PublisherUrl), null));
         _uniqueKey = new (Id, CatalogId);
     }
 
@@ -62,10 +61,9 @@ public class WinGetPackage : IWinGetPackage
     public Uri PublisherUrl => _publisherUrl.Value;
 
     public InstallPackageTask CreateInstallTask(
-        ILogger logger,
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory) => new (logger, wpm, stringResource, wingetFactory, this);
+        WindowsPackageManagerFactory wingetFactory) => new (wpm, stringResource, wingetFactory, this);
 
     /// <summary>
     /// Check if the package requires elevation
@@ -83,6 +81,7 @@ public class WinGetPackage : IWinGetPackage
         }
         catch
         {
+            Log.Logger?.ReportWarn(nameof(WinGetPackage), $"Failed to get elevation requirement for package {_package.Id}; defaulting to not requiring elevation");
             return false;
         }
     }
@@ -92,9 +91,10 @@ public class WinGetPackage : IWinGetPackage
     /// </summary>
     /// <typeparam name="T">Type of the return value</typeparam>
     /// <param name="metadataFunction">Function called with the package metadata as input</param>
+    /// <param name="metadataFieldName">Name of the metadata field we want to get; used for logging</param>
     /// <param name="defaultValue">Default value returned if the package metadata threw an exception</param>
     /// <returns>Metadata function result or default value</returns>
-    private T GetMetadataValue<T>(Func<CatalogPackageMetadata, T> metadataFunction, T defaultValue)
+    private T GetMetadataValue<T>(Func<CatalogPackageMetadata, T> metadataFunction, string metadataFieldName, T defaultValue)
     {
         try
         {
@@ -104,6 +104,7 @@ public class WinGetPackage : IWinGetPackage
         }
         catch
         {
+            Log.Logger?.ReportWarn(nameof(WinGetPackage), $"Failed to get package metadata [{metadataFieldName}] for package {_package.Id}; defaulting to {defaultValue}");
             return defaultValue;
         }
     }

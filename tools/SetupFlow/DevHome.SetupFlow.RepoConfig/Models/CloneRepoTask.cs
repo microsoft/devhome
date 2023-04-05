@@ -19,7 +19,7 @@ namespace DevHome.SetupFlow.RepoConfig.Models;
 /// Object to hold all information needed to clone a repository.
 /// 1:1 CloningInformation to repository.
 /// </summary>
-internal class CloneRepoTask : ISetupTask
+public class CloneRepoTask : ISetupTask
 {
     /// <summary>
     /// Absolute path the user wants to clone their repository to.
@@ -27,9 +27,22 @@ internal class CloneRepoTask : ISetupTask
     private readonly DirectoryInfo cloneLocation;
 
     /// <summary>
-    /// The repository the user wants to clone.
+    /// Gets the repository the user wants to clone.
     /// </summary>
-    private readonly IRepository repositoryToClone;
+    public IRepository RepositoryToClone { get; }
+
+    /// <summary>
+    /// Gets the display name of the repository.
+    /// </summary>
+    public string RepositoryName => RepositoryToClone.DisplayName;
+
+    /// <summary>
+    /// Gets the provider name the repository is cloning from.
+    /// </summary>
+    public string ProviderName
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Gets a value indicating whether the task requires being admin.
@@ -46,6 +59,12 @@ internal class CloneRepoTask : ISetupTask
     /// </summary>
     private readonly IDeveloperId _developerId;
 
+    // May potentially be moved to a central list in the future.
+    public bool WasCloningSuccessful
+    {
+        get; private set;
+    }
+
     private TaskMessages _taskMessage;
 
     public TaskMessages GetLoadingMessages() => _taskMessage;
@@ -60,7 +79,7 @@ internal class CloneRepoTask : ISetupTask
 
     public bool DependsOnDevDriveToBeInstalled
     {
-        get;
+        get; set;
     }
 
     /// <summary>
@@ -69,12 +88,13 @@ internal class CloneRepoTask : ISetupTask
     /// <param name="cloneLocation">Repository will be placed here. at cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
     /// <param name="developerId">Credentials needed to clone a private repo</param>
-    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource)
+    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName)
     {
         this.cloneLocation = cloneLocation;
-        this.repositoryToClone = repositoryToClone;
+        this.RepositoryToClone = repositoryToClone;
         _developerId = developerId;
         SetMessages(stringResource);
+        ProviderName = providerName;
     }
 
     /// <summary>
@@ -86,16 +106,16 @@ internal class CloneRepoTask : ISetupTask
     public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource)
     {
         this.cloneLocation = cloneLocation;
-        this.repositoryToClone = repositoryToClone;
+        this.RepositoryToClone = repositoryToClone;
         SetMessages(stringResource);
     }
 
     private void SetMessages(IStringResource stringResource)
     {
-        var executingMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoCreating, repositoryToClone.DisplayName);
+        var executingMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoCreating, RepositoryToClone.DisplayName);
         var finishedMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoCreated, cloneLocation.FullName);
-        var errorMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoError, repositoryToClone.DisplayName);
-        var needsRebootMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoRestart, repositoryToClone.DisplayName);
+        var errorMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoError, RepositoryToClone.DisplayName);
+        var needsRebootMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoRestart, RepositoryToClone.DisplayName);
         _taskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsRebootMessage);
 
         var actionCenterErrorMessage = new ActionCenterMessages();
@@ -128,7 +148,7 @@ internal class CloneRepoTask : ISetupTask
 
             try
             {
-                await repositoryToClone.CloneRepositoryAsync(cloneLocation.FullName, _developerId);
+                await RepositoryToClone.CloneRepositoryAsync(cloneLocation.FullName, _developerId);
             }
             catch (Exception e)
             {
@@ -137,6 +157,7 @@ internal class CloneRepoTask : ISetupTask
                 return TaskFinishedState.Failure;
             }
 
+            WasCloningSuccessful = true;
             return TaskFinishedState.Success;
         }).AsAsyncOperation();
     }

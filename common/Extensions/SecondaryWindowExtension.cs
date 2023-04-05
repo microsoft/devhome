@@ -138,6 +138,9 @@ public partial class SecondaryWindowExtension : WindowEx
             // Unregister z-order change handler
             PrimaryWindow.ZOrderChanged -= OnPrimaryWindowZOrderChanged;
             Closed -= OnSecondaryWindowClosed;
+            PrimaryWindow.Closed -= OnPrimaryWindowClosed;
+            PrimaryWindow.VisibilityChanged -= OnPrimaryWindowVisiblityChanged;
+            UseAppTheme = false;
         }
     }
 

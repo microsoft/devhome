@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
@@ -15,7 +16,6 @@ using DevHome.SetupFlow.ConfigurationFile;
 using DevHome.SetupFlow.DevDrive;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.RepoConfig;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Windows.System;
 
@@ -29,8 +29,10 @@ namespace DevHome.SetupFlow.MainPage.ViewModels;
 /// </summary>
 public partial class MainPageViewModel : SetupPageViewModelBase
 {
-    private readonly ILogger _logger;
     private readonly IHost _host;
+
+    [ObservableProperty]
+    private bool _showBanner = true;
 
     [ObservableProperty]
     private bool _showDevDriveItem;
@@ -45,16 +47,20 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     public MainPageViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        ILogger logger,
         IHost host)
         : base(stringResource, orchestrator)
     {
-        _logger = logger;
         _host = host;
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
+    }
+
+    [RelayCommand]
+    private void HideBanner()
+    {
+        ShowBanner = false;
     }
 
     /// <summary>
@@ -72,6 +78,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartSetup()
     {
+        Log.Logger?.ReportInfo(nameof(MainPageViewModel), "Starting end-to-end setup");
         StartSetupFlowForTaskGroups(
             _host.GetService<DevDriveTaskGroup>(),
             _host.GetService<RepoConfigTaskGroup>(),
@@ -84,6 +91,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartRepoConfig()
     {
+        Log.Logger?.ReportInfo(nameof(MainPageViewModel), "Starting flow for repo config");
         StartSetupFlowForTaskGroups(
             _host.GetService<DevDriveTaskGroup>(),
             _host.GetService<RepoConfigTaskGroup>());
@@ -95,6 +103,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartAppManagement()
     {
+        Log.Logger?.ReportInfo(nameof(MainPageViewModel), "Starting flow for app management");
         StartSetupFlowForTaskGroups(_host.GetService<AppManagementTaskGroup>());
     }
 
@@ -105,6 +114,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private async void LaunchDisksAndVolumesSettingsPage()
     {
         // TODO: Add telemetry.
+        Log.Logger?.ReportInfo(nameof(MainPageViewModel), "Launching settings on Disks and Volumes page");
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
 
@@ -117,6 +127,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
         if (await configFileSetupFlow.PickConfigurationFileAsync())
         {
+            Log.Logger?.ReportInfo(nameof(MainPageViewModel), "Starting flow for Configuration file");
             StartSetupFlowForTaskGroups(configFileSetupFlow);
         }
     }

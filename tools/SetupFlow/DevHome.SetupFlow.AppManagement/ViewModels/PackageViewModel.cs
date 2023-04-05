@@ -10,7 +10,6 @@ using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.SetupFlow.Common.Services;
-using DevHome.Telemetry;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
@@ -37,7 +36,6 @@ public partial class PackageViewModel : ObservableObject
     private readonly Lazy<BitmapImage> _packageLightThemeIcon;
     private readonly Lazy<InstallPackageTask> _installPackageTask;
 
-    private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IWinGetPackage _package;
     private readonly IWindowsPackageManager _wpm;
@@ -56,14 +54,12 @@ public partial class PackageViewModel : ObservableObject
     private bool _isSelected;
 
     public PackageViewModel(
-        ILogger logger,
         ISetupFlowStringResource stringResource,
         IWindowsPackageManager wpm,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
         WindowsPackageManagerFactory wingetFactory)
     {
-        _logger = logger;
         _stringResource = stringResource;
         _wpm = wpm;
         _package = package;
@@ -157,7 +153,7 @@ public partial class PackageViewModel : ObservableObject
 
     private InstallPackageTask CreateInstallTask()
     {
-        return _package.CreateInstallTask(_logger, _wpm, _stringResource, _wingetFactory);
+        return _package.CreateInstallTask(_wpm, _stringResource, _wingetFactory);
     }
 
     /// <summary>
