@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using DevHome.Activation;
+using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
 using DevHome.Views;
@@ -15,13 +16,18 @@ public class ActivationService : IActivationService
     private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
     private readonly IThemeSelectorService _themeSelectorService;
-    private UIElement? _shell;
+    private readonly ILocalSettingsService _localSettingsService;
 
-    public ActivationService(ActivationHandler<LaunchActivatedEventArgs> defaultHandler, IEnumerable<IActivationHandler> activationHandlers, IThemeSelectorService themeSelectorService)
+    public ActivationService(
+        ActivationHandler<LaunchActivatedEventArgs> defaultHandler,
+        IEnumerable<IActivationHandler> activationHandlers,
+        IThemeSelectorService themeSelectorService,
+        ILocalSettingsService localSettingsService)
     {
         _defaultHandler = defaultHandler;
         _activationHandlers = activationHandlers;
         _themeSelectorService = themeSelectorService;
+        _localSettingsService = localSettingsService;
     }
 
     public async Task ActivateAsync(object activationArgs)
@@ -32,8 +38,7 @@ public class ActivationService : IActivationService
         // Set the MainWindow Content.
         if (App.MainWindow.Content == null)
         {
-            _shell = Application.Current.GetService<InitializationPage>();
-            App.MainWindow.Content = _shell ?? new Frame();
+            App.MainWindow.Content = Application.Current.GetService<InitializationPage>();
         }
 
         // Handle activation via ActivationHandlers.

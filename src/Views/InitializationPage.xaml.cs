@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using DevHome.Logging;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.Services;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
@@ -26,8 +27,8 @@ using Windows.Foundation.Collections;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace DevHome.Views;
+
 /// <summary>
 /// An empty page that can be used on its own or navigated to within a Frame.
 /// </summary>
@@ -56,10 +57,17 @@ public sealed partial class InitializationPage : Page
 
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        await _wpm.MsStoreCatalog.ConnectAsync();
+        try
+        {
+            await _wpm.MsStoreCatalog.ConnectAsync();
+            var result = await _wpm.MsStoreCatalog.GetPackagesAsync(new HashSet<string>() { "9WZDNCRFJ3PV" });
+            await _wpm.InstallPackageAsync(result.First() as WinGetPackage);
+        }
+        catch (Exception ex)
+        {
+            _logger.Log("GitHubExtension Hydration Failed", LogLevel.Local, ex);
+        }
 
-        var result = await _wpm.MsStoreCatalog.GetPackagesAsync(new HashSet<string>() { "9N6ZFG245K8J" });
-        ISetupTask installtask = result.First().CreateInstallTask(_logger, _wpm, _stringResource, _wingetFactory);
-        await installtask.Execute();
+        App.MainWindow.Content = Application.Current.GetService<ShellPage>();
     }
 }
