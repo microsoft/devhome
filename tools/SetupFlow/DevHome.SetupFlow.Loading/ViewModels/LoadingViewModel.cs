@@ -286,7 +286,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             // Move to the next screen if either
             // no tasks failed, or
             // user tried re-running them once.
-            ExecutionFinished.Invoke(null, null);
+            /*ExecutionFinished.Invoke(null, null);*/
         }
         else
         {
