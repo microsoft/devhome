@@ -55,7 +55,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// <summary>
     /// Gets the title for the configuration page
     /// </summary>
-    public string TitleText => StringResource.GetLocalized(StringResourceKey.ViewConfiguration, _configuration.Name);
+    public string TitleText => StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, _configuration.Name);
 
     /// <summary>
     /// Gets the configuration file content
