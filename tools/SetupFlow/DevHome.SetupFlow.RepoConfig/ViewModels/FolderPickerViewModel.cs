@@ -95,6 +95,8 @@ public partial class FolderPickerViewModel : ObservableObject
         if (maybeCloneLocation != null)
         {
             CloneLocation = maybeCloneLocation.FullName;
+            CloneLocationAlias = string.Empty;
+            InDevDriveScenario = false;
         }
 
         EnableBrowseButton();

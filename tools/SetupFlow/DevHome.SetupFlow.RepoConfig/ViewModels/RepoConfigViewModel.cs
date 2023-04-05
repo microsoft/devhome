@@ -12,7 +12,6 @@ using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
-using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -23,11 +22,6 @@ namespace DevHome.SetupFlow.RepoConfig.ViewModels;
 /// </summary>
 public partial class RepoConfigViewModel : SetupPageViewModelBase
 {
-    /// <summary>
-    /// The logger to use to log things.
-    /// </summary>
-    private readonly ILogger _logger;
-
     /// <summary>
     /// All the tasks that need to be ran during the loading page.
     /// </summary>
@@ -62,12 +56,10 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     public RepoConfigViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        ILogger logger,
         IDevDriveManager devDriveManager,
         RepoConfigTaskGroup taskGroup)
         : base(stringResource, orchestrator)
     {
-        _logger = logger;
         _taskGroup = taskGroup;
         _devDriveManager = devDriveManager;
         RepoDialogCancelled += _devDriveManager.CancelChangesToDevDrive;
@@ -135,7 +127,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         {
             if (item.CloneToDevDrive && item.CloningLocation != cloningInfo.CloningLocation)
             {
-                item.CloningLocation = cloningInfo.CloningLocation;
+                item.CloningLocation = new System.IO.DirectoryInfo(cloningInfo.CloningLocation.FullName);
                 item.CloneLocationAlias = cloningInfo.CloneLocationAlias;
             }
         }

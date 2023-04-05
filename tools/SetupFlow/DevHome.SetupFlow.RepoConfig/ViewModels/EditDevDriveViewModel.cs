@@ -182,17 +182,23 @@ public partial class EditDevDriveViewModel : ObservableObject
         ShowDevDriveInformation = DevDriveUtil.IsDevDriveFeatureEnabled ? Visibility.Visible : Visibility.Collapsed;
         if (ShowDevDriveInformation == Visibility.Visible)
         {
+<<<<<<< HEAD
             var existingDevDrives = _devDriveManager.GetAllDevDrivesThatExistOnSystem().Result;
+=======
+            var existingDevDrives = _devDriveManager.GetAllDevDrivesThatExistOnSystem();
+>>>>>>> main
             if (existingDevDrives.Any())
             {
                 ShowDevDriveInformation = Visibility.Collapsed;
                 DevDrive = existingDevDrives.OrderByDescending(x => x.DriveSizeInBytes).First();
                 _canShowDevDriveUI = false;
+                return;
             }
         }
         else
         {
             _canShowDevDriveUI = false;
+            return;
         }
 
         _canShowDevDriveUI = true;

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
 
@@ -32,7 +33,6 @@ public partial class SearchViewModel : ObservableObject
         ExceptionThrown,
     }
 
-    private readonly ILogger _logger;
     private readonly IWindowsPackageManager _wpm;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly PackageProvider _packageProvider;
@@ -62,10 +62,9 @@ public partial class SearchViewModel : ObservableObject
     /// </summary>
     public string NoSearchResultsText => _stringResource.GetLocalized(StringResourceKey.NoSearchResultsFoundTitle, SearchText);
 
-    public SearchViewModel(ILogger logger, IWindowsPackageManager wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider)
+    public SearchViewModel(IWindowsPackageManager wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider)
     {
         _wpm = wpm;
-        _logger = logger;
         _stringResource = stringResource;
         _packageProvider = packageProvider;
     }
@@ -93,6 +92,7 @@ public partial class SearchViewModel : ObservableObject
         try
         {
             // Run the search on a separate (non-UI) thread to prevent lagging the UI.
+            Log.Logger?.ReportInfo(nameof(SearchViewModel), $"Running package search for query [{text}]");
             var matches = await Task.Run(async () => await _wpm.AllCatalogs.SearchAsync(text, SearchResultLimit), cancellationToken);
 
             // Don't update the UI if the operation was canceled
@@ -112,7 +112,7 @@ public partial class SearchViewModel : ObservableObject
         }
         catch (Exception e)
         {
-            _logger.LogError(nameof(SearchViewModel), LogLevel.Info, $"Search error: {e.Message}");
+            Log.Logger?.ReportError(nameof(SearchViewModel), $"Search error: {e.Message}");
             return (SearchResultStatus.ExceptionThrown, null);
         }
     }

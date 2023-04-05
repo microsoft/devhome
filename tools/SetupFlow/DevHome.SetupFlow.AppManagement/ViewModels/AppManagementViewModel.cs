@@ -8,16 +8,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.AppManagement.ViewModels;
 
 public partial class AppManagementViewModel : SetupPageViewModelBase
 {
-    private readonly ILogger _logger;
     private readonly ShimmerSearchViewModel _shimmerSearchViewModel;
     private readonly SearchViewModel _searchViewModel;
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
@@ -38,7 +37,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     public string ApplicationsSelectedCountText => StringResource.GetLocalized(StringResourceKey.ApplicationsSelectedCount, SelectedPackages.Count);
 
     public AppManagementViewModel(
-        ILogger logger,
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         IHost host,
@@ -46,7 +44,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         PackageProvider packageProvider)
         : base(stringResource, orchestrator)
     {
-        _logger = logger;
         _wpm = wpm;
         _packageProvider = packageProvider;
         _searchViewModel = host.GetService<SearchViewModel>();
@@ -64,10 +61,12 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     protected async override Task OnFirstNavigateToAsync()
     {
         // Load catalogs from all data sources
+        Log.Logger?.ReportInfo(nameof(AppManagementViewModel), "Loading package catalogs from all sources");
         await _packageCatalogListViewModel.LoadCatalogsAsync();
 
         // Connect to composite catalog used for searching on a separate
         // (non-UI) thread to prevent lagging the UI.
+        Log.Logger?.ReportInfo(nameof(AppManagementViewModel), "Connecting to composite catalog to enable searching for packages");
         await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
     }
 
@@ -77,7 +76,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         // Change view to searching
         CurrentView = _shimmerSearchViewModel;
 
-        var (searchResultStatus, packages) = await _searchViewModel.SearchAsync(text, cancellationToken);
+        var (searchResultStatus, _) = await _searchViewModel.SearchAsync(text, cancellationToken);
         switch (searchResultStatus)
         {
             case SearchViewModel.SearchResultStatus.Ok:
@@ -88,7 +87,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
                 break;
             case SearchViewModel.SearchResultStatus.CatalogNotConnect:
             case SearchViewModel.SearchResultStatus.ExceptionThrown:
-                _logger.LogError(nameof(AppManagementViewModel), LogLevel.Local, $"Search failed with status: {searchResultStatus}");
+                Log.Logger?.ReportError(nameof(AppManagementViewModel), $"Search failed with status: {searchResultStatus}");
                 CurrentView = _packageCatalogListViewModel;
                 break;
             case SearchViewModel.SearchResultStatus.Canceled:

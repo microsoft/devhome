@@ -4,6 +4,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
 using Microsoft.UI.Xaml;
@@ -75,6 +76,15 @@ internal partial class AddRepoDialog
     public void SetupDevDrives()
     {
         EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
+<<<<<<< HEAD
+=======
+        if (EditDevDriveViewModel.DevDrive != null &&
+            EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+        {
+            FolderPickerViewModel.InDevDriveScenario = true;
+            EditDevDriveViewModel.ClonePathUpdated();
+        }
+>>>>>>> main
     }
 
     private void AddViaAccountToggleButton_Click(object sender, RoutedEventArgs e)

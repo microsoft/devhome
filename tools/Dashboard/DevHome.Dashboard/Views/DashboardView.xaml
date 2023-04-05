@@ -27,6 +27,7 @@
             <StackPanel>
                 <!-- Top Banner - Default/First run experience - shown until user dismissed -->
                 <commonviews:Banner x:Name="DashboardBanner"
+                    TextWidth="500"
                     Visibility="{x:Bind ViewModel.ShowDashboardBanner,Mode=OneWay}"
                     HideButtonVisibility="true"
                     HideButtonCommand="{x:Bind ViewModel.HideDashboardBannerButtonCommand,Mode=OneWay}"

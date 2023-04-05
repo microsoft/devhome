@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.ElevatedComponent;
@@ -153,6 +154,7 @@ public partial class SetupFlowOrchestrator
         // Update current page
         _currentPageIndex = index;
         CurrentPageViewModel = FlowPages.Any() ? FlowPages[_currentPageIndex] : null;
+        Log.Logger?.ReportInfo(nameof(SetupFlowOrchestrator), $"Moving to {CurrentPageViewModel?.GetType().Name}");
 
         // Do post-navigation tasks only when moving forwards, not when going back to a previous page.
         if (movingForward)

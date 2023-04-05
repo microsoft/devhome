@@ -1,5 +1,5 @@
-name: "Localization/Translation issue 🌐"
-description: Report incorrect translations.
+name: "Report a translation problem 🌐"
+description: Report incorrect translations
 labels:
 - Issue-Translation
 
@@ -20,8 +20,8 @@ body:
 - id: languageaffected
   type: input
   attributes:
-    label: 🌐 Language affected
-    placeholder: "German"
+    label: 🌐 Language
+    placeholder: "Example: German"
   validations:
     required: true
 
@@ -35,13 +35,13 @@ body:
 - type: textarea
   attributes: 
     label: ✔️ Expected phrase(s)
-    placeholder: What was expected?
+    placeholder: What phrase was expected?
   validations:
     required: false
 
 - type: textarea
   attributes:
     label: Why is the current translation wrong
-    placeholder: Why do you feel this is incorrect?
+    placeholder: Why do you feel this translation is incorrect?
   validations:
     required: true

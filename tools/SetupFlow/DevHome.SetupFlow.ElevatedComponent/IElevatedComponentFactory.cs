@@ -33,4 +33,9 @@ public interface IElevatedComponentFactory
     /// Creates an object that can be used to install packages from an elevated context.
     /// </summary>
     public PackageInstaller CreatePackageInstaller();
+
+    /// <summary>
+    /// Creates the object that will create the Dev Drive on the users system.
+    /// </summary>
+    public DevDriveStorageOperator CreateDevDriveStorageOperator();
 }

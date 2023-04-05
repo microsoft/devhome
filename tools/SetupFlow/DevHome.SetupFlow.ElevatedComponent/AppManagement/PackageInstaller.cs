@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Microsoft.Management.Deployment;
 using Windows.Foundation;
 
@@ -33,24 +34,29 @@ public sealed class PackageInstaller
     {
         return Task.Run(async () =>
         {
+            Log.Logger?.ReportInfo(nameof(PackageInstaller), $"Elevated install requested for package [{packageId}] from catalog [{catalogName}]");
             var result = new ElevatedInstallResult();
 
             var packageManager = _wingetFactory.CreatePackageManager();
 
+            Log.Logger?.ReportInfo(nameof(PackageInstaller), $"Connecting to catalog [{catalogName}]");
             var catalogReference = packageManager.GetPackageCatalogByName(catalogName);
             var connectResult = await catalogReference.ConnectAsync();
             if (connectResult.Status != ConnectResultStatus.Ok)
             {
+                Log.Logger?.ReportError(nameof(PackageInstaller), $"Failed to connect to the catalog [{catalogName}] with status {connectResult.Status}");
                 result.InstallAttempted = false;
                 return result;
             }
 
+            Log.Logger?.ReportInfo(nameof(PackageInstaller), $"Finding package [{packageId}] in catalog");
             var findOptions = CreateFindOptionsForPackageId(packageId);
             var findResult = connectResult.PackageCatalog.FindPackages(findOptions);
             if (findResult.Status != FindPackagesResultStatus.Ok
                 || findResult.Matches.Count < 1
                 || findResult.WasLimitExceeded)
             {
+                Log.Logger?.ReportError(nameof(PackageInstaller), $"Failed to find package. Status={findResult.Status}, Matches Count={findResult.Matches.Count}, LimitReached={findResult.WasLimitExceeded}");
                 result.InstallAttempted = false;
                 return result;
             }
@@ -60,7 +66,9 @@ public sealed class PackageInstaller
             var installOptions = _wingetFactory.CreateInstallOptions();
             installOptions.PackageInstallMode = PackageInstallMode.Silent;
 
+            Log.Logger?.ReportInfo(nameof(PackageInstaller), $"Initiating install of package {packageId}");
             var installResult = await packageManager.InstallPackageAsync(packageToInstall, installOptions);
+            Log.Logger?.ReportInfo(nameof(PackageInstaller), $"Install finished. Status={installResult.Status}, InstallerErrorCode={installResult.InstallerErrorCode}, RebootRequired={installResult.RebootRequired}");
             result.InstallAttempted = true;
             result.InstallSucceeded = installResult.Status == InstallResultStatus.Ok;
             result.RebootRequired = installResult.RebootRequired;

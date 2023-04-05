@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.ConfigurationFile.Exceptions;
 using DevHome.SetupFlow.ConfigurationFile.Models;
-using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using WinUIEx;
 
@@ -19,8 +19,6 @@ namespace DevHome.SetupFlow.ConfigurationFile.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
-    private readonly ILogger _logger;
-
     public List<ISetupTask> TaskList { get; } = new List<ISetupTask>();
 
     /// <summary>
@@ -39,12 +37,9 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
     public ConfigurationFileViewModel(
         ISetupFlowStringResource stringResource,
-        SetupFlowOrchestrator orchestrator,
-        ILogger logger)
+        SetupFlowOrchestrator orchestrator)
         : base(stringResource, orchestrator)
     {
-        _logger = logger;
-
         // Configure navigation bar
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         CanGoToNextPage = false;
@@ -88,7 +83,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             try
             {
                 Configuration = new (file.Path);
-                var task = new ConfigureTask(_logger, StringResource, file);
+                var task = new ConfigureTask(StringResource, file);
                 await task.OpenConfigurationSetAsync();
                 TaskList.Add(task);
                 return true;
@@ -102,7 +97,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             }
             catch (Exception e)
             {
-                _logger.Log(nameof(ConfigurationFileViewModel), LogLevel.Local, $"Unknown error while opening configuration set: {e.Message}");
+                Log.Logger?.ReportError(nameof(ConfigurationFileViewModel), $"Unknown error while opening configuration set: {e.Message}");
 
                 await mainWindow.ShowErrorMessageDialogAsync(
                     file.Name,

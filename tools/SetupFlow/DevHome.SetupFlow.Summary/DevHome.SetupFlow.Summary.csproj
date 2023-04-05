@@ -18,7 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DevHome.SetupFlow.AppManagement\DevHome.SetupFlow.AppManagement.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
+    <ProjectReference Include="..\DevHome.SetupFlow.RepoConfig\DevHome.SetupFlow.RepoConfig.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using DevHome.SetupFlow.AppManagement.Models;
 using DevHome.SetupFlow.AppManagement.ViewModels;
+using DevHome.SetupFlow.Common.Helpers;
+using Windows.ApplicationModel;
 
 namespace DevHome.SetupFlow.AppManagement.Services;
 
@@ -92,11 +94,13 @@ public class PackageProvider
         if (_packageViewModelCache.TryGetValue(package.UniqueKey, out var value))
         {
             // Promote to permanent cache if requested
+            Log.Logger?.ReportDebug(nameof(PackageProvider), $"Package [{package.Id}] is cached; returning");
             value.IsPermanent = value.IsPermanent || cachePermanently;
             return value.PackageViewModel;
         }
 
         // Package is not cached, create a new one
+        Log.Logger?.ReportDebug(nameof(PackageProvider), $"Creating view model for package [{package.Id}]");
         var viewModel = _packageViewModelFactory(package);
         viewModel.SelectionChanged += OnPackageSelectionChanged;
         viewModel.SelectionChanged += (sender, package) => PackageSelectionChanged?.Invoke(sender, package);
@@ -104,6 +108,7 @@ public class PackageProvider
         // Cache if requested
         if (cachePermanently)
         {
+            Log.Logger?.ReportDebug(nameof(PackageProvider), $"Caching package {package.Id}");
             _packageViewModelCache.TryAdd(package.UniqueKey, new PackageCache()
             {
                 PackageViewModel = viewModel,
@@ -118,8 +123,11 @@ public class PackageProvider
     {
         if (packageViewModel.IsSelected)
         {
+            Log.Logger?.ReportInfo(nameof(PackageProvider), $"Package [{packageViewModel.Package.Id}] has been selected");
+
             // If a package is selected and is not already cached permanently,
             // cache it temporarily
+            Log.Logger?.ReportDebug(nameof(PackageProvider), $"Caching package [{packageViewModel.Package.Id}]");
             _packageViewModelCache.TryAdd(packageViewModel.UniqueKey, new PackageCache()
             {
                 PackageViewModel = packageViewModel,
@@ -131,10 +139,13 @@ public class PackageProvider
         }
         else
         {
+            Log.Logger?.ReportInfo(nameof(PackageProvider), $"Package [{packageViewModel.Package.Id}] has been un-selected");
+
             // If a package is unselected and is cached temporarily, remove it
             // from the cache
             if (_packageViewModelCache.TryGetValue(packageViewModel.UniqueKey, out var value) && !value.IsPermanent)
             {
+                Log.Logger?.ReportDebug(nameof(PackageProvider), $"Removing package [{packageViewModel.Package.Id}] from cache");
                 _packageViewModelCache.Remove(packageViewModel.UniqueKey);
             }
 
@@ -149,9 +160,11 @@ public class PackageProvider
     public void Clear()
     {
         // Clear cache
+        Log.Logger?.ReportDebug(nameof(PackageProvider), $"Clearing package view model cache");
         _packageViewModelCache.Clear();
 
         // Clear list of selected packages
+        Log.Logger?.ReportInfo(nameof(PackageProvider), $"Clearing selected packages");
         _selectedPackages.Clear();
     }
 }

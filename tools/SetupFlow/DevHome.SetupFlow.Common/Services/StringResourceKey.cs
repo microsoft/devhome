@@ -36,6 +36,7 @@ public static class StringResourceKey
     public static readonly string DevDriveNotEnoughFreeSpace = nameof(DevDriveNotEnoughFreeSpace);
     public static readonly string DevDriveReviewPageNumberOfDevDrives = nameof(DevDriveReviewPageNumberOfDevDrives);
     public static readonly string DevDriveReviewPageNumberOfDevDrivesTitle = nameof(DevDriveReviewPageNumberOfDevDrivesTitle);
+    public static readonly string DevDriveUnableToCreateError = nameof(DevDriveUnableToCreateError);
     public static readonly string DevDriveWindowByteUnitComboBoxGB = nameof(DevDriveWindowByteUnitComboBoxGB);
     public static readonly string DevDriveWindowByteUnitComboBoxTB = nameof(DevDriveWindowByteUnitComboBoxTB);
     public static readonly string FileTypeNotSupported = nameof(FileTypeNotSupported);
@@ -90,7 +91,7 @@ public static class StringResourceKey
     // Dev drive loading screen messages
     public static readonly string DevDriveCreating = nameof(DevDriveCreating);
     public static readonly string DevDriveCreated = nameof(DevDriveCreated);
-    public static readonly string DevDriveError = nameof(DevDriveError);
+    public static readonly string DevDriveErrorWithReason = nameof(DevDriveErrorWithReason);
     public static readonly string DevDriveRestart = nameof(DevDriveRestart);
 
     // Loading screen
