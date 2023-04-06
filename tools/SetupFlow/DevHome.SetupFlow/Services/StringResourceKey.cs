@@ -25,6 +25,7 @@ public static class StringResourceKey
     public static readonly string ConfigurationFileOpenUnknownError = nameof(ConfigurationFileOpenUnknownError);
     public static readonly string ConfigurationFileVersionUnknown = nameof(ConfigurationFileVersionUnknown);
     public static readonly string ConfigurationFileTypeNotSupported = nameof(ConfigurationFileTypeNotSupported);
+    public static readonly string ConfigurationViewTitle = nameof(ConfigurationViewTitle);
     public static readonly string DevDriveReviewTitle = nameof(DevDriveReviewTitle);
     public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
     public static readonly string DevDriveDefaultFolderName = nameof(DevDriveDefaultFolderName);
@@ -62,7 +63,6 @@ public static class StringResourceKey
     public static readonly string SelectedPackagesCount = nameof(SelectedPackagesCount);
     public static readonly string SetUpButton = nameof(SetUpButton);
     public static readonly string SizeWithColon = nameof(SizeWithColon);
-    public static readonly string ViewConfiguration = nameof(ViewConfiguration);
     public static readonly string LoadingExecutingProgress = nameof(LoadingExecutingProgress);
     public static readonly string ActionCenterDisplay = nameof(ActionCenterDisplay);
     public static readonly string NeedsRebootMessage = nameof(NeedsRebootMessage);

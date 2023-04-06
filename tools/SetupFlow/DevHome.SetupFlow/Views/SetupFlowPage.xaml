@@ -20,7 +20,7 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Page.Resources>
 
-    <Grid>
+    <Grid MaxWidth="924">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
@@ -91,12 +91,12 @@
             </ContentControl>
 
             <!-- Right buttons -->
-            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+            <StackPanel Grid.Column="1" Orientation="Horizontal" >
                 <HyperlinkButton Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
-                                 MinWidth="120"
+                                 MinWidth="120" Margin="4,0"
                                  x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel" />
                 <Button Command="{x:Bind ViewModel.Orchestrator.GoToPreviousPageCommand, Mode=OneWay}"
-                        MinWidth="120"
+                        MinWidth="120" Margin="4,0"
                         Visibility="{x:Bind ViewModel.Orchestrator.HasPreviousPage, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Previous" />
 
@@ -109,7 +109,7 @@
                     <TextBlock IsTabStop="False" />
                     <Button Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
                             Style="{StaticResource AccentButtonStyle}"
-                            MinWidth="120"
+                            MinWidth="120" Margin="4,0"
                             Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
                             ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
                 </Grid>
