@@ -35,7 +35,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     private readonly IDevDriveManager _devDriveManager;
 
     /// <summary>
-    /// Gets whether the Dev Drive window is opened or closed.
+    /// Gets a value indicating whether the Dev Drive window is opened or closed.
     /// </summary>
     public bool IsWindowOpen
     {

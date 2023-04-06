@@ -7,6 +7,8 @@
                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+               xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+               xmlns:i="using:Microsoft.Xaml.Interactivity"
                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
                mc:Ignorable="d"
                x:Name="AddRepoContentDialog"
@@ -47,7 +49,13 @@
                     <ColumnDefinition Width="310"/>
                 </Grid.ColumnDefinitions>
                 <ComboBox x:Name="AccountsComboBox" Grid.Column="0" SelectionChanged="AccountsComboBox_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Accounts, Mode=OneWay}" />
-                <TextBox x:Name="FilterTextBox" Grid.Column="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox"/>
+                <TextBox x:Name="FilterTextBox" Grid.Column="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" >
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="TextChanged">
+                            <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.FilterRepositoriesCommand}" CommandParameter="{Binding Text, ElementName=FilterTextBox}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </TextBox>
             </Grid>
             <ListView x:Name="RepositoriesListView" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}">
                 <ListView.Header>

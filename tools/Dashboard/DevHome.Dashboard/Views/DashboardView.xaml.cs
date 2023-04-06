@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -13,9 +14,12 @@ using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace DevHome.Dashboard.Views;
 public partial class DashboardView : ToolPage
@@ -32,6 +36,10 @@ public partial class DashboardView : ToolPage
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     private static bool _widgetHostInitialized;
+
+    private static SortedDictionary<string, BitmapImage> _widgetLightIconCache;
+    private static SortedDictionary<string, BitmapImage> _widgetDarkIconCache;
+    private static SortedDictionary<string, BitmapImage> _providerIconCache;
 
     public DashboardView()
     {
@@ -54,7 +62,8 @@ public partial class DashboardView : ToolPage
             PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
 
             ActualThemeChanged += OnActualThemeChanged;
-            Loaded += RestorePinnedWidgets;
+
+            Loaded += OnLoaded;
         }
         else
         {
@@ -78,6 +87,9 @@ public partial class DashboardView : ToolPage
             _renderer = new AdaptiveCardRenderer();
             _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
+            _widgetCatalog.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
+            _widgetCatalog.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
+            _widgetCatalog.WidgetDefinitionAdded += WidgetCatalog_WidgetDefinitionAdded;
             _widgetCatalog.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
             _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
         }
@@ -92,6 +104,10 @@ public partial class DashboardView : ToolPage
 
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
+        // Widgets may have different icons for light vs dark theme, so if the theme changes, update the icons.
+        CacheWidgetIcons();
+
+        // The app uses a different host config to render widgets (adaptive cards) in light and dark themes.
         await SetHostConfigOnWidgetRenderer();
     }
 
@@ -124,6 +140,145 @@ public partial class DashboardView : ToolPage
         });
 
         return;
+    }
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
+        CacheWidgetIcons();
+        RestorePinnedWidgets(null, null);
+        CacheProviderIcons();
+    }
+
+    private void CacheWidgetIcons()
+    {
+        _widgetLightIconCache = new SortedDictionary<string, BitmapImage>();
+        _widgetDarkIconCache = new SortedDictionary<string, BitmapImage>();
+
+        var widgetDefs = _widgetCatalog.GetWidgetDefinitions();
+        foreach (var widgetDef in widgetDefs)
+        {
+            CacheWidgetIcon(widgetDef);
+        }
+    }
+
+    private void CacheWidgetIcon(WidgetDefinition widgetDef)
+    {
+        // Only cache icons for providers that we're including.
+        if (WidgetHelpers.IsIncludedWidgetProvider(widgetDef.ProviderDefinition))
+        {
+            _dispatcher.TryEnqueue(async () =>
+            {
+                try
+                {
+                    Log.Logger()?.ReportDebug("DashboardView", $"Cache widget icon for {widgetDef.Id}");
+                    var itemLightImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Light).Icon);
+                    var itemDarkImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Dark).Icon);
+
+                    // There is a widget bug where Definition update events are being raised as added events.
+                    // If we already have an icon for this key, just remove and add again.
+                    if (_widgetLightIconCache.ContainsKey(widgetDef.Id))
+                    {
+                        _widgetLightIconCache.Remove(widgetDef.Id);
+                    }
+
+                    if (_widgetDarkIconCache.ContainsKey(widgetDef.Id))
+                    {
+                        _widgetDarkIconCache.Remove(widgetDef.Id);
+                    }
+
+                    _widgetLightIconCache.Add(widgetDef.Id, itemLightImage);
+                    _widgetDarkIconCache.Add(widgetDef.Id, itemDarkImage);
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger()?.ReportError("DashboardView", $"Exception in CacheWidgetIcons:", ex);
+                    _widgetLightIconCache.Add(widgetDef.Id, null);
+                    _widgetDarkIconCache.Add(widgetDef.Id, null);
+                }
+            });
+        }
+    }
+
+    private void CacheProviderIcons()
+    {
+        _providerIconCache = new SortedDictionary<string, BitmapImage>();
+
+        var providerDefs = _widgetCatalog.GetProviderDefinitions();
+        foreach (var providerDef in providerDefs)
+        {
+            CacheProviderIcon(providerDef);
+        }
+    }
+
+    private void CacheProviderIcon(WidgetProviderDefinition providerDef)
+    {
+        // Only cache icons for providers that we're including.
+        if (WidgetHelpers.IsIncludedWidgetProvider(providerDef))
+        {
+            _dispatcher.TryEnqueue(async () =>
+            {
+                try
+                {
+                    Log.Logger()?.ReportDebug("DashboardView", $"Cache widget provider icon for {providerDef.Id}");
+                    var itemImage = await WidgetIconToBitmapImage(providerDef.Icon);
+
+                    // There is a widget bug where Definition update events are being raised as added events.
+                    // If we already have an icon for this key, just remove and add again.
+                    if (_providerIconCache.ContainsKey(providerDef.Id))
+                    {
+                        _providerIconCache.Remove(providerDef.Id);
+                    }
+
+                    _providerIconCache.Add(providerDef.Id, itemImage);
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger()?.ReportError("DashboardView", $"Exception in CacheProviderIcon:", ex);
+                    _providerIconCache.Add(providerDef.Id, null);
+                }
+            });
+        }
+    }
+
+    public static BitmapImage GetProviderIcon(WidgetProviderDefinition widgetProviderDefinition)
+    {
+        _providerIconCache.TryGetValue(widgetProviderDefinition.Id, out var image);
+        return image;
+    }
+
+    public static BitmapImage GetWidgetIconForTheme(WidgetDefinition widgetDefinition, ElementTheme theme)
+    {
+        BitmapImage image;
+        if (theme == ElementTheme.Light)
+        {
+            _widgetLightIconCache.TryGetValue(widgetDefinition.Id, out image);
+        }
+        else
+        {
+            _widgetDarkIconCache.TryGetValue(widgetDefinition.Id, out image);
+        }
+
+        return image;
+    }
+
+    public static Brush GetBrushForWidgetIcon(WidgetDefinition widgetDefinition, ElementTheme theme)
+    {
+        var image = GetWidgetIconForTheme(widgetDefinition, theme);
+
+        var brush = new Microsoft.UI.Xaml.Media.ImageBrush
+        {
+            ImageSource = image,
+        };
+        return brush;
+    }
+
+    public static async Task<BitmapImage> WidgetIconToBitmapImage(IRandomAccessStreamReference iconStreamRef)
+    {
+        using var bitmapStream = await iconStreamRef.OpenReadAsync();
+        var itemImage = new BitmapImage();
+        await itemImage.SetSourceAsync(bitmapStream);
+        return itemImage;
     }
 
     private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
@@ -198,6 +353,21 @@ public partial class DashboardView : ToolPage
         }
     }
 
+    private void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args)
+    {
+        CacheProviderIcon(args.ProviderDefinition);
+    }
+
+    private void WidgetCatalog_WidgetProviderDefinitionDeleted(WidgetCatalog sender, WidgetProviderDefinitionDeletedEventArgs args)
+    {
+        _providerIconCache.Remove(args.ProviderDefinitionId);
+    }
+
+    private void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args)
+    {
+        CacheWidgetIcon(args.Definition);
+    }
+
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
     {
         foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == args.Definition.Id).ToList())
@@ -255,6 +425,9 @@ public partial class DashboardView : ToolPage
                 PinnedWidgets.Remove(widgetToRemove);
             }
         });
+
+        _widgetLightIconCache.Remove(args.DefinitionId);
+        _widgetDarkIconCache.Remove(args.DefinitionId);
     }
 
     // Listen for widgets being added or removed, so we can add or remove listeners on the WidgetViewModels' properties.
