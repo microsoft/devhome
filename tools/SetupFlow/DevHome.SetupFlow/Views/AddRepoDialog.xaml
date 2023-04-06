@@ -1,0 +1,96 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<ContentDialog x:Class="DevHome.SetupFlow.Views.AddRepoDialog"
+               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+               xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+               xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+               xmlns:i="using:Microsoft.Xaml.Interactivity"
+               x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
+               mc:Ignorable="d"
+               x:Name="AddRepoContentDialog"
+               PrimaryButtonClick="AddRepoContentDialog_PrimaryButtonClick"
+               IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldPrimaryButtonBeEnabled, Mode=OneWay}">
+    <ContentDialog.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupToolStyles.xaml"/>
+                <ResourceDictionary>
+                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+                    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </ContentDialog.Resources>
+    <StackPanel x:Name="AddRepoStackPanel" Orientation="Vertical" Spacing="10" MinWidth="400" MinHeight="500">
+        <Grid x:Name="RepoCloneOptionGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <ToggleButton x:Name="AddViaAccountToggleButton" Click="AddViaAccountToggleButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton" IsChecked="{x:Bind AddRepoViewModel.IsAccountToggleButtonChecked, Mode=OneWay}" Grid.Column="0" HorizontalAlignment="Stretch"/>
+            <ToggleButton x:Name="AddViaUrlToggleButton" Click="AddViaUrlToggleButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" Grid.Column="1" IsChecked="{x:Bind AddRepoViewModel.IsUrlAccountButtonChecked, Mode=OneWay}" HorizontalAlignment="Stretch"/>
+        </Grid>
+
+        <!-- Adding a repo via URL -->
+        <TextBox x:Name="RepoUrlTextBox" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoUrl" Visibility="{x:Bind AddRepoViewModel.ShowUrlPage, Mode=OneWay}" LostFocus="RepoUrlTextBox_LostFocus" Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}"/>
+
+        <!-- Log into account -->
+        <ComboBox x:Name="RepositoryProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}" SelectionChanged="RepositoryProviderNamesComboBox_SelectionChanged" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}" />
+
+        <!-- Show Repositories -->
+        <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
+            <Grid ColumnSpacing="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="310"/>
+                </Grid.ColumnDefinitions>
+                <ComboBox x:Name="AccountsComboBox" Grid.Column="0" SelectionChanged="AccountsComboBox_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Accounts, Mode=OneWay}" />
+                <TextBox x:Name="FilterTextBox" Grid.Column="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" >
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="TextChanged">
+                            <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.FilterRepositoriesCommand}" CommandParameter="{Binding Text, ElementName=FilterTextBox}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </TextBox>
+            </Grid>
+            <ListView x:Name="RepositoriesListView" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}">
+                <ListView.Header>
+                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoriesList" />
+                </ListView.Header>
+            </ListView>
+        </StackPanel>
+
+        <TextBlock x:Name="ErrorTextBlock" Style="{ThemeResource BodyStrongTextBlockStyle}" Visibility="{x:Bind AddRepoViewModel.ShowErrorTextBox, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Repo_ToolClonePathError"/>
+        <!-- Repo page and URL page both have clonepath + dev drive check box-->
+        <Grid Visibility="{x:Bind FolderPickerViewModel.ShouldShowFolderPicker, Mode=OneWay}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="310"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <!--WINUI3 does not have a folder/file picker control.  Lets make one that looks like it.-->
+            <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
+                     TextChanged="CloneLocation_TextChanged" Grid.Column="0"
+                     Text="{x:Bind FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
+                     IsReadOnly="True"
+                     Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
+            <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
+                     TextChanged="CloneLocation_TextChanged" Grid.Column="0"
+                     Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
+                     IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
+                     Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
+            <Button IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click" Grid.Column="1" Margin="5, 25, 0, 0"/>
+        </Grid>
+        <Grid Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" ColumnSpacing="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <CheckBox Click="MakeNewDevDriveCheckBox_Click" IsEnabled="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NewDevDriveComboBox"/>
+            <HyperlinkButton Content="Customize" Grid.Column="1" Visibility="{x:Bind EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" Click="CustomizeDevDriveHyperlinkButton_Click"/>
+        </Grid>
+    </StackPanel>
+</ContentDialog>

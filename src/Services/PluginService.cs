@@ -1,32 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Collections;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Contracts.Services;
-using DevHome.Helpers;
 using DevHome.Models;
-using DevHome.SetupFlow.RepoConfig;
-using DevHome.ViewModels;
-using DevHome.Views;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
-using Newtonsoft.Json;
-using SampleTool;
 using Windows.ApplicationModel.AppExtensions;
-using Windows.ApplicationModel.Background;
-using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Windows.Storage;
-using WinRT;
 
 namespace DevHome.Services;
 
