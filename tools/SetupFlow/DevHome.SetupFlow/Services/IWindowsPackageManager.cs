@@ -44,6 +44,9 @@ public interface IWindowsPackageManager
         get;
     }
 
+    /// <summary>
+    /// Gets a composite catalog for the predefined <c>msstore</c> and local catalogs.
+    /// </summary>
     public IWinGetCatalog MsStoreCatalog
     {
         get;

@@ -132,6 +132,11 @@ public class WindowsPackageManager : IWindowsPackageManager
         return CreatePredefinedCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
     }
 
+    /// <summary>
+    /// Create a composite catalog that can be used for finding packages in
+    /// msstore and local catalogs
+    /// </summary>
+    /// <returns>Catalog composed of msstore and local catalogs</returns>
     private WinGetCompositeCatalog CreateMsStoreCatalog()
     {
         return CreatePredefinedCatalog(PredefinedPackageCatalog.MicrosoftStore);

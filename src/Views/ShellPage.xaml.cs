@@ -54,14 +54,7 @@ public sealed partial class ShellPage : Page
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
 
-        if (await Application.Current.GetService<ILocalSettingsService>().ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun))
-        {
-            Application.Current.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName!);
-        }
-        else
-        {
-            Application.Current.GetService<INavigationService>().NavigateTo(typeof(WhatsNewViewModel).FullName!);
-        }
+        await ViewModel.OnLoaded();
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
