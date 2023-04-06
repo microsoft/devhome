@@ -20,7 +20,7 @@ public class PluginWrapper : IPluginWrapper
 
     private readonly Dictionary<Type, ProviderType> _providerTypeMap = new ()
     {
-        [typeof(IDevIdProvider)] = ProviderType.DevId,
+        [typeof(IDeveloperIdProvider)] = ProviderType.DeveloperId,
         [typeof(IRepositoryProvider)] = ProviderType.Repository,
         [typeof(INotificationsProvider)] = ProviderType.Notifications,
         [typeof(IWidgetProvider)] = ProviderType.Widget,
