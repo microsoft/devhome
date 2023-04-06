@@ -28,6 +28,8 @@ public delegate PackageViewModel PackageViewModelFactory(IWinGetPackage package)
 /// </summary>
 public partial class PackageViewModel : ObservableObject
 {
+    private const string PublisherNameNotAvailable = "-";
+
     private static readonly BitmapImage DefaultLightPackageIconSource = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultLightPackageIcon.png"));
     private static readonly BitmapImage DefaultDarkPackageIconSource = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultDarkPackageIcon.png"));
 
@@ -83,11 +85,13 @@ public partial class PackageViewModel : ObservableObject
 
     public string CatalogName => _package.CatalogName;
 
-    public string PublisherName => !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : "-";
+    public string PublisherName => !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
 
     public string PackageTitle => Name;
 
-    public string PackageDescription => $"Version {Version} | {CatalogName} | {PublisherName}";
+    public string PackageDescription => $"{Version} | {CatalogName} | {PublisherName}";
+
+    public string PackageVerboseDescription => $"Version {Version} | {CatalogName} | {PublisherName}";
 
     public string TooltipName => $"Name: {Name}";
 
