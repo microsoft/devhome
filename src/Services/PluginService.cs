@@ -15,6 +15,8 @@ namespace DevHome.Services;
 
 public class PluginService : IPluginService
 {
+    public event EventHandler? OnPluginsChanged;
+
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
     private static readonly object _lock = new ();
 
@@ -25,24 +27,36 @@ public class PluginService : IPluginService
 
     public PluginService()
     {
+        _catalog.PackageInstalling -= Catalog_PackageInstalling;
         _catalog.PackageInstalling += Catalog_PackageInstalling;
+        _catalog.PackageUninstalling -= Catalog_PackageUninstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
+        _catalog.PackageUpdating -= Catalog_PackageUpdating;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
     }
 
     private void Catalog_PackageInstalling(PackageCatalog sender, PackageInstallingEventArgs args)
     {
-        OnPackageChange(args.Package);
+        if (args.IsComplete)
+        {
+            OnPackageChange(args.Package);
+        }
     }
 
     private void Catalog_PackageUninstalling(PackageCatalog sender, PackageUninstallingEventArgs args)
     {
-        OnPackageChange(args.Package);
+        if (args.IsComplete)
+        {
+            OnPackageChange(args.Package);
+        }
     }
 
     private void Catalog_PackageUpdating(PackageCatalog sender, PackageUpdatingEventArgs args)
     {
-        OnPackageChange(args.TargetPackage);
+        if (args.IsComplete)
+        {
+            OnPackageChange(args.TargetPackage);
+        }
     }
 
     private async void OnPackageChange(Package package)
@@ -54,6 +68,7 @@ public class PluginService : IPluginService
             {
                 _installedPlugins.Clear();
                 _enabledPlugins.Clear();
+                OnPluginsChanged?.Invoke(this, new EventArgs());
             }
         }
     }
@@ -118,7 +133,7 @@ public class PluginService : IPluginService
                 }
 
                 var name = extension.DisplayName;
-                var pluginWrapper = new PluginWrapper(name, classId);
+                var pluginWrapper = new PluginWrapper(name, extension.Package.Id.FullName, classId);
 
                 var supportedInterfaces = GetSubPropertySet(devHomeProvider, "SupportedInterfaces");
                 if (supportedInterfaces is not null)

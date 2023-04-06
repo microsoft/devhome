@@ -17,4 +17,6 @@ public interface IPluginService
     Task<IEnumerable<IPluginWrapper>> StartAllPluginsAsync();
 
     Task SignalStopPluginsAsync();
+
+    event EventHandler? OnPluginsChanged;
 }

@@ -31,13 +31,19 @@ public class PluginWrapper : IPluginWrapper
 
     private IPlugin? _pluginObject;
 
-    public PluginWrapper(string name, string classId)
+    public PluginWrapper(string name, string packageFullName, string classId)
     {
         Name = name ?? throw new ArgumentNullException(nameof(name));
+        PackageFullName = packageFullName ?? throw new ArgumentNullException(nameof(packageFullName));
         PluginClassId = classId ?? throw new ArgumentNullException(nameof(classId));
     }
 
     public string Name
+    {
+        get;
+    }
+
+    public string PackageFullName
     {
         get;
     }

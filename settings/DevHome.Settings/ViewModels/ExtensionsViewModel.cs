@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
@@ -20,6 +21,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Windows.Devices.Display.Core;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI.Core;
 
 namespace DevHome.Settings.ViewModels;
 
@@ -58,22 +60,34 @@ public partial class ExtensionViewModel : ObservableRecipient
 
 public partial class ExtensionsViewModel : ObservableRecipient
 {
+    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+
     [ObservableProperty]
     private ObservableCollection<ExtensionViewModel> _settingsList = new ();
 
     public ExtensionsViewModel()
+    {
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+        var pluginService = Application.Current.GetService<IPluginService>();
+        pluginService.OnPluginsChanged += OnPluginsChanged;
+
+        DisplaySettings();
+    }
+
+    ~ExtensionsViewModel()
+    {
+        var pluginService = Application.Current.GetService<IPluginService>();
+        pluginService.OnPluginsChanged -= OnPluginsChanged;
+    }
+
+    private void DisplaySettings()
     {
         var pluginWrappers = Task.Run(() =>
         {
             var pluginService = Application.Current.GetService<IPluginService>();
             return pluginService.GetInstalledPluginsAsync(true);
         }).Result;
-
-        var numberOfPlugins = pluginWrappers.Count();
-        if (numberOfPlugins == 0)
-        {
-            return;
-        }
 
         SettingsList.Clear();
 
@@ -82,6 +96,11 @@ public partial class ExtensionsViewModel : ObservableRecipient
             var setting = new Setting("Plugins/" + pluginWrapper.PluginClassId, pluginWrapper.PluginClassId, pluginWrapper.Name, string.Empty, true);
             SettingsList.Add(new ExtensionViewModel(setting, this));
         }
+    }
+
+    private async void OnPluginsChanged(object? sender, EventArgs e)
+    {
+        await _dispatcher.EnqueueAsync(() => { DisplaySettings(); });
     }
 
     public void Navigate(string path)
