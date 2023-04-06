@@ -113,7 +113,6 @@ public class DevDriveManager : IDevDriveManager
     /// <inheritdoc/>
     public void NotifyDevDriveWindowClosed(IDevDrive newDevDrive)
     {
-        PreviousDevDrive = _devDrives.First();
         _devDrives.Clear();
         _devDrives.Add(newDevDrive);
         ViewModelWindowClosed(null, newDevDrive);
@@ -155,6 +154,7 @@ public class DevDriveManager : IDevDriveManager
 
             ViewModel.UpdateDevDriveInfo(devDrive);
             _devDrives.Add(devDrive);
+            PreviousDevDrive = devDrive;
         }
 
         return (result, devDrive);

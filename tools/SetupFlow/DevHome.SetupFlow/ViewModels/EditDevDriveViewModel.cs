@@ -115,6 +115,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     public void RemoveNewDevDrive()
     {
         _devDriveManager.RequestToCloseDevDriveWindow(DevDrive);
+        _devDriveManager.CancelChangesToDevDrive();
         DevDrive = null;
         ShowCustomizeOption = Visibility.Collapsed;
     }
@@ -198,12 +199,9 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </summary>
     private void DevDriveCustomizationWindowClosed(object sender, IDevDrive devDrive)
     {
-        if (devDrive.ID == DevDrive.ID)
-        {
-            IsWindowOpen = false;
-            IsDevDriveCheckboxEnabled = true;
-            DevDrive = devDrive;
-            ClonePathUpdated();
-        }
+        IsWindowOpen = false;
+        IsDevDriveCheckboxEnabled = true;
+        DevDrive = devDrive;
+        ClonePathUpdated();
     }
 }
