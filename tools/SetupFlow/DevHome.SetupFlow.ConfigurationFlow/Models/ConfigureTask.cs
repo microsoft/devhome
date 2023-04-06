@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Models;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.ConfigurationFile.Exceptions;
@@ -21,7 +22,6 @@ namespace DevHome.SetupFlow.ConfigurationFile.Models;
 
 internal class ConfigureTask : ISetupTask
 {
-    private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly StorageFile _file;
     private ConfigurationProcessor _processor;
@@ -33,9 +33,8 @@ internal class ConfigureTask : ISetupTask
 
     public bool DependsOnDevDriveToBeInstalled => false;
 
-    public ConfigureTask(ILogger logger, ISetupFlowStringResource stringResource, StorageFile file)
+    public ConfigureTask(ISetupFlowStringResource stringResource, StorageFile file)
     {
-        _logger = logger;
         _stringResource = stringResource;
         _file = file;
     }
@@ -59,11 +58,11 @@ internal class ConfigureTask : ISetupTask
                 throw new OpenConfigurationSetException(openResult.ResultCode, openResult.Field);
             }
         }
-        catch
+        catch (Exception e)
         {
             _processor = null;
             _configSet = null;
-            _logger.LogError(nameof(ConfigureTask), LogLevel.Local, "Failed to open configuration set");
+            Log.Logger?.ReportError(nameof(ConfigureTask), $"Failed to open configuration set: {e.Message}");
             throw;
         }
     }
@@ -115,9 +114,9 @@ internal class ConfigureTask : ISetupTask
                 RequiresReboot = result.UnitResults.Any(result => result.RebootRequired);
                 return TaskFinishedState.Success;
             }
-            catch
+            catch (Exception e)
             {
-                _logger.LogError(nameof(ConfigureTask), LogLevel.Local, "Failed to apply configuration");
+                Log.Logger?.ReportError(nameof(ConfigureTask), $"Failed to apply configuration: {e.Message}");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();

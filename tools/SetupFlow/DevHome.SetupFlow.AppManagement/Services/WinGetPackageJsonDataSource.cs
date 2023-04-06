@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.AppManagement.Models;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.Telemetry;
 
@@ -32,7 +33,6 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         public IList<string> WinGetPackageIds { get; set; }
     }
 
-    private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly string _fileName;
     private IList<JsonWinGetPackageCatalog> _jsonCatalogs = new List<JsonWinGetPackageCatalog>();
@@ -40,13 +40,11 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     public override int CatalogCount => _jsonCatalogs.Count;
 
     public WinGetPackageJsonDataSource(
-        ILogger logger,
         ISetupFlowStringResource stringResource,
         IWindowsPackageManager wpm,
         string fileName)
         : base(wpm)
     {
-        _logger = logger;
         _stringResource = stringResource;
         _fileName = fileName;
     }
@@ -54,6 +52,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     public async override Task InitializeAsync()
     {
         // Open and deserialize JSON file
+        Log.Logger?.ReportInfo(nameof(WinGetPackageJsonDataSource), $"Reading package list from JSON file {_fileName}");
         using var fileStream = File.OpenRead(_fileName);
         var options = new JsonSerializerOptions() { ReadCommentHandling = JsonCommentHandling.Skip };
         _jsonCatalogs = await JsonSerializer.DeserializeAsync<IList<JsonWinGetPackageCatalog>>(fileStream, options);
@@ -82,6 +81,9 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     /// <returns>Package catalog</returns>
     private async Task<PackageCatalog> LoadCatalogAsync(JsonWinGetPackageCatalog jsonCatalog)
     {
+        var catalogName = _stringResource.GetLocalized(jsonCatalog.NameResourceKey);
+        Log.Logger?.ReportInfo(nameof(WinGetPackageJsonDataSource), $"Attempting to read JSON package catalog {catalogName}");
+
         try
         {
             var packages = await GetPackagesAsync(jsonCatalog.WinGetPackageIds, id => id);
@@ -89,15 +91,19 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
             {
                 return new PackageCatalog()
                 {
-                    Name = _stringResource.GetLocalized(jsonCatalog.NameResourceKey),
+                    Name = catalogName,
                     Description = _stringResource.GetLocalized(jsonCatalog.DescriptionResourceKey),
                     Packages = packages.ToReadOnlyCollection(),
                 };
             }
+            else
+            {
+                Log.Logger?.ReportWarn(nameof(WinGetPackageJsonDataSource), $"JSON package catalog [{catalogName}] is empty");
+            }
         }
         catch (Exception e)
         {
-            _logger.LogError(nameof(WinGetPackageJsonDataSource), LogLevel.Info, $"Error loading packages from winget catalog: {e.Message}");
+            Log.Logger?.ReportError(nameof(WinGetPackageJsonDataSource), $"Error loading packages from winget catalog: {e.Message}");
         }
 
         return null;

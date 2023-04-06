@@ -4,14 +4,16 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.Common.ViewModels;
 using DevHome.SetupFlow.RepoConfig.Models;
-using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.RepoConfig.ViewModels;
 
@@ -20,11 +22,6 @@ namespace DevHome.SetupFlow.RepoConfig.ViewModels;
 /// </summary>
 public partial class RepoConfigViewModel : SetupPageViewModelBase
 {
-    /// <summary>
-    /// The logger to use to log things.
-    /// </summary>
-    private readonly ILogger _logger;
-
     /// <summary>
     /// All the tasks that need to be ran during the loading page.
     /// </summary>
@@ -49,12 +46,10 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     public RepoConfigViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        ILogger logger,
         IDevDriveManager devDriveManager,
         RepoConfigTaskGroup taskGroup)
         : base(stringResource, orchestrator)
     {
-        _logger = logger;
         _taskGroup = taskGroup;
         _devDriveManager = devDriveManager;
         RepoDialogCancelled += _devDriveManager.CancelChangesToDevDrive;
@@ -101,6 +96,16 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         _taskGroup.SaveSetupTaskInformation(repoReviewItems);
     }
 
+    public void UpdateCloneLocation(CloningInformation cloningInformation)
+    {
+        var location = RepoReviewItems.IndexOf(cloningInformation);
+        if (location != -1)
+        {
+            RepoReviewItems[location] = cloningInformation;
+            UpdateCollection();
+        }
+    }
+
     /// <summary>
     /// Update the collection of items that are being cloned to the Dev Drive. With new information
     /// should the user choose to change the information with the customize button.
@@ -112,7 +117,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         {
             if (item.CloneToDevDrive && item.CloningLocation != cloningInfo.CloningLocation)
             {
-                item.CloningLocation = cloningInfo.CloningLocation;
+                item.CloningLocation = new System.IO.DirectoryInfo(cloningInfo.CloningLocation.FullName);
                 item.CloneLocationAlias = cloningInfo.CloneLocationAlias;
             }
         }

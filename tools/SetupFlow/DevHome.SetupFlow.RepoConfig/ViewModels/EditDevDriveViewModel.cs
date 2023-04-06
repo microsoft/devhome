@@ -42,7 +42,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     private readonly IDevDriveManager _devDriveManager;
 
     /// <summary>
-    /// Gets whether the Dev Drive window is opened or closed.
+    /// Gets a value indicating whether the Dev Drive window is opened or closed.
     /// </summary>
     public bool IsWindowOpen
     {
@@ -172,28 +172,29 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// Checks to see if a dev drive is on the users system.
     /// If a dev drive is found hide dev drive UI.
     /// </summary>
-    /// <returns>An awaitable task.</returns>
     /// <remarks>
     /// Won't show dev drive UI in 2 cases
     /// 1. Build does not support Dev Drive
     /// 2. User has existing dev drives.
     /// </remarks>
-    public async Task SetUpStateIfDevDrivesIfExistsAsync()
+    public void SetUpStateIfDevDrivesIfExists()
     {
         ShowDevDriveInformation = DevDriveUtil.IsDevDriveFeatureEnabled ? Visibility.Visible : Visibility.Collapsed;
         if (ShowDevDriveInformation == Visibility.Visible)
         {
-            var existingDevDrives = await _devDriveManager.GetAllDevDrivesThatExistOnSystem();
+            var existingDevDrives = _devDriveManager.GetAllDevDrivesThatExistOnSystem();
             if (existingDevDrives.Any())
             {
                 ShowDevDriveInformation = Visibility.Collapsed;
                 DevDrive = existingDevDrives.OrderByDescending(x => x.DriveSizeInBytes).First();
                 _canShowDevDriveUI = false;
+                return;
             }
         }
         else
         {
             _canShowDevDriveUI = false;
+            return;
         }
 
         _canShowDevDriveUI = true;

@@ -17,4 +17,8 @@
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
+  </ItemGroup>
+
 </Project>

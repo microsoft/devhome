@@ -5,10 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
@@ -16,8 +18,11 @@ using DevHome.SetupFlow.DevDrive.ViewModels;
 using DevHome.SetupFlow.DevDrive.Windows;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.Storage.FileSystem;
+using Windows.Win32.System.Ioctl;
 
 namespace DevHome.SetupFlow.DevDrive.Services;
 
@@ -28,12 +33,14 @@ namespace DevHome.SetupFlow.DevDrive.Services;
 /// </summary>
 public class DevDriveManager : IDevDriveManager
 {
-    private readonly ILogger _logger;
     private readonly IHost _host;
-    private readonly IDevDriveStorageOperator _devDriveStorageOperator = new DevDriveStorageOperator();
     private readonly string _defaultVhdxLocation;
     private readonly string _defaultVhdxName;
     private readonly ISetupFlowStringResource _stringResource;
+
+    // Query flag for persistent state info of the volume, the presense of this flag will let us know
+    // its a Dev drive. TODO: Update this once in Windows SDK
+    private readonly uint _devDriveVolumeStateFlag = 0x00002000;
 
     /// <summary>
     /// Set that holds Dev Drives that have been created through the Dev Drive manager.
@@ -84,10 +91,9 @@ public class DevDriveManager : IDevDriveManager
     /// </summary>
     public event EventHandler<IDevDrive> RequestToCloseViewModelWindow = (sender, e) => { };
 
-    public DevDriveManager(IHost host, ILogger logger, ISetupFlowStringResource stringResource)
+    public DevDriveManager(IHost host, ISetupFlowStringResource stringResource)
     {
         _host = host;
-        _logger = logger;
         _stringResource = stringResource;
         _defaultVhdxLocation = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFolderName);
         _defaultVhdxName = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFileName);
@@ -142,6 +148,14 @@ public class DevDriveManager : IDevDriveManager
         var result = UpdateDevDriveWithDefaultInfo(ref devDrive);
         if (result == DevDriveValidationResult.Successful)
         {
+            var taskGroups = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
+            var group = taskGroups.Single(x => x.GetType() == typeof(DevDriveTaskGroup));
+            if (group is DevDriveTaskGroup driveTaskGroup)
+            {
+                ViewModel.TaskGroup = driveTaskGroup;
+            }
+
+            ViewModel.UpdateDevDriveInfo(devDrive);
             _devDrives.Add(devDrive);
         }
 
@@ -149,12 +163,84 @@ public class DevDriveManager : IDevDriveManager
     }
 
     /// <inheritdoc/>
-    public Task<IEnumerable<IDevDrive>> GetAllDevDrivesThatExistOnSystem()
+    public IEnumerable<IDevDrive> GetAllDevDrivesThatExistOnSystem()
     {
-        return Task.Run(() =>
+        try
         {
-            return _devDriveStorageOperator.GetAllExistingDevDrives();
-        });
+            var devDrives = new List<IDevDrive>();
+            ManagementObjectSearcher searcher =
+                    new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage", "SELECT * FROM MSFT_Volume");
+
+            foreach (ManagementObject queryObj in searcher.Get())
+            {
+                var volumePath = queryObj["Path"] as string;
+                var volumeLabel = queryObj["FileSystemLabel"] as string;
+                var volumeSize = queryObj["Size"];
+                var volumeLetter = queryObj["DriveLetter"];
+                uint outputSize;
+                var volumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
+                var inputVolumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
+                inputVolumeInfo.FlagMask = _devDriveVolumeStateFlag;
+                inputVolumeInfo.Version = 1;
+
+                SafeFileHandle volumeFileHandle = PInvoke.CreateFile(
+                    volumePath,
+                    FILE_ACCESS_FLAGS.FILE_READ_ATTRIBUTES | FILE_ACCESS_FLAGS.FILE_WRITE_ATTRIBUTES,
+                    FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
+                    null,
+                    FILE_CREATION_DISPOSITION.OPEN_EXISTING,
+                    FILE_FLAGS_AND_ATTRIBUTES.FILE_FLAG_BACKUP_SEMANTICS,
+                    null);
+
+                if (volumeFileHandle.IsInvalid)
+                {
+                    continue;
+                }
+
+                unsafe
+                {
+                    var result = PInvoke.DeviceIoControl(
+                        volumeFileHandle,
+                        PInvoke.FSCTL_QUERY_PERSISTENT_VOLUME_STATE,
+                        &inputVolumeInfo,
+                        (uint)sizeof(FILE_FS_PERSISTENT_VOLUME_INFORMATION),
+                        &volumeInfo,
+                        (uint)sizeof(FILE_FS_PERSISTENT_VOLUME_INFORMATION),
+                        &outputSize,
+                        null);
+
+                    if (!result)
+                    {
+                        continue;
+                    }
+
+                    if ((volumeInfo.VolumeFlags & _devDriveVolumeStateFlag) > 0 &&
+                        volumeLetter is char newLetter && volumeSize is ulong newSize)
+                    {
+                        var isInTerabytes = newSize >= DevDriveUtil.OneTbInBytes;
+                        var newDevDrive = new Models.DevDrive
+                        {
+                            DriveLetter = newLetter,
+                            DriveSizeInBytes = newSize,
+                            DriveUnitOfMeasure = isInTerabytes ? ByteUnit.TB : ByteUnit.GB,
+                            DriveLocation = string.Empty,
+                            DriveLabel = volumeLabel,
+                            State = DevDriveState.ExistsOnSystem,
+                        };
+
+                        devDrives.Add(newDevDrive);
+                    }
+                }
+            }
+
+            return devDrives;
+        }
+        catch (Exception ex)
+        {
+            // Log then return empty list, as this only means we don't show the user their existing dev drive. Not catastrophic failure.
+            Log.Logger?.ReportError(nameof(DevDriveManager), $"Failed Get existing Dev Drives. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            return new List<IDevDrive>();
+        }
     }
 
     /// <summary>
@@ -209,9 +295,8 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            // we don't need to keep the exception/crash, we need to tell the user we couldn't find the appdata
-            // folder.
-            _logger.LogError(nameof(DevDriveManager), LogLevel.Info, $"Failed Get default folder for Dev Drive. {ex.Message}");
+            // we don't need to rethrow the exception/crash, we need to tell the user we couldn't find the default folder.
+            Log.Logger?.ReportError(nameof(DevDriveManager), $"Failed Get default folder for Dev Drive. {ex.Message}");
             return DevDriveValidationResult.DefaultFolderNotAvailable;
         }
     }
@@ -243,8 +328,7 @@ public class DevDriveManager : IDevDriveManager
 
         // Only check if the drive letter isn't already being used by another Dev Drive object in memory
         // if we're not in the process of creating it on the System.
-        if (devDrive.State != DevDriveState.Creating &&
-            _devDrives.FirstOrDefault(drive => drive.DriveLetter == devDrive.DriveLetter && drive.ID != devDrive.ID) != null)
+        if (_devDrives.FirstOrDefault(drive => drive.DriveLetter == devDrive.DriveLetter && drive.ID != devDrive.ID) != null)
         {
             returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
         }
@@ -299,18 +383,6 @@ public class DevDriveManager : IDevDriveManager
         }
 
         return driveLetterSet.ToList();
-    }
-
-    /// <inheritdoc/>
-    public DevDriveValidationResult RemoveDevDrive(IDevDrive devDrive)
-    {
-        if (_devDrives.Remove(devDrive))
-        {
-            ViewModel.RemoveTasks();
-            return DevDriveValidationResult.Successful;
-        }
-
-        return DevDriveValidationResult.DevDriveNotFound;
     }
 
     /// <summary>

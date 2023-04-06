@@ -4,6 +4,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.RepoConfig.ViewModels;
 using Microsoft.UI.Xaml;
@@ -64,19 +65,24 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Gets all plugins that have a provider type of repository and devid.
     /// </summary>
-    /// <returns>An awaitable task</returns>
-    public async Task GetPluginsAsync()
+    public void GetPlugins()
     {
-        await AddRepoViewModel.GetPluginsAsync();
+        AddRepoViewModel.GetPlugins();
     }
 
     /// <summary>
     /// Sets up the UI for dev drives.
     /// </summary>
-    /// <returns>An awaitable task</returns>
-    public async Task SetupDevDrivesAsync()
+    public void SetupDevDrives()
     {
-        await EditDevDriveViewModel.SetUpStateIfDevDrivesIfExistsAsync();
+        EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
+
+        if (EditDevDriveViewModel.DevDrive != null &&
+            EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+        {
+            FolderPickerViewModel.InDevDriveScenario = true;
+            EditDevDriveViewModel.ClonePathUpdated();
+        }
     }
 
     private void AddViaAccountToggleButton_Click(object sender, RoutedEventArgs e)
@@ -102,10 +108,10 @@ internal partial class AddRepoDialog
     /// <remarks>
     /// Fired when the combo box on the account page is changed.
     /// </remarks>
-    private async void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
-        await AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
+        AddRepoViewModel.GetAccounts(repositoryProviderName);
         AddRepoViewModel.ChangeToRepoPage();
         FolderPickerViewModel.ShowFolderPicker();
         EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
@@ -143,12 +149,12 @@ internal partial class AddRepoDialog
     /// <remarks>
     /// Fired when a use changes their account on a provider.
     /// </remarks>
-    private async void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // Specific provider has started.
         var loginId = (string)AccountsComboBox.SelectedValue;
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-        await AddRepoViewModel.GetRepositoriesAsync(providerName, loginId);
+        AddRepoViewModel.GetRepositories(providerName, loginId);
     }
 
     /// <summary>
@@ -166,11 +172,11 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Adds the repository from the URL screen to the list of repos to be cloned.
     /// </summary>
-    private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
-            await AddRepoViewModel.AddRepositoryViaUriAsync(FolderPickerViewModel.CloneLocation);
+            AddRepoViewModel.AddRepositoryViaUri(FolderPickerViewModel.CloneLocation);
         }
     }
 

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -15,7 +16,6 @@ using DevHome.SetupFlow.Common.Services;
 using DevHome.SetupFlow.DevDrive.Models;
 using DevHome.SetupFlow.DevDrive.Utilities;
 using DevHome.SetupFlow.DevDrive.Windows;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Windows.Storage.Pickers;
@@ -26,9 +26,7 @@ namespace DevHome.SetupFlow.DevDrive.ViewModels;
 
 public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewModel
 {
-    private readonly ILogger _logger;
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly DevDriveTaskGroup _taskGroup;
     private readonly IDevDriveManager _devDriveManager;
     private readonly string _localizedBrowseButtonText;
     private readonly ObservableCollection<string> _errorList = new ();
@@ -37,6 +35,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private readonly Dictionary<ByteUnit, string> _byteUnitList;
 
     private Models.DevDrive _concreteDevDrive = new ();
+    private DevDriveTaskGroup _taskGroup;
 
     /// <summary>
     /// Gets a value indicating whether the DevDrive window has been opened.
@@ -79,13 +78,10 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     public string AppTitle => Application.Current.GetService<WindowEx>().Title;
 
     public DevDriveViewModel(
-        IHost host,
-        ILogger logger,
         ISetupFlowStringResource stringResource,
         DevDriveTaskGroup taskGroup,
         IDevDriveManager devDriveManager)
     {
-        _logger = logger;
         _taskGroup = taskGroup;
         _stringResource = stringResource;
         _byteUnitList = new Dictionary<ByteUnit, string>
@@ -175,7 +171,11 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
     }
 
-    public DevDriveTaskGroup TaskGroup => _taskGroup;
+    public DevDriveTaskGroup TaskGroup
+    {
+        get => _taskGroup;
+        set => _taskGroup = value;
+    }
 
     /// <summary>
     /// gets the localized Browse button text for the browse button.
