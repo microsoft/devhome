@@ -59,6 +59,8 @@ public class WinGetPackage : IWinGetPackage
 
     public Uri PublisherUrl => _publisherUrl.Value;
 
+    public string PublisherName => _package.DefaultInstallVersion.Publisher;
+
     public InstallPackageTask CreateInstallTask(
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,

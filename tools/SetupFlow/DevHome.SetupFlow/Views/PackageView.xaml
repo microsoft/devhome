@@ -13,7 +13,8 @@
             </ResourceDictionary.MergedDictionaries>
             <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE106;" FalseValue="&#xE109;" />
             <converters:BoolToObjectConverter x:Key="ImageOpacityConverter" TrueValue="0.4" FalseValue="1" />
-            <converters:BoolToObjectConverter x:Key="TextEnableDisableConverter" TrueValue="{ThemeResource TextFillColorDisabledBrush}" FalseValue="{ThemeResource TextFillColorPrimaryBrush}" />
+            <converters:BoolToObjectConverter x:Key="PrimaryTextEnableDisableConverter" TrueValue="{ThemeResource TextFillColorDisabledBrush}" FalseValue="{ThemeResource TextFillColorPrimaryBrush}" />
+            <converters:BoolToObjectConverter x:Key="SecondaryTextEnableDisableConverter" TrueValue="{ThemeResource TextFillColorDisabledBrush}" FalseValue="{ThemeResource TextFillColorSecondaryBrush}" />
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
@@ -24,6 +25,17 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+
+        <ToolTipService.ToolTip>
+            <StackPanel>
+                <StackPanel>
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind Package.TooltipName, Mode=OneWay}"/>
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind Package.TooltipVersion, Mode=OneWay}"/>
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind Package.TooltipSource, Mode=OneWay}"/>
+                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind Package.TooltipPublisher, Mode=OneWay}"/>
+                </StackPanel>
+            </StackPanel>
+        </ToolTipService.ToolTip>
 
         <!-- Package card header layout -->
         <Grid>
@@ -55,28 +67,39 @@
         </Grid>
 
         <!-- Package card body layout -->
-        <StackPanel Grid.Row="1">
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            
             <!-- Package title -->
             <TextBlock
-                Foreground="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource TextEnableDisableConverter}}"
-                Style="{ThemeResource CaptionTextBlockStyle}"
-                Text="{x:Bind Package.Name,Mode=OneWay}"/>
+                MaxLines="2"
+                TextTrimming="CharacterEllipsis"
+                Foreground="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource PrimaryTextEnableDisableConverter}}"
+                Style="{ThemeResource BodyTextBlockStyle}"
+                Text="{x:Bind Package.PackageTitle,Mode=OneWay}"/>
 
             <!-- Package Version -->
             <TextBlock
-                Foreground="{x:Bind Package.IsSelected,Mode=OneWay, Converter={StaticResource TextEnableDisableConverter}}"
+                Grid.Row="1"
+                MaxLines="1"
+                TextTrimming="CharacterEllipsis"
+                Foreground="{x:Bind Package.IsSelected,Mode=OneWay, Converter={StaticResource SecondaryTextEnableDisableConverter}}"
                 Style="{ThemeResource CaptionTextBlockStyle}"
-                Text="{x:Bind Package.Version,Mode=OneWay}"/>
+                Text="{x:Bind Package.PackageDescription,Mode=OneWay}"/>
 
             <!-- Package link -->
             <HyperlinkButton
+                Grid.Row="2"
+                Padding="0"
                 IsEnabled="{x:Bind Package.IsSelected,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
                 Command="{x:Bind Package.LearnMoreCommand, Mode=OneWay}"
                 Style="{ThemeResource TextBlockButtonStyle}">
-                <TextBlock
-                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"
-                    Style="{ThemeResource CaptionTextBlockStyle}"/>
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
             </HyperlinkButton>
-        </StackPanel>
+        </Grid>
     </Grid>
 </UserControl>

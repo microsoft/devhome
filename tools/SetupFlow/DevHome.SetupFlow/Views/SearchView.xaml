@@ -12,6 +12,7 @@
         <converters:StringFormatConverter x:Name="StringFormatConverter" />
         <converters:BoolToObjectConverter x:Name="SelectButtonGlyphConverter" TrueValue="&#xE106;" FalseValue="&#xE109;" />
         <converters:BoolNegationConverter x:Name="BoolNegationConverter" />
+        <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
     </UserControl.Resources>
     <!-- Search view layout -->
     <Grid>
@@ -86,18 +87,33 @@
                                             <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
                                             <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
                                         </controls:SettingsCard.Resources>
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip>
+                                                <StackPanel>
+                                                    <TextBlock FontWeight="Bold" Text="{Binding TooltipIsInstalled}" Visibility="{Binding TooltipIsInstalled, Converter={StaticResource StringVisibilityConverter}}"/>
+                                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{Binding TooltipName}"/>
+                                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{Binding TooltipVersion}"/>
+                                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{Binding TooltipSource}"/>
+                                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{Binding TooltipPublisher}"/>
+                                                </StackPanel>
+                                            </ToolTip>
+                                        </ToolTipService.ToolTip>
                                         <controls:SettingsCard.Header>
                                             <TextBlock
                                                 Name="Title"
+                                                TextTrimming="CharacterEllipsis"
+                                                MaxLines="1"
                                                 Style="{ThemeResource CaptionTextBlockStyle}"
-                                                Text="{Binding Name}"/>
+                                                Text="{Binding PackageTitle}"/>
                                         </controls:SettingsCard.Header>
                                         <controls:SettingsCard.Description>
                                             <TextBlock
                                                 Name="Version"
+                                                TextTrimming="CharacterEllipsis"
+                                                MaxLines="1"
                                                 Foreground="{ThemeResource TextFillColorSecondary}"
                                                 Style="{ThemeResource CaptionTextBlockStyle}"
-                                                Text="{Binding Version}"/>
+                                                Text="{Binding PackageDescription}"/>
                                         </controls:SettingsCard.Description>
                                         <controls:SettingsCard.HeaderIcon>
                                             <ImageIcon Name="Image" Source="{Binding Icon, Mode=OneWay}"/>

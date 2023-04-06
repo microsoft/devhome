@@ -81,6 +81,24 @@ public partial class PackageViewModel : ObservableObject
 
     public bool IsInstalled => _package.IsInstalled;
 
+    public string CatalogName => _package.CatalogName;
+
+    public string PublisherName => !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : "-";
+
+    public string PackageTitle => Name;
+
+    public string PackageDescription => $"Version {Version} | {CatalogName} | {PublisherName}";
+
+    public string TooltipName => $"Name: {Name}";
+
+    public string TooltipVersion => $"Version: {Version}";
+
+    public string TooltipIsInstalled => IsInstalled ? $"Application exists" : string.Empty;
+
+    public string TooltipSource => $"Source: {CatalogName}";
+
+    public string TooltipPublisher => $"Publisher: {PublisherName}";
+
     public InstallPackageTask InstallPackageTask => _installPackageTask.Value;
 
     /// <summary>

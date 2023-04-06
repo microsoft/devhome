@@ -41,6 +41,14 @@ public interface IWinGetPackage
     }
 
     /// <summary>
+    /// Gets the package catalog name
+    /// </summary>
+    public string CatalogName
+    {
+        get;
+    }
+
+    /// <summary>
     /// Gets a globally unique key for the package.
     /// </summary>
     /// <remarks>
@@ -105,6 +113,14 @@ public interface IWinGetPackage
     /// Gets the publisher url
     /// </summary>
     public Uri PublisherUrl
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the package publisher name
+    /// </summary>
+    public string PublisherName
     {
         get;
     }
