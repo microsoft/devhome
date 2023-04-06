@@ -13,11 +13,19 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
             <converters:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+
+            <x:Double x:Key="SettingsCardHeaderIconMaxSize">32</x:Double>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
+                <ResourceDictionary>
+                    <Style x:Key="MainPageCardStyle" TargetType="labs:SettingsCard">
+                        <Setter Property="CornerRadius" Value="7" />
+                    </Style>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
 
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
@@ -45,6 +53,7 @@
             <StackPanel Spacing="5">
                 <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_EnvironmentSetup" />
                 <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
+                                   Style="{StaticResource MainPageCardStyle}"
                                    IsClickEnabled="True" Command="{x:Bind ViewModel.StartSetupCommand}"
                                    ActionIcon="{x:Null}" >
                     <labs:SettingsCard.HeaderIcon>
@@ -52,6 +61,7 @@
                     </labs:SettingsCard.HeaderIcon>
                 </labs:SettingsCard>
                 <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile"
+                                   Style="{StaticResource MainPageCardStyle}"
                                    IsClickEnabled="True" Command="{x:Bind ViewModel.StartConfigurationFileCommand}"
                                    ActionIcon="{x:Null}" >
                     <labs:SettingsCard.HeaderIcon>
@@ -63,6 +73,7 @@
             <StackPanel Spacing="5">
                 <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
                 <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos"
+                                   Style="{StaticResource MainPageCardStyle}"
                                    IsClickEnabled="True" Command="{x:Bind ViewModel.StartRepoConfigCommand}"
                                    ActionIcon="{x:Null}" >
                     <labs:SettingsCard.HeaderIcon>
@@ -70,6 +81,7 @@
                     </labs:SettingsCard.HeaderIcon>
                 </labs:SettingsCard>
                 <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
+                                   Style="{StaticResource MainPageCardStyle}"
                                    IsClickEnabled="True" Command="{x:Bind ViewModel.StartAppManagementCommand}"
                                    ActionIcon="{x:Null}" >
                     <labs:SettingsCard.HeaderIcon>
@@ -77,6 +89,7 @@
                     </labs:SettingsCard.HeaderIcon>
                 </labs:SettingsCard>
                 <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevDrive"
+                                   Style="{StaticResource MainPageCardStyle}"
                                    IsClickEnabled="True" Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}" 
                                    Visibility="{x:Bind ViewModel.ShowDevDriveItem, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" >
                     <labs:SettingsCard.ActionIcon>
