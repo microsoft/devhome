@@ -11,8 +11,6 @@
     xmlns:util="using:DevHome.SetupFlow.Utilities"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
     mc:Ignorable="d"
     Background="{ThemeResource ContentDialogBackground}"
