@@ -11,6 +11,8 @@
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:vm="using:DevHome.Dashboard.ViewModels"
     xmlns:views="using:DevHome.Dashboard.Views"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
 
     <Grid>
@@ -19,9 +21,13 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="0">
-            <Button x:Name="AddWidgetButton" x:Uid="AddWidget" HorizontalAlignment="Right" Click="AddWidgetButton_Click"/>
-        </StackPanel>
+        <!-- Header - Title and Add Widget button -->
+        <Grid Grid.Row="0" Margin="0,10,0,22">
+            <TextBlock x:Uid="DashboardPage_Title" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Left"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="AddWidgetButton" x:Uid="AddWidget" HorizontalAlignment="Right" Click="AddWidgetButton_Click"/>
+            </StackPanel>
+        </Grid>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1">
             <StackPanel>
@@ -34,7 +40,7 @@
                     ButtonCommand="{x:Bind ViewModel.DashboardBannerButtonCommand,Mode=OneWay}"
                     x:Uid="ms-resource:///DevHome.Dashboard/Resources/DashboardBanner"
                     ImageSource="ms-appx:///DevHome.Dashboard/Assets/DashboardBanner.png"
-                    Margin="0, 20"/>
+                    Margin="0,0,0,12" />
 
                 <!-- Widget grid -->
                 <GridView x:Name="MainGridView" ItemsSource="{x:Bind views:DashboardView.PinnedWidgets}"

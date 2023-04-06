@@ -6,7 +6,7 @@ namespace Microsoft.Windows.DevHome.SDK
     enum ProviderType
     {
         Repository = 0,
-        DevId = 1,
+        DeveloperId = 1,
         Settings = 2,
         SetupFlow = 3,
         Widget = 4,
@@ -53,7 +53,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     [version(1.0)]
-    interface IDevIdProvider
+    interface IDeveloperIdProvider
     {
         String GetName();
 

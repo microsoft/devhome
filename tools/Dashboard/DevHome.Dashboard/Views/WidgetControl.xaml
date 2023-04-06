@@ -17,7 +17,8 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <ContentPresenter Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}" Grid.Row="1" />
+
+        <!-- Widget header: icon, title, menu -->
         <Grid Grid.Row="0">
             <StackPanel Orientation="Horizontal" Margin="15,10,15,5">
                 <Rectangle Width="16" Height="16" Margin="0,0,8,0"
@@ -34,5 +35,10 @@
                 </Button.Flyout>
             </Button>
         </Grid>
+
+        <!-- Widget content -->
+        <ScrollViewer Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}" Grid.Row="1" 
+                      VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"/>
+
     </Grid>
 </UserControl>
