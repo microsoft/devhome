@@ -2,8 +2,8 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.Common.ViewModels;
+using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 using Moq;
 using Moq.Protected;
 

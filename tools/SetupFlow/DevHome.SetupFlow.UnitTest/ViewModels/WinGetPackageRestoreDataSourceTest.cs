@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.AppManagement.Exceptions;
-using DevHome.SetupFlow.AppManagement.Models;
-using DevHome.SetupFlow.AppManagement.Services;
+using DevHome.SetupFlow.Exceptions;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.UnitTest.Helpers;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Microsoft.Management.Deployment;
@@ -166,7 +166,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
     /// Load catalogs from restore data source
     /// </summary>
     /// <returns>List of package catalogs</returns>
-    private IList<AppManagement.Models.PackageCatalog> LoadCatalogsFromRestoreDataSource()
+    private IList<Models.PackageCatalog> LoadCatalogsFromRestoreDataSource()
     {
         var restoreDataSource = TestHost!.GetService<WinGetPackageRestoreDataSource>();
         restoreDataSource.InitializeAsync().GetAwaiter().GetResult();
