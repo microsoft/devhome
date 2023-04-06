@@ -2,10 +2,12 @@
 // Licensed under the MIT license.
 
 using System.Collections.ObjectModel;
+using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Dashboard.ViewModels;
 using DevHome.Helpers;
 using DevHome.Services;
 using DevHome.ViewModels;
@@ -45,14 +47,21 @@ public sealed partial class ShellPage : Page
         AppTitleBarText.Text = "AppDisplayName".GetLocalized();
     }
 
-    private void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         TitleBarHelper.UpdateTitleBar(App.MainWindow, RequestedTheme);
 
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
 
-        Application.Current.GetService<INavigationService>().NavigateTo(typeof(WhatsNewViewModel).FullName!);
+        if (await Application.Current.GetService<ILocalSettingsService>().ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun))
+        {
+            Application.Current.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName!);
+        }
+        else
+        {
+            Application.Current.GetService<INavigationService>().NavigateTo(typeof(WhatsNewViewModel).FullName!);
+        }
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)

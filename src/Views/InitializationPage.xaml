@@ -43,7 +43,7 @@
 
             <ProgressRing Grid.Row="2" IsIndeterminate="True" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" />
         </Grid>
-        <Grid Grid.Column="1" Background="#000000">
+        <Grid Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorDefault}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>

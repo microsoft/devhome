@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
 using DevHome.Models;
 using DevHome.Services;
 using DevHome.Settings.ViewModels;
@@ -26,8 +28,10 @@ public sealed partial class WhatsNewPage : Page
         InitializeComponent();
     }
 
-    private void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstRun, true);
+
         var whatsNewCards = FeaturesContainer.Resources
             .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
             .Select(card => card.Value as WhatsNewCard);

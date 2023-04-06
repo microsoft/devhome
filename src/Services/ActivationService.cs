@@ -4,6 +4,7 @@
 using DevHome.Activation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
 using DevHome.Contracts.Services;
 using DevHome.Views;
 using Microsoft.UI.Xaml;
@@ -38,7 +39,9 @@ public class ActivationService : IActivationService
         // Set the MainWindow Content.
         if (App.MainWindow.Content == null)
         {
-            App.MainWindow.Content = Application.Current.GetService<InitializationPage>();
+            App.MainWindow.Content = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun)
+                ? Application.Current.GetService<ShellPage>()
+                : Application.Current.GetService<InitializationPage>();
         }
 
         // Handle activation via ActivationHandlers.
