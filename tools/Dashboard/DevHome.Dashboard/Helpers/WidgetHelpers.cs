@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using System;
 using System.Linq;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
@@ -60,5 +61,12 @@ internal class WidgetHelpers
             WidgetSize.Large => WidgetPxHeightLarge,
             _ => 0,
         };
+    }
+
+    public static bool IsIncludedWidgetProvider(WidgetProviderDefinition provider)
+    {
+        var include = provider.Id.StartsWith("Microsoft.Windows.DevHome", StringComparison.CurrentCulture);
+        Log.Logger()?.ReportInfo("WidgetHelpers", $"Found provider Id = {provider.Id}, include = {include}");
+        return include;
     }
 }

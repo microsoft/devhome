@@ -8,14 +8,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.Models;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.Common.ViewModels;
-using DevHome.SetupFlow.Loading.ViewModels;
-using DevHome.SetupFlow.MainPage.ViewModels;
-using DevHome.SetupFlow.Review.ViewModels;
-using DevHome.SetupFlow.Summary.ViewModels;
+using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.ViewModels;

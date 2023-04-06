@@ -2,17 +2,11 @@
 // Licensed under the MIT license.
 
 using System;
-using DevHome.SetupFlow.AppManagement.ViewModels;
-using DevHome.SetupFlow.ConfigurationFile.ViewModels;
-using DevHome.SetupFlow.Loading.ViewModels;
-using DevHome.SetupFlow.MainPage.ViewModels;
-using DevHome.SetupFlow.RepoConfig.ViewModels;
-using DevHome.SetupFlow.Review.ViewModels;
-using DevHome.SetupFlow.Summary.ViewModels;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.SetupFlow.Common.Selectors;
+namespace DevHome.SetupFlow.Selectors;
 
 /// <summary>
 /// Data template selector class for rendering the current active page in the

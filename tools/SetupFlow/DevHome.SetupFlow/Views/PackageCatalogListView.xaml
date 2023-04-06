@@ -1,0 +1,40 @@
+<UserControl
+    x:Class="DevHome.SetupFlow.Views.PackageCatalogListView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:views="using:DevHome.SetupFlow.Views"
+    mc:Ignorable="d">
+    <ScrollViewer>
+        <StackPanel>
+            <!-- Package catalogs -->
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.PackageCatalogs, Mode=OneWay}">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="viewmodels:PackageCatalogViewModel">
+                        <Border
+                            Margin="0 0 20 0"
+                            Padding="0 0 0 10"
+                            BorderThickness="0 0 0 1"
+                            BorderBrush="{ThemeResource ControlStrokeColorDefault}">
+                            <views:PackageCatalogView  Catalog="{x:Bind Mode=OneWay}" GroupSize="6"/>
+                        </Border>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+                <ItemsRepeater.Layout>
+                    <StackLayout Spacing="10" />
+                </ItemsRepeater.Layout>
+            </ItemsRepeater>
+
+            <!-- Package catalog shimmers -->
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.PackageCatalogShimmers, Mode=OneWay}">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate>
+                        <views:ShimmerPackageCatalogView PackageCount="6" />
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

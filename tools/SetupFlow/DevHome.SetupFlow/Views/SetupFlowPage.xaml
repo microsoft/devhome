@@ -10,15 +10,9 @@
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:pg="using:DevHome.Common"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
-    xmlns:appManagementViews="using:DevHome.SetupFlow.AppManagement.Views"
-    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Common.Behaviors"
-    xmlns:selectors="using:DevHome.SetupFlow.Common.Selectors"
-    xmlns:configurationFileViews="using:DevHome.SetupFlow.ConfigurationFile.Views"
-    xmlns:loadingViews="using:DevHome.SetupFlow.Loading.Views"
-    xmlns:mainPageViews="using:DevHome.SetupFlow.MainPage.Views"
-    xmlns:repoConfigViews="using:DevHome.SetupFlow.RepoConfig.Views"
-    xmlns:reviewViews="using:DevHome.SetupFlow.Review.Views"
-    xmlns:summaryViews="using:DevHome.SetupFlow.Summary.Views"
+    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
+    xmlns:selectors="using:DevHome.SetupFlow.Selectors"
+    xmlns:views="using:DevHome.SetupFlow.Views"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
@@ -26,7 +20,7 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Page.Resources>
 
-    <Grid>
+    <Grid MaxWidth="924">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
@@ -42,37 +36,37 @@
                 <selectors:SetupFlowViewSelector>
                     <selectors:SetupFlowViewSelector.MainPageTemplate>
                         <DataTemplate>
-                            <mainPageViews:MainPageView />
+                            <views:MainPageView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.MainPageTemplate>
                     <selectors:SetupFlowViewSelector.RepoConfigTemplate>
                         <DataTemplate>
-                            <repoConfigViews:RepoConfigView />
+                            <views:RepoConfigView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.RepoConfigTemplate>
                     <selectors:SetupFlowViewSelector.AppManagementTemplate>
                         <DataTemplate>
-                            <appManagementViews:AppManagementView />
+                            <views:AppManagementView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.AppManagementTemplate>
                     <selectors:SetupFlowViewSelector.ReviewTemplate>
                         <DataTemplate>
-                            <reviewViews:ReviewView />
+                            <views:ReviewView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.ReviewTemplate>
                     <selectors:SetupFlowViewSelector.LoadingTemplate>
                         <DataTemplate>
-                            <loadingViews:LoadingView />
+                            <views:LoadingView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.LoadingTemplate>
                     <selectors:SetupFlowViewSelector.SummaryTemplate>
                         <DataTemplate>
-                            <summaryViews:SummaryView />
+                            <views:SummaryView />
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.SummaryTemplate>
                     <selectors:SetupFlowViewSelector.ConfigurationFileTemplate>
                         <DataTemplate>
-                            <configurationFileViews:ConfigurationFileView/>
+                            <views:ConfigurationFileView/>
                         </DataTemplate>
                     </selectors:SetupFlowViewSelector.ConfigurationFileTemplate>
                 </selectors:SetupFlowViewSelector>
@@ -97,12 +91,12 @@
             </ContentControl>
 
             <!-- Right buttons -->
-            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+            <StackPanel Grid.Column="1" Orientation="Horizontal" >
                 <HyperlinkButton Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
-                                 MinWidth="120"
+                                 MinWidth="120" Margin="4,0"
                                  x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel" />
                 <Button Command="{x:Bind ViewModel.Orchestrator.GoToPreviousPageCommand, Mode=OneWay}"
-                        MinWidth="120"
+                        MinWidth="120" Margin="4,0"
                         Visibility="{x:Bind ViewModel.Orchestrator.HasPreviousPage, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Previous" />
 
@@ -115,7 +109,7 @@
                     <TextBlock IsTabStop="False" />
                     <Button Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
                             Style="{StaticResource AccentButtonStyle}"
-                            MinWidth="120"
+                            MinWidth="120" Margin="4,0"
                             Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
                             ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
                 </Grid>

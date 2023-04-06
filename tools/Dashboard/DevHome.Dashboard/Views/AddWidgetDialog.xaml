@@ -17,12 +17,12 @@
         <x:Double x:Key="ContentDialogMaxWidth">652</x:Double>
         <x:Double x:Key="ContentDialogMaxHeight">684</x:Double>
         <Thickness x:Key="ContentDialogTitleMargin">0,0,0,0</Thickness>
-        <Thickness x:Key="ContentDialogPadding">16,7,0,0</Thickness>
+        <Thickness x:Key="ContentDialogPadding">0,0,0,0</Thickness>
     </ContentDialog.Resources>
 
     <StackPanel>
         <!-- Title and Close button -->
-        <Grid>
+        <Grid Margin="16,7,0,0">
             <TextBlock x:Uid="PinWidgetsTitle" HorizontalAlignment="Left" />
             <Button HorizontalAlignment="Right" Click="CancelButton_Click"
                     BorderThickness="0" Background="Transparent">
@@ -41,7 +41,7 @@
                         IsSettingsVisible="False"
                         IsPaneToggleButtonVisible="False"
                         IsTitleBarAutoPaddingEnabled="False"
-                        OpenPaneLength="180"
+                        OpenPaneLength="218"
                         SelectionChanged="AddWidgetNavigationView_SelectionChanged">
             <NavigationView.MenuItems>
             </NavigationView.MenuItems>
