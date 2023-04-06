@@ -14,8 +14,8 @@ public sealed partial class DevDriveWindow : SecondaryWindowExtension
 {
     private readonly DevDriveViewModel _devDriveViewModel;
     private readonly DevDriveView _devDriveView;
-    private readonly double _initialHeight = 600;
-    private readonly double _initialWidth = 650;
+    private const double InitialHeight = 600;
+    private const double InitialWidth = 650;
 
     public DevDriveWindow(DevDriveViewModel viewModel)
         : base()
@@ -29,10 +29,10 @@ public sealed partial class DevDriveWindow : SecondaryWindowExtension
         SetTitleBar(_devDriveView.TitleBar);
         UseAppTheme = true;
         Activated += UpdateTitleBarTextColors;
-        MinHeight = _initialHeight;
-        Height = _initialHeight;
-        MinWidth = _initialWidth;
-        Width = _initialWidth;
+        MinHeight = InitialHeight;
+        Height = InitialHeight;
+        MinWidth = InitialWidth;
+        Width = InitialWidth;
     }
 
     public DevDriveViewModel ViewModel => _devDriveViewModel;

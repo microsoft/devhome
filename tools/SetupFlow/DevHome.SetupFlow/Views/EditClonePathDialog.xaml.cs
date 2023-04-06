@@ -155,6 +155,9 @@ public sealed partial class EditClonePathDialog
     /// </summary>
     private void EditClonePathDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
+        // Checks if the previous checkmark value is true. If it is true and the current value is false, this means the user
+        // unselected the checkmark, we are currently showing the warning message and the user has selected the primary button
+        // to confirm they do not want to create a new Dev Drive.
         if (PrevCheckBoxSelection && !DevDriveCheckBox.IsChecked.GetValueOrDefault(false))
         {
             args.Cancel = true;
@@ -174,6 +177,10 @@ public sealed partial class EditClonePathDialog
     /// </summary>
     private void EditClonePathDialog_CloseButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
+        // Checks if the previous checkmark value is true. If it is true and the current value is false, this means the user
+        // unselected the checkmark, we are currently showing the warning message and the user has selected the close button
+        // to cancel out of the warning and back to the main edit clone path dialog.
+        // This response means the user still wants to create the Dev Drive, so repopulate the data.
         if (PrevCheckBoxSelection && !DevDriveCheckBox.IsChecked.GetValueOrDefault(false))
         {
             args.Cancel = true;
@@ -195,6 +202,7 @@ public sealed partial class EditClonePathDialog
     public void UpdateDialogState()
     {
         CloseButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/CloseButtonText");
+
         if (PrevCheckBoxSelection && PrevCheckBoxSelection != DevDriveCheckBox.IsChecked.GetValueOrDefault(false))
         {
             Title = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialogUncheckCheckMark + $"/Title");
