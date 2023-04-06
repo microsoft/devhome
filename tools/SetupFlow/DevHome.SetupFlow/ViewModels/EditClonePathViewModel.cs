@@ -23,6 +23,12 @@ public partial class EditClonePathViewModel : ObservableObject
     [ObservableProperty]
     private bool _isPrimaryButtonEnabled;
 
+    /// <summary>
+    /// Controls if the the warning message for removing the new dev drive should be shown.
+    /// </summary>
+    [ObservableProperty]
+    private bool _shouldShowAreYouSureMessage;
+
     public EditClonePathViewModel()
     {
         ShowErrorTextBox = Visibility.Collapsed;

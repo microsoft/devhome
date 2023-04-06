@@ -859,4 +859,16 @@
   <data name="NoRepositoriesToClone.Text" xml:space="preserve">
     <value>No Repositories to clone</value>
   </data>
+  <data name="EditClonePathDialogUncheckCheckMark.PrimaryButtonText" xml:space="preserve">
+    <value>Yes, I'm sure</value>
+    <comment>Text to show in a button in the dialog that will confirm the users action</comment>
+  </data>
+  <data name="EditClonePathDialogUncheckedCheckMarkWarning.Text" xml:space="preserve">
+    <value>The current repository won't be cloned to the new Dev Drive.</value>
+    <comment>Text for the dialog where unchecking the create Dev Drive checkmark shows the user text advising them that by unchecking the checkbox we won't create a Dev Drive for them</comment>
+  </data>
+  <data name="EditClonePathDialogUncheckCheckMark.Title" xml:space="preserve">
+    <value>Are you sure?</value>
+    <comment>Title text for the dialog where the user is about to choose an option that we want them to confirm first before proceeding</comment>
+  </data>
 </root>
