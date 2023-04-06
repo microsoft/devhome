@@ -19,6 +19,7 @@ public class Log
         public static readonly string AppManagement = nameof(AppManagement);
         public static readonly string Configuration = nameof(Configuration);
         public static readonly string DevDrive = nameof(DevDrive);
+        public static readonly string Loading = nameof(Loading);
         public static readonly string MainPage = nameof(MainPage);
         public static readonly string Orchestrator = nameof(Orchestrator);
         public static readonly string RepoConfig = nameof(RepoConfig);

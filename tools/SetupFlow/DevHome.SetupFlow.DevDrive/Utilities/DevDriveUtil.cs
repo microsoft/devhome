@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using CommunityToolkit.Common;
 using DevHome.Common.Models;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.DevDrive.Models;
 using Newtonsoft.Json.Linq;
 using Windows.Win32;
@@ -77,12 +78,14 @@ public static class DevDriveUtil
             if (osVersion.Major == 10 && osVersion.Minor == 0 && osVersion.Build < 22000)
             {
                 // Win 10
+                Log.Logger?.ReportInfo(Log.Component.DevDrive, "Dev Drive feature is not available on Win10");
                 return false;
             }
 
             if (osVersion.Major == 10 && osVersion.Minor == 0 && osVersion.Build >= 25309)
             {
                 // Canary Insiders dev channel use the 25000 series numbering. Feature is enabled there.
+                Log.Logger?.ReportInfo(Log.Component.DevDrive, "Dev Drive feature is not available on older Win11 builds");
                 return true;
             }
 
