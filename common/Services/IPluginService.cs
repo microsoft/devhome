@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.Common.Services;
 public interface IPluginService
@@ -18,5 +19,5 @@ public interface IPluginService
 
     Task SignalStopPluginsAsync();
 
-    event EventHandler? OnPluginsChanged;
+    public event EventHandler OnPluginsChanged;
 }

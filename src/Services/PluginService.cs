@@ -7,6 +7,7 @@ using DevHome.Common.Services;
 using DevHome.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using SampleTool;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation.Collections;
@@ -15,7 +16,7 @@ namespace DevHome.Services;
 
 public class PluginService : IPluginService
 {
-    public event EventHandler? OnPluginsChanged;
+    public event EventHandler OnPluginsChanged = (_, _) => { };
 
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
     private static readonly object _lock = new ();
@@ -39,7 +40,18 @@ public class PluginService : IPluginService
     {
         if (args.IsComplete)
         {
-            OnPackageChange(args.Package);
+            lock (_lock)
+            {
+                var isDevHomeExtension = Task.Run(() =>
+                {
+                    return IsValidDevHomeExtension(args.Package);
+                }).Result;
+
+                if (isDevHomeExtension)
+                {
+                    OnPackageChange(args.Package);
+                }
+            }
         }
     }
 
@@ -47,7 +59,17 @@ public class PluginService : IPluginService
     {
         if (args.IsComplete)
         {
-            OnPackageChange(args.Package);
+            lock (_lock)
+            {
+                foreach (var plugin in _installedPlugins)
+                {
+                    if (plugin.PackageFullName == args.Package.Id.FullName)
+                    {
+                        OnPackageChange(args.Package);
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -55,22 +77,26 @@ public class PluginService : IPluginService
     {
         if (args.IsComplete)
         {
-            OnPackageChange(args.TargetPackage);
+            lock (_lock)
+            {
+                var isDevHomeExtension = Task.Run(() =>
+                {
+                    return IsValidDevHomeExtension(args.TargetPackage);
+                }).Result;
+
+                if (isDevHomeExtension)
+                {
+                    OnPackageChange(args.TargetPackage);
+                }
+            }
         }
     }
 
-    private async void OnPackageChange(Package package)
+    private void OnPackageChange(Package package)
     {
-        var isDevHomeExtension = await IsValidDevHomeExtension(package);
-        if (isDevHomeExtension)
-        {
-            lock (_lock)
-            {
-                _installedPlugins.Clear();
-                _enabledPlugins.Clear();
-                OnPluginsChanged?.Invoke(this, new EventArgs());
-            }
-        }
+        _installedPlugins.Clear();
+        _enabledPlugins.Clear();
+        OnPluginsChanged.Invoke(this, new EventArgs());
     }
 
     private async Task<bool> IsValidDevHomeExtension(Package package)

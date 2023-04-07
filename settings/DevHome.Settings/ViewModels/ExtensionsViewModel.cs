@@ -70,15 +70,10 @@ public partial class ExtensionsViewModel : ObservableRecipient
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         var pluginService = Application.Current.GetService<IPluginService>();
+        pluginService.OnPluginsChanged -= OnPluginsChanged;
         pluginService.OnPluginsChanged += OnPluginsChanged;
 
         DisplaySettings();
-    }
-
-    ~ExtensionsViewModel()
-    {
-        var pluginService = Application.Current.GetService<IPluginService>();
-        pluginService.OnPluginsChanged -= OnPluginsChanged;
     }
 
     private void DisplaySettings()
