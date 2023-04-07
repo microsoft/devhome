@@ -5,7 +5,7 @@ using System.Management;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 
-namespace DevHome.SetupFlow.ComInterop.Projection.DevDriveFormatter;
+namespace DevHome.SetupFlow.Common.DevDriveFormatter;
 
 /// <summary>
 /// Class that will perform the format operation to format a partition as a Dev Drive.

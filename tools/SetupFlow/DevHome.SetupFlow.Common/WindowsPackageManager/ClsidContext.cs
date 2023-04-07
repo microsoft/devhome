@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-namespace DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+namespace DevHome.SetupFlow.Common.WindowsPackageManager;
 
 public enum ClsidContext
 {

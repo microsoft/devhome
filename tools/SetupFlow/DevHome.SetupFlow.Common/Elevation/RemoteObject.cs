@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-namespace DevHome.SetupFlow.ElevatedComponent;
+using System;
+using System.Threading;
+
+namespace DevHome.SetupFlow.Common.Elevation;
 
 public class RemoteObject<T> : IDisposable
 {

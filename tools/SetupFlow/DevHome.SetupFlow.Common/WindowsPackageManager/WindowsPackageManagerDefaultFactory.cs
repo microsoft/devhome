@@ -7,7 +7,7 @@ using Windows.Win32;
 using Windows.Win32.System.Com;
 using WinRT;
 
-namespace DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+namespace DevHome.SetupFlow.Common.WindowsPackageManager;
 
 public class WindowsPackageManagerDefaultFactory : WindowsPackageManagerFactory
 {
