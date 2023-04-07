@@ -30,7 +30,7 @@ public sealed partial class RepoConfigView : UserControl
     /// </summary>
     private async void AddRepoButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager);
+        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource);
         addRepoDialog.GetPlugins();
         addRepoDialog.SetupDevDrives();
         var themeService = Application.Current.GetService<IThemeSelectorService>();

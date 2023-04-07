@@ -105,4 +105,8 @@ public static class StringResourceKey
     // Loading screen
     public static readonly string LoadingScreenActionCenterErrors = nameof(LoadingScreenActionCenterErrors);
     public static readonly string LoadingPageSteps = nameof(LoadingPageSteps);
+
+    // Repo tool
+    public static readonly string RepoAccountPagePrimaryButtonText = nameof(RepoAccountPagePrimaryButtonText);
+    public static readonly string RepoEverythingElsePrimaryButtonText = nameof(RepoEverythingElsePrimaryButtonText);
 }

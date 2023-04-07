@@ -14,7 +14,9 @@
                x:Name="AddRepoContentDialog"
                PrimaryButtonClick="AddRepoContentDialog_PrimaryButtonClick"
                IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldPrimaryButtonBeEnabled, Mode=OneWay}"
-               Style="{StaticResource DefaultContentDialogStyle}">
+               Style="{StaticResource DefaultContentDialogStyle}"
+               PrimaryButtonText="{x:Bind AddRepoViewModel.PrimaryButtonText, Mode=OneWay}"
+               CornerRadius="8">
     <ContentDialog.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

@@ -883,4 +883,12 @@
     <value>Are you sure?</value>
     <comment>Title text for the dialog where the user is about to choose an option that we want them to confirm first before proceeding</comment>
   </data>
+  <data name="RepoAccountPagePrimaryButtonText" xml:space="preserve">
+    <value>Connect</value>
+    <comment>Text to show the user when selecting a provder</comment>
+  </data>
+  <data name="RepoEverythingElsePrimaryButtonText" xml:space="preserve">
+    <value>Add</value>
+    <comment>Text to show everywhere else in the tool.</comment>
+  </data>
 </root>

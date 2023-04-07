@@ -29,6 +29,8 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
     private readonly IDevDriveManager _devDriveManager;
 
+    public ISetupFlowStringResource LocalStringResource { get; }
+
     /// <summary>
     /// All repositories the user wants to clone.
     /// </summary>
@@ -52,6 +54,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     {
         _taskGroup = taskGroup;
         _devDriveManager = devDriveManager;
+        LocalStringResource = stringResource;
         RepoDialogCancelled += _devDriveManager.CancelChangesToDevDrive;
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReposConfigPageTitle);
     }

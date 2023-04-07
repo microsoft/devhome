@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -47,10 +48,10 @@ internal partial class AddRepoDialog
     /// </summary>
     private string _oldCloneLocation;
 
-    public AddRepoDialog(IDevDriveManager devDriveManager)
+    public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource)
     {
         this.InitializeComponent();
-        AddRepoViewModel = new AddRepoViewModel();
+        AddRepoViewModel = new AddRepoViewModel(stringResource);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel();
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
@@ -111,17 +112,10 @@ internal partial class AddRepoDialog
     private void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
-        AddRepoViewModel.GetAccounts(repositoryProviderName);
-        AddRepoViewModel.ChangeToRepoPage();
-        FolderPickerViewModel.ShowFolderPicker();
-        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-
-        if (AddRepoViewModel.Accounts.Any())
+        if (!string.IsNullOrEmpty(repositoryProviderName))
         {
-            AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+            IsPrimaryButtonEnabled = true;
         }
-
-        ToggleCloneButton();
     }
 
     /// <summary>
@@ -177,6 +171,24 @@ internal partial class AddRepoDialog
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
             AddRepoViewModel.AddRepositoryViaUri(FolderPickerViewModel.CloneLocation);
+        }
+        else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
+        {
+            var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
+            if (!string.IsNullOrEmpty(repositoryProviderName))
+            {
+                AddRepoViewModel.GetAccounts(repositoryProviderName);
+                AddRepoViewModel.ChangeToRepoPage();
+                FolderPickerViewModel.ShowFolderPicker();
+                EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+
+                if (AddRepoViewModel.Accounts.Any())
+                {
+                    AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+                }
+
+                ToggleCloneButton();
+            }
         }
     }
 
