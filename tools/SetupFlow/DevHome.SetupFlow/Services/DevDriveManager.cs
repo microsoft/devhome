@@ -251,7 +251,7 @@ public class DevDriveManager : IDevDriveManager
     {
         try
         {
-            var location = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var location = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var root = Path.GetPathRoot(Environment.SystemDirectory);
             if (string.IsNullOrEmpty(location) || string.IsNullOrEmpty(root))
             {
