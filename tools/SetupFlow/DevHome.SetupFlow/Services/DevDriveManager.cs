@@ -251,7 +251,7 @@ public class DevDriveManager : IDevDriveManager
     {
         try
         {
-            var location = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var location = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var root = Path.GetPathRoot(Environment.SystemDirectory);
             if (string.IsNullOrEmpty(location) || string.IsNullOrEmpty(root))
             {
@@ -275,14 +275,16 @@ public class DevDriveManager : IDevDriveManager
             devDrive.DriveUnitOfMeasure = ByteUnit.GB;
             devDrive.DriveLocation = location;
             uint count = 1;
-            var fullPath = Path.Combine(location, $"{_defaultVhdxName}.vhdx");
-            var fileName = _defaultVhdxName;
+            var fileName = $"{_defaultVhdxName}";
+            var folderWithFile = Path.Combine(_defaultVhdxLocation, fileName);
+            var fullPath = Path.Combine(location, folderWithFile);
 
             // If original default file name exists we'll increase the number next to the filename
             while (File.Exists(fullPath) && count <= 1000)
             {
                 fileName = $"{_defaultVhdxName} {count}";
-                fullPath = Path.Combine(location, $"{fileName}.vhdx");
+                folderWithFile = Path.Combine(_defaultVhdxLocation, $"{fileName}.vhdx");
+                fullPath = Path.Combine(location, folderWithFile);
                 count++;
             }
 
