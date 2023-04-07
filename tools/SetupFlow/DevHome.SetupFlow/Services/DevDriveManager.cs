@@ -146,7 +146,7 @@ public class DevDriveManager : IDevDriveManager
         if (result == DevDriveValidationResult.Successful)
         {
             var taskGroups = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
-            var group = taskGroups.Single(x => x.GetType() == typeof(DevDriveTaskGroup));
+            var group = taskGroups.SingleOrDefault(x => x.GetType() == typeof(DevDriveTaskGroup));
             if (group is DevDriveTaskGroup driveTaskGroup)
             {
                 ViewModel.TaskGroup = driveTaskGroup;

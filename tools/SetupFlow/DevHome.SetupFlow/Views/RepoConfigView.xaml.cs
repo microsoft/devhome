@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Contracts.Services;
@@ -44,7 +45,7 @@ public sealed partial class RepoConfigView : UserControl
         }
 
         var everythingToClone = addRepoDialog.AddRepoViewModel.EverythingToClone;
-        if (result == ContentDialogResult.Primary)
+        if (result == ContentDialogResult.Primary && everythingToClone.Any())
         {
             // We currently only support adding either a local path or a new Dev Drive as the cloning location. Only one can be selected
             // during the add repo dialog flow. So if multiple repositories are selected and the user chose to clone them to a Dev Drive
@@ -60,7 +61,7 @@ public sealed partial class RepoConfigView : UserControl
                 // The cloning location may have changed e.g The original Drive clone path for Dev Drives was the F: drive for items
                 // on the add repo page, but during the Add repo dialog flow the user chose to change this location to the D: drive.
                 // we need to reflect this for all the old items currently in the add repo page.
-                ViewModel.UpdateCollectionWithDevDriveInfo(everythingToClone[0]);
+                ViewModel.UpdateCollectionWithDevDriveInfo(everythingToClone.First());
                 ViewModel.DevDriveManager.IncreaseRepositoriesCount(everythingToClone.Count);
                 ViewModel.DevDriveManager.ConfirmChangesToDevDrive();
             }
