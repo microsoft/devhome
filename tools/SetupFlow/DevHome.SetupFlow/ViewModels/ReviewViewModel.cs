@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.ElevatedComponent;
+using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -75,7 +77,15 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         var isAdminRequired = _orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresAdmin));
         if (isAdminRequired)
         {
-            _orchestrator.RemoteElevatedFactory = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentFactory>();
+            try
+            {
+                _orchestrator.RemoteElevatedFactory = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentFactory>();
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError($"Failed to initialize elevated process: {e}");
+                Log.Logger?.ReportInfo("Will continue with setup as best-effort");
+            }
         }
 
         await Task.CompletedTask;

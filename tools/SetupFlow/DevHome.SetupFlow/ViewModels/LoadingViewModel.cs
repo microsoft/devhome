@@ -308,7 +308,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             });
 
             TaskFinishedState taskFinishedState;
-            if (taskInformation.TaskToExecute.RequiresAdmin)
+            if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedFactory != null)
             {
                 taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedFactory.Value);
             }
