@@ -407,4 +407,25 @@
   <data name="WhatsNewPage_ConnectToGitHub_SuccessContentDialog_Title" xml:space="preserve">
     <value>has connected to GitHub!</value>
   </data>
+  <data name="InitializationPage_InfoDescription.Text" xml:space="preserve">
+    <value>Monitor and track your coding tasks, workflows, system performance, and more on a customizable dashboard.</value>
+  </data>
+  <data name="InitializationPage_InfoTitle.Text" xml:space="preserve">
+    <value>Information at your fingertips</value>
+  </data>
+  <data name="InitializationPage_SettingsDescription.Text" xml:space="preserve">
+    <value>Discover new Windows settings to improve your productivity.</value>
+  </data>
+  <data name="InitializationPage_SettingsTitle.Text" xml:space="preserve">
+    <value>Settings for development</value>
+  </data>
+  <data name="InitializationPage_SetupDescription.Text" xml:space="preserve">
+    <value>Download and connect to all your development tools in one place.</value>
+  </data>
+  <data name="InitializationPage_SetupTitle.Text" xml:space="preserve">
+    <value>Streamline your machine setup</value>
+  </data>
+  <data name="InitializationPage_Title.Text" xml:space="preserve">
+    <value>Dev Home is getting things ready for you...</value>
+  </data>
 </root>
