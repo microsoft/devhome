@@ -89,19 +89,19 @@ public partial class PackageViewModel : ObservableObject
 
     public string PackageTitle => Name;
 
-    public string PackageDescription => $"{Version} | {CatalogName} | {PublisherName}";
+    public string PackageDescription => _stringResource.GetLocalized(StringResourceKey.PackageDescription, Version, CatalogName, PublisherName);
 
-    public string PackageVerboseDescription => $"Version {Version} | {CatalogName} | {PublisherName}";
+    public string PackageVerboseDescription => _stringResource.GetLocalized(StringResourceKey.PackageVerboseDescription, Version, CatalogName, PublisherName);
 
-    public string TooltipName => $"Name: {Name}";
+    public string TooltipName => _stringResource.GetLocalized(StringResourceKey.PackageNameTooltip, Name);
 
-    public string TooltipVersion => $"Version: {Version}";
+    public string TooltipVersion => _stringResource.GetLocalized(StringResourceKey.PackageVersionTooltip, Version);
 
-    public string TooltipIsInstalled => IsInstalled ? $"Application exists" : string.Empty;
+    public string TooltipIsInstalled => IsInstalled ? _stringResource.GetLocalized(StringResourceKey.PackageInstalledTooltip) : string.Empty;
 
-    public string TooltipSource => $"Source: {CatalogName}";
+    public string TooltipSource => _stringResource.GetLocalized(StringResourceKey.PackageSourceTooltip, CatalogName);
 
-    public string TooltipPublisher => $"Publisher: {PublisherName}";
+    public string TooltipPublisher => _stringResource.GetLocalized(StringResourceKey.PackagePublisherNameTooltip, PublisherName);
 
     public InstallPackageTask InstallPackageTask => _installPackageTask.Value;
 

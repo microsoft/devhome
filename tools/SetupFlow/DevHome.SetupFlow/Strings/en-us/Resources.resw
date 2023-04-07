@@ -325,6 +325,10 @@
     <value>Learn more</value>
     <comment>Text for a clickable learn more button</comment>
   </data>
+  <data name="MainPage.Title" xml:space="preserve">
+    <value>Machine configuration</value>
+    <comment>Title for the main page where users can configure their machines</comment>
+  </data>
   <data name="MainPage_CloneRepos.Header" xml:space="preserve">
     <value>Clone repositories</value>
     <comment>Header for a card that when clicked takes the user to a page for cloning git repositories</comment>
@@ -396,6 +400,34 @@
   <data name="PackagesCount" xml:space="preserve">
     <value>{0} packages</value>
     <comment>{Locked="{0}"} Display the number of packages. {0} is replaced by the number of packages.</comment>
+  </data>
+  <data name="PackageDescription" xml:space="preserve">
+    <value>{0} | {1} | {2}</value>
+    <comment>{Locked="{0}","{1}","{2}"} Text composed of a package version, source and publisher name. {0} is replaced by the package version. {1} is replaced by the package source. {2} is replaced by the package publisher name.</comment>
+  </data>
+  <data name="PackageInstalledTooltip" xml:space="preserve">
+    <value>Application exists</value>
+    <comment>Label for a package/application that already exists on the user's machine.</comment>
+  </data>
+  <data name="PackageNameTooltip" xml:space="preserve">
+    <value>Name: {0}</value>
+    <comment>{Locked="{0}"} Label for a package name displayed on a tooltip. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="PackagePublisherNameTooltip" xml:space="preserve">
+    <value>Publisher: {0}</value>
+    <comment>{Locked="{0}"} Label for a package publisher name displayed on a tooltip. {0} is replaced by the package publisher name.</comment>
+  </data>
+  <data name="PackageSourceTooltip" xml:space="preserve">
+    <value>Source: {0}</value>
+    <comment>{Locked="{0}"} Label for a package source displayed on a tooltip. {0} is replaced by the package source.</comment>
+  </data>
+  <data name="PackageVerboseDescription" xml:space="preserve">
+    <value>Version {0} | {1} | {2}</value>
+    <comment>{Locked="{0}","{1}","{2}"} Text composed of a package version, source and publisher name. {0} is replaced by the package version. {1} is replaced by the package source. {2} is replaced by the package publisher name.</comment>
+  </data>
+  <data name="PackageVersionTooltip" xml:space="preserve">
+    <value>Version: {0}</value>
+    <comment>{Locked="{0}"} Label for a package version displayed on a tooltip. {0} is replaced by the package version.</comment>
   </data>
   <data name="PopularAppsTitle" xml:space="preserve">
     <value>Popular Apps</value>

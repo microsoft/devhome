@@ -10,6 +10,7 @@
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:commonviews="using:DevHome.Common.Views"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -39,68 +40,70 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Spacing="30">
-            <commonviews:Banner
-                TextWidth="400"
-                HideButtonVisibility="True"
-                HideButtonCommand="{x:Bind ViewModel.HideBannerCommand}"
-                Visibility="{x:Bind ViewModel.ShowBanner, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                ButtonCommand="{x:Bind ViewModel.BannerButtonCommand,Mode=OneWay}"
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DefaultBanner"
-                ImageSource="{ThemeResource Setup_Banner}" />
+    <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="30">
+                <commonviews:Banner
+                    TextWidth="400"
+                    HideButtonVisibility="True"
+                    HideButtonCommand="{x:Bind ViewModel.HideBannerCommand}"
+                    Visibility="{x:Bind ViewModel.ShowBanner, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                    ButtonCommand="{x:Bind ViewModel.BannerButtonCommand,Mode=OneWay}"
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DefaultBanner"
+                    ImageSource="{ThemeResource Setup_Banner}" />
 
-            <StackPanel Spacing="5">
-                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_EnvironmentSetup" />
-                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
-                                   Style="{StaticResource MainPageCardStyle}"
-                                   IsClickEnabled="True" Command="{x:Bind ViewModel.StartSetupCommand}"
-                                   ActionIcon="{x:Null}" >
-                    <labs:SettingsCard.HeaderIcon>
-                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_EndToEnd.png" />
-                    </labs:SettingsCard.HeaderIcon>
-                </labs:SettingsCard>
-                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile"
-                                   Style="{StaticResource MainPageCardStyle}"
-                                   IsClickEnabled="True" Command="{x:Bind ViewModel.StartConfigurationFileCommand}"
-                                   ActionIcon="{x:Null}" >
-                    <labs:SettingsCard.HeaderIcon>
-                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_ConfigurationFile.png" />
-                    </labs:SettingsCard.HeaderIcon>
-                </labs:SettingsCard>
-            </StackPanel>
+                <StackPanel Spacing="5">
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_EnvironmentSetup" />
+                    <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
+                                       Style="{StaticResource MainPageCardStyle}"
+                                       IsClickEnabled="True" Command="{x:Bind ViewModel.StartSetupCommand}"
+                                       ActionIcon="{x:Null}" >
+                        <labs:SettingsCard.HeaderIcon>
+                            <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_EndToEnd.png" />
+                        </labs:SettingsCard.HeaderIcon>
+                    </labs:SettingsCard>
+                    <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile"
+                                       Style="{StaticResource MainPageCardStyle}"
+                                       IsClickEnabled="True" Command="{x:Bind ViewModel.StartConfigurationFileCommand}"
+                                       ActionIcon="{x:Null}" >
+                        <labs:SettingsCard.HeaderIcon>
+                            <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_ConfigurationFile.png" />
+                        </labs:SettingsCard.HeaderIcon>
+                    </labs:SettingsCard>
+                </StackPanel>
 
-            <StackPanel Spacing="5">
-                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
-                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos"
-                                   Style="{StaticResource MainPageCardStyle}"
-                                   IsClickEnabled="True" Command="{x:Bind ViewModel.StartRepoConfigCommand}"
-                                   ActionIcon="{x:Null}" >
-                    <labs:SettingsCard.HeaderIcon>
-                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_RepoConfig.png" />
-                    </labs:SettingsCard.HeaderIcon>
-                </labs:SettingsCard>
-                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
-                                   Style="{StaticResource MainPageCardStyle}"
-                                   IsClickEnabled="True" Command="{x:Bind ViewModel.StartAppManagementCommand}"
-                                   ActionIcon="{x:Null}" >
-                    <labs:SettingsCard.HeaderIcon>
-                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_AppManagement.png" />
-                    </labs:SettingsCard.HeaderIcon>
-                </labs:SettingsCard>
-                <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevDrive"
-                                   Style="{StaticResource MainPageCardStyle}"
-                                   IsClickEnabled="True" Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}" 
-                                   Visibility="{x:Bind ViewModel.ShowDevDriveItem, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" >
-                    <labs:SettingsCard.ActionIcon>
-                        <!-- The open new window icon -->
-                        <FontIcon Glyph="&#xE8A7;" />
-                    </labs:SettingsCard.ActionIcon>
-                    <labs:SettingsCard.HeaderIcon>
-                        <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_DevDrive.png" />
-                    </labs:SettingsCard.HeaderIcon>
-                </labs:SettingsCard>
+                <StackPanel Spacing="5">
+                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
+                    <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos"
+                                       Style="{StaticResource MainPageCardStyle}"
+                                       IsClickEnabled="True" Command="{x:Bind ViewModel.StartRepoConfigCommand}"
+                                       ActionIcon="{x:Null}" >
+                        <labs:SettingsCard.HeaderIcon>
+                            <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_RepoConfig.png" />
+                        </labs:SettingsCard.HeaderIcon>
+                    </labs:SettingsCard>
+                    <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
+                                       Style="{StaticResource MainPageCardStyle}"
+                                       IsClickEnabled="True" Command="{x:Bind ViewModel.StartAppManagementCommand}"
+                                       ActionIcon="{x:Null}" >
+                        <labs:SettingsCard.HeaderIcon>
+                            <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_AppManagement.png" />
+                        </labs:SettingsCard.HeaderIcon>
+                    </labs:SettingsCard>
+                    <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevDrive"
+                                       Style="{StaticResource MainPageCardStyle}"
+                                       IsClickEnabled="True" Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}" 
+                                       Visibility="{x:Bind ViewModel.ShowDevDriveItem, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" >
+                        <labs:SettingsCard.ActionIcon>
+                            <!-- The open new window icon -->
+                            <FontIcon Glyph="&#xE8A7;" />
+                        </labs:SettingsCard.ActionIcon>
+                        <labs:SettingsCard.HeaderIcon>
+                            <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_DevDrive.png" />
+                        </labs:SettingsCard.HeaderIcon>
+                    </labs:SettingsCard>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
-    </ScrollViewer>
+        </ScrollViewer>
+    </controls:SetupShell>
 </UserControl>
