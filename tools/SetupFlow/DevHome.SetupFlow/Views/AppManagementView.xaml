@@ -122,12 +122,15 @@
                             </ctControls:SettingsCard.Resources>
                             <ToolTipService.ToolTip>
                                 <StackPanel>
-                                    <StackPanel>
-                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind TooltipName, Mode=OneWay}"/>
-                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind TooltipVersion, Mode=OneWay}"/>
-                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind TooltipSource, Mode=OneWay}"/>
-                                        <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind TooltipPublisher, Mode=OneWay}"/>
-                                    </StackPanel>
+                                    <StackPanel.Resources>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <TextBlock Text="{x:Bind TooltipName, Mode=OneWay}"/>
+                                    <TextBlock Text="{x:Bind TooltipVersion, Mode=OneWay}"/>
+                                    <TextBlock Text="{x:Bind TooltipSource, Mode=OneWay}"/>
+                                    <TextBlock Text="{x:Bind TooltipPublisher, Mode=OneWay}"/>
                                 </StackPanel>
                             </ToolTipService.ToolTip>
                             <ctControls:SettingsCard.Header>

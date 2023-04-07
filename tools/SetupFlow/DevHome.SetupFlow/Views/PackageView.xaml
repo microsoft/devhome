@@ -27,12 +27,15 @@
         </Grid.RowDefinitions>
         <ToolTipService.ToolTip>
             <StackPanel>
-                <StackPanel>
-                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind Package.TooltipName, Mode=OneWay}"/>
-                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind Package.TooltipVersion, Mode=OneWay}"/>
-                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind Package.TooltipSource, Mode=OneWay}"/>
-                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind Package.TooltipPublisher, Mode=OneWay}"/>
-                </StackPanel>
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock Text="{x:Bind Package.TooltipName, Mode=OneWay}"/>
+                <TextBlock Text="{x:Bind Package.TooltipVersion, Mode=OneWay}"/>
+                <TextBlock Text="{x:Bind Package.TooltipSource, Mode=OneWay}"/>
+                <TextBlock Text="{x:Bind Package.TooltipPublisher, Mode=OneWay}"/>
             </StackPanel>
         </ToolTipService.ToolTip>
 

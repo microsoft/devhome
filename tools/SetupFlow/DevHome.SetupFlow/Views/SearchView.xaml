@@ -90,11 +90,19 @@
                                         <ToolTipService.ToolTip>
                                             <ToolTip>
                                                 <StackPanel>
-                                                    <TextBlock FontWeight="Bold" Text="{Binding TooltipIsInstalled}" Visibility="{Binding TooltipIsInstalled, Converter={StaticResource StringVisibilityConverter}}"/>
-                                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{Binding TooltipName}"/>
-                                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{Binding TooltipVersion}"/>
-                                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{Binding TooltipSource}"/>
-                                                    <TextBlock Foreground="{ThemeResource TextFillColorSecondary}" Text="{Binding TooltipPublisher}"/>
+                                                    <StackPanel.Resources>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
+                                                        </Style>
+                                                    </StackPanel.Resources>
+                                                    <TextBlock
+                                                        Foreground="{ThemeResource TextFillColorPrimary}"
+                                                        FontWeight="Bold" Text="{Binding TooltipIsInstalled}"
+                                                        Visibility="{Binding TooltipIsInstalled, Converter={StaticResource StringVisibilityConverter}}"/>
+                                                    <TextBlock Text="{Binding TooltipName}"/>
+                                                    <TextBlock Text="{Binding TooltipVersion}"/>
+                                                    <TextBlock Text="{Binding TooltipSource}"/>
+                                                    <TextBlock Text="{Binding TooltipPublisher}"/>
                                                 </StackPanel>
                                             </ToolTip>
                                         </ToolTipService.ToolTip>
