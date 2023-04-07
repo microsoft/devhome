@@ -85,12 +85,30 @@
                                 </Border>
                                 <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 0, 0">
                                     <StackPanel Orientation="Horizontal" Spacing="5">
-                                        <TextBox Text="{x:Bind ClonePath, Mode=OneWay}" IsEnabled="False" MinWidth="400"  Margin="10, 5, 0, 5"/>
+                                        <TextBox 
+                                            Text="{x:Bind CloneLocationAlias}" 
+                                            IsEnabled="False"
+                                            Visibility="{x:Bind CloneToDevDrive, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                            MinWidth="400"
+                                            Margin="10, 5, 0, 5"/>
+                                        
+                                        <TextBox 
+                                            Text="{x:Bind ClonePath}" 
+                                            IsEnabled="False"
+                                            Visibility="{x:Bind CloneToDevDrive, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
+                                            MinWidth="400"
+                                            Margin="10, 5, 0, 5" />
                                         
                                         <!-- Need to use view methods here because DataType is CloningInformation-->
                                         <Button Click="EditClonePathButton_Click">
                                             <Button.DataContext>
-                                                <models:CloningInformation ProviderName="{x:Bind ProviderName}" CloningLocation="{x:Bind CloningLocation}" OwningAccount="{x:Bind OwningAccount}" RepositoryToClone="{x:Bind RepositoryToClone}"/>
+                                                <models:CloningInformation
+                                                    ProviderName="{x:Bind ProviderName}" 
+                                                    CloningLocation="{x:Bind CloningLocation}" 
+                                                    OwningAccount="{x:Bind OwningAccount}" 
+                                                    RepositoryToClone="{x:Bind RepositoryToClone}"
+                                                    CloneLocationAlias="{x:Bind CloneLocationAlias}"
+                                                    CloneToDevDrive="{x:Bind CloneToDevDrive}"/>
                                             </Button.DataContext>
                                             <Button.Content>
                                                 <SymbolIcon Symbol="Edit"/>
@@ -98,7 +116,12 @@
                                         </Button>
                                         <Button Click="RemoveCloningInformationButton_Click" Style="{ThemeResource AlternateCloseButtonStyle}">
                                             <Button.DataContext>
-                                                <models:CloningInformation ProviderName="{x:Bind ProviderName}" CloningLocation="{x:Bind CloningLocation}" OwningAccount="{x:Bind OwningAccount}" RepositoryToClone="{x:Bind RepositoryToClone}"/>
+                                                <models:CloningInformation 
+                                                    ProviderName="{x:Bind ProviderName}" 
+                                                    CloningLocation="{x:Bind CloningLocation}" 
+                                                    OwningAccount="{x:Bind OwningAccount}" 
+                                                    RepositoryToClone="{x:Bind RepositoryToClone}"
+                                                    CloneToDevDrive="{x:Bind CloneToDevDrive}"/>
                                             </Button.DataContext>
                                             <Button.Content>
                                                 <SymbolIcon Symbol="Cancel"/>

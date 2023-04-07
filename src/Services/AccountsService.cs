@@ -32,14 +32,14 @@ public class AccountsService : IAccountsService
         });
     }
 
-    public async Task<IReadOnlyList<IDevIdProvider>> GetDevIdProviders()
+    public async Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders()
     {
-        var devIdProviders = new List<IDevIdProvider>();
+        var devIdProviders = new List<IDeveloperIdProvider>();
         var pluginService = new PluginService();
-        var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DevId);
+        var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
         foreach (var plugin in plugins)
         {
-            var devIdProvider = await plugin.GetProviderAsync<IDevIdProvider>();
+            var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
             if (devIdProvider is not null)
             {
                 devIdProviders.Add(devIdProvider);
@@ -49,11 +49,11 @@ public class AccountsService : IAccountsService
         return devIdProviders;
     }
 
-    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDevIdProvider iDevIdProvider) => iDevIdProvider.GetLoggedInDeveloperIds().ToList();
+    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider) => iDevIdProvider.GetLoggedInDeveloperIds().ToList();
 
     public IReadOnlyList<IDeveloperId> GetDeveloperIds(IPlugin plugin)
     {
-        if (plugin.GetProvider(ProviderType.DevId) is IDevIdProvider devIdProvider)
+        if (plugin.GetProvider(ProviderType.DeveloperId) is IDeveloperIdProvider devIdProvider)
         {
             return GetDeveloperIds(devIdProvider);
         }
@@ -63,7 +63,7 @@ public class AccountsService : IAccountsService
 
     public void LoggedInEventHandler(object? sender, IDeveloperId developerId)
     {
-        if (sender is IDevIdProvider devIdProvider)
+        if (sender is IDeveloperIdProvider devIdProvider)
         {
             TelemetryHelper.AccountEvent("Login_DevId_Event", devIdProvider.GetName(), developerId.LoginId());
         }
@@ -74,7 +74,7 @@ public class AccountsService : IAccountsService
 
     public void LoggedOutEventHandler(object? sender, IDeveloperId developerId)
     {
-        if (sender is IDevIdProvider devIdProvider)
+        if (sender is IDeveloperIdProvider devIdProvider)
         {
             TelemetryHelper.AccountEvent("Logout_DevId_Event", devIdProvider.GetName(), developerId.LoginId());
         }

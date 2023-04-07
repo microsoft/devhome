@@ -6,7 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.ElevatedComponent;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskGroups;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -17,19 +19,26 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     private readonly SetupFlowOrchestrator _orchestrator;
 
     [ObservableProperty]
-    private bool _isEulaAccepted = false;
-
-    [ObservableProperty]
-    private bool _isRebootRequired = false;
-
-    [ObservableProperty]
-    private bool _isRebootAccepted = false;
-
-    [ObservableProperty]
     private IList<ReviewTabViewModelBase> _reviewTabs;
 
     [ObservableProperty]
     private ReviewTabViewModelBase _selectedReviewTab;
+
+    public bool HasApplicationsToInstall => Orchestrator.GetTaskGroup<AppManagementTaskGroup>()?.SetupTasks.Any() == true;
+
+    public bool HasMSStoreApplicationsToInstall
+    {
+        get
+        {
+            var hasMSStoreApps = Orchestrator.GetTaskGroup<AppManagementTaskGroup>()?.SetupTasks.Any(task =>
+            {
+                var installTask = task as InstallPackageTask;
+                return installTask?.IsFromMSStore == true;
+            });
+
+            return hasMSStoreApps == true;
+        }
+    }
 
     public bool HasTasksToSetUp => Orchestrator.TaskGroups.Any(g => g.SetupTasks.Any());
 
@@ -49,7 +58,6 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     protected async override Task OnEachNavigateToAsync()
     {
-        IsRebootRequired = _orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresReboot));
         NextPageButtonToolTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
         await Task.CompletedTask;
     }
@@ -72,16 +80,9 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         await Task.CompletedTask;
     }
 
-    partial void OnIsEulaAcceptedChanged(bool value) => UpdateCanGoToNextPage();
-
-    partial void OnIsRebootAcceptedChanged(bool value) => UpdateCanGoToNextPage();
-
     public void UpdateCanGoToNextPage()
     {
-        CanGoToNextPage =
-            IsEulaAccepted &&
-            (!IsRebootRequired || IsRebootAccepted) &&
-            HasTasksToSetUp;
+        CanGoToNextPage = HasTasksToSetUp;
         _orchestrator.NotifyNavigationCanExecuteChanged();
     }
 }
