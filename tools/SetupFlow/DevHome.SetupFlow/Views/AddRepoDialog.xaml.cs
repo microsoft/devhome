@@ -153,12 +153,12 @@ internal partial class AddRepoDialog
     /// <remarks>
     /// Fired when a use changes their account on a provider.
     /// </remarks>
-    private async void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // Specific provider has started.
         var loginId = (string)AccountsComboBox.SelectedValue;
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-        await Task.Run(() => AddRepoViewModel.GetRepositories(providerName, loginId));
+        AddRepoViewModel.GetRepositories(providerName, loginId);
     }
 
     /// <summary>
