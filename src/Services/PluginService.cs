@@ -7,7 +7,6 @@ using DevHome.Common.Services;
 using DevHome.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
-using SampleTool;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation.Collections;

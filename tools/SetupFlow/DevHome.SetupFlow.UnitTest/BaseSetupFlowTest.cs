@@ -2,11 +2,9 @@
 // Licensed under the MIT license.
 
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.AppManagement.Services;
-using DevHome.SetupFlow.AppManagement.ViewModels;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.Telemetry;
+using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
@@ -48,7 +46,6 @@ public class BaseSetupFlowTest
             .ConfigureServices(services =>
             {
                 // Common services
-                services.AddSingleton<ILogger>(new Mock<ILogger>().Object);
                 services.AddSingleton<IThemeSelectorService>(ThemeSelectorService!.Object);
                 services.AddSingleton<ISetupFlowStringResource>(_ =>
                 {

@@ -201,12 +201,16 @@
     <value>You are responsible for understanding the configuration settings you are choosing to execute. Microsoft is not responsible for the configuration file you have authored or imported. This configuration may change settings in Windows, install software, change software settings (including security settings), and accept user agreements to third-party packages and services on your behalf.  By running this configuration file, you acknowledge that you understand and agree to these resources and settings. Any applications installed are licensed to you by their owners. Microsoft is not responsible for, nor does it grant any licenses to, third-party packages or services.</value>
     <comment>Legal approved. Do not change without approval.</comment>
   </data>
+  <data name="ConfigurationViewTitle" xml:space="preserve">
+    <value>View {0}</value>
+    <comment>{Locked="{0}"}Title for the page showing the contents of a configuration file. {0} is replaced by the configuration file name.</comment>
+  </data>
   <data name="DefaultBanner.Title" xml:space="preserve">
     <value>Get ready to code in minutes</value>
     <comment>Title text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.Description" xml:space="preserve">
-    <value>Find out how you can use Dev Home to get your development machine set up quickly.</value>
+    <value>Find out how you can use Dev Home to set up your development machine more quickly.</value>
     <comment>{Locked="Dev Home"}Description text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.ButtonText" xml:space="preserve">
@@ -362,7 +366,7 @@
     <comment>Text shown if no applications were selected to install</comment>
   </data>
   <data name="NavigationPane.Content" xml:space="preserve">
-    <value>Dev Setup tool</value>
+    <value>Machine Configuration</value>
     <comment>Navigation pane content</comment>
   </data>
   <data name="NoApplicationsSelected.Text" xml:space="preserve">
@@ -409,44 +413,28 @@
     <value>Restore</value>
     <comment>Label for restore button</comment>
   </data>
-  <data name="Review_EulaTitle.Text" xml:space="preserve">
-    <value>End-User License Agreement</value>
-    <comment>Header for the license agreement text</comment>
-  </data>
-  <data name="Review_EulaText.Text" xml:space="preserve">
-    <value>IMPORTANT—READ CAREFULLY: This Microsoft End-User License Agreement ("EULA") is ...</value>
-    <comment>License agreements</comment>
-  </data>
-  <data name="Review_AcceptEula.Content" xml:space="preserve">
-    <value>I read the terms and allow Windows to accept all EULA on my behalf</value>
-    <comment>Checkbox text for user to accept the EULA</comment>
-  </data>
-  <data name="Review_AcceptReboot.Content" xml:space="preserve">
-    <value>I allow Windows to automatically reboot my system</value>
-    <comment>Checkbox text for user to accept the possibility of reboots during setup</comment>
-  </data>
   <data name="Review_SetupDetails.Text" xml:space="preserve">
     <value>Set up details</value>
     <comment>Header for a section detailing the set up steps to be performed. "Set up" is the noun</comment>
   </data>
   <data name="Review_TermsTitle.Text" xml:space="preserve">
-    <value>Terms</value>
+    <value>Terms &amp; agreements</value>
     <comment>As in "Terms of use"</comment>
   </data>
-  <data name="Review_TermsText.Text" xml:space="preserve">
-    <value>By clicking Create, I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed above; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings.</value>
-    <comment>Terms of use shown before starting setup.</comment>
+  <data name="Review_Terms.Text" xml:space="preserve">
+    <value>By continuing, you acknowledge that these applications are licensed to you by the owner. Microsoft is not responsible for, nor does it grant any licenses to, third-party applications. You are responsible for reviewing any agreements related to your use of these applications, which you can view by selecting the Learn more links.</value>
+    <comment>Terms of use shown before starting installation of apps.</comment>
   </data>
-  <data name="Review_RebootTitle.Text" xml:space="preserve">
-    <value>System reboot</value>
-    <comment>Header for text indicating that a reboot may be needed</comment>
+  <data name="Review_MSStoreTerms.Text" xml:space="preserve">
+    <value>You've selected applications which come from the Microsoft Store. By continuing, you agree to the [Microsoft Store Terms of Sale]</value>
+    <comment>{Locked="["}{Locked="]"}Terms of use shown when installing an application from the Microsoft Store. The text in between the delimiters [ ] is made into an hyperlink in code, and the delimiters are removed</comment>
   </data>
-  <data name="Review_RebootText.Text" xml:space="preserve">
-    <value>A reboot may be needed</value>
-    <comment>Text indicating that a reboot may be needed to finish the setup</comment>
+  <data name="Review_MSStoreTerms.NavigateUri" xml:space="preserve">
+    <value>https://www.microsoft.com/store/b/terms-of-sale</value>
+    <comment>{Locked}Uri to the Microsoft Store terms of sale</comment>
   </data>
   <data name="ReviewNothingToSetUpToolTip" xml:space="preserve">
-    <value>Nothing to set up</value>
+    <value>There's nothing to set up​</value>
     <comment>Text shown on a tool tip for a "Start set up" button if there is noting to set up</comment>
   </data>
   <data name="SearchBox.PlaceholderText" xml:space="preserve">
@@ -709,7 +697,7 @@
     <comment>Text that advises the user that the file name of the virtual hard disk they were trying to create already exists in the location they selected and that they should enter a new name.</comment>
   </data>
   <data name="DevDriveUnableToCreateError" xml:space="preserve">
-    <value>The Dev Drive couldn't be created.</value>
+    <value>Dev Drive couldn't be created</value>
     <comment>Text that advises the user that there was an error and we couldn't create the Dev Drive on their machine.</comment>
   </data>
   <data name="CloneRepoCreated" xml:space="preserve">
@@ -841,7 +829,7 @@
     <comment>Second part of the message notifying users to restart.</comment>
   </data>
   <data name="DevDriveErrorWithReason" xml:space="preserve">
-    <value>Dev Drive couldn't be created because {0}</value>
+    <value>Dev Drive couldn't be created error: {0}</value>
     <comment>Message when the dev drive could not be created. Param: reason.</comment>
   </data>
   <data name="DevDriveDriveLetterNotAvailable" xml:space="preserve">
@@ -851,5 +839,20 @@
   <data name="DevDriveReviewTitle" xml:space="preserve">
     <value>Drive</value>
     <comment>Text that shows the title of a tab in the review page where users can see the details of the Dev Drive they are about to create.</comment>
+  </data>
+  <data name="NoRepositoriesToClone.Text" xml:space="preserve">
+    <value>No Repositories to clone</value>
+  </data>
+  <data name="EditClonePathDialogUncheckCheckMark.PrimaryButtonText" xml:space="preserve">
+    <value>Yes, I'm sure</value>
+    <comment>Text to show in a button in the dialog that will confirm the users action</comment>
+  </data>
+  <data name="EditClonePathDialogUncheckedCheckMarkWarning.Text" xml:space="preserve">
+    <value>The current repository won't be cloned to the new Dev Drive.</value>
+    <comment>Text for the dialog where unchecking the create Dev Drive checkmark shows the user text advising them that by unchecking the checkbox we won't create a Dev Drive for them</comment>
+  </data>
+  <data name="EditClonePathDialogUncheckCheckMark.Title" xml:space="preserve">
+    <value>Are you sure?</value>
+    <comment>Title text for the dialog where the user is about to choose an option that we want them to confirm first before proceeding</comment>
   </data>
 </root>

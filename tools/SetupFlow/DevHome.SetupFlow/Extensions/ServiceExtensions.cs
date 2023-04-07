@@ -1,20 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.SetupFlow.AppManagement.Extensions;
-using DevHome.SetupFlow.Common.Services;
-using DevHome.SetupFlow.ConfigurationFile.Extensions;
-using DevHome.SetupFlow.DevDrive.Extensions;
-using DevHome.SetupFlow.Loading.Extensions;
-using DevHome.SetupFlow.MainPage.Extensions;
-using DevHome.SetupFlow.RepoConfig.Extensions;
-using DevHome.SetupFlow.Review.Extensions;
-using DevHome.SetupFlow.Summary.Extensions;
+using System.IO;
+using DevHome.Common.Services;
+using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Microsoft.Internal.Windows.DevHome.Helpers;
+using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
+using Windows.ApplicationModel;
 
 namespace DevHome.SetupFlow.Extensions;
+
 public static class ServiceExtensions
 {
     public static IServiceCollection AddSetupFlow(this IServiceCollection services, HostBuilderContext context)
@@ -38,6 +39,107 @@ public static class ServiceExtensions
 
         // Configurations
         services.Configure<SetupFlowOptions>(context.Configuration.GetSection(nameof(SetupFlowOptions)));
+
+        return services;
+    }
+
+    private static IServiceCollection AddAppManagement(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<ShimmerSearchViewModel>();
+        services.AddTransient<SearchViewModel>();
+        services.AddTransient<PackageViewModel>();
+        services.AddTransient<PackageCatalogListViewModel>();
+        services.AddTransient<AppManagementViewModel>();
+        services.AddTransient<PackageCatalogViewModel>();
+        services.AddTransient<AppManagementReviewViewModel>();
+
+        // Services
+        services.AddSingleton<IWindowsPackageManager, WindowsPackageManager>();
+        services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory(ClsidContext.Prod));
+        services.AddSingleton<IRestoreInfo, RestoreInfo>();
+        services.AddSingleton<PackageProvider>();
+        services.AddTransient<AppManagementTaskGroup>();
+        services.AddTransient<WinGetPackageRestoreDataSource>();
+        services.AddTransient<WinGetPackageJsonDataSource>(sp =>
+        {
+            var dataSourcePath = sp.GetService<IOptions<SetupFlowOptions>>().Value.WinGetPackageJsonDataSourcePath;
+            var dataSourceFullPath = Path.Combine(Package.Current.InstalledLocation.Path, dataSourcePath);
+            return ActivatorUtilities.CreateInstance<WinGetPackageJsonDataSource>(sp, dataSourceFullPath);
+        });
+
+        // DI factory pattern
+        services.AddSingleton<PackageViewModelFactory>(sp => package => ActivatorUtilities.CreateInstance<PackageViewModel>(sp, package));
+        services.AddSingleton<PackageCatalogViewModelFactory>(sp => catalog => ActivatorUtilities.CreateInstance<PackageCatalogViewModel>(sp, catalog));
+
+        return services;
+    }
+
+    private static IServiceCollection AddConfigurationFile(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<ConfigurationFileViewModel>();
+
+        // Services
+        services.AddTransient<ConfigurationFileTaskGroup>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddDevDrive(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<DevDriveViewModel>();
+        services.AddTransient<DevDriveReviewViewModel>();
+
+        // Services
+        services.AddTransient<DevDriveTaskGroup>();
+        services.AddSingleton<IDevDriveManager, DevDriveManager>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddLoading(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<LoadingViewModel>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddMainPage(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<MainPageViewModel>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddRepoConfig(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<AddRepoViewModel>();
+        services.AddTransient<RepoConfigViewModel>();
+        services.AddTransient<RepoConfigReviewViewModel>();
+
+        // Services
+        services.AddTransient<RepoConfigTaskGroup>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddReview(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<ReviewViewModel>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddSummary(this IServiceCollection services)
+    {
+        // View models
+        services.AddTransient<SummaryViewModel>();
 
         return services;
     }

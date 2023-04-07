@@ -114,4 +114,8 @@
     <value>Customize</value>
     <comment>A menu option that will bring up a dialog that lets the user customize the widget</comment>
   </data>
+  <data name="DashboardPage_Title.Text" xml:space="preserve">
+    <value>Dashboard</value>
+    <comment>Header label for the Dashboard page</comment>
+  </data>
 </root>

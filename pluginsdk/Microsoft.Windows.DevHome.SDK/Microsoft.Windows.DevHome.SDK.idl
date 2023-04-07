@@ -6,7 +6,7 @@ namespace Microsoft.Windows.DevHome.SDK
     enum ProviderType
     {
         Repository = 0,
-        DevId = 1,
+        DeveloperId = 1,
         Settings = 2,
         SetupFlow = 3,
         Widget = 4,
@@ -28,7 +28,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
         Windows.Foundation.IAsyncOperation<IIterable<IRepository> > GetRepositoriesAsync(IDeveloperId developerId);
 
-        IRepository ParseRepositoryFromUrl(Windows.Foundation.Uri uri);
+        Windows.Foundation.IAsyncOperation <IRepository> ParseRepositoryFromUrlAsync(Windows.Foundation.Uri uri);
     };
 
     [version(1.0)] interface IRepository {
@@ -36,6 +36,10 @@ namespace Microsoft.Windows.DevHome.SDK
         String DisplayName { get; };
 
         String OwningAccountName { get; };
+
+        Boolean IsPrivate { get; };
+
+        Windows.Foundation.DateTime LastUpdated { get; };
 
         Windows.Foundation.IAsyncAction CloneRepositoryAsync(String cloneDestination, IDeveloperId developerId);
 
@@ -49,7 +53,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     [version(1.0)]
-    interface IDevIdProvider
+    interface IDeveloperIdProvider
     {
         String GetName();
 
