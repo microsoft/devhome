@@ -235,16 +235,16 @@ public partial class AddRepoViewModel : ObservableObject
     /// Gets all the accounts for a provider and updates the UI.
     /// </summary>
     /// <param name="repositoryProviderName">The provider the user wants to use.</param>
-    public void GetAccounts(string repositoryProviderName)
+    public async Task GetAccountsAsync(string repositoryProviderName)
     {
-        _providers.StartIfNotRunning(repositoryProviderName);
-        var loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
+        await Task.Run(() => _providers.StartIfNotRunning(repositoryProviderName));
+        var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
             // Throw away developer id becase we're calling GetAllLoggedInAccounts in anticipation
             // of 1 Provider : N DeveloperIds
-            _providers.LogInToProvider(repositoryProviderName);
-            loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
+            await Task.Run(() => _providers.LogInToProvider(repositoryProviderName));
+            loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         }
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId()));

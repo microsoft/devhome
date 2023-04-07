@@ -65,24 +65,27 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Gets all plugins that have a provider type of repository and devid.
     /// </summary>
-    public void GetPlugins()
+    public async Task GetPluginsAsync()
     {
-        AddRepoViewModel.GetPlugins();
+        await Task.Run(() => AddRepoViewModel.GetPlugins());
     }
 
     /// <summary>
     /// Sets up the UI for dev drives.
     /// </summary>
-    public void SetupDevDrives()
+    public async Task SetupDevDrivesAsync()
     {
-        EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
-
-        if (EditDevDriveViewModel.DevDrive != null &&
-            EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+        await Task.Run(() =>
         {
-            FolderPickerViewModel.InDevDriveScenario = true;
-            EditDevDriveViewModel.ClonePathUpdated();
-        }
+            EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
+
+            if (EditDevDriveViewModel.DevDrive != null &&
+                EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+            {
+                FolderPickerViewModel.InDevDriveScenario = true;
+                EditDevDriveViewModel.ClonePathUpdated();
+            }
+        });
     }
 
     private void AddViaAccountToggleButton_Click(object sender, RoutedEventArgs e)
@@ -108,14 +111,15 @@ internal partial class AddRepoDialog
     /// <remarks>
     /// Fired when the combo box on the account page is changed.
     /// </remarks>
-    private void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
-        AddRepoViewModel.GetAccounts(repositoryProviderName);
+        var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
         AddRepoViewModel.ChangeToRepoPage();
         FolderPickerViewModel.ShowFolderPicker();
         EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
 
+        await getAccountsTask;
         if (AddRepoViewModel.Accounts.Any())
         {
             AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
@@ -149,12 +153,12 @@ internal partial class AddRepoDialog
     /// <remarks>
     /// Fired when a use changes their account on a provider.
     /// </remarks>
-    private void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // Specific provider has started.
         var loginId = (string)AccountsComboBox.SelectedValue;
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-        AddRepoViewModel.GetRepositories(providerName, loginId);
+        await Task.Run(() => AddRepoViewModel.GetRepositories(providerName, loginId));
     }
 
     /// <summary>
