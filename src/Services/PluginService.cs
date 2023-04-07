@@ -27,11 +27,8 @@ public class PluginService : IPluginService
 
     public PluginService()
     {
-        _catalog.PackageInstalling -= Catalog_PackageInstalling;
         _catalog.PackageInstalling += Catalog_PackageInstalling;
-        _catalog.PackageUninstalling -= Catalog_PackageUninstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
-        _catalog.PackageUpdating -= Catalog_PackageUpdating;
         _catalog.PackageUpdating += Catalog_PackageUpdating;
     }
 

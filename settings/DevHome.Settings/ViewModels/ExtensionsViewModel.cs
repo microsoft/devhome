@@ -78,10 +78,10 @@ public partial class ExtensionsViewModel : ObservableRecipient
 
     private void DisplaySettings()
     {
-        var pluginWrappers = Task.Run(() =>
+        var pluginWrappers = Task.Run(async () =>
         {
             var pluginService = Application.Current.GetService<IPluginService>();
-            return pluginService.GetInstalledPluginsAsync(true);
+            return await pluginService.GetInstalledPluginsAsync(true);
         }).Result;
 
         SettingsList.Clear();
