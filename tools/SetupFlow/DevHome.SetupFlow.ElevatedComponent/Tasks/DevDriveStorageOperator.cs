@@ -11,7 +11,7 @@ using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.Storage.Vhd;
 using Windows.Win32.System.Ioctl;
 
-namespace DevHome.SetupFlow.ElevatedComponent;
+namespace DevHome.SetupFlow.ElevatedComponent.Tasks;
 
 /// <summary>
 /// Class that will perform storage operations related to Dev Drives.
@@ -50,8 +50,8 @@ public sealed class DevDriveStorageOperator
         public static readonly int _function = 0x0087;
         public static readonly int _access = 0x0001;
 
-        public static uint CtlCodeOutput => (uint)((_deviceType << 16) | (_access << 14) | (_function << 2));
-   }
+        public static uint CtlCodeOutput => (uint)(_deviceType << 16 | _access << 14 | _function << 2);
+    }
 
     public DevDriveStorageOperator()
     {
@@ -178,7 +178,7 @@ public sealed class DevDriveStorageOperator
     private HRESULT CreatePartition(string virtDiskPhysicalPath, out uint diskNumber)
     {
         diskNumber = 0;
-        SafeFileHandle diskHandle = PInvoke.CreateFile(
+        var diskHandle = PInvoke.CreateFile(
             virtDiskPhysicalPath,
             FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
             FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
@@ -239,7 +239,7 @@ public sealed class DevDriveStorageOperator
         unsafe
         {
             partitionLayout.Info.PartitionCount = 1;
-            PARTITION_INFORMATION_EX* partitionInfo = &partitionLayout.Info.PartitionEntry._0;
+            var partitionInfo = &partitionLayout.Info.PartitionEntry._0;
             partitionInfo->PartitionStyle = PARTITION_STYLE.PARTITION_STYLE_GPT;
 
             // There are currently no partitions on the disk, so to make this easy for us, we start off the
@@ -250,8 +250,8 @@ public sealed class DevDriveStorageOperator
             // length rounded down to the nearest Mb to keep this alignment.
             var totalLengthInBytes = partitionLayout.Info.Anonymous.Gpt.UsableLength;
             partitionInfo->StartingOffset = ((partitionLayout.Info.Anonymous.Gpt.StartingUsableOffset / _oneMb) + 1) * _oneMb;
-            totalLengthInBytes -= (partitionInfo->StartingOffset - partitionLayout.Info.Anonymous.Gpt.StartingUsableOffset);
-            partitionInfo->PartitionLength = (totalLengthInBytes / _oneMb) * _oneMb;
+            totalLengthInBytes -= partitionInfo->StartingOffset - partitionLayout.Info.Anonymous.Gpt.StartingUsableOffset;
+            partitionInfo->PartitionLength = totalLengthInBytes / _oneMb * _oneMb;
             partitionInfo->PartitionNumber = 0;
             partitionInfo->RewritePartition = new BOOLEAN(1);
             partitionInfo->Anonymous.Gpt.PartitionType = PInvoke.PARTITION_BASIC_DATA_GUID;
@@ -355,7 +355,7 @@ public sealed class DevDriveStorageOperator
                         volumeGuidPathAfterTrim = volumeGuidPathAfterTrim.TrimEnd('\\');
                     }
 
-                    SafeFileHandle volumeFileHandle = PInvoke.CreateFile(
+                    var volumeFileHandle = PInvoke.CreateFile(
                         volumeGuidPathAfterTrim,
                         0,
                         FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,

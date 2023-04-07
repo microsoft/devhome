@@ -30,10 +30,9 @@ public class InstallPackageTask : ISetupTask
 
     public bool IsFromMSStore => string.Equals(_package.CatalogId, MSStoreCatalogId, StringComparison.Ordinal);
 
-    // As we don't have this information available for each package before
-    // installation in the WinGet COM API, simply assume that any package
-    // installation may need a reboot by default.
-    public bool RequiresReboot { get; set; } = true;
+    // We don't have this information available for each package before
+    // installation in the WinGet COM API, but we do get it after installation.
+    public bool RequiresReboot { get; set; }
 
     // May potentially be moved to a central list in the future.
     public bool WasInstallSuccessful
@@ -118,10 +117,11 @@ public class InstallPackageTask : ISetupTask
         return Task.Run(async () =>
         {
             Log.Logger?.ReportInfo(nameof(InstallPackageTask), $"Starting installation with elevation of package {_package.Id}");
-            var packageInstaller = elevatedComponentFactory.CreatePackageInstaller();
-            var installResult = await packageInstaller.InstallPackage(_package.Id, _package.CatalogName);
-            WasInstallSuccessful = installResult.InstallSucceeded;
-            return installResult.InstallSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
+            var elevatedTask = elevatedComponentFactory.CreateElevatedInstallTask();
+            var elevatedResult = await elevatedTask.InstallPackage(_package.Id, _package.CatalogName);
+            WasInstallSuccessful = elevatedResult.TaskSucceeded;
+            RequiresReboot = elevatedResult.RebootRequired;
+            return elevatedResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }
 
