@@ -59,6 +59,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     protected async override Task OnEachNavigateToAsync()
     {
         NextPageButtonToolTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
+        UpdateCanGoToNextPage();
         await Task.CompletedTask;
     }
 

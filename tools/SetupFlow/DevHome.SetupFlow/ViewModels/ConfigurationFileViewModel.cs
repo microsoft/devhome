@@ -89,7 +89,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             catch (OpenConfigurationSetException e)
             {
                 await mainWindow.ShowErrorMessageDialogAsync(
-                    file.Name,
+                    StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
                     GetErrorMessage(e),
                     StringResource.GetLocalized(StringResourceKey.Close));
             }

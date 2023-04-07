@@ -15,12 +15,12 @@
         <GridView SelectionMode="None" ItemsSource="{x:Bind ShimmerPackages}">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <ItemsWrapGrid Margin="20 0 20 0" MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                    <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
             <GridView.ItemTemplate>
                 <DataTemplate>
-                    <labs:Shimmer Width="190" Height="120" />
+                    <labs:Shimmer Width="190" Height="138" />
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>

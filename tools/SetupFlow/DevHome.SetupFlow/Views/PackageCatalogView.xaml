@@ -53,10 +53,14 @@
                         VerticalAlignment="Top"
                         ItemsSource="{Binding}"
                         SelectionMode="None">
+                        <GridView.ItemContainerStyle>
+                            <Style TargetType="GridViewItem">
+                                <Setter Property="Margin" Value="0 0 4 4"/>
+                            </Style>
+                        </GridView.ItemContainerStyle>
                         <GridView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <ItemsWrapGrid
-                                    Margin="20 0 20 0"
                                     Loaded="OnItemsWrapGridLoaded"
                                     Unloaded="OnItemsWrapGridUnloaded"
                                     MaximumRowsOrColumns="3"
@@ -65,7 +69,7 @@
                         </GridView.ItemsPanel>
                         <GridView.ItemTemplate>
                             <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                                <views:PackageView Width="190" Height="120" Package="{x:Bind Mode=OneWay}"/>
+                                <views:PackageView Width="190" Height="138" Package="{x:Bind Mode=OneWay}"/>
                             </DataTemplate>
                         </GridView.ItemTemplate>
                     </GridView>
