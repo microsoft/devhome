@@ -51,35 +51,36 @@
                 </AutoSuggestBox>
 
                 <!-- Main content -->
-                <ContentControl
-                    Grid.Row="1"
-                    Margin="0 0 10 0"
-                    HorizontalContentAlignment="Stretch"
-                    VerticalContentAlignment="Stretch"
-                    Content="{x:Bind ViewModel.CurrentView, Mode=OneWay}">
-                    <ContentControl.ContentTemplateSelector>
-                        <selectors:AppManagementViewSelector>
-                            <!-- Default/Main template -->
-                            <selectors:AppManagementViewSelector.MainTemplate>
-                                <DataTemplate>
-                                    <views:PackageCatalogListView />
-                                </DataTemplate>
-                            </selectors:AppManagementViewSelector.MainTemplate>
-                            <!-- Search template -->
-                            <selectors:AppManagementViewSelector.SearchTemplate>
-                                <DataTemplate>
-                                    <views:SearchView />
-                                </DataTemplate>
-                            </selectors:AppManagementViewSelector.SearchTemplate>
-                            <!-- Shimmer search template -->
-                            <selectors:AppManagementViewSelector.ShimmerSearchTemplate>
-                                <DataTemplate>
-                                    <views:ShimmerSearchView PackageCount="6" />
-                                </DataTemplate>
-                            </selectors:AppManagementViewSelector.ShimmerSearchTemplate>
-                        </selectors:AppManagementViewSelector>
-                    </ContentControl.ContentTemplateSelector>
-                </ContentControl>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ContentControl
+                        Margin="0 0 10 0"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"
+                        Content="{x:Bind ViewModel.CurrentView, Mode=OneWay}">
+                        <ContentControl.ContentTemplateSelector>
+                            <selectors:AppManagementViewSelector>
+                                <!-- Default/Main template -->
+                                <selectors:AppManagementViewSelector.MainTemplate>
+                                    <DataTemplate>
+                                        <views:PackageCatalogListView />
+                                    </DataTemplate>
+                                </selectors:AppManagementViewSelector.MainTemplate>
+                                <!-- Search template -->
+                                <selectors:AppManagementViewSelector.SearchTemplate>
+                                    <DataTemplate>
+                                        <views:SearchView />
+                                    </DataTemplate>
+                                </selectors:AppManagementViewSelector.SearchTemplate>
+                                <!-- Shimmer search template -->
+                                <selectors:AppManagementViewSelector.ShimmerSearchTemplate>
+                                    <DataTemplate>
+                                        <views:ShimmerSearchView PackageCount="6" />
+                                    </DataTemplate>
+                                </selectors:AppManagementViewSelector.ShimmerSearchTemplate>
+                            </selectors:AppManagementViewSelector>
+                        </ContentControl.ContentTemplateSelector>
+                    </ContentControl>
+                </ScrollViewer>
             </Grid>
         </controls:SetupShell>
 

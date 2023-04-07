@@ -121,7 +121,7 @@
                                                 MaxLines="1"
                                                 Foreground="{ThemeResource TextFillColorSecondary}"
                                                 Style="{ThemeResource CaptionTextBlockStyle}"
-                                                Text="{Binding PackageVerboseDescription}"/>
+                                                Text="{Binding PackageDescription}"/>
                                         </controls:SettingsCard.Description>
                                         <controls:SettingsCard.HeaderIcon>
                                             <ImageIcon Name="Image" Source="{Binding Icon, Mode=OneWay}"/>

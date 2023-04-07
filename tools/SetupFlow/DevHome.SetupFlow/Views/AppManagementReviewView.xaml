@@ -71,7 +71,6 @@
                             <TextBlock
                                 Text="{x:Bind PackageDescription, Mode=OneWay}"
                                 MaxLines="1"
-                                TextWrapping="NoWrap"
                                 TextTrimming="CharacterEllipsis" />
                         </ctControls:SettingsCard.Description>
                         <ctControls:SettingsCard.HeaderIcon>

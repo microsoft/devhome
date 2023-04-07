@@ -40,85 +40,87 @@
                 <Button x:Name="AddRepositoriesButton" Click="AddRepoButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"/>
             </ControlTemplate>
         </setupControls:SetupShell.HeaderTemplate>
-        <StackPanel x:Name="RepoConfigStackPanel" Orientation="Vertical" Spacing="10" HorizontalAlignment="Stretch">
-            <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
-                <ScrollViewer.TopHeader>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="40"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition MinWidth="151" />
-                            <ColumnDefinition MinWidth="249" />
-                            <ColumnDefinition MinWidth="400" />
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 1, 1" HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
-                            <TextBlock Text="Repository type" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        </Border>
-                        <Border Grid.Column="1" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 1, 1" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
-                            <TextBlock Text="Repository name" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        </Border>
-                        <Border Grid.Column="2" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
-                            <TextBlock Text="Clone path" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        </Border>
-                        
-                        <!-- Remove borders when the user has selected a repository because the items have top borders -->
-                        <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 1, 0" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}" HorizontalAlignment="Stretch">
-                            <TextBlock Text="Repository type" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        </Border>
-                        <Border Grid.Column="1" Style="{StaticResource DevHomeBorderStyle}"  BorderThickness="0, 0, 1, 0" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}">
-                            <TextBlock Text="Repository name" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        </Border>
-                        <TextBlock Grid.Column="2" Text="Clone path" Padding="10, 0, 0, 0" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                    </Grid>
-                </ScrollViewer.TopHeader>
-                <StackPanel  x:Name="CloningInformationstackPanel" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <StackPanel.Resources>
-                        <StackLayout x:Name="VerticalStackLayout" Orientation="Vertical"/>
-                        <DataTemplate x:Key="HorizontalBarTemplate" x:DataType="models:CloningInformation">
-                            <StackPanel  Orientation="Horizontal">
-                                <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 1, 0">
-                                    <TextBlock Text="{x:Bind ProviderName}" MinWidth="150" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                                </Border>
-                                <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 1, 0">
-                                    <TextBlock Text="{x:Bind RepositoryId}" MinWidth="248" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                                </Border>
-                                <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 0, 0">
-                                    <StackPanel Orientation="Horizontal" Spacing="5">
-                                        <TextBox Text="{x:Bind ClonePath, Mode=OneWay}" IsEnabled="False" MinWidth="400"  Margin="10, 5, 0, 5"/>
-                                        
-                                        <!-- Need to use view methods here because DataType is CloningInformation-->
-                                        <Button Click="EditClonePathButton_Click">
-                                            <Button.DataContext>
-                                                <models:CloningInformation ProviderName="{x:Bind ProviderName}" CloningLocation="{x:Bind CloningLocation}" OwningAccount="{x:Bind OwningAccount}" RepositoryToClone="{x:Bind RepositoryToClone}"/>
-                                            </Button.DataContext>
-                                            <Button.Content>
-                                                <SymbolIcon Symbol="Edit"/>
-                                            </Button.Content>
-                                        </Button>
-                                        <Button Click="RemoveCloningInformationButton_Click" Style="{ThemeResource AlternateCloseButtonStyle}">
-                                            <Button.DataContext>
-                                                <models:CloningInformation ProviderName="{x:Bind ProviderName}" CloningLocation="{x:Bind CloningLocation}" OwningAccount="{x:Bind OwningAccount}" RepositoryToClone="{x:Bind RepositoryToClone}"/>
-                                            </Button.DataContext>
-                                            <Button.Content>
-                                                <SymbolIcon Symbol="Cancel"/>
-                                            </Button.Content>
-                                        </Button>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </DataTemplate>
-                    </StackPanel.Resources>
-                    <ItemsRepeater x:Name="TasksItemsRepeater" ItemsSource="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay}"
-                           Layout="{StaticResource VerticalStackLayout}" 
-                           ItemTemplate="{StaticResource HorizontalBarTemplate}">
-                    </ItemsRepeater>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="RepoConfigStackPanel" Orientation="Vertical" Spacing="10" HorizontalAlignment="Stretch">
+                <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
+                    <ScrollViewer.TopHeader>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MinWidth="151" />
+                                <ColumnDefinition MinWidth="249" />
+                                <ColumnDefinition MinWidth="400" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 1, 1" HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
+                                <TextBlock Text="Repository type" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 1, 1" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
+                                <TextBlock Text="Repository name" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            </Border>
+                            <Border Grid.Column="2" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
+                                <TextBlock Text="Clone path" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            </Border>
+
+                            <!-- Remove borders when the user has selected a repository because the items have top borders -->
+                            <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 1, 0" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}" HorizontalAlignment="Stretch">
+                                <TextBlock Text="Repository type" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            </Border>
+                            <Border Grid.Column="1" Style="{StaticResource DevHomeBorderStyle}"  BorderThickness="0, 0, 1, 0" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}">
+                                <TextBlock Text="Repository name" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            </Border>
+                            <TextBlock Grid.Column="2" Text="Clone path" Padding="10, 0, 0, 0" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                        </Grid>
+                    </ScrollViewer.TopHeader>
+                    <StackPanel  x:Name="CloningInformationstackPanel" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <StackPanel.Resources>
+                            <StackLayout x:Name="VerticalStackLayout" Orientation="Vertical"/>
+                            <DataTemplate x:Key="HorizontalBarTemplate" x:DataType="models:CloningInformation">
+                                <StackPanel  Orientation="Horizontal">
+                                    <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 1, 0">
+                                        <TextBlock Text="{x:Bind ProviderName}" MinWidth="150" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                    </Border>
+                                    <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 1, 0">
+                                        <TextBlock Text="{x:Bind RepositoryId}" MinWidth="248" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                    </Border>
+                                    <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 0, 0">
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <TextBox Text="{x:Bind ClonePath, Mode=OneWay}" IsEnabled="False" MinWidth="400"  Margin="10, 5, 0, 5"/>
+
+                                            <!-- Need to use view methods here because DataType is CloningInformation-->
+                                            <Button Click="EditClonePathButton_Click">
+                                                <Button.DataContext>
+                                                    <models:CloningInformation ProviderName="{x:Bind ProviderName}" CloningLocation="{x:Bind CloningLocation}" OwningAccount="{x:Bind OwningAccount}" RepositoryToClone="{x:Bind RepositoryToClone}"/>
+                                                </Button.DataContext>
+                                                <Button.Content>
+                                                    <SymbolIcon Symbol="Edit"/>
+                                                </Button.Content>
+                                            </Button>
+                                            <Button Click="RemoveCloningInformationButton_Click" Style="{ThemeResource AlternateCloseButtonStyle}">
+                                                <Button.DataContext>
+                                                    <models:CloningInformation ProviderName="{x:Bind ProviderName}" CloningLocation="{x:Bind CloningLocation}" OwningAccount="{x:Bind OwningAccount}" RepositoryToClone="{x:Bind RepositoryToClone}"/>
+                                                </Button.DataContext>
+                                                <Button.Content>
+                                                    <SymbolIcon Symbol="Cancel"/>
+                                                </Button.Content>
+                                            </Button>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </DataTemplate>
+                        </StackPanel.Resources>
+                        <ItemsRepeater x:Name="TasksItemsRepeater" ItemsSource="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay}"
+                               Layout="{StaticResource VerticalStackLayout}" 
+                               ItemTemplate="{StaticResource HorizontalBarTemplate}">
+                        </ItemsRepeater>
+                    </StackPanel>
+                </ScrollViewer>
+                <StackPanel x:Name="NoRepositoryStackPanel" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}" HorizontalAlignment="Center" Margin="0, 150, 0, 0">
+                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
+                    <HyperlinkButton Click="AddRepoButton_Click" HorizontalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
                 </StackPanel>
-            </ScrollViewer>
-            <StackPanel x:Name="NoRepositoryStackPanel" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}" HorizontalAlignment="Center" Margin="0, 150, 0, 0">
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
-                <HyperlinkButton Click="AddRepoButton_Click" HorizontalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
             </StackPanel>
-        </StackPanel>
+        </ScrollViewer>
     </setupControls:SetupShell>
 </UserControl>

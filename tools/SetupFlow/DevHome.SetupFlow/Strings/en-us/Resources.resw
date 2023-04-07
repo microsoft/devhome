@@ -421,10 +421,6 @@
     <value>Source: {0}</value>
     <comment>{Locked="{0}"} Label for a package source displayed on a tooltip. {0} is replaced by the package source.</comment>
   </data>
-  <data name="PackageVerboseDescription" xml:space="preserve">
-    <value>Version {0} | {1} | {2}</value>
-    <comment>{Locked="{0}","{1}","{2}"} Text composed of a package version, source and publisher name. {0} is replaced by the package version. {1} is replaced by the package source. {2} is replaced by the package publisher name.</comment>
-  </data>
   <data name="PackageVersionTooltip" xml:space="preserve">
     <value>Version: {0}</value>
     <comment>{Locked="{0}"} Label for a package version displayed on a tooltip. {0} is replaced by the package version.</comment>

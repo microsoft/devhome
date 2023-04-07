@@ -91,8 +91,6 @@ public partial class PackageViewModel : ObservableObject
 
     public string PackageDescription => _stringResource.GetLocalized(StringResourceKey.PackageDescription, Version, CatalogName, PublisherName);
 
-    public string PackageVerboseDescription => _stringResource.GetLocalized(StringResourceKey.PackageVerboseDescription, Version, CatalogName, PublisherName);
-
     public string TooltipName => _stringResource.GetLocalized(StringResourceKey.PackageNameTooltip, Name);
 
     public string TooltipVersion => _stringResource.GetLocalized(StringResourceKey.PackageVersionTooltip, Version);
