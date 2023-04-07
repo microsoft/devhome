@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     mc:Ignorable="d">
-    <Grid RowSpacing="4" Margin="0 10">
+    <Grid RowSpacing="4" Margin="0 10 23 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />

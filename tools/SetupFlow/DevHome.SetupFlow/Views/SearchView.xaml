@@ -15,7 +15,7 @@
         <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
     </UserControl.Resources>
     <!-- Search view layout -->
-    <Grid>
+    <Grid Margin="0 0 23 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
