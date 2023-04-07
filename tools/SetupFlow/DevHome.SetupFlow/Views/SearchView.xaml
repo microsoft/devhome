@@ -10,6 +10,7 @@
     <UserControl.Resources>
         <converters:CollectionVisibilityConverter x:Name="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         <converters:StringFormatConverter x:Name="StringFormatConverter" />
+        <!-- Show `Undo` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
         <converters:BoolToObjectConverter x:Name="SelectButtonGlyphConverter" TrueValue="&#xE7A7;" FalseValue="&#xE109;" />
         <converters:BoolNegationConverter x:Name="BoolNegationConverter" />
         <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
