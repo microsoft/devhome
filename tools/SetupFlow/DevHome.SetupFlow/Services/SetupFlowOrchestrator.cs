@@ -99,6 +99,25 @@ public partial class SetupFlowOrchestrator
     }
 
     /// <summary>
+    /// Gets the task group from the corresponding type, if it exists in the current flow.
+    /// </summary>
+#nullable enable
+    public T? GetTaskGroup<T>()
+        where T : ISetupTaskGroup
+    {
+        foreach (var taskGroup in TaskGroups)
+        {
+            if (taskGroup is T)
+            {
+                return (T)taskGroup;
+            }
+        }
+
+        return default;
+    }
+#nullable disable
+
+    /// <summary>
     /// Releases the remote factory, terminating the background process.
     /// </summary>
     public void ReleaseRemoteFactory()

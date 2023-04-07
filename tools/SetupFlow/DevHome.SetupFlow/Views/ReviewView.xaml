@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:selectors="using:DevHome.SetupFlow.Selectors"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
@@ -90,25 +91,16 @@
                     </NavigationView>
                 </Expander.Content>
             </Expander>
-            <StackPanel Style="{StaticResource ReviewStackPanelStyle}">
-                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_EulaTitle" />
-                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_EulaText" />
-                <CheckBox IsChecked="{x:Bind ViewModel.IsEulaAccepted, Mode=TwoWay}"
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_AcceptEula" />
-            </StackPanel>
 
             <StackPanel Style="{StaticResource ReviewStackPanelStyle}"
-                        Visibility="{x:Bind ViewModel.IsRebootRequired, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
-                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_RebootTitle" />
-                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_RebootText" />
-                <CheckBox IsChecked="{x:Bind ViewModel.IsRebootAccepted, Mode=TwoWay}"
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_AcceptReboot" />
-            </StackPanel>
-
-            <StackPanel Style="{StaticResource ReviewStackPanelStyle}">
-                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsTitle" />
-                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsText" />
-                <!-- TODO: Add hyperlinks for Terms of use, Privacy policy -->
+                        Visibility="{x:Bind ViewModel.HasApplicationsToInstall, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
+                           x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsTitle" />
+                <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
+                           x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_Terms" />
+                <commonviews:HyperlinkTextBlock
+                    Visibility="{x:Bind ViewModel.HasMSStoreApplicationsToInstall, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_MSStoreTerms" />
             </StackPanel>
         </StackPanel>
     </controls:SetupShell>
