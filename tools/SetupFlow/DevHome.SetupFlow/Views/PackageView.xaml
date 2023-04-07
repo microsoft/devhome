@@ -11,7 +11,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE106;" FalseValue="&#xE109;" />
+            <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE7A7;" FalseValue="&#xE109;" />
             <converters:BoolToObjectConverter x:Key="ImageOpacityConverter" TrueValue="0.4" FalseValue="1" />
             <converters:BoolToObjectConverter x:Key="PrimaryTextEnableDisableConverter" TrueValue="{ThemeResource TextFillColorDisabledBrush}" FalseValue="{ThemeResource TextFillColorPrimaryBrush}" />
             <converters:BoolToObjectConverter x:Key="SecondaryTextEnableDisableConverter" TrueValue="{ThemeResource TextFillColorDisabledBrush}" FalseValue="{ThemeResource TextFillColorSecondaryBrush}" />

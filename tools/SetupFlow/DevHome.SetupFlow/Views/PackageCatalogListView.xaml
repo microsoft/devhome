@@ -13,7 +13,6 @@
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:PackageCatalogViewModel">
                     <Border
-                        Margin="0 0 20 0"
                         Padding="0 0 0 10"
                         BorderThickness="0 0 0 1"
                         BorderBrush="{ThemeResource ControlStrokeColorDefault}">

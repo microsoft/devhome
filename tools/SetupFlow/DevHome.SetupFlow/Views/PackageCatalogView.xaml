@@ -53,6 +53,11 @@
                         VerticalAlignment="Top"
                         ItemsSource="{Binding}"
                         SelectionMode="None">
+                        <GridView.ItemContainerStyle>
+                            <Style TargetType="GridViewItem">
+                                <Setter Property="Margin" Value="0 0 4 4"/>
+                            </Style>
+                        </GridView.ItemContainerStyle>
                         <GridView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <ItemsWrapGrid
