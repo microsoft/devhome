@@ -24,24 +24,16 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0" Padding="30">
             <Grid.RowDefinitions>
-                <RowDefinition Height="40*" />
-                <RowDefinition Height="20*" />
-                <RowDefinition Height="40*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="40" />
             </Grid.RowDefinitions>
 
-            <TextBlock x:Uid="InitializationPage_Title" Grid.Row="0" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="28" />
+            <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Image Height="150" Width="150" Source="/Assets/Tiles/AppList.scale-400.png" HorizontalAlignment="Center" Margin="0 0 0 10" />
+                <TextBlock x:Uid="InitializationPage_Title"  TextWrapping="Wrap" HorizontalAlignment="Center" FontSize="28" />
+            </StackPanel>
 
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Image Height="150" Width="150" Source="/Assets/Tiles/AppList.scale-400.png" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </Grid>
-
-            <ProgressRing Grid.Row="2" IsIndeterminate="True" Width="50" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <ProgressBar Grid.Row="1" IsIndeterminate="True" Width="100" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center" />
         </Grid>
         <Grid Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorDefault}">
             <Grid.RowDefinitions>

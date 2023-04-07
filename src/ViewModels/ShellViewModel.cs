@@ -17,8 +17,8 @@ namespace DevHome.ViewModels;
 
 public class ShellViewModel : ObservableRecipient
 {
+    private readonly ILocalSettingsService _localSettingsService;
     private object? _selected;
-    private ILocalSettingsService _localSettingsService;
 
     public INavigationService NavigationService
     {
