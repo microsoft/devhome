@@ -128,8 +128,15 @@ internal class CreateDevDriveTask : ISetupTask
                     return TaskFinishedState.Failure;
                 }
 
+                var defaultFolderName = Path.Combine(DevDrive.DriveLocation, _stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFolderName));
+
+                if (!Directory.Exists(defaultFolderName))
+                {
+                    Directory.CreateDirectory(defaultFolderName);
+                }
+
                 var storageOperator = elevatedComponentFactory.CreateDevDriveStorageOperator();
-                var virtDiskPath = Path.Combine(DevDrive.DriveLocation, DevDrive.DriveLabel + ".vhdx");
+                var virtDiskPath = Path.Combine(defaultFolderName, DevDrive.DriveLabel + ".vhdx");
                 var result = storageOperator.CreateDevDrive(virtDiskPath, DevDrive.DriveSizeInBytes, DevDrive.DriveLetter, DevDrive.DriveLabel);
                 if (result != 0)
                 {

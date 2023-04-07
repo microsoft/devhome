@@ -275,16 +275,14 @@ public class DevDriveManager : IDevDriveManager
             devDrive.DriveUnitOfMeasure = ByteUnit.GB;
             devDrive.DriveLocation = location;
             uint count = 1;
-            var fileName = $"{_defaultVhdxName}";
-            var folderWithFile = Path.Combine(_defaultVhdxLocation, fileName);
-            var fullPath = Path.Combine(location, folderWithFile);
+            var fullPath = Path.Combine(location, $"{_defaultVhdxName}.vhdx");
+            var fileName = _defaultVhdxName;
 
             // If original default file name exists we'll increase the number next to the filename
             while (File.Exists(fullPath) && count <= 1000)
             {
                 fileName = $"{_defaultVhdxName} {count}";
-                folderWithFile = Path.Combine(_defaultVhdxLocation, $"{fileName}.vhdx");
-                fullPath = Path.Combine(location, folderWithFile);
+                fullPath = Path.Combine(location, $"{fileName}.vhdx");
                 count++;
             }
 
