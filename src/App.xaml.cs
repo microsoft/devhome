@@ -40,7 +40,7 @@ public partial class App : Application, IApp
 
     public static WindowEx MainWindow { get; } = new MainWindow();
 
-    internal static NavConfig NavConfig { get; } = JsonConvert.DeserializeObject<NavConfig>(File.ReadAllText(Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "navConfig.json")))!;
+    internal static NavConfig NavConfig { get; } = JsonConvert.DeserializeObject<NavConfig>(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "navConfig.json")))!;
 
     public App()
     {
