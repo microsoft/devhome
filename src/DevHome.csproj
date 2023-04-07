@@ -16,6 +16,7 @@
         <Nullable>enable</Nullable>
         <UseWinUI>true</UseWinUI>
         <EnableMsixTooling>true</EnableMsixTooling>
+        <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
     </PropertyGroup>
 
     <ItemGroup>
