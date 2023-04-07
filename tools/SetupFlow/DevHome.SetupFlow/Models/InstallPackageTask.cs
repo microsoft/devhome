@@ -146,7 +146,7 @@ public class InstallPackageTask : ISetupTask
     private bool RequiresElevation()
     {
         var options = _wingetFactory.CreateInstallOptions();
-        options.PackageInstallScope = PackageInstallScope.User;
+        options.PackageInstallScope = PackageInstallScope.Any;
         return _package.RequiresElevation(options);
     }
 }
