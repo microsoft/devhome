@@ -64,6 +64,6 @@ public sealed partial class HyperlinkTextBlock : UserControl
         this.InitializeComponent();
     }
 
-    public static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(Banner), new PropertyMetadata(string.Empty));
-    public static readonly DependencyProperty NavigateUriProperty = DependencyProperty.Register(nameof(NavigateUri), typeof(string), typeof(Banner), new PropertyMetadata(string.Empty));
+    public static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(HyperlinkTextBlock), new PropertyMetadata(string.Empty));
+    public static readonly DependencyProperty NavigateUriProperty = DependencyProperty.Register(nameof(NavigateUri), typeof(string), typeof(HyperlinkTextBlock), new PropertyMetadata(string.Empty));
 }

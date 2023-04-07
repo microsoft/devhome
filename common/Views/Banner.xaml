@@ -9,17 +9,15 @@
         <Grid.Background>
             <ImageBrush Stretch="UniformToFill" ImageSource="{x:Bind ImageSource, Mode=OneWay}" />
         </Grid.Background>
-        <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Height="60" Width="60">
-            <Button HorizontalAlignment="Center" VerticalAlignment="Center"
-                    BorderThickness="0" Background="Transparent"
-                    Command="{x:Bind HideButtonCommand, Mode=OneWay}"
-                    Visibility="{x:Bind HideButtonVisibility, Mode=OneWay}">
-                <!-- Text = close symbol -->
-                <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                       FontSize="{ThemeResource BodyTextBlockFontSize}"
-                       Text="&#xE10A;" />
-            </Button>
-        </Grid>
+        <!-- Hide Banner Button -->
+        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
+                BorderThickness="0" Background="Transparent" Padding="5"
+                Command="{x:Bind HideButtonCommand, Mode=OneWay}"
+                Visibility="{x:Bind HideButtonVisibility, Mode=OneWay}">
+            <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                    FontSize="{ThemeResource BodyTextBlockFontSize}"
+                    Text="&#xE10A;" />
+        </Button>
         <StackPanel VerticalAlignment="Center" Margin="38 0 0 0" Spacing="12">
             <TextBlock
                 Width="{x:Bind TextWidth}"
