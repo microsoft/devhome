@@ -156,7 +156,7 @@ public partial class DashboardView : ToolPage
         _widgetDarkIconCache = new SortedDictionary<string, BitmapImage>();
 
         var widgetDefs = _widgetCatalog.GetWidgetDefinitions();
-        foreach (var widgetDef in widgetDefs)
+        foreach (var widgetDef in widgetDefs ?? Array.Empty<WidgetDefinition>())
         {
             CacheWidgetIcon(widgetDef);
         }

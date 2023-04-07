@@ -113,7 +113,6 @@ public class DevDriveManager : IDevDriveManager
     /// <inheritdoc/>
     public void NotifyDevDriveWindowClosed(IDevDrive newDevDrive)
     {
-        PreviousDevDrive = _devDrives.First();
         _devDrives.Clear();
         _devDrives.Add(newDevDrive);
         ViewModelWindowClosed(null, newDevDrive);
@@ -147,7 +146,7 @@ public class DevDriveManager : IDevDriveManager
         if (result == DevDriveValidationResult.Successful)
         {
             var taskGroups = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
-            var group = taskGroups.Single(x => x.GetType() == typeof(DevDriveTaskGroup));
+            var group = taskGroups.SingleOrDefault(x => x.GetType() == typeof(DevDriveTaskGroup));
             if (group is DevDriveTaskGroup driveTaskGroup)
             {
                 ViewModel.TaskGroup = driveTaskGroup;
@@ -155,6 +154,7 @@ public class DevDriveManager : IDevDriveManager
 
             ViewModel.UpdateDevDriveInfo(devDrive);
             _devDrives.Add(devDrive);
+            PreviousDevDrive = devDrive;
         }
 
         return (result, devDrive);
@@ -251,7 +251,7 @@ public class DevDriveManager : IDevDriveManager
     {
         try
         {
-            var location = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var location = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var root = Path.GetPathRoot(Environment.SystemDirectory);
             if (string.IsNullOrEmpty(location) || string.IsNullOrEmpty(root))
             {

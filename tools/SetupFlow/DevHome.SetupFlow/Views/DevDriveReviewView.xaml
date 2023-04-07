@@ -18,12 +18,13 @@
     </UserControl.Resources>
 
     <Grid
+        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
         Margin="0 5 0 5">
         <!-- No Dev Drive message-->
         <TextBlock
             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveReviewPageNoDevDrives"
             Visibility="{x:Bind ViewModel.DevDrives, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverterWhenEmpty}}"
-            HorizontalAlignment="Left"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
             Margin="10 10 10 10"/>
         <!-- Dev Drive Available-->
         <ScrollViewer 
