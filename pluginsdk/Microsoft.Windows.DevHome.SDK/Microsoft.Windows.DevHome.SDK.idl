@@ -1,5 +1,3 @@
-import "Microsoft.Windows.DevHome.SDK.PluginUI.idl";
-
 namespace Microsoft.Windows.DevHome.SDK
 {
     [contractversion(1)] 
