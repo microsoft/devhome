@@ -45,14 +45,6 @@ public interface IWindowsPackageManager
     }
 
     /// <summary>
-    /// Gets a composite catalog for the predefined <c>msstore</c> and local catalogs.
-    /// </summary>
-    public IWinGetCatalog MsStoreCatalog
-    {
-        get;
-    }
-
-    /// <summary>
     /// Opens all custom composite catalogs.
     /// </summary>
     /// <exception cref="CatalogConnectionException">Exception thrown if a catalog connection failed</exception>
