@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Management.Deployment;
 
-namespace DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+namespace DevHome.SetupFlow.Common.WindowsPackageManager;
 
 internal static class ClassesDefinition
 {

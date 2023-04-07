@@ -4,7 +4,7 @@
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Helpers;

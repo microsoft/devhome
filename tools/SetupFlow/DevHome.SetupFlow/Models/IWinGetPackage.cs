@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
-using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
 using Windows.Storage.Streams;
 

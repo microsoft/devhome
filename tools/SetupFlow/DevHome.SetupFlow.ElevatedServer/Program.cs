@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.ElevatedServer;

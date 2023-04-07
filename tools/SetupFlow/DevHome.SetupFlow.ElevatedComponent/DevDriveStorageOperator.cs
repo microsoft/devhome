@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 using System.Runtime.InteropServices;
-using DevHome.SetupFlow.ComInterop.Projection.DevDriveFormatter;
+using DevHome.SetupFlow.Common.DevDriveFormatter;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
 using Windows.Win32.Foundation;
