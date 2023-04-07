@@ -96,7 +96,7 @@ public class PluginService : IPluginService
     {
         _installedPlugins.Clear();
         _enabledPlugins.Clear();
-        OnPluginsChanged.Invoke(this, new EventArgs());
+        OnPluginsChanged.Invoke(this, EventArgs.Empty);
     }
 
     private async Task<bool> IsValidDevHomeExtension(Package package)
@@ -178,11 +178,8 @@ public class PluginService : IPluginService
                     }
                 }
 
-                var isPluginDisabled = Task.Run(() =>
-                {
-                    var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                    return localSettingsService.ReadSettingAsync<bool>(classId + "-ExtensionDisabled");
-                }).Result;
+                var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
+                var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(classId + "-ExtensionDisabled");
 
                 _installedPlugins.Add(pluginWrapper);
                 if (!isPluginDisabled)
