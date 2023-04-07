@@ -25,7 +25,6 @@
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
         <ToolTipService.ToolTip>
             <StackPanel>
                 <StackPanel>
