@@ -35,13 +35,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Views\HyperlinkTextBlock.xaml">
+    <Page Update="Views\Banner.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Views\Banner.xaml">
+    <Page Update="Views\HyperlinkTextBlock.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
