@@ -6,7 +6,6 @@ using System.Threading;
 using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
 using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Services;
-using Microsoft.CodeAnalysis;
 using Microsoft.Management.Deployment;
 using Windows.Storage.Streams;
 
