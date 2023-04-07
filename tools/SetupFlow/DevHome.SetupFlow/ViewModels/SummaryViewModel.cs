@@ -33,7 +33,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         {
             var repositoriesCloned = new ObservableCollection<KeyValuePair<string, string>>();
             var taskGroup = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
-            var group = taskGroup.Single(x => x.GetType() == typeof(RepoConfigTaskGroup));
+            var group = taskGroup.SingleOrDefault(x => x.GetType() == typeof(RepoConfigTaskGroup));
             if (group is RepoConfigTaskGroup repoTaskGroup)
             {
                 foreach (var task in repoTaskGroup.SetupTasks)

@@ -47,7 +47,7 @@ public sealed partial class WhatsNewPage : Page
     {
         var resourceLoader = new Windows.ApplicationModel.Resources.ResourceLoader();
         var pluginService = new PluginService();
-        var plugins = pluginService.GetInstalledPluginsAsync(ProviderType.DevId).Result;
+        var plugins = pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId).Result;
 
         // TODO: Replace this with a check for KnownPluginsGuid got Github plugin
         var plugin = plugins.Where(p => p.Name.Contains("Github")).FirstOrDefault();
@@ -64,7 +64,7 @@ public sealed partial class WhatsNewPage : Page
             return;
         }
 
-        var devIdProvider = await plugin.GetProviderAsync<IDevIdProvider>();
+        var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
 
         if (devIdProvider is null)
         {

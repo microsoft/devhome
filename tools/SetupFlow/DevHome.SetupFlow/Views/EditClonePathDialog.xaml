@@ -10,7 +10,10 @@
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/EditClonePathDialog"
     mc:Ignorable="d"
-    IsPrimaryButtonEnabled="{x:Bind EditClonePathViewModel.IsPrimaryButtonEnabled, Mode=OneWay}">
+    IsPrimaryButtonEnabled="{x:Bind EditClonePathViewModel.IsPrimaryButtonEnabled, Mode=OneWay}"
+    PrimaryButtonClick="EditClonePathDialog_PrimaryButtonClick"
+    CloseButtonClick="EditClonePathDialog_CloseButtonClick"
+    Style="{StaticResource DefaultContentDialogStyle}">
     <ContentDialog.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -23,32 +26,57 @@
         </ResourceDictionary>
     </ContentDialog.Resources>
     <StackPanel>
-        <TextBlock x:Name="ErrorTextBlock" Style="{ThemeResource BodyStrongTextBlockStyle}" Visibility="{x:Bind EditClonePathViewModel.ShowErrorTextBox, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Repo_ToolClonePathError"/>
-        <Grid Visibility="{x:Bind FolderPickerViewModel.ShouldShowFolderPicker, Mode=OneWay}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="310"/>
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <!--WINUI3 does not have a folder/file picker control.  Lets make one that looks like it.-->
-            <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
-                     Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"
-                     Text="{x:Bind FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
-                     IsReadOnly="True"
-                     Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
-            <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
-                     Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"
-                     Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
-                     IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
-                     Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
-            <Button IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click"  Grid.Column="1" Margin="5, 25, 0, 0"/>
-        </Grid>
-        <Grid Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" ColumnSpacing="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="350"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <CheckBox x:Name="DevDriveCheckBox" Click="MakeNewDevDriveComboBox_Click" IsEnabled="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NewDevDriveComboBox"/>
-            <HyperlinkButton Content="Customize" Grid.Column="1" Visibility="{x:Bind EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" Click="CustomizeDevDriveHyperlinkButton_Click"/>
-        </Grid>
+        <StackPanel
+            Visibility="{x:Bind EditClonePathViewModel.ShouldShowAreYouSureMessage, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+            Width="400"
+            Margin="0 20 0 20">
+            <TextBlock
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/EditClonePathDialogUncheckedCheckMarkWarning"
+                TextWrapping="Wrap"/>
+        </StackPanel>
+        <StackPanel
+            Visibility="{x:Bind EditClonePathViewModel.ShouldShowAreYouSureMessage, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
+            <TextBlock x:Name="ErrorTextBlock" Style="{ThemeResource BodyStrongTextBlockStyle}" Visibility="{x:Bind EditClonePathViewModel.ShowErrorTextBox, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Repo_ToolClonePathError"/>
+            <Grid Visibility="{x:Bind FolderPickerViewModel.ShouldShowFolderPicker, Mode=OneWay}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!--WINUI3 does not have a folder/file picker control.  Lets make one that looks like it.-->
+                <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
+                         Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"
+                         Text="{x:Bind FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
+                         IsReadOnly="True"
+                         Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
+                         Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"
+                         Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
+                         IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
+                         Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
+                <Button 
+                    IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" 
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" 
+                    Click="ChooseCloneLocationButton_Click"  
+                    Grid.Column="1" 
+                    Margin="5, 25, 0, 0"
+                    Padding="8 5 10 5"/>
+            </Grid>
+            <Grid 
+                Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" 
+                ColumnSpacing="10"
+                Margin="0,10,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="350"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox x:Name="DevDriveCheckBox" Click="MakeNewDevDriveComboBox_Click" IsEnabled="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NewDevDriveComboBox"/>
+                <HyperlinkButton 
+                    Content="Customize" 
+                    Grid.Column="1" 
+                    Visibility="{x:Bind EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" 
+                    Click="CustomizeDevDriveHyperlinkButton_Click"
+                    Margin="0 5 0 5"/>
+            </Grid>
+        </StackPanel>
     </StackPanel>
 </ContentDialog>

@@ -11,9 +11,9 @@ public interface IAccountsService
 {
     Task InitializeAsync();
 
-    Task<IReadOnlyList<IDevIdProvider>> GetDevIdProviders();
+    Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders();
 
-    IReadOnlyList<IDeveloperId> GetDeveloperIds(IDevIdProvider iDevIdProvider);
+    IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider);
 
     IReadOnlyList<IDeveloperId> GetDeveloperIds(IPlugin plugin);
 }
