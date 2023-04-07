@@ -5,7 +5,7 @@ using System.Management.Automation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
