@@ -273,6 +273,14 @@ public class DevDriveManager : IDevDriveManager
             devDrive.DriveLetter = availableLetters[0];
             devDrive.DriveSizeInBytes = DevDriveUtil.MinDevDriveSizeInBytes;
             devDrive.DriveUnitOfMeasure = ByteUnit.GB;
+            location = Path.Combine(location, _defaultVhdxLocation);
+
+            // Create the location if it doesn't exist.
+            if (!Directory.Exists(location))
+            {
+                Directory.CreateDirectory(location);
+            }
+
             devDrive.DriveLocation = location;
             uint count = 1;
             var fullPath = Path.Combine(location, $"{_defaultVhdxName}.vhdx");
