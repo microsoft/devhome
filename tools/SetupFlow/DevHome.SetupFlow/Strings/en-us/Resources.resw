@@ -883,4 +883,8 @@
     <value>Are you sure?</value>
     <comment>Title text for the dialog where the user is about to choose an option that we want them to confirm first before proceeding</comment>
   </data>
+  <data name="LoadingScreenGoToSummaryButtonContent" xml:space="preserve">
+    <value>Summary</value>
+    <comment>Button letting users go to the summary if they want after tasks failed.</comment>
+  </data>
 </root>

@@ -105,4 +105,5 @@ public static class StringResourceKey
     // Loading screen
     public static readonly string LoadingScreenActionCenterErrors = nameof(LoadingScreenActionCenterErrors);
     public static readonly string LoadingPageSteps = nameof(LoadingPageSteps);
+    public static readonly string LoadingScreenGoToSummaryButtonContent = nameof(LoadingScreenGoToSummaryButtonContent);
 }
