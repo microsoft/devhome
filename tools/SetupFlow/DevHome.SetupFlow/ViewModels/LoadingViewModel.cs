@@ -4,10 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Common.Elevation;
+using DevHome.SetupFlow.ElevatedComponent;
+using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
@@ -221,6 +225,20 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     protected async override Task OnFirstNavigateToAsync()
     {
+        var isAdminRequired = Orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresAdmin));
+        if (isAdminRequired)
+        {
+            try
+            {
+                Orchestrator.RemoteElevatedFactory = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentFactory>();
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError($"Failed to initialize elevated process: {e}");
+                Log.Logger?.ReportInfo("Will continue with setup as best-effort");
+            }
+        }
+
         FetchTaskInformation();
 
         await StartAllTasks(_tasksToRun);
