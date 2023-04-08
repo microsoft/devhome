@@ -29,6 +29,17 @@
         </ResourceDictionary>
     </ContentDialog.Resources>
     <StackPanel x:Name="AddRepoStackPanel" Orientation="Vertical" Spacing="10" MinWidth="400" MinHeight="500">
+        <StackPanel.Resources>
+            <ResourceDictionary>
+                <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <SolidColorBrush Color="{ThemeResource SystemAccentColor}"/>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ResourceDictionary>
+        </StackPanel.Resources>
         <Grid x:Name="RepoCloneOptionGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />

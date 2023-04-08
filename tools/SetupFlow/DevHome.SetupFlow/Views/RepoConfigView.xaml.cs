@@ -30,6 +30,7 @@ public sealed partial class RepoConfigView : UserControl
     /// </summary>
     private async void AddRepoButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        (sender as Button).IsEnabled = false;
         var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource);
         addRepoDialog.GetPlugins();
         addRepoDialog.SetupDevDrives();
@@ -37,6 +38,7 @@ public sealed partial class RepoConfigView : UserControl
         addRepoDialog.XamlRoot = RepoConfigStackPanel.XamlRoot;
         addRepoDialog.RequestedTheme = themeService.Theme;
         var result = await addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
+        (sender as Button).IsEnabled = true;
         var devDrive = addRepoDialog.EditDevDriveViewModel.DevDrive;
 
         if (addRepoDialog.EditDevDriveViewModel.IsWindowOpen)

@@ -96,6 +96,7 @@ internal partial class AddRepoDialog
 
     private void AddViaUrlToggleButton_Click(object sender, RoutedEventArgs e)
     {
+        RepositoryProviderComboBox.SelectedIndex = -1;
         AddRepoViewModel.ChangeToUrlPage();
         FolderPickerViewModel.ShowFolderPicker();
         EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
@@ -114,7 +115,13 @@ internal partial class AddRepoDialog
         var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
         if (!string.IsNullOrEmpty(repositoryProviderName))
         {
+            PrimaryButtonStyle = AddRepoStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
             IsPrimaryButtonEnabled = true;
+        }
+        else
+        {
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+            IsPrimaryButtonEnabled = false;
         }
     }
 
@@ -174,6 +181,7 @@ internal partial class AddRepoDialog
         }
         else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
         {
+            args.Cancel = true;
             var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
             if (!string.IsNullOrEmpty(repositoryProviderName))
             {
@@ -187,7 +195,8 @@ internal partial class AddRepoDialog
                     AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
                 }
 
-                ToggleCloneButton();
+                IsPrimaryButtonEnabled = false;
+                RepositoryProviderComboBox.SelectedIndex = -1;
             }
         }
     }
@@ -242,13 +251,13 @@ internal partial class AddRepoDialog
     private void ToggleCloneButton()
     {
         var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
-        if (isEverythingGood)
+        if (AddRepoViewModel.CurrentPage != PageKind.AddViaAccount || isEverythingGood)
         {
-            AddRepoViewModel.EnablePrimaryButton();
+            IsPrimaryButtonEnabled = true;
         }
         else
         {
-            AddRepoViewModel.DisablePrimaryButton();
+            IsPrimaryButtonEnabled = false;
         }
 
         // Fill in EverythingToClone with the location
