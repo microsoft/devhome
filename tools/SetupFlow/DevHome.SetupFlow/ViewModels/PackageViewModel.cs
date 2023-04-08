@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
@@ -28,6 +28,8 @@ public delegate PackageViewModel PackageViewModelFactory(IWinGetPackage package)
 /// </summary>
 public partial class PackageViewModel : ObservableObject
 {
+    private const string PublisherNameNotAvailable = "-";
+
     private static readonly BitmapImage DefaultLightPackageIconSource = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultLightPackageIcon.png"));
     private static readonly BitmapImage DefaultDarkPackageIconSource = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultDarkPackageIcon.png"));
 
@@ -80,6 +82,24 @@ public partial class PackageViewModel : ObservableObject
     public string Version => _package.Version;
 
     public bool IsInstalled => _package.IsInstalled;
+
+    public string CatalogName => _package.CatalogName;
+
+    public string PublisherName => !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
+
+    public string PackageTitle => Name;
+
+    public string PackageDescription => _stringResource.GetLocalized(StringResourceKey.PackageDescription, Version, CatalogName, PublisherName);
+
+    public string TooltipName => _stringResource.GetLocalized(StringResourceKey.PackageNameTooltip, Name);
+
+    public string TooltipVersion => _stringResource.GetLocalized(StringResourceKey.PackageVersionTooltip, Version);
+
+    public string TooltipIsInstalled => IsInstalled ? _stringResource.GetLocalized(StringResourceKey.PackageInstalledTooltip) : string.Empty;
+
+    public string TooltipSource => _stringResource.GetLocalized(StringResourceKey.PackageSourceTooltip, CatalogName);
+
+    public string TooltipPublisher => _stringResource.GetLocalized(StringResourceKey.PackagePublisherNameTooltip, PublisherName);
 
     public InstallPackageTask InstallPackageTask => _installPackageTask.Value;
 

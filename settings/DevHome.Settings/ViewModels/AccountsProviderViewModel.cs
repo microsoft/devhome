@@ -17,11 +17,11 @@ using Microsoft.Windows.DevHome.SDK;
 namespace DevHome.Settings.ViewModels;
 public partial class AccountsProviderViewModel : ObservableObject
 {
-    private readonly IDevIdProvider _devIdProvider;
+    private readonly IDeveloperIdProvider _devIdProvider;
 
     public ObservableCollection<Account> LoggedInAccounts { get; } = new ();
 
-    public AccountsProviderViewModel(IDevIdProvider devIdProvider)
+    public AccountsProviderViewModel(IDeveloperIdProvider devIdProvider)
     {
         _devIdProvider = devIdProvider;
         RefreshLoggedInAccounts();

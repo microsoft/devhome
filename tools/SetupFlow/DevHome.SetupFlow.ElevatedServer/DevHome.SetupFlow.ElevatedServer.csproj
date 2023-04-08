@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Setup\DevHome.SetupFlow.ElevatedComponent.Setup.csproj" />
+    <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent\DevHome.SetupFlow.ElevatedComponent.csproj" />
   </ItemGroup>
 

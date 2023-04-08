@@ -4,7 +4,7 @@
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Helpers;
@@ -16,6 +16,8 @@ namespace DevHome.SetupFlow.Models;
 
 public class InstallPackageTask : ISetupTask
 {
+    private static readonly string MSStoreCatalogId = "StoreEdgeFD";
+
     private readonly IWindowsPackageManager _wpm;
     private readonly WinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
@@ -25,6 +27,8 @@ public class InstallPackageTask : ISetupTask
     private InstallPackageException _installPackageException;
 
     public bool RequiresAdmin => _requiresElevation.Value;
+
+    public bool IsFromMSStore => string.Equals(_package.CatalogId, MSStoreCatalogId, StringComparison.Ordinal);
 
     // As we don't have this information available for each package before
     // installation in the WinGet COM API, simply assume that any package
@@ -142,7 +146,7 @@ public class InstallPackageTask : ISetupTask
     private bool RequiresElevation()
     {
         var options = _wingetFactory.CreateInstallOptions();
-        options.PackageInstallScope = PackageInstallScope.User;
+        options.PackageInstallScope = PackageInstallScope.Any;
         return _package.RequiresElevation(options);
     }
 }

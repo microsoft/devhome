@@ -52,8 +52,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
 
         PageTitle = StringResource.GetLocalized(StringResourceKey.ApplicationsPageTitle);
 
-        // By default, show the package catalogs
-        CurrentView = _packageCatalogListViewModel;
+        SelectDefaultView();
     }
 
     protected async override Task OnFirstNavigateToAsync()
@@ -66,6 +65,18 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         // (non-UI) thread to prevent lagging the UI.
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to composite catalog to enable searching for packages");
         await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
+    }
+
+    protected async override Task OnEachNavigateToAsync()
+    {
+        SelectDefaultView();
+        await Task.CompletedTask;
+    }
+
+    private void SelectDefaultView()
+    {
+        // By default, show the package catalogs
+        CurrentView = _packageCatalogListViewModel;
     }
 
     [RelayCommand(AllowConcurrentExecutions = true)]

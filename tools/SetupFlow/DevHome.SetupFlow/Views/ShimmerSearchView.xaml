@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     mc:Ignorable="d">
-    <Grid RowSpacing="4" Margin="0 10">
+    <Grid RowSpacing="4" Margin="0 10 23 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
@@ -25,7 +25,7 @@
         </Grid>
 
         <ScrollViewer Grid.Row="1">
-            <ItemsRepeater Margin="18 0" ItemsSource="{x:Bind ShimmerPackages, Mode=OneWay}">
+            <ItemsRepeater ItemsSource="{x:Bind ShimmerPackages, Mode=OneWay}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
                         <labs:Shimmer Height="67" />
@@ -35,7 +35,6 @@
                     <StackLayout Spacing="4" />
                 </ItemsRepeater.Layout>
             </ItemsRepeater>
-            
         </ScrollViewer>
     </Grid>
 </UserControl>

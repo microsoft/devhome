@@ -7,8 +7,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:selectors="using:DevHome.SetupFlow.Selectors"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
@@ -33,79 +33,76 @@
 
     <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
                          Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
-        <StackPanel>
-            <labs:SettingsExpander>
-                <labs:SettingsExpander.Header>
-                    <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
-                               x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_SetUpDetails" />
-                </labs:SettingsExpander.Header>
-                <labs:SettingsExpander.Items>
-                    <NavigationView x:Name="ReviewNavigationView"
-                                    Padding="24,12,24,24"
-                                    MinHeight="266"
-                                    PaneDisplayMode="Top"
-                                    SelectionFollowsFocus="Enabled"
-                                    IsBackButtonVisible="Collapsed"
-                                    IsSettingsVisible="False"
-                                    MenuItemsSource="{x:Bind ViewModel.ReviewTabs, Mode=OneWay}"
-                                    SelectedItem="{x:Bind ViewModel.SelectedReviewTab, Mode=TwoWay}">
-                        <NavigationView.Resources>
-                            <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
-                        </NavigationView.Resources>
-                        <NavigationView.MenuItemTemplate>
-                            <DataTemplate x:DataType="viewModels:ReviewTabViewModelBase">
-                                <TextBlock Text="{x:Bind TabTitle}" />
-                            </DataTemplate>
-                        </NavigationView.MenuItemTemplate>
-                        <Frame MinHeight="100" Padding="12">
-                            <ContentControl Content="{x:Bind ViewModel.SelectedReviewTab, Mode=OneWay}"
-                                            HorizontalContentAlignment="Stretch"
-                                            VerticalContentAlignment="Stretch" >
-                                <ContentControl.ContentTemplateSelector>
-                                    <selectors:ReviewTabViewSelector>
-                                        <selectors:ReviewTabViewSelector.DevDriveTabTemplate>
-                                            <DataTemplate>
-                                                <views:DevDriveReviewView />
-                                            </DataTemplate>
-                                        </selectors:ReviewTabViewSelector.DevDriveTabTemplate>
-                                        <selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
-                                            <DataTemplate>
-                                                <views:RepoConfigReviewView />
-                                            </DataTemplate>
-                                        </selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
-                                        <selectors:ReviewTabViewSelector.AppManagementTabTemplate>
-                                            <DataTemplate>
-                                                <views:AppManagementReviewView />
-                                            </DataTemplate>
-                                        </selectors:ReviewTabViewSelector.AppManagementTabTemplate>
-                                    </selectors:ReviewTabViewSelector>
-                                </ContentControl.ContentTemplateSelector>
-                            </ContentControl>
-                        </Frame>
-                    </NavigationView>
-                </labs:SettingsExpander.Items>
-            </labs:SettingsExpander>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- TODO: We should use the labs:SettingsExpander to get some of the styling for
+                           free, but it crashes when the content is not a SettingsCard, and
+                           SettingsCards are hard to style to use the full width. -->
+                <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                          MinHeight="64" CornerRadius="3" Padding="47,0,47,7" >
+                    <Expander.Header>
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
+                                   x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_SetUpDetails" />
+                    </Expander.Header>
+                    <Expander.Content>
+                        <NavigationView x:Name="ReviewNavigationView"
+                                        HorizontalAlignment="Stretch"
+                                        Padding="0" Margin="0"
+                                        MinHeight="266"
+                                        PaneDisplayMode="Top"
+                                        SelectionFollowsFocus="Enabled"
+                                        IsBackButtonVisible="Collapsed"
+                                        IsSettingsVisible="False"
+                                        MenuItemsSource="{x:Bind ViewModel.ReviewTabs, Mode=OneWay}"
+                                        SelectedItem="{x:Bind ViewModel.SelectedReviewTab, Mode=TwoWay}">
+                            <NavigationView.Resources>
+                                <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
+                            </NavigationView.Resources>
+                            <NavigationView.MenuItemTemplate>
+                                <DataTemplate x:DataType="viewModels:ReviewTabViewModelBase">
+                                    <TextBlock Text="{x:Bind TabTitle}" />
+                                </DataTemplate>
+                            </NavigationView.MenuItemTemplate>
+                            <Frame MinHeight="100" Padding="12" HorizontalAlignment="Stretch">
+                                <ContentControl Content="{x:Bind ViewModel.SelectedReviewTab, Mode=OneWay}"
+                                                HorizontalContentAlignment="Stretch"
+                                                VerticalContentAlignment="Stretch" >
+                                    <ContentControl.ContentTemplateSelector>
+                                        <selectors:ReviewTabViewSelector>
+                                            <selectors:ReviewTabViewSelector.DevDriveTabTemplate>
+                                                <DataTemplate>
+                                                    <views:DevDriveReviewView />
+                                                </DataTemplate>
+                                            </selectors:ReviewTabViewSelector.DevDriveTabTemplate>
+                                            <selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
+                                                <DataTemplate>
+                                                    <views:RepoConfigReviewView />
+                                                </DataTemplate>
+                                            </selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
+                                            <selectors:ReviewTabViewSelector.AppManagementTabTemplate>
+                                                <DataTemplate>
+                                                    <views:AppManagementReviewView />
+                                                </DataTemplate>
+                                            </selectors:ReviewTabViewSelector.AppManagementTabTemplate>
+                                        </selectors:ReviewTabViewSelector>
+                                    </ContentControl.ContentTemplateSelector>
+                                </ContentControl>
+                            </Frame>
+                        </NavigationView>
+                    </Expander.Content>
+                </Expander>
 
-            <StackPanel Style="{StaticResource ReviewStackPanelStyle}">
-                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_EulaTitle" />
-                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_EulaText" />
-                <CheckBox IsChecked="{x:Bind ViewModel.IsEulaAccepted, Mode=TwoWay}"
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_AcceptEula" />
+                <StackPanel Style="{StaticResource ReviewStackPanelStyle}"
+                            Visibility="{x:Bind ViewModel.HasApplicationsToInstall, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
+                               x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsTitle" />
+                    <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
+                               x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_Terms" />
+                    <commonviews:HyperlinkTextBlock
+                        Visibility="{x:Bind ViewModel.HasMSStoreApplicationsToInstall, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_MSStoreTerms" />
+                </StackPanel>
             </StackPanel>
-
-            <StackPanel Style="{StaticResource ReviewStackPanelStyle}"
-                        Visibility="{x:Bind ViewModel.IsRebootRequired, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
-                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_RebootTitle" />
-                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_RebootText" />
-                <CheckBox IsChecked="{x:Bind ViewModel.IsRebootAccepted, Mode=TwoWay}"
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_AcceptReboot" />
-            </StackPanel>
-
-            <StackPanel Style="{StaticResource ReviewStackPanelStyle}">
-                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsTitle" />
-                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsText" />
-                <!-- TODO: Add hyperlinks for Terms of use, Privacy policy -->
-            </StackPanel>
-        </StackPanel>
+        </ScrollViewer>
     </controls:SetupShell>
 </UserControl>

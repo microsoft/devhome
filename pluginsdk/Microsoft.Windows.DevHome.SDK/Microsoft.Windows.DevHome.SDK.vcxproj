@@ -151,7 +151,6 @@
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Microsoft.Windows.DevHome.SDK.idl" />
-    <Midl Include="Microsoft.Windows.DevHome.SDK.PluginUI.idl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

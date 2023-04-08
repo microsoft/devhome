@@ -321,7 +321,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             });
 
             TaskFinishedState taskFinishedState;
-            if (taskInformation.TaskToExecute.RequiresAdmin)
+            if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedFactory != null)
             {
                 Log.Logger?.ReportInfo(Log.Component.Loading, "Starting task as admin");
                 taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedFactory.Value);

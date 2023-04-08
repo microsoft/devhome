@@ -2,17 +2,22 @@
 // Licensed under the MIT license.
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Contracts;
+using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Dashboard.ViewModels;
 using DevHome.Services;
 using DevHome.Settings.Views;
 using DevHome.Views;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.ViewModels;
 
 public class ShellViewModel : ObservableRecipient
 {
+    private readonly ILocalSettingsService _localSettingsService;
     private object? _selected;
 
     public INavigationService NavigationService
@@ -31,11 +36,24 @@ public class ShellViewModel : ObservableRecipient
         set => SetProperty(ref _selected, value);
     }
 
-    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService)
+    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, ILocalSettingsService localSettingsService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
+        _localSettingsService = localSettingsService;
+    }
+
+    public async Task OnLoaded()
+    {
+        if (await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun))
+        {
+            NavigationService.NavigateTo(typeof(DashboardViewModel).FullName!);
+        }
+        else
+        {
+            NavigationService.NavigateTo(typeof(WhatsNewViewModel).FullName!);
+        }
     }
 
     private void OnNavigated(object sender, NavigationEventArgs e)

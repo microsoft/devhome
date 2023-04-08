@@ -40,6 +40,8 @@ public static class StringResourceKey
     public static readonly string DevDriveUnableToCreateError = nameof(DevDriveUnableToCreateError);
     public static readonly string DevDriveWindowByteUnitComboBoxGB = nameof(DevDriveWindowByteUnitComboBoxGB);
     public static readonly string DevDriveWindowByteUnitComboBoxTB = nameof(DevDriveWindowByteUnitComboBoxTB);
+    public static readonly string EditClonePathDialog = nameof(EditClonePathDialog);
+    public static readonly string EditClonePathDialogUncheckCheckMark = nameof(EditClonePathDialogUncheckCheckMark);
     public static readonly string FileTypeNotSupported = nameof(FileTypeNotSupported);
     public static readonly string InstalledPackage = nameof(InstalledPackage);
     public static readonly string InstalledPackageReboot = nameof(InstalledPackageReboot);
@@ -54,6 +56,12 @@ public static class StringResourceKey
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
     public static readonly string PackagesCount = nameof(PackagesCount);
+    public static readonly string PackageDescription = nameof(PackageDescription);
+    public static readonly string PackageInstalledTooltip = nameof(PackageInstalledTooltip);
+    public static readonly string PackageNameTooltip = nameof(PackageNameTooltip);
+    public static readonly string PackagePublisherNameTooltip = nameof(PackagePublisherNameTooltip);
+    public static readonly string PackageSourceTooltip = nameof(PackageSourceTooltip);
+    public static readonly string PackageVersionTooltip = nameof(PackageVersionTooltip);
     public static readonly string PathWithColon = nameof(PathWithColon);
     public static readonly string ResultCount = nameof(ResultCount);
     public static readonly string RestorePackagesTitle = nameof(RestorePackagesTitle);

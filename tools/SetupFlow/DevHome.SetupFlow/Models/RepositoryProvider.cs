@@ -28,7 +28,7 @@ internal class RepositoryProvider
     /// <summary>
     /// The DevId provider used to log a user into an account.
     /// </summary>
-    private IDevIdProvider _devIdProvider;
+    private IDeveloperIdProvider _devIdProvider;
 
     /// <summary>
     /// Provider used to clone a repsitory.
@@ -53,7 +53,7 @@ internal class RepositoryProvider
         // The task.run inside GetProvider makes a deadlock when .Result is called.
         // https://stackoverflow.com/a/17248813.  Solution is to wrap in Task.Run().
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider plugins");
-        _devIdProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IDevIdProvider>()).Result;
+        _devIdProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
         _repositoryProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
     }
 

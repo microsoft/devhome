@@ -97,7 +97,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             {
                 Log.Logger?.ReportError(Log.Component.Configuration, $"Opening configuration set failed: {e.Message}");
                 await mainWindow.ShowErrorMessageDialogAsync(
-                    file.Name,
+                    StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
                     GetErrorMessage(e),
                     StringResource.GetLocalized(StringResourceKey.Close));
             }

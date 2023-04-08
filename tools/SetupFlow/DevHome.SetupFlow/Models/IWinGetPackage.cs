@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
-using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
 using Windows.Storage.Streams;
 
@@ -36,6 +36,14 @@ public interface IWinGetPackage
     /// Gets the package catalog Id
     /// </summary>
     public string CatalogId
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the package catalog name
+    /// </summary>
+    public string CatalogName
     {
         get;
     }
@@ -105,6 +113,14 @@ public interface IWinGetPackage
     /// Gets the publisher url
     /// </summary>
     public Uri PublisherUrl
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the package publisher name
+    /// </summary>
+    public string PublisherName
     {
         get;
     }

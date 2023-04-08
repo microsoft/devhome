@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Models;
@@ -97,6 +98,25 @@ public partial class SetupFlowOrchestrator
         GoToPreviousPageCommand.NotifyCanExecuteChanged();
         GoToNextPageCommand.NotifyCanExecuteChanged();
     }
+
+    /// <summary>
+    /// Gets the task group from the corresponding type, if it exists in the current flow.
+    /// </summary>
+#nullable enable
+    public T? GetTaskGroup<T>()
+        where T : ISetupTaskGroup
+    {
+        foreach (var taskGroup in TaskGroups)
+        {
+            if (taskGroup is T)
+            {
+                return (T)taskGroup;
+            }
+        }
+
+        return default;
+    }
+#nullable disable
 
     /// <summary>
     /// Releases the remote factory, terminating the background process.

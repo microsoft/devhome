@@ -13,7 +13,8 @@
                mc:Ignorable="d"
                x:Name="AddRepoContentDialog"
                PrimaryButtonClick="AddRepoContentDialog_PrimaryButtonClick"
-               IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldPrimaryButtonBeEnabled, Mode=OneWay}">
+               IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldPrimaryButtonBeEnabled, Mode=OneWay}"
+               Style="{StaticResource DefaultContentDialogStyle}">
     <ContentDialog.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -84,7 +85,10 @@
                      Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
             <Button IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click" Grid.Column="1" Margin="5, 25, 0, 0"/>
         </Grid>
-        <Grid Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" ColumnSpacing="10">
+        <Grid 
+            Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" 
+            ColumnSpacing="10"
+            Margin="0 10 0 10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="350"/>
                 <ColumnDefinition Width="*"/>
