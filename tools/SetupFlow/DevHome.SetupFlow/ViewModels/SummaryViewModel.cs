@@ -81,6 +81,13 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _showRestartNeeded = Visibility.Collapsed;
     }
 
+    [RelayCommand]
+    public void GoBackToMainPage()
+    {
+        var things = _host.GetService<SetupFlowViewModel>();
+        things.Cancel();
+    }
+
     public SummaryViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
