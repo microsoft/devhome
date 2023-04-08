@@ -99,7 +99,7 @@ internal class CreateDevDriveTask : ISetupTask
                 if (msgLength == 0)
                 {
                     // if formatting the error code into a message fails, then log this and just return the error code.
-                    Log.Logger?.ReportError(nameof(CreateDevDriveTask), $"Failed to format error code. ${errorCode:X}");
+                    Log.Logger?.ReportError(nameof(CreateDevDriveTask), $"Failed to format error code.  0x{errorCode:X}");
                     return $"(0x{errorCode:X})";
                 }
 
