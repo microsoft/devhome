@@ -300,7 +300,13 @@ public partial class AddRepoViewModel : ObservableObject
     {
         // Try to parse repo from Uri
         // null means no providers were able to parse the Uri.
-        var providerNameAndRepo = _providers.ParseRepositoryFromUri(new Uri(Url));
+        Uri uriToParse;
+        if (!Uri.TryCreate(cloneLocation, UriKind.Absolute, out uriToParse))
+        {
+            return;
+        }
+
+        var providerNameAndRepo = _providers.ParseRepositoryFromUri(uriToParse);
         if (providerNameAndRepo.Item2 == null)
         {
             return;
