@@ -155,7 +155,7 @@ public class CloneRepoTask : ISetupTask
             }
 
             WasCloningSuccessful = true;
-            return TaskFinishedState.Failure;
+            return TaskFinishedState.Success;
         }).AsAsyncOperation();
     }
 
