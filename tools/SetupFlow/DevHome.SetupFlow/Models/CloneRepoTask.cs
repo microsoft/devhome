@@ -79,8 +79,6 @@ public class CloneRepoTask : ISetupTask
         get; set;
     }
 
-    private static readonly Random _random = new ();
-
     /// <summary>
     /// Initializes a new instance of the <see cref="CloneRepoTask"/> class.
     /// </summary>
