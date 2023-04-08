@@ -170,32 +170,33 @@ public partial class DashboardView : ToolPage
         {
             _dispatcher.TryEnqueue(async () =>
             {
+                var widgetDefId = widgetDef.Id;
                 try
                 {
-                    Log.Logger()?.ReportDebug("DashboardView", $"Cache widget icon for {widgetDef.Id}");
+                    Log.Logger()?.ReportDebug("DashboardView", $"Cache widget icon for {widgetDefId}");
                     var itemLightImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Light).Icon);
                     var itemDarkImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Dark).Icon);
 
                     // There is a widget bug where Definition update events are being raised as added events.
                     // If we already have an icon for this key, just remove and add again.
-                    if (_widgetLightIconCache.ContainsKey(widgetDef.Id))
+                    if (_widgetLightIconCache.ContainsKey(widgetDefId))
                     {
-                        _widgetLightIconCache.Remove(widgetDef.Id);
+                        _widgetLightIconCache.Remove(widgetDefId);
                     }
 
-                    if (_widgetDarkIconCache.ContainsKey(widgetDef.Id))
+                    if (_widgetDarkIconCache.ContainsKey(widgetDefId))
                     {
-                        _widgetDarkIconCache.Remove(widgetDef.Id);
+                        _widgetDarkIconCache.Remove(widgetDefId);
                     }
 
-                    _widgetLightIconCache.Add(widgetDef.Id, itemLightImage);
-                    _widgetDarkIconCache.Add(widgetDef.Id, itemDarkImage);
+                    _widgetLightIconCache.Add(widgetDefId, itemLightImage);
+                    _widgetDarkIconCache.Add(widgetDefId, itemDarkImage);
                 }
                 catch (Exception ex)
                 {
                     Log.Logger()?.ReportError("DashboardView", $"Exception in CacheWidgetIcons:", ex);
-                    _widgetLightIconCache.Add(widgetDef.Id, null);
-                    _widgetDarkIconCache.Add(widgetDef.Id, null);
+                    _widgetLightIconCache.Add(widgetDefId, null);
+                    _widgetDarkIconCache.Add(widgetDefId, null);
                 }
             });
         }
@@ -217,26 +218,27 @@ public partial class DashboardView : ToolPage
         // Only cache icons for providers that we're including.
         if (WidgetHelpers.IsIncludedWidgetProvider(providerDef))
         {
+            var providerDefId = providerDef.Id;
             _dispatcher.TryEnqueue(async () =>
             {
                 try
                 {
-                    Log.Logger()?.ReportDebug("DashboardView", $"Cache widget provider icon for {providerDef.Id}");
+                    Log.Logger()?.ReportDebug("DashboardView", $"Cache widget provider icon for {providerDefId}");
                     var itemImage = await WidgetIconToBitmapImage(providerDef.Icon);
 
                     // There is a widget bug where Definition update events are being raised as added events.
                     // If we already have an icon for this key, just remove and add again.
-                    if (_providerIconCache.ContainsKey(providerDef.Id))
+                    if (_providerIconCache.ContainsKey(providerDefId))
                     {
-                        _providerIconCache.Remove(providerDef.Id);
+                        _providerIconCache.Remove(providerDefId);
                     }
 
-                    _providerIconCache.Add(providerDef.Id, itemImage);
+                    _providerIconCache.Add(providerDefId, itemImage);
                 }
                 catch (Exception ex)
                 {
                     Log.Logger()?.ReportError("DashboardView", $"Exception in CacheProviderIcon:", ex);
-                    _providerIconCache.Add(providerDef.Id, null);
+                    _providerIconCache.Add(providerDefId, null);
                 }
             });
         }
@@ -285,7 +287,7 @@ public partial class DashboardView : ToolPage
     private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
     {
         // TODO: Ideally there would be some sort of visual loading indicator while the renderer gets set up.
-        SetHostConfigOnWidgetRenderer().Wait();
+        await SetHostConfigOnWidgetRenderer();
 
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
         var pinnedWidgets = _widgetHost.GetWidgets();
@@ -417,18 +419,19 @@ public partial class DashboardView : ToolPage
     // Remove widget(s) from the Dashboard if the provider deletes the widget definition, or the provider is uninstalled.
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
+        var definitionId = args.DefinitionId;
         _dispatcher.TryEnqueue(() =>
         {
-            Log.Logger()?.ReportInfo("DashboardView", $"WidgetDefinitionDeleted {args.DefinitionId}");
-            foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == args.DefinitionId).ToList())
+            Log.Logger()?.ReportInfo("DashboardView", $"WidgetDefinitionDeleted {definitionId}");
+            foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
             {
                 Log.Logger()?.ReportInfo("DashboardView", $"Remove widget {widgetToRemove.Widget.Id}");
                 PinnedWidgets.Remove(widgetToRemove);
             }
         });
 
-        _widgetLightIconCache.Remove(args.DefinitionId);
-        _widgetDarkIconCache.Remove(args.DefinitionId);
+        _widgetLightIconCache.Remove(definitionId);
+        _widgetDarkIconCache.Remove(definitionId);
     }
 
     // Listen for widgets being added or removed, so we can add or remove listeners on the WidgetViewModels' properties.
