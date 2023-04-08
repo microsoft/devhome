@@ -20,6 +20,7 @@ internal class ConfigureTask : ISetupTask
 
     // We can run configuration files as admin or as regular user
     // depending on the user, so we make this settable.
+    // TODO: Wire this with UI
     public bool RequiresAdmin { get; set; }
 
     public bool RequiresReboot { get; private set; }
