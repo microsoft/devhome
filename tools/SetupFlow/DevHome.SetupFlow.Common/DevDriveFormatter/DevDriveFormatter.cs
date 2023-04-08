@@ -6,7 +6,6 @@ using System.Management;
 using DevHome.Logging;
 using Windows.Win32;
 using Windows.Win32.Foundation;
-using WinRT;
 
 namespace DevHome.SetupFlow.Common.DevDriveFormatter;
 
