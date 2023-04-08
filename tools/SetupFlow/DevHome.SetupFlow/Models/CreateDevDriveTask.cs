@@ -9,6 +9,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.ElevatedComponent;
+using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
@@ -98,7 +99,7 @@ internal class CreateDevDriveTask : ISetupTask
                 if (msgLength == 0)
                 {
                     // if formatting the error code into a message fails, then log this and just return the error code.
-                    _logger.LogError(nameof(CreateDevDriveTask), LogLevel.Info, $"Failed to format error code. ${errorCode:X}");
+                    Log.Logger?.ReportError(nameof(CreateDevDriveTask), $"Failed to format error code. ${errorCode:X}");
                     return $"(0x{errorCode:X})";
                 }
 
@@ -141,7 +142,7 @@ internal class CreateDevDriveTask : ISetupTask
                 if (result != 0)
                 {
                     _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, GetLocalizedErrorMsg(result));
-                    _logger.LogError(nameof(CreateDevDriveTask), LogLevel.Info, $"Failed to create Dev Drive, Error code. 0x{result:X}");
+                    Log.Logger?.ReportError(nameof(CreateDevDriveTask), $"Failed to create Dev Drive, Error code. 0x{result:X}");
                     return TaskFinishedState.Failure;
                 }
 
@@ -149,7 +150,7 @@ internal class CreateDevDriveTask : ISetupTask
             }
             catch (Exception ex)
             {
-                _logger.LogError(nameof(CreateDevDriveTask), LogLevel.Info, $"Failed to create Dev Drive. Due to Exception ErrorCode: 0x{ex.HResult:X}, Msg: {ex.Message}");
+                Log.Logger?.ReportError(nameof(CreateDevDriveTask), $"Failed to create Dev Drive. Due to Exception ErrorCode: 0x{ex.HResult:X}, Msg: {ex.Message}");
                 _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, GetLocalizedErrorMsg(ex.HResult));
                 return TaskFinishedState.Failure;
             }
