@@ -526,7 +526,7 @@
     <comment>Add repository button text</comment>
   </data>
   <data name="ReposConfigPageTitle" xml:space="preserve">
-    <value>Clone Repos</value>
+    <value>Clone repos</value>
     <comment>Clone Repo label for the stepper</comment>
   </data>
   <data name="ApplicationsPageTitle" xml:space="preserve">
@@ -542,7 +542,7 @@
     <comment>Text for the use to choose to make a dev drive</comment>
   </data>
   <data name="ClonePath.Header" xml:space="preserve">
-    <value>Clone Path</value>
+    <value>Clone path</value>
     <comment>Header for choosing a clone path</comment>
   </data>
   <data name="ClonePath.PlaceholderText" xml:space="preserve">
@@ -562,7 +562,7 @@
     <comment>Text to appear in the textbox for entering in a URL</comment>
   </data>
   <data name="CloneRepoDialog.Title" xml:space="preserve">
-    <value>Clone a Repository</value>
+    <value>Clone a repository</value>
     <comment>Header for the dialog bos to clone repositories</comment>
   </data>
   <data name="NewDevDriveComboBox.Content" xml:space="preserve">
@@ -661,7 +661,7 @@
     <comment>file name for the virtual disk file we will create the Dev Drive in if the user keeps the defaults</comment>
   </data>
   <data name="DevDriveDefaultFolderName" xml:space="preserve">
-    <value>Dev Drives</value>
+    <value>Dev Disks</value>
     <comment>folder name for the folder we will create the Dev Drive in if the user keeps the defaults</comment>
   </data>
   <data name="DevDriveReviewPageDevDriveDetailsTitle.Text" xml:space="preserve">
@@ -825,7 +825,7 @@
     <comment>Header for the section that shows all the downloaded apps</comment>
   </data>
   <data name="SummaryPage_Header.Text" xml:space="preserve">
-    <value>Here's what we set up for you.</value>
+    <value>We set up the following for you...</value>
     <comment>Header text for the summary page</comment>
   </data>
   <data name="SummaryPage_NextSteps.Text" xml:space="preserve">
@@ -886,5 +886,13 @@
   <data name="LoadingScreenGoToSummaryButtonContent" xml:space="preserve">
     <value>Summary</value>
     <comment>Button letting users go to the summary if they want after tasks failed.</comment>
+  </data>
+  <data name="RepoAccountPagePrimaryButtonText" xml:space="preserve">
+    <value>Connect</value>
+    <comment>Text to show the user when selecting a provder</comment>
+  </data>
+  <data name="RepoEverythingElsePrimaryButtonText" xml:space="preserve">
+    <value>Add</value>
+    <comment>Text to show everywhere else in the tool.</comment>
   </data>
 </root>
