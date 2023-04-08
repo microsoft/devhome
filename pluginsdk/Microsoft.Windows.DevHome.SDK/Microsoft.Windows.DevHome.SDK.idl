@@ -1,8 +1,9 @@
-import "Microsoft.Windows.DevHome.SDK.PluginUI.idl";
-
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [version(1.0)]
+    [contractversion(1)] 
+    apicontract DevHomeContract {}
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     enum ProviderType
     {
         Repository = 0,
@@ -14,14 +15,14 @@ namespace Microsoft.Windows.DevHome.SDK
         Notifications = 6
     };
 
-    [version(1.0)] 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface IPlugin 
     {
         IInspectable GetProvider(ProviderType providerType);
         void Dispose();
     }
 
-    [version(1.0)]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface IRepositoryProvider 
     {
         String DisplayName { get; };
@@ -31,7 +32,8 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperation <IRepository> ParseRepositoryFromUrlAsync(Windows.Foundation.Uri uri);
     };
 
-    [version(1.0)] interface IRepository {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    interface IRepository {
 
         String DisplayName { get; };
 
@@ -46,13 +48,31 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncAction CloneRepositoryAsync(String cloneDestination);
     }
 
-    [version(1.0)] 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] 
     interface ISettingsProvider 
     {
         String GetName();
     };
 
-    [version(1.0)]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    interface IPluginAdaptiveCardController 
+    {
+        void Initialize(IPluginAdaptiveCard pluginUI);
+        void Dispose();
+        void OnAction(String action, String inputs);
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    interface IPluginAdaptiveCard
+    {
+        String TemplateJson { get; };
+        String DataJson { get; };
+        String State { get; };
+
+        void Update(String templateJson, String dataJson, String state);
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface IDeveloperIdProvider
     {
         String GetName();
@@ -72,31 +92,31 @@ namespace Microsoft.Windows.DevHome.SDK
         event Windows.Foundation.EventHandler<IDeveloperId> Updated;
     };
 
-    [version(1.0)] 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface ISetupFlowProvider 
     {
         String GetName();
     };
 
-    [version(1.0)] 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface IWidgetProvider 
     {
         String GetName();
     };
 
-    [version(1.0)] 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] 
     interface IDevDoctorProvider 
     {
         String GetName();
     };
 
-    [version(1.0)] 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] 
     interface INotificationsProvider 
     {
         String GetName();
     };
 
-    [version(1.0)]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     // IDeveloperId is the basic interface for DeveloperId corresponding to each logged in user, used by the Dev Home Core app
     interface IDeveloperId
     {
@@ -105,4 +125,6 @@ namespace Microsoft.Windows.DevHome.SDK
         String Email();
         String Url();
     };
+
+
 }
