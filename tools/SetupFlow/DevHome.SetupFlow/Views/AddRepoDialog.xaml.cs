@@ -177,7 +177,7 @@ internal partial class AddRepoDialog
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
-            AddRepoViewModel.AddRepositoryViaUri(FolderPickerViewModel.CloneLocation);
+            AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation);
         }
         else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
         {

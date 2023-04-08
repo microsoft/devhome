@@ -182,7 +182,7 @@
     <Content Update="Assets\LightError.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
-    <Content Update="Assets\LightSucess.png">
+    <Content Update="Assets\LightSuccess.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\Setup_AppManagement.png">

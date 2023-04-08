@@ -157,16 +157,7 @@ public class CloneRepoTask : ISetupTask
             }
 
             WasCloningSuccessful = true;
-
-            var randomNumber = _random.Next(10);
-            if (randomNumber < 5)
-            {
-                return TaskFinishedState.Failure;
-            }
-            else
-            {
-                return TaskFinishedState.Success;
-            }
+            return TaskFinishedState.Success;
         }).AsAsyncOperation();
     }
 
