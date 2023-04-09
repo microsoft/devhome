@@ -39,13 +39,17 @@ public sealed partial class RepoConfigView : UserControl
         }
 
         var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource);
-        addRepoDialog.GetPlugins();
-        addRepoDialog.SetupDevDrives();
+        var getPluginsTask = addRepoDialog.GetPluginsAsync();
+        var setupDevDrivesTask = addRepoDialog.SetupDevDrivesAsync();
         var themeService = Application.Current.GetService<IThemeSelectorService>();
         addRepoDialog.XamlRoot = RepoConfigStackPanel.XamlRoot;
         addRepoDialog.RequestedTheme = themeService.Theme;
-        var result = await addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
 
+        // Start
+        await getPluginsTask;
+        await setupDevDrivesTask;
+        var result = await addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
+        
         if (senderAsButton != null)
         {
             senderAsButton.IsEnabled = false;
