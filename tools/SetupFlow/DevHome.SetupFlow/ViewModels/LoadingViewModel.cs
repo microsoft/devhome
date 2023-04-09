@@ -33,7 +33,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private static readonly BitmapImage LightSuccess = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightSuccess.png"));
 
 #pragma warning disable SA1310 // Field names should not contain underscore
-    private const int NUMBER_OF_PARALLEL_RUNNING_TASKS = 20;
+    private const int NUMBER_OF_PARALLEL_RUNNING_TASKS = 5;
 #pragma warning restore SA1310 // Field names should not contain underscore
 
 #pragma warning disable SA1310 // Field names should not contain underscore
@@ -142,13 +142,13 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // Assuming that the theme can't change while the user is in the loading screen.
         _currentTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
 
-        IsNavigationBarVisible = false;
         IsStepPage = false;
-
+        IsNavigationBarVisible = false;
+        ShowOnlyNextButton = true;
+        NextPageButtonText = stringResource.GetLocalized(StringResourceKey.LoadingScreenGoToSummaryButtonContent);
         ShowRetryButton = Visibility.Collapsed;
         _failedTasks = new List<TaskInformation>();
         ActionCenterItems = new ();
-        CanGoToNextPage = false;
     }
 
     /// <summary>
@@ -319,9 +319,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             // At this point some tasks ran into an error.
             // Give the user the option to re try them all or move to the next screen.
             ShowRetryButton = Visibility.Visible;
-
-            // Allow user to retry all failed tasks or go to the next page.
-            CanGoToNextPage = true;
+            IsNavigationBarVisible = true;
         }
     }
 
