@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -20,6 +22,15 @@ namespace DevHome.SetupFlow.ViewModels;
 public partial class LoadingViewModel : SetupPageViewModelBase
 {
     private readonly IHost _host;
+
+    private readonly ElementTheme _currentTheme;
+
+    private static readonly BitmapImage DarkCaution = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
+    private static readonly BitmapImage DarkError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
+    private static readonly BitmapImage DarkSuccess = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkSuccess.png"));
+    private static readonly BitmapImage LightCaution = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightCaution.png"));
+    private static readonly BitmapImage LightError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
+    private static readonly BitmapImage LightSuccess = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightSuccess.png"));
 
 #pragma warning disable SA1310 // Field names should not contain underscore
     private const int NUMBER_OF_PARALLEL_RUNNING_TASKS = 5;
@@ -127,6 +138,10 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     {
         _host = host;
         _tasksToRun = new ();
+
+        // Assuming that the theme can't change while the user is in the loading screen.
+        _currentTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
+
         IsStepPage = false;
         IsNavigationBarVisible = false;
         ShowOnlyNextButton = true;
@@ -175,23 +190,38 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     public void ChangeMessage(TaskInformation information, TaskFinishedState taskFinishedState)
     {
         var stringToReplace = string.Empty;
-        var circleBrush = new SolidColorBrush();
-        var statusSymbolHex = string.Empty;
+        BitmapImage statusSymbolIcon = null;
 
         if (taskFinishedState == TaskFinishedState.Success)
         {
             if (information.TaskToExecute.RequiresReboot)
             {
                 stringToReplace = information.TaskToExecute.GetLoadingMessages().NeedsReboot;
-                circleBrush.Color = Microsoft.UI.Colors.Yellow;
-                statusSymbolHex = "\xF13C";
+
+                if (_currentTheme == ElementTheme.Dark)
+                {
+                    statusSymbolIcon = DarkCaution;
+                }
+                else
+                {
+                    // I only have light and dark icons.  What would "default" be?
+                    statusSymbolIcon = LightCaution;
+                }
+
                 ActionCenterItems.Add(information.TaskToExecute.GetRebootMessage());
             }
             else
             {
                 stringToReplace = information.TaskToExecute.GetLoadingMessages().Finished;
-                circleBrush.Color = Microsoft.UI.Colors.Green;
-                statusSymbolHex = "\xE73E";
+
+                if (_currentTheme == ElementTheme.Dark)
+                {
+                    statusSymbolIcon = DarkSuccess;
+                }
+                else
+                {
+                    statusSymbolIcon = LightSuccess;
+                }
             }
 
             TasksFinishedSuccessfully++;
@@ -199,8 +229,15 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         else if (taskFinishedState == TaskFinishedState.Failure)
         {
             stringToReplace = information.TaskToExecute.GetLoadingMessages().Error;
-            circleBrush.Color = Microsoft.UI.Colors.Red;
-            statusSymbolHex = "\xF78A";
+            if (_currentTheme == ElementTheme.Dark)
+            {
+                statusSymbolIcon = DarkError;
+            }
+            else
+            {
+                statusSymbolIcon = LightError;
+            }
+
             ActionCenterItems.Add(information.TaskToExecute.GetErrorMessages());
             TasksFailed++;
 
@@ -210,8 +247,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             }
         }
 
-        information.CircleForeground = circleBrush;
-        information.StatusSymbolHex = statusSymbolHex;
+        information.StatusSymbolIcon = statusSymbolIcon;
         information.MessageToShow = stringToReplace;
     }
 

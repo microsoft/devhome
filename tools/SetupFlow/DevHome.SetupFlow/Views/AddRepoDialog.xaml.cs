@@ -186,7 +186,7 @@ internal partial class AddRepoDialog
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
-            AddRepoViewModel.AddRepositoryViaUri(FolderPickerViewModel.CloneLocation);
+            AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation);
         }
         else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
         {
@@ -206,7 +206,6 @@ internal partial class AddRepoDialog
                 }
 
                 IsPrimaryButtonEnabled = false;
-                RepositoryProviderComboBox.SelectedIndex = -1;
             }
         }
     }
@@ -261,7 +260,7 @@ internal partial class AddRepoDialog
     private void ToggleCloneButton()
     {
         var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
-        if (AddRepoViewModel.CurrentPage != PageKind.AddViaAccount || isEverythingGood)
+        if (isEverythingGood)
         {
             IsPrimaryButtonEnabled = true;
         }
@@ -280,8 +279,17 @@ internal partial class AddRepoDialog
     /// <summary>
     /// User navigated away from the URL text box.  Validate it.
     /// </summary>
+    /// <remarks>
+    /// LostFocus event fires before data binding.  Set URL here.
+    /// </remarks>
     private void RepoUrlTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
+        // just in case something other than a text box calls this.
+        if (sender is TextBox)
+        {
+            AddRepoViewModel.Url = (sender as TextBox).Text;
+        }
+
         ToggleCloneButton();
     }
 }

@@ -296,11 +296,17 @@ public partial class AddRepoViewModel : ObservableObject
     /// Adds a repository from the URL page.
     /// </summary>
     /// <param name="cloneLocation">The location to clone the repo to</param>
-    public void AddRepositoryViaUri(string cloneLocation)
+    public void AddRepositoryViaUri(string url, string cloneLocation)
     {
         // Try to parse repo from Uri
         // null means no providers were able to parse the Uri.
-        var providerNameAndRepo = _providers.ParseRepositoryFromUri(new Uri(Url));
+        Uri uriToParse;
+        if (!Uri.TryCreate(url, UriKind.Absolute, out uriToParse))
+        {
+            return;
+        }
+
+        var providerNameAndRepo = _providers.ParseRepositoryFromUri(uriToParse);
         if (providerNameAndRepo.Item2 == null)
         {
             return;
