@@ -182,7 +182,7 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Adds the repository from the URL screen to the list of repos to be cloned.
     /// </summary>
-    private void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
@@ -194,11 +194,12 @@ internal partial class AddRepoDialog
             var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
             if (!string.IsNullOrEmpty(repositoryProviderName))
             {
-                AddRepoViewModel.GetAccounts(repositoryProviderName);
+                var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
                 AddRepoViewModel.ChangeToRepoPage();
                 FolderPickerViewModel.ShowFolderPicker();
                 EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
 
+                await getAccountsTask;
                 if (AddRepoViewModel.Accounts.Any())
                 {
                     AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
