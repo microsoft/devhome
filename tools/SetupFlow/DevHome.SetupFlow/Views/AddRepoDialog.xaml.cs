@@ -274,7 +274,12 @@ internal partial class AddRepoDialog
     /// </remarks>
     private void RepoUrlTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
-        AddRepoViewModel.Url = (sender as TextBox).Text;
+        // just in case something other than a text box calls this.
+        if (sender is TextBox)
+        {
+            AddRepoViewModel.Url = (sender as TextBox).Text;
+        }
+
         ToggleCloneButton();
     }
 }
