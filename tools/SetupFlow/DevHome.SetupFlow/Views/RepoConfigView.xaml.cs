@@ -30,13 +30,31 @@ public sealed partial class RepoConfigView : UserControl
     /// </summary>
     private async void AddRepoButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager);
-        addRepoDialog.GetPlugins();
-        addRepoDialog.SetupDevDrives();
+        // Both the hyperlink button and button call this.
+        // disable the button to prevent users from double clicking it.
+        var senderAsButton = sender as Button;
+        if (senderAsButton != null)
+        {
+            senderAsButton.IsEnabled = false;
+        }
+
+        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource);
+        var getPluginsTask = addRepoDialog.GetPluginsAsync();
+        var setupDevDrivesTask = addRepoDialog.SetupDevDrivesAsync();
         var themeService = Application.Current.GetService<IThemeSelectorService>();
         addRepoDialog.XamlRoot = RepoConfigStackPanel.XamlRoot;
         addRepoDialog.RequestedTheme = themeService.Theme;
+
+        // Start
+        await getPluginsTask;
+        await setupDevDrivesTask;
         var result = await addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
+
+        if (senderAsButton != null)
+        {
+            senderAsButton.IsEnabled = true;
+        }
+
         var devDrive = addRepoDialog.EditDevDriveViewModel.DevDrive;
 
         if (addRepoDialog.EditDevDriveViewModel.IsWindowOpen)

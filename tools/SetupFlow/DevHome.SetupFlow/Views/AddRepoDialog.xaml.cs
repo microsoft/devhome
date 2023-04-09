@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -47,10 +48,10 @@ internal partial class AddRepoDialog
     /// </summary>
     private string _oldCloneLocation;
 
-    public AddRepoDialog(IDevDriveManager devDriveManager)
+    public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource)
     {
         this.InitializeComponent();
-        AddRepoViewModel = new AddRepoViewModel();
+        AddRepoViewModel = new AddRepoViewModel(stringResource);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel();
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
@@ -65,24 +66,27 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Gets all plugins that have a provider type of repository and devid.
     /// </summary>
-    public void GetPlugins()
+    public async Task GetPluginsAsync()
     {
-        AddRepoViewModel.GetPlugins();
+        await Task.Run(() => AddRepoViewModel.GetPlugins());
     }
 
     /// <summary>
     /// Sets up the UI for dev drives.
     /// </summary>
-    public void SetupDevDrives()
+    public async Task SetupDevDrivesAsync()
     {
-        EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
-
-        if (EditDevDriveViewModel.DevDrive != null &&
-            EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+        await Task.Run(() =>
         {
-            FolderPickerViewModel.InDevDriveScenario = true;
-            EditDevDriveViewModel.ClonePathUpdated();
-        }
+            EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
+
+            if (EditDevDriveViewModel.DevDrive != null &&
+                EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+            {
+                FolderPickerViewModel.InDevDriveScenario = true;
+                EditDevDriveViewModel.ClonePathUpdated();
+            }
+        });
     }
 
     private void AddViaAccountToggleButton_Click(object sender, RoutedEventArgs e)
@@ -95,6 +99,7 @@ internal partial class AddRepoDialog
 
     private void AddViaUrlToggleButton_Click(object sender, RoutedEventArgs e)
     {
+        RepositoryProviderComboBox.SelectedIndex = -1;
         AddRepoViewModel.ChangeToUrlPage();
         FolderPickerViewModel.ShowFolderPicker();
         EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
@@ -111,17 +116,16 @@ internal partial class AddRepoDialog
     private void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
-        AddRepoViewModel.GetAccounts(repositoryProviderName);
-        AddRepoViewModel.ChangeToRepoPage();
-        FolderPickerViewModel.ShowFolderPicker();
-        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-
-        if (AddRepoViewModel.Accounts.Any())
+        if (!string.IsNullOrEmpty(repositoryProviderName))
         {
-            AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+            PrimaryButtonStyle = AddRepoStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+            IsPrimaryButtonEnabled = true;
         }
-
-        ToggleCloneButton();
+        else
+        {
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+            IsPrimaryButtonEnabled = false;
+        }
     }
 
     /// <summary>
@@ -172,11 +176,31 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Adds the repository from the URL screen to the list of repos to be cloned.
     /// </summary>
-    private void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
-            AddRepoViewModel.AddRepositoryViaUri(FolderPickerViewModel.CloneLocation);
+            AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation);
+        }
+        else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
+        {
+            args.Cancel = true;
+            var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
+            if (!string.IsNullOrEmpty(repositoryProviderName))
+            {
+                var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
+                AddRepoViewModel.ChangeToRepoPage();
+                FolderPickerViewModel.ShowFolderPicker();
+                EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+
+                await getAccountsTask;
+                if (AddRepoViewModel.Accounts.Any())
+                {
+                    AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+                }
+
+                IsPrimaryButtonEnabled = false;
+            }
         }
     }
 
@@ -232,11 +256,11 @@ internal partial class AddRepoDialog
         var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
         if (isEverythingGood)
         {
-            AddRepoViewModel.EnablePrimaryButton();
+            IsPrimaryButtonEnabled = true;
         }
         else
         {
-            AddRepoViewModel.DisablePrimaryButton();
+            IsPrimaryButtonEnabled = false;
         }
 
         // Fill in EverythingToClone with the location
@@ -249,8 +273,17 @@ internal partial class AddRepoDialog
     /// <summary>
     /// User navigated away from the URL text box.  Validate it.
     /// </summary>
+    /// <remarks>
+    /// LostFocus event fires before data binding.  Set URL here.
+    /// </remarks>
     private void RepoUrlTextBox_LostFocus(object sender, RoutedEventArgs e)
     {
+        // just in case something other than a text box calls this.
+        if (sender is TextBox)
+        {
+            AddRepoViewModel.Url = (sender as TextBox).Text;
+        }
+
         ToggleCloneButton();
     }
 }

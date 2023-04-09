@@ -13,6 +13,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using static DevHome.SetupFlow.Models.Common;
@@ -26,6 +27,8 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class AddRepoViewModel : ObservableObject
 {
+    private readonly ISetupFlowStringResource _stringResource;
+
     /// <summary>
     /// Gets or sets the list that keeps all repositories the user wants to clone.
     /// </summary>
@@ -113,6 +116,9 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private string _textToFilterBy;
 
+    [ObservableProperty]
+    private string _primaryButtonText;
+
     [RelayCommand]
     private void FilterRepositories(string text)
     {
@@ -137,8 +143,9 @@ public partial class AddRepoViewModel : ObservableObject
         get; set;
     }
 
-    public AddRepoViewModel()
+    public AddRepoViewModel(ISetupFlowStringResource stringResource)
     {
+        _stringResource = stringResource;
         ChangeToUrlPage();
 
         // override changes ChangeToUrlPage to correctly set the state.
@@ -176,6 +183,7 @@ public partial class AddRepoViewModel : ObservableObject
         IsUrlAccountButtonChecked = true;
         IsAccountToggleButtonChecked = false;
         CurrentPage = PageKind.AddViaUrl;
+        PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
     }
 
     public void ChangeToAccountPage()
@@ -186,6 +194,7 @@ public partial class AddRepoViewModel : ObservableObject
         IsUrlAccountButtonChecked = false;
         IsAccountToggleButtonChecked = true;
         CurrentPage = PageKind.AddViaAccount;
+        PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoAccountPagePrimaryButtonText);
     }
 
     public void ChangeToRepoPage()
@@ -194,6 +203,7 @@ public partial class AddRepoViewModel : ObservableObject
         ShowAccountPage = Visibility.Collapsed;
         ShowRepoPage = Visibility.Visible;
         CurrentPage = PageKind.Repositories;
+        PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
 
         // The only way to get the repo page is through the account page.
         // No need to change toggle buttons.
@@ -235,16 +245,16 @@ public partial class AddRepoViewModel : ObservableObject
     /// Gets all the accounts for a provider and updates the UI.
     /// </summary>
     /// <param name="repositoryProviderName">The provider the user wants to use.</param>
-    public void GetAccounts(string repositoryProviderName)
+    public async Task GetAccountsAsync(string repositoryProviderName)
     {
-        _providers.StartIfNotRunning(repositoryProviderName);
-        var loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
+        await Task.Run(() => _providers.StartIfNotRunning(repositoryProviderName));
+        var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
             // Throw away developer id becase we're calling GetAllLoggedInAccounts in anticipation
             // of 1 Provider : N DeveloperIds
-            _providers.LogInToProvider(repositoryProviderName);
-            loggedInAccounts = _providers.GetAllLoggedInAccounts(repositoryProviderName);
+            await Task.Run(() => _providers.LogInToProvider(repositoryProviderName));
+            loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         }
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId()));
@@ -286,11 +296,17 @@ public partial class AddRepoViewModel : ObservableObject
     /// Adds a repository from the URL page.
     /// </summary>
     /// <param name="cloneLocation">The location to clone the repo to</param>
-    public void AddRepositoryViaUri(string cloneLocation)
+    public void AddRepositoryViaUri(string url, string cloneLocation)
     {
         // Try to parse repo from Uri
         // null means no providers were able to parse the Uri.
-        var providerNameAndRepo = _providers.ParseRepositoryFromUri(new Uri(Url));
+        Uri uriToParse;
+        if (!Uri.TryCreate(url, UriKind.Absolute, out uriToParse))
+        {
+            return;
+        }
+
+        var providerNameAndRepo = _providers.ParseRepositoryFromUri(uriToParse);
         if (providerNameAndRepo.Item2 == null)
         {
             return;
