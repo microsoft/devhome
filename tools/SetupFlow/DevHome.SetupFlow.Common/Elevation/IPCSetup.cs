@@ -1,15 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Diagnostics;
+using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using DevHome.Logging;
 using Windows.Win32;
 using Windows.Win32.System.Com;
 using WinRT;
 
-namespace DevHome.SetupFlow.ElevatedComponent;
+namespace DevHome.SetupFlow.Common.Elevation;
 
 /// <summary>
 /// Helper class for establishing a background process to offload work to,
@@ -302,6 +306,7 @@ public static class IPCSetup
     /// <param name="value">
     /// The object to write on the shared memory, can be null when writing a failure.
     /// </param>
+#nullable enable
     public static void CompleteRemoteObjectInitialization<T>(
         int defaultHResult,
         T? value,
@@ -394,4 +399,5 @@ public static class IPCSetup
 
         logger?.ReportInfo("Exiting");
     }
+#nullable disable
 }

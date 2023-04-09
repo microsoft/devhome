@@ -41,10 +41,21 @@
                 </Button>
             </StackPanel>
         </Grid>
-        
-        <!-- Intoduction to the summary page -->
-        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Header" Style="{ThemeResource FlyoutPickerTitleTextBlockStyle}" Margin="0, 20, 0, 40"/>
-        
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <!-- Intoduction to the summary page -->
+            <TextBlock Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Header" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0, 20, 0, 40"/>
+            <Button Grid.Column="1" HorizontalAlignment="Right" Command="{x:Bind ViewModel.GoBackToMainPageCommand}" Style="{ThemeResource AlternateCloseButtonStyle}" VerticalAlignment="Center">
+                <Button.Content>
+                    <SymbolIcon Symbol="Cancel"/>
+                </Button.Content>
+            </Button>
+        </Grid>
+
         <!-- Grid with information on tasks completed-->
         <Grid ColumnSpacing="50">
             <Grid.ColumnDefinitions>

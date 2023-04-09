@@ -4,7 +4,10 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DevHome.Common.Contracts.Services;
+using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Helpers;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Services;
@@ -35,8 +38,9 @@ public class AccountsService : IAccountsService
     public async Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders()
     {
         var devIdProviders = new List<IDeveloperIdProvider>();
-        var pluginService = new PluginService();
+        var pluginService = Application.Current.GetService<IPluginService>();
         var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
+
         foreach (var plugin in plugins)
         {
             var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();

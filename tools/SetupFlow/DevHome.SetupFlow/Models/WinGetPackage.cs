@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading;
-using DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.Management.Deployment;
@@ -79,12 +79,22 @@ public class WinGetPackage : IWinGetPackage
         {
             // TODO Use the API contract version to check if this method can be
             // called instead of a try/catch
+            Log.Logger?.ReportInfo(nameof(WinGetPackage), $"Getting applicable installer info for package {Id}");
             var appInstaller = _package.DefaultInstallVersion.GetApplicableInstaller(options);
-            return appInstaller.ElevationRequirement == ElevationRequirement.ElevationRequired;
+            if (appInstaller != null)
+            {
+                Log.Logger?.ReportInfo(nameof(WinGetPackage), $"Elevation requirement = {appInstaller.ElevationRequirement} for package {Id}");
+                return appInstaller.ElevationRequirement == ElevationRequirement.ElevationRequired;
+            }
+            else
+            {
+                Log.Logger?.ReportWarn(nameof(WinGetPackage), $"No applicable installer info found for package {Id}; defaulting to not requiring elevation");
+                return false;
+            }
         }
         catch
         {
-            Log.Logger?.ReportWarn(nameof(WinGetPackage), $"Failed to get elevation requirement for package {_package.Id}; defaulting to not requiring elevation");
+            Log.Logger?.ReportWarn(nameof(WinGetPackage), $"Failed to get elevation requirement for package {Id}; defaulting to not requiring elevation");
             return false;
         }
     }

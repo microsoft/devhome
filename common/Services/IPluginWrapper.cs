@@ -23,6 +23,14 @@ public interface IPluginWrapper
     }
 
     /// <summary>
+    /// Gets package fullname of the plugin
+    /// </summary>
+    string PackageFullName
+    {
+        get;
+    }
+
+    /// <summary>
     /// Gets class id (GUID) of the plugin class (which implements IPlugin) as mentioned in the manifest
     /// </summary>
     string PluginClassId

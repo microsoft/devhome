@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Models;

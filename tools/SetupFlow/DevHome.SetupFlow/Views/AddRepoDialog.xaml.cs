@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -47,10 +48,10 @@ internal partial class AddRepoDialog
     /// </summary>
     private string _oldCloneLocation;
 
-    public AddRepoDialog(IDevDriveManager devDriveManager)
+    public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource)
     {
         this.InitializeComponent();
-        AddRepoViewModel = new AddRepoViewModel();
+        AddRepoViewModel = new AddRepoViewModel(stringResource);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel();
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
@@ -98,6 +99,7 @@ internal partial class AddRepoDialog
 
     private void AddViaUrlToggleButton_Click(object sender, RoutedEventArgs e)
     {
+        RepositoryProviderComboBox.SelectedIndex = -1;
         AddRepoViewModel.ChangeToUrlPage();
         FolderPickerViewModel.ShowFolderPicker();
         EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
@@ -122,10 +124,14 @@ internal partial class AddRepoDialog
         await getAccountsTask;
         if (AddRepoViewModel.Accounts.Any())
         {
-            AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+            PrimaryButtonStyle = AddRepoStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+            IsPrimaryButtonEnabled = true;
         }
-
-        ToggleCloneButton();
+        else
+        {
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+            IsPrimaryButtonEnabled = false;
+        }
     }
 
     /// <summary>
@@ -182,6 +188,26 @@ internal partial class AddRepoDialog
         {
             AddRepoViewModel.AddRepositoryViaUri(FolderPickerViewModel.CloneLocation);
         }
+        else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
+        {
+            args.Cancel = true;
+            var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
+            if (!string.IsNullOrEmpty(repositoryProviderName))
+            {
+                AddRepoViewModel.GetAccounts(repositoryProviderName);
+                AddRepoViewModel.ChangeToRepoPage();
+                FolderPickerViewModel.ShowFolderPicker();
+                EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+
+                if (AddRepoViewModel.Accounts.Any())
+                {
+                    AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+                }
+
+                IsPrimaryButtonEnabled = false;
+                RepositoryProviderComboBox.SelectedIndex = -1;
+            }
+        }
     }
 
     /// <summary>
@@ -234,13 +260,13 @@ internal partial class AddRepoDialog
     private void ToggleCloneButton()
     {
         var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
-        if (isEverythingGood)
+        if (AddRepoViewModel.CurrentPage != PageKind.AddViaAccount || isEverythingGood)
         {
-            AddRepoViewModel.EnablePrimaryButton();
+            IsPrimaryButtonEnabled = true;
         }
         else
         {
-            AddRepoViewModel.DisablePrimaryButton();
+            IsPrimaryButtonEnabled = false;
         }
 
         // Fill in EverythingToClone with the location

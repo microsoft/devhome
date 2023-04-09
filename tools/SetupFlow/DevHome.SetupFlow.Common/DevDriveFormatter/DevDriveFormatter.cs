@@ -1,11 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Linq;
 using System.Management;
+using DevHome.Logging;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 
-namespace DevHome.SetupFlow.ComInterop.Projection.DevDriveFormatter;
+namespace DevHome.SetupFlow.Common.DevDriveFormatter;
 
 /// <summary>
 /// Class that will perform the format operation to format a partition as a Dev Drive.
@@ -24,6 +26,8 @@ public class DevDriveFormatter
     /// <returns>An Hresult as an int that indicates whether the operation succeeded or failed</returns>
     public int FormatPartitionAsDevDrive(char curDriveLetter, string driveLabel)
     {
+        var logger = new ComponentLogger("FormatPartitionAsDevDrive", "DevDriveFormatter").Logger;
+        logger?.ReportInfo(nameof(DevDriveFormatter), $"{nameof(FormatPartitionAsDevDrive)}: Creating ManagementObjectSearcher to search for volume whose Drive letter is {curDriveLetter}:");
         try
         {
             // Since at the time of this call we don't know the unique object ID of our new volume
@@ -32,14 +36,17 @@ public class DevDriveFormatter
             var searcher =
                 new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage", "SELECT * FROM MSFT_Volume");
             long fourKb = 4096;
-            foreach (ManagementObject queryObj in searcher.Get())
+            foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
             {
                 var objectId = queryObj["ObjectId"] as string;
                 var letter = queryObj["DriveLetter"];
+
                 if (letter is char foundALetter
                     && curDriveLetter == foundALetter &&
                     !string.IsNullOrEmpty(objectId))
                 {
+                    logger?.ReportInfo(nameof(DevDriveFormatter), $"Starting WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter}, using args: DeveloperVolume: true, FileSystem: ReFS, FileSystemLabel: {driveLabel}, AllocationUnitSize: {fourKb}");
+
                     // Obtain in-parameters for the method
                     var inParams =
                         queryObj.GetMethodParameters("Format");
@@ -57,18 +64,28 @@ public class DevDriveFormatter
                     var returnValue = (uint)outParams["ReturnValue"];
                     if (returnValue == 0)
                     {
+                        logger?.ReportInfo(nameof(DevDriveFormatter), $"WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter} finished Successfully");
                         return 0;
                     }
+
+                    logger?.ReportError(nameof(DevDriveFormatter), $"WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter}, failed with wmi error: {returnValue}");
+                    break;
                 }
+
+                var notCorrectDriveLetter = (letter is char ) ? ((char)letter).ToString() : "none";
+                logger?.ReportInfo(nameof(DevDriveFormatter), $"ManagementObjectSearcher found ObjectId: {objectId} but its Driveletter: {notCorrectDriveLetter}: is not correct, continuing search...");
             }
 
             // If we got here that means the returnValue was not successful. We give this a specific error but this will need need
             // to be changed. WMI can return different status and error codes based on the function. The actual returnValue will need
             // to be converted. https://learn.microsoft.com/en-us/windows/win32/wmisdk/wmi-return-codes
-            return (int)PInvoke.HRESULT_FROM_WIN32(WIN32_ERROR.ERROR_FUNCTION_FAILED);
+            var defaultError = (int)PInvoke.HRESULT_FROM_WIN32(WIN32_ERROR.ERROR_FUNCTION_FAILED);
+            logger?.ReportError(nameof(DevDriveFormatter), $"{nameof(FormatPartitionAsDevDrive)} Attempt to format drive as a Dev Drive failed default error: 0x{defaultError:X}");
+            return defaultError;
         }
         catch (ManagementException e)
         {
+            logger?.ReportError(nameof(DevDriveFormatter), $"{nameof(FormatPartitionAsDevDrive)} A management exception occurred while formating Dev Drive Error: 0x{e.HResult:X}, error msg: {e.Message}");
             return e.HResult;
         }
     }

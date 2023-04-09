@@ -4,7 +4,7 @@
 using System;
 using Microsoft.Management.Deployment;
 
-namespace DevHome.SetupFlow.ComInterop.Projection.WindowsPackageManager;
+namespace DevHome.SetupFlow.Common.WindowsPackageManager;
 
 /// <summary>
 /// Factory class for creating WinGet COM objects.
