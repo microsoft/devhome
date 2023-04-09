@@ -49,7 +49,7 @@ public sealed partial class RepoConfigView : UserControl
         await getPluginsTask;
         await setupDevDrivesTask;
         var result = await addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
-        
+
         if (senderAsButton != null)
         {
             senderAsButton.IsEnabled = false;
