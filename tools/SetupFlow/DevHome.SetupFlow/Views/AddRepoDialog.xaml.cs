@@ -66,24 +66,27 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Gets all plugins that have a provider type of repository and devid.
     /// </summary>
-    public void GetPlugins()
+    public async Task GetPluginsAsync()
     {
-        AddRepoViewModel.GetPlugins();
+        await Task.Run(() => AddRepoViewModel.GetPlugins());
     }
 
     /// <summary>
     /// Sets up the UI for dev drives.
     /// </summary>
-    public void SetupDevDrives()
+    public async Task SetupDevDrivesAsync()
     {
-        EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
-
-        if (EditDevDriveViewModel.DevDrive != null &&
-            EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+        await Task.Run(() =>
         {
-            FolderPickerViewModel.InDevDriveScenario = true;
-            EditDevDriveViewModel.ClonePathUpdated();
-        }
+            EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
+
+            if (EditDevDriveViewModel.DevDrive != null &&
+                EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+            {
+                FolderPickerViewModel.InDevDriveScenario = true;
+                EditDevDriveViewModel.ClonePathUpdated();
+            }
+        });
     }
 
     private void AddViaAccountToggleButton_Click(object sender, RoutedEventArgs e)
@@ -110,10 +113,16 @@ internal partial class AddRepoDialog
     /// <remarks>
     /// Fired when the combo box on the account page is changed.
     /// </remarks>
-    private void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
-        if (!string.IsNullOrEmpty(repositoryProviderName))
+        var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
+        AddRepoViewModel.ChangeToRepoPage();
+        FolderPickerViewModel.ShowFolderPicker();
+        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+
+        await getAccountsTask;
+        if (AddRepoViewModel.Accounts.Any())
         {
             PrimaryButtonStyle = AddRepoStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
             IsPrimaryButtonEnabled = true;
@@ -173,7 +182,7 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Adds the repository from the URL screen to the list of repos to be cloned.
     /// </summary>
-    private void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
@@ -185,11 +194,12 @@ internal partial class AddRepoDialog
             var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
             if (!string.IsNullOrEmpty(repositoryProviderName))
             {
-                AddRepoViewModel.GetAccounts(repositoryProviderName);
+                var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
                 AddRepoViewModel.ChangeToRepoPage();
                 FolderPickerViewModel.ShowFolderPicker();
                 EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
 
+                await getAccountsTask;
                 if (AddRepoViewModel.Accounts.Any())
                 {
                     AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
