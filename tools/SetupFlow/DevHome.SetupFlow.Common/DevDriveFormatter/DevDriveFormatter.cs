@@ -15,7 +15,7 @@ namespace DevHome.SetupFlow.Common.DevDriveFormatter;
 /// this was moved out of the DevDriveStorageOperator class in that project. This is a work around for
 /// now until that is fixed.
 /// </summary>
-public class DevDriveFormatter
+public sealed class DevDriveFormatter
 {
     /// <summary>
     /// Uses WMI to and the storage Api to format the drive as a Dev Drive. Note: the implementation

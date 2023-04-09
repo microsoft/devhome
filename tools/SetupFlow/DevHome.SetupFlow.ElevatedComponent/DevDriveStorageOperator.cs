@@ -557,6 +557,11 @@ public sealed class DevDriveStorageOperator
     {
         Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(FormatPartitionAsDevDrive)}: Creating DevDriveFormatter");
         var devDriveFormatter = new DevDriveFormatter();
-        return devDriveFormatter.FormatPartitionAsDevDrive(curDriveLetter, driveLabel);
+
+        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(FormatPartitionAsDevDrive)}: DevDriveFormatter created");
+        var result = devDriveFormatter.FormatPartitionAsDevDrive(curDriveLetter, driveLabel);
+
+        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(FormatPartitionAsDevDrive)}: {nameof(DevDriveFormatter)} FormatPartitionAsDevDrive resulted in return code: {result:X}");
+        return result;
     }
 }
