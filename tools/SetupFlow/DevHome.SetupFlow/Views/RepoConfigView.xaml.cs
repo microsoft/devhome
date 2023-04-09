@@ -52,7 +52,7 @@ public sealed partial class RepoConfigView : UserControl
 
         if (senderAsButton != null)
         {
-            senderAsButton.IsEnabled = false;
+            senderAsButton.IsEnabled = true;
         }
 
         var devDrive = addRepoDialog.EditDevDriveViewModel.DevDrive;
