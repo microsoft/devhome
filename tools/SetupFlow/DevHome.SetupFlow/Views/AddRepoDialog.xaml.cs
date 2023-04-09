@@ -113,16 +113,10 @@ internal partial class AddRepoDialog
     /// <remarks>
     /// Fired when the combo box on the account page is changed.
     /// </remarks>
-    private async void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
-        var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
-        AddRepoViewModel.ChangeToRepoPage();
-        FolderPickerViewModel.ShowFolderPicker();
-        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-
-        await getAccountsTask;
-        if (AddRepoViewModel.Accounts.Any())
+        if (!string.IsNullOrEmpty(repositoryProviderName))
         {
             PrimaryButtonStyle = AddRepoStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
             IsPrimaryButtonEnabled = true;
