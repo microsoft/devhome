@@ -74,9 +74,11 @@
             </ContentControl.ContentTemplateSelector>
         </ContentControl>
 
-        <controls:SetupFlowNavigation Grid.Row="1">
+        <controls:SetupFlowNavigation
+            Grid.Row="1"
+            Visibility="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.IsNavigationBarVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
             <i:Interaction.Behaviors>
-                <setupFlowBehaviors:SetupFlowNavigationBehavior DefaultIsVisible="True">
+                <setupFlowBehaviors:SetupFlowNavigationBehavior>
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultCancelTemplate>
                         <HyperlinkButton
                             Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"

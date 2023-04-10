@@ -90,6 +90,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _orchestrator = orchestrator;
         _host = host;
 
+        IsNavigationBarVisible = false;
         IsStepPage = false;
 
         _showRestartNeeded = Visibility.Collapsed;

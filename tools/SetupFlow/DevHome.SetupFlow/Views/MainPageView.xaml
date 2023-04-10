@@ -12,7 +12,6 @@
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
-    setupFlowBehaviors:SetupFlowNavigationBehavior.IsVisible="False"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>

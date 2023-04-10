@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Diagnostics;
 using DevHome.SetupFlow.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -23,7 +22,6 @@ public class SetupFlowNavigationBehavior : Behavior<SetupFlowNavigation>
         _instance = this;
 
         // Initialize to default template and values
-        UpdateIsVisible(_instance.DefaultIsVisible);
         UpdateContentTemplate(_instance.DefaultContentTemplate);
         UpdateCancelTemplate(_instance.DefaultCancelTemplate);
         UpdatePreviousTemplate(_instance.DefaultPreviousTemplate);
@@ -125,24 +123,4 @@ public class SetupFlowNavigationBehavior : Behavior<SetupFlowNavigation>
     }
 
     public static readonly DependencyProperty ContentTemplateProperty = DependencyProperty.RegisterAttached("ContentTemplate", typeof(object), typeof(SetupFlowNavigationBehavior), new PropertyMetadata(null, (_, e) => UpdateContentTemplate(e.NewValue)));
-
-    /***
-     * Visibility
-     */
-    public bool DefaultIsVisible { get; set; }
-
-    public static bool GetIsVisible(UserControl nav) => (bool)nav.GetValue(IsVisibleProperty);
-
-    public static void SetIsVisible(UserControl nav, bool visibility) =>
-        SetTemporaryValue(nav, IsVisibleProperty, visibility, () => UpdateIsVisible(_instance?.DefaultIsVisible));
-
-    public static void UpdateIsVisible(object isVisibleObject)
-    {
-        if (_instance != null && isVisibleObject is bool isVisible)
-        {
-            _instance.AssociatedObject.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
-        }
-    }
-
-    public static readonly DependencyProperty IsVisibleProperty = DependencyProperty.RegisterAttached("IsVisible", typeof(bool), typeof(SetupFlowNavigationBehavior), new PropertyMetadata(true, (_, e) => UpdateIsVisible(e.NewValue)));
 }
