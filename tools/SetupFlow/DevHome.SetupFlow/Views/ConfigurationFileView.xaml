@@ -16,7 +16,9 @@
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
     <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
-        <SplitButton
+        <ToggleSplitButton
+            IsEnabled="{x:Bind ViewModel.ReadAndAgree, Mode=OneWay}"
+            IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=OneWay}"
             Command="{x:Bind ViewModel.ConfigureAsAdminCommand, Mode=OneWay}"
             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsAdmin">
             <SplitButton.Flyout>
@@ -27,7 +29,7 @@
                     </MenuFlyoutItem>
                 </MenuFlyout>
             </SplitButton.Flyout>
-        </SplitButton>
+        </ToggleSplitButton>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
     <controls:SetupShell Title="{x:Bind ViewModel.TitleText, Mode=OneWay}">
         <Grid>
