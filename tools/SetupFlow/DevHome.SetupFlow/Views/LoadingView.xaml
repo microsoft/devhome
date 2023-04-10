@@ -28,7 +28,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <!-- Hide cancel and previous template -->
+    <!-- Hide previous and cancel buttons -->
     <setupFlowBehaviors:SetupFlowNavigationBehavior.CancelTemplate>
         <Grid />
     </setupFlowBehaviors:SetupFlowNavigationBehavior.CancelTemplate>
