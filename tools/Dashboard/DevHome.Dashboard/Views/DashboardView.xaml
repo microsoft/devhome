@@ -20,11 +20,11 @@
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="DashboardBannerFront">ms-appx:///DevHome.Dashboard/Assets/DashboardBannerFrontLight.png</x:String>
-                    <x:String x:Key="DashboardBannerBack">ms-appx:///DevHome.Dashboard/Assets/DashboardBannerBackLight.png</x:String>
+                    <x:String x:Key="DashboardBannerBack">ms-appx:///DevHome.Common/Assets/BannerBackgroundLight.png</x:String>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <x:String x:Key="DashboardBannerFront">ms-appx:///DevHome.Dashboard/Assets/DashboardBannerFrontDark.png</x:String>
-                    <x:String x:Key="DashboardBannerBack">ms-appx:///DevHome.Dashboard/Assets/DashboardBannerBackDark.png</x:String>
+                    <x:String x:Key="DashboardBannerBack">ms-appx:///DevHome.Common/Assets/BannerBackgroundDark.png</x:String>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>

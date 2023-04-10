@@ -30,12 +30,12 @@
 
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
-                    <x:String x:Key="Setup_Banner_Back">ms-appx:///DevHome.SetupFlow/Assets/Setup_Banner_Back_Light.png</x:String>
+                    <x:String x:Key="Setup_Banner_Back">ms-appx:///DevHome.Common/Assets/BannerBackgroundLight.png</x:String>
                     <x:String x:Key="Setup_Banner_Front">ms-appx:///DevHome.SetupFlow/Assets/Setup_Banner_Front_Light.png</x:String>
                 </ResourceDictionary>
 
                 <ResourceDictionary x:Key="Dark">
-                    <x:String x:Key="Setup_Banner_Back">ms-appx:///DevHome.SetupFlow/Assets/Setup_Banner_Back_Dark.png</x:String>
+                    <x:String x:Key="Setup_Banner_Back">ms-appx:///DevHome.Common/Assets/BannerBackgroundDark.png</x:String>
                     <x:String x:Key="Setup_Banner_Front">ms-appx:///DevHome.SetupFlow/Assets/Setup_Banner_Front_Dark.png</x:String>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
