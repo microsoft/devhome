@@ -8,7 +8,7 @@
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
-    setupFlowBehaviors:SetupFlowNavigationBehavior.Visibility="Collapsed"
+    setupFlowBehaviors:SetupFlowNavigationBehavior.IsVisible="False"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>

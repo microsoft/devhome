@@ -10,7 +10,7 @@
     xmlns:models="using:DevHome.SetupFlow.Models"
     xmlns:commonModels="using:DevHome.SetupFlow.Models"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
-    setupFlowBehaviors:SetupFlowNavigationBehavior.Visibility="Collapsed"
+    setupFlowBehaviors:SetupFlowNavigationBehavior.IsVisible="False"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>

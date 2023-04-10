@@ -23,7 +23,7 @@ public class SetupFlowNavigationBehavior : Behavior<SetupFlowNavigation>
         _instance = this;
 
         // Initialize to default template and values
-        UpdateVisibility(_instance.DefaultVisibility);
+        UpdateIsVisible(_instance.DefaultIsVisible);
         UpdateContentTemplate(_instance.DefaultContentTemplate);
         UpdateCancelTemplate(_instance.DefaultCancelTemplate);
         UpdatePreviousTemplate(_instance.DefaultPreviousTemplate);
@@ -129,20 +129,20 @@ public class SetupFlowNavigationBehavior : Behavior<SetupFlowNavigation>
     /***
      * Visibility
      */
-    public Visibility DefaultVisibility { get; set; }
+    public bool DefaultIsVisible { get; set; }
 
-    public static Visibility GetVisibility(UserControl nav) => (Visibility)nav.GetValue(VisibilityProperty);
+    public static bool GetIsVisible(UserControl nav) => (bool)nav.GetValue(IsVisibleProperty);
 
-    public static void SetVisibility(UserControl nav, Visibility visibility) =>
-        SetTemporaryValue(nav, VisibilityProperty, visibility, () => UpdateVisibility(_instance?.DefaultVisibility));
+    public static void SetIsVisible(UserControl nav, bool visibility) =>
+        SetTemporaryValue(nav, IsVisibleProperty, visibility, () => UpdateIsVisible(_instance?.DefaultIsVisible));
 
-    public static void UpdateVisibility(object visibilityObject)
+    public static void UpdateIsVisible(object isVisibleObject)
     {
-        if (_instance != null && visibilityObject is Visibility visibility)
+        if (_instance != null && isVisibleObject is bool isVisible)
         {
-            _instance.AssociatedObject.Visibility = visibility;
+            _instance.AssociatedObject.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 
-    public static readonly DependencyProperty VisibilityProperty = DependencyProperty.RegisterAttached("Visibility", typeof(Visibility), typeof(SetupFlowNavigationBehavior), new PropertyMetadata(Visibility.Visible, (_, e) => UpdateVisibility(e.NewValue)));
+    public static readonly DependencyProperty IsVisibleProperty = DependencyProperty.RegisterAttached("IsVisible", typeof(bool), typeof(SetupFlowNavigationBehavior), new PropertyMetadata(true, (_, e) => UpdateIsVisible(e.NewValue)));
 }

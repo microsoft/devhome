@@ -76,7 +76,7 @@
 
         <controls:SetupFlowNavigation Grid.Row="1">
             <i:Interaction.Behaviors>
-                <setupFlowBehaviors:SetupFlowNavigationBehavior DefaultVisibility="Visible">
+                <setupFlowBehaviors:SetupFlowNavigationBehavior DefaultIsVisible="True">
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultCancelTemplate>
                         <HyperlinkButton
                             Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
