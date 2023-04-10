@@ -191,7 +191,7 @@
   <data name="Settings_Accounts_AddAccountButton.Content" xml:space="preserve">
     <value>Add Account</value>
   </data>
-  <data name="Settings_Accounts_AddAccountText.Text" xml:space="preserve">
+  <data name="Settings_Accounts_AddAccount.Header" xml:space="preserve">
     <value>Add Account</value>
   </data>
   <data name="Settings_Accounts_AfterLogoutContentDialog_Content" xml:space="preserve">
@@ -216,7 +216,7 @@
     <value>Are you sure?</value>
   </data>
   <data name="Settings_Accounts_LogoutButton.Content" xml:space="preserve">
-    <value>Logout</value>
+    <value>Sign Out</value>
   </data>
   <data name="Settings_Accounts_NoProvidersContentDialog_Content" xml:space="preserve">
     <value>Please install a Dev Home Plugin and restart Dev Home to add an account.</value>
