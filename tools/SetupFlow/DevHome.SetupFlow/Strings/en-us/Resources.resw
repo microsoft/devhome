@@ -816,6 +816,14 @@
     <value>Tasks</value>
     <comment>Header for the Tasks scroll viewer</comment>
   </data>
+  <data name="SetUpAsAdmin.Content" xml:space="preserve">
+    <value>Set up as admin</value>
+    <comment>Text shown on a split button for setting up configuration as admin</comment>
+  </data>
+  <data name="SetUpAsNonAdmin.Text" xml:space="preserve">
+    <value>Set up as non-admin</value>
+    <comment>Text shown on a split button for setting up configuration as non-admin</comment>
+  </data>
   <data name="SummaryPage_AppsDownloadedCount.Text" xml:space="preserve">
     <value>Applications installed</value>
     <comment>Bottom footer of the number of apps downloaded</comment>

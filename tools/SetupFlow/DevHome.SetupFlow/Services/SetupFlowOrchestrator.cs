@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,6 +44,11 @@ public partial class SetupFlowOrchestrator
     [NotifyCanExecuteChangedFor(nameof(GoToPreviousPageCommand))]
     [NotifyCanExecuteChangedFor(nameof(GoToNextPageCommand))]
     private SetupPageViewModelBase _currentPageViewModel;
+
+    /// <summary>
+    /// Occurrs right before a page changes
+    /// </summary>
+    public event EventHandler PageChanging;
 
     /// <summary>
     /// Gets or sets the task groups that are to be executed on the flow.
@@ -142,6 +148,8 @@ public partial class SetupFlowOrchestrator
     /// Determines whether a given page is one that will be shown later in the flow.
     /// </summary>
     public bool IsUpcomingPage(SetupPageViewModelBase page) => FlowPages.Skip(_currentPageIndex + 1).Contains(page);
+
+    partial void OnCurrentPageViewModelChanging(SetupPageViewModelBase value) => PageChanging?.Invoke(null, EventArgs.Empty);
 
     [RelayCommand(CanExecute = nameof(CanGoToPreviousPage))]
     public async Task GoToPreviousPage()
