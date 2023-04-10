@@ -1,18 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+extern alias Projection;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.Common.Elevation;
-using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using Microsoft.Extensions.Hosting;
+using Projection::DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.ViewModels;
 
