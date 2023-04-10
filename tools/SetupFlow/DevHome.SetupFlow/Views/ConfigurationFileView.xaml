@@ -20,11 +20,12 @@
             Command="{x:Bind ViewModel.ConfigureAsAdminCommand, Mode=OneWay}"
             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsAdmin">
             <SplitButton.Flyout>
-                <Flyout>
-                    <Button
-                        Command="{x:Bind ViewModel.ConfigureAsNonAdminCommand}"
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsNonAdmin"/>
-                </Flyout>
+                <MenuFlyout>
+                    <MenuFlyoutItem
+                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsNonAdmin"
+                        Command="{x:Bind ViewModel.ConfigureAsNonAdminCommand}">
+                    </MenuFlyoutItem>
+                </MenuFlyout>
             </SplitButton.Flyout>
         </SplitButton>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
