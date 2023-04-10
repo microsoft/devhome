@@ -18,12 +18,12 @@
     <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
         <SplitButton
             Command="{x:Bind ViewModel.ConfigureAsAdminCommand, Mode=OneWay}"
-            Content="Set up as admin">
+            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsAdmin">
             <SplitButton.Flyout>
                 <Flyout>
                     <Button
                         Command="{x:Bind ViewModel.ConfigureAsNonAdminCommand}"
-                        Content="Set up as non-admin"/>
+                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsNonAdmin"/>
                 </Flyout>
             </SplitButton.Flyout>
         </SplitButton>
