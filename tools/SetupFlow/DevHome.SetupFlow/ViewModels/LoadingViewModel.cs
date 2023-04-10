@@ -128,7 +128,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         _host = host;
         _tasksToRun = new ();
 
-        IsNavigationBarVisible = false;
         IsStepPage = false;
 
         ShowRetryButton = Visibility.Collapsed;

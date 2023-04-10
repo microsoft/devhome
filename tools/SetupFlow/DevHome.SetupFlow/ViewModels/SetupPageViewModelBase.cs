@@ -25,12 +25,6 @@ public partial class SetupPageViewModelBase : ObservableObject
     private bool _hasExecutedFirstNavigateFrom;
 
     /// <summary>
-    /// Indicates whether to show the navigation bar at the bottom of this page.
-    /// </summary>
-    [ObservableProperty]
-    private bool _isNavigationBarVisible = true;
-
-    /// <summary>
     /// Indicates whether the "Previous page" button should be enabled on this page.
     /// </summary>
     /// <remarks>

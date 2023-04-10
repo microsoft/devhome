@@ -48,7 +48,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     {
         _host = host;
 
-        IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
     }
