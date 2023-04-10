@@ -39,12 +39,7 @@ public class SetupFlowNavigationBehavior : Behavior<SetupFlowNavigation>
     private static void SetTemporaryValue(UserControl control, DependencyProperty property, object value, Action defaultValueAction)
     {
         control.SetValue(property, value);
-
-        control.Unloaded += (_, _) =>
-        {
-            Debug.WriteLine("Setting");
-            defaultValueAction();
-        };
+        control.Unloaded += (_, _) => defaultValueAction();
     }
 
     /***

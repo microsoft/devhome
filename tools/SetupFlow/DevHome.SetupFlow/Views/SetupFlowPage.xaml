@@ -93,11 +93,12 @@
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
                         <Grid ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
                             <TextBlock IsTabStop="False" />
-                            <Button Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
-                                    Style="{StaticResource AccentButtonStyle}"
-                                    MinWidth="120" Margin="4,0"
-                                    Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
-                                    ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
+                            <Button
+                                Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
+                                Style="{StaticResource AccentButtonStyle}"
+                                MinWidth="120" Margin="4,0"
+                                Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
                         </Grid>
                     </setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
                 </setupFlowBehaviors:SetupFlowNavigationBehavior>

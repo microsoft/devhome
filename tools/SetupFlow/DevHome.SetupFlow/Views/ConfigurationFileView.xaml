@@ -10,11 +10,24 @@
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     mc:Ignorable="d">
-    <setupFlowBehaviors:SetupFlowNavigationContentBehavior.Content>
+    <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AgreeOnAbovePolicy"
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
-    </setupFlowBehaviors:SetupFlowNavigationContentBehavior.Content>
+    </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
+    <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+        <SplitButton
+            Command="{x:Bind ViewModel.ConfigureAsAdminCommand, Mode=OneWay}"
+            Content="Set up as admin">
+            <SplitButton.Flyout>
+                <Flyout>
+                    <Button
+                        Command="{x:Bind ViewModel.ConfigureAsNonAdminCommand}"
+                        Content="Set up as non-admin"/>
+                </Flyout>
+            </SplitButton.Flyout>
+        </SplitButton>
+    </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
     <controls:SetupShell Title="{x:Bind ViewModel.TitleText, Mode=OneWay}">
         <Grid>
             <Grid.RowDefinitions>
