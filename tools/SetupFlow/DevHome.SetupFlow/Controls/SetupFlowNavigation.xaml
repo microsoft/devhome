@@ -18,8 +18,8 @@
         </Grid.ColumnDefinitions>
         <ContentControl Content="{x:Bind ContentTemplate, Mode=OneWay}" />
         <StackPanel Grid.Column="1" Orientation="Horizontal" >
-            <ContentControl Content="{x:Bind CancelTemplate, Mode=OneWay}" />
-            <ContentControl Content="{x:Bind PreviousTemplate, Mode=OneWay}" />
+            <ContentControl Visibility="{x:Bind CancelVisibility, Mode=OneWay}" Content="{x:Bind CancelTemplate, Mode=OneWay}" />
+            <ContentControl Visibility="{x:Bind PreviousVisibility, Mode=OneWay}" Content="{x:Bind PreviousTemplate, Mode=OneWay}" />
             <ContentControl Content="{x:Bind NextTemplate, Mode=OneWay}" />
         </StackPanel>
     </Grid>
