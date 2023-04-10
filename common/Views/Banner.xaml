@@ -7,11 +7,11 @@
     mc:Ignorable="d">
     <Grid Height="214">
         <Grid.Background>
-            <ImageBrush Stretch="Fill" ImageSource="{x:Bind BackgroundSource}" />
+            <ImageBrush Stretch="Fill" ImageSource="{x:Bind BackgroundSource, Mode=OneWay}" />
         </Grid.Background>
 
         <!-- Set Min sizes so that image gets clipped as window narrows, rather than scaling down -->
-        <Image Stretch="Uniform" Source="{x:Bind OverlaySource}" 
+        <Image Stretch="Uniform" Source="{x:Bind OverlaySource, Mode=OneWay}" 
                Margin="0 0 0 0" Height="214" Width="924" MinHeight="214" MinWidth="924"/>
 
         <!-- Hide Banner Button -->
