@@ -9,7 +9,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:DevHome.SetupFlow.Models"
     xmlns:commonModels="using:DevHome.SetupFlow.Models"
-    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>

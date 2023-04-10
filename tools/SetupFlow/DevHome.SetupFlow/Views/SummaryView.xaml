@@ -7,7 +7,6 @@
     xmlns:ctControls="using:CommunityToolkit.Labs.WinUI"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
-    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
