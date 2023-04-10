@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:commonviews="using:DevHome.Common.Views"
+    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:selectors="using:DevHome.SetupFlow.Selectors"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
@@ -31,6 +32,12 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
+    <setupFlowBehaviors:SetupFlowNavigationContentBehavior.Content>
+        <CheckBox
+            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_ReadAndAgree"
+            IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
+    </setupFlowBehaviors:SetupFlowNavigationContentBehavior.Content>
+
     <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
                          Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
         <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -39,6 +46,7 @@
                            free, but it crashes when the content is not a SettingsCard, and
                            SettingsCards are hard to style to use the full width. -->
                 <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                          IsExpanded="true"
                           MinHeight="64" CornerRadius="3" Padding="47,0,47,7" >
                     <Expander.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"

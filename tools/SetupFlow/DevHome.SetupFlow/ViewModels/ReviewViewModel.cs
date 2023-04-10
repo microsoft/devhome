@@ -27,6 +27,9 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ReviewTabViewModelBase _selectedReviewTab;
 
+    [ObservableProperty]
+    private bool _readAndAgree;
+
     public bool HasApplicationsToInstall => Orchestrator.GetTaskGroup<AppManagementTaskGroup>()?.SetupTasks.Any() == true;
 
     public bool HasMSStoreApplicationsToInstall
@@ -92,9 +95,11 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         await Task.CompletedTask;
     }
 
+    partial void OnReadAndAgreeChanged(bool value) => UpdateCanGoToNextPage();
+
     public void UpdateCanGoToNextPage()
     {
-        CanGoToNextPage = HasTasksToSetUp;
+        CanGoToNextPage = HasTasksToSetUp && ReadAndAgree;
         _orchestrator.NotifyNavigationCanExecuteChanged();
     }
 }
