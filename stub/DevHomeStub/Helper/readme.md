@@ -1,0 +1,1 @@
+﻿This contains a port of logic from https://microsoft.visualstudio.com/Apps/_git/core.appsOnDemand?path=%2Fsrc%2FMicrosoft.Apps.Stubs.

@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+     xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+     xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+     xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+     xmlns:rescap3="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities/3"
+     xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+     IgnorableNamespaces="uap uap3 rescap rescap3 mp">
+
+  <Identity Name="Microsoft.Windows.DevHome" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.0.0.0" />
+
+  <Properties>
+    <DisplayName>ms-resource:AppStoreName</DisplayName>
+    <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
+    <Description>ms-resource:AppDescription</Description>
+    <Logo>Images\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.21200.0" MaxVersionTested="10.0.21326.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate"/>
+  </Resources>
+  
+  <Applications>
+    <Application Id="DevHome.Console"
+      Executable="$targetnametoken$.exe"
+      EntryPoint="$targetentrypoint$">
+      <uap:VisualElements DisplayName="ms-resource:AppDisplayName" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Images\MedTile.png"  Square44x44Logo="Images\AppList.png">
+        <uap:DefaultTile Wide310x150Logo="Images\WideTile.png" Square310x310Logo="Images\LargeTile.png"  Square71x71Logo="Images\SmallTile.png">
+        </uap:DefaultTile >
+        <uap:SplashScreen Image="Images\SplashScreen.png"  />
+        <uap:LockScreen BadgeLogo="Images\Badge.png"  Notification="badgeAndTileText"/>
+      </uap:VisualElements>
+      <Extensions>
+        <uap3:Extension Category="windows.protocol">
+          <uap3:Protocol Name="ms-devhome" Parameters="&quot;%1&quot;">
+            <uap:DisplayName>ms-devhome</uap:DisplayName>
+            <uap:Logo>Images\AppList.png</uap:Logo>
+          </uap3:Protocol>
+        </uap3:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>
