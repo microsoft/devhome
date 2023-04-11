@@ -31,7 +31,7 @@ public static class ServiceExtensions
         services.AddSummary();
 
         // View-models
-        services.AddTransient<SetupFlowViewModel>();
+        services.AddSingleton<SetupFlowViewModel>();
 
         // Services
         services.AddSingleton<ISetupFlowStringResource, SetupFlowStringResource>();
