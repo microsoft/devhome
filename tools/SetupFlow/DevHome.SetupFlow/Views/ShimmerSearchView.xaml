@@ -1,0 +1,40 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<UserControl
+    x:Class="DevHome.SetupFlow.Views.ShimmerSearchView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    mc:Ignorable="d">
+    <Grid RowSpacing="4" Margin="0 10 23 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Margin="0 0 0 10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <labs:Shimmer HorizontalAlignment="Left" Width="100"/>
+            <labs:Shimmer Grid.Column="1" Width="100"/>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1">
+            <ItemsRepeater ItemsSource="{x:Bind ShimmerPackages, Mode=OneWay}">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate>
+                        <labs:Shimmer Height="67" />
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+                <ItemsRepeater.Layout>
+                    <StackLayout Spacing="4" />
+                </ItemsRepeater.Layout>
+            </ItemsRepeater>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

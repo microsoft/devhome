@@ -1,0 +1,54 @@
+<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Licensed under the MIT License. -->
+
+<UserControl
+    x:Class="DevHome.SetupFlow.Views.ConfigurationFileView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
+    mc:Ignorable="d">
+    <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
+        <CheckBox
+            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AgreeOnAbovePolicy"
+            IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
+    </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
+    <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+        <ToggleSplitButton
+            IsEnabled="{x:Bind ViewModel.ReadAndAgree, Mode=OneWay}"
+            IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=OneWay}"
+            Command="{x:Bind ViewModel.ConfigureAsAdminCommand, Mode=OneWay}"
+            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsAdmin">
+            <SplitButton.Flyout>
+                <MenuFlyout>
+                    <MenuFlyoutItem
+                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsNonAdmin"
+                        Command="{x:Bind ViewModel.ConfigureAsNonAdminCommand}">
+                    </MenuFlyoutItem>
+                </MenuFlyout>
+            </SplitButton.Flyout>
+        </ToggleSplitButton>
+    </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+    <controls:SetupShell Title="{x:Bind ViewModel.TitleText, Mode=OneWay}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <InfoBar
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ConfigurationFileWarning"
+                IsOpen="True"
+                IsClosable="False"
+                Severity="Warning"/>
+            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto">
+                <TextBlock
+                    FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                    Padding="15"
+                    FontFamily="{StaticResource CascadiaMonoFontFamily}"
+                    Text="{x:Bind ViewModel.Content, Mode=OneWay}"/>
+            </ScrollViewer>
+        </Grid>
+    </controls:SetupShell>
+</UserControl>

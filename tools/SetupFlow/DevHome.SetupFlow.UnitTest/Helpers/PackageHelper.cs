@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.SetupFlow.AppManagement.Models;
+using DevHome.SetupFlow.Models;
 using Moq;
 
 namespace DevHome.SetupFlow.UnitTest.Helpers;

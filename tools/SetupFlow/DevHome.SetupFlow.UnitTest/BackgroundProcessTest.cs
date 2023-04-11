@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.SetupFlow.ElevatedComponent;
+extern alias Server;
+
+using DevHome.SetupFlow.Common.Elevation;
+using Server::DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.UnitTest;
 

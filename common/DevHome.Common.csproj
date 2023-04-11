@@ -9,6 +9,9 @@
     <UseWinUI>true</UseWinUI>
     <DevHomeSDKVersion Condition="$(DevHomeSDKVersion) == ''">0.100.*</DevHomeSDKVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Views\HyperlinkTextBlock.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
@@ -35,5 +38,21 @@
     <Page Update="Views\Banner.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Update="Views\HyperlinkTextBlock.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Assets\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Assets\BannerBackgroundDark.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\BannerBackgroundLight.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

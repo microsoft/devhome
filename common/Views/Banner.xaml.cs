@@ -20,10 +20,22 @@ public sealed partial class Banner : UserControl
         set => SetValue(DescriptionProperty, value);
     }
 
-    public string ImageSource
+    public int TextWidth
     {
-        get => (string)GetValue(ImageSourceProperty);
-        set => SetValue(ImageSourceProperty, value);
+        get => (int)GetValue(TextWidthProperty);
+        set => SetValue(TextWidthProperty, value);
+    }
+
+    public string BackgroundSource
+    {
+        get => (string)GetValue(BackgroundSourceProperty);
+        set => SetValue(BackgroundSourceProperty, value);
+    }
+
+    public string OverlaySource
+    {
+        get => (string)GetValue(OverlaySourceProperty);
+        set => SetValue(OverlaySourceProperty, value);
     }
 
     public string ButtonText
@@ -57,7 +69,9 @@ public sealed partial class Banner : UserControl
 
     public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(Banner), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty DescriptionProperty = DependencyProperty.Register(nameof(Description), typeof(string), typeof(Banner), new PropertyMetadata(string.Empty));
-    public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(nameof(ImageSource), typeof(string), typeof(Banner), new PropertyMetadata(string.Empty));
+    public static readonly DependencyProperty TextWidthProperty = DependencyProperty.Register(nameof(TextWidth), typeof(int), typeof(Banner), new PropertyMetadata(400));
+    public static readonly DependencyProperty BackgroundSourceProperty = DependencyProperty.Register(nameof(BackgroundSource), typeof(string), typeof(Banner), new PropertyMetadata(string.Empty));
+    public static readonly DependencyProperty OverlaySourceProperty = DependencyProperty.Register(nameof(OverlaySource), typeof(string), typeof(Banner), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty ButtonTextProperty = DependencyProperty.Register(nameof(ButtonText), typeof(string), typeof(Banner), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty ButtonCommandProperty = DependencyProperty.Register(nameof(ButtonCommand), typeof(ICommand), typeof(Banner), new PropertyMetadata(null));
     public static readonly DependencyProperty HideButtonVisibilityProperty = DependencyProperty.Register(nameof(HideButtonVisibility), typeof(bool), typeof(Banner), new PropertyMetadata(false));

@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
 using DevHome.Models;
 using DevHome.Services;
 using DevHome.Settings.ViewModels;
@@ -26,8 +28,10 @@ public sealed partial class WhatsNewPage : Page
         InitializeComponent();
     }
 
-    private void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstRun, true);
+
         var whatsNewCards = FeaturesContainer.Resources
             .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
             .Select(card => card.Value as WhatsNewCard);
@@ -47,7 +51,7 @@ public sealed partial class WhatsNewPage : Page
     {
         var resourceLoader = new Windows.ApplicationModel.Resources.ResourceLoader();
         var pluginService = new PluginService();
-        var plugins = pluginService.GetInstalledPluginsAsync(ProviderType.DevId).Result;
+        var plugins = pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId).Result;
 
         // TODO: Replace this with a check for KnownPluginsGuid got Github plugin
         var plugin = plugins.Where(p => p.Name.Contains("Github")).FirstOrDefault();
@@ -64,7 +68,7 @@ public sealed partial class WhatsNewPage : Page
             return;
         }
 
-        var devIdProvider = await plugin.GetProviderAsync<IDevIdProvider>();
+        var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
 
         if (devIdProvider is null)
         {

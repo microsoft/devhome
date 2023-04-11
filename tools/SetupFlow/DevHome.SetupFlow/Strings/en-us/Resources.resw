@@ -157,28 +157,60 @@
     <value>Close</value>
     <comment>Label for a close button</comment>
   </data>
+  <data name="ConfigurationFieldInvalid" xml:space="preserve">
+    <value>The field '{0}' in the configuration file is invalid</value>
+    <comment>{Locked="{0}"} An error in reading a configuration file. {0} is a placeholder replaced by the field name from the file.</comment>
+  </data>
+  <data name="ConfigurationFileInvalid" xml:space="preserve">
+    <value>The configuration file is invalid.</value>
+    <comment>An error in reading a configuration file.</comment>
+  </data>
+  <data name="ConfigurationFileVersionUnknown" xml:space="preserve">
+    <value>Configuration file version {0} is not known.</value>
+    <comment>{Locked="{0}"} An error in reading a configuration file. {0} is a placeholder replaced by the version of the configuration file.</comment>
+  </data>
+  <data name="ConfigurationFileApplyError" xml:space="preserve">
+    <value>Couldn't apply settings from configuration file</value>
+    <comment>Label displayed when the settings listed in a configuration file have not been applied successfully</comment>
+  </data>
+  <data name="ConfigurationFileApplySuccess" xml:space="preserve">
+    <value>Applied settings from configuration file</value>
+    <comment>Label displayed when a configuration file has been applied successfully</comment>
+  </data>
+  <data name="ConfigurationFileApplySuccessReboot" xml:space="preserve">
+    <value>Applied settings from configuration file (restart required)</value>
+    <comment>Label displayed when a configuration file has been applied successfully and a system restart is required</comment>
+  </data>
+  <data name="ConfigurationFileApplying" xml:space="preserve">
+    <value>Applying settings from configuration file ...</value>
+    <comment>Label displayed when a configuration file is being applied</comment>
+  </data>
+  <data name="ConfigurationFileOpenUnknownError" xml:space="preserve">
+    <value>Unknown error</value>
+    <comment>Label displayed when opening a configuration fails because of an unknown error.</comment>
+  </data>
   <data name="ConfigurationFileWindow.Title" xml:space="preserve">
     <value>Configuration file name (Preview)</value>
     <comment>Title of the configuration file window</comment>
-  </data>
-  <data name="ConfigurationFileTypeNotSupported" xml:space="preserve">
-    <value>The configuration file should be a YAML file. Windows 11 marks a visual evolutions of the operating system.</value>
-    <comment>Configuration file type not supported error message</comment>
   </data>
   <data name="ConfigurationFileWarning.Title" xml:space="preserve">
     <value>Configuration file warning</value>
     <comment>Title of the configuration file warning message</comment>
   </data>
   <data name="ConfigurationFileWarning.Message" xml:space="preserve">
-    <value>This is a test feature. Windows 11 marks a visual evolution of the operating system. We have evolved our design language alongside with Fluent to create a design which is human, universal and truly feels like Windows.</value>
-    <comment>Text of the configuration file warninig message</comment>
+    <value>You are responsible for understanding the configuration settings you are choosing to execute. Microsoft is not responsible for the configuration file you have authored or imported. This configuration may change settings in Windows, install software, change software settings (including security settings), and accept user agreements to third-party packages and services on your behalf.  By running this configuration file, you acknowledge that you understand and agree to these resources and settings. Any applications installed are licensed to you by their owners. Microsoft is not responsible for, nor does it grant any licenses to, third-party packages or services.</value>
+    <comment>Legal approved. Do not change without approval.</comment>
+  </data>
+  <data name="ConfigurationViewTitle" xml:space="preserve">
+    <value>View {0}</value>
+    <comment>{Locked="{0}"}Title for the page showing the contents of a configuration file. {0} is replaced by the configuration file name.</comment>
   </data>
   <data name="DefaultBanner.Title" xml:space="preserve">
     <value>Get ready to code in minutes</value>
     <comment>Title text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.Description" xml:space="preserve">
-    <value>Find out how you can use Dev Home to get your development machine set up quickly.</value>
+    <value>Find out how you can use Dev Home to set up your development machine more quickly.</value>
     <comment>{Locked="Dev Home"}Description text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.ButtonText" xml:space="preserve">
@@ -210,11 +242,11 @@
     <comment>Text to Advise the user that the disks and volumes page in the Windows settings app has more advanced options for creating a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink.Text" xml:space="preserve">
-    <value>Open disks and volumes setting</value>
+    <value>Open Disks and volumes settings</value>
     <comment>Hyperlink text, so when clicked the user will be redirected to the disks and volumes Windows settings page.</comment>
   </data>
   <data name="DevDriveWindowLocationTextBox.Header" xml:space="preserve">
-    <value>Dev Drive location</value>
+    <value>Location</value>
     <comment>Header for the Dev Drive location text box. This location can be on the location system or on a network share</comment>
   </data>
   <data name="DevDriveWindowLocationTextBox.PlaceholderText" xml:space="preserve">
@@ -230,7 +262,7 @@
     <comment>Placeholder drive label value that will be used as the file name within the Dev Drive name text box. VHD stands for virtual hard disk, which is what will be created when the user goes to create a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowOnlyOneDevDriveAllowedHeader.Text" xml:space="preserve">
-    <value>You can only create one Dev Drive in Dev Home at a time.</value>
+    <value>A Dev Drive optimizes performance for development. You can only create one in Dev Home.</value>
     <comment>Text to advise users that they are only allowed the create one Dev Drive at a time.</comment>
   </data>
   <data name="DevDriveWindowSaveButton.Content" xml:space="preserve">
@@ -253,13 +285,17 @@
     <value>Installed {0}</value>
     <comment>{Locked="{0}"} Label displayed when a package has been installed. {0} is replaced by the package name.</comment>
   </data>
+  <data name="InstalledPackageReboot" xml:space="preserve">
+    <value>Installed {0} (restart required)</value>
+    <comment>{Locked="{0}"} Label displayed when a package has been installed. {0} is replaced by the package name.</comment>
+  </data>
   <data name="InstallingPackage" xml:space="preserve">
-    <value>Installing {0}</value>
+    <value>Installing {0} ...</value>
     <comment>{Locked="{0}"} Label displayed when a package is being installed. {0} is replaced by the package name.</comment>
   </data>
-  <data name="InstallPackageErrorWithReason" xml:space="preserve">
-    <value>Error installing {0}: {1}</value>
-    <comment>{Locked="{0}","{1}"} Label displayed when a package failed to install. {0} is replaced by the package name. {1} is replaced by the error reason.</comment>
+  <data name="InstallPackageError" xml:space="preserve">
+    <value>Couldn't install {0}</value>
+    <comment>{Locked="{0}"} Label displayed when a package failed to install. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorBlockedByPolicy" xml:space="preserve">
     <value>Operation is blocked by Group Policy</value>
@@ -288,6 +324,10 @@
   <data name="LearnMore.Text" xml:space="preserve">
     <value>Learn more</value>
     <comment>Text for a clickable learn more button</comment>
+  </data>
+  <data name="MainPage.Title" xml:space="preserve">
+    <value>Machine configuration</value>
+    <comment>Title for the main page where users can configure their machines</comment>
   </data>
   <data name="MainPage_CloneRepos.Header" xml:space="preserve">
     <value>Clone repositories</value>
@@ -330,7 +370,7 @@
     <comment>Text shown if no applications were selected to install</comment>
   </data>
   <data name="NavigationPane.Content" xml:space="preserve">
-    <value>Dev Setup tool</value>
+    <value>Machine Configuration</value>
     <comment>Navigation pane content</comment>
   </data>
   <data name="NoApplicationsSelected.Text" xml:space="preserve">
@@ -361,6 +401,30 @@
     <value>{0} packages</value>
     <comment>{Locked="{0}"} Display the number of packages. {0} is replaced by the number of packages.</comment>
   </data>
+  <data name="PackageDescription" xml:space="preserve">
+    <value>{0} | {1} | {2}</value>
+    <comment>{Locked="{0}","{1}","{2}"} Text composed of a package version, source and publisher name. {0} is replaced by the package version. {1} is replaced by the package source. {2} is replaced by the package publisher name.</comment>
+  </data>
+  <data name="PackageInstalledTooltip" xml:space="preserve">
+    <value>Application exists</value>
+    <comment>Label for a package/application that already exists on the user's machine.</comment>
+  </data>
+  <data name="PackageNameTooltip" xml:space="preserve">
+    <value>Name: {0}</value>
+    <comment>{Locked="{0}"} Label for a package name displayed on a tooltip. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="PackagePublisherNameTooltip" xml:space="preserve">
+    <value>Publisher: {0}</value>
+    <comment>{Locked="{0}"} Label for a package publisher name displayed on a tooltip. {0} is replaced by the package publisher name.</comment>
+  </data>
+  <data name="PackageSourceTooltip" xml:space="preserve">
+    <value>Source: {0}</value>
+    <comment>{Locked="{0}"} Label for a package source displayed on a tooltip. {0} is replaced by the package source.</comment>
+  </data>
+  <data name="PackageVersionTooltip" xml:space="preserve">
+    <value>Version: {0}</value>
+    <comment>{Locked="{0}"} Label for a package version displayed on a tooltip. {0} is replaced by the package version.</comment>
+  </data>
   <data name="PopularAppsTitle" xml:space="preserve">
     <value>Popular Apps</value>
     <comment>Header text for a popular application section</comment>
@@ -377,44 +441,32 @@
     <value>Restore</value>
     <comment>Label for restore button</comment>
   </data>
-  <data name="Review_EulaTitle.Text" xml:space="preserve">
-    <value>End-User License Agreement</value>
-    <comment>Header for the license agreement text</comment>
-  </data>
-  <data name="Review_EulaText.Text" xml:space="preserve">
-    <value>IMPORTANT—READ CAREFULLY: This Microsoft End-User License Agreement ("EULA") is ...</value>
-    <comment>License agreements</comment>
-  </data>
-  <data name="Review_AcceptEula.Content" xml:space="preserve">
-    <value>I read the terms and allow Windows to accept all EULA on my behalf</value>
-    <comment>Checkbox text for user to accept the EULA</comment>
-  </data>
-  <data name="Review_AcceptReboot.Content" xml:space="preserve">
-    <value>I allow Windows to automatically reboot my system</value>
-    <comment>Checkbox text for user to accept the possibility of reboots during setup</comment>
-  </data>
   <data name="Review_SetupDetails.Text" xml:space="preserve">
     <value>Set up details</value>
     <comment>Header for a section detailing the set up steps to be performed. "Set up" is the noun</comment>
   </data>
+  <data name="Review_ReadAndAgree.Content" xml:space="preserve">
+    <value>I have read, understand and agree to the above set up</value>
+    <comment>Checkbox label that needs to be checked before starting the setup</comment>
+  </data>
   <data name="Review_TermsTitle.Text" xml:space="preserve">
-    <value>Terms</value>
+    <value>Terms &amp; agreements</value>
     <comment>As in "Terms of use"</comment>
   </data>
-  <data name="Review_TermsText.Text" xml:space="preserve">
-    <value>By clicking Create, I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed above; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings.</value>
-    <comment>Terms of use shown before starting setup.</comment>
+  <data name="Review_Terms.Text" xml:space="preserve">
+    <value>By continuing, you acknowledge that these applications are licensed to you by the owner. Microsoft is not responsible for, nor does it grant any licenses to, third-party applications. You are responsible for reviewing any agreements related to your use of these applications, which you can view by selecting the Learn more links.</value>
+    <comment>Terms of use shown before starting installation of apps.</comment>
   </data>
-  <data name="Review_RebootTitle.Text" xml:space="preserve">
-    <value>System reboot</value>
-    <comment>Header for text indicating that a reboot may be needed</comment>
+  <data name="Review_MSStoreTerms.Text" xml:space="preserve">
+    <value>You've selected applications which come from the Microsoft Store. By continuing, you agree to the [Microsoft Store Terms of Sale]</value>
+    <comment>{Locked="["}{Locked="]"}Terms of use shown when installing an application from the Microsoft Store. The text in between the delimiters [ ] is made into an hyperlink in code, and the delimiters are removed</comment>
   </data>
-  <data name="Review_RebootText.Text" xml:space="preserve">
-    <value>A reboot may be needed</value>
-    <comment>Text indicating that a reboot may be needed to finish the setup</comment>
+  <data name="Review_MSStoreTerms.NavigateUri" xml:space="preserve">
+    <value>https://www.microsoft.com/store/b/terms-of-sale</value>
+    <comment>{Locked}Uri to the Microsoft Store terms of sale</comment>
   </data>
   <data name="ReviewNothingToSetUpToolTip" xml:space="preserve">
-    <value>Nothing to set up</value>
+    <value>There's nothing to set up​</value>
     <comment>Text shown on a tool tip for a "Start set up" button if there is noting to set up</comment>
   </data>
   <data name="SearchBox.PlaceholderText" xml:space="preserve">
@@ -478,7 +530,7 @@
     <comment>Add repository button text</comment>
   </data>
   <data name="ReposConfigPageTitle" xml:space="preserve">
-    <value>Clone Repos</value>
+    <value>Clone repos</value>
     <comment>Clone Repo label for the stepper</comment>
   </data>
   <data name="ApplicationsPageTitle" xml:space="preserve">
@@ -494,7 +546,7 @@
     <comment>Text for the use to choose to make a dev drive</comment>
   </data>
   <data name="ClonePath.Header" xml:space="preserve">
-    <value>Clone Path</value>
+    <value>Clone path</value>
     <comment>Header for choosing a clone path</comment>
   </data>
   <data name="ClonePath.PlaceholderText" xml:space="preserve">
@@ -514,7 +566,7 @@
     <comment>Text to appear in the textbox for entering in a URL</comment>
   </data>
   <data name="CloneRepoDialog.Title" xml:space="preserve">
-    <value>Clone a Repository</value>
+    <value>Clone a repository</value>
     <comment>Header for the dialog bos to clone repositories</comment>
   </data>
   <data name="NewDevDriveComboBox.Content" xml:space="preserve">
@@ -601,54 +653,19 @@
     <value>Tasks</value>
     <comment>Header for executing tasks</comment>
   </data>
-  <data name="LoadingScreenCloningRepositoryErrorTestSecondary" xml:space="preserve">
-    <value>Repository failed because {0}</value>
-    <comment>Sub text that will show up in the action center</comment>
-  </data>
   <data name="CloningRepositoryErrorText" xml:space="preserve">
     <value>Failed to clone repository {0}</value>
     <comment>Main tex tto show in the loading screen that a repo failed to clone</comment>
   </data>
-  <data name="LoadingScreenCloningRepositoryFinished" xml:space="preserve">
-    <value>Repository Cloned, and location set to  {0}</value>
-    <comment>Notify the user that a repository has been cloned</comment>
-  </data>
-  <data name="LoadingScreenCloningRepositoryMainText" xml:space="preserve">
-    <value>Cloning Repository {0}</value>
-    <comment>Text to notify the user what repository is being clones</comment>
-  </data>
-  <data name="LoadingScreenCloningReposityNeedsAttention" xml:space="preserve">
-    <value>Repository {0} needs your attention</value>
-    <comment>Task message when a cloning task needs a users attention</comment>
-  </data>
-  <data name="LoadingScreenCloningRepositoryNeedsAttentionMainMessage" xml:space="preserve">
-    <value>Something needs your attention</value>
-    <comment>Sub message in the "Needs Attention" window</comment>
-  </data>
-  <data name="LoadingScreenCloningRepositoryNeedsAttentionPrimaryButtonContent" xml:space="preserve">
-    <value>Okay</value>
-    <comment>Main message in the "Needs attention" window</comment>
-  </data>
-  <data name="LoadingScreenCloningRepositoryNeedsAttentionSecondaryButtonContent" xml:space="preserve">
-    <value>Not Okay</value>
-    <comment>Content of the primary button in the "Needs Attention" window</comment>
-  </data>
-  <data name="LoadingScreenCloningRepositoryNeedsAttentionSubMessage" xml:space="preserve">
-    <value>Repository {0} needs your attention</value>
-  </data>
   <data name="ActionCenterCloningRepositoryErrorTextSecondary" xml:space="preserve">
     <value>Error message: {0}</value>
-  </data>
-  <data name="LoadingScreenCloneRepositoryNeedsRebootText" xml:space="preserve">
-    <value>Repository {0} requires  a reboot to finish cloning.</value>
-    <comment>Message notifying the user that a repo requires the machine to reboot</comment>
   </data>
   <data name="DevDriveDefaultFileName" xml:space="preserve">
     <value>Dev Disk</value>
     <comment>file name for the virtual disk file we will create the Dev Drive in if the user keeps the defaults</comment>
   </data>
   <data name="DevDriveDefaultFolderName" xml:space="preserve">
-    <value>Dev Drives</value>
+    <value>Dev Disks</value>
     <comment>folder name for the folder we will create the Dev Drive in if the user keeps the defaults</comment>
   </data>
   <data name="DevDriveReviewPageDevDriveDetailsTitle.Text" xml:space="preserve">
@@ -656,7 +673,7 @@
     <comment>Text that will be the description of a section in the review page where the user will see a list of details about the Dev Drives they are about to create. The name, size and the virtual disk file location are the details shows.</comment>
   </data>
   <data name="DevDriveReviewPageNoDevDrives.Text" xml:space="preserve">
-    <value>No Dev Drives will be created.</value>
+    <value>Nothing added</value>
     <comment>Text that lets the user know that they did not select a previous option to create a Dev Drive so therefore none will be created in the next step</comment>
   </data>
   <data name="DevDriveReviewPageNumberOfDevDrives" xml:space="preserve">
@@ -712,23 +729,182 @@
     <comment>Text that advises the user that the file name of the virtual hard disk they were trying to create already exists in the location they selected and that they should enter a new name.</comment>
   </data>
   <data name="DevDriveUnableToCreateError" xml:space="preserve">
-    <value>The Dev Drive couldn't be created.</value>
+    <value>Dev Drive couldn't be created</value>
     <comment>Text that advises the user that there was an error and we couldn't create the Dev Drive on their machine.</comment>
   </data>
-  <data name="NeedsRebootMessage" xml:space="preserve">
-    <value>{0} Needs to reboot the machine to finish</value>
-    <comment>Message to tell the user that the machine needs to reboot</comment>
+  <data name="CloneRepoCreated" xml:space="preserve">
+    <value>Cloned {0}</value>
+    <comment>Message when a repository finished cloning.  Param:repo name</comment>
   </data>
-  <data name="LogFileName" xml:space="preserve">
-    <value>DevHomeTasks.Log</value>
-    <comment>The log file name for failed tasks.</comment>
+  <data name="CloneRepoCreating" xml:space="preserve">
+    <value>Cloning {0}</value>
+    <comment>Message when a repository is cloning.  Param:Clone Path</comment>
   </data>
-  <data name="UnknownError" xml:space="preserve">
-    <value>Unknown Error</value>
-    <comment>Text to display when an error is unknwon</comment>
+  <data name="CloneRepoError" xml:space="preserve">
+    <value>Couldn't clone  {0}</value>
+    <comment>Message when a repository encountered an error when cloning. Param: Repo Name</comment>
+  </data>
+  <data name="CloneRepoRestart" xml:space="preserve">
+    <value>Cloned to  {0} (restart required)</value>
+    <comment>Message when a repository is cloned but needs to reboot the computer. Param: Repo name</comment>
+  </data>
+  <data name="ConfigureTaskCreated" xml:space="preserve">
+    <value>Applied settings from configuration file</value>
+    <comment>Message when the configure task finished successfully</comment>
+  </data>
+  <data name="ConfigureTaskCreating" xml:space="preserve">
+    <value>Applying settings from configuration file...</value>
+    <comment>Message when the configure task is executing</comment>
+  </data>
+  <data name="ConfigureTaskError" xml:space="preserve">
+    <value>Couldn't apply settings from configuration file</value>
+    <comment>Message when the configuration task failed</comment>
+  </data>
+  <data name="ConfigureTaskRestart" xml:space="preserve">
+    <value>Applied settings from the configuration file (restart required)</value>
+    <comment>Message when the configuration task needs the computer to reboot</comment>
+  </data>
+  <data name="DevDriveCreated" xml:space="preserve">
+    <value>Created DevDrive</value>
+    <comment>Task message when a Dev Drive is finished</comment>
+  </data>
+  <data name="DevDriveCreating" xml:space="preserve">
+    <value>Creating Dev Drive...</value>
+    <comment>Task message when a Dev Drive is being created</comment>
+  </data>
+  <data name="DevDriveRestart" xml:space="preserve">
+    <value>Created Dev Drive (restart required)</value>
+    <comment>Task message when a Dev Drive needs the computer to restart</comment>
+  </data>
+  <data name="DownloadAppCreated" xml:space="preserve">
+    <value>Downloaded {0}</value>
+    <comment>Message when an app has downloaded. Param: App name</comment>
+  </data>
+  <data name="DownloadAppCreating" xml:space="preserve">
+    <value>Downloading {0}</value>
+    <comment>Message when an app is downloading. Param: App name</comment>
+  </data>
+  <data name="DownloadAppError" xml:space="preserve">
+    <value>Couldn't download {0}</value>
+    <comment>Message when an app encountered an error. Param: App name</comment>
+  </data>
+  <data name="DownloadAppRestart" xml:space="preserve">
+    <value>Downloaded {0} (restart required)</value>
+    <comment>Message when an app downloaded and needs to reboot the comuter. Param: App name</comment>
+  </data>
+  <data name="LoadingPageSteps" xml:space="preserve">
+    <value>Step {0} of {1}</value>
+    <comment>Keeps track of how many tasks have been started. Param: Number of started tasks, total number of tasks</comment>
+  </data>
+  <data name="LoadingPage_ActionCenter.Text" xml:space="preserve">
+    <value>Action needed</value>
+    <comment>Header for the action center</comment>
+  </data>
+  <data name="LoadingPage_ActionCenterErrors" xml:space="preserve">
+    <value>Errors: {0}</value>
+    <comment>Number of tasks that failed. Param: number of failed tasks</comment>
+  </data>
+  <data name="LoadingPage_ActionCenter_GoToSummary.Content" xml:space="preserve">
+    <value>View Summary</value>
+    <comment>Button content to let users go to the summary page</comment>
+  </data>
+  <data name="LoadingPage_ActionCenter_Retry.Content" xml:space="preserve">
+    <value>Retry</value>
+    <comment>Hyper link button content to allow users to retry all failed tasks</comment>
+  </data>
+  <data name="LoadingPage_Header.Text" xml:space="preserve">
+    <value>Hold on while we set things up</value>
+    <comment>Header for the loading screen</comment>
+  </data>
+  <data name="LoadingPage_Tasks.Text" xml:space="preserve">
+    <value>Tasks</value>
+    <comment>Header for the Tasks scroll viewer</comment>
+  </data>
+  <data name="SetUpAsAdmin.Content" xml:space="preserve">
+    <value>Set up as admin</value>
+    <comment>Text shown on a split button for setting up configuration as admin</comment>
+  </data>
+  <data name="SetUpAsNonAdmin.Text" xml:space="preserve">
+    <value>Set up as non-admin</value>
+    <comment>Text shown on a split button for setting up configuration as non-admin</comment>
+  </data>
+  <data name="SummaryPage_AppsDownloadedCount.Text" xml:space="preserve">
+    <value>Applications installed</value>
+    <comment>Bottom footer of the number of apps downloaded</comment>
+  </data>
+  <data name="SummaryPage_AppsDownlodedDisplay.Text" xml:space="preserve">
+    <value>Installed applications</value>
+    <comment>Header for the section that shows all the downloaded apps</comment>
+  </data>
+  <data name="SummaryPage_Header.Text" xml:space="preserve">
+    <value>We set up the following for you...</value>
+    <comment>Header text for the summary page</comment>
+  </data>
+  <data name="SummaryPage_NextSteps.Text" xml:space="preserve">
+    <value>Next Steps</value>
+    <comment>Text for the "Next steps" section of the summary page</comment>
+  </data>
+  <data name="SummaryPage_OpenDashboard.Content" xml:space="preserve">
+    <value>Open Dashboard</value>
+    <comment>Button content to let user go to the dashboard</comment>
+  </data>
+  <data name="SummaryPage_ReposClonedDisplay.Text" xml:space="preserve">
+    <value>Cloned repositories</value>
+    <comment>Header of the section that shows all cloned repositories</comment>
+  </data>
+  <data name="SummaryPage_ReposClonedCount.Text" xml:space="preserve">
+    <value>Repositories cloned</value>
+    <comment>Bottom header of the count of all repos cloned</comment>
+  </data>
+  <data name="SummaryPage_RestartRequiredButton.Content" xml:space="preserve">
+    <value>Restart Now</value>
+    <comment>Content of the button to allow users to restart their machine</comment>
+  </data>
+  <data name="SummaryPage_RestartRequired_First.Text" xml:space="preserve">
+    <value>Restart Required</value>
+    <comment>First part of the message notifying users to restart.  Split because this portion is in bold</comment>
+  </data>
+  <data name="SummaryPage_RestartRequired_Second.Text" xml:space="preserve">
+    <value>Restart your computer to finish setup</value>
+    <comment>Second part of the message notifying users to restart.</comment>
+  </data>
+  <data name="DevDriveErrorWithReason" xml:space="preserve">
+    <value>Dev Drive couldn't be created error: {0}</value>
+    <comment>Message when the dev drive could not be created. Param: reason.</comment>
   </data>
   <data name="DevDriveDriveLetterNotAvailable" xml:space="preserve">
     <value>The requested drive letter is not available. Select another one and try again.</value>
     <comment>Error text that tells the user that the drive letter they selected in the drive letter combo box, is not available.</comment>
+  </data>
+  <data name="DevDriveReviewTitle" xml:space="preserve">
+    <value>Drive</value>
+    <comment>Text that shows the title of a tab in the review page where users can see the details of the Dev Drive they are about to create.</comment>
+  </data>
+  <data name="NoRepositoriesToClone.Text" xml:space="preserve">
+    <value>No Repositories to clone</value>
+  </data>
+  <data name="EditClonePathDialogUncheckCheckMark.PrimaryButtonText" xml:space="preserve">
+    <value>Yes, I'm sure</value>
+    <comment>Text to show in a button in the dialog that will confirm the users action</comment>
+  </data>
+  <data name="EditClonePathDialogUncheckedCheckMarkWarning.Text" xml:space="preserve">
+    <value>The current repository won't be cloned to the new Dev Drive.</value>
+    <comment>Text for the dialog where unchecking the create Dev Drive checkmark shows the user text advising them that by unchecking the checkbox we won't create a Dev Drive for them</comment>
+  </data>
+  <data name="EditClonePathDialogUncheckCheckMark.Title" xml:space="preserve">
+    <value>Are you sure?</value>
+    <comment>Title text for the dialog where the user is about to choose an option that we want them to confirm first before proceeding</comment>
+  </data>
+  <data name="LoadingScreenGoToSummaryButtonContent" xml:space="preserve">
+    <value>Summary</value>
+    <comment>Button letting users go to the summary if they want after tasks failed.</comment>
+  </data>
+  <data name="RepoAccountPagePrimaryButtonText" xml:space="preserve">
+    <value>Connect</value>
+    <comment>Text to show the user when selecting a provder</comment>
+  </data>
+  <data name="RepoEverythingElsePrimaryButtonText" xml:space="preserve">
+    <value>Add</value>
+    <comment>Text to show everywhere else in the tool.</comment>
   </data>
 </root>

@@ -1,0 +1,10 @@
+﻿HRESULT_FROM_WIN32
+DeviceIoControl
+CreateFile
+MAX_PATH
+PathIsNetworkPath
+FILE_FS_PERSISTENT_VOLUME_INFORMATION
+FSCTL_QUERY_PERSISTENT_VOLUME_STATE
+StrFormatByteSizeEx
+LocalFree
+FormatMessage

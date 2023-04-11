@@ -1,0 +1,108 @@
+<UserControl
+    x:Class="DevHome.SetupFlow.Views.PackageView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <!-- Show `Undo` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
+            <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE7A7;" FalseValue="&#xE109;" />
+            <converters:BoolToObjectConverter x:Key="ImageOpacityConverter" TrueValue="0.4" FalseValue="1" />
+            <converters:BoolToObjectConverter x:Key="PrimaryTextEnableDisableConverter" TrueValue="{ThemeResource TextFillColorDisabledBrush}" FalseValue="{ThemeResource TextFillColorPrimaryBrush}" />
+            <converters:BoolToObjectConverter x:Key="SecondaryTextEnableDisableConverter" TrueValue="{ThemeResource TextFillColorDisabledBrush}" FalseValue="{ThemeResource TextFillColorSecondaryBrush}" />
+            <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <!-- Package card -->
+    <Grid Style="{ThemeResource CardGridSecondaryStyle}" Padding="12" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ToolTipService.ToolTip>
+            <StackPanel>
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock Text="{x:Bind Package.TooltipName, Mode=OneWay}"/>
+                <TextBlock Text="{x:Bind Package.TooltipVersion, Mode=OneWay}"/>
+                <TextBlock Text="{x:Bind Package.TooltipSource, Mode=OneWay}"/>
+                <TextBlock Text="{x:Bind Package.TooltipPublisher, Mode=OneWay}"/>
+            </StackPanel>
+        </ToolTipService.ToolTip>
+
+        <!-- Package card header layout -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Package image -->
+            <ImageIcon
+                Width="24"
+                VerticalAlignment="Center"
+                Opacity="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource ImageOpacityConverter}}"
+                Source="{x:Bind Package.Icon,Mode=OneWay}"/>
+
+            <!-- Select button -->
+            <Button
+                Grid.Column="1"
+                Background="Transparent"
+                BorderThickness="0"
+                Command="{x:Bind Package.ToggleSelectionCommand,Mode=OneWay}"
+                HorizontalAlignment="Right"
+                Padding="5">
+                <FontIcon
+                    Glyph="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource SelectButtonGlyphConverter}}"
+                    FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                    FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
+            </Button>
+        </Grid>
+
+        <!-- Package card body layout -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Package title -->
+            <TextBlock
+                MaxLines="2"
+                TextTrimming="CharacterEllipsis"
+                Foreground="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource PrimaryTextEnableDisableConverter}}"
+                Style="{ThemeResource BodyTextBlockStyle}"
+                Text="{x:Bind Package.PackageTitle,Mode=OneWay}"/>
+
+            <!-- Package Version -->
+            <TextBlock
+                Grid.Row="1"
+                MaxLines="1"
+                TextTrimming="CharacterEllipsis"
+                Foreground="{x:Bind Package.IsSelected,Mode=OneWay, Converter={StaticResource SecondaryTextEnableDisableConverter}}"
+                Style="{ThemeResource CaptionTextBlockStyle}"
+                Text="{x:Bind Package.PackageDescription,Mode=OneWay}"/>
+
+            <!-- Package link -->
+            <HyperlinkButton
+                Grid.Row="2"
+                Padding="0"
+                IsEnabled="{x:Bind Package.IsSelected,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
+                Command="{x:Bind Package.LearnMoreCommand, Mode=OneWay}"
+                Style="{ThemeResource TextBlockButtonStyle}">
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
+            </HyperlinkButton>
+        </Grid>
+    </Grid>
+</UserControl>

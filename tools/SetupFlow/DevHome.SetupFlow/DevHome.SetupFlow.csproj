@@ -7,63 +7,205 @@
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Models\**" />
-    <Content Remove="Models\**" />
-    <EmbeddedResource Remove="Models\**" />
-    <None Remove="Models\**" />
-    <Page Remove="Models\**" />
-    <PRIResource Remove="Models\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Assets\AppManagementPackages.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="SetupFlowPage.xaml" />
-    <None Remove="Styles\SetupFlowStyles.xaml" />
-  </ItemGroup>
 
   <ItemGroup>
-      <PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
-      <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
-      <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
+    <PackageReference Include="CommunityToolkit.Labs.WinUI.SettingsControls" Version="0.0.14" />
+    <PackageReference Include="CommunityToolkit.Labs.WinUI.Shimmer" Version="0.0.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.Primitives" Version="7.1.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
+    <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.*-*" />
+    <PackageReference Include="Microsoft.Management.Configuration" Version="0.0.1" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
+      <IncludeAssets>contentFiles</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.188-beta">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
+    <PackageReference Include="System.Management" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\DevHome.SetupFlow.AppManagement\DevHome.SetupFlow.AppManagement.csproj" />
+    <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
-    <ProjectReference Include="..\DevHome.SetupFlow.ConfigurationFlow\DevHome.SetupFlow.ConfigurationFile.csproj" />
-    <ProjectReference Include="..\DevHome.SetupFlow.DevDrive\DevHome.SetupFlow.DevDrive.csproj" />
-    <ProjectReference Include="..\DevHome.SetupFlow.Loading\DevHome.SetupFlow.Loading.csproj" />
-    <ProjectReference Include="..\DevHome.SetupFlow.MainPage\DevHome.SetupFlow.MainPage.csproj" />
-    <ProjectReference Include="..\DevHome.SetupFlow.RepoConfig\DevHome.SetupFlow.RepoConfig.csproj" />
-    <ProjectReference Include="..\DevHome.SetupFlow.Review\DevHome.SetupFlow.Review.csproj" />
-    <ProjectReference Include="..\DevHome.SetupFlow.Summary\DevHome.SetupFlow.Summary.csproj" />
-
-    <!-- Including this project reference ensures that the outputs from the project are copied to the output directory.
-         Setting ReferenceOutputAssembly to false prevents the same outputs from being passed to the compiler when
-         building this project, which prevents conflicts as it defines the same classes as
-         DevHome.SetupFlow.ElevatedComponent.Projection -->
+    <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Projection\DevHome.SetupFlow.ElevatedComponent.Projection.csproj">
+      <Aliases>Projection</Aliases>
+    </ProjectReference>
     <ProjectReference Include="..\DevHome.SetupFlow.ElevatedServer\DevHome.SetupFlow.ElevatedServer.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Aliases>Server</Aliases>
     </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Styles\SetupFlowStyles.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
+    <None Update="Assets\AppManagementPackages.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Page Update="Controls\SetupFlowNavigation.xaml">
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Controls\SetupFlowNavigation.xaml" />
+    <None Remove="NativeMethods.txt" />
+    <None Remove="SetupFlowPage.xaml" />
+    <None Remove="Controls\SetupShell.xaml" />
+    <None Remove="Styles\SetupFlowStyles.xaml" />
+    <None Remove="Styles\SetupToolStyles.xaml" />
+    <None Remove="Views\AddRepoDialog.xaml" />
+    <None Remove="Views\DevDriveReviewView.xaml" />
+    <None Remove="Views\DevDriveView.xaml" />
+    <None Remove="Views\EditClonePathDialog.xaml" />
+    <None Remove="Views\LoadingView.xaml" />
+    <None Remove="Views\MainPageView.xaml" />
+    <None Remove="Views\RepoConfigReviewView.xaml" />
+    <None Remove="Views\RepoConfigView.xaml" />
+    <None Remove="Views\ReviewView.xaml" />
+    <None Remove="Views\SummaryView.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="NativeMethods.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Controls\SetupShell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Styles\SetupFlowStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="SetupFlowPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Update="Styles\SetupToolStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\AddRepoDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\AppManagementReviewView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\AppManagementView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\DevDriveReviewView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\DevDriveView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\EditClonePathDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\LoadingView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\MainPageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\PackageCatalogListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\PackageCatalogView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\PackageView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\RepoConfigReviewView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\RepoConfigView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\ReviewView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\SearchView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\ShimmerPackageCatalogView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\ShimmerSearchView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\SummaryView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Assets\DarkCaution.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\DarkError.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\DarkSuccess.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\LightCaution.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\LightError.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\LightSuccess.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Setup_AppManagement.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Setup_Banner_Front_Dark.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Setup_Banner_Front_Light.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Setup_ConfigurationFile.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Setup_DevDrive.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Setup_EndToEnd.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\Setup_RepoConfig.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>
