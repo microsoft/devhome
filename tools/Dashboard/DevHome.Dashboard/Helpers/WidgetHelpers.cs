@@ -3,12 +3,15 @@
 
 using System;
 using System.Linq;
+using System.Text.Json;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Helpers;
 internal class WidgetHelpers
 {
+    public const string DevHomeHostName = "DevHome";
+
     private const double WidgetPxHeightSmall = 146;
     private const double WidgetPxHeightMedium = 304;
     private const double WidgetPxHeightLarge = 462;
@@ -68,5 +71,14 @@ internal class WidgetHelpers
         var include = provider.Id.StartsWith("Microsoft.Windows.DevHome", StringComparison.CurrentCulture);
         Log.Logger()?.ReportInfo("WidgetHelpers", $"Found provider Id = {provider.Id}, include = {include}");
         return include;
+    }
+
+    public static string CreateWidgetCustomState()
+    {
+        var state = new WidgetCustomState
+        {
+            Host = DevHomeHostName,
+        };
+        return JsonSerializer.Serialize(state);
     }
 }

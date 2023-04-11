@@ -74,6 +74,9 @@ public sealed partial class WidgetControl : UserControl
         {
             if (deleteMenuItem?.Tag is WidgetViewModel widgetViewModel)
             {
+                // Remove any custom state from the widget. In case the deletion fails, we won't show the widget anymore.
+                await widgetViewModel.Widget.SetCustomStateAsync(string.Empty);
+
                 // Remove the widget from the list before deleting, otherwise the widget will
                 // have changed and the collection won't be able to find it to remove it.
                 var widgetIdToDelete = widgetViewModel.Widget.Id;
