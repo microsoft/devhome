@@ -5,15 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DevHome.Settings.ViewModels"
-    xmlns:models="using:DevHome.Settings.Models"
+    xmlns:models="using:DevHome.Settings.Models" xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     mc:Ignorable="d">
     <Page.Resources>
-        <Style x:Key="AccountsExpander" TargetType="Expander">
-            <Setter Property="IsExpanded" Value="False"/>
-            <Setter Property="VerticalAlignment" Value="Bottom"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        </Style>
-
         <DataTemplate x:Key="AccountsProviderButtonTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
             <StackPanel>
                 <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Stretch" Click="AddDeveloperId_Click" Tag="{x:Bind}" />
@@ -34,20 +28,9 @@
 
         <DataTemplate x:Key="AccountsViewTemplate" x:DataType="models:Account">
             <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                <Expander Style="{StaticResource AccountsExpander}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" IsExpanded="False">
-                    <Expander.Header>
-                        <RelativePanel Margin="{StaticResource XSmallLeftTopRightBottomMargin}">
-                            <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                            </StackPanel>
-                            <StackPanel>
-                                <TextBlock Text="{x:Bind LoginId}"  Style="{ThemeResource BodyTextStyle}" HorizontalAlignment="Left"/>
-                            </StackPanel>
-                            <StackPanel RelativePanel.AlignRightWithPanel="True">
-                                <Button Tag="{x:Bind}" x:Uid="Settings_Accounts_LogoutButton" Content="Logout" HorizontalAlignment="Right" Click="Logout_Click"/>
-                            </StackPanel>
-                        </RelativePanel>
-                    </Expander.Header>
-                </Expander>
+                <labs:SettingsCard Header="{x:Bind LoginId}">
+                    <Button Tag="{x:Bind}" x:Uid="Settings_Accounts_LogoutButton" Click="Logout_Click"/>
+                </labs:SettingsCard>
             </StackPanel>
         </DataTemplate>
     </Page.Resources>
@@ -59,33 +42,24 @@
                 </StackPanel>
 
                 <StackPanel x:Name="AddAccountMainStackPanel" Margin="{StaticResource XSmallTopMargin}">
-                    <Expander Style="{StaticResource AccountsExpander}">
-                        <Expander.Header>
-                            <RelativePanel Margin="{StaticResource XSmallLeftTopRightBottomMargin}">
-                                <StackPanel>
-                                    <TextBlock x:Uid="Settings_Accounts_AddAccountText" Style="{ThemeResource BodyTextStyle}" HorizontalAlignment="Left"/>
-                                </StackPanel>
-                                <StackPanel RelativePanel.AlignRightWithPanel="True">
-                                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right">
-                                        <Button.Flyout>
-                                            <Flyout Placement="Bottom">
-                                                <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
+                    <labs:SettingsCard x:Uid="Settings_Accounts_AddAccount">
+                        <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right">
+                            <Button.Flyout>
+                                <Flyout Placement="Bottom">
+                                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
                         HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
-                                                </ItemsRepeater>
-                                                <Flyout.FlyoutPresenterStyle>
-                                                    <Style TargetType="FlyoutPresenter">
-                                                        <Setter Property="IsTabStop" Value="True"/>
-                                                        <Setter Property="TabNavigation" Value="Cycle"/>
-                                                        <Setter Property="MinWidth" Value="150" />
-                                                    </Style>
-                                                </Flyout.FlyoutPresenterStyle>
-                                            </Flyout>
-                                        </Button.Flyout>
-                                    </Button>
-                                </StackPanel>
-                            </RelativePanel>
-                        </Expander.Header>
-                    </Expander>
+                                    </ItemsRepeater>
+                                    <Flyout.FlyoutPresenterStyle>
+                                        <Style TargetType="FlyoutPresenter">
+                                            <Setter Property="IsTabStop" Value="True"/>
+                                            <Setter Property="TabNavigation" Value="Cycle"/>
+                                            <Setter Property="MinWidth" Value="150" />
+                                        </Style>
+                                    </Flyout.FlyoutPresenterStyle>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                    </labs:SettingsCard>
                 </StackPanel>
 
                 <StackPanel>

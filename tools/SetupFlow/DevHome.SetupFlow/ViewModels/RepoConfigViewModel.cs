@@ -26,6 +26,8 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
     private readonly IDevDriveManager _devDriveManager;
 
+    public ISetupFlowStringResource LocalStringResource { get; }
+
     /// <summary>
     /// All repositories the user wants to clone.
     /// </summary>
@@ -49,6 +51,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     {
         _taskGroup = taskGroup;
         _devDriveManager = devDriveManager;
+        LocalStringResource = stringResource;
         RepoDialogCancelled += _devDriveManager.CancelChangesToDevDrive;
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReposConfigPageTitle);
     }
@@ -78,20 +81,12 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {cloningInformation.RepositoryId} from repos to clone");
         RepoReviewItems.Remove(cloningInformation);
-        UpdateCollection();
+        _taskGroup.SaveSetupTaskInformation(RepoReviewItems.ToList());
 
         if (RepoReviewItems.Count == 0)
         {
             ShouldShowNoRepoMessage = Visibility.Visible;
         }
-    }
-
-    // Assumes an item in the list has been changed via reference.
-    public void UpdateCollection()
-    {
-        List<CloningInformation> repoReviewItems = new (RepoReviewItems);
-        RepoReviewItems = new ObservableCollection<CloningInformation>(repoReviewItems);
-        _taskGroup.SaveSetupTaskInformation(repoReviewItems);
     }
 
     public void UpdateCloneLocation(CloningInformation cloningInformation)
@@ -100,7 +95,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         if (location != -1)
         {
             RepoReviewItems[location] = cloningInformation;
-            UpdateCollection();
+            _taskGroup.SaveSetupTaskInformation(RepoReviewItems.ToList());
         }
     }
 

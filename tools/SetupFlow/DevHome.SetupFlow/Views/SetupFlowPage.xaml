@@ -13,11 +13,13 @@
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     xmlns:selectors="using:DevHome.SetupFlow.Selectors"
     xmlns:views="using:DevHome.SetupFlow.Views"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:BoolToVisibilityConverter x:Key="NegateBoolToVisibility" TrueValue="Collapsed" FalseValue="Visible" />
     </Page.Resources>
 
     <Grid MaxWidth="924">
@@ -73,47 +75,42 @@
             </ContentControl.ContentTemplateSelector>
         </ContentControl>
 
-        <Grid Grid.Row="1"
-              Padding="0 24"
-              BorderThickness="0 1 0 0"
-              BorderBrush="{ThemeResource ControlStrokeColorDefault}"
-              Visibility="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.IsNavigationBarVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-
-            <!-- Main content-->
-            <ContentControl VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch">
-                <i:Interaction.Behaviors>
-                    <setupFlowBehaviors:SetupFlowNavigationContentBehavior />
-                </i:Interaction.Behaviors>
-            </ContentControl>
-
-            <!-- Right buttons -->
-            <StackPanel Grid.Column="1" Orientation="Horizontal" >
-                <HyperlinkButton Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
-                                 MinWidth="120" Margin="4,0"
-                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel" />
-                <Button Command="{x:Bind ViewModel.Orchestrator.GoToPreviousPageCommand, Mode=OneWay}"
-                        MinWidth="120" Margin="4,0"
-                        Visibility="{x:Bind ViewModel.Orchestrator.HasPreviousPage, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Previous" />
-
-                <!-- We sometimes want to show a tooltip on the button when it is disabled,
-                     but tooltips only show on enabled controls. As a hacky workaround,
-                     put the button in a container and the tooltip in the container.
-                     But for some reason the tooltip doesn't show up if the button is the
-                     only control, so add an empty control... -->
-                <Grid ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
-                    <TextBlock IsTabStop="False" />
-                    <Button Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
-                            Style="{StaticResource AccentButtonStyle}"
+        <controls:SetupFlowNavigation
+            Grid.Row="1"
+            Visibility="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.IsNavigationBarVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+            <i:Interaction.Behaviors>
+                <setupFlowBehaviors:SetupFlowNavigationBehavior>
+                    <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultCancelTemplate>
+                        <HyperlinkButton
+                            Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
                             MinWidth="120" Margin="4,0"
-                            Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
-                            ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
-                </Grid>
-            </StackPanel>
-        </Grid>
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel" />
+                    </setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultCancelTemplate>
+                    <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultPreviousTemplate>
+                        <Button
+                            Command="{x:Bind ViewModel.Orchestrator.GoToPreviousPageCommand, Mode=OneWay}"
+                            MinWidth="120" Margin="4,0"
+                            Visibility="{x:Bind ViewModel.Orchestrator.HasPreviousPage, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Previous" />
+                    </setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultPreviousTemplate>
+                    <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
+                        <!-- We sometimes want to show a tooltip on the button when it is disabled,
+                             but tooltips only show on enabled controls. As a hacky workaround,
+                             put the button in a container and the tooltip in the container.
+                             But for some reason the tooltip doesn't show up if the button is the
+                             only control, so add an empty control... -->
+                        <Grid ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+                            <TextBlock IsTabStop="False" />
+                            <Button
+                                Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
+                                Style="{StaticResource AccentButtonStyle}"
+                                MinWidth="120" Margin="4,0"
+                                Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
+                        </Grid>
+                    </setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
+                </setupFlowBehaviors:SetupFlowNavigationBehavior>
+            </i:Interaction.Behaviors>
+        </controls:SetupFlowNavigation>
     </Grid>
 </pg:ToolPage>

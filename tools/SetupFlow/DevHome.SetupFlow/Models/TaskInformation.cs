@@ -4,6 +4,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DevHome.SetupFlow.Models;
 public partial class TaskInformation : ObservableObject
@@ -25,8 +26,5 @@ public partial class TaskInformation : ObservableObject
     private Visibility _statusIconGridVisibility;
 
     [ObservableProperty]
-    private Brush _circleForeground;
-
-    [ObservableProperty]
-    private string _statusSymbolHex;
+    private BitmapImage _statusSymbolIcon;
 }
