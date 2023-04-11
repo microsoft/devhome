@@ -47,6 +47,9 @@ public partial class SetupFlowOrchestrator
     [NotifyCanExecuteChangedFor(nameof(GoToNextPageCommand))]
     private SetupPageViewModelBase _currentPageViewModel;
 
+    [ObservableProperty]
+    private string _flowTitle;
+
     /// <summary>
     /// Occurrs right before a page changes
     /// </summary>

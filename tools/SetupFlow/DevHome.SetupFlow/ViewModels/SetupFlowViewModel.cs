@@ -34,8 +34,17 @@ public partial class SetupFlowViewModel : ObservableObject
             _mainPageViewModel,
         };
 
-        _mainPageViewModel.StartSetupFlow += (object sender, IList<ISetupTaskGroup> taskGroups) =>
+        _mainPageViewModel.StartSetupFlow += (object sender, (string, IList<ISetupTaskGroup>) args) =>
         {
+            var flowTitle = args.Item1;
+            var taskGroups = args.Item2;
+
+            // Don't reset the title when we get an empty string; we may have set it earlier to what we want
+            if (!string.IsNullOrEmpty(flowTitle))
+            {
+                Orchestrator.FlowTitle = flowTitle;
+            }
+
             Orchestrator.TaskGroups = taskGroups;
             SetFlowPagesFromCurrentTaskGroups();
         };

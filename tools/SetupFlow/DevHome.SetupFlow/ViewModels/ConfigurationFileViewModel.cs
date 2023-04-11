@@ -24,7 +24,6 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// Configuration file
     /// </summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(TitleText))]
     [NotifyPropertyChangedFor(nameof(Content))]
     private Configuration _configuration;
 
@@ -52,11 +51,6 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         CanGoToNextPage = value;
         Orchestrator.NotifyNavigationCanExecuteChanged();
     }
-
-    /// <summary>
-    /// Gets the title for the configuration page
-    /// </summary>
-    public string TitleText => StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, _configuration.Name);
 
     /// <summary>
     /// Gets the configuration file content
@@ -107,6 +101,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             {
                 Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
                 Configuration = new (file.Path);
+                Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
                 var task = new ConfigureTask(StringResource, file);
                 await task.OpenConfigurationSetAsync();
                 TaskList.Add(task);

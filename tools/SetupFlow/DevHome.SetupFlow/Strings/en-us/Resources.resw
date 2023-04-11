@@ -489,10 +489,6 @@
     <value>Search for apps and packages to install or select them below.</value>
     <comment>Description for the application management page</comment>
   </data>
-  <data name="SetupShell_EndToEndTitle.Text" xml:space="preserve">
-    <value>End-to-end setup</value>
-    <comment>Title for all the pages during an end-to-end setup flow</comment>
-  </data>
   <data name="SetupShell_RepoConfig.Description" xml:space="preserve">
     <value>Add private or public repositories to clone to you computer.</value>
     <comment>Description for the application management page</comment>
@@ -520,10 +516,6 @@
   <data name="MainPage_RepoReviewDescription.Text" xml:space="preserve">
     <value>Add private or public repositories to clone to your compuer</value>
     <comment>Description for the repo review page</comment>
-  </data>
-  <data name="MainPage_RepoReviewHeader.Text" xml:space="preserve">
-    <value>End-to-end flow</value>
-    <comment>Header for the repo review page</comment>
   </data>
   <data name="MainPage_RepoReview_AddRepository.Content" xml:space="preserve">
     <value>+ Add repository</value>

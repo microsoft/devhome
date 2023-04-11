@@ -45,7 +45,7 @@ public sealed partial class SetupShell : UserControl
         set => SetValue(OrchestratorProperty, value);
     }
 
-    public bool UseDefaultTitle => string.IsNullOrEmpty(Title);
+    public bool UseOrchestratorTitle => string.IsNullOrEmpty(Title);
 
     public SetupShell()
     {
