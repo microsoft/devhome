@@ -33,4 +33,7 @@
 
     <Thickness x:Key="SettingsPageHyperlinkButtonMargin">-12,4,0,0</Thickness>
 
+    <Thickness x:Key="SettingsPageSubTitleMargin">0,8,0,16</Thickness>
+    <Thickness x:Key="SettingsPageSubTitleArrowMargin">12,0,8,0</Thickness>
+
 </ResourceDictionary>
