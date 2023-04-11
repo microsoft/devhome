@@ -184,7 +184,7 @@ public partial class SetupFlowOrchestrator
         // Update current page
         _currentPageIndex = index;
         CurrentPageViewModel = FlowPages.Any() ? FlowPages[_currentPageIndex] : null;
-        Log.Logger?.ReportInfo(nameof(SetupFlowOrchestrator), $"Moving to {CurrentPageViewModel?.GetType().Name}");
+        Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Moving to {CurrentPageViewModel?.GetType().Name}");
 
         // Do post-navigation tasks only when moving forwards, not when going back to a previous page.
         if (movingForward)

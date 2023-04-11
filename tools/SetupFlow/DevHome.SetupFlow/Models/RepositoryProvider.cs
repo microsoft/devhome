@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Helpers;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -51,6 +52,7 @@ internal class RepositoryProvider
     {
         // The task.run inside GetProvider makes a deadlock when .Result is called.
         // https://stackoverflow.com/a/17248813.  Solution is to wrap in Task.Run().
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider plugins");
         _devIdProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
         _repositoryProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
     }

@@ -49,7 +49,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         }
         else
         {
-            Log.Logger?.ReportWarn(nameof(WinGetPackageRestoreDataSource), $"Restore data source skipped with status: {restoreDeviceInfoResult.Status}");
+            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Restore data source skipped with status: {restoreDeviceInfoResult.Status}");
         }
     }
 
@@ -58,19 +58,19 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         var result = new List<PackageCatalog>();
         if (_restoreDeviceInfo == null)
         {
-            Log.Logger?.ReportWarn(nameof(WinGetPackageRestoreDataSource), $"Load catalogs skipped because no restore device information was found");
+            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Load catalogs skipped because no restore device information was found");
             return result;
         }
 
         try
         {
-            Log.Logger?.ReportInfo(nameof(WinGetPackageRestoreDataSource), "Finding packages from restore data");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Finding packages from restore data");
             var packages = await GetPackagesAsync(
                 _restoreDeviceInfo.WinGetApplicationsInfo,
                 appInfo => appInfo.Id,
                 async (package, appInfo) =>
             {
-                Log.Logger?.ReportInfo(nameof(WinGetPackageRestoreDataSource), $"Obtaining icon information for package {package.Id}");
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for package {package.Id}");
                 package.LightThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Light);
                 package.DarkThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Dark);
             });
@@ -86,12 +86,12 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
             }
             else
             {
-                Log.Logger?.ReportInfo(nameof(WinGetPackageRestoreDataSource), "No packages found from restore");
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, "No packages found from restore");
             }
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(nameof(WinGetPackageRestoreDataSource), $"Error loading packages from winget restore catalog: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget restore catalog: {e.Message}");
         }
 
         return result;

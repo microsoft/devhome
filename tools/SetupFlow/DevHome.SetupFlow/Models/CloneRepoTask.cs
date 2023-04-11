@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
@@ -137,16 +138,19 @@ public class CloneRepoTask : ISetupTask
             {
                 try
                 {
+                    Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Creating clone location for repository at {cloneLocation.FullName}");
                     Directory.CreateDirectory(cloneLocation.FullName);
                 }
                 catch (Exception)
                 {
+                    Log.Logger?.ReportError(Log.Component.RepoConfig, "Failed to create clone location for repository");
                     return TaskFinishedState.Failure;
                 }
             }
 
             try
             {
+                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
                 await RepositoryToClone.CloneRepositoryAsync(cloneLocation.FullName, _developerId);
             }
             catch (Exception e)

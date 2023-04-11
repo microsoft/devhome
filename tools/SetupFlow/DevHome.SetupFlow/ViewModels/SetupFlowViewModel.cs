@@ -54,7 +54,7 @@ public partial class SetupFlowViewModel : ObservableObject
         }
         else
         {
-            Log.Logger?.ReportInfo(nameof(SetupFlowViewModel), "Review page will be skipped for this flow");
+            Log.Logger?.ReportInfo(Log.Component.Orchestrator, "Review page will be skipped for this flow");
         }
 
         // The Loading page can advance to the next page
@@ -75,7 +75,7 @@ public partial class SetupFlowViewModel : ObservableObject
     [RelayCommand]
     public void Cancel()
     {
-        Log.Logger?.ReportInfo(nameof(SetupFlowViewModel), "Cancelling flow");
+        Log.Logger?.ReportInfo(Log.Component.Orchestrator, "Cancelling flow");
         Orchestrator.ReleaseRemoteFactory();
         _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
         Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };

@@ -7,6 +7,7 @@ using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -45,10 +46,12 @@ public class DevDriveTaskGroup : ISetupTaskGroup
     {
         if (_devDriveTasks.Any())
         {
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Overwriting existing dev drive task");
             _devDriveTasks[0].DevDrive = devDrive;
         }
         else
         {
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Adding new dev drive task");
             _devDriveTasks.Add(new CreateDevDriveTask(devDrive, _host, _logger, _stringResource));
         }
     }
@@ -59,6 +62,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
     /// </summary>
     public void RemoveDevDriveTasks()
     {
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Clearing all dev drive tasks");
         _devDriveTasks.Clear();
     }
 

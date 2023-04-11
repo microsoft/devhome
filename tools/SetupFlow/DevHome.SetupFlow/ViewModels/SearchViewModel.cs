@@ -90,7 +90,7 @@ public partial class SearchViewModel : ObservableObject
         try
         {
             // Run the search on a separate (non-UI) thread to prevent lagging the UI.
-            Log.Logger?.ReportInfo(nameof(SearchViewModel), $"Running package search for query [{text}]");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Running package search for query [{text}]");
             var matches = await Task.Run(async () => await _wpm.AllCatalogs.SearchAsync(text, SearchResultLimit), cancellationToken);
 
             // Don't update the UI if the operation was canceled
@@ -110,7 +110,7 @@ public partial class SearchViewModel : ObservableObject
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(nameof(SearchViewModel), $"Search error: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Search error: {e.Message}");
             return (SearchResultStatus.ExceptionThrown, null);
         }
     }

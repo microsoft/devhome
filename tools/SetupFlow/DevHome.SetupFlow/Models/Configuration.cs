@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using DevHome.SetupFlow.Helpers;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -36,6 +37,7 @@ public class Configuration
     /// <returns>Configuration file content</returns>
     private string LoadContent()
     {
+        Log.Logger?.ReportInfo(Log.Component.Configuration, $"Loading configuration file content from {_fileInfo.FullName}");
         using var text = _fileInfo.OpenText();
         return text.ReadToEnd();
     }

@@ -46,6 +46,13 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         IsStepPage = false;
     }
 
+    partial void OnReadAndAgreeChanged(bool value)
+    {
+        Log.Logger?.ReportInfo(Log.Component.Configuration, $"Read and agree changed. Value: {value}");
+        CanGoToNextPage = value;
+        Orchestrator.NotifyNavigationCanExecuteChanged();
+    }
+
     /// <summary>
     /// Gets the title for the configuration page
     /// </summary>
@@ -83,16 +90,22 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         var mainWindow = Application.Current.GetService<WindowEx>();
 
         // Create and configure file picker
+        Log.Logger?.ReportInfo(Log.Component.Configuration, "Launching file picker to select configurationf file");
         var filePicker = mainWindow.CreateOpenFilePicker();
         filePicker.FileTypeFilter.Add(".yaml");
         filePicker.FileTypeFilter.Add(".yml");
         var file = await filePicker.PickSingleFileAsync();
 
         // Check if a file was selected
-        if (file != null)
+        if (file == null)
+        {
+            Log.Logger?.ReportInfo(Log.Component.Configuration, "No configuration file selected");
+        }
+        else
         {
             try
             {
+                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
                 Configuration = new (file.Path);
                 var task = new ConfigureTask(StringResource, file);
                 await task.OpenConfigurationSetAsync();
@@ -101,6 +114,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             }
             catch (OpenConfigurationSetException e)
             {
+                Log.Logger?.ReportError(Log.Component.Configuration, $"Opening configuration set failed: {e.Message}");
                 await mainWindow.ShowErrorMessageDialogAsync(
                     StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
                     GetErrorMessage(e),
@@ -108,7 +122,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(nameof(ConfigurationFileViewModel), $"Unknown error while opening configuration set: {e.Message}");
+                Log.Logger?.ReportError(Log.Component.Configuration, $"Unknown error while opening configuration set: {e.Message}");
 
                 await mainWindow.ShowErrorMessageDialogAsync(
                     file.Name,

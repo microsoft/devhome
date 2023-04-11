@@ -74,7 +74,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartSetup()
     {
-        Log.Logger?.ReportInfo(nameof(MainPageViewModel), "Starting end-to-end setup");
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting end-to-end setup");
         StartSetupFlowForTaskGroups(
             _host.GetService<DevDriveTaskGroup>(),
             _host.GetService<RepoConfigTaskGroup>(),
@@ -87,7 +87,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartRepoConfig()
     {
-        Log.Logger?.ReportInfo(nameof(MainPageViewModel), "Starting flow for repo config");
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for repo config");
         StartSetupFlowForTaskGroups(
             _host.GetService<DevDriveTaskGroup>(),
             _host.GetService<RepoConfigTaskGroup>());
@@ -99,7 +99,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartAppManagement()
     {
-        Log.Logger?.ReportInfo(nameof(MainPageViewModel), "Starting flow for app management");
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for app management");
         StartSetupFlowForTaskGroups(_host.GetService<AppManagementTaskGroup>());
     }
 
@@ -110,7 +110,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private async void LaunchDisksAndVolumesSettingsPage()
     {
         // TODO: Add telemetry.
-        Log.Logger?.ReportInfo(nameof(MainPageViewModel), "Launching settings on Disks and Volumes page");
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
 
@@ -123,7 +123,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
         if (await configFileSetupFlow.PickConfigurationFileAsync())
         {
-            Log.Logger?.ReportInfo(nameof(MainPageViewModel), "Starting flow for Configuration file");
+            Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for Configuration file");
             StartSetupFlowForTaskGroups(configFileSetupFlow);
         }
     }
