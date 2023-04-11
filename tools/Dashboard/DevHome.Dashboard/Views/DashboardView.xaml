@@ -30,7 +30,7 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid MaxWidth="924" HorizontalAlignment="Left">
+    <Grid MaxWidth="924">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
