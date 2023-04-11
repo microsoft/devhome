@@ -25,6 +25,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\DevHome.csproj" />
+    <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent\DevHome.SetupFlow.ElevatedComponent.csproj">
+      <Aliases>Server</Aliases>
+    </ProjectReference>
     <ProjectReference Include="..\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
   </ItemGroup>
 </Project>

@@ -147,7 +147,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
         IsStepPage = false;
         IsNavigationBarVisible = false;
-        ShowOnlyNextButton = true;
         NextPageButtonText = stringResource.GetLocalized(StringResourceKey.LoadingScreenGoToSummaryButtonContent);
         ShowRetryButton = Visibility.Collapsed;
         _failedTasks = new List<TaskInformation>();

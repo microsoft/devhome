@@ -65,16 +65,6 @@ public partial class SetupPageViewModelBase : ObservableObject
     private string _nextPageButtonToolTipText;
 
     /// <summary>
-    /// Indicates if only the next button should show up in the navigation bar.
-    /// tool tip optional.
-    /// </summary>
-    /// <remarks>
-    /// Default is false. Used in the loading page.
-    /// </remarks>
-    [ObservableProperty]
-    private bool _showOnlyNextButton = false;
-
-    /// <summary>
     /// Indicates whether this page is one of the steps the user will need to complete before starting the setup.
     /// </summary>
     [ObservableProperty]

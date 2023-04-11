@@ -1,13 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+extern alias Projection;
+
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.SetupFlow.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;

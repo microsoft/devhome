@@ -1,14 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+extern alias Projection;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.SetupFlow.Common.Elevation;
+using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using Microsoft.Extensions.Hosting;
+using Projection::DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -21,6 +27,9 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private ReviewTabViewModelBase _selectedReviewTab;
+
+    [ObservableProperty]
+    private bool _readAndAgree;
 
     public bool HasApplicationsToInstall => Orchestrator.GetTaskGroup<AppManagementTaskGroup>()?.SetupTasks.Any() == true;
 
@@ -67,9 +76,11 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         await Task.CompletedTask;
     }
 
+    partial void OnReadAndAgreeChanged(bool value) => UpdateCanGoToNextPage();
+
     public void UpdateCanGoToNextPage()
     {
-        CanGoToNextPage = HasTasksToSetUp;
+        CanGoToNextPage = HasTasksToSetUp && ReadAndAgree;
         Orchestrator.NotifyNavigationCanExecuteChanged();
     }
 }

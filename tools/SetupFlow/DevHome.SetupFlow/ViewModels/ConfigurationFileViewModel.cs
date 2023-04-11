@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Helpers;
@@ -17,7 +18,7 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
-    public List<ISetupTask> TaskList { get; } = new List<ISetupTask>();
+    public List<ConfigureTask> TaskList { get; } = new List<ConfigureTask>();
 
     /// <summary>
     /// Configuration file
@@ -31,6 +32,8 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// Store the value for whether the agreements are read.
     /// </summary>
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ConfigureAsAdminCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ConfigureAsNonAdminCommand))]
     private bool _readAndAgree;
 
     public ConfigurationFileViewModel(
@@ -40,14 +43,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     {
         // Configure navigation bar
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
-        CanGoToNextPage = false;
         IsStepPage = false;
-    }
-
-    partial void OnReadAndAgreeChanged(bool value)
-    {
-        CanGoToNextPage = value;
-        Orchestrator.NotifyNavigationCanExecuteChanged();
     }
 
     /// <summary>
@@ -59,6 +55,23 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// Gets the configuration file content
     /// </summary>
     public string Content => _configuration.Content;
+
+    [RelayCommand(CanExecute = nameof(ReadAndAgree))]
+    public async Task ConfigureAsAdminAsync()
+    {
+        foreach (var task in TaskList)
+        {
+            task.RequiresAdmin = true;
+        }
+
+        await Orchestrator.GoToNextPage();
+    }
+
+    [RelayCommand(CanExecute = nameof(ReadAndAgree))]
+    public async Task ConfigureAsNonAdminAsync()
+    {
+        await Orchestrator.GoToNextPage();
+    }
 
     /// <summary>
     /// Open file picker to select a YAML configuration file.
