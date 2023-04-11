@@ -44,6 +44,13 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         AddWidgetNavigationView.MenuItems.Clear();
 
+        if (_widgetCatalog is null)
+        {
+            // We should never have gotten here if we don't have a WidgetCatalog.
+            Log.Logger()?.ReportError("AddWidgetDialog", $"Opened the AddWidgetDialog, but WidgetCatalog is null.");
+            return;
+        }
+
         var providerDefs = _widgetCatalog.GetProviderDefinitions();
         var widgetDefs = _widgetCatalog.GetWidgetDefinitions();
 
