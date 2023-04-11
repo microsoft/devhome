@@ -189,10 +189,10 @@
     <Content Update="Assets\Setup_AppManagement.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="Assets\Setup_Banner_Dark.png">
+    <Content Update="Assets\Setup_Banner_Front_Dark.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="Assets\Setup_Banner_Light.png">
+    <Content Update="Assets\Setup_Banner_Front_Light.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="Assets\Setup_ConfigurationFile.png">

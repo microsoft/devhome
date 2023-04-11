@@ -5,36 +5,41 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    <Grid CornerRadius="8" Height="214">
+    <Grid Height="214">
         <Grid.Background>
-            <ImageBrush Stretch="UniformToFill" ImageSource="{x:Bind ImageSource, Mode=OneWay}" />
+            <ImageBrush Stretch="Fill" ImageSource="{x:Bind BackgroundSource, Mode=OneWay}" />
         </Grid.Background>
+
+        <!-- Set Min sizes so that image gets clipped as window narrows, rather than scaling down -->
+        <Image Stretch="Uniform" Source="{x:Bind OverlaySource, Mode=OneWay}" 
+               Margin="0 0 0 0" Height="214" Width="924" MinHeight="214" MinWidth="924"/>
+
         <!-- Hide Banner Button -->
         <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
                 BorderThickness="0" Background="Transparent" Padding="5"
-                Command="{x:Bind HideButtonCommand, Mode=OneWay}"
-                Visibility="{x:Bind HideButtonVisibility, Mode=OneWay}">
+                Command="{x:Bind HideButtonCommand}"
+                Visibility="{x:Bind HideButtonVisibility}">
             <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}"
-                    FontSize="{ThemeResource BodyTextBlockFontSize}"
-                    Text="&#xE10A;" />
+                       FontSize="{ThemeResource BodyTextBlockFontSize}"
+                       Text="&#xE10A;" />
         </Button>
         <StackPanel VerticalAlignment="Center" Margin="38 0 0 0" Spacing="12">
             <TextBlock
                 Width="{x:Bind TextWidth}"
                 HorizontalAlignment="Left"
                 Style="{ThemeResource SubtitleTextBlockStyle}"
-                Text="{x:Bind Title, Mode=OneWay}"/>
+                Text="{x:Bind Title}"/>
             <TextBlock
                 Width="{x:Bind TextWidth}"
                 HorizontalAlignment="Left"
                 TextWrapping="Wrap"
-                Text="{x:Bind Description, Mode=OneWay}"/>
+                Text="{x:Bind Description}"/>
             <Button
                 Margin="0 15 0 0"
                 Padding="25 4 25 6"
                 MinWidth="120"
-                Command="{x:Bind ButtonCommand, Mode=OneWay}"
-                Content="{x:Bind ButtonText, Mode=OneWay}"/>
+                Command="{x:Bind ButtonCommand}"
+                Content="{x:Bind ButtonText}"/>
         </StackPanel>
     </Grid>
 </UserControl>

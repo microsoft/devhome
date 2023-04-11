@@ -33,6 +33,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Assets\DashboardBannerFrontDark.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\DashboardBannerFrontLight.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="Assets\HostConfigLight.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
