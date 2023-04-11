@@ -18,7 +18,6 @@ using DevHome.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Newtonsoft.Json;
 
 namespace DevHome;
 
@@ -40,7 +39,7 @@ public partial class App : Application, IApp
 
     public static WindowEx MainWindow { get; } = new MainWindow();
 
-    internal static NavConfig NavConfig { get; } = JsonConvert.DeserializeObject<NavConfig>(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "navConfig.json")))!;
+    internal static NavConfig NavConfig { get; } = System.Text.Json.JsonSerializer.Deserialize(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "navConfig.json")), SourceGenerationContext.Default.NavConfig)!;
 
     public App()
     {
