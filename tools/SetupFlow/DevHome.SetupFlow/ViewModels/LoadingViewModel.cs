@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+extern alias Projection;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,13 +13,13 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Elevation;
-using DevHome.SetupFlow.ElevatedComponent;
 using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Projection::DevHome.SetupFlow.ElevatedComponent;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
