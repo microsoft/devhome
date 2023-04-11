@@ -68,6 +68,7 @@ public partial class DashboardView : ToolPage
         else
         {
             // TODO: show error
+            AddWidgetButton.IsEnabled = false;
         }
 
 #if DEBUG
@@ -95,7 +96,7 @@ public partial class DashboardView : ToolPage
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError("DashboardView", "Error in InitializeWidgetHost", ex);
+            Log.Logger()?.ReportError("DashboardView", "Exception in InitializeWidgetHost:", ex);
             return false;
         }
 

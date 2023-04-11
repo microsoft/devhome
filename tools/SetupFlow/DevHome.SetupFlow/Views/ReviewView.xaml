@@ -32,11 +32,11 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <setupFlowBehaviors:SetupFlowNavigationContentBehavior.Content>
+    <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_ReadAndAgree"
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
-    </setupFlowBehaviors:SetupFlowNavigationContentBehavior.Content>
+    </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
 
     <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
                          Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >

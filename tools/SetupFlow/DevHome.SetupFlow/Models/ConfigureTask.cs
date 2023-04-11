@@ -18,14 +18,14 @@ using Windows.Storage;
 
 namespace DevHome.SetupFlow.Models;
 
-internal class ConfigureTask : ISetupTask
+public class ConfigureTask : ISetupTask
 {
     private readonly ISetupFlowStringResource _stringResource;
     private readonly StorageFile _file;
     private ConfigurationProcessor _processor;
     private ConfigurationSet _configSet;
 
-    public bool RequiresAdmin => false;
+    public bool RequiresAdmin { get; set; }
 
     public bool RequiresReboot { get; private set; }
 
