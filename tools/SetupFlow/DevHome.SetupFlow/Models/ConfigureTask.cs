@@ -46,7 +46,8 @@ public class ConfigureTask : ISetupTask
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(nameof(ConfigurationFileHelper), $"Failed to open configuration set: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to open configuration set: {e.Message}");
+            throw;
         }
     }
 
@@ -96,7 +97,7 @@ public class ConfigureTask : ISetupTask
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(nameof(ConfigureTask), $"Failed to apply configuration: {e.Message}");
+                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration: {e.Message}");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -108,7 +109,7 @@ public class ConfigureTask : ISetupTask
     {
         return Task.Run(async () =>
         {
-            Log.Logger?.ReportInfo(nameof(ConfigureTask), $"Starting elevated application of configuration file {_file.Path}");
+            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file {_file.Path}");
             var elevatedTask = elevatedComponentFactory.CreateElevatedConfigurationTask();
             var elevatedResult = await elevatedTask.ApplyConfiguration(_file);
             RequiresReboot = elevatedResult.RebootRequired;

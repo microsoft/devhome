@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using DevHome.Logging;
 using DevHome.SetupFlow.Common.Exceptions;
 using Microsoft.Management.Configuration;
 using Microsoft.Management.Configuration.Processor;
@@ -21,6 +22,7 @@ namespace DevHome.SetupFlow.Common.Configuration;
 public class ConfigurationFileHelper
 {
     private readonly StorageFile _file;
+    private readonly Logger _logger;
     private ConfigurationProcessor _processor;
     private ConfigurationSet _configSet;
     private ApplyConfigurationSetResult _result;
@@ -28,6 +30,7 @@ public class ConfigurationFileHelper
     public ConfigurationFileHelper(StorageFile file)
     {
         _file = file;
+        _logger = new ComponentLogger("ConfigurationFile", "SetupFlow").Logger;
     }
 
     public async Task OpenConfigurationSetAsync()
@@ -42,6 +45,8 @@ public class ConfigurationFileHelper
             properties.AdditionalModulePaths = new List<string>() { modulesPath };
             var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
             _processor = new ConfigurationProcessor(factory);
+
+            _logger.ReportInfo($"Opening configuration set from path {_file.Path}");
             var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
             _configSet = openResult.Set;
             if (_configSet == null)
@@ -64,7 +69,9 @@ public class ConfigurationFileHelper
             throw new InvalidOperationException();
         }
 
+        _logger.ReportInfo("Starting to apply configuration set");
         _result = await _processor.ApplySetAsync(_configSet, ApplyConfigurationSetFlags.None);
+        _logger.ReportInfo($"Apply configuration finished. HResult: {_result.ResultCode?.HResult}");
     }
 
     public bool ApplicationSucceeded => _result.ResultCode == null;

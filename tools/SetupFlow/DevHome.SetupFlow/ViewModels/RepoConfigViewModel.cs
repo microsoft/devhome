@@ -6,14 +6,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -82,6 +80,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// <param name="cloningInformation">The cloning information to remove.</param>
     public void RemoveCloningInformation(CloningInformation cloningInformation)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {cloningInformation.RepositoryId} from repos to clone");
         RepoReviewItems.Remove(cloningInformation);
         _taskGroup.SaveSetupTaskInformation(RepoReviewItems.ToList());
 
@@ -108,10 +107,12 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// <param name="cloningInfo">Cloning info that has a new path for the Dev Drive</param>
     public void UpdateCollectionWithDevDriveInfo(CloningInformation cloningInfo)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Updating dev drive location on repos to clone after change to dev drive");
         foreach (var item in RepoReviewItems)
         {
             if (item.CloneToDevDrive && item.CloningLocation != cloningInfo.CloningLocation)
             {
+                Log.Logger?.ReportDebug(Log.Component.RepoConfig, $"Updating {item.RepositoryId}");
                 item.CloningLocation = new System.IO.DirectoryInfo(cloningInfo.CloningLocation.FullName);
                 item.CloneLocationAlias = cloningInfo.CloneLocationAlias;
             }
@@ -132,6 +133,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
     public void ReportDialogCancellation()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repo add/edit dialog cancelled");
         RepoDialogCancelled();
     }
 }

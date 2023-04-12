@@ -44,7 +44,7 @@ public partial class PackageCatalogViewModel : ObservableObject
     [RelayCommand]
     private void AddAllPackages()
     {
-        Log.Logger?.ReportInfo(nameof(PackageCatalogViewModel), $"Adding all packages from catalog {Name} to selection");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Adding all packages from catalog {Name} to selection");
         foreach (var package in Packages)
         {
             package.IsSelected = true;

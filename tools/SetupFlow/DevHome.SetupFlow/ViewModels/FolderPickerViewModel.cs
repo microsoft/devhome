@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Helpers;
 using Microsoft.UI.Xaml;
 using Windows.Storage.Pickers;
 using WinUIEx;
@@ -62,11 +63,13 @@ public partial class FolderPickerViewModel : ObservableObject
 
     public void ShowFolderPicker()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Showing folder picker");
         ShouldShowFolderPicker = Visibility.Visible;
     }
 
     public void CloseFolderPicker()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Closing folder picker");
         ShouldShowFolderPicker = Visibility.Collapsed;
     }
 
@@ -108,6 +111,7 @@ public partial class FolderPickerViewModel : ObservableObject
     /// <returns>An awaitable task.</returns>
     private async Task<DirectoryInfo> PickCloneDirectoryAsync()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Opening folder picker to select clone directory");
         var folderPicker = new FolderPicker();
         WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Application.Current.GetService<WindowEx>().GetWindowHandle());
         folderPicker.FileTypeFilter.Add("*");
@@ -115,10 +119,12 @@ public partial class FolderPickerViewModel : ObservableObject
         var locationToCloneTo = await folderPicker.PickSingleFolderAsync();
         if (locationToCloneTo != null && locationToCloneTo.Path.Length > 0)
         {
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Selected '{locationToCloneTo.Path}' as location to clone to");
             return new DirectoryInfo(locationToCloneTo.Path);
         }
         else
         {
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Didn't select a location to clone to");
             return null;
         }
     }

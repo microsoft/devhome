@@ -46,7 +46,7 @@ public sealed class DevDriveStorageOperator
     /// see https://learn.microsoft.com/en-us/windows/win32/fileio/ioctl-disk-are-volumes-ready
     /// https://learn.microsoft.com/en-us/windows/win32/fileio/disk-management-control-codes
     /// </summary>
-    private struct IOCTL_DISK_ARE_VOLUMES_READY
+    private readonly struct IOCTL_DISK_ARE_VOLUMES_READY
     {
         public static readonly int _deviceType = 0x00000007;
         public static readonly int _function = 0x0087;
@@ -413,7 +413,7 @@ public sealed class DevDriveStorageOperator
                     // The call to createFile succeeds with the trailing backslash, however when getting the device info
                     // using that handle, it fails so we need to remove it before the call, and add it back later.
                     var volumeGuidPathAfterTrim = volumeGuidPathBeforeTrim.Trim('\0');
-                    var hasTrailingbackslash = volumeGuidPathAfterTrim.Last() == '\\' ? true : false;
+                    var hasTrailingbackslash = volumeGuidPathAfterTrim.Last() == '\\';
                     if (hasTrailingbackslash)
                     {
                         volumeGuidPathAfterTrim = volumeGuidPathAfterTrim.TrimEnd('\\');

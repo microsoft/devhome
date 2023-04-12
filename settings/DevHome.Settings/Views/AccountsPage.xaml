@@ -5,7 +5,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="using:DevHome.Settings.ViewModels"
-    xmlns:models="using:DevHome.Settings.Models" xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:models="using:DevHome.Settings.Models"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
         <DataTemplate x:Key="AccountsProviderButtonTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
@@ -34,40 +37,46 @@
             </StackPanel>
         </DataTemplate>
     </Page.Resources>
-    <Grid>
-        <StackPanel x:Name="MainStackPanel">
-            <StackPanel x:Name="AccountsContentArea">
-                <StackPanel x:Name="AccountsTitleStackPanel" Margin="{StaticResource XSmallTopMargin}">
-                    <TextBlock x:Uid="Settings_Accounts_SubTitle" Style="{ThemeResource TitleTextBlockStyle}" />
-                </StackPanel>
 
-                <StackPanel x:Name="AddAccountMainStackPanel" Margin="{StaticResource XSmallTopMargin}">
-                    <labs:SettingsCard x:Uid="Settings_Accounts_AddAccount">
-                        <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right">
-                            <Button.Flyout>
-                                <Flyout Placement="Bottom">
-                                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel x:Name="AccountsContentArea">
+            <Grid x:Name="Settings_Breadcrumbs" Margin="{StaticResource SettingsPageSubTitleMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Uid="Settings_SubTitle" Grid.Column="0" Style="{ThemeResource TitleTextBlockStyle}" />
+                <TextBlock Text=">" Grid.Column="1" Style="{ThemeResource TitleTextBlockStyle}" Margin="{StaticResource SettingsPageSubTitleArrowMargin}" />
+                <TextBlock x:Uid="Settings_Accounts_SubTitle" Grid.Column="2" Style="{ThemeResource TitleTextBlockStyle}" />
+            </Grid>
+
+            <StackPanel x:Name="AddAccountMainStackPanel" Margin="{StaticResource XSmallTopMargin}">
+                <labs:SettingsCard x:Uid="Settings_Accounts_AddAccount">
+                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right">
+                        <Button.Flyout>
+                            <Flyout Placement="Bottom">
+                                <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
+                                </ItemsRepeater>
+                                <Flyout.FlyoutPresenterStyle>
+                                    <Style TargetType="FlyoutPresenter">
+                                        <Setter Property="IsTabStop" Value="True"/>
+                                        <Setter Property="TabNavigation" Value="Cycle"/>
+                                        <Setter Property="MinWidth" Value="150" />
+                                    </Style>
+                                </Flyout.FlyoutPresenterStyle>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                </labs:SettingsCard>
+            </StackPanel>
+                
+            <StackPanel>
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderViewTemplate}"
                         HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
-                                    </ItemsRepeater>
-                                    <Flyout.FlyoutPresenterStyle>
-                                        <Style TargetType="FlyoutPresenter">
-                                            <Setter Property="IsTabStop" Value="True"/>
-                                            <Setter Property="TabNavigation" Value="Cycle"/>
-                                            <Setter Property="MinWidth" Value="150" />
-                                        </Style>
-                                    </Flyout.FlyoutPresenterStyle>
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
-                    </labs:SettingsCard>
-                </StackPanel>
-
-                <StackPanel>
-                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderViewTemplate}"
-                            HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
-                    </ItemsRepeater>
-                </StackPanel>
+                </ItemsRepeater>
             </StackPanel>
         </StackPanel>
-    </Grid>
+    </ScrollViewer>
 </Page>

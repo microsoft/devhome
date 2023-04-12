@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.IO;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
@@ -31,7 +32,7 @@ public static class ServiceExtensions
         services.AddSummary();
 
         // View-models
-        services.AddTransient<SetupFlowViewModel>();
+        services.AddSingleton<SetupFlowViewModel>();
 
         // Services
         services.AddSingleton<ISetupFlowStringResource, SetupFlowStringResource>();
@@ -64,7 +65,7 @@ public static class ServiceExtensions
         services.AddTransient<WinGetPackageJsonDataSource>(sp =>
         {
             var dataSourcePath = sp.GetService<IOptions<SetupFlowOptions>>().Value.WinGetPackageJsonDataSourcePath;
-            var dataSourceFullPath = Path.Combine(Package.Current.InstalledLocation.Path, dataSourcePath);
+            var dataSourceFullPath = Path.Combine(AppContext.BaseDirectory, dataSourcePath);
             return ActivatorUtilities.CreateInstance<WinGetPackageJsonDataSource>(sp, dataSourceFullPath);
         });
 
