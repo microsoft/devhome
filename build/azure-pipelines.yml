@@ -32,7 +32,7 @@ resources:
   - repository: templates_onebranch
     type: git
     name: OneBranch.Pipelines/GovernedTemplates
-    ref: refs/heads/main
+    ref: $(BuildingBranch)
 
 stages:
 - stage: SourceAnalysis
