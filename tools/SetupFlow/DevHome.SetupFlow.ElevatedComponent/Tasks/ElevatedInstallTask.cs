@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Microsoft.Management.Deployment;
@@ -34,29 +35,29 @@ public sealed class ElevatedInstallTask
     {
         return Task.Run(async () =>
         {
-            Log.Logger?.ReportInfo(nameof(ElevatedInstallTask), $"Elevated install requested for package [{packageId}] from catalog [{catalogName}]");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Elevated install requested for package [{packageId}] from catalog [{catalogName}]");
             var result = new TaskResult();
 
             var packageManager = _wingetFactory.CreatePackageManager();
 
-            Log.Logger?.ReportInfo(nameof(ElevatedInstallTask), $"Connecting to catalog [{catalogName}]");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Connecting to catalog [{catalogName}]");
             var catalogReference = packageManager.GetPackageCatalogByName(catalogName);
             var connectResult = await catalogReference.ConnectAsync();
             if (connectResult.Status != ConnectResultStatus.Ok)
             {
-                Log.Logger?.ReportError(nameof(ElevatedInstallTask), $"Failed to connect to the catalog [{catalogName}] with status {connectResult.Status}");
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to the catalog [{catalogName}] with status {connectResult.Status}");
                 result.TaskAttempted = false;
                 return result;
             }
 
-            Log.Logger?.ReportInfo(nameof(ElevatedInstallTask), $"Finding package [{packageId}] in catalog");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Finding package [{packageId}] in catalog");
             var findOptions = CreateFindOptionsForPackageId(packageId);
             var findResult = connectResult.PackageCatalog.FindPackages(findOptions);
             if (findResult.Status != FindPackagesResultStatus.Ok
                 || findResult.Matches.Count < 1
                 || findResult.WasLimitExceeded)
             {
-                Log.Logger?.ReportError(nameof(ElevatedInstallTask), $"Failed to find package. Status={findResult.Status}, Matches Count={findResult.Matches.Count}, LimitReached={findResult.WasLimitExceeded}");
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to find package. Status={findResult.Status}, Matches Count={findResult.Matches.Count}, LimitReached={findResult.WasLimitExceeded}");
                 result.TaskAttempted = false;
                 return result;
             }
@@ -66,9 +67,9 @@ public sealed class ElevatedInstallTask
             var installOptions = _wingetFactory.CreateInstallOptions();
             installOptions.PackageInstallMode = PackageInstallMode.Silent;
 
-            Log.Logger?.ReportInfo(nameof(ElevatedInstallTask), $"Initiating install of package {packageId}");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initiating install of package {packageId}");
             var installResult = await packageManager.InstallPackageAsync(packageToInstall, installOptions);
-            Log.Logger?.ReportInfo(nameof(ElevatedInstallTask), $"Install finished. Status={installResult.Status}, InstallerErrorCode={installResult.InstallerErrorCode}, RebootRequired={installResult.RebootRequired}");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Install finished. Status={installResult.Status}, InstallerErrorCode={installResult.InstallerErrorCode}, RebootRequired={installResult.RebootRequired}");
             result.TaskAttempted = true;
             result.TaskSucceeded = installResult.Status == InstallResultStatus.Ok;
             result.RebootRequired = installResult.RebootRequired;

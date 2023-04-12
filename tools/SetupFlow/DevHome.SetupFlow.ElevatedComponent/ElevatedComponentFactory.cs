@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.SetupFlow.ElevatedComponent.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Tasks;
 
 namespace DevHome.SetupFlow.ElevatedComponent;
@@ -18,19 +18,19 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
 
     public ElevatedInstallTask CreateElevatedInstallTask()
     {
-        Log.Logger?.ReportInfo(nameof(ElevatedComponentFactory), "Creating elevated package installer");
+        Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated package installer");
         return new ElevatedInstallTask();
     }
 
     public DevDriveStorageOperator CreateDevDriveStorageOperator()
     {
-        Log.Logger?.ReportInfo(nameof(ElevatedComponentFactory), "Creating elevated Dev Drive storage operator");
+        Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Dev Drive storage operator");
         return new DevDriveStorageOperator();
     }
 
     public ElevatedConfigurationTask CreateElevatedConfigurationTask()
     {
-        Log.Logger?.ReportInfo(nameof(ElevatedComponentFactory), "Creating elevated Configuration File applier");
+        Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Configuration File applier");
         return new ElevatedConfigurationTask();
     }
 }

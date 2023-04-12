@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using DevHome.SetupFlow.Common.Configuration;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Windows.Foundation;
 using Windows.Storage;
@@ -20,25 +21,25 @@ public sealed class ElevatedConfigurationTask
             {
                 var configurationFileHelper = new ConfigurationFileHelper(file);
 
-                Log.Logger?.ReportInfo(nameof(ElevatedConfigurationTask), $"Opening configuration set from file: {file.Path}");
+                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from file: {file.Path}");
                 await configurationFileHelper.OpenConfigurationSetAsync();
 
-                Log.Logger?.ReportInfo(nameof(ElevatedConfigurationTask), "Starting configuration set application");
-                await configurationFileHelper.ApplyConfigurationAsync();
-                Log.Logger?.ReportInfo(nameof(ElevatedConfigurationTask), "Configuration application finished");
+                Log.Logger?.ReportInfo(Log.Component.Configuration, "Starting configuration set application");
+                var result = await configurationFileHelper.ApplyConfigurationAsync();
+                Log.Logger?.ReportInfo(Log.Component.Configuration, "Configuration application finished");
 
                 taskResult.TaskAttempted = true;
-                taskResult.TaskSucceeded = configurationFileHelper.ApplicationSucceeded;
-                taskResult.RebootRequired = configurationFileHelper.ResultRequiresReboot;
+                taskResult.TaskSucceeded = result.Succeeded;
+                taskResult.RebootRequired = result.RequiresReboot;
 
-                if (configurationFileHelper.ResultException != null)
+                if (result.ResultException != null)
                 {
-                    throw configurationFileHelper.ResultException;
+                    throw result.ResultException;
                 }
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(nameof(ElevatedConfigurationTask), $"Failed to apply configuration: {e.Message}");
+                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration: {e.Message}");
                 taskResult.TaskSucceeded = false;
             }
 

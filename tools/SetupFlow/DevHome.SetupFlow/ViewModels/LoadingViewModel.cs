@@ -13,7 +13,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Elevation;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
@@ -277,8 +277,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError($"Failed to initialize elevated process: {e}");
-                Log.Logger?.ReportInfo("Will continue with setup as best-effort");
+                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process: {e}");
+                Log.Logger?.ReportInfo(Log.Component.Loading, "Will continue with setup as best-effort");
             }
         }
 

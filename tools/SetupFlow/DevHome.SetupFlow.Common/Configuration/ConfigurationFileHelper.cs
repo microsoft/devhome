@@ -7,8 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using DevHome.Logging;
 using DevHome.SetupFlow.Common.Exceptions;
+using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.Management.Configuration;
 using Microsoft.Management.Configuration.Processor;
 using Windows.Storage;
@@ -21,16 +21,32 @@ namespace DevHome.SetupFlow.Common.Configuration;
 /// </summary>
 public class ConfigurationFileHelper
 {
+    public class ApplicationResult
+    {
+        public ApplyConfigurationSetResult Result
+        {
+            get;
+        }
+
+        public bool Succeeded => Result.ResultCode == null;
+
+        public bool RequiresReboot => Result.UnitResults.Any(result => result.RebootRequired);
+
+        public Exception ResultException => Result.ResultCode;
+
+        public ApplicationResult(ApplyConfigurationSetResult result)
+        {
+            Result = result;
+        }
+    }
+
     private readonly StorageFile _file;
-    private readonly Logger _logger;
     private ConfigurationProcessor _processor;
     private ConfigurationSet _configSet;
-    private ApplyConfigurationSetResult _result;
 
     public ConfigurationFileHelper(StorageFile file)
     {
         _file = file;
-        _logger = new ComponentLogger("ConfigurationFile", "SetupFlow").Logger;
     }
 
     public async Task OpenConfigurationSetAsync()
@@ -44,9 +60,14 @@ public class ConfigurationFileHelper
             var properties = new ConfigurationProcessorFactoryProperties();
             properties.AdditionalModulePaths = new List<string>() { modulesPath };
             var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
-            _processor = new ConfigurationProcessor(factory);
+            factory.MinimumLevel = DiagnosticLevel.Verbose;
+            factory.Diagnostics += (sender, args) => LogConfigurationDiagnostics("ConfigurationFactory", args);
 
-            _logger.ReportInfo($"Opening configuration set from path {_file.Path}");
+            _processor = new ConfigurationProcessor(factory);
+            _processor.MinimumLevel = DiagnosticLevel.Verbose;
+            _processor.Diagnostics += (sender, args) => LogConfigurationDiagnostics("ConfigurationProcessor", args);
+
+            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {_file.Path}");
             var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
             _configSet = openResult.Set;
             if (_configSet == null)
@@ -62,21 +83,39 @@ public class ConfigurationFileHelper
         }
     }
 
-    public async Task ApplyConfigurationAsync()
+    public async Task<ApplicationResult> ApplyConfigurationAsync()
     {
         if (_processor == null || _configSet == null)
         {
             throw new InvalidOperationException();
         }
 
-        _logger.ReportInfo("Starting to apply configuration set");
-        _result = await _processor.ApplySetAsync(_configSet, ApplyConfigurationSetFlags.None);
-        _logger.ReportInfo($"Apply configuration finished. HResult: {_result.ResultCode?.HResult}");
+        Log.Logger?.ReportInfo(Log.Component.Configuration, "Starting to apply configuration set");
+        var result = await _processor.ApplySetAsync(_configSet, ApplyConfigurationSetFlags.None);
+        Log.Logger?.ReportInfo(Log.Component.Configuration, $"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
+        return new ApplicationResult(result);
     }
 
-    public bool ApplicationSucceeded => _result.ResultCode == null;
-
-    public bool ResultRequiresReboot => _result.UnitResults.Any(result => result.RebootRequired);
-
-    public Exception ResultException => _result.ResultCode;
+    private void LogConfigurationDiagnostics(string sourceComponent, DiagnosticInformation diagnosticInformation)
+    {
+        switch (diagnosticInformation.Level)
+        {
+            case DiagnosticLevel.Verbose:
+                Log.Logger?.ReportDebug(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                return;
+            case DiagnosticLevel.Warning:
+                Log.Logger?.ReportWarn(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                return;
+            case DiagnosticLevel.Error:
+                Log.Logger?.ReportError(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                return;
+            case DiagnosticLevel.Critical:
+                Log.Logger?.ReportCritical(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                return;
+            case DiagnosticLevel.Informational:
+            default:
+                Log.Logger?.ReportInfo(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                return;
+        }
+    }
 }
