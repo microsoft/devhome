@@ -80,8 +80,25 @@
                     </behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
                 </behaviors:NavigationViewHeaderBehavior>
             </i:Interaction.Behaviors>
-            <Grid Margin="{StaticResource NavigationViewPageContentMargin}">
-                <Frame x:Name="NavigationFrame" />
+            <Grid DataContext="{Binding ViewModel.InfoBarModel}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <!-- InfoBar's Top margin is set conditionally in ShellPage.xaml.cs file on NavigationViewControl_DisplayModeChanged-->
+                <InfoBar 
+                    Grid.Row="0" 
+                    x:Name="ShellInfoBar" 
+                    Margin="50 0 50 0" 
+                    Severity="Error" 
+                    Title="Hello" 
+                    Visibility="Visible" 
+                    Message="{Binding Description}" 
+                    IsOpen="True" 
+                    MaxWidth="924" />
+                <Grid Grid.Row="1" Margin="{StaticResource NavigationViewPageContentMargin}">
+                    <Frame x:Name="NavigationFrame" />
+                </Grid>
             </Grid>
         </NavigationView>
     </Grid>

@@ -4,6 +4,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Contracts;
 using DevHome.Common.Helpers;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Dashboard.ViewModels;
@@ -15,10 +16,14 @@ using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.ViewModels;
 
-public class ShellViewModel : ObservableRecipient
+public partial class ShellViewModel : ObservableRecipient
 {
+
     private readonly ILocalSettingsService _localSettingsService;
     private object? _selected;
+
+    [ObservableProperty]
+    private InfoBarModel _infoBarModel = new ();
 
     public INavigationService NavigationService
     {
