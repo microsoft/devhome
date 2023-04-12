@@ -64,7 +64,7 @@ public class ConfigurationFileHelper
             factory.Diagnostics += (sender, args) => LogConfigurationDiagnostics("ConfigurationFactory", args);
 
             _processor = new ConfigurationProcessor(factory);
-            factory.MinimumLevel = DiagnosticLevel.Verbose;
+            _processor.MinimumLevel = DiagnosticLevel.Verbose;
             _processor.Diagnostics += (sender, args) => LogConfigurationDiagnostics("ConfigurationProcessor", args);
 
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {_file.Path}");
