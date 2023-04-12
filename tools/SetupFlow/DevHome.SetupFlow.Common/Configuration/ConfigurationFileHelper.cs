@@ -44,7 +44,10 @@ public class ConfigurationFileHelper
             var properties = new ConfigurationProcessorFactoryProperties();
             properties.AdditionalModulePaths = new List<string>() { modulesPath };
             var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
+            factory.Diagnostics += (sender, args) => LogConfigurationDiagnostics(nameof(ConfigurationSetProcessorFactory), args);
+
             _processor = new ConfigurationProcessor(factory);
+            _processor.Diagnostics += (sender, args) => LogConfigurationDiagnostics(nameof(ConfigurationSetProcessorFactory), args);
 
             _logger.ReportInfo($"Opening configuration set from path {_file.Path}");
             var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
@@ -79,4 +82,26 @@ public class ConfigurationFileHelper
     public bool ResultRequiresReboot => _result.UnitResults.Any(result => result.RebootRequired);
 
     public Exception ResultException => _result.ResultCode;
+
+    private void LogConfigurationDiagnostics(string sourceComponent, DiagnosticInformation diagnosticInformation)
+    {
+        switch (diagnosticInformation.Level)
+        {
+            case DiagnosticLevel.Verbose:
+                _logger.ReportDebug(sourceComponent, diagnosticInformation.Message);
+                return;
+            case DiagnosticLevel.Informational:
+                _logger.ReportInfo(sourceComponent, diagnosticInformation.Message);
+                return;
+            case DiagnosticLevel.Warning:
+                _logger.ReportWarn(sourceComponent, diagnosticInformation.Message);
+                return;
+            case DiagnosticLevel.Error:
+                _logger.ReportError(sourceComponent, diagnosticInformation.Message);
+                return;
+            case DiagnosticLevel.Critical:
+                _logger.ReportCritical(sourceComponent, diagnosticInformation.Message);
+                return;
+        }
+    }
 }
