@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,8 +60,6 @@ internal partial class AddRepoDialog
             FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
             FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
         };
-
-        ToggleCloneButton();
     }
 
     /// <summary>
@@ -91,6 +90,7 @@ internal partial class AddRepoDialog
 
     private void AddViaAccountToggleButton_Click(object sender, RoutedEventArgs e)
     {
+        UrlErrorTextBlock.Visibility = Visibility.Collapsed;
         AddRepoViewModel.ChangeToAccountPage();
         FolderPickerViewModel.CloseFolderPicker();
         EditDevDriveViewModel.HideDevDriveUI();
@@ -253,20 +253,46 @@ internal partial class AddRepoDialog
     /// </summary>
     private void ToggleCloneButton()
     {
-        var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
+        var isEverythingGood = AddRepoViewModel.ValidateRepoInformation();
+        if (!isEverythingGood)
+        {
+            IsPrimaryButtonEnabled = false;
+
+            if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
+            {
+                // User could be moving away from the repo tab into the URL tab where they haven't
+                // entered any information.
+                if (AddRepoViewModel.Url.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
+                {
+                    UrlErrorTextBlock.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    UrlErrorTextBlock.Visibility = Visibility.Visible;
+                }
+            }
+
+            return;
+        }
+        else
+        {
+            if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
+            {
+                UrlErrorTextBlock.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        isEverythingGood = FolderPickerViewModel.ValidateCloneLocation();
+
         if (isEverythingGood)
         {
             IsPrimaryButtonEnabled = true;
+            UrlErrorTextBlock.Visibility = Visibility.Collapsed;
+            AddRepoViewModel.SetCloneLocation(FolderPickerViewModel.CloneLocation);
         }
         else
         {
             IsPrimaryButtonEnabled = false;
-        }
-
-        // Fill in EverythingToClone with the location
-        if (isEverythingGood)
-        {
-            AddRepoViewModel.SetCloneLocation(FolderPickerViewModel.CloneLocation);
         }
     }
 

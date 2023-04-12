@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Helpers;
@@ -48,14 +49,22 @@ internal class RepositoryProviders
     /// <param name="uri">The Uri to parse.</param>
     /// <returns>If a provider was found that can parse the Uri then (providerName, repository) in not
     /// (string.empty, null)</returns>
-    public (string, IRepository) ParseRepositoryFromUri(Uri uri)
+    public (string, IRepository) ParseRepositoryFromUri(string uri)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Parsing repository from URI {uri}");
+
+        Uri parsedUri;
+        if (!Uri.TryCreate(uri, UriKind.Absolute, out parsedUri))
+        {
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"{uri} is not a valid Uri");
+            return (string.Empty, null);
+        }
+
         foreach (var provider in _providers)
         {
             provider.Value.StartIfNotRunning();
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Attempting to parse using provider {provider.Key}");
-            var repository = provider.Value.ParseRepositoryFromUri(uri);
+            var repository = provider.Value.ParseRepositoryFromUri(parsedUri);
             if (repository != null)
             {
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Repository parsed to {repository.DisplayName} owned by {repository.OwningAccountName}");
@@ -63,6 +72,7 @@ internal class RepositoryProviders
             }
         }
 
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"{uri} can not be parsed by any extensions.");
         return (string.Empty, null);
     }
 

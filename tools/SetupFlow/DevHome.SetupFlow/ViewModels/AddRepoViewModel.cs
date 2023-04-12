@@ -222,7 +222,7 @@ public partial class AddRepoViewModel : ObservableObject
         if (CurrentPage == PageKind.AddViaUrl)
         {
             // check if url or username/repo is filled in.
-            return !string.IsNullOrWhiteSpace(Url) && !string.IsNullOrEmpty(Url);
+            return _providers.ParseRepositoryFromUri(Url).Item2 != null;
         }
         else if (CurrentPage == PageKind.AddViaAccount || CurrentPage == PageKind.Repositories)
         {
@@ -307,13 +307,7 @@ public partial class AddRepoViewModel : ObservableObject
     {
         // Try to parse repo from Uri
         // null means no providers were able to parse the Uri.
-        Uri uriToParse;
-        if (!Uri.TryCreate(url, UriKind.Absolute, out uriToParse))
-        {
-            return;
-        }
-
-        var providerNameAndRepo = _providers.ParseRepositoryFromUri(uriToParse);
+        var providerNameAndRepo = _providers.ParseRepositoryFromUri(url);
         if (providerNameAndRepo.Item2 == null)
         {
             return;
