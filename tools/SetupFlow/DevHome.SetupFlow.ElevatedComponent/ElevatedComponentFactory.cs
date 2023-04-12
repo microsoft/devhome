@@ -18,19 +18,19 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
 
     public ElevatedInstallTask CreateElevatedInstallTask()
     {
-        Log.Logger?.ReportInfo(Log.Component.ElevatedComponent, "Creating elevated package installer");
+        Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated package installer");
         return new ElevatedInstallTask();
     }
 
     public DevDriveStorageOperator CreateDevDriveStorageOperator()
     {
-        Log.Logger?.ReportInfo(Log.Component.ElevatedComponent, "Creating elevated Dev Drive storage operator");
+        Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Dev Drive storage operator");
         return new DevDriveStorageOperator();
     }
 
     public ElevatedConfigurationTask CreateElevatedConfigurationTask()
     {
-        Log.Logger?.ReportInfo(Log.Component.ElevatedComponent, "Creating elevated Configuration File applier");
+        Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Configuration File applier");
         return new ElevatedConfigurationTask();
     }
 }

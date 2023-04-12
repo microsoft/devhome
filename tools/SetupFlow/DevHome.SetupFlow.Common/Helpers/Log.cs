@@ -38,6 +38,6 @@ public class Log
 
         public static readonly string IPCClient = nameof(IPCClient);
         public static readonly string IPCServer = nameof(IPCServer);
-        public static readonly string ElevatedComponent = nameof(ElevatedComponent);
+        public static readonly string Elevated = nameof(Elevated);
     }
 }

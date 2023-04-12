@@ -3,9 +3,8 @@
 
 using System.Runtime.InteropServices;
 using DevHome.SetupFlow.Common.DevDriveFormatter;
-using DevHome.SetupFlow.ElevatedComponent.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.Win32.SafeHandles;
-using Windows.ApplicationModel;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security;
@@ -72,36 +71,36 @@ public sealed class DevDriveStorageOperator
     public int CreateDevDrive(string virtDiskPath, ulong sizeInBytes, char newDriveLetter, string driveLabel)
     {
         string virtDiskPhysicalPath;
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreateDevDrive)}: Starting {nameof(CreateAndAttachVhdx)}");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(CreateAndAttachVhdx)}");
         var result = CreateAndAttachVhdx(virtDiskPath, sizeInBytes, out virtDiskPhysicalPath);
         if (result.Failed)
         {
-            Log.Logger?.ReportError(nameof(DevDriveStorageOperator), $"{nameof(CreateDevDrive)}: {nameof(CreateAndAttachVhdx)} failed with error: {result:X}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(CreateAndAttachVhdx)} failed with error: {result:X}");
             return result.Value;
         }
 
         uint diskNumber;
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreateDevDrive)}: Starting {nameof(CreatePartition)}");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(CreatePartition)}");
         result = CreatePartition(virtDiskPhysicalPath, out diskNumber);
         if (result.Failed)
         {
-            Log.Logger?.ReportError(nameof(DevDriveStorageOperator), $"{nameof(CreateDevDrive)}: {nameof(CreatePartition)} failed with error: {result:X}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(CreatePartition)} failed with error: {result:X}");
             return result.Value;
         }
 
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreateDevDrive)}: Starting {nameof(AssignDriveLetterToPartition)}");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(AssignDriveLetterToPartition)}");
         result = AssignDriveLetterToPartition(diskNumber, newDriveLetter);
         if (result.Failed)
         {
-            Log.Logger?.ReportError(nameof(DevDriveStorageOperator), $"{nameof(CreateDevDrive)}: {nameof(AssignDriveLetterToPartition)} failed with error: {result:X}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(AssignDriveLetterToPartition)} failed with error: {result:X}");
             return result.Value;
         }
 
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreateDevDrive)}: Starting {nameof(FormatPartitionAsDevDrive)}");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(FormatPartitionAsDevDrive)}");
         var finishedResult = FormatPartitionAsDevDrive(newDriveLetter, driveLabel);
         if (finishedResult != 0)
         {
-            Log.Logger?.ReportError(nameof(DevDriveStorageOperator), $"{nameof(CreateDevDrive)}: {nameof(FormatPartitionAsDevDrive)} failed with error: 0x{finishedResult:X}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(FormatPartitionAsDevDrive)} failed with error: 0x{finishedResult:X}");
         }
 
         return finishedResult;
@@ -131,7 +130,7 @@ public sealed class DevDriveStorageOperator
             DeviceId = PInvoke.VIRTUAL_STORAGE_TYPE_DEVICE_VHDX,
         };
 
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreateAndAttachVhdx)}: Starting CreateVirtualDisk");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"Starting CreateVirtualDisk");
         SafeFileHandle tempHandle;
         var result = PInvoke.CreateVirtualDisk(
             storageType,
@@ -145,11 +144,11 @@ public sealed class DevDriveStorageOperator
             out tempHandle);
         if (result != WIN32_ERROR.NO_ERROR)
         {
-            Log.Logger?.ReportError(nameof(DevDriveStorageOperator), $"{nameof(CreateAndAttachVhdx)}: CreateVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"CreateVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
             return PInvoke.HRESULT_FROM_WIN32(result);
         }
 
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreateAndAttachVhdx)}: Starting AttachVirtualDisk");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"Starting AttachVirtualDisk");
         result = PInvoke.AttachVirtualDisk(
             tempHandle,
             (PSECURITY_DESCRIPTOR)null,
@@ -159,11 +158,11 @@ public sealed class DevDriveStorageOperator
             null);
         if (result != WIN32_ERROR.NO_ERROR)
         {
-            Log.Logger?.ReportError(nameof(DevDriveStorageOperator), $"{nameof(CreateAndAttachVhdx)}: AttachVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"AttachVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
             return PInvoke.HRESULT_FROM_WIN32(result);
         }
 
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreateAndAttachVhdx)}: Starting GetVirtualDiskPhysicalPath");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"Starting GetVirtualDiskPhysicalPath");
 
         // Getting the virtual disk path here before exiting save alot more repeated win32 code in the long run
         // as we need the path to get the disk number.
@@ -179,7 +178,7 @@ public sealed class DevDriveStorageOperator
                     pathPtr);
                 if (result != WIN32_ERROR.NO_ERROR)
                 {
-                    Log.Logger?.ReportError(nameof(DevDriveStorageOperator), $"{nameof(CreateAndAttachVhdx)}: GetVirtualDiskPhysicalPath failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
+                    Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"GetVirtualDiskPhysicalPath failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
                     return PInvoke.HRESULT_FROM_WIN32(result);
                 }
             }
@@ -201,7 +200,7 @@ public sealed class DevDriveStorageOperator
     {
         diskNumber = 0;
         HRESULT error;
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreatePartition)}: Starting CreateFile from physical path");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreatePartition), $"Starting CreateFile from physical path");
         var diskHandle = PInvoke.CreateFile(
             virtDiskPhysicalPath,
             FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
@@ -215,12 +214,13 @@ public sealed class DevDriveStorageOperator
         {
             error = ReturnLastErrorAsHR();
             Log.Logger?.ReportError(
-                nameof(DevDriveStorageOperator),
-                $"{nameof(CreatePartition)}: CreateFile from physical path: {virtDiskPhysicalPath.Trim('\0')} failed with error: {error:X}, is diskHandle invalid: {diskHandle.IsInvalid}");
+                Log.Component.DevDrive,
+                nameof(CreatePartition),
+                $"CreateFile from physical path: {virtDiskPhysicalPath.Trim('\0')} failed with error: {error:X}, is diskHandle invalid: {diskHandle.IsInvalid}");
             return error;
         }
 
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreatePartition)}: Starting Initialize disk");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreatePartition), $"Starting Initialize disk");
 
         // Initialize the disk
         CREATE_DISK createDisk;
@@ -244,12 +244,13 @@ public sealed class DevDriveStorageOperator
         {
             error = ReturnLastErrorAsHR();
             Log.Logger?.ReportError(
-                nameof(DevDriveStorageOperator),
-                $"{nameof(CreatePartition)}: DeviceIoControl initialize disk failed with error: {error:X}, is diskHandle invalid: {diskHandle.IsInvalid}");
+                Log.Component.DevDrive,
+                nameof(CreatePartition),
+                $"DeviceIoControl initialize disk failed with error: {error:X}, is diskHandle invalid: {diskHandle.IsInvalid}");
             return error;
         }
 
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreatePartition)}: Getting partition layout");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreatePartition), $"Getting partition layout");
 
         // Collect information about how we want the partition layout to look before
         // we attempt to create it.
@@ -271,12 +272,13 @@ public sealed class DevDriveStorageOperator
         {
             error = ReturnLastErrorAsHR();
             Log.Logger?.ReportError(
-                nameof(DevDriveStorageOperator),
-                $"{nameof(CreatePartition)}: DeviceIoControl get partition layout failed with error: {error:X}, is diskHandle invalid: {diskHandle.IsInvalid}");
+                Log.Component.DevDrive,
+                nameof(CreatePartition),
+                $"DeviceIoControl get partition layout failed with error: {error:X}, is diskHandle invalid: {diskHandle.IsInvalid}");
             return error;
         }
 
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreatePartition)}: Setting partition layout");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreatePartition), $"Setting partition layout");
         unsafe
         {
             partitionLayout.Info.PartitionCount = 1;
@@ -312,12 +314,13 @@ public sealed class DevDriveStorageOperator
         {
             error = ReturnLastErrorAsHR();
             Log.Logger?.ReportError(
-                nameof(DevDriveStorageOperator),
-                $"{nameof(CreatePartition)}: DeviceIoControl set partition layout failed with error: {error:X}, is diskHandle invalid: {diskHandle.IsInvalid}");
+                Log.Component.DevDrive,
+                nameof(CreatePartition),
+                $"DeviceIoControl set partition layout failed with error: {error:X}, is diskHandle invalid: {diskHandle.IsInvalid}");
             return error;
         }
 
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreatePartition)}: Waiting on IOCTL_DISK_ARE_VOLUMES_READY");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreatePartition), $"Waiting on IOCTL_DISK_ARE_VOLUMES_READY");
 
         // After the partition is created, we need to wait for the volume
         // to become fully installed. IOCTL_DISK_ARE_VOLUMES_READY waits
@@ -339,12 +342,13 @@ public sealed class DevDriveStorageOperator
         {
             error = ReturnLastErrorAsHR();
             Log.Logger?.ReportError(
-                nameof(DevDriveStorageOperator),
-                $"{nameof(CreatePartition)}: DeviceIoControl set IOCTL_DISK_ARE_VOLUMES_READY failed with error: {error:X}, is diskHandle invalid: {diskHandle.IsInvalid}");
+                Log.Component.DevDrive,
+                nameof(CreatePartition),
+                $"DeviceIoControl set IOCTL_DISK_ARE_VOLUMES_READY failed with error: {error:X}, is diskHandle invalid: {diskHandle.IsInvalid}");
             return error;
         }
 
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(CreatePartition)}: Getting the virtual disks disk number");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreatePartition), $"Getting the virtual disks disk number");
 
         // At this point the partition has been created with the first assignable
         // drive letter by windows. We need to use the disk number so we can change
@@ -368,8 +372,9 @@ public sealed class DevDriveStorageOperator
         {
             error = ReturnLastErrorAsHR();
             Log.Logger?.ReportError(
-                nameof(DevDriveStorageOperator),
-                $"{nameof(CreatePartition)}: DeviceIoControl get device number failed with error: {error:X}, is diskHandle invalid: {diskHandle.IsInvalid}");
+                Log.Component.DevDrive,
+                nameof(CreatePartition),
+                $"DeviceIoControl get device number failed with error: {error:X}, is diskHandle invalid: {diskHandle.IsInvalid}");
             return error;
         }
 
@@ -396,18 +401,19 @@ public sealed class DevDriveStorageOperator
             FindVolumeCloseSafeHandle volumeHandle;
             fixed (char* pathPtr = volumeGuidPathBeforeTrim)
             {
-                Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(AssignDriveLetterToPartition)}: Finding to first volume");
+                Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Finding to first volume");
                 volumeHandle = new FindVolumeCloseSafeHandle(PInvoke.FindFirstVolume(pathPtr, PInvoke.MAX_PATH));
                 if (volumeHandle.IsInvalid)
                 {
                     error = ReturnLastErrorAsHR();
                     Log.Logger?.ReportError(
-                        nameof(DevDriveStorageOperator),
-                        $"{nameof(AssignDriveLetterToPartition)}: FindFirstVolume failed with error: {error:X}");
+                        Log.Component.DevDrive,
+                        nameof(AssignDriveLetterToPartition),
+                        $"FindFirstVolume failed with error: {error:X}");
                     return error;
                 }
 
-                Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(AssignDriveLetterToPartition)}: First volume found, volume guid {volumeGuidPathBeforeTrim}");
+                Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"First volume found, volume guid {volumeGuidPathBeforeTrim}");
                 do
                 {
                     // The call to createFile succeeds with the trailing backslash, however when getting the device info
@@ -419,7 +425,7 @@ public sealed class DevDriveStorageOperator
                         volumeGuidPathAfterTrim = volumeGuidPathAfterTrim.TrimEnd('\\');
                     }
 
-                    Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(AssignDriveLetterToPartition)}: Creating volume file handle for volume volume guid {volumeGuidPathAfterTrim}");
+                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Creating volume file handle for volume volume guid {volumeGuidPathAfterTrim}");
                     var volumeFileHandle = PInvoke.CreateFile(
                         volumeGuidPathAfterTrim,
                         0,
@@ -433,12 +439,13 @@ public sealed class DevDriveStorageOperator
                     {
                         error = ReturnLastErrorAsHR();
                         Log.Logger?.ReportError(
-                            nameof(DevDriveStorageOperator),
-                            $"{nameof(AssignDriveLetterToPartition)}: CreateFile for volume guid {volumeGuidPathAfterTrim} failed with error: {error:X}");
+                            Log.Component.DevDrive,
+                            nameof(AssignDriveLetterToPartition),
+                            $"CreateFile for volume guid {volumeGuidPathAfterTrim} failed with error: {error:X}");
                         return error;
                     }
 
-                    Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(AssignDriveLetterToPartition)}: Getting disk number for {volumeGuidPathAfterTrim}");
+                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Getting disk number for {volumeGuidPathAfterTrim}");
 
                     // The device number will tell us if we're looking at the virtual disk or not.
                     var deviceInfo = new STORAGE_DEVICE_NUMBER_EX { };
@@ -455,11 +462,11 @@ public sealed class DevDriveStorageOperator
                     if (!result)
                     {
                         error = ReturnLastErrorAsHR();
-                        Log.Logger?.ReportWarn(nameof(DevDriveStorageOperator), $"{nameof(AssignDriveLetterToPartition)}: DeviceIoControl getting disk number for volume guid {volumeGuidPathAfterTrim} failed with error: {error:X}, continuing to other volumes...");
+                        Log.Logger?.ReportWarn(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"DeviceIoControl getting disk number for volume guid {volumeGuidPathAfterTrim} failed with error: {error:X}, continuing to other volumes...");
                         continue;
                     }
 
-                    Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(AssignDriveLetterToPartition)}: Comparing disk number: {deviceInfo.DeviceNumber} for volume: {volumeGuidPathAfterTrim} with virtual disks disk number: {diskNumber}");
+                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Comparing disk number: {deviceInfo.DeviceNumber} for volume: {volumeGuidPathAfterTrim} with virtual disks disk number: {diskNumber}");
 
                     // Only the virtual disk that we created above will have this disk number,
                     // the disk number is guaranteed to be the same until a reboot, which is fine
@@ -467,13 +474,14 @@ public sealed class DevDriveStorageOperator
                     if (diskNumber != deviceInfo.DeviceNumber)
                     {
                         Log.Logger?.ReportInfo(
-                            nameof(DevDriveStorageOperator),
-                            $"{nameof(AssignDriveLetterToPartition)}: volume guid {volumeGuidPathAfterTrim} on device number: {deviceInfo.DeviceNumber} does not have the same device number as the newly created virtual disk's device number {diskNumber}");
+                            Log.Component.DevDrive,
+                            nameof(AssignDriveLetterToPartition),
+                            $"volume guid {volumeGuidPathAfterTrim} on device number: {deviceInfo.DeviceNumber} does not have the same device number as the newly created virtual disk's device number {diskNumber}");
                         continue;
                     }
 
                     volumeGuidPathBeforeTrim = hasTrailingbackslash ? volumeGuidPathBeforeTrim : volumeGuidPathAfterTrim;
-                    Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(AssignDriveLetterToPartition)}: Finding old drive letter for volume: {volumeGuidPathBeforeTrim}");
+                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Finding old drive letter for volume: {volumeGuidPathBeforeTrim}");
 
                     // At this point there will most likely be a default drive letter
                     // if available that was given to the drive, so we need to remove it,
@@ -491,13 +499,14 @@ public sealed class DevDriveStorageOperator
                         {
                             error = ReturnLastErrorAsHR();
                             Log.Logger?.ReportError(
-                                nameof(DevDriveStorageOperator),
-                                $"{nameof(AssignDriveLetterToPartition)}: GetVolumePathNamesForVolumeName failed with error: {error:X}, vhdx disk number {diskNumber}, volume guid {volumeGuidPathBeforeTrim}");
+                                Log.Component.DevDrive,
+                                nameof(AssignDriveLetterToPartition),
+                                $"GetVolumePathNamesForVolumeName failed with error: {error:X}, vhdx disk number {diskNumber}, volume guid {volumeGuidPathBeforeTrim}");
                             return error;
                         }
                     }
 
-                    Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(AssignDriveLetterToPartition)}: Deleting old drive letter for volume: {volumeGuidPathBeforeTrim}");
+                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Deleting old drive letter for volume: {volumeGuidPathBeforeTrim}");
                     if (oldDriveLetterPath[0] != '\0')
                     {
                         result = PInvoke.DeleteVolumeMountPoint(oldDriveLetterPath);
@@ -505,13 +514,14 @@ public sealed class DevDriveStorageOperator
                         {
                             error = ReturnLastErrorAsHR();
                             Log.Logger?.ReportError(
-                                nameof(DevDriveStorageOperator),
-                                $"{nameof(AssignDriveLetterToPartition)}: DeleteVolumeMountPoint failed with error: {error:X}, vhdx disk number {diskNumber}, old Drive Letter: {oldDriveLetterPath[0]}, volume guid {volumeGuidPathBeforeTrim}");
+                                Log.Component.DevDrive,
+                                nameof(AssignDriveLetterToPartition),
+                                $"DeleteVolumeMountPoint failed with error: {error:X}, vhdx disk number {diskNumber}, old Drive Letter: {oldDriveLetterPath[0]}, volume guid {volumeGuidPathBeforeTrim}");
                             return error;
                         }
                     }
 
-                    Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(AssignDriveLetterToPartition)}: Setting {newDriveLetter}: as new drive letter for volume: {volumeGuidPathBeforeTrim}");
+                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Setting {newDriveLetter}: as new drive letter for volume: {volumeGuidPathBeforeTrim}");
 
                     // SetVolumeMountPoint expects the drive letter to be in the form of Letter:\ e.g "A:\"
                     var fullDrivePath = newDriveLetter + ":\\";
@@ -520,8 +530,9 @@ public sealed class DevDriveStorageOperator
                     {
                         error = ReturnLastErrorAsHR();
                         Log.Logger?.ReportError(
-                            nameof(DevDriveStorageOperator),
-                            $"{nameof(AssignDriveLetterToPartition)}: SetVolumeMountPoint failed with error: {error:X}, vhdx disk number {diskNumber}, old Drive Letter: {oldDriveLetterPath[0]}, attempted new Drive path {fullDrivePath}, volume guid {volumeGuidPathBeforeTrim}");
+                            Log.Component.DevDrive,
+                            nameof(AssignDriveLetterToPartition),
+                            $"SetVolumeMountPoint failed with error: {error:X}, vhdx disk number {diskNumber}, old Drive Letter: {oldDriveLetterPath[0]}, attempted new Drive path {fullDrivePath}, volume guid {volumeGuidPathBeforeTrim}");
                         return error;
                     }
 
@@ -533,7 +544,7 @@ public sealed class DevDriveStorageOperator
 
         // FindNextVolume errored out for some other reason without us finding our volume.
         error = ReturnLastErrorAsHR();
-        Log.Logger?.ReportError(nameof(DevDriveStorageOperator), $"{nameof(AssignDriveLetterToPartition)}: Failed to find the new volume on disk number {diskNumber} error: {error:X}");
+        Log.Logger?.ReportError(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Failed to find the new volume on disk number {diskNumber} error: {error:X}");
         return error;
     }
 
@@ -555,7 +566,7 @@ public sealed class DevDriveStorageOperator
     /// <returns>An Hresult that indicates whether the operation succeeded or failed</returns>
     private int FormatPartitionAsDevDrive(char curDriveLetter, string driveLabel)
     {
-        Log.Logger?.ReportInfo(nameof(DevDriveStorageOperator), $"{nameof(FormatPartitionAsDevDrive)}: Creating DevDriveFormatter");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Creating DevDriveFormatter");
         var devDriveFormatter = new DevDriveFormatter();
         return devDriveFormatter.FormatPartitionAsDevDrive(curDriveLetter, driveLabel);
     }
