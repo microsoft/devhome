@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using DevHome.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using DevHome.Views;
@@ -22,12 +23,10 @@ public class InitializationViewModel : ObservableRecipient
     private const string GitHubPluginStorePackageId = "9NZCC27PR6N6";
     private const int StoreInstallTimeout = 60_000;
 
-    private readonly ILogger _logger;
     private readonly IThemeSelectorService _themeSelector;
 
-    public InitializationViewModel(ILogger logger, IThemeSelectorService themeSelector)
+    public InitializationViewModel(IThemeSelectorService themeSelector)
     {
-        _logger = logger;
         _themeSelector = themeSelector;
     }
 
@@ -38,14 +37,21 @@ public class InitializationViewModel : ObservableRecipient
             var appInstallTask = InstallStorePackageAsync(GitHubPluginStorePackageId);
 
             // wait for a maximunm of StoreInstallTimeout milis
-            if (await Task.WhenAny(appInstallTask, Task.Delay(StoreInstallTimeout)) != appInstallTask)
+            var completedTask = await Task.WhenAny(appInstallTask, Task.Delay(StoreInstallTimeout));
+
+            if (completedTask.Exception is not null)
+            {
+                throw completedTask.Exception;
+            }
+
+            if (completedTask != appInstallTask)
             {
                 throw new TimeoutException("Store Install task did not finish in time.");
             }
         }
         catch (Exception ex)
         {
-            _logger.Log("GitHubExtension Hydration Failed", LogLevel.Local, ex);
+            Log.Logger?.ReportError("GitHubExtension Hydration Failed", ex);
         }
 
         App.MainWindow.Content = Application.Current.GetService<ShellPage>();
@@ -59,19 +65,31 @@ public class InitializationViewModel : ObservableRecipient
         {
             var tcs = new TaskCompletionSource<bool>();
 
-            var install = new AppInstallManager().StartAppInstallAsync(packageId, null, true, false).GetAwaiter().GetResult();
+            AppInstallItem installItem;
 
-            install.Completed += (sender, args) =>
+            try
+            {
+                Log.Logger?.ReportInfo("Initialization Page: Starting extension app install");
+                installItem = new AppInstallManager().StartAppInstallAsync(packageId, null, true, false).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                Log.Logger?.ReportInfo("Initialization Page: Extension app install success");
+                tcs.SetException(ex);
+                return tcs.Task;
+            }
+
+            installItem.Completed += (sender, args) =>
             {
                 tcs.SetResult(true);
             };
 
-            install.StatusChanged += (sender, args) =>
+            installItem.StatusChanged += (sender, args) =>
             {
-                if (install.GetCurrentStatus().InstallState == AppInstallState.Canceled
-                    || install.GetCurrentStatus().InstallState == AppInstallState.Error)
+                if (installItem.GetCurrentStatus().InstallState == AppInstallState.Canceled
+                    || installItem.GetCurrentStatus().InstallState == AppInstallState.Error)
                 {
-                    tcs.TrySetException(new JobFailedException(install.GetCurrentStatus().ErrorCode.ToString()));
+                    tcs.TrySetException(new JobFailedException(installItem.GetCurrentStatus().ErrorCode.ToString()));
                 }
             };
 
