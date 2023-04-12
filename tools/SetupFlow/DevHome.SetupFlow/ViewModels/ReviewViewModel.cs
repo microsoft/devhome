@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.Common.Elevation;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;

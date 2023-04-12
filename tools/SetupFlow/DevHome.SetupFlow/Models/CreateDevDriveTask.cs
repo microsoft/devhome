@@ -10,9 +10,8 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
@@ -28,7 +27,6 @@ internal class CreateDevDriveTask : ISetupTask
     private readonly ActionCenterMessages _actionCenterMessages = new ();
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IHost _host;
-    private readonly ILogger _logger;
 
     public bool RequiresAdmin => true;
 
@@ -41,7 +39,7 @@ internal class CreateDevDriveTask : ISetupTask
         get; set;
     }
 
-    public CreateDevDriveTask(IDevDrive devDrive, IHost host, ILogger logger, ISetupFlowStringResource stringResource)
+    public CreateDevDriveTask(IDevDrive devDrive, IHost host, ISetupFlowStringResource stringResource)
     {
         DevDrive = devDrive;
         _stringResource = stringResource;
@@ -53,7 +51,6 @@ internal class CreateDevDriveTask : ISetupTask
             NeedsReboot = _stringResource.GetLocalized(StringResourceKey.DevDriveRestart),
         };
         _host = host;
-        _logger = logger;
     }
 
     public ActionCenterMessages GetErrorMessages() => _actionCenterMessages;

@@ -128,7 +128,6 @@ public interface IWinGetPackage
     /// <summary>
     /// Create an install task for this package
     /// </summary>
-    /// <param name="logger">Logger service</param>
     /// <param name="wpm">Windows package manager service</param>
     /// <param name="stringResource">String resource service</param>
     /// <param name="wingetFactory">WinGet factory</param>

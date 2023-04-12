@@ -11,7 +11,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;

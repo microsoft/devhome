@@ -2,13 +2,12 @@
 // Licensed under the MIT license.
 
 extern alias Projection;
-
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
-using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.Management.Deployment;
 using Projection::DevHome.SetupFlow.ElevatedComponent;

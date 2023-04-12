@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.UI.Xaml;
 using Windows.Storage.Pickers;
 using WinUIEx;

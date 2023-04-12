@@ -3,7 +3,7 @@
 
 using System;
 using System.IO;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 
 namespace DevHome.SetupFlow.Models;
 

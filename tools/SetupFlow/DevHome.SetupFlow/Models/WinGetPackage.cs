@@ -3,8 +3,8 @@
 
 using System;
 using System.Threading;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
-using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.Management.Deployment;
 using Windows.Storage.Streams;

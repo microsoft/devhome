@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;

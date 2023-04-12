@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services;

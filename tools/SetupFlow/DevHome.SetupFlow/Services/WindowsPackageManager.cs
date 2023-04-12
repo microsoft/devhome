@@ -3,9 +3,9 @@
 
 using System;
 using System.Threading.Tasks;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
-using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
 

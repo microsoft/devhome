@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CommunityToolkit.Common;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using Windows.Win32;
 using Windows.Win32.UI.Shell;
 using ToolKitHelpers = CommunityToolkit.WinUI.Helpers;
