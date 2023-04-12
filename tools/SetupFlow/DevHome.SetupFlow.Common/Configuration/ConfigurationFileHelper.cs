@@ -53,12 +53,10 @@ public class ConfigurationFileHelper
     {
         try
         {
-            var assemblyDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new InvalidDataException();
-            var rootDirectory = Path.GetDirectoryName(assemblyDirectory) ?? throw new InvalidDataException();
-            var modulesPath = Path.Combine(rootDirectory, "ExternalModules");
-
+            var modulesPath = Path.Combine(AppContext.BaseDirectory, "ExternalModules");
             var properties = new ConfigurationProcessorFactoryProperties();
             properties.AdditionalModulePaths = new List<string>() { modulesPath };
+            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Additional module paths: {string.Join(", ", properties.AdditionalModulePaths)}");
             var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
             factory.MinimumLevel = DiagnosticLevel.Verbose;
             factory.Diagnostics += (sender, args) => LogConfigurationDiagnostics("ConfigurationFactory", args);
