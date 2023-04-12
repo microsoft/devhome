@@ -81,15 +81,15 @@ public class ConfigureTask : ISetupTask
         {
             try
             {
-                await _configurationFileHelper.ApplyConfigurationAsync();
-                RequiresReboot = _configurationFileHelper.ResultRequiresReboot;
-                if (_configurationFileHelper.ApplicationSucceeded)
+                var result = await _configurationFileHelper.ApplyConfigurationAsync();
+                RequiresReboot = result.RequiresReboot;
+                if (result.Succeeded)
                 {
                     return TaskFinishedState.Success;
                 }
                 else
                 {
-                    throw _configurationFileHelper.ResultException;
+                    throw result.ResultException;
                 }
             }
             catch (Exception e)

@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using DevHome.Logging;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.Management.Configuration;
@@ -22,10 +21,28 @@ namespace DevHome.SetupFlow.Common.Configuration;
 /// </summary>
 public class ConfigurationFileHelper
 {
+    public class ApplicationResult
+    {
+        public ApplyConfigurationSetResult Result
+        {
+            get;
+        }
+
+        public bool Succeeded => Result.ResultCode == null;
+
+        public bool RequiresReboot => Result.UnitResults.Any(result => result.RebootRequired);
+
+        public Exception ResultException => Result.ResultCode;
+
+        public ApplicationResult(ApplyConfigurationSetResult result)
+        {
+            Result = result;
+        }
+    }
+
     private readonly StorageFile _file;
     private ConfigurationProcessor _processor;
     private ConfigurationSet _configSet;
-    private ApplyConfigurationSetResult _result;
 
     public ConfigurationFileHelper(StorageFile file)
     {
@@ -66,7 +83,7 @@ public class ConfigurationFileHelper
         }
     }
 
-    public async Task ApplyConfigurationAsync()
+    public async Task<ApplicationResult> ApplyConfigurationAsync()
     {
         if (_processor == null || _configSet == null)
         {
@@ -74,15 +91,10 @@ public class ConfigurationFileHelper
         }
 
         Log.Logger?.ReportInfo(Log.Component.Configuration, "Starting to apply configuration set");
-        _result = await _processor.ApplySetAsync(_configSet, ApplyConfigurationSetFlags.None);
-        Log.Logger?.ReportInfo(Log.Component.Configuration, $"Apply configuration finished. HResult: {_result.ResultCode?.HResult}");
+        var result = await _processor.ApplySetAsync(_configSet, ApplyConfigurationSetFlags.None);
+        Log.Logger?.ReportInfo(Log.Component.Configuration, $"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
+        return new ApplicationResult(result);
     }
-
-    public bool ApplicationSucceeded => _result.ResultCode == null;
-
-    public bool ResultRequiresReboot => _result.UnitResults.Any(result => result.RebootRequired);
-
-    public Exception ResultException => _result.ResultCode;
 
     private void LogConfigurationDiagnostics(string sourceComponent, DiagnosticInformation diagnosticInformation)
     {
@@ -90,9 +102,6 @@ public class ConfigurationFileHelper
         {
             case DiagnosticLevel.Verbose:
                 Log.Logger?.ReportDebug(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
-                return;
-            case DiagnosticLevel.Informational:
-                Log.Logger?.ReportInfo(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
                 return;
             case DiagnosticLevel.Warning:
                 Log.Logger?.ReportWarn(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
@@ -102,6 +111,10 @@ public class ConfigurationFileHelper
                 return;
             case DiagnosticLevel.Critical:
                 Log.Logger?.ReportCritical(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
+                return;
+            case DiagnosticLevel.Informational:
+            default:
+                Log.Logger?.ReportInfo(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
                 return;
         }
     }

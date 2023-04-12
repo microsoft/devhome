@@ -25,16 +25,16 @@ public sealed class ElevatedConfigurationTask
                 await configurationFileHelper.OpenConfigurationSetAsync();
 
                 Log.Logger?.ReportInfo(Log.Component.Configuration, "Starting configuration set application");
-                await configurationFileHelper.ApplyConfigurationAsync();
+                var result = await configurationFileHelper.ApplyConfigurationAsync();
                 Log.Logger?.ReportInfo(Log.Component.Configuration, "Configuration application finished");
 
                 taskResult.TaskAttempted = true;
-                taskResult.TaskSucceeded = configurationFileHelper.ApplicationSucceeded;
-                taskResult.RebootRequired = configurationFileHelper.ResultRequiresReboot;
+                taskResult.TaskSucceeded = result.Succeeded;
+                taskResult.RebootRequired = result.RequiresReboot;
 
-                if (configurationFileHelper.ResultException != null)
+                if (result.ResultException != null)
                 {
-                    throw configurationFileHelper.ResultException;
+                    throw result.ResultException;
                 }
             }
             catch (Exception e)
