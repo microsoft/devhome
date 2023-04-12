@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Exceptions;
+using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;

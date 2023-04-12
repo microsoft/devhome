@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.SetupFlow.ElevatedComponent.AppManagement;
+using DevHome.SetupFlow.ElevatedComponent.Tasks;
 
 namespace DevHome.SetupFlow.ElevatedComponent;
 
@@ -32,10 +32,15 @@ public interface IElevatedComponentFactory
     /// <summary>
     /// Creates an object that can be used to install packages from an elevated context.
     /// </summary>
-    public PackageInstaller CreatePackageInstaller();
+    public ElevatedInstallTask CreateElevatedInstallTask();
 
     /// <summary>
     /// Creates the object that will create the Dev Drive on the users system.
     /// </summary>
     public DevDriveStorageOperator CreateDevDriveStorageOperator();
+
+    /// <summary>
+    /// Creates an object that can apply a configuration file.
+    /// </summary>
+    public ElevatedConfigurationTask CreateElevatedConfigurationTask();
 }

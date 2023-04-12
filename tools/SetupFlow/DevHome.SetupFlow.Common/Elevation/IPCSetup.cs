@@ -144,7 +144,7 @@ public static class IPCSetup
     /// </returns>
     public static (RemoteObject<T>, Process) CreateOutOfProcessObjectAndGetProcess<T>(bool isForTesting = false)
     {
-        var logger = new ComponentLogger("Client", "IPCSetup").Logger;
+        var logger = new ComponentLogger("IPCSetup_Client", "SetupFlow").Logger;
 
         // The shared memory block, initialization event and completion semaphore all need a name
         // that will be used by the child process to find them. We use new random GUIDs for them.
@@ -314,7 +314,7 @@ public static class IPCSetup
         string initEventName,
         string completionSemaphoreName)
     {
-        var logger = new ComponentLogger("Server", "IPCSetup").Logger;
+        var logger = new ComponentLogger("IPCSetup_Server", "SetupFlow").Logger;
 
         // Open the shared resources
         logger?.ReportInfo("Opening shared resources");

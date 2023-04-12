@@ -4,11 +4,8 @@
 extern alias Projection;
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
+using DevHome.SetupFlow.Common.Configuration;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Services;
@@ -24,9 +21,10 @@ public class ConfigureTask : ISetupTask
 {
     private readonly ISetupFlowStringResource _stringResource;
     private readonly StorageFile _file;
-    private ConfigurationProcessor _processor;
-    private ConfigurationSet _configSet;
+    private ConfigurationFileHelper _configurationFileHelper;
 
+    // We can run configuration files as admin or as regular user
+    // depending on the user, so we make this settable.
     public bool RequiresAdmin { get; set; }
 
     public bool RequiresReboot { get; private set; }
@@ -43,27 +41,11 @@ public class ConfigureTask : ISetupTask
     {
         try
         {
-            var assemblyDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new InvalidDataException();
-            var rootDirectory = Path.GetDirectoryName(assemblyDirectory) ?? throw new InvalidDataException();
-            var modulesPath = Path.Combine(rootDirectory, "ExternalModules");
-
-            var properties = new ConfigurationProcessorFactoryProperties();
-            properties.AdditionalModulePaths = new List<string>() { modulesPath };
-            var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
-            _processor = new ConfigurationProcessor(factory);
-
-            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {_file.Path}");
-            var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
-            _configSet = openResult.Set;
-            if (_configSet == null)
-            {
-                throw new OpenConfigurationSetException(openResult.ResultCode, openResult.Field);
-            }
+            _configurationFileHelper = new ConfigurationFileHelper(_file);
+            await _configurationFileHelper.OpenConfigurationSetAsync();
         }
         catch (Exception e)
         {
-            _processor = null;
-            _configSet = null;
             Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to open configuration set: {e.Message}");
             throw;
         }
@@ -102,21 +84,16 @@ public class ConfigureTask : ISetupTask
         {
             try
             {
-                if (_processor == null || _configSet == null)
+                await _configurationFileHelper.ApplyConfigurationAsync();
+                RequiresReboot = _configurationFileHelper.ResultRequiresReboot;
+                if (_configurationFileHelper.ApplicationSucceeded)
                 {
-                    return TaskFinishedState.Failure;
+                    return TaskFinishedState.Success;
                 }
-
-                Log.Logger?.ReportInfo(Log.Component.Configuration, "Starting to apply configuration set");
-                var result = await _processor.ApplySetAsync(_configSet, ApplyConfigurationSetFlags.None);
-                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
-                if (result.ResultCode != null)
+                else
                 {
-                    throw result.ResultCode;
+                    throw _configurationFileHelper.ResultException;
                 }
-
-                RequiresReboot = result.UnitResults.Any(result => result.RebootRequired);
-                return TaskFinishedState.Success;
             }
             catch (Exception e)
             {
@@ -130,8 +107,13 @@ public class ConfigureTask : ISetupTask
     /// <remarks><seealso cref="RequiresAdmin"/></remarks>
     IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
     {
-        // Noop
-        Log.Logger?.ReportWarn(Log.Component.Configuration, "Configuration should not be applied as admin");
-        return Task.FromResult(TaskFinishedState.Failure).AsAsyncOperation();
+        return Task.Run(async () =>
+        {
+            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file {_file.Path}");
+            var elevatedTask = elevatedComponentFactory.CreateElevatedConfigurationTask();
+            var elevatedResult = await elevatedTask.ApplyConfiguration(_file);
+            RequiresReboot = elevatedResult.RebootRequired;
+            return elevatedResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
+        }).AsAsyncOperation();
     }
 }
