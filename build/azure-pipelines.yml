@@ -1,5 +1,7 @@
 trigger:
 - main
+- staging
+- release
 
 pool:
   vmImage: 'windows-latest'
@@ -32,7 +34,7 @@ resources:
   - repository: templates_onebranch
     type: git
     name: OneBranch.Pipelines/GovernedTemplates
-    ref: "$(BuildingBranch)"
+    ref: refs/heads/main
 
 stages:
 - stage: SourceAnalysis
@@ -49,6 +51,13 @@ stages:
       displayName: 'Use Node >=8.6.0'
       inputs:
         versionSpec: '>=8.6.0'
+
+    - task: powershell@2
+      displayName: 'What branch are we'
+      inputs:
+        targetType: 'inline'
+        script: |
+          Write-Host "$(Build.SourceBranch)"
 
     - template: v2/Steps/PackageES/Windows.SDL.Sources.Analysis.OS.Undocked.yml@templates_onebranch
       parameters:
