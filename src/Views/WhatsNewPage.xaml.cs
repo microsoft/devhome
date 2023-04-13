@@ -4,6 +4,7 @@
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
+using DevHome.Common.Services;
 using DevHome.Models;
 using DevHome.Services;
 using DevHome.Settings.ViewModels;
@@ -49,6 +50,7 @@ public sealed partial class WhatsNewPage : Page
 
     private async void ConnectToGitHubButton_Click(object sender, RoutedEventArgs e)
     {
+        Application.Current.GetService<IInfoBarService>().ShowAppLevelInfoBar(InfoBarSeverity.Warning, "Connecting", "To github");
         var resourceLoader = new Windows.ApplicationModel.Resources.ResourceLoader();
         var pluginService = new PluginService();
         var plugins = pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId).Result;

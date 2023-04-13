@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Contracts;
 using DevHome.Common.Helpers;
-using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Dashboard.ViewModels;
@@ -12,18 +12,17 @@ using DevHome.Services;
 using DevHome.Settings.Views;
 using DevHome.Views;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.ViewModels;
 
-public partial class ShellViewModel : ObservableRecipient
+public class ShellViewModel : ObservableRecipient
 {
 
     private readonly ILocalSettingsService _localSettingsService;
     private object? _selected;
-
-    [ObservableProperty]
-    private InfoBarModel _infoBarModel = new ();
+    private InfoBarModel _shellInfoBarModel = new ();
 
     public INavigationService NavigationService
     {
@@ -39,6 +38,12 @@ public partial class ShellViewModel : ObservableRecipient
     {
         get => _selected;
         set => SetProperty(ref _selected, value);
+    }
+
+    public InfoBarModel ShellInfoBarModel
+    {
+        get => _shellInfoBarModel;
+        set => SetProperty(ref _shellInfoBarModel, value);
     }
 
     public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, ILocalSettingsService localSettingsService)
