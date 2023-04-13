@@ -53,19 +53,15 @@ public class ConfigurationFileHelper
     {
         try
         {
-            var assemblyDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new InvalidDataException();
-            var rootDirectory = Path.GetDirectoryName(assemblyDirectory) ?? throw new InvalidDataException();
-            var modulesPath = Path.Combine(rootDirectory, "ExternalModules");
-
+            var modulesPath = Path.Combine(AppContext.BaseDirectory, "ExternalModules");
             var properties = new ConfigurationProcessorFactoryProperties();
             properties.AdditionalModulePaths = new List<string>() { modulesPath };
+            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Additional module paths: {string.Join(", ", properties.AdditionalModulePaths)}");
             var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
-            factory.MinimumLevel = DiagnosticLevel.Verbose;
-            factory.Diagnostics += (sender, args) => LogConfigurationDiagnostics("ConfigurationFactory", args);
 
             _processor = new ConfigurationProcessor(factory);
             _processor.MinimumLevel = DiagnosticLevel.Verbose;
-            _processor.Diagnostics += (sender, args) => LogConfigurationDiagnostics("ConfigurationProcessor", args);
+            _processor.Diagnostics += (sender, args) => LogConfigurationDiagnostics(args);
 
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {_file.Path}");
             var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
@@ -96,8 +92,9 @@ public class ConfigurationFileHelper
         return new ApplicationResult(result);
     }
 
-    private void LogConfigurationDiagnostics(string sourceComponent, DiagnosticInformation diagnosticInformation)
+    private void LogConfigurationDiagnostics(DiagnosticInformation diagnosticInformation)
     {
+        var sourceComponent = nameof(ConfigurationProcessor);
         switch (diagnosticInformation.Level)
         {
             case DiagnosticLevel.Verbose:
