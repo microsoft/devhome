@@ -103,7 +103,7 @@ internal class RepositoryProviders
     /// <returns>All the repositories for an account and provider.</returns>
     public IEnumerable<IRepository> GetAllRepositories(string providerName, IDeveloperId developerId)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all repositories for repository provider {providerName} and account {developerId.DisplayName}");
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all repositories for repository provider {providerName} and account {developerId.LoginId}");
         return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId) ?? new List<IRepository>();
     }
 }

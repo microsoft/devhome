@@ -5,13 +5,19 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.WinUI.UI.Controls;
 using DevHome.Common.Views;
 using DevHome.Settings.Helpers;
 using DevHome.Settings.Models;
 using DevHome.Settings.Views;
 using DevHome.Telemetry;
+using Microsoft.UI;
+using Microsoft.UI.Text;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Settings.ViewModels;
@@ -37,14 +43,39 @@ public partial class AccountsProviderViewModel : ObservableObject
         pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, AdaptiveCardRendererHelper.GetLoginUIRenderer());
         pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
 
-        // TODO: Replace Close button with "X"
-        var loginUIContentDialog = new LoginUIDialog
+        var loginUIContentDialog = new LoginUIDialog();
+
+        Button cancelButton = new Button();
+        cancelButton.Content = "x";
+        cancelButton.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Right;
+        cancelButton.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Top;
+        cancelButton.Background = new SolidColorBrush(Colors.Transparent);
+        cancelButton.Click += (sender, args) =>
         {
-            Content = pluginAdaptiveCardPanel,
-            XamlRoot = parentPage.XamlRoot,
-            RequestedTheme = parentPage.ActualTheme,
-            CloseButtonText = "Close",
+            loginUIContentDialog.Hide();
         };
+
+        TextBlock title = new TextBlock();
+        title.Text = "Connect your account";
+        title.HorizontalAlignment = HorizontalAlignment.Left;
+        title.VerticalAlignment = VerticalAlignment.Top;
+        title.FontSize = 22;
+        title.FontWeight = FontWeights.Bold;
+
+        var heading = new DockPanel();
+        heading.Children.Add(title);
+        heading.Children.Add(cancelButton);
+        DockPanel.SetDock(cancelButton, Dock.Right);
+        DockPanel.SetDock(title, Dock.Left);
+
+        var uiControlObject = new StackPanel();
+        uiControlObject.Children.Add(heading);
+        uiControlObject.Children.Add(pluginAdaptiveCardPanel);
+
+        loginUIContentDialog.Content = uiControlObject;
+        loginUIContentDialog.XamlRoot = parentPage.XamlRoot;
+        loginUIContentDialog.RequestedTheme = parentPage.ActualTheme;
+
         await loginUIContentDialog.ShowAsync();
         RefreshLoggedInAccounts();
 
