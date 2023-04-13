@@ -38,6 +38,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _widgetCatalog = catalog;
 
         FillAvailableWidgets();
+        SelectFirstWidgetByDefault();
     }
 
     private void FillAvailableWidgets()
@@ -161,6 +162,19 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
 
         return false;
+    }
+
+    private void SelectFirstWidgetByDefault()
+    {
+        if (AddWidgetNavigationView.MenuItems.Count > 0)
+        {
+            var firstProvider = AddWidgetNavigationView.MenuItems[0] as NavigationViewItem;
+            if (firstProvider.MenuItems.Count > 0)
+            {
+                var firstWidget = firstProvider.MenuItems[0] as NavigationViewItem;
+                AddWidgetNavigationView.SelectedItem = firstWidget;
+            }
+        }
     }
 
     private async void AddWidgetNavigationView_SelectionChanged(
