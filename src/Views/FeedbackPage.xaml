@@ -10,12 +10,15 @@
     xmlns:helpers="using:DevHome.Common.Helpers"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:xaml="using:Microsoft.UI.Xaml"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
     mc:Ignorable="d"
+    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="Page_Loaded">
+    
     <Page.Resources>
         <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
     </Page.Resources>
-    <Grid>
+    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <ContentDialog x:Name="reportBugDialog" x:Uid="Feedback_ReportBug_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
             <Grid>
                 <TextBlock>
@@ -92,6 +95,11 @@
         </ContentDialog>
         <StackPanel Orientation="Vertical"
                     x:Name="ContentArea" Margin="{StaticResource FeedbackTitleMargin}">
+            <TextBlock
+                x:Uid="Feedback_Title"
+                Style="{ThemeResource TitleTextBlockStyle}"
+                Margin="0 10"
+                />
             <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" FontWeight="Normal">
                 <Hyperlink x:Uid="Feedback_DocumentationInfo_Link" TextDecorations="None">
                     <Run x:Uid="Feedback_DocumentationInfo_LinkText"/>

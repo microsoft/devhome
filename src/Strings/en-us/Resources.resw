@@ -127,7 +127,7 @@
   </data>
   <data name="Feedback.Content" xml:space="preserve">
     <value>Feedback</value>
-  </data>  
+  </data>
   <data name="Feedback_OpenSource.Text" xml:space="preserve">
     <value>Dev Home follows the Microsoft Open Source Code of Conduct. </value>
     <comment>Dev Home abides by Microsoft Open Source guidance</comment>
@@ -357,25 +357,25 @@
     <comment>httpsYourSecurityLinkGoesHere is a dummy security guidance link that goes here. Will be replaced with an aka.ms link later.</comment>
   </data>
   <data name="WhatsNewPage_DevIdCard_Description.Text" xml:space="preserve">
-    <value>Sign-in to create widgets, clone repos, receive repository based notifications and more.</value>
+    <value>Sign in to your developer account to clone repositories and get notifications for them.</value>
   </data>
   <data name="WhatsNew.Content" xml:space="preserve">
     <value>Introducing Dev Home</value>
   </data>
   <data name="WhatsNewPage_ConfigMachineCard.Description" xml:space="preserve">
-    <value>Clone multiple repos and download all the apps and packages you need in one streamlined process.</value>
+    <value>Use the streamlined end-to-end setup to clone multiple repositories and install all the applications you need at once.</value>
   </data>
   <data name="WhatsNewPage_ConfigMachineCard.Title" xml:space="preserve">
-    <value>Configure a new machine in three easy steps</value>
+    <value>Set up your dev machine seamlessly</value>
   </data>
   <data name="WhatsNewPage_Description.Text" xml:space="preserve">
-    <value>Take a second to understand why Developer Hub is the best tool there is for assisting developers</value>
+    <value>Take a few minutes to learn how you can use Dev Home for development.</value>
   </data>
   <data name="WhatsNewPage_DevDashCard.Description" xml:space="preserve">
-    <value>Create Widgets to monitor issues, pull requests, and system performance all in one convenient dashboard.</value>
+    <value>Get the info you need in one place—add widgets to track issues, pull requests, and system performance.</value>
   </data>
   <data name="WhatsNewPage_DevDashCard.Title" xml:space="preserve">
-    <value>Developer Dashboards</value>
+    <value>Monitor projects in your dashboard</value>
   </data>
   <data name="WhatsNewPage_DevIdCard_Title.Text" xml:space="preserve">
     <value>Connect your developer account</value>
@@ -384,16 +384,16 @@
     <value>Connect accounts</value>
   </data>
   <data name="WhatsNewPage_DevPFeaturesCard.Description" xml:space="preserve">
-    <value>Faster files system performance with Dev Drive, File Explorer Git integration, and exciting new system settings.</value>
+    <value>Optimize performance with a Dev Drive—Dev Home sets it up for you.</value>
   </data>
   <data name="WhatsNewPage_DevPFeaturesCard.Title" xml:space="preserve">
-    <value>Learn more about Developer+ features coming in 2023</value>
+    <value>Create a Dev Drive</value>
   </data>
   <data name="WhatsNewPage_NotifCard.Description" xml:space="preserve">
-    <value>Receive Windows system notifications for your pull requests, checks and merges.</value>
+    <value>Keep up with pull requests, checks, merges, and more.</value>
   </data>
   <data name="WhatsNewPage_NotifCard.Title" xml:space="preserve">
-    <value>Notifications on your Repositories</value>
+    <value>Get timely notifications</value>
   </data>
   <data name="InitializationPage_InfoDescription.Text" xml:space="preserve">
     <value>Monitor and track your coding tasks, workflows, system performance, and more on a customizable dashboard.</value>
@@ -415,5 +415,11 @@
   </data>
   <data name="InitializationPage_Title.Text" xml:space="preserve">
     <value>Dev Home is getting things ready for you...</value>
+  </data>
+  <data name="WhatsNewPage_Title.Text" xml:space="preserve">
+    <value>Introducing Dev Home</value>
+  </data>
+  <data name="Feedback_Title.Text" xml:space="preserve">
+    <value>Feedback</value>
   </data>
 </root>

@@ -35,7 +35,8 @@ public sealed partial class WhatsNewPage : Page
 
         var whatsNewCards = FeaturesContainer.Resources
             .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
-            .Select(card => card.Value as WhatsNewCard);
+            .Select(card => card.Value as WhatsNewCard)
+            .OrderBy(card => card?.Priority ?? 0);
 
         foreach (var card in whatsNewCards)
         {

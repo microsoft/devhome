@@ -12,7 +12,7 @@
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}" HorizontalAlignment="Center">
         <StackPanel>
             <Grid x:Name="Settings_Breadcrumbs" Margin="{StaticResource SettingsPageSubTitleMargin}">
                 <Grid.ColumnDefinitions>
@@ -25,7 +25,7 @@
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="settings:SettingViewModel">
                         <labs:SettingsCard Header="{x:Bind Header}" Description="{x:Bind Description}"
-                                       IsClickEnabled="True" Command="{x:Bind NavigateSettingsCommand}" />
+                                       IsClickEnabled="True" Command="{x:Bind NavigateSettingsCommand}" Margin="0 0 0 5" />
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>
             </ItemsRepeater>
