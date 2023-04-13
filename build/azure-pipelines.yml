@@ -53,6 +53,7 @@ stages:
         versionSpec: '>=8.6.0'
 
     - task: powershell@2
+      displayName: BuildingBranch
       inputs:
         targetType: 'inline'
         script: |
@@ -155,7 +156,7 @@ stages:
           displayName: Build Dev Home
           inputs:
             filePath: 'Build.ps1'
-            arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -Version $(MSIXVersion) -SDKVersion $(SDKVersion) -SDKNugetSource $(Pipeline.Workspace)\sdkArtifacts\ -BuildStep "msix" -IsAzurePipelineBuild
+            arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -Version $(MSIXVersion) -SDKVersion $(SDKVersion) -SDKNugetSource $(Pipeline.Workspace)\sdkArtifacts\ -BuildStep "msix" -AzureBuildingBranch "$(BuildingBranch)" -IsAzurePipelineBuild
 
         - task: EsrpCodeSigning@2
           inputs:
