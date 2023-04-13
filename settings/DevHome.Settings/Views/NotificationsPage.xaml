@@ -10,6 +10,8 @@
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:settings="using:DevHome.Settings.ViewModels"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
         <ResourceDictionary>
@@ -17,17 +19,30 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <ItemsRepeater ItemsSource="{x:Bind ViewModel.SettingsList, Mode=OneWay}">
-            <ItemsRepeater.ItemTemplate>
-                <DataTemplate x:DataType="settings:NotificationViewModel">
-                    <labs:SettingsCard Header="{x:Bind Header}"
+    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+        <StackPanel x:Name="ContentArea">
+            <Grid x:Name="Settings_Breadcrumbs" Margin="{StaticResource SettingsPageSubTitleMargin}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Uid="Settings_SubTitle" Grid.Column="0" Style="{ThemeResource TitleTextBlockStyle}" />
+                <TextBlock Text=">" Grid.Column="1" Style="{ThemeResource TitleTextBlockStyle}" Margin="{StaticResource SettingsPageSubTitleArrowMargin}" />
+                <TextBlock x:Uid="Settings_Notifications_SubTitle" Grid.Column="2" Style="{ThemeResource TitleTextBlockStyle}" />
+            </Grid>
+
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.SettingsList, Mode=OneWay}">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate x:DataType="settings:NotificationViewModel">
+                        <labs:SettingsCard Header="{x:Bind Header}"
                                    IsClickEnabled="True" Command="{x:Bind NavigateSettingsCommand}">
-                        <ToggleSwitch Visibility="{x:Bind HasToggleSwitch, Converter={StaticResource BoolToVisibilityConverter}}"
+                            <ToggleSwitch Visibility="{x:Bind HasToggleSwitch, Converter={StaticResource BoolToVisibilityConverter}}"
                                       IsOn="{x:Bind IsEnabled, Mode=TwoWay}" />
-                    </labs:SettingsCard>
-                </DataTemplate>
-            </ItemsRepeater.ItemTemplate>
-        </ItemsRepeater>
+                        </labs:SettingsCard>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </StackPanel>
     </ScrollViewer>
 </Page>

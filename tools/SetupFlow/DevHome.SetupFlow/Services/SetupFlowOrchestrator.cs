@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.SetupFlow.Common.Elevation;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
@@ -46,6 +46,9 @@ public partial class SetupFlowOrchestrator
     [NotifyCanExecuteChangedFor(nameof(GoToPreviousPageCommand))]
     [NotifyCanExecuteChangedFor(nameof(GoToNextPageCommand))]
     private SetupPageViewModelBase _currentPageViewModel;
+
+    [ObservableProperty]
+    private string _flowTitle;
 
     /// <summary>
     /// Occurrs right before a page changes
@@ -184,7 +187,7 @@ public partial class SetupFlowOrchestrator
         // Update current page
         _currentPageIndex = index;
         CurrentPageViewModel = FlowPages.Any() ? FlowPages[_currentPageIndex] : null;
-        Log.Logger?.ReportInfo(nameof(SetupFlowOrchestrator), $"Moving to {CurrentPageViewModel?.GetType().Name}");
+        Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Moving to {CurrentPageViewModel?.GetType().Name}");
 
         // Do post-navigation tasks only when moving forwards, not when going back to a previous page.
         if (movingForward)

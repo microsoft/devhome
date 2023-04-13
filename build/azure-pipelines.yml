@@ -1,5 +1,7 @@
 trigger:
 - main
+- staging
+- release
 
 pool:
   vmImage: 'windows-latest'
@@ -49,6 +51,13 @@ stages:
       displayName: 'Use Node >=8.6.0'
       inputs:
         versionSpec: '>=8.6.0'
+
+    - task: powershell@2
+      displayName: BuildingBranch
+      inputs:
+        targetType: 'inline'
+        script: |
+          Write-Host "$(BuildingBranch)"
 
     - template: v2/Steps/PackageES/Windows.SDL.Sources.Analysis.OS.Undocked.yml@templates_onebranch
       parameters:
@@ -147,7 +156,7 @@ stages:
           displayName: Build Dev Home
           inputs:
             filePath: 'Build.ps1'
-            arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -Version $(MSIXVersion) -SDKVersion $(SDKVersion) -SDKNugetSource $(Pipeline.Workspace)\sdkArtifacts\ -BuildStep "msix" -IsAzurePipelineBuild
+            arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -Version $(MSIXVersion) -SDKVersion $(SDKVersion) -SDKNugetSource $(Pipeline.Workspace)\sdkArtifacts\ -BuildStep "msix" -AzureBuildingBranch "$(BuildingBranch)" -IsAzurePipelineBuild
 
         - task: EsrpCodeSigning@2
           inputs:

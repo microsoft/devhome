@@ -4,6 +4,8 @@ parameters:
   type: object
   default:
     main: main
+    staging: staging
+    release: release
 
 jobs:
 - job: SyncMirror

@@ -12,14 +12,12 @@ using DevHome.Services;
 using DevHome.Settings.Views;
 using DevHome.Views;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.ViewModels;
 
 public class ShellViewModel : ObservableRecipient
 {
-
     private readonly ILocalSettingsService _localSettingsService;
     private object? _selected;
     private InfoBarModel _shellInfoBarModel = new ();
@@ -68,7 +66,7 @@ public class ShellViewModel : ObservableRecipient
 
     private void OnNavigated(object sender, NavigationEventArgs e)
     {
-        if (e.SourcePageType == typeof(SettingsPage))
+        if (IsSettingsPage(e.SourcePageType.FullName))
         {
             Selected = NavigationViewService.SettingsItem;
             return;
@@ -79,5 +77,17 @@ public class ShellViewModel : ObservableRecipient
         {
             Selected = selectedItem;
         }
+    }
+
+    private bool IsSettingsPage(string? pageType)
+    {
+        if (string.IsNullOrEmpty(pageType))
+        {
+            return false;
+        }
+
+#pragma warning disable CA1310 // Specify StringComparison for correctness
+        return pageType.StartsWith("DevHome.Settings");
+#pragma warning restore CA1310 // Specify StringComparison for correctness
     }
 }

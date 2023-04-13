@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.ViewModels;
@@ -138,6 +138,7 @@ public class DevDriveManager : IDevDriveManager
         // produced before reuse it.
         if (_devDrives.Any())
         {
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Reusing existing Dev Drive");
             return (DevDriveValidationResult.Successful, _devDrives.First());
         }
 
@@ -236,7 +237,7 @@ public class DevDriveManager : IDevDriveManager
         catch (Exception ex)
         {
             // Log then return empty list, as this only means we don't show the user their existing dev drive. Not catastrophic failure.
-            Log.Logger?.ReportError(nameof(DevDriveManager), $"Failed Get existing Dev Drives. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed Get existing Dev Drives. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
             return new List<IDevDrive>();
         }
     }
@@ -251,22 +252,26 @@ public class DevDriveManager : IDevDriveManager
     {
         try
         {
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Setting default Dev Drive info");
             var location = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var root = Path.GetPathRoot(Environment.SystemDirectory);
             if (string.IsNullOrEmpty(location) || string.IsNullOrEmpty(root))
             {
+                Log.Logger?.ReportError(Log.Component.DevDrive, "Default Dev Drive location is not available");
                 return DevDriveValidationResult.DefaultFolderNotAvailable;
             }
 
             var drive = new DriveInfo(root);
             if (DevDriveUtil.MinDevDriveSizeInBytes > (ulong)drive.AvailableFreeSpace)
             {
+                Log.Logger?.ReportError(Log.Component.DevDrive, "Not enough space available to create a Dev Drive");
                 return DevDriveValidationResult.NotEnoughFreeSpace;
             }
 
             var availableLetters = GetAvailableDriveLetters();
             if (!availableLetters.Any())
             {
+                Log.Logger?.ReportError(Log.Component.DevDrive, "No drive letters available to assign to Dev Drive");
                 return DevDriveValidationResult.NoDriveLettersAvailable;
             }
 
@@ -297,12 +302,13 @@ public class DevDriveManager : IDevDriveManager
             devDrive.DriveLabel = fileName;
             devDrive.State = DevDriveState.New;
 
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Default Dev Drive info: DriveLetter={devDrive.DriveLetter}, DriveSize={devDrive.DriveSizeInBytes}, Location={devDrive.DriveLocation}, Label={devDrive.DriveLabel}");
             return DevDriveValidationResult.Successful;
         }
         catch (Exception ex)
         {
             // we don't need to rethrow the exception/crash, we need to tell the user we couldn't find the default folder.
-            Log.Logger?.ReportError(nameof(DevDriveManager), $"Failed Get default folder for Dev Drive. {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed Get default folder for Dev Drive. {ex.Message}");
             return DevDriveValidationResult.DefaultFolderNotAvailable;
         }
     }

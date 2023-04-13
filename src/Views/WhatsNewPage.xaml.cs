@@ -35,7 +35,8 @@ public sealed partial class WhatsNewPage : Page
 
         var whatsNewCards = FeaturesContainer.Resources
             .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
-            .Select(card => card.Value as WhatsNewCard);
+            .Select(card => card.Value as WhatsNewCard)
+            .OrderBy(card => card?.Priority ?? 0);
 
         foreach (var card in whatsNewCards)
         {
@@ -48,55 +49,9 @@ public sealed partial class WhatsNewPage : Page
         }
     }
 
-    private async void ConnectToGitHubButton_Click(object sender, RoutedEventArgs e)
+    private void ConnectToAccountsButton_Click(object sender, RoutedEventArgs e)
     {
-        Application.Current.GetService<IInfoBarService>().ShowAppLevelInfoBar(InfoBarSeverity.Warning, "Connecting", "To github");
-        var resourceLoader = new Windows.ApplicationModel.Resources.ResourceLoader();
-        var pluginService = new PluginService();
-        var plugins = pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId).Result;
-
-        // TODO: Replace this with a check for KnownPluginsGuid got Github plugin
-        var plugin = plugins.Where(p => p.Name.Contains("Github")).FirstOrDefault();
-
-        if (plugin is null)
-        {
-            var connectToGitHubContentDialog = new ContentDialog
-            {
-                Title = resourceLoader.GetString("WhatsNewPage_ConnectToGitHub_NoPluginsContentDialog_Title"),
-                CloseButtonText = resourceLoader.GetString("WhatsNewPage_ConnectToGitHub_NoPluginsContentDialog_CloseButtonText"),
-                XamlRoot = XamlRoot,
-            };
-            _ = await connectToGitHubContentDialog.ShowAsync();
-            return;
-        }
-
-        var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
-
-        if (devIdProvider is null)
-        {
-            return;
-        }
-
-        if (devIdProvider.GetLoggedInDeveloperIds().Any())
-        {
-            // DevId already connected
-            var connectToGitHubContentDialog = new ContentDialog
-            {
-                Title = resourceLoader.GetString("WhatsNewPage_ConnectToGitHub_AlreadyConnectedContentDialog_Title"),
-                CloseButtonText = resourceLoader.GetString("WhatsNewPage_ConnectToGitHub_AlreadyConnectedContentDialog_CloseButtonText"),
-                XamlRoot = XamlRoot,
-            };
-            _ = await connectToGitHubContentDialog.ShowAsync();
-            return;
-        }
-
-        try
-        {
-            await new AccountsProviderViewModel(devIdProvider).ShowLoginUIAsync("WhatsNew", this);
-        }
-        catch (Exception ex)
-        {
-            LoggerFactory.Get<ILogger>().LogError<string>($"ConnectToGitHubButton_Click_Failure", LogLevel.Local, $"Error: {ex}");
-        }
+        var navigationService = Application.Current.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(AccountsViewModel).FullName!);
     }
 }

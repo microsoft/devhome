@@ -4,7 +4,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -119,7 +119,7 @@ public partial class SetupPageViewModelBase : ObservableObject
         if (!_hasExecutedFirstNavigateTo)
         {
             _hasExecutedFirstNavigateTo = true;
-            Log.Logger?.ReportInfo(nameof(SetupPageViewModelBase), $"Executing post-navigation tasks for page {this.GetType().Name}");
+            Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Executing post-navigation tasks for page {this.GetType().Name}");
             await OnFirstNavigateToAsync();
         }
 
@@ -137,7 +137,7 @@ public partial class SetupPageViewModelBase : ObservableObject
         if (!_hasExecutedFirstNavigateFrom)
         {
             _hasExecutedFirstNavigateFrom = true;
-            Log.Logger?.ReportInfo(nameof(SetupPageViewModelBase), $"Executing pre-navigation tasks for page {this.GetType().Name}");
+            Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Executing pre-navigation tasks for page {this.GetType().Name}");
             await OnFirstNavigateFromAsync();
         }
     }

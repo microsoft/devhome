@@ -31,11 +31,12 @@ public class PageService : IPageService
         Configure<FeedbackViewModel, FeedbackPage>();
         Configure<WhatsNewViewModel, WhatsNewPage>();
 
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var group in App.NavConfig.NavMenu.Groups)
         {
             foreach (var tool in group.Tools)
             {
-                var toolType = from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                var toolType = from assembly in assemblies
                                where assembly.GetName().Name == tool.Assembly
                                select assembly.GetType(tool.ViewFullName);
 

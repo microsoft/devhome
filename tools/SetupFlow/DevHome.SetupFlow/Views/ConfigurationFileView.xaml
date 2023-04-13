@@ -31,7 +31,7 @@
             </SplitButton.Flyout>
         </ToggleSplitButton>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
-    <controls:SetupShell Title="{x:Bind ViewModel.TitleText, Mode=OneWay}">
+    <controls:SetupShell Orchestrator="{x:Bind ViewModel.Orchestrator}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />

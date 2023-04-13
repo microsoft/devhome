@@ -59,7 +59,9 @@
                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_EnvironmentSetup" />
                     <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
                                        Style="{StaticResource MainPageCardStyle}"
-                                       IsClickEnabled="True" Command="{x:Bind ViewModel.StartSetupCommand}"
+                                       IsClickEnabled="True"
+                                       Command="{x:Bind ViewModel.StartSetupCommand}"
+                                       CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
                                        ActionIcon="{x:Null}" >
                         <labs:SettingsCard.HeaderIcon>
                             <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_EndToEnd.png" />
@@ -67,7 +69,9 @@
                     </labs:SettingsCard>
                     <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile"
                                        Style="{StaticResource MainPageCardStyle}"
-                                       IsClickEnabled="True" Command="{x:Bind ViewModel.StartConfigurationFileCommand}"
+                                       IsClickEnabled="True"
+                                       Command="{x:Bind ViewModel.StartConfigurationFileCommand}"
+                                       CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
                                        ActionIcon="{x:Null}" >
                         <labs:SettingsCard.HeaderIcon>
                             <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_ConfigurationFile.png" />
@@ -79,7 +83,9 @@
                     <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
                     <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos"
                                        Style="{StaticResource MainPageCardStyle}"
-                                       IsClickEnabled="True" Command="{x:Bind ViewModel.StartRepoConfigCommand}"
+                                       IsClickEnabled="True"
+                                       Command="{x:Bind ViewModel.StartRepoConfigCommand}"
+                                       CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
                                        ActionIcon="{x:Null}" >
                         <labs:SettingsCard.HeaderIcon>
                             <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_RepoConfig.png" />
@@ -87,7 +93,9 @@
                     </labs:SettingsCard>
                     <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
                                        Style="{StaticResource MainPageCardStyle}"
-                                       IsClickEnabled="True" Command="{x:Bind ViewModel.StartAppManagementCommand}"
+                                       IsClickEnabled="True"
+                                       Command="{x:Bind ViewModel.StartAppManagementCommand}"
+                                       CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
                                        ActionIcon="{x:Null}" >
                         <labs:SettingsCard.HeaderIcon>
                             <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_AppManagement.png" />
