@@ -1,0 +1,7 @@
+trigger:
+- staging
+- release
+
+steps:
+- script: echo Triggering ADO Build
+  displayName: 'Triggering ADO Build'
