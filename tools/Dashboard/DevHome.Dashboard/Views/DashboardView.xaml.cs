@@ -299,12 +299,21 @@ public partial class DashboardView : ToolPage
             {
                 try
                 {
-                    var size = await widget.GetSizeAsync();
-                    AddWidgetToPinnedWidgets(widget, size);
+                    var stateStr = await widget.GetCustomStateAsync();
+                    Log.Logger()?.ReportInfo("DashboardView", $"GetWidgetCustomState: {stateStr}");
+                    if (!string.IsNullOrEmpty(stateStr))
+                    {
+                        var stateObj = System.Text.Json.JsonSerializer.Deserialize<WidgetCustomState>(stateStr);
+                        if (stateObj.Host == WidgetHelpers.DevHomeHostName)
+                        {
+                            var size = await widget.GetSizeAsync();
+                            AddWidgetToPinnedWidgets(widget, size);
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger()?.ReportError("DashboardView", $"RestorePinnedWidgets(): widget.GetSizeAsync() failed", ex);
+                    Log.Logger()?.ReportError("DashboardView", $"RestorePinnedWidgets(): ", ex);
                 }
             }
         }
@@ -328,6 +337,12 @@ public partial class DashboardView : ToolPage
 
         if (newWidget != null)
         {
+            // Set custom state on new widget.
+            var newCustomState = WidgetHelpers.CreateWidgetCustomState();
+            Log.Logger()?.ReportDebug("DashboardView", $"SetCustomState: {newCustomState}");
+            await newWidget.SetCustomStateAsync(newCustomState);
+
+            // Put new widget on the Dashboard.
             var widgetDef = _widgetCatalog.GetWidgetDefinition(newWidget.DefinitionId);
             var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
             await newWidget.SetSizeAsync(size);
@@ -490,8 +505,12 @@ public partial class DashboardView : ToolPage
         if (newWidget != null)
         {
             // Remove and delete the old widget.
+            var state = await widgetViewModel.Widget.GetCustomStateAsync();
             PinnedWidgets.RemoveAt(index);
             await widgetViewModel.Widget.DeleteAsync();
+
+            // Put the old widget's state on the new widget.
+            await newWidget.SetCustomStateAsync(state);
 
             // Set the original size on the new widget and add it to the list.
             await newWidget.SetSizeAsync(originalSize);
