@@ -75,25 +75,19 @@ public partial class AddRepoViewModel : ObservableObject
     /// Should the URL page be visible?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showUrlPage;
+    private bool _showUrlPage;
 
     /// <summary>
     /// Should the account page be visible?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showAccountPage;
+    private bool _showAccountPage;
 
     /// <summary>
     /// Should the repositories page be visible?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showRepoPage;
-
-    /// <summary>
-    /// Should the error text be shown?
-    /// </summary>
-    [ObservableProperty]
-    private Visibility _showErrorTextBox;
+    private bool _showRepoPage;
 
     /// <summary>
     /// Keeps track of if the account button is checked.  Used to switch UIs
@@ -118,6 +112,9 @@ public partial class AddRepoViewModel : ObservableObject
 
     [ObservableProperty]
     private string _primaryButtonText;
+
+    [ObservableProperty]
+    private bool _showUrlError = false;
 
     [RelayCommand]
     private void FilterRepositories(string text)
@@ -152,7 +149,7 @@ public partial class AddRepoViewModel : ObservableObject
         IsUrlAccountButtonChecked = true;
         IsAccountToggleButtonChecked = false;
         ShouldPrimaryButtonBeEnabled = false;
-        ShowErrorTextBox = Visibility.Collapsed;
+        ShowErrorTextBox = false;
         EverythingToClone = new ();
     }
 

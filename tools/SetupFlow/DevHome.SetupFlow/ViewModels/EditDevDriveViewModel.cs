@@ -56,13 +56,13 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// Some builds don't have dev drives.
     /// </summary>
     [ObservableProperty]
-    private Visibility _showDevDriveInformation;
+    private bool _showDevDriveInformation;
 
     /// <summary>
     /// The customization hyperlink button visibility changes if the user wants a new dev drive.
     /// </summary>
     [ObservableProperty]
-    private Visibility _showCustomizeOption;
+    private bool _showCustomizeOption;
 
     /// <summary>
     /// The checkbox can be disabled if the user has an existing dev drive.
@@ -73,7 +73,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     public EditDevDriveViewModel(IDevDriveManager devDriveManager)
     {
         _devDriveManager = devDriveManager;
-        ShowCustomizeOption = Visibility.Collapsed;
+        ShowCustomizeOption = false;
         IsDevDriveCheckboxEnabled = true;
     }
 
@@ -87,7 +87,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     public bool MakeDefaultDevDrive()
     {
         // DevDrive SetToDefaults
-        ShowCustomizeOption = Visibility.Visible;
+        ShowCustomizeOption = true;
         var (result, devDrive) = _devDriveManager.GetNewDevDrive();
         if (result == DevDriveValidationResult.Successful)
         {
@@ -103,13 +103,13 @@ public partial class EditDevDriveViewModel : ObservableObject
     {
         if (_canShowDevDriveUI)
         {
-            ShowDevDriveInformation = Visibility.Visible;
+            ShowDevDriveInformation = true;
         }
     }
 
     public void HideDevDriveUI()
     {
-        ShowDevDriveInformation = Visibility.Collapsed;
+        ShowDevDriveInformation = false;
     }
 
     public void RemoveNewDevDrive()
@@ -117,7 +117,7 @@ public partial class EditDevDriveViewModel : ObservableObject
         _devDriveManager.RequestToCloseDevDriveWindow(DevDrive);
         _devDriveManager.CancelChangesToDevDrive();
         DevDrive = null;
-        ShowCustomizeOption = Visibility.Collapsed;
+        ShowCustomizeOption = false;
     }
 
     /// <summary>
@@ -173,13 +173,12 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </remarks>
     public void SetUpStateIfDevDrivesIfExists()
     {
-        ShowDevDriveInformation = DevDriveUtil.IsDevDriveFeatureEnabled ? Visibility.Visible : Visibility.Collapsed;
-        if (ShowDevDriveInformation == Visibility.Visible)
+        if (DevDriveUtil.IsDevDriveFeatureEnabled)
         {
             var existingDevDrives = _devDriveManager.GetAllDevDrivesThatExistOnSystem();
             if (existingDevDrives.Any())
             {
-                ShowDevDriveInformation = Visibility.Collapsed;
+                ShowDevDriveInformation = false;
                 DevDrive = existingDevDrives.OrderByDescending(x => x.DriveSizeInBytes).First();
                 _canShowDevDriveUI = false;
                 return;
