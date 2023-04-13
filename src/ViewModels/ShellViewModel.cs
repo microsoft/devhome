@@ -8,10 +8,6 @@ using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Dashboard.ViewModels;
-using DevHome.Services;
-using DevHome.Settings.Views;
-using DevHome.Views;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.ViewModels;
