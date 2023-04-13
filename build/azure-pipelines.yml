@@ -57,8 +57,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          Write-Host "$(Build.TargetBranch)"
-          Write-Host "$(Build.TargetBranchName)"
+          Write-Host "$(System.PullRequest.TargetBranch)"
 
     - template: v2/Steps/PackageES/Windows.SDL.Sources.Analysis.OS.Undocked.yml@templates_onebranch
       parameters:
