@@ -53,11 +53,10 @@ stages:
         versionSpec: '>=8.6.0'
 
     - task: powershell@2
-      displayName: 'What branch are we'
       inputs:
         targetType: 'inline'
         script: |
-          Write-Host "$(System.PullRequest.TargetBranch)"
+          Write-Host "$(BuildingBranch)"
 
     - template: v2/Steps/PackageES/Windows.SDL.Sources.Analysis.OS.Undocked.yml@templates_onebranch
       parameters:
