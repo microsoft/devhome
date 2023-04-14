@@ -11,6 +11,7 @@ using DevHome.SetupFlow.Services;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 using Windows.Storage;
+using WinRT;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -27,6 +28,11 @@ public class ConfigureTask : ISetupTask
     public bool RequiresReboot { get; private set; }
 
     public bool DependsOnDevDriveToBeInstalled => false;
+
+    public ConfigurationFileHelper.ApplicationResult Result
+    {
+        get; private set;
+    }
 
     public ConfigureTask(ISetupFlowStringResource stringResource, StorageFile file)
     {
@@ -81,15 +87,15 @@ public class ConfigureTask : ISetupTask
         {
             try
             {
-                var result = await _configurationFileHelper.ApplyConfigurationAsync();
-                RequiresReboot = result.RequiresReboot;
-                if (result.Succeeded)
+                Result = await _configurationFileHelper.ApplyConfigurationAsync();
+                RequiresReboot = Result.RequiresReboot;
+                if (Result.Succeeded)
                 {
                     return TaskFinishedState.Success;
                 }
                 else
                 {
-                    throw result.ResultException;
+                    throw Result.ResultException;
                 }
             }
             catch (Exception e)

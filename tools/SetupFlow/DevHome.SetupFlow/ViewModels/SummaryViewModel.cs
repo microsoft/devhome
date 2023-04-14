@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Common.Configuration;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -66,6 +67,29 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
             packageProvider.Clear();
             return packagesInstalled;
+        }
+    }
+
+    public IList<ConfigurationFileHelper.UnitResult> ConfigurationUnits
+    {
+        get
+        {
+            List<ConfigurationFileHelper.UnitResult> test = new ();
+            var repositoriesCloned = new ObservableCollection<KeyValuePair<string, string>>();
+            var taskGroup = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
+            var group = taskGroup.SingleOrDefault(x => x.GetType() == typeof(ConfigurationFileTaskGroup));
+            if (group is ConfigurationFileTaskGroup configTaskGroup)
+            {
+                foreach (var task in configTaskGroup.SetupTasks)
+                {
+                    if (task is ConfigureTask configTask)
+                    {
+                        test.AddRange(configTask.Result.UnitResults);
+                    }
+                }
+            }
+
+            return test;
         }
     }
 

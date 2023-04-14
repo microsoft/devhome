@@ -20,7 +20,13 @@
     </UserControl.Resources>
 
 
-    <StackPanel Orientation="Vertical" Spacing="5" >
+    <Grid RowSpacing="5" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
         <!-- Display if the user has tasks need the machine to restart.-->
         <Grid Visibility="{x:Bind ViewModel.ShowRestartNeeded}"  Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10" >
             <Grid.ColumnDefinitions>
@@ -42,7 +48,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid>
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -56,8 +62,50 @@
             </Button>
         </Grid>
 
+        <Grid
+            Visibility="Visible"
+            Grid.Row="2"
+            RowSpacing="20"
+            ScrollViewer.VerticalScrollBarVisibility="Auto"
+            BorderBrush="{StaticResource DividerStrokeColorDefault}"
+            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0">Summary</TextBlock>
+                <TextBlock Grid.Column="1" Padding="0,20,0,0">Success: 2 | Failed: 3</TextBlock>
+            </Grid>
+            <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.ConfigurationUnits, Mode=OneWay}">
+                    <ItemsRepeater.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontFamily" Value="{StaticResource CascadiaMonoFontFamily}"/>
+                            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <Setter Property="LineHeight" Value="20"/>
+                        </Style>
+                    </ItemsRepeater.Resources>
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Intent}"/>
+                                <TextBlock Text="{Binding UnitName}"/>
+                                <TextBlock Text="{Binding ResultException.HResult}"/>
+                                <TextBlock Text="{Binding State}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </ScrollViewer>
+        </Grid>
+
         <!-- Grid with information on tasks completed-->
-        <Grid ColumnSpacing="50">
+        <Grid Grid.Row="2" ColumnSpacing="50" Visibility="Collapsed">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition />
@@ -110,8 +158,11 @@
                             <StackPanel.Resources>
                                 <StackLayout x:Name="LayoutForRepos" Orientation="Vertical" Spacing="10"/>
                                 <DataTemplate x:Key="repoTemplate">
-                                    <Grid
-                                        ColumnDefinitions="Auto, *">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
                                         <FontIcon 
                                             Grid.Column="0"
                                             Glyph="{Binding Path=Key}"
@@ -179,5 +230,5 @@
                 </StackPanel>
             </StackPanel>
         </Grid>
-    </StackPanel>
+    </Grid>
 </UserControl>
