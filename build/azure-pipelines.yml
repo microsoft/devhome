@@ -136,7 +136,7 @@ stages:
         SymbolsProduct: DevHomeSDK
 
 - stage: Build_DevHome
-  dependsOn: Build_SDK
+  condition: not(failed('Build_SDK'))
   variables:
     SDKVersion: $[stageDependencies.Build_SDK.Build_SDK.outputs['BuildSDKCommand.SDKVersion']]
   jobs:
@@ -277,7 +277,7 @@ stages:
             SymbolsProduct: DevHome
 
 - stage: Build_MsixBundle
-  dependsOn: Build_DevHome
+  condition: not(failed('Build_DevHome'))
   jobs:
   - job: Build_MsixBundles
     steps:
@@ -343,9 +343,7 @@ stages:
             targetPath: AppxBundles\${{ configuration }}
 
 - stage: Store_Publish
-  dependsOn:
-  - SourceAnalysis
-  - Build_MsixBundle
+  condition: and(not(failed('SourceAnalysis')), not(failed('Build_MsixBundle')))
   jobs:
   - job: Store_Publish
     steps:
