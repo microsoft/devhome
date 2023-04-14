@@ -4,20 +4,9 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.WinUI.UI.Controls;
-using DevHome.Common.Views;
-using DevHome.Settings.Helpers;
 using DevHome.Settings.Models;
-using DevHome.Settings.Views;
 using DevHome.Telemetry;
-using Microsoft.UI;
-using Microsoft.UI.Text;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Settings.ViewModels;

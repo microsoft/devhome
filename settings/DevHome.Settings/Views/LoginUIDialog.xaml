@@ -23,7 +23,7 @@
         <!-- Title and Close button -->
         <Grid>
             <TextBlock x:Uid="LoginUIDialogTitle" HorizontalAlignment="Left"
-                       FontStyle="{ThemeResource SubtitleTextBlockStyle}"/>
+                       Style="{ThemeResource SubtitleTextBlockStyle}"/>
             <Button HorizontalAlignment="Right" Click="CloseButton_Click"
                     BorderThickness="0" Background="Transparent" Padding="5">
                 <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}"
