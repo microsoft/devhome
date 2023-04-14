@@ -97,7 +97,7 @@ stages:
 
 - stage: SyncMirror
   dependsOn: []
-  condition: or(eq('$(variables.BuildingBranch)', 'staging'), eq('$(variables.BuildingBranch)', 'release'))
+  condition: or(eq(variables['BuildingBranch'], 'staging'), eq(variables['BuildingBranch'], 'release'))
   jobs:
   - template: SyncMirroredRepository.yml
     parameters:
@@ -355,7 +355,7 @@ stages:
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Staging build to store - NEEDS TO BE CHANGED TO CANARY STORE ENTRY WHEN AVAILABLE'
-      condition: eq('$(variables.BuildingBranch)', 'staging')
+      condition: eq(variables['BuildingBranch'], 'staging')
       inputs:
         serviceEndpoint: 'DevHome StoreBroker'
         appId: 9N8MHTPHNGVV
@@ -365,7 +365,7 @@ stages:
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Release build to store'
-      condition: eq('$(variables.BuildingBranch)', 'release')
+      condition: eq(variables['BuildingBranch'], 'release')
       inputs:
         serviceEndpoint: 'DevHome StoreBroker'
         appId: 9N8MHTPHNGVV
