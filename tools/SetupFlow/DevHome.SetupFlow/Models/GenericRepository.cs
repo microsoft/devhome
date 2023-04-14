@@ -3,7 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
-using DevHome.Dashboard.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using LibGit2Sharp;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
@@ -48,22 +48,22 @@ internal class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
                 }
                 catch (RecurseSubmodulesException recurseException)
                 {
-                    Log.Logger()?.ReportError("GenericRepository", "Could not clone all sub modules", recurseException);
+                    Log.Logger?.ReportError("GenericRepository", "Could not clone all sub modules", recurseException);
                     throw;
                 }
                 catch (UserCancelledException userCancelledException)
                 {
-                    Log.Logger()?.ReportError("GenericRepository", "The user stoped the clone operation", userCancelledException);
+                    Log.Logger?.ReportError("GenericRepository", "The user stoped the clone operation", userCancelledException);
                     throw;
                 }
                 catch (NameConflictException nameConflictException)
                 {
-                    Log.Logger()?.ReportError("GenericRepository", nameConflictException);
+                    Log.Logger?.ReportError("GenericRepository", nameConflictException);
                     throw;
                 }
                 catch (Exception e)
                 {
-                    Log.Logger()?.ReportError("GenericRepository", "Could not clone the repository", e);
+                    Log.Logger?.ReportError("GenericRepository", "Could not clone the repository", e);
                     throw;
                 }
             }
