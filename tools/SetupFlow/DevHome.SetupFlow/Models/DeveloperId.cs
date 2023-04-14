@@ -19,6 +19,10 @@ public class DeveloperId : IDeveloperId
 
     public string Url() => _url;
 
+    public string DisplayName() => throw new System.NotImplementedException();
+
+    public string Email() => throw new System.NotImplementedException();
+
     public DeveloperId(string loginId, string url)
     {
         _loginId = loginId;

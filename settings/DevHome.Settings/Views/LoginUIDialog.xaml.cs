@@ -11,4 +11,9 @@ public sealed partial class LoginUIDialog : ContentDialog
     {
         this.InitializeComponent();
     }
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
+    {
+        this.Hide();
+    }
 }

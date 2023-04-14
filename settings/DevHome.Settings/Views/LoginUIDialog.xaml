@@ -18,4 +18,20 @@
         <x:Double x:Key="ContentDialogMaxHeight">502</x:Double>
         <Thickness x:Key="ContentDialogTitleMargin">0,0,0,0</Thickness>
     </ContentDialog.Resources>
+
+    <StackPanel>
+        <!-- Title and Close button -->
+        <Grid>
+            <TextBlock x:Uid="LoginUIDialogTitle" HorizontalAlignment="Left"
+                       FontStyle="{ThemeResource SubtitleTextBlockStyle}"/>
+            <Button HorizontalAlignment="Right" Click="CloseButton_Click"
+                    BorderThickness="0" Background="Transparent" Padding="5">
+                <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                           FontSize="{ThemeResource BodyTextBlockFontSize}"
+                           Text="&#xE10A;" />
+            </Button>
+        </Grid>
+        
+        
+    </StackPanel>
 </ContentDialog>
