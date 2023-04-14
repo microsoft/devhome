@@ -51,7 +51,7 @@ public class DevDriveFormatter
                         queryObj.GetMethodParameters("Format");
 
                     // Add the default parameters.
-                    inParams["DeveloperVolume"] = true;
+                    inParams["DevDrive"] = true;
                     inParams["FileSystem"] = "ReFS";
                     inParams["FileSystemLabel"] = driveLabel;
                     inParams["AllocationUnitSize"] = fourKb;
