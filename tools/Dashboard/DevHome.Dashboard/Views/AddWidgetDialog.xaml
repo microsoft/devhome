@@ -18,14 +18,15 @@
         <x:Double x:Key="ContentDialogMaxHeight">684</x:Double>
         <Thickness x:Key="ContentDialogTitleMargin">0,0,0,0</Thickness>
         <Thickness x:Key="ContentDialogPadding">0,0,0,0</Thickness>
+        <Thickness x:Key="NavigationViewContentMargin">0,0,0,0</Thickness>
     </ContentDialog.Resources>
 
     <StackPanel>
         <!-- Title and Close button -->
-        <Grid Margin="16,7,0,0">
-            <TextBlock x:Uid="PinWidgetsTitle" HorizontalAlignment="Left" />
+        <Grid>
+            <TextBlock x:Uid="PinWidgetsTitle" HorizontalAlignment="Left" Margin="16,10,0,0" />
             <Button HorizontalAlignment="Right" Click="CancelButton_Click"
-                    BorderThickness="0" Background="Transparent">
+                    BorderThickness="0" Background="Transparent" Padding="10">
                 <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}" 
                            FontSize="{ThemeResource BodyTextBlockFontSize}" 
                            Text="&#xE10A;" />
@@ -49,25 +50,28 @@
             <!-- Widget configuration UI -->
             <!-- TODO: This is a bare-bones representation of the configuration UI -->
             <!--       Should have better layout / possibly be a user control -->
-            <Grid x:Name="ConfigurationContentGrid" Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
+            <Grid x:Name="ConfigurationContentGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
-                <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch" Grid.Row="0"
-                              MinHeight="480" MaxHeight="480">
+                <ScrollViewer Grid.Row="0"
+                              VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
+                              MinHeight="530" MaxHeight="530">
                     <Frame x:Name="ConfigurationContentFrame" 
-                            Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}" />
+                           Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}" />
                 </ScrollViewer>
 
-                <Button x:Name="PinButton" x:Uid="PinButton"
-                        VerticalAlignment="Bottom" HorizontalAlignment="Center"
-                        Visibility="Collapsed"
-                        Height="32" Width="118"
-                        Click="PinButton_Click"
-                        Grid.Row="1"
-                        Margin="0,43" />
+                <Grid Grid.Row="1"
+                      Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
+                    <Button x:Name="PinButton" x:Uid="PinButton"
+                            VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                            Visibility="Collapsed"
+                            Height="32" Width="118"
+                            Click="PinButton_Click"
+                            Margin="0,43" />
+                </Grid>
             </Grid>
         </NavigationView>
     </StackPanel>
