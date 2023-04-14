@@ -97,7 +97,7 @@ stages:
 
 - stage: SyncMirror
   dependsOn: []
-  condition: or(eq('$(BuildingBranch)', 'staging'), eq('$(BuildingBranch)', 'release'))
+  condition: or(eq('$(variables.BuildingBranch)', 'staging'), eq('$(variables.BuildingBranch)', 'release'))
   jobs:
   - template: SyncMirroredRepository.yml
     parameters:
@@ -136,7 +136,7 @@ stages:
         SymbolsProduct: DevHomeSDK
 
 - stage: Build_DevHome
-  condition: not(failed('Build_SDK'))
+  condition: succeeded('Build_SDK')
   variables:
     SDKVersion: $[stageDependencies.Build_SDK.Build_SDK.outputs['BuildSDKCommand.SDKVersion']]
   jobs:
@@ -277,7 +277,7 @@ stages:
             SymbolsProduct: DevHome
 
 - stage: Build_MsixBundle
-  condition: not(failed('Build_DevHome'))
+  condition: succeeded('Build_DevHome')
   jobs:
   - job: Build_MsixBundles
     steps:
@@ -343,7 +343,7 @@ stages:
             targetPath: AppxBundles\${{ configuration }}
 
 - stage: Store_Publish
-  condition: and(not(failed('SourceAnalysis')), not(failed('Build_MsixBundle')))
+  condition: and(succeeded('SourceAnalysis'), succeeded('Build_MsixBundle'))
   jobs:
   - job: Store_Publish
     steps:
@@ -355,7 +355,7 @@ stages:
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Staging build to store - NEEDS TO BE CHANGED TO CANARY STORE ENTRY WHEN AVAILABLE'
-      condition: eq('$(BuildingBranch)', 'staging')
+      condition: eq('$(variables.BuildingBranch)', 'staging')
       inputs:
         serviceEndpoint: 'DevHome StoreBroker'
         appId: 9N8MHTPHNGVV
@@ -365,7 +365,7 @@ stages:
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Release build to store'
-      condition: eq('$(BuildingBranch)', 'release')
+      condition: eq('$(variables.BuildingBranch)', 'release')
       inputs:
         serviceEndpoint: 'DevHome StoreBroker'
         appId: 9N8MHTPHNGVV
