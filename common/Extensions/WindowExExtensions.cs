@@ -84,7 +84,7 @@ public static class WindowExExtensions
     /// Open file picker
     /// </summary>
     /// <param name="window">Target window</param>
-    /// <param name="filters">List of filter name and extension</param>
+    /// <param name="filters">List of type filters (e.g. *.yaml, *.txt), or empty/<c>null</c> to allow all file types</param>
     /// <returns>Storage file or <c>null</c> if no file was selected</returns>
     public static async Task<StorageFile?> OpenFilePickerAsync(this WindowEx window, List<string>? filters = null)
     {
