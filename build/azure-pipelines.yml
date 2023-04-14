@@ -332,3 +332,34 @@ stages:
           inputs:
             artifactName: MsixBundle_${{ configuration }}
             targetPath: AppxBundles\${{ configuration }}
+
+- stage: Store_Publish
+  dependsOn: Build_MsixBundle
+  jobs:
+  - job: Store_Publish
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: MsixBundle_Release
+        targetPath: StorePublish
+
+    - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
+      displayName: 'Publish Staging build to store - NEEDS TO BE CHANGED TO CANARY STORE ENTRY WHEN AVAILABLE'
+      condition: eq('$(BuildingBranch)', 'staging')
+      inputs:
+        serviceEndpoint: 'DevHome StoreBroker'
+        appId: 9N8MHTPHNGVV
+        sourceFolder: 'StorePublish'
+        contents: '*.msixbundle'
+        force: true
+
+    - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
+      displayName: 'Publish Release build to store'
+      condition: eq('$(BuildingBranch)', 'release')
+      inputs:
+        serviceEndpoint: 'DevHome StoreBroker'
+        appId: 9N8MHTPHNGVV
+        sourceFolder: 'StorePublish'
+        contents: '*.msixbundle'
+        force: true
