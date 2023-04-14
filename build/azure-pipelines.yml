@@ -37,6 +37,18 @@ resources:
     ref: refs/heads/main
 
 stages:
+- stage: TestVariables
+  condition: eq(variables['BuildingBranch'], 'main')
+  jobs:
+  - job: Test Conditional
+    steps:
+    - task: powershell@2
+      displayName: BuildingBranch
+      inputs:
+        targetType: 'inline'
+        script: |
+          Write-Host "BuildingBranch: $(BuildingBranch)"
+
 - stage: SourceAnalysis
   # This stage is expected to run in parallel with BuildWindowsAppSDK-Stages.
   dependsOn: []
