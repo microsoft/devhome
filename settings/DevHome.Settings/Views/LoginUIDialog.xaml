@@ -31,7 +31,7 @@
                            Text="&#xE10A;" />
             </Button>
         </Grid>
-        
-        
+
+        <Frame x:Name="LoginUIContent" />
     </StackPanel>
 </ContentDialog>

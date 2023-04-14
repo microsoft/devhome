@@ -7,9 +7,10 @@ using Microsoft.UI.Xaml.Controls;
 namespace DevHome.Settings.Views;
 public sealed partial class LoginUIDialog : ContentDialog
 {
-    public LoginUIDialog()
+    public LoginUIDialog(StackPanel pluginAdaptiveCardPanel)
     {
         this.InitializeComponent();
+        LoginUIContent.Content = pluginAdaptiveCardPanel;
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e)

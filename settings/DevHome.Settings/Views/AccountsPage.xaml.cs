@@ -76,12 +76,8 @@ public sealed partial class AccountsPage : Page
         pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, AdaptiveCardRendererHelper.GetLoginUIRenderer());
         pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
 
-        var uiControlObject = new StackPanel();
-        uiControlObject.Children.Add(pluginAdaptiveCardPanel);
-
-        var loginUIContentDialog = new LoginUIDialog
+        var loginUIContentDialog = new LoginUIDialog(pluginAdaptiveCardPanel)
         {
-            Content = uiControlObject,
             XamlRoot = parentPage.XamlRoot,
             RequestedTheme = parentPage.ActualTheme,
         };
