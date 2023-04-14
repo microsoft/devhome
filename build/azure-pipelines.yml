@@ -40,7 +40,7 @@ stages:
 - stage: TestVariables
   condition: eq(variables['BuildingBranch'], 'main')
   jobs:
-  - job: Test Conditional
+  - job: TestConditional
     steps:
     - task: powershell@2
       displayName: BuildingBranch
