@@ -99,11 +99,9 @@ stages:
   dependsOn: []
   condition: or(eq('$(BuildingBranch)', 'staging'), eq('$(BuildingBranch)', 'release'))
   jobs:
-  - job: Staging/release sync from GitHub to ADO
-    steps:
-    - template: SyncMirroredRepository.yml
-      parameters:
-        SourceToTargetBranch: "$(BuildingBranch)"
+  - template: SyncMirroredRepository.yml
+    parameters:
+      SourceToTargetBranch: "$(BuildingBranch)"
 
 - stage: Build_SDK
   dependsOn: SyncMirror
