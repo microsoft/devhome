@@ -95,7 +95,7 @@
                     Visibility="Visible" 
                     Message="{x:Bind ViewModel.ShellInfoBarModel.Description, Mode=TwoWay}" 
                     IsOpen="{x:Bind ViewModel.ShellInfoBarModel.IsOpen, Mode=TwoWay}" 
-                    MaxWidth="924" />
+                    MaxWidth="{ThemeResource MaxPageContentWidth}" />
                 <Grid Grid.Row="1">
                     <Frame x:Name="NavigationFrame" />
                 </Grid>
