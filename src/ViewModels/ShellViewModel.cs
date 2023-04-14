@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Contracts;
 using DevHome.Common.Helpers;
@@ -15,6 +16,7 @@ public class ShellViewModel : ObservableRecipient
 {
     private readonly ILocalSettingsService _localSettingsService;
     private object? _selected;
+    private InfoBarModel _shellInfoBarModel = new ();
 
     public INavigationService NavigationService
     {
@@ -30,6 +32,12 @@ public class ShellViewModel : ObservableRecipient
     {
         get => _selected;
         set => SetProperty(ref _selected, value);
+    }
+
+    public InfoBarModel ShellInfoBarModel
+    {
+        get => _shellInfoBarModel;
+        set => SetProperty(ref _shellInfoBarModel, value);
     }
 
     public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, ILocalSettingsService localSettingsService)

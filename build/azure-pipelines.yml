@@ -39,7 +39,7 @@ resources:
 stages:
 - stage: SourceAnalysis
   # This stage is expected to run in parallel with BuildWindowsAppSDK-Stages.
-  dependsOn: ''
+  dependsOn: []
   jobs:
   - job: SDLSourcesScanning
     steps:
@@ -95,7 +95,16 @@ stages:
         minRiskLevel: 2
         onlyInputs: false
 
+- stage: SyncMirror
+  dependsOn: []
+  condition: or(eq('$(BuildingBranch)', 'staging'), eq('$(BuildingBranch)', 'release'))
+  jobs:
+  - template: SyncMirroredRepository.yml
+    parameters:
+      SourceToTargetBranch: "$(BuildingBranch)"
+
 - stage: Build_SDK
+  condition: not(failed('SyncMirror'))
   jobs:
   - job: Build_SDK
     steps:
@@ -127,7 +136,7 @@ stages:
         SymbolsProduct: DevHomeSDK
 
 - stage: Build_DevHome
-  dependsOn: Build_SDK
+  condition: not(failed('Build_SDK'))
   variables:
     SDKVersion: $[stageDependencies.Build_SDK.Build_SDK.outputs['BuildSDKCommand.SDKVersion']]
   jobs:
@@ -268,7 +277,7 @@ stages:
             SymbolsProduct: DevHome
 
 - stage: Build_MsixBundle
-  dependsOn: Build_DevHome
+  condition: not(failed('Build_DevHome'))
   jobs:
   - job: Build_MsixBundles
     steps:
@@ -332,3 +341,34 @@ stages:
           inputs:
             artifactName: MsixBundle_${{ configuration }}
             targetPath: AppxBundles\${{ configuration }}
+
+- stage: Store_Publish
+  condition: and(not(failed('SourceAnalysis')), not(failed('Build_MsixBundle')))
+  jobs:
+  - job: Store_Publish
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: MsixBundle_Release
+        targetPath: StorePublish
+
+    - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
+      displayName: 'Publish Staging build to store - NEEDS TO BE CHANGED TO CANARY STORE ENTRY WHEN AVAILABLE'
+      condition: eq('$(BuildingBranch)', 'staging')
+      inputs:
+        serviceEndpoint: 'DevHome StoreBroker'
+        appId: 9N8MHTPHNGVV
+        sourceFolder: 'StorePublish'
+        contents: '*.msixbundle'
+        force: true
+
+    - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
+      displayName: 'Publish Release build to store'
+      condition: eq('$(BuildingBranch)', 'release')
+      inputs:
+        serviceEndpoint: 'DevHome StoreBroker'
+        appId: 9N8MHTPHNGVV
+        sourceFolder: 'StorePublish'
+        contents: '*.msixbundle'
+        force: true

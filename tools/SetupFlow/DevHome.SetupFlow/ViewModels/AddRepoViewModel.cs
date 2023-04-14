@@ -300,13 +300,14 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Adds a repository from the URL page.
+    /// Adds a repository from the URL page. Steps to determine what repoProvider to use.
+    /// 1. All providers are asked "Can you parse this into a URL you understand."  If yes, that provider to clone the repo.
+    /// 2. If no providers can parse the URL a fall back "GitProvider" is used that uses libgit2sharp to clone the repo.
     /// </summary>
     /// <param name="cloneLocation">The location to clone the repo to</param>
     public void AddRepositoryViaUri(string url, string cloneLocation)
     {
-        // Try to parse repo from Uri
-        // null means no providers were able to parse the Uri.
+        // if the url isn't valid don't bother finding a provider.
         Uri uriToParse;
         if (!Uri.TryCreate(url, UriKind.Absolute, out uriToParse))
         {
@@ -322,10 +323,29 @@ public partial class AddRepoViewModel : ObservableObject
         var repository = providerNameAndRepo.Item2;
         var developerId = new DeveloperId(repository.OwningAccountName, Url);
         var cloningInformation = new CloningInformation();
-        cloningInformation.ProviderName = providerNameAndRepo.Item1;
-        cloningInformation.OwningAccount = developerId;
-        cloningInformation.RepositoryToClone = repository;
-        cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+        var providerNameAndRepo = _providers.ParseRepositoryFromUri(uriToParse);
+        if (providerNameAndRepo.Item2 != null)
+        {
+            // a provider parsed the Url and returned a valid IRepository
+            var repository = providerNameAndRepo.Item2;
+            var developerId = new DeveloperId(repository.OwningAccountName, string.Empty, repository.OwningAccountName, Url);
+            cloningInformation.ProviderName = providerNameAndRepo.Item1;
+            cloningInformation.OwningAccount = developerId;
+            cloningInformation.RepositoryToClone = repository;
+            cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+        }
+        else
+        {
+            // no providers can parse the Url.
+            // Fall back to a git Url.
+            cloningInformation.ProviderName = "git";
+
+            // Because the user is cloning via URL the developer account is unknown.
+            var gitDeveloperId = new DeveloperId("Unknown", string.Empty, "FromGitUrl", Url);
+            cloningInformation.OwningAccount = gitDeveloperId;
+            cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
+            cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+        }
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
         EverythingToClone.Add(cloningInformation);
