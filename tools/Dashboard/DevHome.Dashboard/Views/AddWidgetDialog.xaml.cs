@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
+using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Dispatching;
@@ -13,10 +14,12 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Widgets.Hosts;
+using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
 public sealed partial class AddWidgetDialog : ContentDialog
 {
+    private static WindowEx _mainWindow;
     private readonly WidgetHost _widgetHost;
     private readonly WidgetCatalog _widgetCatalog;
     private Widget _currentWidget;
@@ -40,6 +43,10 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         // Strange behavior: setting the requested theme in the constructor isn't enough, so do it here.
         RequestedTheme = theme;
+
+        // Get the application root window so we know when it has closed.
+        _mainWindow = Application.Current.GetService<WindowEx>();
+        _mainWindow.Closed += OnMainWindowClosed;
 
         FillAvailableWidgets();
         SelectFirstWidgetByDefault();
@@ -230,6 +237,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
         await ClearCurrentWidget();
 
         this.Hide();
+    }
+
+    private async void OnMainWindowClosed(object sender, WindowEventArgs args)
+    {
+        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Window Closed, delete partially created widget");
+        await ClearCurrentWidget();
     }
 
     private async Task ClearCurrentWidget()
