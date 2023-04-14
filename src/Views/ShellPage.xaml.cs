@@ -73,6 +73,14 @@ public sealed partial class ShellPage : Page
             Right = AppTitleBar.Margin.Right,
             Bottom = AppTitleBar.Margin.Bottom,
         };
+
+        ShellInfoBar.Margin = new Thickness()
+        {
+            Left = ShellInfoBar.Margin.Left,
+            Top = sender.DisplayMode == NavigationViewDisplayMode.Minimal ? 50 : 5,
+            Right = ShellInfoBar.Margin.Right,
+            Bottom = ShellInfoBar.Margin.Bottom,
+        };
     }
 
     private static KeyboardAccelerator BuildKeyboardAccelerator(VirtualKey key, VirtualKeyModifiers? modifiers = null)
