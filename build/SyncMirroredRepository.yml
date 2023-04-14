@@ -19,5 +19,5 @@ jobs:
   - template: SyncMirror-Steps.yml
     parameters:
       SourceRepository: "https://$(GitHubPAT)@github.com/microsoft/DevHome.git"
-      TargetBranch: $(SourceToTargetBranch)
-      SourceBranch: $(SourceToTargetBranch)
+      TargetBranch: "${{ parameters.SourceToTargetBranch }}"
+      SourceBranch: "${{ parameters.SourceToTargetBranch }}"
