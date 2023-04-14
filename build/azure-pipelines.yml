@@ -104,7 +104,7 @@ stages:
       SourceToTargetBranch: "$(BuildingBranch)"
 
 - stage: Build_SDK
-  dependsOn: SyncMirror
+  condition: not(failed('SyncMirror'))
   jobs:
   - job: Build_SDK
     steps:
