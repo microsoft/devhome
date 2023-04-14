@@ -314,21 +314,13 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        var providerNameAndRepo = _providers.ParseRepositoryFromUri(uriToParse);
-        if (providerNameAndRepo.Item2 == null)
-        {
-            return;
-        }
-
-        var repository = providerNameAndRepo.Item2;
-        var developerId = new DeveloperId(repository.OwningAccountName, Url);
         var cloningInformation = new CloningInformation();
         var providerNameAndRepo = _providers.ParseRepositoryFromUri(uriToParse);
         if (providerNameAndRepo.Item2 != null)
         {
             // a provider parsed the Url and returned a valid IRepository
             var repository = providerNameAndRepo.Item2;
-            var developerId = new DeveloperId(repository.OwningAccountName, string.Empty, repository.OwningAccountName, Url);
+            var developerId = new DeveloperId(repository.OwningAccountName, Url);
             cloningInformation.ProviderName = providerNameAndRepo.Item1;
             cloningInformation.OwningAccount = developerId;
             cloningInformation.RepositoryToClone = repository;
