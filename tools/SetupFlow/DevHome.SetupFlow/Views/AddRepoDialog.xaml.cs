@@ -99,13 +99,6 @@ internal partial class AddRepoDialog
 
     private void AddViaUrlToggleButton_Click(object sender, RoutedEventArgs e)
     {
-        // If the user clicks the URL button while on the URL tab
-        // leave button checked and return.
-        if (AddRepoViewModel.IsUrlAccountButtonChecked.HasValue && AddRepoViewModel.IsUrlAccountButtonChecked.Value)
-        {
-            return;
-        }
-
         RepositoryProviderComboBox.SelectedIndex = -1;
         AddRepoViewModel.ChangeToUrlPage();
         FolderPickerViewModel.ShowFolderPicker();
