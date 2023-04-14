@@ -66,6 +66,7 @@ public partial class App : Application, IApp
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IAccountsService, AccountsService>();
             services.AddSingleton<ILogger>(LoggerFactory.Get<ILogger>());
+            services.AddSingleton<IStringResource, StringResource>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();

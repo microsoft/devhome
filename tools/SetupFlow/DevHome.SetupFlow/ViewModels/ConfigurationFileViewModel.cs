@@ -86,7 +86,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
         // Create and configure file picker
         Log.Logger?.ReportInfo(Log.Component.Configuration, "Launching file picker to select configurationf file");
-        var file = await mainWindow.OpenFilePickerAsync(new () { ("YAML", "*.yaml"), ("YAML", "*.yml") });
+        var file = await mainWindow.OpenFilePickerAsync(new List<string> { "*.yaml", "*.yml" });
 
         // Check if a file was selected
         if (file == null)

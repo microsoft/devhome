@@ -3,11 +3,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using CommunityToolkit.WinUI;
 using DevHome.Common.Helpers;
+using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -82,7 +86,7 @@ public static class WindowExExtensions
     /// <param name="window">Target window</param>
     /// <param name="filters">List of filter name and extension</param>
     /// <returns>Storage file or <c>null</c> if no file was selected</returns>
-    public static async Task<StorageFile?> OpenFilePickerAsync(this WindowEx window, List<(string name, string extension)> filters)
+    public static async Task<StorageFile?> OpenFilePickerAsync(this WindowEx window, List<string>? filters = null)
     {
         try
         {
@@ -102,7 +106,6 @@ public static class WindowExExtensions
             // Generator (CsWin32) to call the Win32 picking APIs instead."
             unsafe
             {
-                // Retrieve the window handle (HWND) of the main WinUI 3 window.
                 var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
 
                 var hr = PInvoke.CoCreateInstance<IFileOpenDialog>(
@@ -116,32 +119,40 @@ public static class WindowExExtensions
                     Marshal.ThrowExceptionForHR(hr);
                 }
 
+                // Set filters (e.g. "*.yaml", "*.yml", etc...)
                 var extensions = new List<COMDLG_FILTERSPEC>();
-                if (filters != null && filters.Count > 0)
+                filters ??= new ();
+                foreach (var filter in filters)
                 {
-                    foreach (var filter in filters)
-                    {
-                        COMDLG_FILTERSPEC extension;
-
-                        extension.pszName = (char*)Marshal.StringToHGlobalUni(filter.name);
-                        extension.pszSpec = (char*)Marshal.StringToHGlobalUni(filter.extension);
-                        extensions.Add(extension);
-                    }
+                    COMDLG_FILTERSPEC extension;
+                    extension.pszName = (char*)Marshal.StringToHGlobalUni(string.Empty);
+                    extension.pszSpec = (char*)Marshal.StringToHGlobalUni(filter);
+                    extensions.Add(extension);
                 }
 
+                // Generate last filter entry
+                var allFilestString = Application.Current.GetService<IStringResource>().GetLocalized("AllFiles");
+                var allTypes = filters.Any() ? string.Join(";", filters) : "*.*";
+                COMDLG_FILTERSPEC allExtension;
+                allExtension.pszName = (char*)Marshal.StringToHGlobalUni(allFilestString);
+                allExtension.pszSpec = (char*)Marshal.StringToHGlobalUni(allTypes);
+                extensions.Add(allExtension);
+
                 fsd.SetFileTypes(extensions.ToArray());
+
                 fsd.Show(new HWND(hWnd));
                 fsd.GetResult(out var ppsi);
 
-                PWSTR pFilename;
-                ppsi.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, &pFilename);
-                fileName = new string(pFilename);
+                PWSTR pFileName;
+                ppsi.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, &pFileName);
+                fileName = new string(pFileName);
             }
 
             return await StorageFile.GetFileFromPathAsync(fileName);
         }
         catch
         {
+            // Return null if canceled or an error occurred
             return null;
         }
     }
