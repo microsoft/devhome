@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using Windows.Media.Streaming.Adaptive;
+
 namespace DevHome.SetupFlow.Services;
 
 /// <summary>
@@ -110,4 +112,6 @@ public static class StringResourceKey
     // Repo tool
     public static readonly string RepoAccountPagePrimaryButtonText = nameof(RepoAccountPagePrimaryButtonText);
     public static readonly string RepoEverythingElsePrimaryButtonText = nameof(RepoEverythingElsePrimaryButtonText);
+    public static readonly string RepoPageEditClonePathAutomationProperties = nameof(RepoPageEditClonePathAutomationProperties);
+    public static readonly string RepoPageRemoveRepoAutomationProperties = nameof(RepoPageRemoveRepoAutomationProperties);
 }
