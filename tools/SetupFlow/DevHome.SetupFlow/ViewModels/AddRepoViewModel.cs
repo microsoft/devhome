@@ -333,7 +333,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = "git";
 
             // Because the user is cloning via URL the developer account is unknown.
-            var gitDeveloperId = new DeveloperId("Unknown", string.Empty, "FromGitUrl", Url);
+            var gitDeveloperId = new DeveloperId("FromGitUrl", Url);
             cloningInformation.OwningAccount = gitDeveloperId;
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
