@@ -99,6 +99,13 @@ internal partial class AddRepoDialog
 
     private void AddViaUrlToggleButton_Click(object sender, RoutedEventArgs e)
     {
+        // If the user clicks the URL button while on the URL tab
+        // leave button checked and return.
+        if (AddRepoViewModel.IsUrlAccountButtonChecked.HasValue && AddRepoViewModel.IsUrlAccountButtonChecked.Value)
+        {
+            return;
+        }
+
         RepositoryProviderComboBox.SelectedIndex = -1;
         AddRepoViewModel.ChangeToUrlPage();
         FolderPickerViewModel.ShowFolderPicker();
@@ -151,14 +158,22 @@ internal partial class AddRepoDialog
     /// diffrent account.
     /// </summary>
     /// <remarks>
-    /// Fired when a use changes their account on a provider.
+    /// Fired when a user changes their account on a provider.
     /// </remarks>
     private void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        // Specific provider has started.
-        var loginId = (string)AccountsComboBox.SelectedValue;
-        var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-        AddRepoViewModel.GetRepositories(providerName, loginId);
+        // This gets fired when events are removed from the account combo box.
+        // When the provider combox is changed all accounts are removed from the account combo box
+        // and new accounts are added. This method fires twice.
+        // Once to remove all accounts and once to add all logged in accounts.
+        // GetRepositories sets the repositories list view.
+        if (e.AddedItems.Count > 0)
+        {
+            // Specific provider has started.
+            var loginId = (string)AccountsComboBox.SelectedValue;
+            var providerName = (string)RepositoryProviderComboBox.SelectedValue;
+            AddRepoViewModel.GetRepositories(providerName, loginId);
+        }
     }
 
     /// <summary>
@@ -199,6 +214,7 @@ internal partial class AddRepoDialog
                     AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
                 }
 
+                PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
                 IsPrimaryButtonEnabled = false;
             }
         }

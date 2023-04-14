@@ -149,8 +149,6 @@ public partial class AddRepoViewModel : ObservableObject
         ChangeToUrlPage();
 
         // override changes ChangeToUrlPage to correctly set the state.
-        IsUrlAccountButtonChecked = true;
-        IsAccountToggleButtonChecked = false;
         ShouldPrimaryButtonBeEnabled = false;
         ShowErrorTextBox = Visibility.Collapsed;
         EverythingToClone = new ();
