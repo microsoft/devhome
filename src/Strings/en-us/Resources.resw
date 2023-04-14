@@ -127,7 +127,7 @@
   </data>
   <data name="Feedback.Content" xml:space="preserve">
     <value>Feedback</value>
-  </data>  
+  </data>
   <data name="Feedback_OpenSource.Text" xml:space="preserve">
     <value>Dev Home follows the Microsoft Open Source Code of Conduct. </value>
     <comment>Dev Home abides by Microsoft Open Source guidance</comment>
@@ -415,5 +415,8 @@
   </data>
   <data name="InitializationPage_Title.Text" xml:space="preserve">
     <value>Dev Home is getting things ready for you...</value>
+  </data>
+  <data name="AccountLoginUI_DialogTitle_Text" xml:space="preserve">
+    <value>Connect your account</value>
   </data>
 </root>

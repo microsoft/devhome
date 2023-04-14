@@ -55,8 +55,9 @@ public partial class AccountsProviderViewModel : ObservableObject
             loginUIContentDialog.Hide();
         };
 
+        var resourceLoader = new Windows.ApplicationModel.Resources.ResourceLoader();
         TextBlock title = new TextBlock();
-        title.Text = "Connect your account";
+        title.Text = resourceLoader.GetString("AccountLoginUI_DialogTitle_Text");
         title.HorizontalAlignment = HorizontalAlignment.Left;
         title.VerticalAlignment = VerticalAlignment.Top;
         title.FontSize = 22;
