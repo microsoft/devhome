@@ -30,14 +30,14 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid MaxWidth="924">
+    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!-- Header - Title and Add Widget button -->
-        <Grid Grid.Row="0" Margin="0,10,0,22">
+        <Grid Grid.Row="0" Margin="0,0,0,22">
             <TextBlock x:Uid="DashboardPage_Title" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Left"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="AddWidgetButton" x:Uid="AddWidget" HorizontalAlignment="Right" Click="AddWidgetButton_Click"/>

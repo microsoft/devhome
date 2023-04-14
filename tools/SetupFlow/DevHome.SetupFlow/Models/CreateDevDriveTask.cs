@@ -10,9 +10,8 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
-using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
@@ -28,7 +27,6 @@ internal class CreateDevDriveTask : ISetupTask
     private readonly ActionCenterMessages _actionCenterMessages = new ();
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IHost _host;
-    private readonly ILogger _logger;
 
     public bool RequiresAdmin => true;
 
@@ -41,7 +39,7 @@ internal class CreateDevDriveTask : ISetupTask
         get; set;
     }
 
-    public CreateDevDriveTask(IDevDrive devDrive, IHost host, ILogger logger, ISetupFlowStringResource stringResource)
+    public CreateDevDriveTask(IDevDrive devDrive, IHost host, ISetupFlowStringResource stringResource)
     {
         DevDrive = devDrive;
         _stringResource = stringResource;
@@ -53,7 +51,6 @@ internal class CreateDevDriveTask : ISetupTask
             NeedsReboot = _stringResource.GetLocalized(StringResourceKey.DevDriveRestart),
         };
         _host = host;
-        _logger = logger;
     }
 
     public ActionCenterMessages GetErrorMessages() => _actionCenterMessages;
@@ -101,7 +98,7 @@ internal class CreateDevDriveTask : ISetupTask
                 if (msgLength == 0)
                 {
                     // if formatting the error code into a message fails, then log this and just return the error code.
-                    Log.Logger?.ReportError(nameof(CreateDevDriveTask), $"Failed to format error code.  0x{errorCode:X}");
+                    Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to format error code.  0x{errorCode:X}");
                     return $"(0x{errorCode:X})";
                 }
 
@@ -143,7 +140,7 @@ internal class CreateDevDriveTask : ISetupTask
                 if (result != 0)
                 {
                     _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, GetLocalizedErrorMsg(result));
-                    Log.Logger?.ReportError(nameof(CreateDevDriveTask), $"Failed to create Dev Drive, Error code. 0x{result:X}");
+                    Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to create Dev Drive, Error code. 0x{result:X}");
                     return TaskFinishedState.Failure;
                 }
 
@@ -151,7 +148,7 @@ internal class CreateDevDriveTask : ISetupTask
             }
             catch (Exception ex)
             {
-                Log.Logger?.ReportError(nameof(CreateDevDriveTask), $"Failed to create Dev Drive. Due to Exception ErrorCode: 0x{ex.HResult:X}, Msg: {ex.Message}");
+                Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to create Dev Drive. Due to Exception ErrorCode: 0x{ex.HResult:X}, Msg: {ex.Message}");
                 _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, GetLocalizedErrorMsg(ex.HResult));
                 return TaskFinishedState.Failure;
             }

@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.Common.Elevation;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -21,7 +21,6 @@ namespace DevHome.SetupFlow.ViewModels;
 public partial class ReviewViewModel : SetupPageViewModelBase
 {
     private readonly IHost _host;
-    private readonly SetupFlowOrchestrator _orchestrator;
 
     [ObservableProperty]
     private IList<ReviewTabViewModelBase> _reviewTabs;
@@ -57,7 +56,6 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         : base(stringResource, orchestrator)
     {
         _host = host;
-        _orchestrator = orchestrator;
 
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReviewPageTitle);
@@ -73,27 +71,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        ReviewTabs = _orchestrator.TaskGroups.Select(taskGroup => taskGroup.GetReviewTabViewModel()).ToList();
+        ReviewTabs = Orchestrator.TaskGroups.Select(taskGroup => taskGroup.GetReviewTabViewModel()).ToList();
         SelectedReviewTab = ReviewTabs.FirstOrDefault();
-        await Task.CompletedTask;
-    }
-
-    protected async override Task OnFirstNavigateFromAsync()
-    {
-        var isAdminRequired = _orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresAdmin));
-        if (isAdminRequired)
-        {
-            try
-            {
-                _orchestrator.RemoteElevatedFactory = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentFactory>();
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError($"Failed to initialize elevated process: {e}");
-                Log.Logger?.ReportInfo("Will continue with setup as best-effort");
-            }
-        }
-
         await Task.CompletedTask;
     }
 
@@ -102,6 +81,6 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     public void UpdateCanGoToNextPage()
     {
         CanGoToNextPage = HasTasksToSetUp && ReadAndAgree;
-        _orchestrator.NotifyNavigationCanExecuteChanged();
+        Orchestrator.NotifyNavigationCanExecuteChanged();
     }
 }

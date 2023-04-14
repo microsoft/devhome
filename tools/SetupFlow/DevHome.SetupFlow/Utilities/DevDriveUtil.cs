@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CommunityToolkit.Common;
+using DevHome.SetupFlow.Common.Helpers;
 using Windows.Win32;
 using Windows.Win32.UI.Shell;
 using ToolKitHelpers = CommunityToolkit.WinUI.Helpers;
@@ -71,6 +72,7 @@ public static class DevDriveUtil
             if (osVersion.Major == 10 && osVersion.Minor == 0 && osVersion.Build < 22000)
             {
                 // Win 10
+                Log.Logger?.ReportInfo(Log.Component.DevDrive, "Dev Drive feature is not available on Win10");
                 return false;
             }
 
@@ -80,6 +82,7 @@ public static class DevDriveUtil
                 return true;
             }
 
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Dev Drive feature is not available on older Win11 builds");
             return false;
         }
     }

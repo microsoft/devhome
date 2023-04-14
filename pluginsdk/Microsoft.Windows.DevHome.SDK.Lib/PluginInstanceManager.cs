@@ -109,6 +109,8 @@ internal class PluginInstanceManager<T> : IClassFactory
         switch (valueStr)
         {
             case "Microsoft.Windows.DevHome_8wekyb3d8bbwe\0":
+            case "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe\0":
+            case "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe\0":
             case "Microsoft.WindowsTerminal\0":
             case "Microsoft.WindowsTerminal_8wekyb3d8bbwe\0":
             case "WindowsTerminalDev_8wekyb3d8bbwe\0":

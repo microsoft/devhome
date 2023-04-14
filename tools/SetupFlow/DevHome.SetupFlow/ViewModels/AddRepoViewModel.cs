@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
@@ -164,6 +164,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// </remarks>
     public void GetPlugins()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed plugins with Repository and DevId providers");
         var pluginService = Application.Current.GetService<IPluginService>();
         var pluginWrappers = pluginService.GetInstalledPluginsAsync().Result;
         var plugins = pluginWrappers.Where(
@@ -177,6 +178,7 @@ public partial class AddRepoViewModel : ObservableObject
 
     public void ChangeToUrlPage()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Url page");
         ShowUrlPage = Visibility.Visible;
         ShowAccountPage = Visibility.Collapsed;
         ShowRepoPage = Visibility.Collapsed;
@@ -188,6 +190,7 @@ public partial class AddRepoViewModel : ObservableObject
 
     public void ChangeToAccountPage()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Account page");
         ShowUrlPage = Visibility.Collapsed;
         ShowAccountPage = Visibility.Visible;
         ShowRepoPage = Visibility.Collapsed;
@@ -199,6 +202,7 @@ public partial class AddRepoViewModel : ObservableObject
 
     public void ChangeToRepoPage()
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
         ShowUrlPage = Visibility.Collapsed;
         ShowAccountPage = Visibility.Collapsed;
         ShowRepoPage = Visibility.Visible;
@@ -270,9 +274,11 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="repositoriesToRemove">Repositories to remove.</param>
     public void AddOrRemoveRepository(string providerName, string accountName, IList<object> repositoriesToAdd, IList<object> repositoriesToRemove)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding and removing repositories");
         var developerId = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId() == accountName);
         foreach (string repositoryToRemove in repositoriesToRemove)
         {
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {repositoryToRemove}");
             var cloningInformation = new CloningInformation();
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
@@ -283,6 +289,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         foreach (string repositoryToAdd in repositoriesToAdd)
         {
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository {repositoryToAdd}");
             var cloningInformation = new CloningInformation();
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
@@ -293,33 +300,46 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Adds a repository from the URL page.
+    /// Adds a repository from the URL page. Steps to determine what repoProvider to use.
+    /// 1. All providers are asked "Can you parse this into a URL you understand."  If yes, that provider to clone the repo.
+    /// 2. If no providers can parse the URL a fall back "GitProvider" is used that uses libgit2sharp to clone the repo.
     /// </summary>
     /// <param name="cloneLocation">The location to clone the repo to</param>
     public void AddRepositoryViaUri(string url, string cloneLocation)
     {
-        // Try to parse repo from Uri
-        // null means no providers were able to parse the Uri.
+        // if the url isn't valid don't bother finding a provider.
         Uri uriToParse;
         if (!Uri.TryCreate(url, UriKind.Absolute, out uriToParse))
         {
             return;
         }
 
+        var cloningInformation = new CloningInformation();
         var providerNameAndRepo = _providers.ParseRepositoryFromUri(uriToParse);
-        if (providerNameAndRepo.Item2 == null)
+        if (providerNameAndRepo.Item2 != null)
         {
-            return;
+            // a provider parsed the Url and returned a valid IRepository
+            var repository = providerNameAndRepo.Item2;
+            var developerId = new DeveloperId(repository.OwningAccountName, string.Empty, repository.OwningAccountName, Url);
+            cloningInformation.ProviderName = providerNameAndRepo.Item1;
+            cloningInformation.OwningAccount = developerId;
+            cloningInformation.RepositoryToClone = repository;
+            cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+        }
+        else
+        {
+            // no providers can parse the Url.
+            // Fall back to a git Url.
+            cloningInformation.ProviderName = "git";
+
+            // Because the user is cloning via URL the developer account is unknown.
+            var gitDeveloperId = new DeveloperId("Unknown", string.Empty, "FromGitUrl", Url);
+            cloningInformation.OwningAccount = gitDeveloperId;
+            cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
+            cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
         }
 
-        var repository = providerNameAndRepo.Item2;
-        var developerId = new DeveloperId(repository.OwningAccountName, string.Empty, repository.OwningAccountName, Url);
-        var cloningInformation = new CloningInformation();
-        cloningInformation.ProviderName = providerNameAndRepo.Item1;
-        cloningInformation.OwningAccount = developerId;
-        cloningInformation.RepositoryToClone = repository;
-        cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
         EverythingToClone.Add(cloningInformation);
     }
 
@@ -343,6 +363,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="cloneLocation">The location to clone all repositories to.</param>
     public void SetCloneLocation(string cloneLocation)
     {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Setting the clone location for all repositories to {cloneLocation}");
         foreach (var cloningInformation in EverythingToClone)
         {
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
