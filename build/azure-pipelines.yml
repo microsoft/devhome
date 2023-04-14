@@ -37,6 +37,18 @@ resources:
     ref: refs/heads/main
 
 stages:
+- stage: TestVariables
+  condition: eq(variables['BuildingBranch'], 'main')
+  jobs:
+  - job: TestConditional
+    steps:
+    - task: powershell@2
+      displayName: BuildingBranch
+      inputs:
+        targetType: 'inline'
+        script: |
+          Write-Host "BuildingBranch: $(BuildingBranch)"
+
 - stage: SourceAnalysis
   # This stage is expected to run in parallel with BuildWindowsAppSDK-Stages.
   dependsOn: []
@@ -97,7 +109,7 @@ stages:
 
 - stage: SyncMirror
   dependsOn: []
-  condition: or(eq('$(variables.BuildingBranch)', 'staging'), eq('$(variables.BuildingBranch)', 'release'))
+  condition: or(eq(variables['BuildingBranch'], 'staging'), eq(variables['BuildingBranch'], 'release'))
   jobs:
   - template: SyncMirroredRepository.yml
     parameters:
@@ -355,7 +367,7 @@ stages:
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Staging build to store - NEEDS TO BE CHANGED TO CANARY STORE ENTRY WHEN AVAILABLE'
-      condition: eq('$(variables.BuildingBranch)', 'staging')
+      condition: eq(variables['BuildingBranch'], 'staging')
       inputs:
         serviceEndpoint: 'DevHome StoreBroker'
         appId: 9N8MHTPHNGVV
@@ -365,7 +377,7 @@ stages:
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Release build to store'
-      condition: eq('$(variables.BuildingBranch)', 'release')
+      condition: eq(variables['BuildingBranch'], 'release')
       inputs:
         serviceEndpoint: 'DevHome StoreBroker'
         appId: 9N8MHTPHNGVV
