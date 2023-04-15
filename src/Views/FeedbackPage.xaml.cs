@@ -171,12 +171,8 @@ public sealed partial class FeedbackPage : Page
     {
         try
         {
-            ManagementObjectSearcher mos = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
-
-            var collection = await Task.Run(() => mos.Get());
-
-            var name = (string)collection.Cast<System.Management.ManagementBaseObject>().First()["Name"];
-
+            using var mos = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
+            var name = (string)await Task.Run(() => mos.Get().Cast<ManagementBaseObject>().First()["Name"]);
             return "CPU: " + name;
         }
         catch (Exception)

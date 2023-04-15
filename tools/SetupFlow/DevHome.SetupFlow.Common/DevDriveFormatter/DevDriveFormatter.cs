@@ -3,7 +3,7 @@
 
 using System.Linq;
 using System.Management;
-using DevHome.Logging;
+using DevHome.SetupFlow.Common.Helpers;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 
@@ -26,8 +26,7 @@ public class DevDriveFormatter
     /// <returns>An Hresult as an int that indicates whether the operation succeeded or failed</returns>
     public int FormatPartitionAsDevDrive(char curDriveLetter, string driveLabel)
     {
-        var logger = new ComponentLogger("FormatPartitionAsDevDrive", "DevDriveFormatter").Logger;
-        logger?.ReportInfo(nameof(DevDriveFormatter), $"{nameof(FormatPartitionAsDevDrive)}: Creating ManagementObjectSearcher to search for volume whose Drive letter is {curDriveLetter}:");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Creating ManagementObjectSearcher to search for volume whose Drive letter is {curDriveLetter}:");
         try
         {
             // Since at the time of this call we don't know the unique object ID of our new volume
@@ -45,14 +44,14 @@ public class DevDriveFormatter
                     && curDriveLetter == foundALetter &&
                     !string.IsNullOrEmpty(objectId))
                 {
-                    logger?.ReportInfo(nameof(DevDriveFormatter), $"Starting WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter}, using args: DeveloperVolume: true, FileSystem: ReFS, FileSystemLabel: {driveLabel}, AllocationUnitSize: {fourKb}");
+                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Starting WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter}, using args: DeveloperVolume: true, FileSystem: ReFS, FileSystemLabel: {driveLabel}, AllocationUnitSize: {fourKb}");
 
                     // Obtain in-parameters for the method
                     var inParams =
                         queryObj.GetMethodParameters("Format");
 
                     // Add the default parameters.
-                    inParams["DeveloperVolume"] = true;
+                    inParams["DevDrive"] = true;
                     inParams["FileSystem"] = "ReFS";
                     inParams["FileSystemLabel"] = driveLabel;
                     inParams["AllocationUnitSize"] = fourKb;
@@ -64,28 +63,28 @@ public class DevDriveFormatter
                     var returnValue = (uint)outParams["ReturnValue"];
                     if (returnValue == 0)
                     {
-                        logger?.ReportInfo(nameof(DevDriveFormatter), $"WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter} finished Successfully");
+                        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter} finished Successfully");
                         return 0;
                     }
 
-                    logger?.ReportError(nameof(DevDriveFormatter), $"WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter}, failed with wmi error: {returnValue}");
+                    Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter}, failed with wmi error: {returnValue}");
                     break;
                 }
 
                 var notCorrectDriveLetter = (letter is char ) ? ((char)letter).ToString() : "none";
-                logger?.ReportInfo(nameof(DevDriveFormatter), $"ManagementObjectSearcher found ObjectId: {objectId} but its Driveletter: {notCorrectDriveLetter}: is not correct, continuing search...");
+                Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"ManagementObjectSearcher found ObjectId: {objectId} but its Driveletter: {notCorrectDriveLetter}: is not correct, continuing search...");
             }
 
             // If we got here that means the returnValue was not successful. We give this a specific error but this will need need
             // to be changed. WMI can return different status and error codes based on the function. The actual returnValue will need
             // to be converted. https://learn.microsoft.com/en-us/windows/win32/wmisdk/wmi-return-codes
             var defaultError = (int)PInvoke.HRESULT_FROM_WIN32(WIN32_ERROR.ERROR_FUNCTION_FAILED);
-            logger?.ReportError(nameof(DevDriveFormatter), $"{nameof(FormatPartitionAsDevDrive)} Attempt to format drive as a Dev Drive failed default error: 0x{defaultError:X}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Attempt to format drive as a Dev Drive failed default error: 0x{defaultError:X}");
             return defaultError;
         }
         catch (ManagementException e)
         {
-            logger?.ReportError(nameof(DevDriveFormatter), $"{nameof(FormatPartitionAsDevDrive)} A management exception occurred while formating Dev Drive Error: 0x{e.HResult:X}, error msg: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"A management exception occurred while formating Dev Drive Error: 0x{e.HResult:X}, error msg: {e.Message}");
             return e.HResult;
         }
     }

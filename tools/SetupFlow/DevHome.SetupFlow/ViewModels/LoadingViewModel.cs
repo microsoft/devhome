@@ -1,20 +1,25 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+extern alias Projection;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using DevHome.SetupFlow.Common.Elevation;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Projection::DevHome.SetupFlow.ElevatedComponent;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -110,6 +115,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [RelayCommand]
     public async void RestartFailedTasks()
     {
+        Log.Logger?.ReportInfo(Log.Component.Loading, "Restarting all failed tasks");
+
         // Keep the number of successful tasks and needs attention tasks the same.
         // Change failed tasks to 0 becuase, once restarted all tasks haven't failed yet.
         TasksStarted = 0;
@@ -156,6 +163,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     private void FetchTaskInformation()
     {
+        Log.Logger?.ReportDebug(Log.Component.Loading, "Fetching task information");
         var taskIndex = 0;
         foreach (var taskGroup in Orchestrator.TaskGroups)
         {
@@ -188,6 +196,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </remarks>
     public void ChangeMessage(TaskInformation information, TaskFinishedState taskFinishedState)
     {
+        Log.Logger?.ReportDebug(Log.Component.Loading, $"Updating message for task {information.MessageToShow} with state {taskFinishedState}");
         var stringToReplace = string.Empty;
         BitmapImage statusSymbolIcon = null;
 
@@ -195,6 +204,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             if (information.TaskToExecute.RequiresReboot)
             {
+                Log.Logger?.ReportDebug(Log.Component.Loading, "Task succeeded but requires reboot; adding to action center");
                 stringToReplace = information.TaskToExecute.GetLoadingMessages().NeedsReboot;
 
                 if (_currentTheme == ElementTheme.Dark)
@@ -211,6 +221,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             }
             else
             {
+                Log.Logger?.ReportDebug(Log.Component.Loading, "Task succeeded");
                 stringToReplace = information.TaskToExecute.GetLoadingMessages().Finished;
 
                 if (_currentTheme == ElementTheme.Dark)
@@ -227,6 +238,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         }
         else if (taskFinishedState == TaskFinishedState.Failure)
         {
+            Log.Logger?.ReportDebug(Log.Component.Loading, "Task failed");
             stringToReplace = information.TaskToExecute.GetLoadingMessages().Error;
             if (_currentTheme == ElementTheme.Dark)
             {
@@ -242,6 +254,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
             if (_retryCount < MAX_RETRIES)
             {
+                Log.Logger?.ReportDebug(Log.Component.Loading, "Adding task to list for retry");
                 _failedTasks.Add(information);
             }
         }
@@ -255,6 +268,20 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     protected async override Task OnFirstNavigateToAsync()
     {
+        var isAdminRequired = Orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresAdmin));
+        if (isAdminRequired)
+        {
+            try
+            {
+                Orchestrator.RemoteElevatedFactory = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentFactory>();
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process: {e}");
+                Log.Logger?.ReportInfo(Log.Component.Loading, "Will continue with setup as best-effort");
+            }
+        }
+
         FetchTaskInformation();
 
         await StartAllTasks(_tasksToRun);
@@ -267,6 +294,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// <returns>An awaitable task</returns>
     private async Task StartAllTasks(ObservableCollection<TaskInformation> tasks)
     {
+        Log.Logger?.ReportInfo(Log.Component.Loading, "Starting all tasks");
         var window = Application.Current.GetService<WindowEx>();
         await Task.Run(async () =>
         {
@@ -311,10 +339,13 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             // Move to the next screen if either
             // no tasks failed, or
             // user tried re-running them once.
+            Log.Logger?.ReportInfo(Log.Component.Loading, "All tasks succeeded or max number of retries reached; moving to next page");
             ExecutionFinished.Invoke(null, null);
         }
         else
         {
+            Log.Logger?.ReportInfo(Log.Component.Loading, "Some tasks failed; showing retry button");
+
             // At this point some tasks ran into an error.
             // Give the user the option to re try them all or move to the next screen.
             ShowRetryButton = Visibility.Visible;
@@ -342,6 +373,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             TaskFinishedState taskFinishedState;
             if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedFactory != null)
             {
+                Log.Logger?.ReportInfo(Log.Component.Loading, "Starting task as admin");
                 taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedFactory.Value);
             }
             else

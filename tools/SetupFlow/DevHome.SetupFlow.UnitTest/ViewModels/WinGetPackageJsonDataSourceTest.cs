@@ -72,13 +72,14 @@ public class WinGetPackageJsonDataSourceTest : BaseSetupFlowTest
     {
         // Prepare expected package
         var expectedPackages = new List<IWinGetPackage>();
-        ConfigureWinGetCatalogPackages(expectedPackages);
+        var catalog = ConfigureWinGetCatalogPackages(expectedPackages);
 
         // Act
         var loadedPackages = LoadCatalogsFromJsonDataSource("AppManagementPackages_Empty.json");
 
         // Assert
         Assert.AreEqual(0, loadedPackages.Count);
+        catalog.Verify(c => c.GetPackagesAsync(It.IsAny<HashSet<string>>()), Times.Never());
     }
 
     [TestMethod]
@@ -115,11 +116,13 @@ public class WinGetPackageJsonDataSourceTest : BaseSetupFlowTest
     /// Configure winget catalog packages
     /// </summary>
     /// <param name="expectedPackages">Expected packages</param>
-    private void ConfigureWinGetCatalogPackages(IList<IWinGetPackage> expectedPackages)
+    /// <returns>Mock winget catalog</returns>
+    private Mock<IWinGetCatalog> ConfigureWinGetCatalogPackages(IList<IWinGetPackage> expectedPackages)
     {
         var catalog = new Mock<IWinGetCatalog>();
         catalog.Setup(c => c.GetPackagesAsync(It.IsAny<HashSet<string>>())).ReturnsAsync(expectedPackages);
         WindowsPackageManager!.Setup(wpm => wpm.WinGetCatalog).Returns(catalog.Object);
+        return catalog;
     }
 
     /// <summary>

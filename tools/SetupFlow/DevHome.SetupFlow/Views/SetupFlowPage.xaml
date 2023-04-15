@@ -22,7 +22,7 @@
         <converters:BoolToVisibilityConverter x:Key="NegateBoolToVisibility" TrueValue="Collapsed" FalseValue="Visible" />
     </Page.Resources>
 
-    <Grid MaxWidth="924">
+    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />

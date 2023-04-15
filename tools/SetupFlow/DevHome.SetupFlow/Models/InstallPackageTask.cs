@@ -6,9 +6,9 @@ extern alias Projection;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
-using DevHome.SetupFlow.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.Management.Deployment;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
@@ -32,10 +32,9 @@ public class InstallPackageTask : ISetupTask
 
     public bool IsFromMSStore => string.Equals(_package.CatalogId, MSStoreCatalogId, StringComparison.Ordinal);
 
-    // As we don't have this information available for each package before
-    // installation in the WinGet COM API, simply assume that any package
-    // installation may need a reboot by default.
-    public bool RequiresReboot { get; set; } = true;
+    // We don't have this information available for each package before
+    // installation in the WinGet COM API, but we do get it after installation.
+    public bool RequiresReboot { get; set; }
 
     // May potentially be moved to a central list in the future.
     public bool WasInstallSuccessful
@@ -94,7 +93,7 @@ public class InstallPackageTask : ISetupTask
         {
             try
             {
-                Log.Logger?.ReportInfo(nameof(InstallPackageTask), $"Starting installation of package {_package.Id}");
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
                 var installResult = await _wpm.InstallPackageAsync(_package);
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
@@ -104,12 +103,12 @@ public class InstallPackageTask : ISetupTask
             {
                 // TODO: Add telemetry for install failures
                 _installPackageException = e;
-                Log.Logger?.ReportError(nameof(InstallPackageTask), $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
                 return TaskFinishedState.Failure;
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(nameof(InstallPackageTask), $"Exception thrown while installing package: {e.Message}");
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package: {e.Message}");
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
@@ -119,11 +118,12 @@ public class InstallPackageTask : ISetupTask
     {
         return Task.Run(async () =>
         {
-            Log.Logger?.ReportInfo(nameof(InstallPackageTask), $"Starting installation with elevation of package {_package.Id}");
-            var packageInstaller = elevatedComponentFactory.CreatePackageInstaller();
-            var installResult = await packageInstaller.InstallPackage(_package.Id, _package.CatalogName);
-            WasInstallSuccessful = installResult.InstallSucceeded;
-            return installResult.InstallSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
+            var elevatedTask = elevatedComponentFactory.CreateElevatedInstallTask();
+            var elevatedResult = await elevatedTask.InstallPackage(_package.Id, _package.CatalogName);
+            WasInstallSuccessful = elevatedResult.TaskSucceeded;
+            RequiresReboot = elevatedResult.RebootRequired;
+            return elevatedResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }
 

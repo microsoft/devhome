@@ -46,8 +46,8 @@
   },
   "containerStyles": {
     "default": {
-      "backgroundColor": "#201e23",
-      "borderColor": "#201e23",
+      "backgroundColor": "#06FFFFFF",
+      "borderColor": "#06FFFFFF",
       "foregroundColors": {
         "default": {
           "default": "#FFFFFF",
@@ -72,8 +72,8 @@
       }
     },
     "emphasis": {
-      "backgroundColor": "#2b292e",
-      "borderColor": "#2b292e",
+      "backgroundColor": "#09FFFFFF",
+      "borderColor": "#09FFFFFF",
       "foregroundColors": {
         "default": {
           "default": "#FFFFFF",
