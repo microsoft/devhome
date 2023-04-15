@@ -320,7 +320,7 @@ public partial class AddRepoViewModel : ObservableObject
         {
             // a provider parsed the Url and returned a valid IRepository
             var repository = providerNameAndRepo.Item2;
-            var developerId = new DeveloperId(repository.OwningAccountName, string.Empty, repository.OwningAccountName, Url);
+            var developerId = new DeveloperId(repository.OwningAccountName, Url);
             cloningInformation.ProviderName = providerNameAndRepo.Item1;
             cloningInformation.OwningAccount = developerId;
             cloningInformation.RepositoryToClone = repository;
@@ -333,7 +333,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = "git";
 
             // Because the user is cloning via URL the developer account is unknown.
-            var gitDeveloperId = new DeveloperId("Unknown", string.Empty, "FromGitUrl", Url);
+            var gitDeveloperId = new DeveloperId("FromGitUrl", Url);
             cloningInformation.OwningAccount = gitDeveloperId;
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);

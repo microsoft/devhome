@@ -56,8 +56,9 @@
                     <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right">
                         <Button.Flyout>
                             <Flyout Placement="Bottom">
-                                <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
-                    HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
+                                <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}"
+                                               ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
+                                               HorizontalAlignment="Stretch" VerticalAlignment="Center">
                                 </ItemsRepeater>
                                 <Flyout.FlyoutPresenterStyle>
                                     <Style TargetType="FlyoutPresenter">
@@ -73,8 +74,9 @@
             </StackPanel>
                 
             <StackPanel>
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}" ItemTemplate="{StaticResource AccountsProviderViewTemplate}"
-                        HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible">
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}"
+                               ItemTemplate="{StaticResource AccountsProviderViewTemplate}"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Center">
                 </ItemsRepeater>
             </StackPanel>
         </StackPanel>
