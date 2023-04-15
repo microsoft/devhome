@@ -104,7 +104,8 @@ stages:
       SourceToTargetBranch: "$(BuildingBranch)"
 
 - stage: Build_SDK
-  condition: not(failed('SyncMirror'))
+  dependsOn: SyncMirror
+  condition: in(dependencies.SyncMirror.Result, 'Succeeded', 'Skipped')
   jobs:
   - job: Build_SDK
     steps:
@@ -136,7 +137,13 @@ stages:
         SymbolsProduct: DevHomeSDK
 
 - stage: Build_DevHome
-  condition: succeeded('Build_SDK')
+  dependsOn: Build_SDK
+  condition: |
+    and
+    (
+      in(dependencies.SyncMirror.result, 'Succeeded', 'Skipped'),
+      in(dependencies.Build_SDK.result, 'Succeeded')
+    )
   variables:
     SDKVersion: $[stageDependencies.Build_SDK.Build_SDK.outputs['BuildSDKCommand.SDKVersion']]
   jobs:
@@ -277,7 +284,13 @@ stages:
             SymbolsProduct: DevHome
 
 - stage: Build_MsixBundle
-  condition: succeeded('Build_DevHome')
+  dependsOn: Build_DevHome
+  condition: |
+    and
+    (
+      in(dependencies.SyncMirror.result, 'Succeeded', 'Skipped'),
+      in(dependencies.Build_DevHome.result, 'Succeeded')
+    )
   jobs:
   - job: Build_MsixBundles
     steps:
@@ -343,7 +356,16 @@ stages:
             targetPath: AppxBundles\${{ configuration }}
 
 - stage: Store_Publish
-  condition: and(succeeded('SourceAnalysis'), succeeded('Build_MsixBundle'))
+  dependsOn:
+  - SourceAnalysis
+  - Build_MsixBundle
+  condition: |
+    and
+    (
+      in(dependencies.SyncMirror.result, 'Succeeded', 'Skipped'),
+      in(dependencies.Build_MsixBundle.result, 'Succeeded'),
+      in(dependencies.SourceAnalysis.result, 'Succeeded')
+    )
   jobs:
   - job: Store_Publish
     steps:
