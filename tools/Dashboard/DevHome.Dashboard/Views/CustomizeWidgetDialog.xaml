@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Style="{StaticResource DefaultContentDialogStyle}"
-    Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
+    Background="{StaticResource NavigationViewContentBackground}">
 
     <!-- ContentDialog Width and Height are not properly hooked up and must be set this way -->
     <ContentDialog.Resources>
