@@ -66,7 +66,7 @@ public partial class AddRepoViewModel : ObservableObject
     private ObservableCollection<string> _accounts = new ();
 
     /// <summary>
-    /// All the repositories for a specific account.
+    /// All the repositories for a specific account and the symbol to show
     /// </summary>
     [ObservableProperty]
     private ObservableCollection<string> _repositories = new ();

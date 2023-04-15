@@ -15,4 +15,5 @@
     <Style x:Key="CardGridSecondaryStyle" TargetType="Grid" BasedOn="{StaticResource CardGridStyle}">
         <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorSecondary}" />
     </Style>
+    <FontFamily x:Key="DevHomeFluentIcons">/Assets/DevHomeFluentIcons.ttf#DevHome Fluent Icons</FontFamily>
 </ResourceDictionary>
