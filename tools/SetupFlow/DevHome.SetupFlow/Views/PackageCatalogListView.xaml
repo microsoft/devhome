@@ -9,14 +9,14 @@
     mc:Ignorable="d">
     <StackPanel>
         <!-- Package catalogs -->
-        <ItemsRepeater ItemsSource="{x:Bind ViewModel.PackageCatalogs, Mode=OneWay}">
+        <ItemsRepeater
+            ElementPrepared="ItemsRepeater_ElementPrepared"
+            ItemsSource="{x:Bind ViewModel.PackageCatalogs, Mode=OneWay}">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:PackageCatalogViewModel">
-                    <Border
-                        Padding="0 0 0 10"
-                        BorderThickness="0 0 0 1"
-                        BorderBrush="{ThemeResource ControlStrokeColorDefault}">
-                        <views:PackageCatalogView  Catalog="{x:Bind Mode=OneWay}" GroupSize="6"/>
+                    <!-- Border configuration is applied in code-behind -->
+                    <Border>
+                        <views:PackageCatalogView Catalog="{x:Bind Mode=OneWay}" GroupSize="6"/>
                     </Border>
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
