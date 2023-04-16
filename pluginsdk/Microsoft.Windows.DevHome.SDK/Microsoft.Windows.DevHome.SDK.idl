@@ -121,8 +121,6 @@ namespace Microsoft.Windows.DevHome.SDK
     interface IDeveloperId
     {
         String LoginId();
-        String DisplayName();
-        String Email();
         String Url();
     };
 
