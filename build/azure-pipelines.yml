@@ -364,7 +364,8 @@ stages:
     (
       in(dependencies.SyncMirror.result, 'Succeeded', 'Skipped'),
       in(dependencies.Build_MsixBundle.result, 'Succeeded'),
-      in(dependencies.SourceAnalysis.result, 'Succeeded')
+      in(dependencies.SourceAnalysis.result, 'Succeeded'),
+      eq(variables['EnableStorePublishing'], 'true')
     )
   jobs:
   - job: Store_Publish
