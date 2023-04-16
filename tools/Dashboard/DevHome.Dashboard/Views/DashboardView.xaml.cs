@@ -103,13 +103,24 @@ public partial class DashboardView : ToolPage
         return true;
     }
 
+    private async Task<AdaptiveCardRenderer> GetConfigurationRendererAsync()
+    {
+        // When we render a card in an add or edit dialog, we need to have a different Hostonfig,
+        // so create a new renderer for those situations. We can't just temporarily edit the existing
+        // renderer, because a pinned widget might get re-rendered the wrong way while the dialog is open.
+        var configRenderer = new AdaptiveCardRenderer();
+        await SetHostConfigOnWidgetRenderer(configRenderer);
+        configRenderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+        return configRenderer;
+    }
+
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
         // The app uses a different host config to render widgets (adaptive cards) in light and dark themes.
-        await SetHostConfigOnWidgetRenderer();
+        await SetHostConfigOnWidgetRenderer(_renderer);
     }
 
-    private async Task SetHostConfigOnWidgetRenderer()
+    private async Task SetHostConfigOnWidgetRenderer(AdaptiveCardRenderer renderer)
     {
         var hostConfigContents = string.Empty;
         var hostConfigFileName = (ActualTheme == ElementTheme.Light) ? "HostConfigLight.json" : "HostConfigDark.json";
@@ -129,7 +140,7 @@ public partial class DashboardView : ToolPage
         {
             if (!string.IsNullOrEmpty(hostConfigContents))
             {
-                _renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+                renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
             }
             else
             {
@@ -277,7 +288,7 @@ public partial class DashboardView : ToolPage
     private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
     {
         // TODO: Ideally there would be some sort of visual loading indicator while the renderer gets set up.
-        await SetHostConfigOnWidgetRenderer();
+        await SetHostConfigOnWidgetRenderer(_renderer);
 
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
         var pinnedWidgets = _widgetHost.GetWidgets();
@@ -315,7 +326,8 @@ public partial class DashboardView : ToolPage
 
     private async void AddWidgetButton_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new AddWidgetDialog(_widgetHost, _widgetCatalog, _renderer, _dispatcher)
+        var configurationRenderer = await GetConfigurationRendererAsync();
+        var dialog = new AddWidgetDialog(_widgetHost, _widgetCatalog, configurationRenderer, _dispatcher, ActualTheme)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
@@ -482,7 +494,8 @@ public partial class DashboardView : ToolPage
         var originalSize = widgetViewModel.WidgetSize;
         var widgetDef = _widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
 
-        var dialog = new CustomizeWidgetDialog(_widgetHost, _renderer, _dispatcher, widgetDef)
+        var configurationRenderer = await GetConfigurationRendererAsync();
+        var dialog = new CustomizeWidgetDialog(_widgetHost, configurationRenderer, _dispatcher, widgetDef)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
