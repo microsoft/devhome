@@ -19,7 +19,6 @@ using WinUIEx;
 namespace DevHome.Dashboard.Views;
 public sealed partial class AddWidgetDialog : ContentDialog
 {
-    private static WindowEx _mainWindow;
     private readonly WidgetHost _widgetHost;
     private readonly WidgetCatalog _widgetCatalog;
     private Widget _currentWidget;
@@ -45,8 +44,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         RequestedTheme = theme;
 
         // Get the application root window so we know when it has closed.
-        _mainWindow = Application.Current.GetService<WindowEx>();
-        _mainWindow.Closed += OnMainWindowClosed;
+        Application.Current.GetService<WindowEx>().Closed += OnMainWindowClosed;
 
         FillAvailableWidgets();
         SelectFirstWidgetByDefault();
