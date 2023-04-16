@@ -47,4 +47,8 @@ public partial class DashboardViewModel : ObservableObject
 
         return show;
     }
+
+    public void OnNavigatedTo()
+    {
+    }
 }
