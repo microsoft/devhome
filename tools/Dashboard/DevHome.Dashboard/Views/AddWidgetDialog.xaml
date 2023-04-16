@@ -57,9 +57,10 @@
                 </Grid.RowDefinitions>
 
                 <ScrollViewer Grid.Row="0"
+                              Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}"
                               VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
                               MinHeight="530" MaxHeight="530">
-                    <Frame x:Name="ConfigurationContentFrame" 
+                    <Frame x:Name="ConfigurationContentFrame" Margin="45,45,45,0"
                            Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}" />
                 </ScrollViewer>
 
@@ -70,7 +71,7 @@
                             Visibility="Collapsed"
                             Height="32" Width="118"
                             Click="PinButton_Click"
-                            Margin="0,43" />
+                            Margin="0,40" />
                 </Grid>
             </Grid>
         </NavigationView>
