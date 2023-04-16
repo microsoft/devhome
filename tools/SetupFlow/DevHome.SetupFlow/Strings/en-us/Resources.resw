@@ -566,7 +566,7 @@
     <comment>Check box label to notify users of making a new dev drive</comment>
   </data>
   <data name="RepositoryDisplay.Header" xml:space="preserve">
-    <value>Account Type</value>
+    <value>Account type</value>
     <comment>Header to prompt users to choose an account</comment>
   </data>
   <data name="RepoTool_AddViaAccountButton.Content" xml:space="preserve">
