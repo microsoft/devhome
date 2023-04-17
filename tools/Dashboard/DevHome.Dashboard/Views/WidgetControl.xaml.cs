@@ -18,6 +18,8 @@ public sealed partial class WidgetControl : UserControl
     public WidgetControl()
     {
         this.InitializeComponent();
+
+        WidgetScrollViewer.RegisterPropertyChangedCallback(ScrollViewer.ComputedVerticalScrollBarVisibilityProperty, OnWidgetScrollBarVisibilityChanged);
     }
 
     public WidgetViewModel WidgetSource
@@ -28,6 +30,21 @@ public sealed partial class WidgetControl : UserControl
 
     public static readonly DependencyProperty WidgetSourceProperty = DependencyProperty.Register(
         nameof(WidgetSource), typeof(WidgetViewModel), typeof(WidgetControl), new PropertyMetadata(null));
+
+    private void OnWidgetScrollBarVisibilityChanged(DependencyObject sender, DependencyProperty dp)
+    {
+        var padding = new Thickness(0, 0, 0, 0);
+
+        if (sender as ScrollViewer is ScrollViewer sv)
+        {
+            if (sv.ComputedVerticalScrollBarVisibility == Visibility.Visible)
+            {
+                padding.Right = 13;
+            }
+        }
+
+        WidgetScrollViewer.Padding = padding;
+    }
 
     private void OpenWidgetMenu(object sender, RoutedEventArgs e)
     {
@@ -74,6 +91,9 @@ public sealed partial class WidgetControl : UserControl
         {
             if (deleteMenuItem?.Tag is WidgetViewModel widgetViewModel)
             {
+                // Remove any custom state from the widget. In case the deletion fails, we won't show the widget anymore.
+                await widgetViewModel.Widget.SetCustomStateAsync(string.Empty);
+
                 // Remove the widget from the list before deleting, otherwise the widget will
                 // have changed and the collection won't be able to find it to remove it.
                 var widgetIdToDelete = widgetViewModel.Widget.Id;

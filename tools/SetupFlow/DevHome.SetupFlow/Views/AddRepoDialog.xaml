@@ -53,7 +53,7 @@
         <TextBox x:Name="RepoUrlTextBox" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoUrl" Visibility="{x:Bind AddRepoViewModel.ShowUrlPage, Mode=OneWay}" LostFocus="RepoUrlTextBox_LostFocus" Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}"/>
 
         <!-- Log into account -->
-        <ComboBox x:Name="RepositoryProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}" SelectionChanged="RepositoryProviderNamesComboBox_SelectionChanged" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}" />
+        <ComboBox x:Name="RepositoryProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}" SelectionChanged="RepositoryProviderNamesComboBox_SelectionChanged" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}" Margin="0, 20, 0, 0" />
 
         <!-- Show Repositories -->
         <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">

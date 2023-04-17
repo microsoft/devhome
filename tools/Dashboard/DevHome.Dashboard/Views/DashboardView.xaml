@@ -15,14 +15,29 @@
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
 
-    <Grid>
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <x:String x:Key="DashboardBannerFront">ms-appx:///DevHome.Dashboard/Assets/DashboardBannerFrontLight.png</x:String>
+                    <x:String x:Key="DashboardBannerBack">ms-appx:///DevHome.Common/Assets/BannerBackgroundLight.png</x:String>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <x:String x:Key="DashboardBannerFront">ms-appx:///DevHome.Dashboard/Assets/DashboardBannerFrontDark.png</x:String>
+                    <x:String x:Key="DashboardBannerBack">ms-appx:///DevHome.Common/Assets/BannerBackgroundDark.png</x:String>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!-- Header - Title and Add Widget button -->
-        <Grid Grid.Row="0" Margin="0,10,0,22">
+        <Grid Grid.Row="0" Margin="0,0,0,22">
             <TextBlock x:Uid="DashboardPage_Title" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Left"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="AddWidgetButton" x:Uid="AddWidget" HorizontalAlignment="Right" Click="AddWidgetButton_Click"/>
@@ -33,14 +48,15 @@
             <StackPanel>
                 <!-- Top Banner - Default/First run experience - shown until user dismissed -->
                 <commonviews:Banner x:Name="DashboardBanner"
-                    TextWidth="500"
+                    TextWidth="450"
                     Visibility="{x:Bind ViewModel.ShowDashboardBanner,Mode=OneWay}"
                     HideButtonVisibility="true"
                     HideButtonCommand="{x:Bind ViewModel.HideDashboardBannerButtonCommand,Mode=OneWay}"
                     ButtonCommand="{x:Bind ViewModel.DashboardBannerButtonCommand,Mode=OneWay}"
                     x:Uid="ms-resource:///DevHome.Dashboard/Resources/DashboardBanner"
-                    ImageSource="ms-appx:///DevHome.Dashboard/Assets/DashboardBanner.png"
-                    Margin="0,0,0,12" />
+                    BackgroundSource="{ThemeResource DashboardBannerBack}"
+                    OverlaySource="{ThemeResource DashboardBannerFront}"
+                    Margin="0,0,0,10" />
 
                 <!-- Widget grid -->
                 <GridView x:Name="MainGridView" ItemsSource="{x:Bind views:DashboardView.PinnedWidgets}"
@@ -55,6 +71,12 @@
                             <views:WidgetBoard />
                         </ItemsPanelTemplate>
                     </GridView.ItemsPanel>
+                    <GridView.ItemContainerStyle>
+                        <Style TargetType="GridViewItem">
+                            <!-- Default margin is "0,0,4,4". Override since we're setting margins on the WidgetBoard. -->
+                            <Setter Property="Margin" Value="0,0,0,0"/>
+                        </Style>
+                    </GridView.ItemContainerStyle>
                 </GridView>
             </StackPanel>
         </ScrollViewer>

@@ -1,16 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Contracts;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Dashboard.ViewModels;
-using DevHome.Services;
-using DevHome.Settings.Views;
-using DevHome.Views;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.ViewModels;
@@ -19,6 +16,7 @@ public class ShellViewModel : ObservableRecipient
 {
     private readonly ILocalSettingsService _localSettingsService;
     private object? _selected;
+    private InfoBarModel _shellInfoBarModel = new ();
 
     public INavigationService NavigationService
     {
@@ -34,6 +32,12 @@ public class ShellViewModel : ObservableRecipient
     {
         get => _selected;
         set => SetProperty(ref _selected, value);
+    }
+
+    public InfoBarModel ShellInfoBarModel
+    {
+        get => _shellInfoBarModel;
+        set => SetProperty(ref _shellInfoBarModel, value);
     }
 
     public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, ILocalSettingsService localSettingsService)
@@ -58,7 +62,7 @@ public class ShellViewModel : ObservableRecipient
 
     private void OnNavigated(object sender, NavigationEventArgs e)
     {
-        if (e.SourcePageType == typeof(SettingsPage))
+        if (IsSettingsPage(e.SourcePageType.FullName))
         {
             Selected = NavigationViewService.SettingsItem;
             return;
@@ -69,5 +73,17 @@ public class ShellViewModel : ObservableRecipient
         {
             Selected = selectedItem;
         }
+    }
+
+    private bool IsSettingsPage(string? pageType)
+    {
+        if (string.IsNullOrEmpty(pageType))
+        {
+            return false;
+        }
+
+#pragma warning disable CA1310 // Specify StringComparison for correctness
+        return pageType.StartsWith("DevHome.Settings");
+#pragma warning restore CA1310 // Specify StringComparison for correctness
     }
 }

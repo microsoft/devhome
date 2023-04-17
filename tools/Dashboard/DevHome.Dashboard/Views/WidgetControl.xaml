@@ -12,22 +12,22 @@
     mc:Ignorable="d">
 
     <Grid Width="300" Height="{x:Bind helpers:WidgetHelpers.GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize), Mode=OneWay}" 
-          CornerRadius="7" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}">
+          CornerRadius="7">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!-- Widget header: icon, title, menu -->
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="0" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}">
             <StackPanel Orientation="Horizontal" Margin="15,10,15,5">
                 <Rectangle Width="16" Height="16" Margin="0,0,8,0"
                            Fill="{x:Bind views:DashboardView.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme),Mode=OneWay}"/>
-                <TextBlock Text="{x:Bind WidgetSource.WidgetDisplayTitle, Mode=OneWay}" VerticalAlignment="Center" FontSize="{ThemeResource CaptionTextBlockFontSize}"/>
+                <TextBlock Text="{x:Bind WidgetSource.WidgetDisplayTitle, Mode=OneWay}" VerticalAlignment="Center" FontSize="{ThemeResource CaptionTextBlockFontSize}" />
             </StackPanel>
             <Button Tag="{x:Bind}" Content="&#xE712;" 
                     FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{ThemeResource CaptionTextBlockFontSize}"
-                    VerticalAlignment="Top" HorizontalAlignment="Right" Margin="15,10,15,5" BorderThickness="0"
+                    VerticalAlignment="Top" HorizontalAlignment="Right" Margin="15,10,15,5" BorderThickness="0" Padding="5"
                     Background="Transparent"
                     Click="OpenWidgetMenu">
                 <Button.Flyout>
@@ -37,8 +37,8 @@
         </Grid>
 
         <!-- Widget content -->
-        <ScrollViewer Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}" Grid.Row="1" 
-                      VerticalScrollBarVisibility="Hidden" HorizontalScrollMode="Disabled"/>
+        <ScrollViewer x:Name="WidgetScrollViewer" Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}" Grid.Row="1" 
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled" />
 
     </Grid>
 </UserControl>

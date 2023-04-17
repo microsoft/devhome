@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -70,13 +70,13 @@ public partial class PackageCatalogListViewModel : ObservableObject
     {
         try
         {
-            Log.Logger?.ReportInfo(nameof(PackageCatalogListViewModel), $"Initializing package list from data source {dataSource.GetType().Name}");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing package list from data source {dataSource.GetType().Name}");
             await dataSource.InitializeAsync();
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(nameof(PackageCatalogListViewModel), $"Exception thrown while initializing data source of type {dataSource.GetType().Name}");
-            Log.Logger?.ReportError(nameof(PackageCatalogListViewModel), e.Message);
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while initializing data source of type {dataSource.GetType().Name}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, e.Message);
         }
         finally
         {
@@ -93,7 +93,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
         if (dataSource.CatalogCount > 0)
         {
             // Load catalogs on a separate thread to avoid lagging the UI
-            Log.Logger?.ReportInfo(nameof(PackageCatalogListViewModel), $"Loading winget packages from data source {dataSource.GetType().Name}");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
             var catalogs = await Task.Run(async () => await dataSource.LoadCatalogsAsync());
             RemoveShimmers(dataSource.CatalogCount);
             foreach (var catalog in catalogs)

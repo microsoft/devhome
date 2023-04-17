@@ -8,7 +8,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
@@ -34,8 +34,17 @@ public partial class SetupFlowViewModel : ObservableObject
             _mainPageViewModel,
         };
 
-        _mainPageViewModel.StartSetupFlow += (object sender, IList<ISetupTaskGroup> taskGroups) =>
+        _mainPageViewModel.StartSetupFlow += (object sender, (string, IList<ISetupTaskGroup>) args) =>
         {
+            var flowTitle = args.Item1;
+            var taskGroups = args.Item2;
+
+            // Don't reset the title when we get an empty string; we may have set it earlier to what we want
+            if (!string.IsNullOrEmpty(flowTitle))
+            {
+                Orchestrator.FlowTitle = flowTitle;
+            }
+
             Orchestrator.TaskGroups = taskGroups;
             SetFlowPagesFromCurrentTaskGroups();
         };
@@ -54,7 +63,7 @@ public partial class SetupFlowViewModel : ObservableObject
         }
         else
         {
-            Log.Logger?.ReportInfo(nameof(SetupFlowViewModel), "Review page will be skipped for this flow");
+            Log.Logger?.ReportInfo(Log.Component.Orchestrator, "Review page will be skipped for this flow");
         }
 
         // The Loading page can advance to the next page
@@ -75,7 +84,7 @@ public partial class SetupFlowViewModel : ObservableObject
     [RelayCommand]
     public void Cancel()
     {
-        Log.Logger?.ReportInfo(nameof(SetupFlowViewModel), "Cancelling flow");
+        Log.Logger?.ReportInfo(Log.Component.Orchestrator, "Cancelling flow");
         Orchestrator.ReleaseRemoteFactory();
         _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
         Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };

@@ -29,8 +29,8 @@
             <TextBlock
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 TextWrapping="WrapWholeWords"
-                Visibility="{x:Bind UseDefaultTitle, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_EndToEndTitle" />
+                Visibility="{x:Bind UseOrchestratorTitle, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                Text="{x:Bind Orchestrator.FlowTitle}" />
             <TextBlock
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 TextWrapping="WrapWholeWords"

@@ -1,18 +1,10 @@
-name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 parameters:
 - name: "SourceToTargetBranch"
-  type: object
-  default:
-    main: main
+  type: string
+  default: "main"
 
 jobs:
 - job: SyncMirror
-  strategy:
-    matrix: 
-      ${{ each branches in parameters.SourceToTargetBranch }}:
-        ${{ branches.key }}:
-          SourceBranch: ${{ branches.key }}
-          TargetBranch: ${{ branches.value }}
   dependsOn: []
   pool:
     vmImage: 'windows-latest'
@@ -27,5 +19,5 @@ jobs:
   - template: SyncMirror-Steps.yml
     parameters:
       SourceRepository: "https://$(GitHubPAT)@github.com/microsoft/DevHome.git"
-      TargetBranch: $(TargetBranch)
-      SourceBranch: $(SourceBranch)
+      TargetBranch: "${{ parameters.SourceToTargetBranch }}"
+      SourceBranch: "${{ parameters.SourceToTargetBranch }}"

@@ -5,6 +5,7 @@ Param(
     [string]$SDKNugetSource,
     [string]$Version,
     [string]$BuildStep = "all",
+    [string]$AzureBuildingBranch = "main",
     [switch]$IsAzurePipelineBuild = $false,
     [switch]$Help = $false
 )
@@ -72,12 +73,22 @@ if (-not([string]::IsNullOrWhiteSpace($SDKNugetSource))) {
 
 Try {
   if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msix")) {
-    # Update the msix version in the appxmanifest
     [Reflection.Assembly]::LoadWithPartialName("System.Xml.Linq")
+    $xIdentity = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
+    $xProperties = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Properties");
+    $xDisplayName = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}DisplayName");
+
+    # Update the appxmanifest
     $appxmanifestPath = (Join-Path $env:Build_RootDirectory "src\Package.appxmanifest")
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
-    $xName = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
-    $appxmanifest.Root.Element($xName).Attribute("Version").Value = $env:msix_version
+    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = $env:msix_version
+    if ($AzureBuildingBranch -ieq "release") {
+      $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = "Microsoft.Windows.DevHome"
+      $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = "Dev Home (Preview)"
+    } elseif ($AzureBuildingBranch -ieq "staging") {
+      $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = "Microsoft.Windows.DevHome.Canary"
+      $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = "Dev Home (Canary)"
+    }
     $appxmanifest.Save($appxmanifestPath)
 
     foreach ($platform in $env:Build_Platform.Split(",")) {
@@ -102,10 +113,11 @@ Try {
       }
     }
 
-    # Reset the version in appxmanifest to prevent unnecessary code changes
+    # Reset the appxmanifest to prevent unnecessary code changes
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
-    $xName = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
-    $appxmanifest.Root.Element($xName).Attribute("Version").Value = "0.0.0.0"
+    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = "0.0.0.0"
+    $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = "Microsoft.Windows.DevHome.Dev"
+    $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = "Dev Home (Dev)"
     $appxmanifest.Save($appxmanifestPath)
   }
 

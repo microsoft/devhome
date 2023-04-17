@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services;
@@ -50,7 +50,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     public async override Task InitializeAsync()
     {
         // Open and deserialize JSON file
-        Log.Logger?.ReportInfo(nameof(WinGetPackageJsonDataSource), $"Reading package list from JSON file {_fileName}");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Reading package list from JSON file {_fileName}");
         using var fileStream = File.OpenRead(_fileName);
         var options = new JsonSerializerOptions() { ReadCommentHandling = JsonCommentHandling.Skip };
         _jsonCatalogs = await JsonSerializer.DeserializeAsync<IList<JsonWinGetPackageCatalog>>(fileStream, options);
@@ -80,7 +80,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     private async Task<PackageCatalog> LoadCatalogAsync(JsonWinGetPackageCatalog jsonCatalog)
     {
         var catalogName = _stringResource.GetLocalized(jsonCatalog.NameResourceKey);
-        Log.Logger?.ReportInfo(nameof(WinGetPackageJsonDataSource), $"Attempting to read JSON package catalog {catalogName}");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to read JSON package catalog {catalogName}");
 
         try
         {
@@ -96,12 +96,12 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
             }
             else
             {
-                Log.Logger?.ReportWarn(nameof(WinGetPackageJsonDataSource), $"JSON package catalog [{catalogName}] is empty");
+                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"JSON package catalog [{catalogName}] is empty");
             }
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(nameof(WinGetPackageJsonDataSource), $"Error loading packages from winget catalog: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget catalog: {e.Message}");
         }
 
         return null;

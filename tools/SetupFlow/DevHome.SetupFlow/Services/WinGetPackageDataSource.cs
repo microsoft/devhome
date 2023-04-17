@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services;
@@ -71,6 +72,13 @@ public abstract class WinGetPackageDataSource
         PackageProcessorCallback<T> packageProcessorCallback = null)
     {
         List<IWinGetPackage> result = new ();
+
+        // Skip search if package data source is empty
+        if (!items.Any())
+        {
+            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"{nameof(GetPackagesAsync)} received an empty list of items. Skipping search.");
+            return result;
+        }
 
         // Get packages from winget catalog
         var unorderedPackages = await _wpm.WinGetCatalog.GetPackagesAsync(items.Select(i => packageIdCallback(i)).ToHashSet());

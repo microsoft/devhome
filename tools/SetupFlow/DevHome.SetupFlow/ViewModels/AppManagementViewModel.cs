@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Helpers;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
 
@@ -57,12 +57,12 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     protected async override Task OnFirstNavigateToAsync()
     {
         // Load catalogs from all data sources
-        Log.Logger?.ReportInfo(nameof(AppManagementViewModel), "Loading package catalogs from all sources");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Loading package catalogs from all sources");
         await _packageCatalogListViewModel.LoadCatalogsAsync();
 
         // Connect to composite catalog used for searching on a separate
         // (non-UI) thread to prevent lagging the UI.
-        Log.Logger?.ReportInfo(nameof(AppManagementViewModel), "Connecting to composite catalog to enable searching for packages");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to composite catalog to enable searching for packages");
         await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
     }
 
@@ -95,7 +95,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
                 break;
             case SearchViewModel.SearchResultStatus.CatalogNotConnect:
             case SearchViewModel.SearchResultStatus.ExceptionThrown:
-                Log.Logger?.ReportError(nameof(AppManagementViewModel), $"Search failed with status: {searchResultStatus}");
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Search failed with status: {searchResultStatus}");
                 CurrentView = _packageCatalogListViewModel;
                 break;
             case SearchViewModel.SearchResultStatus.Canceled:
