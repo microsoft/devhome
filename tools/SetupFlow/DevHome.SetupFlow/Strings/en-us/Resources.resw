@@ -900,7 +900,7 @@
     <comment>Text to show everywhere else in the tool.</comment>
   </data>
   <data name="RepoToolNextButtonTooltip" xml:space="preserve">
-    <value>You're changes won't be applied until the end</value>
+    <value>Your changes won't be applied until the end</value>
     <comment>Tooltip for the next button in the repo page.</comment>
   </data>
 </root>
