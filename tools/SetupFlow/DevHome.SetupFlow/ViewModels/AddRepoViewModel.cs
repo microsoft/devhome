@@ -151,8 +151,6 @@ public partial class AddRepoViewModel : ObservableObject
         ChangeToUrlPage();
 
         // override changes ChangeToUrlPage to correctly set the state.
-        IsUrlAccountButtonChecked = true;
-        IsAccountToggleButtonChecked = false;
         ShouldPrimaryButtonBeEnabled = false;
         ShowErrorTextBox = Visibility.Collapsed;
         EverythingToClone = new ();
@@ -296,6 +294,8 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
             cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToAdd.RepoName, StringComparison.OrdinalIgnoreCase));
+            cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
+            cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
 
             EverythingToClone.Add(cloningInformation);
         }
@@ -322,7 +322,7 @@ public partial class AddRepoViewModel : ObservableObject
         {
             // a provider parsed the Url and returned a valid IRepository
             var repository = providerNameAndRepo.Item2;
-            var developerId = new DeveloperId(repository.OwningAccountName, string.Empty, repository.OwningAccountName, Url);
+            var developerId = new DeveloperId(repository.OwningAccountName, Url);
             cloningInformation.ProviderName = providerNameAndRepo.Item1;
             cloningInformation.OwningAccount = developerId;
             cloningInformation.RepositoryToClone = repository;
@@ -335,7 +335,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = "git";
 
             // Because the user is cloning via URL the developer account is unknown.
-            var gitDeveloperId = new DeveloperId("Unknown", string.Empty, "FromGitUrl", Url);
+            var gitDeveloperId = new DeveloperId("FromGitUrl", Url);
             cloningInformation.OwningAccount = gitDeveloperId;
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);

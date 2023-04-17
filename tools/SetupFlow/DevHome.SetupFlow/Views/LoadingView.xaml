@@ -41,7 +41,7 @@
                 <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderBottomRow"/>
             </StackPanel>
         </Grid>
-        <ProgressBar x:Name="SetupTaskProgressBar" Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
+        <ProgressBar AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_SetupProgressBar_Description" x:Name="SetupTaskProgressBar" Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
         <TextBlock Text="{x:Bind ViewModel.ExecutingTasks, Mode=OneWay}" />
         <Grid ColumnSpacing="50">
             <Grid.ColumnDefinitions>

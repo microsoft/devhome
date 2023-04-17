@@ -22,6 +22,7 @@ namespace DevHome.Views;
 /// </summary>
 public sealed partial class FeedbackPage : Page
 {
+    private static readonly double ByteSizeGB = 1024 * 1024 * 1024;
     private static string wmiCPUInfo = string.Empty;
 
     public FeedbackViewModel ViewModel
@@ -209,8 +210,8 @@ public sealed partial class FeedbackPage : Page
         memStatus.dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX));
         PInvoke.GlobalMemoryStatusEx(out memStatus);
 
-        var availMemKbToGb = Math.Round(memStatus.ullAvailPhys * 0.000000001, 2);
-        var totalMemKbToGb = Math.Round(memStatus.ullTotalPhys * 0.000000001, 2);
+        var availMemKbToGb = Math.Round(memStatus.ullAvailPhys / ByteSizeGB, 2);
+        var totalMemKbToGb = Math.Round(memStatus.ullTotalPhys / ByteSizeGB, 2);
 
         return "Physical Memory: " + totalMemKbToGb.ToString(cultures) + "GB (" + availMemKbToGb.ToString(cultures) + "GB free)";
     }
