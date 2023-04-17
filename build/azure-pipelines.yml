@@ -369,6 +369,7 @@ stages:
     )
   jobs:
   - job: Store_Publish
+    timeoutInMinutes: 120
     steps:
     - task: DownloadPipelineArtifact@2
       inputs:
