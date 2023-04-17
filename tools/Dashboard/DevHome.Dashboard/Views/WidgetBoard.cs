@@ -44,7 +44,7 @@ public sealed class WidgetBoard : Panel
     }
 
     /// <summary>
-    /// Identifies the <see cref="WidgetWidth"/> dependency property. The defaultt value is 300.
+    /// Identifies the <see cref="WidgetWidth"/> dependency property. The default value is 300.
     /// </summary>
     /// <returns>The identifier for the <see cref="WidgetWidth"/> dependency property.</returns>
     public static readonly DependencyProperty WidgetWidthProperty = DependencyProperty.Register(
