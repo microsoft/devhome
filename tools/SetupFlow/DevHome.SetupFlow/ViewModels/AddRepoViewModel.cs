@@ -292,6 +292,8 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
             cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName == repositoryToAdd);
+            cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
+            cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
 
             EverythingToClone.Add(cloningInformation);
         }

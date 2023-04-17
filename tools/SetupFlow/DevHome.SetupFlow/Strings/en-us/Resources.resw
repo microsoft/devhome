@@ -899,4 +899,24 @@
     <value>Add</value>
     <comment>Text to show everywhere else in the tool.</comment>
   </data>
+  <data name="LoadingScreen_SetupProgressBar_Description" xml:space="preserve">
+    <value>Number of tasks completed progress bar</value>
+    <comment>Description of the progress bar for screen readers</comment>
+  </data>
+  <data name="RepoPageEditClonePathAutomationProperties" xml:space="preserve">
+    <value>Edit Clone Path for Repository {0}</value>
+    <comment>Dynamic description for the edit clone path button</comment>
+  </data>
+  <data name="RepoPageRemoveRepoAutomationProperties" xml:space="preserve">
+    <value>Remove repository {0} from cloning</value>
+    <comment>Dynamic description for the remove repository button</comment>
+  </data>
+  <data name="RepoTool_AccountComboBox_Description" xml:space="preserve">
+    <value>Accounts To pick from</value>
+    <comment>Description of the account combo box for screen readers</comment>
+  </data>
+  <data name="SummaryPage_CloseButton_Description" xml:space="preserve">
+    <value>Return to main screen</value>
+    <comment>Description of the 'go to main page' button for screen readers</comment>
+  </data>
 </root>
