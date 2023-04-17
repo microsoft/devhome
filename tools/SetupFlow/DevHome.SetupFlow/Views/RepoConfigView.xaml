@@ -21,6 +21,7 @@
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
                     <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
                     <converters:CollectionVisibilityConverter x:Key="NegatedCollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
+                    <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
                     <Style x:Key="DevHomeBorderStyle" TargetType="Border" >
                         <Setter Property="BorderBrush">
                             <Setter.Value>
@@ -50,7 +51,7 @@
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition MinWidth="151" />
-                                <ColumnDefinition MinWidth="249" />
+                                <ColumnDefinition MinWidth="274" />
                                 <ColumnDefinition MinWidth="400" />
                             </Grid.ColumnDefinitions>
                             <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 1, 1" HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}">
@@ -82,7 +83,10 @@
                                         <TextBlock Text="{x:Bind ProviderName}" MinWidth="150" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                                     </Border>
                                     <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 1, 0">
-                                        <TextBlock Text="{x:Bind RepositoryId}" MinWidth="248" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <FontIcon Margin="5, 0, 0, 0" FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind RepositoryToClone.IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
+                                            <TextBlock Text="{x:Bind RepositoryId}" MinWidth="248" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                        </StackPanel>
                                     </Border>
                                     <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 0, 0">
                                         <StackPanel Orientation="Horizontal" Spacing="5">

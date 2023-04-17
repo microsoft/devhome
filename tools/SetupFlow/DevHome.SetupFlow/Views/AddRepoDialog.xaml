@@ -11,6 +11,7 @@
                xmlns:i="using:Microsoft.Xaml.Interactivity"
                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
                mc:Ignorable="d"
+               xmlns:models="using:DevHome.SetupFlow.Models"
                x:Name="AddRepoContentDialog"
                PrimaryButtonClick="AddRepoContentDialog_PrimaryButtonClick"
                IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldPrimaryButtonBeEnabled, Mode=OneWay}"
@@ -24,6 +25,7 @@
                 <ResourceDictionary>
                     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+                    <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -76,10 +78,10 @@
                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoriesList" />
                 </ListView.Header>
                 <ListView.ItemTemplate>
-                    <DataTemplate x:Name="symbolAndNameTemplate" x:DataType="x:String">
+                    <DataTemplate x:Name="symbolAndNameTemplate" x:DataType="models:RepoViewListItem">
                         <StackPanel Orientation="Horizontal" Spacing="5">
-                            <FontIcon FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="&#xF03F;"/>
-                            <TextBlock Text="{x:Bind}"/>
+                            <FontIcon FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
+                            <TextBlock Text="{x:Bind RepoName}"/>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>

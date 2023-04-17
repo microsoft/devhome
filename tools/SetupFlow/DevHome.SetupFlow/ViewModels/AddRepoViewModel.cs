@@ -69,7 +69,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// All the repositories for a specific account and the symbol to show
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<string> _repositories = new ();
+    private ObservableCollection<RepoViewListItem> _repositories = new ();
 
     /// <summary>
     /// Should the URL page be visible?
@@ -122,17 +122,19 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     private void FilterRepositories(string text)
     {
-        IEnumerable<string> filteredRepositories;
+        IEnumerable<RepoViewListItem> filteredRepositories;
         if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
         {
-            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => x.DisplayName);
+            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => new RepoViewListItem(x));
         }
         else
         {
-            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate).Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase)).Select(x => x.DisplayName);
+            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate)
+                .Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase))
+                .Select(x => new RepoViewListItem(x));
         }
 
-        Repositories = new ObservableCollection<string>(filteredRepositories);
+        Repositories = new ObservableCollection<RepoViewListItem>(filteredRepositories);
     }
 
     /// <summary>
@@ -276,24 +278,24 @@ public partial class AddRepoViewModel : ObservableObject
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding and removing repositories");
         var developerId = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId() == accountName);
-        foreach (string repositoryToRemove in repositoriesToRemove)
+        foreach (RepoViewListItem repositoryToRemove in repositoriesToRemove)
         {
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {repositoryToRemove}");
             var cloningInformation = new CloningInformation();
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName == repositoryToRemove);
+            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToRemove.RepoName, StringComparison.OrdinalIgnoreCase));
 
             EverythingToClone.Remove(cloningInformation);
         }
 
-        foreach (string repositoryToAdd in repositoriesToAdd)
+        foreach (RepoViewListItem repositoryToAdd in repositoriesToAdd)
         {
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository {repositoryToAdd}");
             var cloningInformation = new CloningInformation();
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName == repositoryToAdd);
+            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToAdd.RepoName, StringComparison.OrdinalIgnoreCase));
 
             EverythingToClone.Add(cloningInformation);
         }
@@ -354,7 +356,7 @@ public partial class AddRepoViewModel : ObservableObject
         _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
 
         // TODO: What if the user comes back here with repos selected?
-        Repositories = new ObservableCollection<string>(_repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => x.DisplayName));
+        Repositories = new ObservableCollection<RepoViewListItem>(_repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => new RepoViewListItem(x)));
     }
 
     /// <summary>
