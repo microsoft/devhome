@@ -466,7 +466,7 @@
     <comment>{Locked}Uri to the Microsoft Store terms of sale</comment>
   </data>
   <data name="ReviewNothingToSetUpToolTip" xml:space="preserve">
-    <value>There's nothing to set up​</value>
+    <value>There's nothing to set up</value>
     <comment>Text shown on a tool tip for a "Start set up" button if there is noting to set up</comment>
   </data>
   <data name="SearchBox.PlaceholderText" xml:space="preserve">
@@ -898,6 +898,10 @@
   <data name="RepoEverythingElsePrimaryButtonText" xml:space="preserve">
     <value>Add</value>
     <comment>Text to show everywhere else in the tool.</comment>
+  </data>
+  <data name="RepoToolNextButtonTooltip" xml:space="preserve">
+    <value>Your changes won't be applied until the end</value>
+    <comment>Tooltip for the next button in the repo page.</comment>
   </data>
   <data name="LoadingScreen_SetupProgressBar_Description" xml:space="preserve">
     <value>Number of tasks completed progress bar</value>
