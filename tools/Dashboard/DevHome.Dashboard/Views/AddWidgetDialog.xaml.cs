@@ -29,13 +29,17 @@ public sealed partial class AddWidgetDialog : ContentDialog
         WidgetHost host,
         WidgetCatalog catalog,
         AdaptiveCardRenderer renderer,
-        DispatcherQueue dispatcher)
+        DispatcherQueue dispatcher,
+        ElementTheme theme)
     {
         ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, renderer, dispatcher);
         this.InitializeComponent();
 
         _widgetHost = host;
         _widgetCatalog = catalog;
+
+        // Strange behavior: setting the requested theme in the constructor isn't enough, so do it here.
+        RequestedTheme = theme;
 
         FillAvailableWidgets();
         SelectFirstWidgetByDefault();
