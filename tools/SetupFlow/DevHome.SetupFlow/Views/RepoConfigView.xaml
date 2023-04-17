@@ -40,7 +40,7 @@
                 <Button x:Name="AddRepositoriesButton" Click="AddRepoButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"/>
             </ControlTemplate>
         </setupControls:SetupShell.HeaderTemplate>
-        <Grid x:Name="RepoConfigStackPanel" RowSpacing="10">
+        <Grid x:Name="RepoConfigGrid" RowSpacing="10">
             <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch">
                 <ScrollViewer.TopHeader>
                     <Grid>
