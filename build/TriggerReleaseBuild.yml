@@ -1,5 +1,5 @@
 trigger:
-- staging
+- release
 
 steps:
 - script: echo Triggering ADO Build

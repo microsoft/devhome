@@ -97,14 +97,15 @@ stages:
 
 - stage: SyncMirror
   dependsOn: []
-  condition: or(eq('$(BuildingBranch)', 'staging'), eq('$(BuildingBranch)', 'release'))
+  condition: or(eq(variables['BuildingBranch'], 'staging'), eq(variables['BuildingBranch'], 'release'))
   jobs:
   - template: SyncMirroredRepository.yml
     parameters:
       SourceToTargetBranch: "$(BuildingBranch)"
 
 - stage: Build_SDK
-  condition: not(failed('SyncMirror'))
+  dependsOn: SyncMirror
+  condition: in(dependencies.SyncMirror.Result, 'Succeeded', 'Skipped')
   jobs:
   - job: Build_SDK
     steps:
@@ -136,7 +137,13 @@ stages:
         SymbolsProduct: DevHomeSDK
 
 - stage: Build_DevHome
-  condition: not(failed('Build_SDK'))
+  dependsOn: Build_SDK
+  condition: |
+    and
+    (
+      in(dependencies.SyncMirror.result, 'Succeeded', 'Skipped'),
+      in(dependencies.Build_SDK.result, 'Succeeded')
+    )
   variables:
     SDKVersion: $[stageDependencies.Build_SDK.Build_SDK.outputs['BuildSDKCommand.SDKVersion']]
   jobs:
@@ -277,7 +284,13 @@ stages:
             SymbolsProduct: DevHome
 
 - stage: Build_MsixBundle
-  condition: not(failed('Build_DevHome'))
+  dependsOn: Build_DevHome
+  condition: |
+    and
+    (
+      in(dependencies.SyncMirror.result, 'Succeeded', 'Skipped'),
+      in(dependencies.Build_DevHome.result, 'Succeeded')
+    )
   jobs:
   - job: Build_MsixBundles
     steps:
@@ -343,9 +356,20 @@ stages:
             targetPath: AppxBundles\${{ configuration }}
 
 - stage: Store_Publish
-  condition: and(not(failed('SourceAnalysis')), not(failed('Build_MsixBundle')))
+  dependsOn:
+  - SourceAnalysis
+  - Build_MsixBundle
+  condition: |
+    and
+    (
+      in(dependencies.SyncMirror.result, 'Succeeded', 'Skipped'),
+      in(dependencies.Build_MsixBundle.result, 'Succeeded'),
+      in(dependencies.SourceAnalysis.result, 'Succeeded'),
+      eq(variables['EnableStorePublishing'], 'true')
+    )
   jobs:
   - job: Store_Publish
+    timeoutInMinutes: 120
     steps:
     - task: DownloadPipelineArtifact@2
       inputs:
@@ -355,7 +379,7 @@ stages:
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Staging build to store - NEEDS TO BE CHANGED TO CANARY STORE ENTRY WHEN AVAILABLE'
-      condition: eq('$(BuildingBranch)', 'staging')
+      condition: eq(variables['BuildingBranch'], 'staging')
       inputs:
         serviceEndpoint: 'DevHome StoreBroker'
         appId: 9N8MHTPHNGVV
@@ -365,7 +389,7 @@ stages:
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Release build to store'
-      condition: eq('$(BuildingBranch)', 'release')
+      condition: eq(variables['BuildingBranch'], 'release')
       inputs:
         serviceEndpoint: 'DevHome StoreBroker'
         appId: 9N8MHTPHNGVV

@@ -99,16 +99,20 @@
                                                 MinWidth="400"
                                                 Margin="10, 5, 0, 5" />
 
-                                        <!-- Need to use view methods here because DataType is CloningInformation-->
-                                        <Button Click="EditClonePathButton_Click">
-                                            <Button.DataContext>
+
+                                            <!-- Need to use view methods here because DataType is CloningInformation-->
+                                            <!-- Each button needs a unique name for screen readers. -->
+                                            <Button Click="EditClonePathButton_Click" AutomationProperties.Name="{x:Bind EditClonePathAutomationName}">
+                                                <Button.DataContext>
                                                 <models:CloningInformation
                                                         ProviderName="{x:Bind ProviderName}" 
                                                         CloningLocation="{x:Bind CloningLocation}" 
                                                         OwningAccount="{x:Bind OwningAccount}" 
                                                         RepositoryToClone="{x:Bind RepositoryToClone}"
                                                         CloneLocationAlias="{x:Bind CloneLocationAlias}"
-                                                        CloneToDevDrive="{x:Bind CloneToDevDrive}"/>
+                                                        CloneToDevDrive="{x:Bind CloneToDevDrive}"
+                                                        EditClonePathAutomationName="{x:Bind EditClonePathAutomationName}"
+                                                        RemoveFromCloningAutomationName="{x:Bind RemoveFromCloningAutomationName}"/>
                                             </Button.DataContext>
                                             <Button.Content>
                                                 <SymbolIcon Symbol="Edit"/>
@@ -116,14 +120,17 @@
                                         </Button>
                                     </StackPanel>
                                 </Border>
-                                <Button Click="RemoveCloningInformationButton_Click" Style="{ThemeResource AlternateCloseButtonStyle}">
+                                <Button Click="RemoveCloningInformationButton_Click" Style="{ThemeResource AlternateCloseButtonStyle}" AutomationProperties.Name="{x:Bind RemoveFromCloningAutomationName}">
                                     <Button.DataContext>
-                                        <models:CloningInformation 
+                                        <models:CloningInformation
                                                         ProviderName="{x:Bind ProviderName}" 
                                                         CloningLocation="{x:Bind CloningLocation}" 
                                                         OwningAccount="{x:Bind OwningAccount}" 
                                                         RepositoryToClone="{x:Bind RepositoryToClone}"
-                                                        CloneToDevDrive="{x:Bind CloneToDevDrive}"/>
+                                                        CloneLocationAlias="{x:Bind CloneLocationAlias}"
+                                                        CloneToDevDrive="{x:Bind CloneToDevDrive}"
+                                                        EditClonePathAutomationName="{x:Bind EditClonePathAutomationName}"
+                                                        RemoveFromCloningAutomationName="{x:Bind RemoveFromCloningAutomationName}"/>
                                     </Button.DataContext>
                                     <Button.Content>
                                         <SymbolIcon Symbol="Cancel"/>
