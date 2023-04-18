@@ -54,6 +54,12 @@ public partial class FolderPickerViewModel : ObservableObject
     [ObservableProperty]
     private bool _inDevDriveScenario;
 
+    [ObservableProperty]
+    private string _folderPickerErrorMessage;
+
+    [ObservableProperty]
+    private bool _showFolderPickerError;
+
     public FolderPickerViewModel()
     {
         ShouldShowFolderPicker = Visibility.Visible;
@@ -136,12 +142,20 @@ public partial class FolderPickerViewModel : ObservableObject
     public bool ValidateCloneLocation()
     {
         // Make sure clone location is filled in and is fully qualified.
-        if (string.IsNullOrEmpty(CloneLocation) || string.IsNullOrWhiteSpace(CloneLocation) || !Path.IsPathFullyQualified(CloneLocation))
+        if (string.IsNullOrEmpty(CloneLocation) || string.IsNullOrWhiteSpace(CloneLocation))
         {
-            CloneLocation = string.Empty;
+            ShowFolderPickerError = false;
             return false;
         }
 
+        if (!Path.IsPathFullyQualified(CloneLocation))
+        {
+            FolderPickerErrorMessage = "Clone location is not fully qualified.";
+            ShowFolderPickerError = true;
+            return false;
+        }
+
+        ShowFolderPickerError = false;
         return true;
     }
 }
