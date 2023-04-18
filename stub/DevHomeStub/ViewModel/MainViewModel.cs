@@ -1,9 +1,9 @@
-﻿// ----------------------------------------------------------
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-// ----------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using System;
 using System.Runtime.Versioning;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Stub.Helper;
 using DevHome.Stub.Properties;
 using DevHome.Stub.ViewModel;
@@ -118,7 +118,7 @@ public class MainViewModel : ViewModelBase
         _upgradeHelper.StartUpgrade();
     }
 
-    private void Install(object obj)
+    private void Install()
     {
         _upgradeHelper = null;
         _upgradeHelper = new UpgradeHelper(_protocolHandlerArguments);

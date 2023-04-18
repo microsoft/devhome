@@ -1,8 +1,8 @@
-﻿// ----------------------------------------------------------
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-// ----------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using System.Diagnostics;
+using CommunityToolkit.Mvvm.Input;
 
 namespace DevHome.Stub.ViewModel;
 
@@ -43,7 +43,7 @@ public class ErrorViewModel : ViewModelBase
         get;
     }
 
-    private void OpenLink(object obj)
+    private void OpenLink()
     {
         try
         {

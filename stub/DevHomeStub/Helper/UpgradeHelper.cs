@@ -1,6 +1,5 @@
-﻿//-----------------------------------------------------------
-// Copyright (c) Microsoft Corporation. All rights reserved.
-//-----------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 namespace DevHome.Stub.Helper;
 
@@ -103,14 +102,16 @@ internal class UpgradeHelper : IUpgradeHelper
 
         try
         {
+            var store = StoreContext.GetDefault();
+            TraceLogger.Instance.LogAcquiringPackages();
+
+            var action = store.GetAppAndOptionalStorePackageUpdatesAsync();
+
             var packageFamilyName = Package.Current.Id.FamilyName;
             var packageManager = new PackageManager();
             packageManager.SetPackageStubPreference(packageFamilyName, PackageStubPreference.Full);
 
-            var store = StoreContext.GetDefault();
-            TraceLogger.Instance.LogAcquiringPackages();
-
-            var allPackages = await store.GetAppAndOptionalStorePackageUpdatesAsync();
+            var allPackages = await action;
             if (allPackages == null)
             {
 #pragma warning disable CA2201 // Do not raise reserved exception types

@@ -17,8 +17,8 @@
             <Style BasedOn="{StaticResource FlatButtonDarkBorderlessStyle}" TargetType="Button" />
 
             <controls:ThemedResourceDictionary.ThemeDictionaries>
-                <ResourceDictionary x:Key="Default" Source="pack://application:,,,/DevHome.Console.Host;component/Styles/Accents/Normal.xaml" />
-                <ResourceDictionary x:Key="HighContrast" Source="pack://application:,,,/DevHome.Console.Host;component/Styles/Accents/HighContrast.xaml" />
+                <ResourceDictionary x:Key="Default" Source="/Styles/Accents/Normal.xaml" />
+                <ResourceDictionary x:Key="HighContrast" Source="/Styles/Accents/HighContrast.xaml" />
             </controls:ThemedResourceDictionary.ThemeDictionaries>
         </controls:ThemedResourceDictionary>
     </Application.Resources>
