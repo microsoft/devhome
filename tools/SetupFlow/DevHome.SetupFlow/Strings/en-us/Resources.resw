@@ -626,7 +626,7 @@
     <comment>Content for the primary button in the edit clone path dialog.</comment>
   </data>
   <data name="LoadingPage_HeaderBottomRow.Text" xml:space="preserve">
-    <value>stay tuned for the magic...</value>
+    <value>Stay tuned for the magic...</value>
     <comment>Bottom row of the header for the loading page.</comment>
   </data>
   <data name="LoadingPage_HeaderTopRow.Text" xml:space="preserve">
