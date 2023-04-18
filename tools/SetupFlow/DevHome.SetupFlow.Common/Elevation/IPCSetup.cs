@@ -190,7 +190,7 @@ public static class IPCSetup
             {
                 FileName = serverPath,
                 Arguments = serverArgs,
-                //// CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
                 UseShellExecute = true,
                 Verb = "runas",
             };

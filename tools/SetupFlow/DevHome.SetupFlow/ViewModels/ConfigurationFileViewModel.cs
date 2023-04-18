@@ -12,6 +12,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
+using Windows.Storage;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -85,10 +86,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
         // Create and configure file picker
         Log.Logger?.ReportInfo(Log.Component.Configuration, "Launching file picker to select configurationf file");
-        var filePicker = mainWindow.CreateOpenFilePicker();
-        filePicker.FileTypeFilter.Add(".yaml");
-        filePicker.FileTypeFilter.Add(".yml");
-        var file = await filePicker.PickSingleFileAsync();
+        var file = await mainWindow.OpenFilePickerAsync(new List<string> { "*.yaml", "*.yml" });
 
         // Check if a file was selected
         if (file == null)

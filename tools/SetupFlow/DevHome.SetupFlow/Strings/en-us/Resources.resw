@@ -137,13 +137,17 @@
     <value>Get started</value>
     <comment>Button text for getting started with transferring settings from a developer machine</comment>
   </data>
-  <data name="AgreeOnAbovePolicy.Content" xml:space="preserve">
-    <value>I have read, understand and agree to the above policy</value>
-    <comment>Checkbox label for reading, understanding and agreeing to policies presented above this label</comment>
+  <data name="AgreeAndContinue.Content" xml:space="preserve">
+    <value>I agree and want to continue</value>
+    <comment>Label for a checkbox to agree on policies presented above this label and to continue to the next page</comment>
   </data>
-  <data name="ApplicationsSelectedCount" xml:space="preserve">
-    <value>{0} application(s) selected</value>
-    <comment>{Locked="{0}"} Label for the number of selected applications. {0} is replaced by the number of selected applications.</comment>
+  <data name="ApplicationsAddedPlural" xml:space="preserve">
+    <value>{0} applications added</value>
+    <comment>{Locked="{0}"} Label for the number of added applications. {0} is replaced by the number of added applications.</comment>
+  </data>
+  <data name="ApplicationsAddedSingular" xml:space="preserve">
+    <value>1 application added</value>
+    <comment>Label displayed when exactly one application is added to install.</comment>
   </data>
   <data name="Browse.Content" xml:space="preserve">
     <value>Browse</value>
@@ -373,16 +377,16 @@
     <value>Machine Configuration</value>
     <comment>Navigation pane content</comment>
   </data>
-  <data name="NoApplicationsSelected.Text" xml:space="preserve">
-    <value>No applications selected</value>
-    <comment>Text displayed when a list of applications selected by the user is empty</comment>
+  <data name="NoApplicationsAdded.Text" xml:space="preserve">
+    <value>No applications added</value>
+    <comment>Text displayed when a list of applications added by the user is empty</comment>
   </data>
   <data name="NoSearchResultsFoundTitle" xml:space="preserve">
     <value>No results found for "{0}"</value>
     <comment>{Locked="{0}"}Text displayed when no search results were found. {0} is replaced by the search query.</comment>
   </data>
   <data name="NoSearchResultsFoundDescription.Text" xml:space="preserve">
-    <value>Did't find what you're looking for? Check the spelling, try new keywords.</value>
+    <value>Check the spelling or try new keywords.</value>
     <comment>Text displayed when no search results were found</comment>
   </data>
   <data name="ResultCount" xml:space="preserve">
@@ -390,23 +394,27 @@
     <comment>{Locked="{0}"} Label for a search result counter. {0} is replaced by the number of result items.</comment>
   </data>
   <data name="RestorePackagesTitle" xml:space="preserve">
-    <value>Restore from {0}</value>
+    <value>On {0}</value>
     <comment>{Locked="{0}"} Header text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
   </data>
   <data name="RestorePackagesDescription" xml:space="preserve">
-    <value>The following applications are recovered from {0}</value>
+    <value>These applications are from {0}. Select the ones to install.</value>
     <comment>{Locked="{0}"} Description text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
   </data>
   <data name="PackagesCount" xml:space="preserve">
     <value>{0} packages</value>
     <comment>{Locked="{0}"} Display the number of packages. {0} is replaced by the number of packages.</comment>
   </data>
-  <data name="PackageDescription" xml:space="preserve">
+  <data name="PackageDescriptionThreeParts" xml:space="preserve">
     <value>{0} | {1} | {2}</value>
     <comment>{Locked="{0}","{1}","{2}"} Text composed of a package version, source and publisher name. {0} is replaced by the package version. {1} is replaced by the package source. {2} is replaced by the package publisher name.</comment>
   </data>
+  <data name="PackageDescriptionTwoParts" xml:space="preserve">
+    <value>{0} | {1}</value>
+    <comment>{Locked="{0}","{1}"} Text composed of a package source and version or publisher name. {0} and {1} are replaced by the package source and version or publisher name.</comment>
+  </data>
   <data name="PackageInstalledTooltip" xml:space="preserve">
-    <value>Application exists</value>
+    <value>Already installed</value>
     <comment>Label for a package/application that already exists on the user's machine.</comment>
   </data>
   <data name="PackageNameTooltip" xml:space="preserve">
@@ -426,7 +434,7 @@
     <comment>{Locked="{0}"} Label for a package version displayed on a tooltip. {0} is replaced by the package version.</comment>
   </data>
   <data name="PopularAppsTitle" xml:space="preserve">
-    <value>Popular Apps</value>
+    <value>Popular applications</value>
     <comment>Header text for a popular application section</comment>
   </data>
   <data name="PopularAppsDescription" xml:space="preserve">
@@ -466,7 +474,7 @@
     <comment>{Locked}Uri to the Microsoft Store terms of sale</comment>
   </data>
   <data name="ReviewNothingToSetUpToolTip" xml:space="preserve">
-    <value>There's nothing to set up​</value>
+    <value>There's nothing to set up</value>
     <comment>Text shown on a tool tip for a "Start set up" button if there is noting to set up</comment>
   </data>
   <data name="SearchBox.PlaceholderText" xml:space="preserve">
@@ -478,15 +486,15 @@
     <comment>Label for select all checkbox</comment>
   </data>
   <data name="SelectedPackages.Text" xml:space="preserve">
-    <value>Selected packages</value>
-    <comment>Label for selected packages</comment>
+    <value>Applications to install</value>
+    <comment>Label for applications to install</comment>
   </data>
   <data name="SetupButton" xml:space="preserve">
     <value>Set up</value>
     <comment>Label for the button that starts the setup</comment>
   </data>
   <data name="SetupShell_AppManagement.Description" xml:space="preserve">
-    <value>Search for apps and packages to install or select them below.</value>
+    <value>Search for applications to install or select them below.</value>
     <comment>Description for the application management page</comment>
   </data>
   <data name="SetupShell_RepoConfig.Description" xml:space="preserve">
@@ -618,7 +626,7 @@
     <comment>Content for the primary button in the edit clone path dialog.</comment>
   </data>
   <data name="LoadingPage_HeaderBottomRow.Text" xml:space="preserve">
-    <value>stay tuned for the magic...</value>
+    <value>Stay tuned for the magic...</value>
     <comment>Bottom row of the header for the loading page.</comment>
   </data>
   <data name="LoadingPage_HeaderTopRow.Text" xml:space="preserve">
@@ -898,6 +906,10 @@
   <data name="RepoEverythingElsePrimaryButtonText" xml:space="preserve">
     <value>Add</value>
     <comment>Text to show everywhere else in the tool.</comment>
+  </data>
+  <data name="RepoToolNextButtonTooltip" xml:space="preserve">
+    <value>Your changes won't be applied until the end</value>
+    <comment>Tooltip for the next button in the repo page.</comment>
   </data>
   <data name="LoadingScreen_SetupProgressBar_Description" xml:space="preserve">
     <value>Number of tasks completed progress bar</value>
