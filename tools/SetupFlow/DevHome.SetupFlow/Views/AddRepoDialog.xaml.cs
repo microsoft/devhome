@@ -140,9 +140,16 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Validate the user put in an absolute path when they are done typing.
     /// </summary>
-    private void CloneLocation_TextChanged(object sender, RoutedEventArgs e)
+    private void CloneLocation_LostFocus(object sender, RoutedEventArgs e)
     {
+        // just in case something other than a text box calls this.
+        if (sender is TextBox)
+        {
+            FolderPickerViewModel.CloneLocation = (sender as TextBox).Text;
+        }
+
         FolderPickerViewModel.ValidateCloneLocation();
+
         ToggleCloneButton();
     }
 
