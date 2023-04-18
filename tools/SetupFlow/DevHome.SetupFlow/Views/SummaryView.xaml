@@ -82,7 +82,7 @@
                 <TextBlock Grid.Column="1" Padding="0,20,0,0">Success: 2 | Failed: 3</TextBlock>
             </Grid>
             <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.ConfigurationUnits, Mode=OneWay}">
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.ConfigurationUnitResults, Mode=OneWay}">
                     <ItemsRepeater.Resources>
                         <Style TargetType="TextBlock">
                             <Setter Property="FontFamily" Value="{StaticResource CascadiaMonoFontFamily}"/>
@@ -91,12 +91,10 @@
                         </Style>
                     </ItemsRepeater.Resources>
                     <ItemsRepeater.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
                             <StackPanel>
-                                <TextBlock Text="{Binding Intent}"/>
-                                <TextBlock Text="{Binding UnitName}"/>
-                                <TextBlock Text="{Binding ResultException.HResult}"/>
-                                <TextBlock Text="{Binding State}"/>
+                                <TextBlock Text="{x:Bind Title}"/>
+                                <TextBlock Margin="20,0,0,0" Text="{x:Bind Result}"/>
                             </StackPanel>
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>

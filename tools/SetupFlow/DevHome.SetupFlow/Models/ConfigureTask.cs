@@ -4,6 +4,8 @@
 extern alias Projection;
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Configuration;
 using DevHome.SetupFlow.Common.Helpers;
@@ -29,7 +31,7 @@ public class ConfigureTask : ISetupTask
 
     public bool DependsOnDevDriveToBeInstalled => false;
 
-    public ConfigurationFileHelper.ApplicationResult Result
+    public IList<ConfigurationUnitResult> UnitResults
     {
         get; private set;
     }
@@ -87,15 +89,16 @@ public class ConfigureTask : ISetupTask
         {
             try
             {
-                Result = await _configurationFileHelper.ApplyConfigurationAsync();
-                RequiresReboot = Result.RequiresReboot;
-                if (Result.Succeeded)
+                var result = await _configurationFileHelper.ApplyConfigurationAsync();
+                RequiresReboot = result.RequiresReboot;
+                UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
+                if (result.Succeeded)
                 {
                     return TaskFinishedState.Success;
                 }
                 else
                 {
-                    throw Result.ResultException;
+                    throw result.ResultException;
                 }
             }
             catch (Exception e)
@@ -116,6 +119,15 @@ public class ConfigureTask : ISetupTask
             var elevatedTask = elevatedComponentFactory.CreateElevatedConfigurationTask();
             var elevatedResult = await elevatedTask.ApplyConfiguration(_file);
             RequiresReboot = elevatedResult.RebootRequired;
+            UnitResults = new List<ConfigurationUnitResult>();
+
+            // Cannot use foreach or Linq for out-of-process IVector
+            // Bug: https://github.com/microsoft/CsWinRT/issues/1205
+            for (var i = 0; i < elevatedResult.UnitResults.Count; ++i)
+            {
+                UnitResults.Add(new ConfigurationUnitResult(elevatedResult.UnitResults[i]));
+            }
+
             return elevatedResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }

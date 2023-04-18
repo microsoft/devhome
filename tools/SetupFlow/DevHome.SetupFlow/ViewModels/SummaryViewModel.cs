@@ -70,21 +70,21 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         }
     }
 
-    public IList<ConfigurationFileHelper.UnitResult> ConfigurationUnits
+    public IList<ConfigurationUnitResultViewModel> ConfigurationUnitResults
     {
         get
         {
-            List<ConfigurationFileHelper.UnitResult> test = new ();
+            List<ConfigurationUnitResultViewModel> test = new ();
             var repositoriesCloned = new ObservableCollection<KeyValuePair<string, string>>();
             var taskGroup = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
             var group = taskGroup.SingleOrDefault(x => x.GetType() == typeof(ConfigurationFileTaskGroup));
             if (group is ConfigurationFileTaskGroup configTaskGroup)
             {
-                foreach (var task in configTaskGroup.SetupTasks)
+                if (configTaskGroup.SetupTasks.FirstOrDefault() is ConfigureTask configTask && configTask.UnitResults != null)
                 {
-                    if (task is ConfigureTask configTask)
+                    foreach (var unitResult in configTask.UnitResults)
                     {
-                        test.AddRange(configTask.Result.UnitResults);
+                        test.Add(new ConfigurationUnitResultViewModel(unitResult));
                     }
                 }
             }

@@ -21,35 +21,8 @@ namespace DevHome.SetupFlow.Common.Configuration;
 /// </summary>
 public class ConfigurationFileHelper
 {
-    public class UnitResult
-    {
-        public ApplyConfigurationUnitResult Result
-        {
-            get;
-        }
-
-        public UnitResult(ApplyConfigurationUnitResult result)
-        {
-            Result = result;
-        }
-
-        public bool RebootRequired => Result.RebootRequired;
-
-        public ConfigurationUnitState State => Result.State;
-
-        public string Identifier => Result.Unit.Identifier;
-
-        public ConfigurationUnitIntent Intent => Result.Unit.Intent;
-
-        public string UnitName => Result.Unit.UnitName;
-
-        public Exception ResultException => Result.ResultInformation.ResultCode;
-    }
-
     public class ApplicationResult
     {
-        private readonly IReadOnlyList<UnitResult> _unitResultList;
-
         public ApplyConfigurationSetResult Result
         {
             get;
@@ -57,17 +30,14 @@ public class ConfigurationFileHelper
 
         public bool Succeeded => Result.ResultCode == null;
 
-        public bool RequiresReboot => UnitResults.Any(result => result.RebootRequired);
+        public bool RequiresReboot => Result.UnitResults.Any(result => result.RebootRequired);
 
         public Exception ResultException => Result.ResultCode;
 
         public ApplicationResult(ApplyConfigurationSetResult result)
         {
             Result = result;
-            _unitResultList = Result.UnitResults.Select(unit => new UnitResult(unit)).ToList();
         }
-
-        public IReadOnlyList<UnitResult> UnitResults => _unitResultList;
     }
 
     private readonly StorageFile _file;
