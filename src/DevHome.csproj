@@ -65,7 +65,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Assets\Tiles\" />
+        <Folder Include="Assets\Preview\" />
     </ItemGroup>
 
     <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
