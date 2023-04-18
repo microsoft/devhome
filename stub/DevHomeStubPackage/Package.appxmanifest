@@ -25,7 +25,7 @@
   </Resources>
   
   <Applications>
-    <Application Id="DevHome.Console"
+    <Application Id="App"
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements DisplayName="ms-resource:AppDisplayName" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Images\MedTile.png"  Square44x44Logo="Images\AppList.png">
