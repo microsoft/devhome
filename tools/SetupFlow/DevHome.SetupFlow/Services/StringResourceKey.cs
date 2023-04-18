@@ -57,7 +57,8 @@ public static class StringResourceKey
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
     public static readonly string PackagesCount = nameof(PackagesCount);
-    public static readonly string PackageDescription = nameof(PackageDescription);
+    public static readonly string PackageDescriptionThreeParts = nameof(PackageDescriptionThreeParts);
+    public static readonly string PackageDescriptionTwoParts = nameof(PackageDescriptionTwoParts);
     public static readonly string PackageInstalledTooltip = nameof(PackageInstalledTooltip);
     public static readonly string PackageNameTooltip = nameof(PackageNameTooltip);
     public static readonly string PackagePublisherNameTooltip = nameof(PackagePublisherNameTooltip);

@@ -398,16 +398,20 @@
     <comment>{Locked="{0}"} Header text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
   </data>
   <data name="RestorePackagesDescription" xml:space="preserve">
-    <value>These apps and packages are from {0}. Select the ones to install.</value>
+    <value>These applications are from {0}. Select the ones to install.</value>
     <comment>{Locked="{0}"} Description text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
   </data>
   <data name="PackagesCount" xml:space="preserve">
     <value>{0} packages</value>
     <comment>{Locked="{0}"} Display the number of packages. {0} is replaced by the number of packages.</comment>
   </data>
-  <data name="PackageDescription" xml:space="preserve">
+  <data name="PackageDescriptionThreeParts" xml:space="preserve">
     <value>{0} | {1} | {2}</value>
     <comment>{Locked="{0}","{1}","{2}"} Text composed of a package version, source and publisher name. {0} is replaced by the package version. {1} is replaced by the package source. {2} is replaced by the package publisher name.</comment>
+  </data>
+  <data name="PackageDescriptionTwoParts" xml:space="preserve">
+    <value>{0} | {1}</value>
+    <comment>{Locked="{0}","{1}"} Text composed of a package source and version or publisher name. {0} and {1} are replaced by the package source and version or publisher name.</comment>
   </data>
   <data name="PackageInstalledTooltip" xml:space="preserve">
     <value>Already installed</value>
@@ -490,7 +494,7 @@
     <comment>Label for the button that starts the setup</comment>
   </data>
   <data name="SetupShell_AppManagement.Description" xml:space="preserve">
-    <value>Search for apps and packages to install or select them below.</value>
+    <value>Search for applications to install or select them below.</value>
     <comment>Description for the application management page</comment>
   </data>
   <data name="SetupShell_RepoConfig.Description" xml:space="preserve">
