@@ -127,7 +127,7 @@
   </data>
   <data name="AllFiles" xml:space="preserve">
     <value>All files</value>
-    <comment>Text for showing all files in a directory</comment>
+    <comment>Text for a dropdown option in a file picker dialog to show all files in a directory</comment>
   </data>
   <data name="Feedback.Content" xml:space="preserve">
     <value>Feedback</value>

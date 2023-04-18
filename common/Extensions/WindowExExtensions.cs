@@ -113,11 +113,7 @@ public static class WindowExExtensions
                     null,
                     CLSCTX.CLSCTX_INPROC_SERVER,
                     out var fsd);
-
-                if (hr < 0)
-                {
-                    Marshal.ThrowExceptionForHR(hr);
-                }
+                Marshal.ThrowExceptionForHR(hr);
 
                 // Set filters (e.g. "*.yaml", "*.yml", etc...)
                 var extensions = new List<COMDLG_FILTERSPEC>();
