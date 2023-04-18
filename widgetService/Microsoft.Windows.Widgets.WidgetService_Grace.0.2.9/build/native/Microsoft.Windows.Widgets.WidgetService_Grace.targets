@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <WidgetService-Platform Condition="'$(Platform)' == 'Win32'">x86</WidgetService-Platform>
+        <WidgetService-Platform Condition="'$(Platform)' != 'Win32'">$(Platform)</WidgetService-Platform>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.Widgets.winmd">
+            <Implementation>Microsoft.Windows.Widgets.dll</Implementation>
+        </Reference>
+        <Reference Include="$(MSBuildThisFileDirectory)..\..\lib\native\Microsoft.Windows.Widgets.Internal.winmd">
+            <Implementation>Microsoft.Windows.Widgets.dll</Implementation>
+        </Reference>
+
+        <ReferenceCopyLocalPaths Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-$(WidgetService-Platform)\native\Microsoft.Windows.Widgets.dll" />
+    </ItemGroup>
+</Project>
