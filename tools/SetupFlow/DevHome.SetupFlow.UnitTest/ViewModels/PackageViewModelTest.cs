@@ -84,7 +84,7 @@ public class PackageViewModelTest : BaseSetupFlowTest
         string expectedDescription)
     {
         // Arrange
-        WindowsPackageManager!.Setup(wpm => wpm.MsStoreId).Returns("mockMsStore");
+        WindowsPackageManager.Setup(wpm => wpm.MsStoreId).Returns("mockMsStore");
         var package = PackageHelper.CreatePackage("mockId");
         package.Setup(p => p.CatalogId).Returns(source);
         package.Setup(p => p.CatalogName).Returns(source);
@@ -98,7 +98,7 @@ public class PackageViewModelTest : BaseSetupFlowTest
             .Returns((string key, object[] args) => $"{args[0]} | {args[1]}");
 
         // Act
-        var packageViewModel = TestHost!.CreateInstance<PackageViewModel>(package.Object);
+        var packageViewModel = TestHost.CreateInstance<PackageViewModel>(package.Object);
 
         // Assert
         Assert.AreEqual(expectedDescription, packageViewModel.PackageDescription);
