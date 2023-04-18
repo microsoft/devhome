@@ -24,6 +24,8 @@ public class BaseSetupFlowTest
 
     protected Mock<IRestoreInfo> RestoreInfo { get; private set; }
 
+    protected Mock<ISetupFlowStringResource> StringResource { get; private set; }
+
     protected IHost TestHost { get; private set; }
 #pragma warning restore CS8618 // Non-nullable properties initialized in [TestInitialize]
 
@@ -33,7 +35,13 @@ public class BaseSetupFlowTest
         WindowsPackageManager = new Mock<IWindowsPackageManager>();
         ThemeSelectorService = new Mock<IThemeSelectorService>();
         RestoreInfo = new Mock<IRestoreInfo>();
+        StringResource = new Mock<ISetupFlowStringResource>();
         TestHost = CreateTestHost();
+
+        // Configure string resource localization to return the input key by default
+        StringResource
+            .Setup(sr => sr.GetLocalized(It.IsAny<string>(), It.IsAny<object[]>()))
+            .Returns((string key, object[] args) => key);
     }
 
     /// <summary>
@@ -47,15 +55,7 @@ public class BaseSetupFlowTest
             {
                 // Common services
                 services.AddSingleton<IThemeSelectorService>(ThemeSelectorService!.Object);
-                services.AddSingleton<ISetupFlowStringResource>(_ =>
-                {
-                    // Configure string resource localization to return the input key
-                    var stringResource = new Mock<ISetupFlowStringResource>();
-                    stringResource
-                        .Setup(sr => sr.GetLocalized(It.IsAny<string>(), It.IsAny<object[]>()))
-                        .Returns((string key, object[] args) => key);
-                    return stringResource.Object;
-                });
+                services.AddSingleton<ISetupFlowStringResource>(StringResource.Object);
 
                 // App-management view models
                 services.AddTransient<PackageViewModel>();
