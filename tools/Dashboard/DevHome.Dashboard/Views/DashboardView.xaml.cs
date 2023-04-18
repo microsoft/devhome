@@ -69,6 +69,7 @@ public partial class DashboardView : ToolPage
         {
             // TODO: show error
             AddWidgetButton.IsEnabled = false;
+            AddFirstWidgetLink.IsEnabled = false;
         }
 
 #if DEBUG
@@ -321,6 +322,7 @@ public partial class DashboardView : ToolPage
         else
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
+            NoWidgetsStackPanel.Visibility = Visibility.Visible;
         }
     }
 
@@ -469,6 +471,8 @@ public partial class DashboardView : ToolPage
                 item.PropertyChanged += PinnedWidgetsPropertyChanged;
             }
         }
+
+        NoWidgetsStackPanel.Visibility = (PinnedWidgets.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private async void PinnedWidgetsPropertyChanged(object sender, PropertyChangedEventArgs e)
