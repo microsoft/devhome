@@ -155,8 +155,8 @@ public class CloneRepoTask : ISetupTask
                 // If the user used the repo tab to add repos then _developerId points to the account used to clone their repo.
                 // What if the user used the URL tab?  On a private repo validation is done in the extension to figure out if any
                 // logged in account has access to the repo.  However, github plugin does not have a way to tell us what account.
-                // _developerId will be null in the case of adding via URL.
-                // If this is the case.  Loop through all logged in devids if any and try them all.
+                // _developerId will be null in the case of adding via URL.  _developerId will be null.
+                // extension will iterate through all logged in Ids and clone with each one.
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
 
                 await RepositoryToClone.CloneRepositoryAsync(cloneLocation.FullName, _developerId);

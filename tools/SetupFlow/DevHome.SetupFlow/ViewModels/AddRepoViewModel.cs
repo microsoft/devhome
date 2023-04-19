@@ -373,8 +373,6 @@ public partial class AddRepoViewModel : ObservableObject
         {
             // A provider parsed the URL and at least 1 logged in account has access to the repo.
             var repository = providerNameAndRepo.Item2;
-
-            // Need to consider no one is logged in when cloning via URL. :)
             cloningInformation.ProviderName = providerNameAndRepo.Item1;
             cloningInformation.RepositoryToClone = repository;
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
@@ -383,7 +381,7 @@ public partial class AddRepoViewModel : ObservableObject
         {
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, "No providers could parse the Url.  Falling back to internal git provider");
 
-            // no providers can parse the Url.
+            // No providers can parse the Url.
             // Fall back to a git Url.
             cloningInformation.ProviderName = "git";
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
