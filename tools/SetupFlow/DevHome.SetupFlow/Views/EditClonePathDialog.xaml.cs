@@ -122,6 +122,11 @@ public sealed partial class EditClonePathDialog
     /// </summary>
     private void CloneLocationTextBox_TextChanged(object sender, RoutedEventArgs e)
     {
+        if (sender is TextBox cloneLocationTextBox)
+        {
+            FolderPickerViewModel.CloneLocation = cloneLocationTextBox.Text;
+        }
+
         IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
     }
 
