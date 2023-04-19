@@ -53,7 +53,7 @@ internal partial class AddRepoDialog
         this.InitializeComponent();
         AddRepoViewModel = new AddRepoViewModel(stringResource);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
-        FolderPickerViewModel = new FolderPickerViewModel();
+        FolderPickerViewModel = new FolderPickerViewModel(stringResource);
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {
             FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);

@@ -51,12 +51,12 @@ public sealed partial class EditClonePathDialog
         get; private set;
     }
 
-    public EditClonePathDialog(IDevDriveManager devDriveManager, CloningInformation cloningInfo)
+    public EditClonePathDialog(IDevDriveManager devDriveManager, CloningInformation cloningInfo, ISetupFlowStringResource stringResource)
     {
         this.InitializeComponent();
         EditClonePathViewModel = new EditClonePathViewModel();
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
-        FolderPickerViewModel = new FolderPickerViewModel();
+        FolderPickerViewModel = new FolderPickerViewModel(stringResource);
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {
             FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
