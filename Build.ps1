@@ -91,28 +91,6 @@ Try {
     }
     $appxmanifest.Save($appxmanifestPath)
 
-    #Update AppDisplayName in resources
-    $stringResourcesPath = (Join-Path $env:Build_RootDirectory "src\Strings\en-us\Resources.resw")
-    $stringResources = [System.Xml.Linq.XDocument]::Load($stringResourcesPath)
-    $appDisplayNameElement = $stringResources.Descendants("data") | Where-Object { $_.Attribute("name").Value -eq "AppDisplayName" }
-    if ($null -ne $appDisplayNameElement) {
-      $valueElement = $appDisplayNameElement.Descendants("value") | Select-Object -First 1
-      if ($null -ne $valueElement) {
-        if ($AzureBuildingBranch -ieq "release") {
-          $valueElement.Value = "Dev Home (Preview)"
-        } elseif ($AzureBuildingBranch -ieq "staging") {
-          $valueElement.Value = "Dev Home (Canary)"
-        }
-        
-        $stringResources.Save($stringResourcesPath)
-        Write-Host "Successfully updated the value of 'AppDisplayName'."
-      } else {
-        Write-Host "Failed to update value of 'AppDisplayName' Couldn't find 'value' element under 'AppDisplayName'"
-      }
-    } else {
-      Write-Host "Failed to find 'AppDisplayName' element in the XML document."
-    }
-
     foreach ($platform in $env:Build_Platform.Split(",")) {
       foreach ($configuration in $env:Build_Configuration.Split(",")) {
         $appxPackageDir = (Join-Path $env:Build_RootDirectory "AppxPackages\$configuration")
