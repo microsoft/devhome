@@ -25,6 +25,11 @@
             <uap3:Name>com.microsoft.devhome</uap3:Name>
           </uap3:AppExtensionHost>
         </uap3:Extension>
+		<uap:Extension Category="windows.protocol">
+		  <uap:Protocol Name="ms-devhome">
+		    <uap:DisplayName>Dev Home</uap:DisplayName>
+		  </uap:Protocol>
+		</uap:Extension>
       </Extensions>
     </Application>
   </Applications>
