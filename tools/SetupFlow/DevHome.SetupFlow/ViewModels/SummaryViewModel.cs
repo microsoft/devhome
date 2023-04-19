@@ -23,6 +23,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly IHost _host;
     private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
+    private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -75,6 +76,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     public bool ShowConfigurationUnitResults => ConfigurationUnitResults.Any();
 
+    public bool CompletedWithErrors => ConfigurationUnitResults.Any(unitResult => unitResult.IsError);
+
     [RelayCommand]
     public void OpenDashboard()
     {
@@ -97,11 +100,13 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     public SummaryViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        IHost host)
+        IHost host,
+        ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory)
         : base(stringResource, orchestrator)
     {
         _orchestrator = orchestrator;
         _host = host;
+        _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
@@ -134,7 +139,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
             {
                 foreach (var unitResult in configTask.UnitResults)
                 {
-                    unitResults.Add(new ConfigurationUnitResultViewModel(unitResult));
+                    unitResults.Add(_configurationUnitResultViewModelFactory(unitResult));
                 }
             }
         }

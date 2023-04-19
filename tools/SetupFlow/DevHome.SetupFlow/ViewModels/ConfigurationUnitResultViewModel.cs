@@ -3,40 +3,53 @@
 
 using System.Globalization;
 using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.ViewModels;
 
+/// <summary>
+/// Delegate factory for creating configuration unit result view models
+/// </summary>
+/// <param name="unitResult">Configuration unit result</param>
+/// <returns>Package view model</returns>
+public delegate ConfigurationUnitResultViewModel ConfigurationUnitResultViewModelFactory(ConfigurationUnitResult unitResult);
+
+/// <summary>
+/// View model for a configuration unit result
+/// </summary>
 public class ConfigurationUnitResultViewModel
 {
     private readonly ConfigurationUnitResult _unitResult;
+    private readonly ISetupFlowStringResource _stringResource;
 
-    public ConfigurationUnitResultViewModel(ConfigurationUnitResult unitResult)
+    public ConfigurationUnitResultViewModel(ISetupFlowStringResource stringResource, ConfigurationUnitResult unitResult)
     {
+        _stringResource = stringResource;
         _unitResult = unitResult;
     }
 
-    public string Title => $"{_unitResult.Intent} : {_unitResult.UnitName}";
+    public string Title => _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummary, _unitResult.Intent, _unitResult.UnitName);
 
-    public string Result => GetResult();
+    public string ApplyResult => GetApplyResult();
 
     public bool IsSkipped => _unitResult.IsSkipped;
 
     public bool IsError => !IsSkipped && _unitResult.HResult != HRESULT.S_OK;
 
-    private string GetResult()
+    private string GetApplyResult()
     {
-        var hresult = _unitResult.HResult.ToString("X", CultureInfo.InvariantCulture);
-        if (_unitResult.IsSkipped)
+        var hresult = $"0x{_unitResult.HResult.ToString("X", CultureInfo.InvariantCulture)}";
+        if (IsSkipped)
         {
-            return $"Skipped: {hresult}";
+            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSkipped, hresult);
         }
 
-        if (_unitResult.HResult != HRESULT.S_OK)
+        if (IsError)
         {
-            return $"Failed: {hresult}";
+            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailed, hresult);
         }
 
-        return $"Completed successfully";
+        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSuccess);
     }
 }

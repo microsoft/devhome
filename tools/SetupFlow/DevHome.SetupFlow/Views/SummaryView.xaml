@@ -7,6 +7,8 @@
     xmlns:ctControls="using:CommunityToolkit.Labs.WinUI"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -14,6 +16,8 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
                 <ResourceDictionary>
                     <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
+                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
+                    <converters:BoolToVisibilityConverter x:Key="BoolToInverseVisibilityConverter"  TrueValue="Collapsed" FalseValue="Visible" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -53,8 +57,18 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource SubtitleTextBlockStyle}">
+                    <Setter Property="Margin" Value="0,20,0,40" />
+                </Style>
+            </Grid.Resources>
             <!-- Intoduction to the summary page -->
-            <TextBlock Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Header" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="0, 20, 0, 40"/>
+            <TextBlock
+                Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource BoolToInverseVisibilityConverter}}"
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Header"/>
+            <TextBlock
+                Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_HeaderWithErrors"/>
             <Button x:Name="ReturnToMainPageButton" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_CloseButton_Description" Grid.Column="1" HorizontalAlignment="Right" Command="{x:Bind ViewModel.GoBackToMainPageCommand}" Style="{ThemeResource AlternateCloseButtonStyle}" VerticalAlignment="Center">
                 <Button.Content>
                     <SymbolIcon Symbol="Cancel"/>
@@ -62,8 +76,9 @@
             </Button>
         </Grid>
 
+        <!-- Configuration unit results -->
         <Grid
-            Visibility="Visible"
+            Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
             Grid.Row="2"
             RowSpacing="20"
             ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -73,14 +88,7 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0">Summary</TextBlock>
-                <TextBlock Grid.Column="1" Padding="0,20,0,0">Success: 2 | Failed: 3</TextBlock>
-            </Grid>
+            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0">Summary</TextBlock>
             <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.ConfigurationUnitResults, Mode=OneWay}">
                     <ItemsRepeater.Resources>
@@ -94,7 +102,16 @@
                         <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
                             <StackPanel>
                                 <TextBlock Text="{x:Bind Title}"/>
-                                <TextBlock Margin="20,0,0,0" Text="{x:Bind Result}"/>
+                                <TextBlock Margin="20,0,0,0" Text="{x:Bind ApplyResult}">
+                                    <i:Interaction.Behaviors>
+                                        <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
+                                            <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}"/>
+                                        </ic:DataTriggerBehavior>
+                                        <ic:DataTriggerBehavior Binding="{x:Bind IsSkipped}" Value="True">
+                                            <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCautionBrush}"/>
+                                        </ic:DataTriggerBehavior>
+                                    </i:Interaction.Behaviors>
+                                </TextBlock>
                             </StackPanel>
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>
@@ -103,7 +120,10 @@
         </Grid>
 
         <!-- Grid with information on tasks completed-->
-        <Grid Grid.Row="2" ColumnSpacing="50" Visibility="Collapsed">
+        <Grid
+            Grid.Row="2"
+            Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource BoolToInverseVisibilityConverter}}"
+            ColumnSpacing="50">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition />

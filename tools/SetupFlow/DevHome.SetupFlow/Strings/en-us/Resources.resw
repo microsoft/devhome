@@ -209,6 +209,22 @@
     <value>View {0}</value>
     <comment>{Locked="{0}"}Title for the page showing the contents of a configuration file. {0} is replaced by the configuration file name.</comment>
   </data>
+  <data name="ConfigurationUnitFailed" xml:space="preserve">
+    <value>Failed: {0}</value>
+    <comment>{Locked="{0}"}Error message displayed when applying a configuration unit fails. {0} is replaced by an error code.</comment>
+  </data>
+  <data name="ConfigurationUnitSkipped" xml:space="preserve">
+    <value>Skipped: {0}</value>
+    <comment>{Locked="{0}"}Warning message displayed when applying a configuration unit is skipped. {0} is replaced by an error code.</comment>
+  </data>
+  <data name="ConfigurationUnitSuccess" xml:space="preserve">
+    <value>Configuration successfully applied</value>
+    <comment>Message displayed when applying a configuration unit succeeds.</comment>
+  </data>
+  <data name="ConfigurationUnitSummary" xml:space="preserve">
+    <value>{0} : {1}</value>
+    <comment>{Locked="{0}","{1}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent. {1} is replaced by the configuration unit name.</comment>
+  </data>
   <data name="DefaultBanner.Title" xml:space="preserve">
     <value>Get ready to code in minutes</value>
     <comment>Title text of an instruction banner section for setting up a development machine</comment>
@@ -839,6 +855,10 @@
   <data name="SummaryPage_Header.Text" xml:space="preserve">
     <value>We set up the following for you...</value>
     <comment>Header text for the summary page</comment>
+  </data>
+  <data name="SummaryPage_HeaderWithErrors.Text" xml:space="preserve">
+    <value>We've set things up, but there were some problems...</value>
+    <comment>Header text for the summary page with certain unsuccessful tasks</comment>
   </data>
   <data name="SummaryPage_NextSteps.Text" xml:space="preserve">
     <value>Next Steps</value>

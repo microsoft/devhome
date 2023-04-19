@@ -72,6 +72,7 @@ public static class ServiceExtensions
         // DI factory pattern
         services.AddSingleton<PackageViewModelFactory>(sp => package => ActivatorUtilities.CreateInstance<PackageViewModel>(sp, package));
         services.AddSingleton<PackageCatalogViewModelFactory>(sp => catalog => ActivatorUtilities.CreateInstance<PackageCatalogViewModel>(sp, catalog));
+        services.AddSingleton<ConfigurationUnitResultViewModelFactory>(sp => unitResult => ActivatorUtilities.CreateInstance<ConfigurationUnitResultViewModel>(sp, unitResult));
 
         return services;
     }
