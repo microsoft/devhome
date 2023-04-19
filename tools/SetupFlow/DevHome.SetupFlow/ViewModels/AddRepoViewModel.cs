@@ -296,6 +296,9 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="accountName">The account used to authenticate into the provider.</param>
     /// <param name="repositoriesToAdd">Repositories to add</param>
     /// <param name="repositoriesToRemove">Repositories to remove.</param>
+    /// <remarks>
+    /// User has to go through the account screen to get here.  The login id to use is known.
+    /// </remarks>
     public void AddOrRemoveRepository(string providerName, string accountName, IList<object> repositoriesToAdd, IList<object> repositoriesToRemove)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding and removing repositories");
@@ -343,6 +346,10 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         var cloningInformation = new CloningInformation();
+
+        // If the URL points to a private repo the URL tab has no way of knowing what account has access.
+        // Keep owning account null to make github extension try all logged in accounts.
+        cloningInformation.OwningAccount = null;
         (string, IRepository) providerNameAndRepo;
 
         try
@@ -353,29 +360,22 @@ public partial class AddRepoViewModel : ObservableObject
         {
             // Catching should not be used for branching logic.
             // However, I forgot to consider the scenario where the URL can be parsed
-            // but the repo can't be found.  This can happen if the user pasts in a private URL
-            // and the user isn't logged in.
-            if (e.InnerException?.HResult == unchecked((int)0x80070005))
-            {
-                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationNotFound);
-                ShouldShowUrlError = Visibility.Visible;
-                return;
-            }
-            else
-            {
-                throw;
-            }
+            // but the repo can't be found.  This can happen if
+            // 1. Any logged in account does not have access
+            // 2. The repo does not exist.
+            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationNotFound);
+            ShouldShowUrlError = Visibility.Visible;
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, e.ToString());
+            return;
         }
 
         if (providerNameAndRepo.Item2 != null)
         {
-            // a provider parsed the Url and returned a valid IRepository
+            // A provider parsed the URL and at least 1 logged in account has access to the repo.
             var repository = providerNameAndRepo.Item2;
 
-            // assuming one account per provider. Will need to change when multiple accounts are enabled.
-            var developerId = _providers.GetAllLoggedInAccounts(providerNameAndRepo.Item1).First() ?? new DeveloperId(repository.OwningAccountName, Url);
+            // Need to consider no one is logged in when cloning via URL. :)
             cloningInformation.ProviderName = providerNameAndRepo.Item1;
-            cloningInformation.OwningAccount = developerId;
             cloningInformation.RepositoryToClone = repository;
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
         }
@@ -386,10 +386,6 @@ public partial class AddRepoViewModel : ObservableObject
             // no providers can parse the Url.
             // Fall back to a git Url.
             cloningInformation.ProviderName = "git";
-
-            // Because the user is cloning via URL the developer account is unknown.
-            var gitDeveloperId = new DeveloperId("FromGitUrl", Url);
-            cloningInformation.OwningAccount = gitDeveloperId;
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
         }

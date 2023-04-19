@@ -103,10 +103,12 @@ public class CloneRepoTask : ISetupTask
     /// </summary>
     /// <param name="cloneLocation">Repository will be placed here. at cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The reposptyr to clone</param>
-    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource)
+    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName)
     {
         this.cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
+        _developerId = null;
+        ProviderName = providerName;
         SetMessages(stringResource);
     }
 
@@ -150,13 +152,18 @@ public class CloneRepoTask : ISetupTask
 
             try
             {
+                // If the user used the repo tab to add repos then _developerId points to the account used to clone their repo.
+                // What if the user used the URL tab?  On a private repo validation is done in the extension to figure out if any
+                // logged in account has access to the repo.  However, github plugin does not have a way to tell us what account.
+                // _developerId will be null in the case of adding via URL.
+                // If this is the case.  Loop through all logged in devids if any and try them all.
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
+
                 await RepositoryToClone.CloneRepositoryAsync(cloneLocation.FullName, _developerId);
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Something happened while trying to clone {cloneLocation.FullName}");
-                Console.WriteLine(e.ToString());
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}", e);
                 return TaskFinishedState.Failure;
             }
 
