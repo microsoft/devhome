@@ -931,4 +931,8 @@
     <value>Return to main screen</value>
     <comment>Description of the 'go to main page' button for screen readers</comment>
   </data>
+  <data name="ClonePathNotFullyQualifiedMessage" xml:space="preserve">
+    <value>Clone path is not fully qualified</value>
+    <comment>Error message to tell the user to fully qualify their clone path</comment>
+  </data>
 </root>

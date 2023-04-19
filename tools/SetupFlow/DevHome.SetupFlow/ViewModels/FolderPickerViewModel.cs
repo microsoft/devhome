@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using Windows.Storage.Pickers;
 using WinUIEx;
@@ -18,6 +19,8 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class FolderPickerViewModel : ObservableObject
 {
+    private readonly ISetupFlowStringResource _stringResource;
+
     /// <summary>
     /// Some pages don't show a folder picker.
     /// </summary>
@@ -60,8 +63,9 @@ public partial class FolderPickerViewModel : ObservableObject
     [ObservableProperty]
     private bool _showFolderPickerError;
 
-    public FolderPickerViewModel()
+    public FolderPickerViewModel(ISetupFlowStringResource stringResource)
     {
+        _stringResource = stringResource;
         ShouldShowFolderPicker = Visibility.Visible;
         CloneLocation = string.Empty;
         IsBrowseButtonEnabled = true;
@@ -150,7 +154,7 @@ public partial class FolderPickerViewModel : ObservableObject
 
         if (!Path.IsPathFullyQualified(CloneLocation))
         {
-            FolderPickerErrorMessage = "Clone location is not fully qualified.";
+            FolderPickerErrorMessage = _stringResource.GetLocalized(StringResourceKey.ClonePathNotFullyQualifiedMessage);
             ShowFolderPickerError = true;
             return false;
         }
