@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
@@ -95,6 +96,13 @@ public class WinGetCompositeCatalog : IWinGetCatalog
     {
         try
         {
+            // Skip search if set is empty
+            if (!packageIdSet.Any())
+            {
+                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"{nameof(GetPackagesAsync)} received an empty set of package id. Skipping search.");
+                return new List<IWinGetPackage>();
+            }
+
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting package set from catalog {_catalog.Info.Name}");
             var options = _wingetFactory.CreateFindPackagesOptions();
             foreach (var packageId in packageIdSet)

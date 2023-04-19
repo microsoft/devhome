@@ -29,10 +29,9 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
 
     public ReadOnlyObservableCollection<PackageViewModel> SelectedPackages => _packageProvider.SelectedPackages;
 
-    /// <summary>
-    /// Gets the localized string for <see cref="StringResourceKey.ApplicationsSelectedCount"/>
-    /// </summary>
-    public string ApplicationsSelectedCountText => StringResource.GetLocalized(StringResourceKey.ApplicationsSelectedCount, SelectedPackages.Count);
+    public string ApplicationsAddedText => SelectedPackages.Count == 1 ?
+        StringResource.GetLocalized(StringResourceKey.ApplicationsAddedSingular) :
+        StringResource.GetLocalized(StringResourceKey.ApplicationsAddedPlural, SelectedPackages.Count);
 
     public AppManagementViewModel(
         ISetupFlowStringResource stringResource,
@@ -48,7 +47,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         _shimmerSearchViewModel = host.GetService<ShimmerSearchViewModel>();
         _packageCatalogListViewModel = host.GetService<PackageCatalogListViewModel>();
 
-        _packageProvider.PackageSelectionChanged += (_, _) => OnPropertyChanged(nameof(ApplicationsSelectedCountText));
+        _packageProvider.PackageSelectionChanged += (_, _) => OnPropertyChanged(nameof(ApplicationsAddedText));
 
         PageTitle = StringResource.GetLocalized(StringResourceKey.ApplicationsPageTitle);
 

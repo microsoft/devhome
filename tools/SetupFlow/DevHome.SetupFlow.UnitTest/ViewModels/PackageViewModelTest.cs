@@ -2,8 +2,10 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.UnitTest.Helpers;
 using DevHome.SetupFlow.ViewModels;
+using Moq;
 
 namespace DevHome.SetupFlow.UnitTest.ViewModels;
 
@@ -68,5 +70,37 @@ public class PackageViewModelTest : BaseSetupFlowTest
 
         // Assert
         Assert.AreEqual(expectedUrl, packageViewModel.GetLearnMoreUri().ToString());
+    }
+
+    [TestMethod]
+    [DataRow("v1", "mockWinGet", "Microsoft", "v1 | mockWinGet | Microsoft")]
+    [DataRow("v1", "mockWinGet", "", "v1 | mockWinGet")]
+    [DataRow("Unknown", "mockMsStore", "Microsoft", "mockMsStore | Microsoft")]
+    [DataRow("Unknown", "mockMsStore", "", "mockMsStore")]
+    public void PackageDescription_VersionAndPublisherAreOptional_ReturnsExpectedDescription(
+        string version,
+        string source,
+        string publisher,
+        string expectedDescription)
+    {
+        // Arrange
+        WindowsPackageManager.Setup(wpm => wpm.MsStoreId).Returns("mockMsStore");
+        var package = PackageHelper.CreatePackage("mockId");
+        package.Setup(p => p.CatalogId).Returns(source);
+        package.Setup(p => p.CatalogName).Returns(source);
+        package.Setup(p => p.PublisherName).Returns(publisher);
+        package.Setup(p => p.Version).Returns(version);
+        StringResource
+            .Setup(sr => sr.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, It.IsAny<object[]>()))
+            .Returns((string key, object[] args) => $"{args[0]} | {args[1]} | {args[2]}");
+        StringResource
+            .Setup(sr => sr.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, It.IsAny<object[]>()))
+            .Returns((string key, object[] args) => $"{args[0]} | {args[1]}");
+
+        // Act
+        var packageViewModel = TestHost.CreateInstance<PackageViewModel>(package.Object);
+
+        // Assert
+        Assert.AreEqual(expectedDescription, packageViewModel.PackageDescription);
     }
 }

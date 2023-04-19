@@ -2,13 +2,17 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading.Tasks;
 using DevHome.Common.Extensions;
+using DevHome.Common.Views;
+using DevHome.Settings.Helpers;
 using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Settings.Views;
 
@@ -47,7 +51,7 @@ public sealed partial class AccountsPage : Page
             {
                 try
                 {
-                    await accountProvider.ShowLoginUIAsync("Settings", this);
+                    await ShowLoginUIAsync("Settings", this, accountProvider);
                 }
                 catch (Exception ex)
                 {
@@ -62,6 +66,27 @@ public sealed partial class AccountsPage : Page
                 return;
             }
         }
+    }
+
+    public async Task ShowLoginUIAsync(string loginEntryPoint, Page parentPage, AccountsProviderViewModel accountProvider)
+    {
+        string[] args = { loginEntryPoint };
+        var loginUIAdaptiveCardController = accountProvider.DeveloperIdProvider.GetAdaptiveCardController(args);
+        var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
+        pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, AdaptiveCardRendererHelper.GetLoginUIRenderer());
+        pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
+
+        var loginUIContentDialog = new LoginUIDialog(pluginAdaptiveCardPanel)
+        {
+            XamlRoot = parentPage.XamlRoot,
+            RequestedTheme = parentPage.ActualTheme,
+        };
+
+        await loginUIContentDialog.ShowAsync();
+        accountProvider.RefreshLoggedInAccounts();
+
+        // TODO: Await Login event to match up the loginEntryPoint and return DeveloperId
+        loginUIAdaptiveCardController.Dispose();
     }
 
     private async void Logout_Click(object sender, RoutedEventArgs e)

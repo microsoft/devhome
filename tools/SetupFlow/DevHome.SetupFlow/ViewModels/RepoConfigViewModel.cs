@@ -35,12 +35,6 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ObservableCollection<CloningInformation> _repoReviewItems = new ();
 
-    /// <summary>
-    /// Controls if the "No repo" message is shown to the user.
-    /// </summary>
-    [ObservableProperty]
-    private Visibility _shouldShowNoRepoMessage = Visibility.Visible;
-
     public IDevDriveManager DevDriveManager => _devDriveManager;
 
     public RepoConfigViewModel(
@@ -55,6 +49,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         LocalStringResource = stringResource;
         RepoDialogCancelled += _devDriveManager.CancelChangesToDevDrive;
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReposConfigPageTitle);
+        NextPageButtonToolTipText = stringResource.GetLocalized(StringResourceKey.RepoToolNextButtonTooltip);
     }
 
     /// <summary>
@@ -69,7 +64,6 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         List<CloningInformation> repoReviewItems = new (RepoReviewItems);
         repoReviewItems.AddRange(cloningInformations);
 
-        ShouldShowNoRepoMessage = Visibility.Collapsed;
         RepoReviewItems = new ObservableCollection<CloningInformation>(repoReviewItems);
         _taskGroup.SaveSetupTaskInformation(repoReviewItems);
     }
@@ -82,12 +76,14 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {cloningInformation.RepositoryId} from repos to clone");
         RepoReviewItems.Remove(cloningInformation);
-        _taskGroup.SaveSetupTaskInformation(RepoReviewItems.ToList());
 
+        // force collection to be empty(?) converter won't fire otherwise.
         if (RepoReviewItems.Count == 0)
         {
-            ShouldShowNoRepoMessage = Visibility.Visible;
+            RepoReviewItems = new ObservableCollection<CloningInformation>();
         }
+
+        _taskGroup.SaveSetupTaskInformation(RepoReviewItems.ToList());
     }
 
     public void UpdateCloneLocation(CloningInformation cloningInformation)

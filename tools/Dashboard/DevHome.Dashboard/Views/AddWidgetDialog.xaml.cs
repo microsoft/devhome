@@ -29,7 +29,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
         WidgetHost host,
         WidgetCatalog catalog,
         AdaptiveCardRenderer renderer,
-        DispatcherQueue dispatcher)
+        DispatcherQueue dispatcher,
+        ElementTheme theme)
     {
         ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, renderer, dispatcher);
         this.InitializeComponent();
@@ -37,7 +38,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _widgetHost = host;
         _widgetCatalog = catalog;
 
+        // Strange behavior: setting the requested theme in the constructor isn't enough, so do it here.
+        RequestedTheme = theme;
+
         FillAvailableWidgets();
+        SelectFirstWidgetByDefault();
     }
 
     private void FillAvailableWidgets()
@@ -63,15 +68,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
         {
             if (WidgetHelpers.IsIncludedWidgetProvider(providerDef))
             {
-                var itemContent = BuildProviderNavItem(providerDef);
                 var navItem = new NavigationViewItem
                 {
                     IsExpanded = true,
                     Tag = providerDef,
-                    Content = itemContent,
+                    Content = providerDef.DisplayName,
                 };
-
-                navItem.Content = itemContent;
 
                 foreach (var widgetDef in widgetDefs)
                 {
@@ -98,12 +100,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
-    private StackPanel BuildProviderNavItem(WidgetProviderDefinition providerDefinition)
-    {
-        var image = DashboardView.GetProviderIcon(providerDefinition);
-        return BuildNavItem(image, providerDefinition.DisplayName);
-    }
-
     private StackPanel BuildWidgetNavItem(WidgetDefinition widgetDefinition)
     {
         var image = DashboardView.GetWidgetIconForTheme(widgetDefinition, ActualTheme);
@@ -121,12 +117,13 @@ public sealed partial class AddWidgetDialog : ContentDialog
         {
             var itemSquare = new Rectangle()
             {
-                MinWidth = 20,
-                MinHeight = 20,
+                Width = 16,
+                Height = 16,
                 Margin = new Thickness(0, 0, 10, 0),
                 Fill = new ImageBrush
                 {
                     ImageSource = image,
+                    Stretch = Stretch.Uniform,
                 },
             };
 
@@ -161,6 +158,19 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
 
         return false;
+    }
+
+    private void SelectFirstWidgetByDefault()
+    {
+        if (AddWidgetNavigationView.MenuItems.Count > 0)
+        {
+            var firstProvider = AddWidgetNavigationView.MenuItems[0] as NavigationViewItem;
+            if (firstProvider.MenuItems.Count > 0)
+            {
+                var firstWidget = firstProvider.MenuItems[0] as NavigationViewItem;
+                AddWidgetNavigationView.SelectedItem = firstWidget;
+            }
+        }
     }
 
     private async void AddWidgetNavigationView_SelectionChanged(

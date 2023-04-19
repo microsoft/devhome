@@ -2,10 +2,22 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using CommunityToolkit.WinUI;
 using DevHome.Common.Helpers;
+using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.ApplicationModel.Resources;
+using Windows.Storage;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.System.Com;
+using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.Shell.Common;
 using WinUIEx;
 
 namespace DevHome.Common.Extensions;
@@ -65,6 +77,79 @@ public static class WindowExExtensions
         {
             rootElement.RequestedTheme = theme;
             TitleBarHelper.UpdateTitleBar(window, theme);
+        }
+    }
+
+    /// <summary>
+    /// Open file picker
+    /// </summary>
+    /// <param name="window">Target window</param>
+    /// <param name="filters">List of type filters (e.g. *.yaml, *.txt), or empty/<c>null</c> to allow all file types</param>
+    /// <returns>Storage file or <c>null</c> if no file was selected</returns>
+    public static async Task<StorageFile?> OpenFilePickerAsync(this WindowEx window, List<string>? filters = null)
+    {
+        try
+        {
+            string fileName;
+
+            // File picker fails when running the application as admin.
+            // To workaround this issue, we instead use the Win32 picking APIs
+            // as suggested in the documentation for the FileSavePicker:
+            // >> Original code reference: https://learn.microsoft.com/en-us/uwp/api/windows.storage.pickers.filesavepicker?view=winrt-22621#in-a-desktop-app-that-requires-elevation
+            // >> Github issue: https://github.com/microsoft/WindowsAppSDK/issues/2504
+            // "In a desktop app (which includes WinUI 3 apps), you can use
+            // FileSavePicker (and other types from Windows.Storage.Pickers).
+            // But if the desktop app requires elevation to run, then you'll
+            // need a different approach (that's because these APIs aren't
+            // designed to be used in an elevated app). The code snippet below
+            // illustrates how you can use the C#/Win32 P/Invoke Source
+            // Generator (CsWin32) to call the Win32 picking APIs instead."
+            unsafe
+            {
+                var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+
+                var hr = PInvoke.CoCreateInstance<IFileOpenDialog>(
+                    typeof(FileOpenDialog).GUID,
+                    null,
+                    CLSCTX.CLSCTX_INPROC_SERVER,
+                    out var fsd);
+                Marshal.ThrowExceptionForHR(hr);
+
+                // Set filters (e.g. "*.yaml", "*.yml", etc...)
+                var extensions = new List<COMDLG_FILTERSPEC>();
+                filters ??= new ();
+                foreach (var filter in filters)
+                {
+                    COMDLG_FILTERSPEC extension;
+                    extension.pszName = (char*)Marshal.StringToHGlobalUni(string.Empty);
+                    extension.pszSpec = (char*)Marshal.StringToHGlobalUni(filter);
+                    extensions.Add(extension);
+                }
+
+                // Generate last filter entry
+                var allFilestString = Application.Current.GetService<IStringResource>().GetLocalized("AllFiles");
+                var allTypes = filters.Any() ? string.Join(";", filters) : "*.*";
+                COMDLG_FILTERSPEC allExtension;
+                allExtension.pszName = (char*)Marshal.StringToHGlobalUni(allFilestString);
+                allExtension.pszSpec = (char*)Marshal.StringToHGlobalUni(allTypes);
+                extensions.Add(allExtension);
+
+                fsd.SetFileTypes(extensions.ToArray());
+
+                fsd.Show(new HWND(hWnd));
+                fsd.GetResult(out var ppsi);
+
+                PWSTR pFileName;
+                ppsi.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, &pFileName);
+                fileName = new string(pFileName);
+            }
+
+            return await StorageFile.GetFileFromPathAsync(fileName);
+        }
+        catch
+        {
+            // Return null if canceled or an error occurred
+            return null;
         }
     }
 }
