@@ -20,7 +20,11 @@ public class ConfigurationUnitResultViewModel
 
     public string Result => GetResult();
 
-    public string GetResult()
+    public bool IsSkipped => _unitResult.IsSkipped;
+
+    public bool IsError => !IsSkipped && _unitResult.HResult != HRESULT.S_OK;
+
+    private string GetResult()
     {
         var hresult = _unitResult.HResult.ToString("X", CultureInfo.InvariantCulture);
         if (_unitResult.IsSkipped)

@@ -22,6 +22,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 {
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly IHost _host;
+    private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -70,28 +71,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         }
     }
 
-    public IList<ConfigurationUnitResultViewModel> ConfigurationUnitResults
-    {
-        get
-        {
-            List<ConfigurationUnitResultViewModel> test = new ();
-            var repositoriesCloned = new ObservableCollection<KeyValuePair<string, string>>();
-            var taskGroup = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
-            var group = taskGroup.SingleOrDefault(x => x.GetType() == typeof(ConfigurationFileTaskGroup));
-            if (group is ConfigurationFileTaskGroup configTaskGroup)
-            {
-                if (configTaskGroup.SetupTasks.FirstOrDefault() is ConfigureTask configTask && configTask.UnitResults != null)
-                {
-                    foreach (var unitResult in configTask.UnitResults)
-                    {
-                        test.Add(new ConfigurationUnitResultViewModel(unitResult));
-                    }
-                }
-            }
+    public IList<ConfigurationUnitResultViewModel> ConfigurationUnitResults => _configurationUnitResults.Value;
 
-            return test;
-        }
-    }
+    public bool ShowConfigurationUnitResults => ConfigurationUnitResults.Any();
 
     [RelayCommand]
     public void OpenDashboard()
@@ -123,6 +105,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
+        _configurationUnitResults = new (GetConfigurationUnitResults);
 
         _showRestartNeeded = Visibility.Collapsed;
     }
@@ -139,4 +122,23 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         // Puzzle piece icon
         _ => "\uEA86",
     };
+
+    private IList<ConfigurationUnitResultViewModel> GetConfigurationUnitResults()
+    {
+        List<ConfigurationUnitResultViewModel> unitResults = new ();
+        var taskGroup = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
+        var group = taskGroup.SingleOrDefault(x => x.GetType() == typeof(ConfigurationFileTaskGroup));
+        if (group is ConfigurationFileTaskGroup configTaskGroup)
+        {
+            if (configTaskGroup.SetupTasks.FirstOrDefault() is ConfigureTask configTask && configTask.UnitResults != null)
+            {
+                foreach (var unitResult in configTask.UnitResults)
+                {
+                    unitResults.Add(new ConfigurationUnitResultViewModel(unitResult));
+                }
+            }
+        }
+
+        return unitResults;
+    }
 }
