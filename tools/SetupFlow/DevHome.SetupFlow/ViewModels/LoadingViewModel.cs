@@ -112,6 +112,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private Visibility _showRetryButton;
 
+    [ObservableProperty]
+    private bool _showErrorMessage;
+
     [RelayCommand]
     public async void RestartFailedTasks()
     {
