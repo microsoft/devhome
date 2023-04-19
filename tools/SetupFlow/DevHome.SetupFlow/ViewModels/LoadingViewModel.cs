@@ -112,15 +112,24 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private Visibility _showRetryButton;
 
+    /// <summary>
+    /// Controls if the banner that notifies the user they've ran out of re-tries should be shown.
+    /// </summary>
     [ObservableProperty]
-    private bool _showErrorMessage;
+    private bool _showOutOfRetriesBanner;
 
+    /// <summary>
+    /// Hides the banner telling the user "You used up all your re-tries"
+    /// </summary>
     [RelayCommand]
     public void HideMaxRetryBanner()
     {
-        ShowErrorMessage = false;
+        ShowOutOfRetriesBanner = false;
     }
 
+    /// <summary>
+    /// Command to re-re run all tasks by moving them from _failedTasks to TasksToRun
+    /// </summary>
     [RelayCommand]
     public async void RestartFailedTasks()
     {
@@ -140,6 +149,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         await StartAllTasks(TasksToRun);
     }
 
+    /// <summary>
+    /// Signals that execution is finished so the stepper can go to the summary page.
+    /// </summary>
     [RelayCommand]
     public void GoToSummaryPage()
     {
@@ -351,7 +363,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         else if (_retryCount >= MAX_RETRIES)
         {
             Log.Logger?.ReportInfo(Log.Component.Loading, "Max number of retries reached; moving to next page");
-            ShowErrorMessage = true;
+            ShowOutOfRetriesBanner = true;
             ShowRetryButton = Visibility.Collapsed;
         }
         else
