@@ -116,6 +116,12 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private bool _showErrorMessage;
 
     [RelayCommand]
+    public void HideMaxRetryBanner()
+    {
+        ShowErrorMessage = false;
+    }
+
+    [RelayCommand]
     public async void RestartFailedTasks()
     {
         Log.Logger?.ReportInfo(Log.Component.Loading, "Restarting all failed tasks");
@@ -135,7 +141,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand]
-    public void NextButtonClicked()
+    public void GoToSummaryPage()
     {
         ExecutionFinished.Invoke(null, null);
     }
@@ -337,13 +343,16 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         });
 
         // All the tasks are done.  Re-try logic follows.
-        if (_failedTasks.Count == 0 || _retryCount >= MAX_RETRIES)
+        if (_failedTasks.Count == 0)
         {
-            // Move to the next screen if either
-            // no tasks failed, or
-            // user tried re-running them once.
-            Log.Logger?.ReportInfo(Log.Component.Loading, "All tasks succeeded or max number of retries reached; moving to next page");
+            Log.Logger?.ReportInfo(Log.Component.Loading, "All tasks succeeded.  Moving to next page");
             ExecutionFinished.Invoke(null, null);
+        }
+        else if (_retryCount >= MAX_RETRIES)
+        {
+            Log.Logger?.ReportInfo(Log.Component.Loading, "Max number of retries reached; moving to next page");
+            ShowErrorMessage = true;
+            ShowRetryButton = Visibility.Collapsed;
         }
         else
         {

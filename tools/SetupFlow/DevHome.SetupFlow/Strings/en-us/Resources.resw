@@ -939,4 +939,8 @@
     <value>you have reached max re-try, please procees to the summary page to learn more</value>
     <comment>Asking users to go to the summary page if failures.</comment>
   </data>
+  <data name="LoadingScreen_MaxRetiresReached_Button.Content" xml:space="preserve">
+    <value>Summary</value>
+    <comment>Button notifying users to go to the summary</comment>
+  </data>
 </root>

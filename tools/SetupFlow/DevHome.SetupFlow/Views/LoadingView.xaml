@@ -35,19 +35,19 @@
     </UserControl.Resources>
 
     <StackPanel x:Name="LoadingPageStackPanel" Orientation="Vertical" Spacing="20">
-        <Grid Visibility="{x:Bind ViewModel.ShowErrorMessage, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"  Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10" >
+        <Grid Visibility="{x:Bind ViewModel.ShowErrorMessage, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"  Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition MinWidth="100" />
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="5">
+            <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="5" BorderBrush="red" BorderThickness="1">
                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF167;" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" />
                 <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_First" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_Second" VerticalAlignment="Center"/>
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_Second" VerticalAlignment="Center" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5">
-                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequiredButton" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
-                <Button Command="{x:Bind ViewModel.RemoveRestartGridCommand}" Style="{ThemeResource AlternateCloseButtonStyle}">
+                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_MaxRetiresReached_Button" Command="{x:Bind ViewModel.GoToSummaryPageCommand}" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
+                <Button Command="{x:Bind ViewModel.HideMaxRetryBannerCommand}" Style="{ThemeResource AlternateCloseButtonStyle}">
                     <Button.Content>
                         <SymbolIcon Symbol="Cancel"/>
                     </Button.Content>
@@ -128,9 +128,6 @@
                     </StackPanel>
                 </ScrollViewer>
             </StackPanel>
-        </Grid>
-        <Grid >
-            
         </Grid>
     </StackPanel>
 </UserControl>
