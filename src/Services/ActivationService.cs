@@ -8,7 +8,6 @@ using DevHome.Common.Helpers;
 using DevHome.Contracts.Services;
 using DevHome.Views;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Services;
 
@@ -18,6 +17,8 @@ public class ActivationService : IActivationService
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly ILocalSettingsService _localSettingsService;
+
+    private bool _isInitialActivation = true;
 
     public ActivationService(
         ActivationHandler<LaunchActivatedEventArgs> defaultHandler,
@@ -33,25 +34,27 @@ public class ActivationService : IActivationService
 
     public async Task ActivateAsync(object activationArgs)
     {
-        // Execute tasks before activation.
-        await InitializeAsync();
-
-        // Set the MainWindow Content.
-        if (App.MainWindow.Content == null)
+        if (_isInitialActivation)
         {
+            _isInitialActivation = false;
+
+            // Execute tasks before activation.
+            await InitializeAsync();
+
+            // Set the MainWindow Content.
             App.MainWindow.Content = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun)
                 ? Application.Current.GetService<ShellPage>()
                 : Application.Current.GetService<InitializationPage>();
+
+            // Activate the MainWindow.
+            App.MainWindow.Activate();
+
+            // Execute tasks after activation.
+            await StartupAsync();
         }
 
         // Handle activation via ActivationHandlers.
         await HandleActivationAsync(activationArgs);
-
-        // Activate the MainWindow.
-        App.MainWindow.Activate();
-
-        // Execute tasks after activation.
-        await StartupAsync();
     }
 
     private async Task HandleActivationAsync(object activationArgs)
@@ -61,11 +64,6 @@ public class ActivationService : IActivationService
         if (activationHandler != null)
         {
             await activationHandler.HandleAsync(activationArgs);
-        }
-
-        if (_defaultHandler.CanHandle(activationArgs))
-        {
-            await _defaultHandler.HandleAsync(activationArgs);
         }
     }
 

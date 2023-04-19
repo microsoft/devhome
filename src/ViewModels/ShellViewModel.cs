@@ -52,7 +52,7 @@ public class ShellViewModel : ObservableRecipient
     {
         if (await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun))
         {
-            NavigationService.NavigateTo(typeof(DashboardViewModel).FullName!);
+            NavigationService.NavigateTo(NavigationService.DefaultPage);
         }
         else
         {
