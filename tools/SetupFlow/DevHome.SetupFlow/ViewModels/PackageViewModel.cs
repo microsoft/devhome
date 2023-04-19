@@ -36,6 +36,7 @@ public partial class PackageViewModel : ObservableObject
     private readonly Lazy<BitmapImage> _packageDarkThemeIcon;
     private readonly Lazy<BitmapImage> _packageLightThemeIcon;
     private readonly Lazy<InstallPackageTask> _installPackageTask;
+    private readonly Lazy<string> _packageDescription;
 
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IWinGetPackage _package;
@@ -69,6 +70,7 @@ public partial class PackageViewModel : ObservableObject
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
         _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask);
+        _packageDescription = new Lazy<string>(GetPackageDescription);
     }
 
     public PackageUniqueKey UniqueKey => _package.UniqueKey;
@@ -89,7 +91,7 @@ public partial class PackageViewModel : ObservableObject
 
     public string PackageTitle => Name;
 
-    public string PackageDescription => _stringResource.GetLocalized(StringResourceKey.PackageDescription, Version, CatalogName, PublisherName);
+    public string PackageDescription => _packageDescription.Value;
 
     public string TooltipName => _stringResource.GetLocalized(StringResourceKey.PackageNameTooltip, Name);
 
@@ -173,6 +175,30 @@ public partial class PackageViewModel : ObservableObject
     private InstallPackageTask CreateInstallTask()
     {
         return _package.CreateInstallTask(_wpm, _stringResource, _wingetFactory);
+    }
+
+    private string GetPackageDescription()
+    {
+        // Version | Source | Publisher name
+        if (_package.CatalogId != _wpm.MsStoreId && !string.IsNullOrEmpty(_package.PublisherName))
+        {
+            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, Version, CatalogName, PublisherName);
+        }
+
+        // Version | Source
+        if (_package.CatalogId != _wpm.MsStoreId)
+        {
+            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, Version, CatalogName);
+        }
+
+        // Source | Publisher name
+        if (!string.IsNullOrEmpty(_package.PublisherName))
+        {
+            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, CatalogName, PublisherName);
+        }
+
+        // Source
+        return CatalogName;
     }
 
     /// <summary>
