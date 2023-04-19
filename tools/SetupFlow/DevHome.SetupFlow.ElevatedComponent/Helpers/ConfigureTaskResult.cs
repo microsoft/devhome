@@ -2,6 +2,10 @@
 // Licensed under the MIT license.
 
 namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
+
+/// <summary>
+/// Class for a configure task result
+/// </summary>
 public sealed class ConfigureTaskResult : ITaskResult
 {
     public bool TaskAttempted { get; set; }

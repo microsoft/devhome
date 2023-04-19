@@ -131,8 +131,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private IList<ConfigurationUnitResultViewModel> GetConfigurationUnitResults()
     {
         List<ConfigurationUnitResultViewModel> unitResults = new ();
-        var taskGroup = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
-        var group = taskGroup.SingleOrDefault(x => x.GetType() == typeof(ConfigurationFileTaskGroup));
+        var group = _orchestrator.TaskGroups.OfType<ConfigurationFileTaskGroup>().FirstOrDefault();
         if (group is ConfigurationFileTaskGroup configTaskGroup)
         {
             if (configTaskGroup.SetupTasks.FirstOrDefault() is ConfigureTask configTask && configTask.UnitResults != null)

@@ -11,8 +11,8 @@ namespace DevHome.SetupFlow.ViewModels;
 /// <summary>
 /// Delegate factory for creating configuration unit result view models
 /// </summary>
-/// <param name="unitResult">Configuration unit result</param>
-/// <returns>Package view model</returns>
+/// <param name="unitResult">Configuration unit result model</param>
+/// <returns>Configuration unit result view model</returns>
 public delegate ConfigurationUnitResultViewModel ConfigurationUnitResultViewModelFactory(ConfigurationUnitResult unitResult);
 
 /// <summary>

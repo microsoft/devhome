@@ -888,6 +888,10 @@
     <value>Restart your computer to finish setup</value>
     <comment>Second part of the message notifying users to restart.</comment>
   </data>
+  <data name="SummaryPage_Summary.Text" xml:space="preserve">
+    <value>Summary</value>
+    <comment>Title for a section in the summary page</comment>
+  </data>
   <data name="DevDriveErrorWithReason" xml:space="preserve">
     <value>Dev Drive couldn't be created error: {0}</value>
     <comment>Message when the dev drive could not be created. Param: reason.</comment>

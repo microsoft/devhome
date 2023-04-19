@@ -81,14 +81,13 @@
             Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
             Grid.Row="2"
             RowSpacing="20"
-            ScrollViewer.VerticalScrollBarVisibility="Auto"
             BorderBrush="{StaticResource DividerStrokeColorDefault}"
             BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0">Summary</TextBlock>
+            <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Summary" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0" />
             <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.ConfigurationUnitResults, Mode=OneWay}">
                     <ItemsRepeater.Resources>
