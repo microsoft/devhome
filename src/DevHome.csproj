@@ -17,7 +17,13 @@
         <UseWinUI>true</UseWinUI>
         <EnableMsixTooling>true</EnableMsixTooling>
         <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
+		<BuildRing Condition="BuildRing == ''">Dev</BuildRing>
     </PropertyGroup>
+
+	<PropertyGroup>
+		<DefineConstants Condition="BuildRing == 'Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
+		<DefineConstants Condition="BuildRing == 'Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
+	</PropertyGroup>
 
     <ItemGroup>
         <Manifest Include="$(ApplicationManifest)" />
