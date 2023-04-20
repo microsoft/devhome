@@ -209,6 +209,26 @@
     <value>View {0}</value>
     <comment>{Locked="{0}"}Title for the page showing the contents of a configuration file. {0} is replaced by the configuration file name.</comment>
   </data>
+  <data name="ConfigurationUnitFailed" xml:space="preserve">
+    <value>Failed: {0}</value>
+    <comment>{Locked="{0}"}Error message displayed when applying a configuration unit fails. {0} is replaced by an error code.</comment>
+  </data>
+  <data name="ConfigurationUnitSkipped" xml:space="preserve">
+    <value>Skipped: {0}</value>
+    <comment>{Locked="{0}"}Warning message displayed when applying a configuration unit is skipped. {0} is replaced by an error code.</comment>
+  </data>
+  <data name="ConfigurationUnitSuccess" xml:space="preserve">
+    <value>Configuration successfully applied</value>
+    <comment>Message displayed when applying a configuration unit succeeds.</comment>
+  </data>
+  <data name="ConfigurationUnitSummary" xml:space="preserve">
+    <value>{0} : {1}</value>
+    <comment>{Locked="{0}","{1}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name.</comment>
+  </data>
+  <data name="ConfigurationUnitStats" xml:space="preserve">
+    <value>Succeeded: {0} | Failed: {1} | Skipped: {2}</value>
+    <comment>{Locked="{0}","{1}","{2}"}Text showing the number of configuration units that succeeded, failed and skipped. {0}, {1} and {2} are replaced with numeric values.</comment>
+  </data>
   <data name="DefaultBanner.Title" xml:space="preserve">
     <value>Get ready to code in minutes</value>
     <comment>Title text of an instruction banner section for setting up a development machine</comment>
@@ -840,6 +860,10 @@
     <value>We set up the following for you...</value>
     <comment>Header text for the summary page</comment>
   </data>
+  <data name="SummaryPage_HeaderWithErrors.Text" xml:space="preserve">
+    <value>We've set things up, but there were some problems...</value>
+    <comment>Header text for the summary page with certain unsuccessful tasks</comment>
+  </data>
   <data name="SummaryPage_NextSteps.Text" xml:space="preserve">
     <value>Next Steps</value>
     <comment>Text for the "Next steps" section of the summary page</comment>
@@ -867,6 +891,10 @@
   <data name="SummaryPage_RestartRequired_Second.Text" xml:space="preserve">
     <value>Restart your computer to finish setup</value>
     <comment>Second part of the message notifying users to restart.</comment>
+  </data>
+  <data name="SummaryPage_Summary.Text" xml:space="preserve">
+    <value>Summary</value>
+    <comment>Title for a section in the summary page</comment>
   </data>
   <data name="DevDriveErrorWithReason" xml:space="preserve">
     <value>Dev Drive couldn't be created error: {0}</value>
@@ -943,8 +971,12 @@
     <value>Summary</value>
     <comment>Button notifying users to go to the summary</comment>
   </data>
+  <data name="ClonePathNotFullyQualifiedMessage" xml:space="preserve">
+    <value>Clone path is not fully qualified</value>
+    <comment>Error message to tell the user to fully qualify their clone path</comment>
+  </data>
   <data name="UrlValidationBadUrl" xml:space="preserve">
-    <value>Url is not a valid, absolute, url.</value>
+    <value>URL is not a valid, absolute, URL.</value>
     <comment>Error string to show the user if the url isn't a url</comment>
   </data>
   <data name="UrlValidationEmpty" xml:space="preserve">

@@ -138,7 +138,7 @@ public class InstallPackageTask : ISetupTask
             InstallResultStatus.DownloadError =>
                 _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorDownloadError),
             InstallResultStatus.InstallError =>
-                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorInstallError, $"0x{_installPackageException.InstallerErrorCode.ToString("X", CultureInfo.InvariantCulture)}"),
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorInstallError, $"0x{_installPackageException.InstallerErrorCode:X}"),
             InstallResultStatus.NoApplicableInstallers =>
                 _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorNoApplicableInstallers),
             _ => _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownError),

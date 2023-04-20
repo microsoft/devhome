@@ -4,18 +4,21 @@
 using DevHome.SetupFlow.Common.Configuration;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
+using Microsoft.Management.Configuration;
 using Windows.Foundation;
 using Windows.Storage;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.ElevatedComponent.Tasks;
 
 public sealed class ElevatedConfigurationTask
 {
-    public IAsyncOperation<TaskResult> ApplyConfiguration(StorageFile file)
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(StorageFile file)
     {
         return Task.Run(async () =>
         {
-            var taskResult = new TaskResult();
+            var taskResult = new ElevatedConfigureTaskResult();
 
             try
             {
@@ -31,6 +34,13 @@ public sealed class ElevatedConfigurationTask
                 taskResult.TaskAttempted = true;
                 taskResult.TaskSucceeded = result.Succeeded;
                 taskResult.RebootRequired = result.RequiresReboot;
+                taskResult.UnitResults = result.Result.UnitResults.Select(unitResult => new ElevatedConfigureUnitTaskResult
+                {
+                    UnitName = unitResult.Unit.UnitName,
+                    Intent = unitResult.Unit.Intent.ToString(),
+                    IsSkipped = unitResult.State == ConfigurationUnitState.Skipped,
+                    HResult = unitResult.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK,
+                }).ToList();
 
                 if (result.ResultException != null)
                 {

@@ -8,3 +8,4 @@ FSCTL_QUERY_PERSISTENT_VOLUME_STATE
 StrFormatByteSizeEx
 LocalFree
 FormatMessage
+S_OK
