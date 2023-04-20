@@ -936,7 +936,7 @@
     <comment>First part of the banner telling a user not all tasks were successful</comment>
   </data>
   <data name="LoadingPage_SomeTasksFailed_Second.Text" xml:space="preserve">
-    <value>you have reached max re-try, please procees to the summary page to learn more</value>
+    <value>You have reached max re-try, please proceed to the summary page to learn more.</value>
     <comment>Asking users to go to the summary page if failures.</comment>
   </data>
   <data name="LoadingScreen_MaxRetiresReached_Button.Content" xml:space="preserve">
