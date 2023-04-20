@@ -146,15 +146,10 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private IList<ConfigurationUnitResultViewModel> GetConfigurationUnitResults()
     {
         List<ConfigurationUnitResultViewModel> unitResults = new ();
-        var configTaskGroup = _orchestrator.TaskGroups.OfType<ConfigurationFileTaskGroup>().FirstOrDefault();
-
-        // Exactly one configuration file is applied at a time
-        if (configTaskGroup?.SetupTasks.FirstOrDefault() is ConfigureTask configTask && configTask.UnitResults != null)
+        var configTaskGroup = _orchestrator.GetTaskGroup<ConfigurationFileTaskGroup>();
+        if (configTaskGroup?.ConfigureTask?.UnitResults != null)
         {
-            foreach (var unitResult in configTask.UnitResults)
-            {
-                unitResults.Add(_configurationUnitResultViewModelFactory(unitResult));
-            }
+            unitResults.AddRange(configTaskGroup.ConfigureTask.UnitResults.Select(unitResult => _configurationUnitResultViewModelFactory(unitResult)));
         }
 
         return unitResults;

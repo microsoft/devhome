@@ -223,7 +223,7 @@
   </data>
   <data name="ConfigurationUnitSummary" xml:space="preserve">
     <value>{0} : {1}</value>
-    <comment>{Locked="{0}","{1}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent. {1} is replaced by the configuration unit name.</comment>
+    <comment>{Locked="{0}","{1}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name.</comment>
   </data>
   <data name="ConfigurationUnitStats" xml:space="preserve">
     <value>Succeeded: {0} | Failed: {1} | Skipped: {2}</value>

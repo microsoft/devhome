@@ -41,7 +41,7 @@ public class ConfigurationUnitResultViewModel
 
     private string GetApplyResult()
     {
-        var hresult = $"0x{_unitResult.HResult.ToString("X", CultureInfo.InvariantCulture)}";
+        var hresult = $"0x{_unitResult.HResult:X}";
         if (IsSkipped)
         {
             return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSkipped, hresult);
