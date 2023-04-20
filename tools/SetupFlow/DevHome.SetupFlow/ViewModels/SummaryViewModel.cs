@@ -29,11 +29,11 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     // TODO: refactor setup flow so CloneRepoTask can be used without having to
     // add the app management project.
-    public ObservableCollection<KeyValuePair<string, string>> RepositoriesCloned
+    public ObservableCollection<RepoViewListItem> RepositoriesCloned
     {
         get
         {
-            var repositoriesCloned = new ObservableCollection<KeyValuePair<string, string>>();
+            var repositoriesCloned = new ObservableCollection<RepoViewListItem>();
             var taskGroup = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
             var group = taskGroup.SingleOrDefault(x => x.GetType() == typeof(RepoConfigTaskGroup));
             if (group is RepoConfigTaskGroup repoTaskGroup)
@@ -42,8 +42,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 {
                     if (task is CloneRepoTask repoTask && repoTask.WasCloningSuccessful)
                     {
-                        repositoriesCloned.Add(
-                            new KeyValuePair<string, string>(GetFontIconForProvider(repoTask.ProviderName), repoTask.RepositoryName));
+                        repositoriesCloned.Add(new (repoTask.RepositoryToClone));
                     }
                 }
             }

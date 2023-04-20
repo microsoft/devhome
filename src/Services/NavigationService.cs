@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Contracts.ViewModels;
+using DevHome.Dashboard.ViewModels;
 using DevHome.Helpers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -18,6 +19,7 @@ public class NavigationService : INavigationService
     private readonly IPageService _pageService;
     private object? _lastParameterUsed;
     private Frame? _frame;
+    private string? _defaultPage;
 
     public event NavigatedEventHandler? Navigated;
 
@@ -40,6 +42,12 @@ public class NavigationService : INavigationService
             _frame = value;
             RegisterFrameEvents();
         }
+    }
+
+    public string DefaultPage
+    {
+        get => _defaultPage ?? typeof(DashboardViewModel).FullName ?? string.Empty;
+        set => _defaultPage = value;
     }
 
     [MemberNotNullWhen(true, nameof(Frame), nameof(_frame))]

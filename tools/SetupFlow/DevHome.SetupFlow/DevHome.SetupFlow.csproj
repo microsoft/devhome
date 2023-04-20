@@ -47,12 +47,16 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Update="Assets\DevHomeFluentIcons.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Page Update="Controls\SetupFlowNavigation.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\DevHomeFluentIcons.ttf" />
     <None Remove="Controls\SetupFlowNavigation.xaml" />
     <None Remove="NativeMethods.txt" />
     <None Remove="SetupFlowPage.xaml" />
