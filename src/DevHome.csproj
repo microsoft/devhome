@@ -17,13 +17,8 @@
         <UseWinUI>true</UseWinUI>
         <EnableMsixTooling>true</EnableMsixTooling>
         <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
-		<BuildRing Condition="BuildRing == ''">Dev</BuildRing>
+		<BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
     </PropertyGroup>
-
-	<PropertyGroup>
-		<DefineConstants Condition="BuildRing == 'Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
-		<DefineConstants Condition="BuildRing == 'Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
-	</PropertyGroup>
 
     <ItemGroup>
         <Manifest Include="$(ApplicationManifest)" />
@@ -95,5 +90,9 @@
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'">
 		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup>
+		<DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
+		<DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
 	</PropertyGroup>
 </Project>
