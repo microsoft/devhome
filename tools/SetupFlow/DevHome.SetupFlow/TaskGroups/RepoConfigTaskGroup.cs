@@ -61,7 +61,18 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         foreach (var cloningInformation in cloningInformations)
         {
             var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.RepositoryToClone.DisplayName);
-            var task = new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.ProviderName);
+
+            // if the repo was added via URL.
+            CloneRepoTask task;
+            if (cloningInformation.OwningAccount == null)
+            {
+                task = new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, _stringResource, cloningInformation.ProviderName);
+            }
+            else
+            {
+                task = new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.ProviderName);
+            }
+
             if (cloningInformation.CloneToDevDrive)
             {
                 task.DependsOnDevDriveToBeInstalled = true;

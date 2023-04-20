@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration.Provider;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -66,10 +68,10 @@ public partial class AddRepoViewModel : ObservableObject
     private ObservableCollection<string> _accounts = new ();
 
     /// <summary>
-    /// All the repositories for a specific account.
+    /// All the repositories for a specific account and the symbol to show
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<string> _repositories = new ();
+    private ObservableCollection<RepoViewListItem> _repositories = new ();
 
     /// <summary>
     /// Should the URL page be visible?
@@ -119,20 +121,28 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private string _primaryButtonText;
 
+    [ObservableProperty]
+    private string _urlParsingError;
+
+    [ObservableProperty]
+    private Visibility _shouldShowUrlError;
+
     [RelayCommand]
     private void FilterRepositories(string text)
     {
-        IEnumerable<string> filteredRepositories;
+        IEnumerable<RepoViewListItem> filteredRepositories;
         if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
         {
-            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => x.DisplayName);
+            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => new RepoViewListItem(x));
         }
         else
         {
-            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate).Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase)).Select(x => x.DisplayName);
+            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate)
+                .Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase))
+                .Select(x => new RepoViewListItem(x));
         }
 
-        Repositories = new ObservableCollection<string>(filteredRepositories);
+        Repositories = new ObservableCollection<RepoViewListItem>(filteredRepositories);
     }
 
     /// <summary>
@@ -149,6 +159,8 @@ public partial class AddRepoViewModel : ObservableObject
         ChangeToUrlPage();
 
         // override changes ChangeToUrlPage to correctly set the state.
+        UrlParsingError = string.Empty;
+        ShouldShowUrlError = Visibility.Collapsed;
         ShouldPrimaryButtonBeEnabled = false;
         ShowErrorTextBox = Visibility.Collapsed;
         EverythingToClone = new ();
@@ -189,6 +201,7 @@ public partial class AddRepoViewModel : ObservableObject
     public void ChangeToAccountPage()
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Account page");
+        ShouldShowUrlError = Visibility.Collapsed;
         ShowUrlPage = Visibility.Collapsed;
         ShowAccountPage = Visibility.Visible;
         ShowRepoPage = Visibility.Collapsed;
@@ -219,8 +232,23 @@ public partial class AddRepoViewModel : ObservableObject
     {
         if (CurrentPage == PageKind.AddViaUrl)
         {
-            // check if url or username/repo is filled in.
-            return !string.IsNullOrWhiteSpace(Url) && !string.IsNullOrEmpty(Url);
+            // Check if Url field is empty
+            if (string.IsNullOrEmpty(Url))
+            {
+                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationEmpty);
+                ShouldShowUrlError = Visibility.Visible;
+                return false;
+            }
+
+            if (!Uri.TryCreate(Url, UriKind.Absolute, out _))
+            {
+                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
+                ShouldShowUrlError = Visibility.Visible;
+                return false;
+            }
+
+            ShouldShowUrlError = Visibility.Collapsed;
+            return true;
         }
         else if (CurrentPage == PageKind.AddViaAccount || CurrentPage == PageKind.Repositories)
         {
@@ -270,28 +298,31 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="accountName">The account used to authenticate into the provider.</param>
     /// <param name="repositoriesToAdd">Repositories to add</param>
     /// <param name="repositoriesToRemove">Repositories to remove.</param>
+    /// <remarks>
+    /// User has to go through the account screen to get here.  The login id to use is known.
+    /// </remarks>
     public void AddOrRemoveRepository(string providerName, string accountName, IList<object> repositoriesToAdd, IList<object> repositoriesToRemove)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding and removing repositories");
         var developerId = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId() == accountName);
-        foreach (string repositoryToRemove in repositoriesToRemove)
+        foreach (RepoViewListItem repositoryToRemove in repositoriesToRemove)
         {
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {repositoryToRemove}");
             var cloningInformation = new CloningInformation();
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName == repositoryToRemove);
+            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToRemove.RepoName, StringComparison.OrdinalIgnoreCase));
 
             EverythingToClone.Remove(cloningInformation);
         }
 
-        foreach (string repositoryToAdd in repositoriesToAdd)
+        foreach (RepoViewListItem repositoryToAdd in repositoriesToAdd)
         {
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository {repositoryToAdd}");
             var cloningInformation = new CloningInformation();
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName == repositoryToAdd);
+            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToAdd.RepoName, StringComparison.OrdinalIgnoreCase));
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
 
@@ -307,34 +338,54 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="cloneLocation">The location to clone the repo to</param>
     public void AddRepositoryViaUri(string url, string cloneLocation)
     {
-        // if the url isn't valid don't bother finding a provider.
+        // If the url isn't valid don't bother finding a provider.
         Uri uriToParse;
         if (!Uri.TryCreate(url, UriKind.Absolute, out uriToParse))
         {
+            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
+            ShouldShowUrlError = Visibility.Visible;
             return;
         }
 
         var cloningInformation = new CloningInformation();
-        var providerNameAndRepo = _providers.ParseRepositoryFromUri(uriToParse);
+
+        // If the URL points to a private repo the URL tab has no way of knowing what account has access.
+        // Keep owning account null to make github extension try all logged in accounts.
+        cloningInformation.OwningAccount = null;
+        (string, IRepository) providerNameAndRepo;
+
+        try
+        {
+            providerNameAndRepo = _providers.ParseRepositoryFromUri(uriToParse);
+        }
+        catch (Exception e)
+        {
+            // Catching should not be used for branching logic.
+            // However, I forgot to consider the scenario where the URL can be parsed
+            // but the repo can't be found.  This can happen if
+            // 1. Any logged in account does not have access
+            // 2. The repo does not exist.
+            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationNotFound);
+            ShouldShowUrlError = Visibility.Visible;
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, e.ToString());
+            return;
+        }
+
         if (providerNameAndRepo.Item2 != null)
         {
-            // a provider parsed the Url and returned a valid IRepository
+            // A provider parsed the URL and at least 1 logged in account has access to the repo.
             var repository = providerNameAndRepo.Item2;
-            var developerId = new DeveloperId(repository.OwningAccountName, Url);
             cloningInformation.ProviderName = providerNameAndRepo.Item1;
-            cloningInformation.OwningAccount = developerId;
             cloningInformation.RepositoryToClone = repository;
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
         }
         else
         {
-            // no providers can parse the Url.
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "No providers could parse the Url.  Falling back to internal git provider");
+
+            // No providers can parse the Url.
             // Fall back to a git Url.
             cloningInformation.ProviderName = "git";
-
-            // Because the user is cloning via URL the developer account is unknown.
-            var gitDeveloperId = new DeveloperId("FromGitUrl", Url);
-            cloningInformation.OwningAccount = gitDeveloperId;
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
         }
@@ -354,7 +405,7 @@ public partial class AddRepoViewModel : ObservableObject
         _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
 
         // TODO: What if the user comes back here with repos selected?
-        Repositories = new ObservableCollection<string>(_repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => x.DisplayName));
+        Repositories = new ObservableCollection<RepoViewListItem>(_repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => new RepoViewListItem(x)));
     }
 
     /// <summary>

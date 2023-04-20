@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,7 +61,7 @@ internal partial class AddRepoDialog
             FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
         };
 
-        ToggleCloneButton();
+        IsPrimaryButtonEnabled = false;
     }
 
     /// <summary>
@@ -189,6 +190,11 @@ internal partial class AddRepoDialog
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
             AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation);
+            if (AddRepoViewModel.ShouldShowUrlError == Visibility.Visible)
+            {
+                IsPrimaryButtonEnabled = false;
+                args.Cancel = true;
+            }
         }
         else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
         {

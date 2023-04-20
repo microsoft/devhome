@@ -115,4 +115,9 @@ public static class StringResourceKey
     public static readonly string RepoEverythingElsePrimaryButtonText = nameof(RepoEverythingElsePrimaryButtonText);
     public static readonly string RepoPageEditClonePathAutomationProperties = nameof(RepoPageEditClonePathAutomationProperties);
     public static readonly string RepoPageRemoveRepoAutomationProperties = nameof(RepoPageRemoveRepoAutomationProperties);
+
+    // Url Validation
+    public static readonly string UrlValidationEmpty = nameof(UrlValidationEmpty);
+    public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);
+    public static readonly string UrlValidationNotFound = nameof(UrlValidationNotFound);
 }
