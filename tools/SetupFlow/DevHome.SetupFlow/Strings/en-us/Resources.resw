@@ -959,8 +959,12 @@
     <value>Return to main screen</value>
     <comment>Description of the 'go to main page' button for screen readers</comment>
   </data>
+  <data name="ClonePathNotFullyQualifiedMessage" xml:space="preserve">
+    <value>Clone path is not fully qualified</value>
+    <comment>Error message to tell the user to fully qualify their clone path</comment>
+    </data>
   <data name="UrlValidationBadUrl" xml:space="preserve">
-    <value>Url is not a valid, absolute, url.</value>
+    <value>URL is not a valid, absolute, URL.</value>
     <comment>Error string to show the user if the url isn't a url</comment>
   </data>
   <data name="UrlValidationEmpty" xml:space="preserve">
