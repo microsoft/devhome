@@ -12,7 +12,7 @@
 
         <!-- Set Min sizes so that image gets clipped as window narrows, rather than scaling down -->
         <Image Stretch="Uniform" Source="{x:Bind OverlaySource, Mode=OneWay}" 
-               Margin="0 0 0 0" Height="214" Width="924" MinHeight="214" MinWidth="924"/>
+               Margin="0 0 0 0" MinHeight="214" MinWidth="{ThemeResource MaxPageContentWidth}"/>
 
         <!-- Hide Banner Button -->
         <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
@@ -25,12 +25,12 @@
         </Button>
         <StackPanel VerticalAlignment="Center" Margin="38 0 0 0" Spacing="12">
             <TextBlock
-                Width="{x:Bind TextWidth}"
+                MaxWidth="{x:Bind TextWidth}"
                 HorizontalAlignment="Left"
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 Text="{x:Bind Title}"/>
             <TextBlock
-                Width="{x:Bind TextWidth}"
+                MaxWidth="{x:Bind TextWidth}"
                 HorizontalAlignment="Left"
                 TextWrapping="Wrap"
                 Text="{x:Bind Description}"/>

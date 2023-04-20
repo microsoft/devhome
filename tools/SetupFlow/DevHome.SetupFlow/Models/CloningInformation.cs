@@ -99,7 +99,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// <param name="other">The CloningInformation to compare to.</param>
     /// <returns>True if equal.</returns>
     /// <remarks>
-    /// ProviderName, OwningAccount, and RepositoryToClone are used for equality.
+    /// ProviderName, and RepositoryToClone are used for equality.
     /// </remarks>
     public bool Equals(CloningInformation other)
     {
@@ -109,7 +109,6 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         }
 
         return ProviderName.Equals(other.ProviderName, StringComparison.OrdinalIgnoreCase) &&
-            OwningAccount.LoginId().Equals(other.OwningAccount.LoginId(), StringComparison.OrdinalIgnoreCase) &&
             RepositoryToClone.DisplayName.Equals(other.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -120,6 +119,6 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
 
     public override int GetHashCode()
     {
-        return (ProviderName + OwningAccount.LoginId() + RepositoryToClone.DisplayName).GetHashCode();
+        return (ProviderName + RepositoryToClone.DisplayName).GetHashCode();
     }
 }
