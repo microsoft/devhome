@@ -37,6 +37,8 @@ public class ConfigurationUnitResultViewModel
 
     public bool IsError => !IsSkipped && _unitResult.HResult != HRESULT.S_OK;
 
+    public bool IsSuccess => _unitResult.HResult == HRESULT.S_OK;
+
     private string GetApplyResult()
     {
         var hresult = $"0x{_unitResult.HResult.ToString("X", CultureInfo.InvariantCulture)}";

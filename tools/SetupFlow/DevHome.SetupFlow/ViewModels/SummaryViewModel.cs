@@ -78,6 +78,18 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     public bool CompletedWithErrors => ConfigurationUnitResults.Any(unitResult => unitResult.IsError);
 
+    public int ConfigurationUnitSucceededCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsSuccess);
+
+    public int ConfigurationUnitFailedCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsError);
+
+    public int ConfigurationUnitSkippedCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsSkipped);
+
+    public string ConfigurationUnitStats => StringResource.GetLocalized(
+        StringResourceKey.ConfigurationUnitStats,
+        ConfigurationUnitSucceededCount,
+        ConfigurationUnitFailedCount,
+        ConfigurationUnitSkippedCount);
+
     [RelayCommand]
     public void OpenDashboard()
     {
