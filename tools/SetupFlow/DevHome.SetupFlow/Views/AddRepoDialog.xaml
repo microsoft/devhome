@@ -78,7 +78,7 @@
                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoriesList" />
                 </ListView.Header>
                 <ListView.ItemTemplate>
-                    <DataTemplate x:Name="symbolAndNameTemplate" x:DataType="models:RepoViewListItem">
+                    <DataTemplate x:DataType="models:RepoViewListItem">
                         <StackPanel Orientation="Horizontal" Spacing="5">
                             <FontIcon FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
                             <TextBlock Text="{x:Bind RepoName}"/>
