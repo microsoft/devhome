@@ -942,6 +942,7 @@
   <data name="LoadingScreen_MaxRetiresReached_Button.Content" xml:space="preserve">
     <value>Summary</value>
     <comment>Button notifying users to go to the summary</comment>
+  </data>
   <data name="UrlValidationBadUrl" xml:space="preserve">
     <value>Url is not a valid, absolute, url.</value>
     <comment>Error string to show the user if the url isn't a url</comment>
