@@ -18,7 +18,7 @@ public class ConfigurationUnitResult
         HResult = result.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK;
     }
 
-    public ConfigurationUnitResult(ConfigureUnitTaskResult result)
+    public ConfigurationUnitResult(ElevatedConfigureUnitTaskResult result)
     {
         UnitName = result.UnitName;
         Intent = result.Intent;

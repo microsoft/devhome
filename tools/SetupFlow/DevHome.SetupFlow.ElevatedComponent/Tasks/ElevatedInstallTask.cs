@@ -31,12 +31,12 @@ public sealed class ElevatedInstallTask
     /// <summary>
     /// Installs a package given its ID and the ID of the catalog it comes from.
     /// </summary>
-    public IAsyncOperation<InstallTaskResult> InstallPackage(string packageId, string catalogName)
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(string packageId, string catalogName)
     {
         return Task.Run(async () =>
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Elevated install requested for package [{packageId}] from catalog [{catalogName}]");
-            var result = new InstallTaskResult();
+            var result = new ElevatedInstallTaskResult();
 
             var packageManager = _wingetFactory.CreatePackageManager();
 

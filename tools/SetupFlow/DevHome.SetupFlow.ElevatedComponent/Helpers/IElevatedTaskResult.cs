@@ -11,7 +11,7 @@ namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
 /// we can project with CsWinRT than to make everything else fit on
 /// to CsWinRT requirements.
 /// </remarks>
-public interface ITaskResult
+public interface IElevatedTaskResult
 {
     /// <summary>
     /// Gets a value indicating whether we actually got to attempting to execute the task.

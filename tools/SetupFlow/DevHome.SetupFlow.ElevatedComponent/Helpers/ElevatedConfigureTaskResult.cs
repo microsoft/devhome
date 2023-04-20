@@ -4,13 +4,15 @@
 namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
 
 /// <summary>
-/// Class for an install task result
+/// Class for a configure task result
 /// </summary>
-public sealed class InstallTaskResult : ITaskResult
+public sealed class ElevatedConfigureTaskResult : IElevatedTaskResult
 {
     public bool TaskAttempted { get; set; }
 
     public bool TaskSucceeded { get; set; }
 
     public bool RebootRequired { get; set; }
+
+    public IReadOnlyList<ElevatedConfigureUnitTaskResult>? UnitResults { get; set; }
 }

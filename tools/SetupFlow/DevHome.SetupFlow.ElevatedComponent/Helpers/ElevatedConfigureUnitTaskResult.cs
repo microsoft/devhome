@@ -4,9 +4,9 @@
 namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
 
 /// <summary>
-/// Class for the result of an individual unit/resource inside <see cref="ConfigureTaskResult"/>
+/// Class for the result of an individual unit/resource inside <see cref="ElevatedConfigureTaskResult"/>
 /// </summary>
-public sealed class ConfigureUnitTaskResult
+public sealed class ElevatedConfigureUnitTaskResult
 {
     public string? UnitName { get; set; }
 

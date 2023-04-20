@@ -14,11 +14,11 @@ namespace DevHome.SetupFlow.ElevatedComponent.Tasks;
 
 public sealed class ElevatedConfigurationTask
 {
-    public IAsyncOperation<ConfigureTaskResult> ApplyConfiguration(StorageFile file)
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(StorageFile file)
     {
         return Task.Run(async () =>
         {
-            var taskResult = new ConfigureTaskResult();
+            var taskResult = new ElevatedConfigureTaskResult();
 
             try
             {
@@ -34,7 +34,7 @@ public sealed class ElevatedConfigurationTask
                 taskResult.TaskAttempted = true;
                 taskResult.TaskSucceeded = result.Succeeded;
                 taskResult.RebootRequired = result.RequiresReboot;
-                taskResult.UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigureUnitTaskResult
+                taskResult.UnitResults = result.Result.UnitResults.Select(unitResult => new ElevatedConfigureUnitTaskResult
                 {
                     UnitName = unitResult.Unit.UnitName,
                     Intent = unitResult.Unit.Intent.ToString(),
