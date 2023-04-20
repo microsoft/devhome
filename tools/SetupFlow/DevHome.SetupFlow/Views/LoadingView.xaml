@@ -25,7 +25,7 @@
                     <Style x:Key="DevHomeBorderStyle" TargetType="Border" >
                         <Setter Property="BorderBrush">
                             <Setter.Value>
-                                <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource ControlFillColorTertiary}"/>
+                                <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource TextFillColorTertiary}"/>
                             </Setter.Value>
                         </Setter>
                     </Style>
@@ -54,26 +54,26 @@
                 </Button>
             </StackPanel>
         </Grid>
-        <Grid x:Name="HeaderGrid">
+        <Grid x:Name="HeaderGrid" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical" Grid.Column="0">
+            <StackPanel Orientation="Vertical" Grid.Column="0" >
                 <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderTopRow"/>
                 <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderBottomRow"/>
             </StackPanel>
         </Grid>
         <ProgressBar AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_SetupProgressBar_Description" x:Name="SetupTaskProgressBar" Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
         <TextBlock Text="{x:Bind ViewModel.ExecutingTasks, Mode=OneWay}" />
-        <Grid ColumnSpacing="50">
+        <Grid ColumnSpacing="50" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <StackPanel x:Name="ExecutingTasksStackPanel" Grid.Column="0">
+            <StackPanel x:Name="ExecutingTasksStackPanel" Grid.Column="0" Padding="0, 11, 0, 0">
                 <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
-                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Padding="0, 0, 0, 20"/>
+                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Padding="0, 0, 0, 12" Style="{StaticResource SemiBoldTextStyle}"/>
                 </Border>
                 <ScrollViewer x:Name="AllRunningTasksScrollViewer" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" Margin="0, 20, 0, 0">
                     <StackPanel>
@@ -98,7 +98,7 @@
             </StackPanel>
             <StackPanel x:Name="ActionCenterStackPanel" Grid.Column="1">
                 <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1" >
-                    <Grid Padding="0, 0, 0, 5">
+                    <Grid Padding="0, 0, 0, 9">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
@@ -106,7 +106,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="33"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter" VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="0" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter" VerticalAlignment="Center" Style="{StaticResource SemiBoldTextStyle}"/>
                         <HyperlinkButton Grid.Row="0" Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}" HorizontalAlignment="right"/>
                     </Grid>
                 </Border>
