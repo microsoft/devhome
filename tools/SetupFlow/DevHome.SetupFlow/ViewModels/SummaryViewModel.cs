@@ -21,6 +21,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 {
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly IHost _host;
+    private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
+    private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -68,6 +70,24 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         }
     }
 
+    public IList<ConfigurationUnitResultViewModel> ConfigurationUnitResults => _configurationUnitResults.Value;
+
+    public bool ShowConfigurationUnitResults => ConfigurationUnitResults.Any();
+
+    public bool CompletedWithErrors => ConfigurationUnitResults.Any(unitResult => unitResult.IsError);
+
+    public int ConfigurationUnitSucceededCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsSuccess);
+
+    public int ConfigurationUnitFailedCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsError);
+
+    public int ConfigurationUnitSkippedCount => ConfigurationUnitResults.Count(unitResult => unitResult.IsSkipped);
+
+    public string ConfigurationUnitStats => StringResource.GetLocalized(
+        StringResourceKey.ConfigurationUnitStats,
+        ConfigurationUnitSucceededCount,
+        ConfigurationUnitFailedCount,
+        ConfigurationUnitSkippedCount);
+
     [RelayCommand]
     public void OpenDashboard()
     {
@@ -90,14 +110,17 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     public SummaryViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        IHost host)
+        IHost host,
+        ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory)
         : base(stringResource, orchestrator)
     {
         _orchestrator = orchestrator;
         _host = host;
+        _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
+        _configurationUnitResults = new (GetConfigurationUnitResults);
 
         _showRestartNeeded = Visibility.Collapsed;
     }
@@ -114,4 +137,21 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         // Puzzle piece icon
         _ => "\uEA86",
     };
+
+    /// <summary>
+    /// Get the list of configuratoin unit restults for an applied
+    /// configuration file task.
+    /// </summary>
+    /// <returns>List of configuration unit result</returns>
+    private IList<ConfigurationUnitResultViewModel> GetConfigurationUnitResults()
+    {
+        List<ConfigurationUnitResultViewModel> unitResults = new ();
+        var configTaskGroup = _orchestrator.GetTaskGroup<ConfigurationFileTaskGroup>();
+        if (configTaskGroup?.ConfigureTask?.UnitResults != null)
+        {
+            unitResults.AddRange(configTaskGroup.ConfigureTask.UnitResults.Select(unitResult => _configurationUnitResultViewModelFactory(unitResult)));
+        }
+
+        return unitResults;
+    }
 }
