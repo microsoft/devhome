@@ -134,20 +134,6 @@ public class CloneRepoTask : ISetupTask
     {
         return Task.Run(async () =>
         {
-            if (!cloneLocation.Exists)
-            {
-                try
-                {
-                    Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Creating clone location for repository at {cloneLocation.FullName}");
-                    Directory.CreateDirectory(cloneLocation.FullName);
-                }
-                catch (Exception)
-                {
-                    Log.Logger?.ReportError(Log.Component.RepoConfig, "Failed to create clone location for repository");
-                    return TaskFinishedState.Failure;
-                }
-            }
-
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
