@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.SetupFlow.Common.Configuration;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -140,18 +139,22 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _ => "\uEA86",
     };
 
+    /// <summary>
+    /// Get the list of configuratoin unit restults for an applied
+    /// configuration file task.
+    /// </summary>
+    /// <returns>List of configuration unit result</returns>
     private IList<ConfigurationUnitResultViewModel> GetConfigurationUnitResults()
     {
         List<ConfigurationUnitResultViewModel> unitResults = new ();
-        var group = _orchestrator.TaskGroups.OfType<ConfigurationFileTaskGroup>().FirstOrDefault();
-        if (group is ConfigurationFileTaskGroup configTaskGroup)
+        var configTaskGroup = _orchestrator.TaskGroups.OfType<ConfigurationFileTaskGroup>().FirstOrDefault();
+
+        // Exactly one configuration file is applied at a time
+        if (configTaskGroup?.SetupTasks.FirstOrDefault() is ConfigureTask configTask && configTask.UnitResults != null)
         {
-            if (configTaskGroup.SetupTasks.FirstOrDefault() is ConfigureTask configTask && configTask.UnitResults != null)
+            foreach (var unitResult in configTask.UnitResults)
             {
-                foreach (var unitResult in configTask.UnitResults)
-                {
-                    unitResults.Add(_configurationUnitResultViewModelFactory(unitResult));
-                }
+                unitResults.Add(_configurationUnitResultViewModelFactory(unitResult));
             }
         }
 
