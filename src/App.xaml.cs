@@ -17,13 +17,17 @@ using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppLifecycle;
 
 namespace DevHome;
 
 // To learn more about WinUI 3, see https://docs.microsoft.com/windows/apps/winui/winui3/.
 public partial class App : Application, IApp
 {
+    private readonly DispatcherQueue _dispatcherQueue;
+
     // The .NET Generic Host provides dependency injection, configuration, logging, and other services.
     // https://docs.microsoft.com/dotnet/core/extensions/generic-host
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
@@ -44,6 +48,7 @@ public partial class App : Application, IApp
     public App()
     {
         InitializeComponent();
+        _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
@@ -51,9 +56,10 @@ public partial class App : Application, IApp
         ConfigureServices((context, services) =>
         {
             // Default Activation Handler
-            services.AddTransient<ActivationHandler<LaunchActivatedEventArgs>, DefaultActivationHandler>();
+            services.AddTransient<ActivationHandler<Microsoft.UI.Xaml.LaunchActivatedEventArgs>, DefaultActivationHandler>();
 
             // Other Activation Handlers
+            services.AddTransient<IActivationHandler, ProtocolActivationHandler>();
 
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
@@ -98,6 +104,7 @@ public partial class App : Application, IApp
         Build();
 
         UnhandledException += App_UnhandledException;
+        AppInstance.GetCurrent().Activated += OnActivated;
     }
 
     private async void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
@@ -107,11 +114,19 @@ public partial class App : Application, IApp
         await GetService<IPluginService>().SignalStopPluginsAsync();
     }
 
-    protected async override void OnLaunched(LaunchActivatedEventArgs args)
+    protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
 
-        await GetService<IActivationService>().ActivateAsync(args);
+        await GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data);
         await GetService<IAccountsService>().InitializeAsync();
+    }
+
+    private void OnActivated(object? sender, AppActivationArguments args)
+    {
+        _dispatcherQueue.TryEnqueue(async () =>
+        {
+            await GetService<IActivationService>().ActivateAsync(args.Data);
+        });
     }
 }

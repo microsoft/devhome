@@ -4,7 +4,7 @@
   <Properties>
     <DisplayName>Dev Home (Dev)</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
-    <Logo>Assets\Tiles\StoreLogo.png</Logo>
+    <Logo>Assets\Preview\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.22000.0" />
@@ -15,9 +15,9 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
-      <uap:VisualElements DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Tiles\MedTile.png" Square44x44Logo="Assets\Tiles\AppList.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Tiles\WideTile.png" />
-        <uap:SplashScreen Image="Assets\Tiles\SplashScreen.png" />
+      <uap:VisualElements DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Preview\MedTile.png" Square44x44Logo="Assets\Preview\AppList.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Preview\WideTile.png" />
+        <uap:SplashScreen Image="Assets\Preview\SplashScreen.png" />
       </uap:VisualElements>
       <Extensions>
         <uap3:Extension Category="windows.appExtensionHost">
@@ -25,6 +25,11 @@
             <uap3:Name>com.microsoft.devhome</uap3:Name>
           </uap3:AppExtensionHost>
         </uap3:Extension>
+		<uap:Extension Category="windows.protocol">
+		  <uap:Protocol Name="ms-devhome">
+		    <uap:DisplayName>Dev Home</uap:DisplayName>
+		  </uap:Protocol>
+		</uap:Extension>
       </Extensions>
     </Application>
   </Applications>

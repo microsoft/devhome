@@ -12,22 +12,22 @@ using Microsoft.Windows.DevHome.SDK;
 namespace DevHome.Settings.ViewModels;
 public partial class AccountsProviderViewModel : ObservableObject
 {
-    public IDeveloperIdProvider DevIdProvider { get; }
+    public IDeveloperIdProvider DeveloperIdProvider { get; }
+
+    public string ProviderName => DeveloperIdProvider.GetName();
 
     public ObservableCollection<Account> LoggedInAccounts { get; } = new ();
 
     public AccountsProviderViewModel(IDeveloperIdProvider devIdProvider)
     {
-        DevIdProvider = devIdProvider;
+        DeveloperIdProvider = devIdProvider;
         RefreshLoggedInAccounts();
     }
-
-    public string ProviderName => DevIdProvider.GetName();
 
     public void RefreshLoggedInAccounts()
     {
         LoggedInAccounts.Clear();
-        DevIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
+        DeveloperIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
         {
             LoggedInAccounts.Add(new Account(this, devId));
         });
@@ -40,7 +40,7 @@ public partial class AccountsProviderViewModel : ObservableObject
         {
             try
             {
-                DevIdProvider.LogoutDeveloperId(accountToRemove.GetDevId());
+                DeveloperIdProvider.LogoutDeveloperId(accountToRemove.GetDevId());
             }
             catch (Exception ex)
             {

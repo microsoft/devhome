@@ -12,7 +12,7 @@
     mc:Ignorable="d">
     <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
-            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AgreeOnAbovePolicy"
+            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AgreeAndContinue"
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
     <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
