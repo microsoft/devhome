@@ -947,5 +947,4 @@
     <value>Can't find repository.</value>
     <comment>Eror string to show the user if the extension can't access the repo</comment>
   </data>
-  </data>
 </root>
