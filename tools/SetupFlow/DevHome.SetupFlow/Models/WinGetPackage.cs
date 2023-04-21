@@ -80,11 +80,11 @@ public class WinGetPackage : IWinGetPackage
             // TODO Use the API contract version to check if this method can be
             // called instead of a try/catch
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting applicable installer info for package {Id}");
-            var appInstaller = _package.DefaultInstallVersion.GetApplicableInstaller(options);
-            if (appInstaller != null)
+            var applicableInstaller = _package.DefaultInstallVersion.GetApplicableInstaller(options);
+            if (applicableInstaller != null)
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Elevation requirement = {appInstaller.ElevationRequirement} for package {Id}");
-                return appInstaller.ElevationRequirement == ElevationRequirement.ElevationRequired;
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Elevation requirement = {applicableInstaller.ElevationRequirement} for package {Id}");
+                return applicableInstaller.ElevationRequirement == ElevationRequirement.ElevationRequired || applicableInstaller.ElevationRequirement == ElevationRequirement.ElevatesSelf;
             }
             else
             {
