@@ -217,6 +217,25 @@
         </uap3:Extension>
       </Extensions>
     </Application>
+    <Application Id="WidgetService" Executable="WidgetService.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="WidgetServicePackage"
+                          Description="WidgetServicePackage"
+                          Square150x150Logo="Assets\Tiles\MedTile.png"
+                          Square44x44Logo="Assets\Tiles\AppList.png"
+                          BackgroundColor="transparent"
+                          AppListEntry="none" />
+      <Extensions>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="widgetservice.exe" Arguments="-RegisterProcessAsComServer" DisplayName="WidgetServiceCOMServer">
+              <com:Class Id="70DAA655-218B-4789-8BAB-8F316EFFAE97" DisplayName="WidgetHost" />
+              <com:Class Id="2CD1F0FC-9571-48EE-A00E-8DEF775BAD42" DisplayName="WidgetsCatalog" />
+              <com:Class Id="427E6253-7A45-4878-817E-4D960F684C4D" DisplayName="WidgetManager" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+      </Extensions>
+    </Application>
   </Applications>
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
