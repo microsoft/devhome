@@ -73,21 +73,44 @@ if (-not([string]::IsNullOrWhiteSpace($SDKNugetSource))) {
 
 Try {
   if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "msix")) {
+    $buildRing = "Dev"
+    $newPackageName = $null
+    $newPackageDisplayName = $null
+    $newAppDisplayNameResource = $null
+
+    if ($AzureBuildingBranch -ieq "release") {
+      $buildRing = "Stable"
+      $newPackageName = "Microsoft.Windows.DevHome"
+      $newPackageDisplayName = "Dev Home (Preview)"
+      $newAppDisplayNameResource = "ms-resource:AppDisplayNameStable"
+    } elseif ($AzureBuildingBranch -ieq "staging") {
+      $buildRing = "Canary"
+      $newPackageName = "Microsoft.Windows.DevHome.Canary"
+      $newPackageDisplayName = "Dev Home (Canary)"
+      $newAppDisplayNameResource = "ms-resource:AppDisplayNameCanary"
+    }
+
     [Reflection.Assembly]::LoadWithPartialName("System.Xml.Linq")
     $xIdentity = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
     $xProperties = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Properties");
     $xDisplayName = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}DisplayName");
 
+    $xApplications = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Applications");
+    $xApplication = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Application");
+    $uapVisualElements = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10}VisualElements");
+
     # Update the appxmanifest
     $appxmanifestPath = (Join-Path $env:Build_RootDirectory "src\Package.appxmanifest")
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
     $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = $env:msix_version
-    if ($AzureBuildingBranch -ieq "release") {
-      $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = "Microsoft.Windows.DevHome"
-      $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = "Dev Home (Preview)"
-    } elseif ($AzureBuildingBranch -ieq "staging") {
-      $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = "Microsoft.Windows.DevHome.Canary"
-      $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = "Dev Home (Canary)"
+    if (-not ([string]::IsNullOrEmpty($newPackageName))) {
+      $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = $newPackageName
+    } 
+    if (-not ([string]::IsNullOrEmpty($newPackageDisplayName))) {
+      $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = $newPackageDisplayName
+    }
+    if (-not ([string]::IsNullOrEmpty($newAppDisplayNameResource))) {
+      $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($uapVisualElements).Attribute("DisplayName").Value = $newAppDisplayNameResource
     }
     $appxmanifest.Save($appxmanifestPath)
 
@@ -103,7 +126,8 @@ Try {
             ("/binaryLogger:DevHome.$platform.$configuration.binlog"),
             ("/p:AppxPackageOutput=$appxPackageDir\DevHome-$platform.msix"),
             ("/p:AppxPackageSigningEnabled=false"),
-            ("/p:GenerateAppxPackageOnBuild=true")
+            ("/p:GenerateAppxPackageOnBuild=true"),
+            ("/p:BuildRing=$buildRing")
         )
 
         & $msbuildPath $msbuildArgs
@@ -118,6 +142,7 @@ Try {
     $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = "0.0.0.0"
     $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = "Microsoft.Windows.DevHome.Dev"
     $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = "Dev Home (Dev)"
+    $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($uapVisualElements).Attribute("DisplayName").Value = "ms-resource:AppDisplayNameDev"
     $appxmanifest.Save($appxmanifestPath)
   }
 

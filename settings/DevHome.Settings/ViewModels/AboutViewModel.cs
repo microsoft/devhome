@@ -8,7 +8,9 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
+using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
+using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel;
@@ -32,19 +34,10 @@ public partial class AboutViewModel : ObservableRecipient
 
     private static string GetVersionDescription()
     {
-        Version version;
+        IAppInfoService appInfoService = Application.Current.GetService<IAppInfoService>();
+        var localizedAppName = appInfoService.GetAppNameLocalized();
+        var version = appInfoService.GetAppVersion();
 
-        if (RuntimeHelper.IsMSIX)
-        {
-            var packageVersion = Package.Current.Id.Version;
-
-            version = new (packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
-        }
-        else
-        {
-            version = Assembly.GetExecutingAssembly().GetName().Version!;
-        }
-
-        return $"{"AppDisplayName".GetLocalized()} - {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+        return $"{localizedAppName} - {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
     }
 }
