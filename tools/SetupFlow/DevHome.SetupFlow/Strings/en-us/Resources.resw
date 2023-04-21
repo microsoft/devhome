@@ -959,10 +959,22 @@
     <value>Return to main screen</value>
     <comment>Description of the 'go to main page' button for screen readers</comment>
   </data>
+  <data name="LoadingPage_SomeTasksFailed_First.Text" xml:space="preserve">
+    <value>Title</value>
+    <comment>First part of the banner telling a user not all tasks were successful</comment>
+  </data>
+  <data name="LoadingPage_SomeTasksFailed_Second.Text" xml:space="preserve">
+    <value>You have reached max re-try, please proceed to the summary page to learn more.</value>
+    <comment>Asking users to go to the summary page if failures.</comment>
+  </data>
+  <data name="LoadingScreen_MaxRetiresReached_Button.Content" xml:space="preserve">
+    <value>Summary</value>
+    <comment>Button notifying users to go to the summary</comment>
+  </data>
   <data name="ClonePathNotFullyQualifiedMessage" xml:space="preserve">
     <value>Clone path is not fully qualified</value>
     <comment>Error message to tell the user to fully qualify their clone path</comment>
-    </data>
+  </data>
   <data name="UrlValidationBadUrl" xml:space="preserve">
     <value>URL is not a valid, absolute, URL.</value>
     <comment>Error string to show the user if the url isn't a url</comment>
