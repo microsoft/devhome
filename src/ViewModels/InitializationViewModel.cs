@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
 using DevHome.SetupFlow.Services;
@@ -20,33 +21,41 @@ using Windows.ApplicationModel.Store.Preview.InstallControl;
 namespace DevHome.ViewModels;
 public class InitializationViewModel : ObservableRecipient
 {
-    private const string GitHubPluginStorePackageId = "9NZCC27PR6N6";
+    private const string GitHubExtensionStorePackageId = "9NZCC27PR6N6";
+    private const string GitHubExtensionPackageFamilyName = "Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe";
+
     private const int StoreInstallTimeout = 60_000;
 
     private readonly IThemeSelectorService _themeSelector;
+    private readonly IPluginService _pluginService;
 
-    public InitializationViewModel(IThemeSelectorService themeSelector)
+    public InitializationViewModel(IThemeSelectorService themeSelector, IPluginService pluginService)
     {
         _themeSelector = themeSelector;
+        _pluginService = pluginService;
     }
 
     public async Task OnPageLoadedAsync()
     {
         try
         {
-            var appInstallTask = InstallStorePackageAsync(GitHubPluginStorePackageId);
-
-            // wait for a maximunm of StoreInstallTimeout milis
-            var completedTask = await Task.WhenAny(appInstallTask, Task.Delay(StoreInstallTimeout));
-
-            if (completedTask.Exception is not null)
+            if (!(await _pluginService.GetInstalledAppExtensionsAsync())
+                .Any(extension => extension.AppInfo.PackageFamilyName.Equals(GitHubExtensionPackageFamilyName, StringComparison.OrdinalIgnoreCase)))
             {
-                throw completedTask.Exception;
-            }
+                var appInstallTask = InstallStorePackageAsync(GitHubExtensionStorePackageId);
 
-            if (completedTask != appInstallTask)
-            {
-                throw new TimeoutException("Store Install task did not finish in time.");
+                // wait for a maximunm of StoreInstallTimeout milis
+                var completedTask = await Task.WhenAny(appInstallTask, Task.Delay(StoreInstallTimeout));
+
+                if (completedTask.Exception is not null)
+                {
+                    throw completedTask.Exception;
+                }
+
+                if (completedTask != appInstallTask)
+                {
+                    throw new TimeoutException("Store Install task did not finish in time.");
+                }
             }
         }
         catch (Exception ex)
@@ -90,6 +99,10 @@ public class InitializationViewModel : ObservableRecipient
                     || installItem.GetCurrentStatus().InstallState == AppInstallState.Error)
                 {
                     tcs.TrySetException(new JobFailedException(installItem.GetCurrentStatus().ErrorCode.ToString()));
+                }
+                else if (installItem.GetCurrentStatus().InstallState == AppInstallState.Completed)
+                {
+                    tcs.SetResult(true);
                 }
             };
 
