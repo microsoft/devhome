@@ -144,9 +144,15 @@ internal partial class AddRepoDialog
     private void CloneLocation_TextChanged(object sender, TextChangedEventArgs e)
     {
         // just in case something other than a text box calls this.
-        if (sender is TextBox)
+        if (sender is TextBox cloneLocationTextBox)
         {
-            FolderPickerViewModel.CloneLocation = (sender as TextBox).Text;
+            var location = cloneLocationTextBox.Text;
+            if (string.CompareOrdinal(cloneLocationTextBox.Name, "DevDriveCloneLocationAliasTextBox") == 0)
+            {
+                location = EditDevDriveViewModel.GetDriveDisplayName();
+            }
+
+            FolderPickerViewModel.CloneLocation = location;
         }
 
         FolderPickerViewModel.ValidateCloneLocation();
