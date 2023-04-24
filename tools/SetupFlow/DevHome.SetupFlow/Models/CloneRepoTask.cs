@@ -153,10 +153,10 @@ public class CloneRepoTask : ISetupTask
             {
                 await RepositoryToClone.CloneRepositoryAsync(cloneLocation.FullName, _developerId);
             }
-            catch (DirectoryNotFoundException)
+            catch (DirectoryNotFoundException myException)
             {
                 Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}");
-                _actionCenterErrorMessage.PrimaryMessage = "Path is not empty.";
+                _actionCenterErrorMessage.PrimaryMessage = myException.Message;
                 return TaskFinishedState.Failure;
             }
             catch (UnauthorizedAccessException)
