@@ -11,8 +11,21 @@
     xmlns:helpers="using:DevHome.Dashboard.Helpers"
     mc:Ignorable="d">
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <Color x:Key="WidgetBorderColor">#0F000000</Color>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="WidgetBorderColor">#1A000000</Color>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
     <Grid Width="300" Height="{x:Bind helpers:WidgetHelpers.GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize), Mode=OneWay}" 
-          CornerRadius="7">
+          CornerRadius="7" BorderBrush="{ThemeResource WidgetBorderColor}" BorderThickness="1">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
