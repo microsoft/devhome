@@ -69,7 +69,20 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// <summary>
     /// Gets the clone path the user wants to clone the repo to.
     /// </summary>
-    public string ClonePath => CloningLocation.FullName ?? string.Empty;
+    public string ClonePath
+    {
+        get
+        {
+            var path = _cloningLocation.FullName;
+
+            if (RepositoryToClone != null)
+            {
+                path = Path.Join(path, RepositoryToClone.DisplayName);
+            }
+
+            return path;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the name of the button that allows a user to edit the clone path of a repository.
