@@ -94,13 +94,13 @@
             <!-- Header text -->
             <StackPanel Grid.Row="0" Padding="5 0" Orientation="Vertical" Spacing="4">
                 <TextBlock Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SelectedPackages" />
-                <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind ViewModel.ApplicationsSelectedCountText,Mode=OneWay}"/>
+                <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind ViewModel.ApplicationsAddedText,Mode=OneWay}"/>
             </StackPanel>
 
             <!-- No package selected -->
             <TextBlock
                 Grid.Row="1"
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NoApplicationsSelected"
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NoApplicationsAdded"
                 Visibility="{x:Bind ViewModel.SelectedPackages.Count,Mode=OneWay, Converter={StaticResource CountToVisibilityConverter}}"
                 Style="{ThemeResource CaptionTextBlockStyle}"
                 Foreground="{ThemeResource TextFillColorSecondary}"

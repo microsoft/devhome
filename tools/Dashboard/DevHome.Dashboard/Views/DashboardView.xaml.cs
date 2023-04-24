@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common;
+using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
@@ -69,6 +70,7 @@ public partial class DashboardView : ToolPage
         {
             // TODO: show error
             AddWidgetButton.IsEnabled = false;
+            AddFirstWidgetLink.IsEnabled = false;
         }
 
 #if DEBUG
@@ -109,7 +111,7 @@ public partial class DashboardView : ToolPage
         // so create a new renderer for those situations. We can't just temporarily edit the existing
         // renderer, because a pinned widget might get re-rendered the wrong way while the dialog is open.
         var configRenderer = new AdaptiveCardRenderer();
-        await SetHostConfigOnWidgetRenderer(configRenderer);
+        await ConfigureWidgetRenderer(configRenderer);
         configRenderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
         return configRenderer;
     }
@@ -117,11 +119,15 @@ public partial class DashboardView : ToolPage
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
         // The app uses a different host config to render widgets (adaptive cards) in light and dark themes.
-        await SetHostConfigOnWidgetRenderer(_renderer);
+        await ConfigureWidgetRenderer(_renderer);
     }
 
-    private async Task SetHostConfigOnWidgetRenderer(AdaptiveCardRenderer renderer)
+    private async Task ConfigureWidgetRenderer(AdaptiveCardRenderer renderer)
     {
+        // Add custom Adaptive Card renderer.
+        renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
+
+        // Add host config for current theme.
         var hostConfigContents = string.Empty;
         var hostConfigFileName = (ActualTheme == ElementTheme.Light) ? "HostConfigLight.json" : "HostConfigDark.json";
         try
@@ -288,7 +294,7 @@ public partial class DashboardView : ToolPage
     private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
     {
         // TODO: Ideally there would be some sort of visual loading indicator while the renderer gets set up.
-        await SetHostConfigOnWidgetRenderer(_renderer);
+        await ConfigureWidgetRenderer(_renderer);
 
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
         var pinnedWidgets = _widgetHost.GetWidgets();
@@ -321,6 +327,7 @@ public partial class DashboardView : ToolPage
         else
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
+            NoWidgetsStackPanel.Visibility = Visibility.Visible;
         }
     }
 
@@ -469,6 +476,8 @@ public partial class DashboardView : ToolPage
                 item.PropertyChanged += PinnedWidgetsPropertyChanged;
             }
         }
+
+        NoWidgetsStackPanel.Visibility = (PinnedWidgets.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private async void PinnedWidgetsPropertyChanged(object sender, PropertyChangedEventArgs e)

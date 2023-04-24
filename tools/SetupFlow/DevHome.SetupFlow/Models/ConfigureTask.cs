@@ -4,6 +4,8 @@
 extern alias Projection;
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Configuration;
 using DevHome.SetupFlow.Common.Helpers;
@@ -11,6 +13,7 @@ using DevHome.SetupFlow.Services;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 using Windows.Storage;
+using WinRT;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -27,6 +30,11 @@ public class ConfigureTask : ISetupTask
     public bool RequiresReboot { get; private set; }
 
     public bool DependsOnDevDriveToBeInstalled => false;
+
+    public IList<ConfigurationUnitResult> UnitResults
+    {
+        get; private set;
+    }
 
     public ConfigureTask(ISetupFlowStringResource stringResource, StorageFile file)
     {
@@ -83,6 +91,7 @@ public class ConfigureTask : ISetupTask
             {
                 var result = await _configurationFileHelper.ApplyConfigurationAsync();
                 RequiresReboot = result.RequiresReboot;
+                UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
                 if (result.Succeeded)
                 {
                     return TaskFinishedState.Success;
@@ -110,6 +119,15 @@ public class ConfigureTask : ISetupTask
             var elevatedTask = elevatedComponentFactory.CreateElevatedConfigurationTask();
             var elevatedResult = await elevatedTask.ApplyConfiguration(_file);
             RequiresReboot = elevatedResult.RebootRequired;
+            UnitResults = new List<ConfigurationUnitResult>();
+
+            // Cannot use foreach or Linq for out-of-process IVector
+            // Bug: https://github.com/microsoft/CsWinRT/issues/1205
+            for (var i = 0; i < elevatedResult.UnitResults.Count; ++i)
+            {
+                UnitResults.Add(new ConfigurationUnitResult(elevatedResult.UnitResults[i]));
+            }
+
             return elevatedResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }

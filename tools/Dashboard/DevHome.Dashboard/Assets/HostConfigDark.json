@@ -9,7 +9,7 @@
   },
   "separator": {
     "lineThickness": 0,
-    "lineColor": "#EEEEEE"
+    "lineColor": "#C8FFFFFF"
   },
   "supportsInteractivity": true,
   "fontTypes": {
@@ -51,11 +51,11 @@
       "foregroundColors": {
         "default": {
           "default": "#FFFFFF",
-          "subtle": "#EEEEEE"
+          "subtle": "#C8FFFFFF"
         },
         "accent": {
           "default": "#0063B1",
-          "subtle": "#0063B1"
+          "subtle": "#880063B1"
         },
         "attention": {
           "default": "#FF0000",
@@ -77,7 +77,7 @@
       "foregroundColors": {
         "default": {
           "default": "#FFFFFF",
-          "subtle": "#EEEEEE"
+          "subtle": "#C8FFFFFF"
         },
         "accent": {
           "default": "#2E89FC",

@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
@@ -20,6 +21,12 @@ public class ConfigurationFileTaskGroup : ISetupTaskGroup
     public async Task<bool> PickConfigurationFileAsync() => await _viewModel.PickConfigurationFileAsync();
 
     public IEnumerable<ISetupTask> SetupTasks => _viewModel.TaskList;
+
+    /// <summary>
+    /// Gets the task corresponding to the configuration file to apply
+    /// </summary>
+    /// <remarks>At most one configuration file can be applied at a time</remarks>
+    public ConfigureTask ConfigureTask => _viewModel.TaskList.FirstOrDefault();
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _viewModel;
 

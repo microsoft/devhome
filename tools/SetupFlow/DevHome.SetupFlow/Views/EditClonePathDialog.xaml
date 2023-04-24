@@ -61,6 +61,7 @@
                     Margin="5, 25, 0, 0"
                     Padding="8 5 10 5"/>
             </Grid>
+            <TextBlock Text="{x:Bind FolderPickerViewModel.FolderPickerErrorMessage, Mode=OneWay}" Visibility="{x:Bind FolderPickerViewModel.ShowFolderPickerError, Mode=OneWay}"/>
             <Grid 
                 Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" 
                 ColumnSpacing="10"

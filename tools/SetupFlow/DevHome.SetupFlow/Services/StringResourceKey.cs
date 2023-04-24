@@ -11,7 +11,8 @@ namespace DevHome.SetupFlow.Services;
 public static class StringResourceKey
 {
     // Keys in this file should be a subset of the ones found in the .resw file.
-    public static readonly string ApplicationsSelectedCount = nameof(ApplicationsSelectedCount);
+    public static readonly string ApplicationsAddedPlural = nameof(ApplicationsAddedPlural);
+    public static readonly string ApplicationsAddedSingular = nameof(ApplicationsAddedSingular);
     public static readonly string Applications = nameof(Applications);
     public static readonly string Basics = nameof(Basics);
     public static readonly string BrowseTextBlock = nameof(BrowseTextBlock);
@@ -25,6 +26,11 @@ public static class StringResourceKey
     public static readonly string ConfigurationFileOpenUnknownError = nameof(ConfigurationFileOpenUnknownError);
     public static readonly string ConfigurationFileVersionUnknown = nameof(ConfigurationFileVersionUnknown);
     public static readonly string ConfigurationFileTypeNotSupported = nameof(ConfigurationFileTypeNotSupported);
+    public static readonly string ConfigurationUnitFailed = nameof(ConfigurationUnitFailed);
+    public static readonly string ConfigurationUnitSkipped = nameof(ConfigurationUnitSkipped);
+    public static readonly string ConfigurationUnitSuccess = nameof(ConfigurationUnitSuccess);
+    public static readonly string ConfigurationUnitSummary = nameof(ConfigurationUnitSummary);
+    public static readonly string ConfigurationUnitStats = nameof(ConfigurationUnitStats);
     public static readonly string ConfigurationViewTitle = nameof(ConfigurationViewTitle);
     public static readonly string DevDriveReviewTitle = nameof(DevDriveReviewTitle);
     public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
@@ -56,7 +62,8 @@ public static class StringResourceKey
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
     public static readonly string PackagesCount = nameof(PackagesCount);
-    public static readonly string PackageDescription = nameof(PackageDescription);
+    public static readonly string PackageDescriptionThreeParts = nameof(PackageDescriptionThreeParts);
+    public static readonly string PackageDescriptionTwoParts = nameof(PackageDescriptionTwoParts);
     public static readonly string PackageInstalledTooltip = nameof(PackageInstalledTooltip);
     public static readonly string PackageNameTooltip = nameof(PackageNameTooltip);
     public static readonly string PackagePublisherNameTooltip = nameof(PackagePublisherNameTooltip);
@@ -108,6 +115,15 @@ public static class StringResourceKey
     public static readonly string LoadingScreenGoToSummaryButtonContent = nameof(LoadingScreenGoToSummaryButtonContent);
 
     // Repo tool
+    public static readonly string RepoToolNextButtonTooltip = nameof(RepoToolNextButtonTooltip);
     public static readonly string RepoAccountPagePrimaryButtonText = nameof(RepoAccountPagePrimaryButtonText);
     public static readonly string RepoEverythingElsePrimaryButtonText = nameof(RepoEverythingElsePrimaryButtonText);
+    public static readonly string RepoPageEditClonePathAutomationProperties = nameof(RepoPageEditClonePathAutomationProperties);
+    public static readonly string RepoPageRemoveRepoAutomationProperties = nameof(RepoPageRemoveRepoAutomationProperties);
+    public static readonly string ClonePathNotFullyQualifiedMessage = nameof(ClonePathNotFullyQualifiedMessage);
+
+    // Url Validation
+    public static readonly string UrlValidationEmpty = nameof(UrlValidationEmpty);
+    public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);
+    public static readonly string UrlValidationNotFound = nameof(UrlValidationNotFound);
 }

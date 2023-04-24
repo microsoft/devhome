@@ -6,6 +6,7 @@ using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -124,7 +125,13 @@ public partial class WidgetViewModel : ObservableObject
         {
             var template = new AdaptiveCardTemplate(cardTemplate);
             var json = template.Expand(cardData);
-            card = AdaptiveCard.FromJsonString(json);
+
+            // Use custom parser.
+            var elementParser = new AdaptiveElementParserRegistration();
+            elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
+
+            // Create adaptive card.
+            card = AdaptiveCard.FromJsonString(json, elementParser, new AdaptiveActionParserRegistration());
         }
         catch (Exception ex)
         {

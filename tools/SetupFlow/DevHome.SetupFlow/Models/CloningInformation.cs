@@ -69,9 +69,29 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     public string RepositoryId => $"{RepositoryToClone.DisplayName ?? string.Empty}";
 
     /// <summary>
-    /// Gets the clone path the user wants ot clone the repo to.
+    /// Gets the clone path the user wants to clone the repo to.
     /// </summary>
     public string ClonePath => CloningLocation.FullName ?? string.Empty;
+
+    /// <summary>
+    /// Gets or sets the name of the button that allows a user to edit the clone path of a repository.
+    /// This name can't be static because each button name needs to be unique.  Because each name needs to be unique
+    /// the name is stored here so it can be set at the time when a unique name can be made.
+    /// </summary>
+    public string EditClonePathAutomationName
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the button that allows a user to remove the repository from being cloned.
+    /// This name can't be static because each button name needs to be unique.  Because each name needs to be unique
+    /// the name is stored here so it can be set at the time when a unique name can be made.
+    /// </summary>
+    public string RemoveFromCloningAutomationName
+    {
+        get; set;
+    }
 
     /// <summary>
     /// Compares two CloningInformations for equality.
@@ -79,7 +99,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// <param name="other">The CloningInformation to compare to.</param>
     /// <returns>True if equal.</returns>
     /// <remarks>
-    /// ProviderName, OwningAccount, and RepositoryToClone are used for equality.
+    /// ProviderName, and RepositoryToClone are used for equality.
     /// </remarks>
     public bool Equals(CloningInformation other)
     {
@@ -89,7 +109,6 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         }
 
         return ProviderName.Equals(other.ProviderName, StringComparison.OrdinalIgnoreCase) &&
-            OwningAccount.LoginId().Equals(other.OwningAccount.LoginId(), StringComparison.OrdinalIgnoreCase) &&
             RepositoryToClone.DisplayName.Equals(other.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -100,6 +119,6 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
 
     public override int GetHashCode()
     {
-        return (ProviderName + OwningAccount.LoginId() + RepositoryToClone.DisplayName).GetHashCode();
+        return (ProviderName + RepositoryToClone.DisplayName).GetHashCode();
     }
 }
