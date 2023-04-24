@@ -127,7 +127,7 @@ public sealed partial class EditClonePathDialog
             var location = cloneLocationTextBox.Text;
             if (string.CompareOrdinal(cloneLocationTextBox.Name, "DevDriveCloneLocationAliasTextBox") == 0)
             {
-                location = EditDevDriveViewModel.GetDriveDisplayName();
+                location = (EditDevDriveViewModel.DevDrive != null) ? EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
             }
 
             FolderPickerViewModel.CloneLocation = location;
