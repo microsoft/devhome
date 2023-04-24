@@ -147,7 +147,7 @@ internal partial class AddRepoDialog
         if (sender is TextBox cloneLocationTextBox)
         {
             var location = cloneLocationTextBox.Text;
-            if (string.CompareOrdinal(cloneLocationTextBox.Name, "DevDriveCloneLocationAliasTextBox") == 0)
+            if (string.Equals(cloneLocationTextBox.Name, "DevDriveCloneLocationAliasTextBox", StringComparison.Ordinal))
             {
                 location = (EditDevDriveViewModel.DevDrive != null) ? EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
             }

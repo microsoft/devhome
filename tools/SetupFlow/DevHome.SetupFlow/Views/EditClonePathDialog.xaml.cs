@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using System;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
@@ -125,7 +126,7 @@ public sealed partial class EditClonePathDialog
         if (sender is TextBox cloneLocationTextBox)
         {
             var location = cloneLocationTextBox.Text;
-            if (string.CompareOrdinal(cloneLocationTextBox.Name, "DevDriveCloneLocationAliasTextBox") == 0)
+            if (string.Equals(cloneLocationTextBox.Name, "DevDriveCloneLocationAliasTextBox", StringComparison.Ordinal))
             {
                 location = (EditDevDriveViewModel.DevDrive != null) ? EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
             }
