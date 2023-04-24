@@ -4,7 +4,10 @@
 extern alias Projection;
 
 using System;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Helpers;
@@ -29,7 +32,10 @@ public class CloneRepoTask : ISetupTask
     /// <summary>
     /// Gets the repository the user wants to clone.
     /// </summary>
-    public IRepository RepositoryToClone { get; }
+    public IRepository RepositoryToClone
+    {
+        get;
+    }
 
     /// <summary>
     /// Gets the display name of the repository.
@@ -129,41 +135,52 @@ public class CloneRepoTask : ISetupTask
     }
 
     /// <summary>
-    /// Clones the repository.  Makes the directory if it does not exist.
+    /// Clones the repository.
     /// </summary>
     /// <returns>An awaitable operation.</returns>
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
     {
         return Task.Run(async () =>
         {
-            if (!cloneLocation.Exists)
-            {
-                try
-                {
-                    Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Creating clone location for repository at {cloneLocation.FullName}");
-                    Directory.CreateDirectory(cloneLocation.FullName);
-                }
-                catch (Exception)
-                {
-                    Log.Logger?.ReportError(Log.Component.RepoConfig, "Failed to create clone location for repository");
-                    return TaskFinishedState.Failure;
-                }
-            }
+            // If the user used the repo tab to add repos then _developerId points to the account used to clone their repo.
+            // What if the user used the URL tab?  On a private repo validation is done in the extension to figure out if any
+            // logged in account has access to the repo.  However, github plugin does not have a way to tell us what account.
+            // _developerId will be null in the case of adding via URL.  _developerId will be null.
+            // extension will iterate through all logged in Ids and clone with each one.
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
 
             try
             {
-                // If the user used the repo tab to add repos then _developerId points to the account used to clone their repo.
-                // What if the user used the URL tab?  On a private repo validation is done in the extension to figure out if any
-                // logged in account has access to the repo.  However, github plugin does not have a way to tell us what account.
-                // _developerId will be null in the case of adding via URL.  _developerId will be null.
-                // extension will iterate through all logged in Ids and clone with each one.
-                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
-
                 await RepositoryToClone.CloneRepositoryAsync(cloneLocation.FullName, _developerId);
             }
-            catch (Exception e)
+            catch (DirectoryNotFoundException)
             {
-                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}", e);
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}");
+                _actionCenterErrorMessage.PrimaryMessage = "Path is not empty.";
+                return TaskFinishedState.Failure;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}");
+                _actionCenterErrorMessage.PrimaryMessage = "Repo private or not found.";
+                return TaskFinishedState.Failure;
+            }
+            catch (FileNotFoundException)
+            {
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}");
+                _actionCenterErrorMessage.PrimaryMessage = "Can't clone all submodules.";
+                return TaskFinishedState.Failure;
+            }
+            catch (OperationCanceledException)
+            {
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}");
+                _actionCenterErrorMessage.PrimaryMessage = "User cancelled.";
+                return TaskFinishedState.Failure;
+            }
+            catch (InvalidOperationException)
+            {
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}");
+                _actionCenterErrorMessage.PrimaryMessage = "Cloning failed.";
                 return TaskFinishedState.Failure;
             }
 
