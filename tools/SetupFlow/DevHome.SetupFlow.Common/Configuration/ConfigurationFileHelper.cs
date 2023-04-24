@@ -62,6 +62,7 @@ public class ConfigurationFileHelper
             _processor = new ConfigurationProcessor(factory);
             _processor.MinimumLevel = DiagnosticLevel.Verbose;
             _processor.Diagnostics += (sender, args) => LogConfigurationDiagnostics(args);
+            _processor.Caller = nameof(DevHome);
 
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {_file.Path}");
             var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
@@ -97,9 +98,6 @@ public class ConfigurationFileHelper
         var sourceComponent = nameof(ConfigurationProcessor);
         switch (diagnosticInformation.Level)
         {
-            case DiagnosticLevel.Verbose:
-                Log.Logger?.ReportDebug(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
-                return;
             case DiagnosticLevel.Warning:
                 Log.Logger?.ReportWarn(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
                 return;
@@ -109,6 +107,7 @@ public class ConfigurationFileHelper
             case DiagnosticLevel.Critical:
                 Log.Logger?.ReportCritical(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);
                 return;
+            case DiagnosticLevel.Verbose:
             case DiagnosticLevel.Informational:
             default:
                 Log.Logger?.ReportInfo(Log.Component.Configuration, sourceComponent, diagnosticInformation.Message);

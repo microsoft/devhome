@@ -42,7 +42,7 @@ public sealed partial class RepoConfigView : UserControl
         var getPluginsTask = addRepoDialog.GetPluginsAsync();
         var setupDevDrivesTask = addRepoDialog.SetupDevDrivesAsync();
         var themeService = Application.Current.GetService<IThemeSelectorService>();
-        addRepoDialog.XamlRoot = RepoConfigStackPanel.XamlRoot;
+        addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
         addRepoDialog.RequestedTheme = themeService.Theme;
 
         // Start
@@ -102,9 +102,9 @@ public sealed partial class RepoConfigView : UserControl
         var cloningInformation = (sender as Button).DataContext as CloningInformation;
         var oldLocation = cloningInformation.CloningLocation;
         var wasCloningToDevDrive = cloningInformation.CloneToDevDrive;
-        var editClonePathDialog = new EditClonePathDialog(ViewModel.DevDriveManager, cloningInformation);
+        var editClonePathDialog = new EditClonePathDialog(ViewModel.DevDriveManager, cloningInformation, ViewModel.LocalStringResource);
         var themeService = Application.Current.GetService<IThemeSelectorService>();
-        editClonePathDialog.XamlRoot = RepoConfigStackPanel.XamlRoot;
+        editClonePathDialog.XamlRoot = RepoConfigGrid.XamlRoot;
         editClonePathDialog.RequestedTheme = themeService.Theme;
         var result = await editClonePathDialog.ShowAsync(ContentDialogPlacement.InPlace);
 

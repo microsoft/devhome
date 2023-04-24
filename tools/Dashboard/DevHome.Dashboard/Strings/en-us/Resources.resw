@@ -118,4 +118,12 @@
     <value>Dashboard</value>
     <comment>Header label for the Dashboard page</comment>
   </data>
+  <data name="NoWidgetsPinned.Text" xml:space="preserve">
+    <value>Pin a widget here</value>
+    <comment>Shown when no widgets are pinned</comment>
+  </data>
+  <data name="AddFirstWidgetLink.Content" xml:space="preserve">
+    <value>+ Add new widget</value>
+    <comment>The hyperlink to bring the user to the Add Widget dialog. Shows if the user hasn't pinned any widgets.</comment>
+  </data>
 </root>

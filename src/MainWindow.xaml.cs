@@ -16,7 +16,7 @@ public sealed partial class MainWindow : WindowEx
 
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets/DevHome.ico"));
         Content = null;
-        Title = "AppDisplayName".GetLocalized();
+        Title = Application.Current.GetService<IAppInfoService>().GetAppNameLocalized();
     }
 
     private void MainWindow_Closed(object sender, Microsoft.UI.Xaml.WindowEventArgs args)

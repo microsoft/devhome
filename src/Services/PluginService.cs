@@ -141,11 +141,16 @@ public class PluginService : IPluginService
         return (devHomeProvider, classId);
     }
 
+    public async Task<IEnumerable<AppExtension>> GetInstalledAppExtensionsAsync()
+    {
+        return await AppExtensionCatalog.Open("com.microsoft.devhome").FindAllAsync();
+    }
+
     public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins = false)
     {
         if (_installedPlugins.Count == 0)
         {
-            var extensions = await AppExtensionCatalog.Open("com.microsoft.devhome").FindAllAsync();
+            var extensions = await GetInstalledAppExtensionsAsync();
             foreach (var extension in extensions)
             {
                 var (devHomeProvider, classId) = await GetDevHomeExtensionPropertiesAsync(extension);
