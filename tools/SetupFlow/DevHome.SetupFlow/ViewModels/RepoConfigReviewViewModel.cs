@@ -7,6 +7,7 @@ using System.Linq;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using Microsoft.UI.Xaml.Shapes;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -30,7 +31,7 @@ public partial class RepoConfigReviewViewModel : ReviewTabViewModelBase
     {
         _stringResource = stringResource;
         _repositoriesToClone = new ReadOnlyObservableCollection<string>(
-            new ObservableCollection<string>(cloningTasks.Select(x => x.RepositoryToClone.DisplayName)));
+            new ObservableCollection<string>(cloningTasks.Select(x => System.IO.Path.Join(x.CloneLocation.FullName,  x.RepositoryToClone.DisplayName))));
 
         TabTitle = stringResource.GetLocalized(StringResourceKey.Repository);
     }
