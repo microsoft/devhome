@@ -60,7 +60,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         _cloneTasks.Clear();
         foreach (var cloningInformation in cloningInformations)
         {
-            var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.RepositoryToClone.DisplayName);
+            var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.RepositoryToClone.DisplayName);
 
             // if the repo was added via URL.
             CloneRepoTask task;
