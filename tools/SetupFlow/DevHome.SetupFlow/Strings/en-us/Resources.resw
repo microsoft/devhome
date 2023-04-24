@@ -976,7 +976,7 @@
     <comment>Error message to tell the user to fully qualify their clone path</comment>
   </data>
   <data name="UrlValidationBadUrl" xml:space="preserve">
-    <value>URL is not a valid, or not relative</value>
+    <value>URL is not valid or not relative</value>
     <comment>Error string to show the user if the url isn't a url</comment>
   </data>
   <data name="UrlValidationEmpty" xml:space="preserve">
