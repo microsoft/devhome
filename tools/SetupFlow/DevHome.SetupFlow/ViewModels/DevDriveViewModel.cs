@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -29,7 +30,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IDevDriveManager _devDriveManager;
     private readonly string _localizedBrowseButtonText;
-    private readonly ObservableCollection<string> _errorList = new ();
+    private readonly ObservableCollection<string> _fileNameAndSizeErrorList = new ();
 
     private readonly string _devHomeIconPath = "Assets/DevHome.ico";
     private readonly Dictionary<ByteUnit, string> _byteUnitList;
@@ -132,6 +133,18 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private char _comboBoxDriveLetter;
 
     /// <summary>
+    /// Gets or sets localized error text for when the folder location the user wants to save the virtual disk to is not found.
+    /// </summary>
+    [ObservableProperty]
+    private string _invalidFolderLocation;
+
+    /// <summary>
+    /// Gets or sets localized error text for when there are no drive letters to assign to a Dev Drive.
+    /// </summary>
+    [ObservableProperty]
+    private string _noDriveLettersAvailable;
+
+    /// <summary>
     /// Gets the drive letters available on the system and is not already in use by a Dev Drive
     /// that the Dev Drive manager is holding in memory.
     /// </summary>
@@ -183,9 +196,9 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     public string LocalizedBrowseButtonText => _localizedBrowseButtonText;
 
     /// <summary>
-    /// gets the list of localized error text that will be shown in the UI.
+    /// gets the list of localized error text for filename errors and sizing errors that will be shown in the UI.
     /// </summary>
-    public ObservableCollection<string> ErrorList => _errorList;
+    public ObservableCollection<string> FileNameAndSizeErrorList => _fileNameAndSizeErrorList;
 
     /// <summary>
     /// Opens folder picker and adds folder to the drive location, if the user does not cancel the dialog.
@@ -278,7 +291,6 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private void SaveButton()
     {
         Log.Logger?.ReportInfo(Log.Component.DevDrive, "Saving changes to Dev Drive");
-        ErrorList.Clear();
         ByteUnit driveUnitOfMeasure = (ByteUnit)_comboBoxByteUnit;
         var tempDrive = new Models.DevDrive()
         {
@@ -319,7 +331,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     public Task<bool> LaunchDevDriveWindow()
     {
         Log.Logger?.ReportInfo(Log.Component.DevDrive, "Launching window to set up Dev Drive");
-        ErrorList.Clear();
+        ResetErrors();
         DevDriveWindowContainer = new (this);
         DevDriveWindowContainer.Closed += ViewContainerClosed;
         DevDriveWindowContainer.Activate();
@@ -343,10 +355,49 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     public void ShowErrorInUI(ISet<DevDriveValidationResult> resultSet)
     {
         var prefix = "DevDrive";
+        var tempfileNameAndSizeErrorList = new List<string>();
+        NoDriveLettersAvailable = string.Empty;
+        InvalidFolderLocation = string.Empty;
         foreach (DevDriveValidationResult result in resultSet)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Error in Dev Drive setup: {result.ToString()}");
-            ErrorList.Add(_stringResource.GetLocalized(prefix + result.ToString()));
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Input validation Error in Dev Drive window: {result.ToString()}");
+            var errorString = _stringResource.GetLocalized(prefix + result.ToString());
+
+            if (result == DevDriveValidationResult.NoDriveLettersAvailable)
+            {
+                NoDriveLettersAvailable = errorString;
+            }
+            else if (result == DevDriveValidationResult.InvalidFolderLocation)
+            {
+                InvalidFolderLocation = errorString;
+            }
+            else if (result == DevDriveValidationResult.InvalidDriveLabel || result == DevDriveValidationResult.NotEnoughFreeSpace)
+            {
+                tempfileNameAndSizeErrorList.Add(errorString);
+            }
         }
+
+        if (tempfileNameAndSizeErrorList.Count == 0 || tempfileNameAndSizeErrorList.Count == 1)
+        {
+            FileNameAndSizeErrorList.Clear();
+        }
+
+        foreach (var error in tempfileNameAndSizeErrorList)
+        {
+            if (!FileNameAndSizeErrorList.Contains(error))
+            {
+                FileNameAndSizeErrorList.Add(error);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Resets erros shown in the UI
+    /// </summary>
+    private void ResetErrors()
+    {
+        NoDriveLettersAvailable = string.Empty;
+        InvalidFolderLocation = string.Empty;
+        FileNameAndSizeErrorList.Clear();
     }
 }

@@ -101,6 +101,7 @@
                      TextChanged="CloneLocation_TextChanged" Grid.Column="0"
                      Text="{x:Bind FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
                      IsReadOnly="True"
+                     IsEnabled="False"
                      Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"/>
             <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
                      TextChanged="CloneLocation_TextChanged" Grid.Column="0"
@@ -112,11 +113,10 @@
         <TextBlock Text="{x:Bind FolderPickerViewModel.FolderPickerErrorMessage, Mode=OneWay}" Visibility="{x:Bind FolderPickerViewModel.ShowFolderPickerError, Mode=OneWay}"/>
         <Grid 
             Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" 
-            ColumnSpacing="10"
             Margin="0 10 0 10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="350"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <CheckBox Click="MakeNewDevDriveCheckBox_Click" IsEnabled="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NewDevDriveComboBox"/>
             <HyperlinkButton Content="Customize" Grid.Column="1" Visibility="{x:Bind EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" Click="CustomizeDevDriveHyperlinkButton_Click"/>
