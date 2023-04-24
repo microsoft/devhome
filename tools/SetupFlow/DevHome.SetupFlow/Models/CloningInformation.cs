@@ -24,8 +24,6 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
 
     /// <summary>
     /// Full path the user wants to clone the repository.
-    /// RepoConfigTaskGroup appends other directories at the end of CloningLocation to make sure that
-    /// two repositories aren't cloned to the same location.
     /// </summary>
     [ObservableProperty]
     private DirectoryInfo _cloningLocation;
