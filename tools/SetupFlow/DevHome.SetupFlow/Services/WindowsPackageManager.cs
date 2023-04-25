@@ -3,11 +3,14 @@
 
 using System;
 using System.Threading.Tasks;
+using DevHome.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models;
+using Microsoft.Extensions.Options;
 using Microsoft.Management.Deployment;
+using Windows.ApplicationModel.Store.Preview.InstallControl;
 
 namespace DevHome.SetupFlow.Services;
 
@@ -17,6 +20,8 @@ namespace DevHome.SetupFlow.Services;
 public class WindowsPackageManager : IWindowsPackageManager
 {
     private readonly WindowsPackageManagerFactory _wingetFactory;
+    private readonly IAppInstallManagerService _appInstallManagerService;
+    private readonly IOptions<SetupFlowOptions> _setupFlowOptions;
 
     // Custom composite catalogs
     private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
@@ -26,9 +31,16 @@ public class WindowsPackageManager : IWindowsPackageManager
     private readonly Lazy<string> _wingetCatalogId;
     private readonly Lazy<string> _msStoreCatalogId;
 
-    public WindowsPackageManager(WindowsPackageManagerFactory wingetFactory)
+    private readonly Lazy<bool> _isCOMServerAvailable;
+
+    public WindowsPackageManager(
+        WindowsPackageManagerFactory wingetFactory,
+        IAppInstallManagerService appInstallManagerService,
+        IOptions<SetupFlowOptions> setupFlowOptions)
     {
         _wingetFactory = wingetFactory;
+        _appInstallManagerService = appInstallManagerService;
+        _setupFlowOptions = setupFlowOptions;
 
         // Lazy-initialize custom composite catalogs
         _allCatalogs = new (CreateAllCatalogs);
@@ -37,6 +49,8 @@ public class WindowsPackageManager : IWindowsPackageManager
         // Lazy-initialize predefined catalog ids
         _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
         _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
+
+        _isCOMServerAvailable = new (GetIsCOMServerAvailable);
     }
 
     public string WinGetCatalogId => _wingetCatalogId.Value;
@@ -46,6 +60,43 @@ public class WindowsPackageManager : IWindowsPackageManager
     public IWinGetCatalog AllCatalogs => _allCatalogs.Value;
 
     public IWinGetCatalog WinGetCatalog => _wingetCatalog.Value;
+
+    public bool IsAppInstallerUpdateAvailable { get; private set; }
+
+    public bool IsCOMServerAvailable => _isCOMServerAvailable.Value;
+
+    public async Task CheckForAppInstallerUpdateAsync()
+    {
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Checking if AppInstaller has an update ...");
+            IsUpdateAvailable = await _appInstallManagerService.IsAppUpdateAvailableAsync(_setupFlowOptions.Value.AppInstallerProductId);
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"{nameof(IsUpdateAvailable)} = {IsUpdateAvailable}");
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to check if AppInstaller has an update, defaulting to false", e);
+        }
+    }
+
+    public async Task UpdateAppInstallerAsync()
+    {
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Updating AppInstaller ...");
+            var appInstallItem = await _appInstallManagerService.StartAppUpdateAsync(_setupFlowOptions.Value.AppInstallerProductId);
+            appInstallItem.Completed += (sender, _) =>
+            {
+                var installState = sender.GetCurrentStatus().InstallState;
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Updating AppInstaller completed with install state = {installState}");
+                IsUpdateAvailable = installState != AppInstallState.Completed;
+            };
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to check if AppInstaller has an update, defaulting to false", e);
+        }
+    }
 
     public async Task ConnectToAllCatalogsAsync()
     {
@@ -142,5 +193,21 @@ public class WindowsPackageManager : IWindowsPackageManager
         var catalog = packageManager.GetPredefinedPackageCatalog(predefinedPackageCatalog);
         compositeCatalog.AddPackageCatalog(catalog);
         return compositeCatalog;
+    }
+
+    private bool GetIsCOMServerAvailable()
+    {
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Attempting to create a WindowsPackageManager COM object");
+            _wingetFactory.CreatePackageManager();
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "WindowsPackageManager COM object created successfully");
+            return true;
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to create a WindowsPackageManager COM object", e);
+            return false;
+        }
     }
 }

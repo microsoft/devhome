@@ -13,6 +13,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using Microsoft.Extensions.Hosting;
+using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -141,5 +142,14 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     {
         // TODO Update code with the "Learn more" button behavior
         await Launcher.LaunchUriAsync(new ("https://microsoft.com"));
+    }
+
+    [RelayCommand]
+    private async Task UpdateAppInstallerAsync()
+    {
+        AppInstallManager appInstallManager = new AppInstallManager();
+        var updates = await appInstallManager.SearchForUpdatesAsync("9NBLGGH4NNS1", string.Empty);
+        updates.ToString();
+        await Task.CompletedTask;
     }
 }

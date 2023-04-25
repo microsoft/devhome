@@ -45,6 +45,20 @@ public interface IWindowsPackageManager
     }
 
     /// <summary>
+    /// Gets a value indicating whether the WindowsPackageManager COM server
+    /// can be used to perform out-of-proc COM calls
+    /// </summary>
+    /// <returns>True if COM server is available</returns>
+    public bool IsCOMServerAvailable
+    {
+        get;
+    }
+
+    public Task CheckForAppInstallerUpdateAsync();
+
+    public Task UpdateAppInstallerAsync();
+
+    /// <summary>
     /// Opens all custom composite catalogs.
     /// </summary>
     /// <exception cref="CatalogConnectionException">Exception thrown if a catalog connection failed</exception>

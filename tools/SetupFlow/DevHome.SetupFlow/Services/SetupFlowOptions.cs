@@ -23,4 +23,12 @@ public class SetupFlowOptions
     {
         get; set;
     }
+
+    /// <summary>
+    /// Gets or sets the AppInstaller product id
+    /// </summary>
+    public string AppInstallerProductId
+    {
+        get; set;
+    }
 }
