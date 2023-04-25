@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Helpers;
+using DevHome.Common.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 
@@ -28,7 +28,7 @@ public class AccountsService : IAccountsService
         {
             var devIds = devIdProvider.GetLoggedInDeveloperIds().ToList();
 
-            TelemetryHelper.AccountStartupEvent("Startup_DevId_Event", devIdProvider.GetName(), devIds);
+            TelemetryHelper.LogAccountEvent("Startup_DevId_Event", devIdProvider.GetName(), devIds);
 
             devIdProvider.LoggedIn += LoggedInEventHandler;
             devIdProvider.LoggedOut += LoggedOutEventHandler;
@@ -69,7 +69,7 @@ public class AccountsService : IAccountsService
     {
         if (sender is IDeveloperIdProvider devIdProvider)
         {
-            TelemetryHelper.AccountEvent("Login_DevId_Event", devIdProvider.GetName(), developerId.LoginId());
+            TelemetryHelper.LogAccountEvent("Login_DevId_Event", devIdProvider.GetName(), developerId);
         }
 
         // Bring focus back to DevHome after login
@@ -80,7 +80,7 @@ public class AccountsService : IAccountsService
     {
         if (sender is IDeveloperIdProvider devIdProvider)
         {
-            TelemetryHelper.AccountEvent("Logout_DevId_Event", devIdProvider.GetName(), developerId.LoginId());
+            TelemetryHelper.LogAccountEvent("Logout_DevId_Event", devIdProvider.GetName(), developerId);
         }
     }
 }
