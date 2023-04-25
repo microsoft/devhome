@@ -68,7 +68,7 @@
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_HeaderWithErrors"/>
-            <Button x:Name="ReturnToMainPageButton" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_CloseButton_Description" Grid.Column="1" HorizontalAlignment="Right" Command="{x:Bind ViewModel.GoBackToMainPageCommand}" Style="{ThemeResource AlternateCloseButtonStyle}" VerticalAlignment="Center">
+            <Button x:Name="ReturnToMainPageButton" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_CloseButton_Description" Grid.Column="1" HorizontalAlignment="Right" Command="{x:Bind ViewModel.GoToMainPageCommand}" Style="{ThemeResource AlternateCloseButtonStyle}" VerticalAlignment="Center">
                 <Button.Content>
                     <SymbolIcon Symbol="Cancel"/>
                 </Button.Content>
@@ -145,7 +145,7 @@
             <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="30">
 
                 <!-- Number of apps and repos cloned.-->
-                <StackPanel Orientation="Horizontal" Spacing="20" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="20" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" HorizontalAlignment="Center" Padding="0, 15, 0, 0">
                     <StackPanel.BorderBrush>
                         <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
                     </StackPanel.BorderBrush>
@@ -166,11 +166,17 @@
                         <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedCount" />
                     </Grid>
                 </StackPanel>
-                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" HorizontalAlignment="Center" />
+                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" HorizontalAlignment="Center" Command="{x:Bind ViewModel.GoToMainPageCommand, Mode=OneWay}" />
 
                 <!-- Next steps section -->
-                <!-- LEaving empty because we don't have the finilized strings, or options for this section.-->
-                <StackPanel Orientation="Vertical" Spacing="2" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" Padding="0, 30, 0, 0">
+                <StackPanel Orientation="Vertical" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" Padding="0, 30, 0, 0">
+                    <StackPanel.BorderBrush>
+                        <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
+                    </StackPanel.BorderBrush>
+                    <HyperlinkButton Content="Set up another project"/>
+                    <HyperlinkButton Content="Change Dev Home settings"/>
+                    <HyperlinkButton Content="Change Developer settings in Windows"/>
+                    <HyperlinkButton Content="Lean more about Dev Home"/>
                 </StackPanel>
             </StackPanel>
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -23,6 +24,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly IHost _host;
     private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
+    private readonly INavigationService _navigationService;
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -89,22 +91,16 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         ConfigurationUnitSkippedCount);
 
     [RelayCommand]
-    public void OpenDashboard()
-    {
-        throw new NotImplementedException();
-    }
-
-    [RelayCommand]
     public void RemoveRestartGrid()
     {
         _showRestartNeeded = Visibility.Collapsed;
     }
 
     [RelayCommand]
-    public void GoBackToMainPage()
+    public void GoToMainPage()
     {
-        var things = _host.GetService<SetupFlowViewModel>();
-        things.Cancel();
+        var setupFlowViewModel = _host.GetService<SetupFlowViewModel>();
+        setupFlowViewModel.Cancel();
     }
 
     public SummaryViewModel(
@@ -123,6 +119,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _configurationUnitResults = new (GetConfigurationUnitResults);
 
         _showRestartNeeded = Visibility.Collapsed;
+
+        _navigationService = _host.GetService<INavigationService>();
     }
 
     protected async override Task OnFirstNavigateToAsync()
