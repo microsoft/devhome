@@ -21,19 +21,21 @@
             Visibility="{x:Bind ViewModel.RepositoriesToClone, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
             VerticalAlignment="Center"
             HorizontalAlignment="Center" />
-        <GridView
+        <ListView ItemsSource="{x:Bind ViewModel.RepositoriesToClone, Mode=OneWay}"
+            SelectionMode="None"/>
+        <!--<GridView
             ScrollViewer.VerticalScrollMode="Enabled"
             ScrollViewer.VerticalScrollBarVisibility="Visible"
             ItemsSource="{x:Bind ViewModel.RepositoriesToClone, Mode=OneWay}"
             SelectionMode="None">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal" />
+                    <ItemsWrapGrid MaximumRowsOrColumns="1" Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="x:String">
-                    <ctControls:SettingsCard Width="200" Padding="5" Background="Transparent">
+                    <ctControls:SettingsCard Padding="5" Background="Transparent">
                         <ctControls:SettingsCard.Resources>
                             <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
                             <Thickness x:Key="SettingsCardPadding">0</Thickness>
@@ -49,6 +51,6 @@
                     </ctControls:SettingsCard>
                 </DataTemplate>
             </GridView.ItemTemplate>
-        </GridView>
+        </GridView>-->
     </Grid>
 </UserControl>
