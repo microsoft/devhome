@@ -378,11 +378,11 @@ stages:
         targetPath: StorePublish
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
-      displayName: 'Publish Staging build to store - NEEDS TO BE CHANGED TO CANARY STORE ENTRY WHEN AVAILABLE'
+      displayName: 'Publish Staging build to store'
       condition: eq(variables['BuildingBranch'], 'staging')
       inputs:
-        serviceEndpoint: 'DevHome StoreBroker'
-        appId: 9N8MHTPHNGVV
+        serviceEndpoint: 'DevHomeCanary StoreBroker'
+        appId: 9MX22N5S7HRD
         sourceFolder: 'StorePublish'
         contents: '*.msixbundle'
         force: true
