@@ -146,6 +146,20 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Gets a value indicating whether the UI can skip the account page and switch to the repo page.
+    /// </summary>
+    /// <remarks>
+    /// UI can skip the account tab and go to the repo page if the following conditions are met
+    /// 1. DevHome has only 1 provider installed.
+    /// 2. The provider has only 1 logged in account.
+    /// </remarks>
+    public bool CanSkipToRepoPage
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
     /// Gets or sets what page the user is currently on.  Used to branch logic depending on the page.
     /// </summary>
     internal PageKind CurrentPage
@@ -164,6 +178,7 @@ public partial class AddRepoViewModel : ObservableObject
         ShouldPrimaryButtonBeEnabled = false;
         ShowErrorTextBox = Visibility.Collapsed;
         EverythingToClone = new ();
+        CanSkipToRepoPage = false;
     }
 
     /// <summary>
@@ -209,6 +224,16 @@ public partial class AddRepoViewModel : ObservableObject
         IsAccountToggleButtonChecked = true;
         CurrentPage = PageKind.AddViaAccount;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoAccountPagePrimaryButtonText);
+
+        if (ProviderNames.Count == 1)
+        {
+            _providers.StartIfNotRunning(ProviderNames[0]);
+            var accounts = _providers.GetAllLoggedInAccounts(ProviderNames[0]);
+            if (accounts.Count() == 1)
+            {
+                CanSkipToRepoPage = true;
+            }
+        }
     }
 
     public void ChangeToRepoPage()

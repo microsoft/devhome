@@ -95,6 +95,15 @@ internal partial class AddRepoDialog
         AddRepoViewModel.ChangeToAccountPage();
         FolderPickerViewModel.CloseFolderPicker();
         EditDevDriveViewModel.HideDevDriveUI();
+
+        // If the DevHome has 1 provider installed and the provider has 1 logged in account
+        // switch to the repo page.
+        if (AddRepoViewModel.CanSkipToRepoPage)
+        {
+            RepositoryProviderComboBox.SelectedValue = AddRepoViewModel.ProviderNames[0];
+            SwitchToRepoPage(AddRepoViewModel.ProviderNames[0]);
+        }
+
         ToggleCloneButton();
     }
 
@@ -198,7 +207,7 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Adds the repository from the URL screen to the list of repos to be cloned.
     /// </summary>
-    private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
@@ -215,21 +224,26 @@ internal partial class AddRepoDialog
             var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
             if (!string.IsNullOrEmpty(repositoryProviderName))
             {
-                var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
-                AddRepoViewModel.ChangeToRepoPage();
-                FolderPickerViewModel.ShowFolderPicker();
-                EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-
-                await getAccountsTask;
-                if (AddRepoViewModel.Accounts.Any())
-                {
-                    AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
-                }
-
-                PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-                IsPrimaryButtonEnabled = false;
+                SwitchToRepoPage(repositoryProviderName);
             }
         }
+    }
+
+    private async void SwitchToRepoPage(string repositoryProviderName)
+    {
+        var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
+        AddRepoViewModel.ChangeToRepoPage();
+        FolderPickerViewModel.ShowFolderPicker();
+        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+
+        await getAccountsTask;
+        if (AddRepoViewModel.Accounts.Any())
+        {
+            AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+        }
+
+        PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+        IsPrimaryButtonEnabled = false;
     }
 
     /// <summary>
