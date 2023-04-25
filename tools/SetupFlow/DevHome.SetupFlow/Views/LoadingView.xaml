@@ -20,6 +20,7 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
                 <ResourceDictionary>
                     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+                    <converters:BoolNegationConverter x:Key="BoolNegation"/>
                 </ResourceDictionary>
                 <ResourceDictionary>
                     <Style x:Key="DevHomeBorderStyle" TargetType="Border" >
@@ -85,7 +86,10 @@
                                     Width="16"
                                     Height="16"
                                     Source="{x:Bind StatusSymbolIcon, Mode=OneWay}"/>
-                                    <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                    <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}" Padding="0, 5, 0, 0"/>
+                                    
+                                    <!-- If the status icon is visible it means the task has stopped.  Don't show progress ring.-->
+                                    <ProgressRing IsActive="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource BoolNegation}}"/>
                                 </StackPanel>
                             </DataTemplate>
                         </StackPanel.Resources>
