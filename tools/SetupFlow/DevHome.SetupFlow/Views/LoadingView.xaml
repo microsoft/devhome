@@ -89,7 +89,7 @@
                                     <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}" Padding="0, 5, 0, 0"/>
                                     
                                     <!-- If the status icon is visible it means the task has stopped.  Don't show progress ring.-->
-                                    <ProgressRing IsActive="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource BoolNegation}}"/>
+                                    <ProgressRing IsActive="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource BoolNegation}}" Width="20" Height="20"/>
                                 </StackPanel>
                             </DataTemplate>
                         </StackPanel.Resources>
