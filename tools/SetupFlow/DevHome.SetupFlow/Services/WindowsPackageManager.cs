@@ -105,14 +105,8 @@ public class WindowsPackageManager : IWindowsPackageManager
 
     public bool IsCOMServerAvailable => _isCOMServerAvailable.Value;
 
-    public async Task<bool> IsAppInstallerUpdateAvailableAsync(bool forceCheck = false)
+    public async Task<bool> IsAppInstallerUpdateAvailableAsync()
     {
-        if (!forceCheck)
-        {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Checking if AppInstaller has an update from cache. AppInstaller update available = {_appInstallerUpdateAvailable}");
-            return _appInstallerUpdateAvailable;
-        }
-
         try
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, "Checking if AppInstaller has an update ...");

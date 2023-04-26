@@ -70,9 +70,8 @@ public interface IWindowsPackageManager
     /// <summary>
     /// Checks if AppInstaller has an available update
     /// </summary>
-    /// <param name="forceCheck">True to force re-evaluating the update availability value. False to use the last known value..</param>
     /// <returns>True if an AppInstaller update is available, false otherwise</returns>
-    public Task<bool> IsAppInstallerUpdateAvailableAsync(bool forceCheck = false);
+    public Task<bool> IsAppInstallerUpdateAvailableAsync();
 
     /// <summary>
     /// Start AppInstaller update

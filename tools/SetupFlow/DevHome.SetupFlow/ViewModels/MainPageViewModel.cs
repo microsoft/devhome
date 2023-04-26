@@ -68,7 +68,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         _wpm.AppInstallerUpdateCompleted += OnAppInstallerUpdateCompleted;
     }
 
-    protected async override Task OnEachNavigateToAsync()
+    protected async override Task OnFirstNavigateToAsync()
     {
         ShowAppInstallerUpdate = await _wpm.IsAppInstallerUpdateAvailableAsync();
     }

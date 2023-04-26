@@ -122,19 +122,6 @@ public partial class App : Application, IApp
 
         await GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data);
         await GetService<IAccountsService>().InitializeAsync();
-        await ValidateAppInstallerAsync();
-    }
-
-    private async Task ValidateAppInstallerAsync()
-    {
-        Log.Logger?.ReportInfo("Validating AppInstaller on launch ...");
-        var wpm = GetService<IWindowsPackageManager>();
-        if (wpm.IsCOMServerAvailable)
-        {
-            // Check for app-installer update on app launch. The request's
-            // return value is cached unless forced to recheck.
-            await wpm.IsAppInstallerUpdateAvailableAsync(forceCheck: true);
-        }
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)
