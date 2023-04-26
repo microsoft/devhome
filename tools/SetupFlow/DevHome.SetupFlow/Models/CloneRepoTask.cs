@@ -138,20 +138,6 @@ public class CloneRepoTask : ISetupTask
     {
         return Task.Run(async () =>
         {
-            if (!_cloneLocation.Exists)
-            {
-                try
-                {
-                    Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Creating clone location for repository at {_cloneLocation.FullName}");
-                    Directory.CreateDirectory(_cloneLocation.FullName);
-                }
-                catch (Exception)
-                {
-                    Log.Logger?.ReportError(Log.Component.RepoConfig, "Failed to create clone location for repository");
-                    return TaskFinishedState.Failure;
-                }
-            }
-
             try
             {
                 // If the user used the repo tab to add repos then _developerId points to the account used to clone their repo.

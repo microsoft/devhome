@@ -31,6 +31,8 @@ public partial class AddRepoViewModel : ObservableObject
 {
     private readonly ISetupFlowStringResource _stringResource;
 
+    private readonly List<CloningInformation> _previouslySelectedRepos;
+
     /// <summary>
     /// Gets or sets the list that keeps all repositories the user wants to clone.
     /// </summary>
@@ -110,7 +112,7 @@ public partial class AddRepoViewModel : ObservableObject
     private bool? _isUrlAccountButtonChecked;
 
     /// <summary>
-    /// COntrols if the primary button is enabled.  Turns true if everything is correct.
+    /// Controls if the primary button is enabled.  Turns true if everything is correct.
     /// </summary>
     [ObservableProperty]
     private bool _shouldPrimaryButtonBeEnabled;
@@ -146,6 +148,20 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Gets a value indicating whether the UI can skip the account page and switch to the repo page.
+    /// </summary>
+    /// <remarks>
+    /// UI can skip the account tab and go to the repo page if the following conditions are met
+    /// 1. DevHome has only 1 provider installed.
+    /// 2. The provider has only 1 logged in account.
+    /// </remarks>
+    public bool CanSkipAccountConnection
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
     /// Gets or sets what page the user is currently on.  Used to branch logic depending on the page.
     /// </summary>
     internal PageKind CurrentPage
@@ -153,7 +169,7 @@ public partial class AddRepoViewModel : ObservableObject
         get; set;
     }
 
-    public AddRepoViewModel(ISetupFlowStringResource stringResource)
+    public AddRepoViewModel(ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
     {
         _stringResource = stringResource;
         ChangeToUrlPage();
@@ -164,6 +180,8 @@ public partial class AddRepoViewModel : ObservableObject
         ShouldPrimaryButtonBeEnabled = false;
         ShowErrorTextBox = Visibility.Collapsed;
         EverythingToClone = new ();
+
+        _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
     }
 
     /// <summary>
@@ -209,6 +227,16 @@ public partial class AddRepoViewModel : ObservableObject
         IsAccountToggleButtonChecked = true;
         CurrentPage = PageKind.AddViaAccount;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoAccountPagePrimaryButtonText);
+
+        if (ProviderNames.Count == 1)
+        {
+            _providers.StartIfNotRunning(ProviderNames[0]);
+            var accounts = _providers.GetAllLoggedInAccounts(ProviderNames[0]);
+            if (accounts.Count() == 1)
+            {
+                CanSkipAccountConnection = true;
+            }
+        }
     }
 
     public void ChangeToRepoPage()
@@ -240,7 +268,7 @@ public partial class AddRepoViewModel : ObservableObject
                 return false;
             }
 
-            if (!Uri.TryCreate(Url, UriKind.Relative, out _))
+            if (!Uri.TryCreate(Url, UriKind.Absolute, out _))
             {
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
                 ShouldShowUrlError = Visibility.Visible;
@@ -340,7 +368,7 @@ public partial class AddRepoViewModel : ObservableObject
     {
         // If the url isn't valid don't bother finding a provider.
         Uri uriToParse;
-        if (!Uri.TryCreate(url, UriKind.Relative, out uriToParse))
+        if (!Uri.TryCreate(url, UriKind.Absolute, out uriToParse))
         {
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
             ShouldShowUrlError = Visibility.Visible;
@@ -351,7 +379,6 @@ public partial class AddRepoViewModel : ObservableObject
 
         // If the URL points to a private repo the URL tab has no way of knowing what account has access.
         // Keep owning account null to make github extension try all logged in accounts.
-        cloningInformation.OwningAccount = null;
         (string, IRepository) providerNameAndRepo;
 
         try
@@ -388,6 +415,16 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = "git";
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+        }
+
+        // User could paste in a url of an already added repo.  Check for that here.
+        if (_previouslySelectedRepos.Any(x => x.RepositoryToClone.OwningAccountName.Equals(cloningInformation.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase)
+            && x.RepositoryToClone.DisplayName.Equals(cloningInformation.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase)))
+        {
+            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
+            ShouldShowUrlError = Visibility.Visible;
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repository has already been added.");
+            return;
         }
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");

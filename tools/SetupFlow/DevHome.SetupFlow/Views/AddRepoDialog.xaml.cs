@@ -2,11 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
@@ -49,10 +51,10 @@ internal partial class AddRepoDialog
     /// </summary>
     private string _oldCloneLocation;
 
-    public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource)
+    public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
     {
         this.InitializeComponent();
-        AddRepoViewModel = new AddRepoViewModel(stringResource);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
@@ -95,6 +97,15 @@ internal partial class AddRepoDialog
         AddRepoViewModel.ChangeToAccountPage();
         FolderPickerViewModel.CloseFolderPicker();
         EditDevDriveViewModel.HideDevDriveUI();
+
+        // If DevHome has 1 provider installed and the provider has 1 logged in account
+        // switch to the repo page.
+        if (AddRepoViewModel.CanSkipAccountConnection)
+        {
+            RepositoryProviderComboBox.SelectedValue = AddRepoViewModel.ProviderNames[0];
+            SwitchToRepoPage(AddRepoViewModel.ProviderNames[0]);
+        }
+
         ToggleCloneButton();
     }
 
@@ -198,7 +209,7 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Adds the repository from the URL screen to the list of repos to be cloned.
     /// </summary>
-    private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
@@ -215,21 +226,26 @@ internal partial class AddRepoDialog
             var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
             if (!string.IsNullOrEmpty(repositoryProviderName))
             {
-                var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
-                AddRepoViewModel.ChangeToRepoPage();
-                FolderPickerViewModel.ShowFolderPicker();
-                EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-
-                await getAccountsTask;
-                if (AddRepoViewModel.Accounts.Any())
-                {
-                    AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
-                }
-
-                PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-                IsPrimaryButtonEnabled = false;
+                SwitchToRepoPage(repositoryProviderName);
             }
         }
+    }
+
+    private async void SwitchToRepoPage(string repositoryProviderName)
+    {
+        var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
+        AddRepoViewModel.ChangeToRepoPage();
+        FolderPickerViewModel.ShowFolderPicker();
+        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+
+        await getAccountsTask;
+        if (AddRepoViewModel.Accounts.Any())
+        {
+            AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+        }
+
+        PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+        IsPrimaryButtonEnabled = false;
     }
 
     /// <summary>
