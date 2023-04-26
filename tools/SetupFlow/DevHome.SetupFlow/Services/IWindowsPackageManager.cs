@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 
@@ -45,18 +46,13 @@ public interface IWindowsPackageManager
     }
 
     /// <summary>
-    /// Gets a value indicating whether the WindowsPackageManager COM server
-    /// can be used to perform out-of-proc COM calls
+    /// Gets a value indicating whether the WindowsPackageManagerServer is available to create out-of-proc COM objects
     /// </summary>
-    /// <returns>True if COM server is available</returns>
+    /// <returns>True if COM Server is available, false otherwise</returns>
     public bool IsCOMServerAvailable
     {
         get;
     }
-
-    public Task CheckForAppInstallerUpdateAsync();
-
-    public Task UpdateAppInstallerAsync();
 
     /// <summary>
     /// Opens all custom composite catalogs.
@@ -70,4 +66,22 @@ public interface IWindowsPackageManager
     /// <param name="package">Package to install</param>
     /// <returns>Install package result</returns>
     public Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package);
+
+    /// <summary>
+    /// Checks if AppInstaller has an available update
+    /// </summary>
+    /// <param name="forceCheck">True to force re-evaluating the update availability value. False to use the last known value..</param>
+    /// <returns>True if an AppInstaller update is available, false otherwise</returns>
+    public Task<bool> IsAppInstallerUpdateAvailableAsync(bool forceCheck = false);
+
+    /// <summary>
+    /// Start AppInstaller update
+    /// </summary>
+    /// <returns>True if the update started, false otherwise.</returns>
+    public Task<bool> StartAppInstallerUpdateAsync();
+
+    /// <summary>
+    /// Occurrs when AppInstaller update has completed
+    /// </summary>
+    public event EventHandler AppInstallerUpdateCompleted;
 }

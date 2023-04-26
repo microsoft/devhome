@@ -13,7 +13,6 @@ using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using Microsoft.Extensions.Hosting;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -27,12 +26,21 @@ namespace DevHome.SetupFlow.ViewModels;
 public partial class MainPageViewModel : SetupPageViewModelBase
 {
     private readonly IHost _host;
+    private readonly IWindowsPackageManager _wpm;
+    private readonly DispatcherQueue _dispatcherQueue;
 
     [ObservableProperty]
     private bool _showBanner = true;
 
     [ObservableProperty]
     private bool _showDevDriveItem;
+
+    [ObservableProperty]
+    private bool _showAppInstallerUpdate;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(AppInstallerStateText))]
+    private bool _isAppInstallerUpdating;
 
     /// <summary>
     /// Event raised when the user elects to start the setup flow.
@@ -41,17 +49,28 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// </summary>
     public event EventHandler<(string, IList<ISetupTaskGroup>)> StartSetupFlow;
 
+    public string AppInstallerStateText => IsAppInstallerUpdating ? "Updating" : "Update";
+
     public MainPageViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
+        IWindowsPackageManager wpm,
         IHost host)
         : base(stringResource, orchestrator)
     {
         _host = host;
+        _wpm = wpm;
+        _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
+        _wpm.AppInstallerUpdateCompleted += OnAppInstallerUpdateCompleted;
+    }
+
+    protected async override Task OnEachNavigateToAsync()
+    {
+        ShowAppInstallerUpdate = await _wpm.IsAppInstallerUpdateAvailableAsync();
     }
 
     [RelayCommand]
@@ -147,9 +166,25 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task UpdateAppInstallerAsync()
     {
-        AppInstallManager appInstallManager = new AppInstallManager();
-        var updates = await appInstallManager.SearchForUpdatesAsync("9NBLGGH4NNS1", string.Empty);
-        updates.ToString();
-        await Task.CompletedTask;
+        IsAppInstallerUpdating = true;
+        if (await _wpm.StartAppInstallerUpdateAsync())
+        {
+            Log.Logger?.ReportInfo(Log.Component.MainPage, "AppInstaller update started");
+        }
+        else
+        {
+            Log.Logger?.ReportInfo(Log.Component.MainPage, "AppInstaller update did not start");
+            IsAppInstallerUpdating = false;
+        }
+    }
+
+    private void OnAppInstallerUpdateCompleted(object sender, EventArgs args)
+    {
+        // From the UI Thread
+        _dispatcherQueue.TryEnqueue(() =>
+        {
+            // Hide app installer update notification
+            ShowAppInstallerUpdate = false;
+        });
     }
 }

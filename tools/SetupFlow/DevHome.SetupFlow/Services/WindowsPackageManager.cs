@@ -31,7 +31,9 @@ public class WindowsPackageManager : IWindowsPackageManager
     private readonly Lazy<string> _wingetCatalogId;
     private readonly Lazy<string> _msStoreCatalogId;
 
+    // App installer
     private readonly Lazy<bool> _isCOMServerAvailable;
+    private bool _appInstallerUpdateAvailable;
 
     public WindowsPackageManager(
         WindowsPackageManagerFactory wingetFactory,
@@ -50,7 +52,8 @@ public class WindowsPackageManager : IWindowsPackageManager
         _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
         _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
 
-        _isCOMServerAvailable = new (GetIsCOMServerAvailable);
+        _appInstallManagerService.ItemCompleted += OnAppInstallManagerItemCompleted;
+        _isCOMServerAvailable = new (IsCOMServerAvailableInternal);
     }
 
     public string WinGetCatalogId => _wingetCatalogId.Value;
@@ -61,42 +64,7 @@ public class WindowsPackageManager : IWindowsPackageManager
 
     public IWinGetCatalog WinGetCatalog => _wingetCatalog.Value;
 
-    public bool IsAppInstallerUpdateAvailable { get; private set; }
-
-    public bool IsCOMServerAvailable => _isCOMServerAvailable.Value;
-
-    public async Task CheckForAppInstallerUpdateAsync()
-    {
-        try
-        {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Checking if AppInstaller has an update ...");
-            IsUpdateAvailable = await _appInstallManagerService.IsAppUpdateAvailableAsync(_setupFlowOptions.Value.AppInstallerProductId);
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"{nameof(IsUpdateAvailable)} = {IsUpdateAvailable}");
-        }
-        catch (Exception e)
-        {
-            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to check if AppInstaller has an update, defaulting to false", e);
-        }
-    }
-
-    public async Task UpdateAppInstallerAsync()
-    {
-        try
-        {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Updating AppInstaller ...");
-            var appInstallItem = await _appInstallManagerService.StartAppUpdateAsync(_setupFlowOptions.Value.AppInstallerProductId);
-            appInstallItem.Completed += (sender, _) =>
-            {
-                var installState = sender.GetCurrentStatus().InstallState;
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Updating AppInstaller completed with install state = {installState}");
-                IsUpdateAvailable = installState != AppInstallState.Completed;
-            };
-        }
-        catch (Exception e)
-        {
-            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to check if AppInstaller has an update, defaulting to false", e);
-        }
-    }
+    public event EventHandler AppInstallerUpdateCompleted;
 
     public async Task ConnectToAllCatalogsAsync()
     {
@@ -133,6 +101,46 @@ public class WindowsPackageManager : IWindowsPackageManager
         {
             RebootRequired = installResult.RebootRequired,
         };
+    }
+
+    public bool IsCOMServerAvailable => _isCOMServerAvailable.Value;
+
+    public async Task<bool> IsAppInstallerUpdateAvailableAsync(bool forceCheck = false)
+    {
+        if (!forceCheck)
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Checking if AppInstaller has an update from cache. AppInstaller update available = {_appInstallerUpdateAvailable}");
+            return _appInstallerUpdateAvailable;
+        }
+
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Checking if AppInstaller has an update ...");
+            _appInstallerUpdateAvailable = await _appInstallManagerService.IsAppUpdateAvailableAsync(_setupFlowOptions.Value.AppInstallerProductId);
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller update available = {_appInstallerUpdateAvailable}");
+            return _appInstallerUpdateAvailable;
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to check if AppInstaller has an update, defaulting to false", e);
+            return false;
+        }
+    }
+
+    public async Task<bool> StartAppInstallerUpdateAsync()
+    {
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting AppInstaller update ...");
+            var updateStarted = await _appInstallManagerService.StartAppUpdateAsync(_setupFlowOptions.Value.AppInstallerProductId);
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Start AppInstaller update = {updateStarted}");
+            return updateStarted;
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to start AppInstaller update", e);
+            return false;
+        }
     }
 
     /// <summary>
@@ -195,19 +203,30 @@ public class WindowsPackageManager : IWindowsPackageManager
         return compositeCatalog;
     }
 
-    private bool GetIsCOMServerAvailable()
+    private bool IsCOMServerAvailableInternal()
     {
         try
         {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Attempting to create a WindowsPackageManager COM object");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to create a dummy out-of-proc {nameof(WindowsPackageManager)} COM object to test if the COM server is available");
             _wingetFactory.CreatePackageManager();
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, "WindowsPackageManager COM object created successfully");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"{nameof(WindowsPackageManager)} COM object created successfully");
             return true;
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to create a WindowsPackageManager COM object", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create a {nameof(WindowsPackageManager)} COM object", e);
             return false;
+        }
+    }
+
+    private void OnAppInstallManagerItemCompleted(AppInstallManager appInstallManager, AppInstallManagerItemEventArgs itemEventArgs)
+    {
+        var item = itemEventArgs?.Item;
+        if (item?.ProductId == _setupFlowOptions.Value.AppInstallerProductId && item?.InstallType == AppInstallType.Update)
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller update completed");
+            _appInstallerUpdateAvailable = false;
+            AppInstallerUpdateCompleted?.Invoke(null, EventArgs.Empty);
         }
     }
 }

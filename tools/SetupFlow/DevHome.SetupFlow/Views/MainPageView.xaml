@@ -48,12 +48,17 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <InfoBar
+            Visibility="{x:Bind ViewModel.ShowAppInstallerUpdate, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
             Severity="Warning"
             IsOpen="True"
             Title="Update App Installer"
             Message="Get the best experience and latest features when installing apps.">
             <InfoBar.ActionButton>
-                <Button Command="{x:Bind ViewModel.UpdateAppInstallerCommand}" HorizontalAlignment="Right">Update</Button>
+                <Button
+                    Content="{x:Bind ViewModel.AppInstallerStateText, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.UpdateAppInstallerCommand}"
+                    HorizontalAlignment="Right">
+                </Button>
             </InfoBar.ActionButton>
         </InfoBar>
         <controls:SetupShell Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage">

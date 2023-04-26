@@ -4,12 +4,25 @@
 using System;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
+using Windows.Foundation;
 
 namespace DevHome.Services;
 
 public class AppInstallManagerService : IAppInstallManagerService
 {
     private readonly AppInstallManager _appInstallManager;
+
+    public event TypedEventHandler<AppInstallManager, AppInstallManagerItemEventArgs> ItemCompleted
+    {
+        add => _appInstallManager.ItemCompleted += value;
+        remove => _appInstallManager.ItemCompleted -= value;
+    }
+
+    public event TypedEventHandler<AppInstallManager, AppInstallManagerItemEventArgs> ItemStatusChanged
+    {
+        add => _appInstallManager.ItemStatusChanged += value;
+        remove => _appInstallManager.ItemStatusChanged -= value;
+    }
 
     public AppInstallManagerService()
     {
@@ -18,15 +31,13 @@ public class AppInstallManagerService : IAppInstallManagerService
 
     public async Task<bool> IsAppUpdateAvailableAsync(string productId)
     {
-        var appInstallItem = await SearchForUpdateAsync(productId, new AppUpdateOptions
+        return await SearchForUpdateAsync(productId, new AppUpdateOptions
         {
             AutomaticallyDownloadAndInstallUpdateIfFound = false,
         });
-
-        return appInstallItem != null;
     }
 
-    public async Task<AppInstallItem> StartAppUpdateAsync(string productId)
+    public async Task<bool> StartAppUpdateAsync(string productId)
     {
         return await SearchForUpdateAsync(productId, new AppUpdateOptions
         {
@@ -34,22 +45,32 @@ public class AppInstallManagerService : IAppInstallManagerService
         });
     }
 
-    public async Task<AppInstallItem> StartAppInstallAsync(string productId, bool repair, bool forceUseOfNonRemovableStorage)
+    public async Task StartAppInstallAsync(string productId, bool repair, bool forceUseOfNonRemovableStorage)
     {
-        return await _appInstallManager.StartAppInstallAsync(
+        await _appInstallManager.StartAppInstallAsync(
             productId,
             skuId: null,
             repair,
             forceUseOfNonRemovableStorage);
     }
 
-    private async Task<AppInstallItem> SearchForUpdateAsync(string productId, AppUpdateOptions options)
+    /// <summary>
+    /// Search for an update for the specified product id
+    /// </summary>
+    /// <param name="productId">Target product id</param>
+    /// <param name="options">Update option</param>
+    /// <returns>True if an update is available</returns>
+    private async Task<bool> SearchForUpdateAsync(string productId, AppUpdateOptions options)
     {
-        return await _appInstallManager.SearchForUpdatesAsync(
+        // Throws an exception if product id is invalid
+        var appInstallItem = await _appInstallManager.SearchForUpdatesAsync(
             productId,
             skuId: null,
             correlationVector: null,
             clientId: null,
             options);
+
+        // Check if update is available
+        return appInstallItem != null;
     }
 }
