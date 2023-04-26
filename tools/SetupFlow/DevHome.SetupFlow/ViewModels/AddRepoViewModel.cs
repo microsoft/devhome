@@ -110,7 +110,7 @@ public partial class AddRepoViewModel : ObservableObject
     private bool? _isUrlAccountButtonChecked;
 
     /// <summary>
-    /// COntrols if the primary button is enabled.  Turns true if everything is correct.
+    /// Controls if the primary button is enabled.  Turns true if everything is correct.
     /// </summary>
     [ObservableProperty]
     private bool _shouldPrimaryButtonBeEnabled;
@@ -153,7 +153,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// 1. DevHome has only 1 provider installed.
     /// 2. The provider has only 1 logged in account.
     /// </remarks>
-    public bool CanSkipToRepoPage
+    public bool CanSkipAccountConnection
     {
         get;
         private set;
@@ -178,7 +178,6 @@ public partial class AddRepoViewModel : ObservableObject
         ShouldPrimaryButtonBeEnabled = false;
         ShowErrorTextBox = Visibility.Collapsed;
         EverythingToClone = new ();
-        CanSkipToRepoPage = false;
     }
 
     /// <summary>
@@ -231,7 +230,7 @@ public partial class AddRepoViewModel : ObservableObject
             var accounts = _providers.GetAllLoggedInAccounts(ProviderNames[0]);
             if (accounts.Count() == 1)
             {
-                CanSkipToRepoPage = true;
+                CanSkipAccountConnection = true;
             }
         }
     }

@@ -96,9 +96,9 @@ internal partial class AddRepoDialog
         FolderPickerViewModel.CloseFolderPicker();
         EditDevDriveViewModel.HideDevDriveUI();
 
-        // If the DevHome has 1 provider installed and the provider has 1 logged in account
+        // If DevHome has 1 provider installed and the provider has 1 logged in account
         // switch to the repo page.
-        if (AddRepoViewModel.CanSkipToRepoPage)
+        if (AddRepoViewModel.CanSkipAccountConnection)
         {
             RepositoryProviderComboBox.SelectedValue = AddRepoViewModel.ProviderNames[0];
             SwitchToRepoPage(AddRepoViewModel.ProviderNames[0]);
