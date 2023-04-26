@@ -31,6 +31,8 @@ public partial class AddRepoViewModel : ObservableObject
 {
     private readonly ISetupFlowStringResource _stringResource;
 
+    private readonly List<CloningInformation> _previouslySelectedRepos;
+
     /// <summary>
     /// Gets or sets the list that keeps all repositories the user wants to clone.
     /// </summary>
@@ -153,7 +155,7 @@ public partial class AddRepoViewModel : ObservableObject
         get; set;
     }
 
-    public AddRepoViewModel(ISetupFlowStringResource stringResource)
+    public AddRepoViewModel(ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
     {
         _stringResource = stringResource;
         ChangeToUrlPage();
@@ -164,6 +166,8 @@ public partial class AddRepoViewModel : ObservableObject
         ShouldPrimaryButtonBeEnabled = false;
         ShowErrorTextBox = Visibility.Collapsed;
         EverythingToClone = new ();
+
+        _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
     }
 
     /// <summary>
@@ -351,7 +355,6 @@ public partial class AddRepoViewModel : ObservableObject
 
         // If the URL points to a private repo the URL tab has no way of knowing what account has access.
         // Keep owning account null to make github extension try all logged in accounts.
-        cloningInformation.OwningAccount = null;
         (string, IRepository) providerNameAndRepo;
 
         try
@@ -388,6 +391,16 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = "git";
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+        }
+
+        // User could paste in a url of an already added repo.  Check for that here.
+        if (_previouslySelectedRepos.Any(x => x.RepositoryToClone.OwningAccountName.Equals(cloningInformation.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase)
+            && x.RepositoryToClone.DisplayName.Equals(cloningInformation.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase)))
+        {
+            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
+            ShouldShowUrlError = Visibility.Visible;
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repository has already been added.");
+            return;
         }
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
