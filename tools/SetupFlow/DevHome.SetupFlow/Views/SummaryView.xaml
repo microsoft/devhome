@@ -173,10 +173,10 @@
                     <StackPanel.BorderBrush>
                         <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
                     </StackPanel.BorderBrush>
-                    <HyperlinkButton Content="Set up another project"/>
+                    <HyperlinkButton Content="Set up another project" Command="{x:Bind ViewModel.GoToSetupFlowStartCommand}"/>
                     <HyperlinkButton Content="Change Dev Home settings"/>
                     <HyperlinkButton Content="Change Developer settings in Windows"/>
-                    <HyperlinkButton Content="Lean more about Dev Home"/>
+                    <HyperlinkButton Content="Lean more about Dev Home" Command="{x:Bind ViewModel.GoToLEarnMorePageCommand}"/>
                 </StackPanel>
             </StackPanel>
 

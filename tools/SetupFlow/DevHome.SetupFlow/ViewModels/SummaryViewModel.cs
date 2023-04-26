@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,10 +12,13 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Selectors;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.SetupFlow.Views;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -101,6 +105,26 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     {
         var setupFlowViewModel = _host.GetService<SetupFlowViewModel>();
         setupFlowViewModel.Cancel();
+    }
+
+    [RelayCommand]
+    public void GoToLEarnMorePage()
+    {
+        var browserProcessInfo = new ProcessStartInfo();
+        browserProcessInfo.UseShellExecute = true;
+        browserProcessInfo.FileName = "https://learn.microsoft.com/windows/";
+
+        Process.Start(browserProcessInfo);
+    }
+
+    [RelayCommand]
+    public void GoToSetupFlowStart()
+    {
+        Orchestrator.ReleaseRemoteFactory();
+        _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
+
+        var startOfSetupFlow = _host.GetService<SetupPageViewModelBase>();
+        Orchestrator.FlowPages = new List<SetupPageViewModelBase> { startOfSetupFlow };
     }
 
     public SummaryViewModel(
