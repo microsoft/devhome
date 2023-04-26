@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -12,6 +13,7 @@ using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Common.TelemetryEvents;
 
+[EventData]
 public class DeveloperIdEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
