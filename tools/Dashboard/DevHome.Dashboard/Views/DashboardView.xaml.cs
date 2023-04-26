@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
+using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
@@ -21,7 +22,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.Storage;
-using Windows.System;
 
 namespace DevHome.Dashboard.Views;
 public partial class DashboardView : ToolPage
@@ -44,6 +44,8 @@ public partial class DashboardView : ToolPage
 
     private const string DraggedWidget = "DraggedWidget";
     private const string DraggedIndex = "DraggedIndex";
+
+    private ContentDialog _openDialog;
 
     public DashboardView()
     {
@@ -306,7 +308,10 @@ public partial class DashboardView : ToolPage
             XamlRoot = this.XamlRoot,
             RequestedTheme = this.ActualTheme,
         };
+        _openDialog = dialog;
+        dialog.Margin = GetDialogMarginForWindowHeight(Application.Current.GetService<WindowEx>().Height);
         _ = await dialog.ShowAsync();
+        _openDialog = null;
 
         var newWidget = dialog.AddedWidget;
 
@@ -496,7 +501,10 @@ public partial class DashboardView : ToolPage
             XamlRoot = this.XamlRoot,
             RequestedTheme = this.ActualTheme,
         };
+        _openDialog = dialog;
+        dialog.Margin = GetDialogMarginForWindowHeight(Application.Current.GetService<WindowEx>().Height);
         _ = await dialog.ShowAsync();
+        _openDialog = null;
 
         var newWidget = dialog.EditedWidget;
 
@@ -516,6 +524,33 @@ public partial class DashboardView : ToolPage
         }
 
         widgetViewModel.IsInEditMode = false;
+    }
+
+    private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (_openDialog is not null)
+        {
+            _openDialog.Margin = GetDialogMarginForWindowHeight(Application.Current.GetService<WindowEx>().Height);
+        }
+    }
+
+    private Thickness GetDialogMarginForWindowHeight(double windowHeight)
+    {
+        var titleBarHeight = 48;
+        var contentDialogHeight = (_openDialog.ActualHeight > 0) ? _openDialog.ActualHeight : 684;
+
+        if (windowHeight < contentDialogHeight + (titleBarHeight * 2))
+        {
+            var popupMargin = (windowHeight - contentDialogHeight) / 2;
+            popupMargin = (popupMargin > 0) ? popupMargin : 0;
+            var adjustedMargin = titleBarHeight - popupMargin;
+
+            Log.Logger()?.ReportInfo("DashboardView", $"dialog+titlebar = {contentDialogHeight + (titleBarHeight * 2)}, window = {windowHeight}, popup margin = {popupMargin}");
+
+            return new Thickness(0, adjustedMargin, 0, 0);
+        }
+
+        return new Thickness(0, 0, 0, 0);
     }
 
     private void WidgetGridView_DragItemsStarting(object sender, DragItemsStartingEventArgs e)

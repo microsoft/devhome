@@ -16,6 +16,7 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
+    SizeChanged="MainWindow_SizeChanged"
     mc:Ignorable="d">
 
     <Page.Resources>
