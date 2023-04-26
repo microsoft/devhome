@@ -19,6 +19,7 @@ using DevHome.SetupFlow.Views;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -108,23 +109,19 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand]
-    public void GoToLEarnMorePage()
+    public void GoToForDevelopersSettingsPage()
+    {
+        Task.Run(() => Launcher.LaunchUriAsync(new Uri("ms-settings:developers"))).Wait();
+    }
+
+    [RelayCommand]
+    public void GoToLearnMorePage()
     {
         var browserProcessInfo = new ProcessStartInfo();
         browserProcessInfo.UseShellExecute = true;
         browserProcessInfo.FileName = "https://learn.microsoft.com/windows/";
 
         Process.Start(browserProcessInfo);
-    }
-
-    [RelayCommand]
-    public void GoToSetupFlowStart()
-    {
-        Orchestrator.ReleaseRemoteFactory();
-        _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
-
-        var startOfSetupFlow = _host.GetService<SetupPageViewModelBase>();
-        Orchestrator.FlowPages = new List<SetupPageViewModelBase> { startOfSetupFlow };
     }
 
     public SummaryViewModel(
