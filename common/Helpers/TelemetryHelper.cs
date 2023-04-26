@@ -10,10 +10,19 @@ namespace DevHome.Common.Telemetry;
 
 public static class TelemetryHelper
 {
-    public static void Log(string eventName, LogLevel logLevel, EventBase eventData)
+    public static void Log<T>(string eventName, LogLevel logLevel, T eventData)
+        where T : EventBase
     {
         LoggerFactory.Get<ILogger>().Log(eventName, logLevel, eventData);
     }
+
+    public static void LogError<T>(string eventName, LogLevel logLevel, T eventData)
+        where T : EventBase
+    {
+        LoggerFactory.Get<ILogger>().LogError(eventName, logLevel, eventData);
+    }
+
+    //// Developer ID events
 
     public static void LogDeveloperIdStartup(string providerName, IEnumerable<IDeveloperId> devIds) =>
         LogAccountEvent("Startup_DevId_Event", providerName, devIds);
@@ -27,15 +36,17 @@ public static class TelemetryHelper
     private static void LogAccountEvent(string eventName, string providerName, IEnumerable<IDeveloperId> devIds) =>
         Log(eventName, LogLevel.Critical, new DeveloperIdEvent(providerName, devIds));
 
+    //// App Install events
+
     public static void LogAppSelectedForInstall(string packageId, string sourceId) =>
         LogAppInstallEvent("AppInstall_AppSelected", packageId, sourceId);
 
     public static void LogAppInstallSucceeded(string packageId, string sourceId) =>
         LogAppInstallEvent("AppInstall_InstallSucceeded", packageId, sourceId);
 
-    public static void LogAppInstallFailed(string packageId, string sourceId) =>
-        LogAppInstallEvent("AppInstall_InstallFailed", packageId, sourceId);
-
     private static void LogAppInstallEvent(string eventName, string packageId, string sourceId) =>
         Log(eventName, LogLevel.Critical, new AppInstallEvent(packageId, sourceId));
+
+    public static void LogAppInstallFailed(string packageId, string sourceId) =>
+        LogError("AppInstall_InstallFailed", LogLevel.Critical, new AppInstallEvent(packageId, sourceId));
 }
