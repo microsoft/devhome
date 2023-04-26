@@ -105,7 +105,6 @@ public class InstallPackageTask : ISetupTask
             }
             catch (InstallPackageException e)
             {
-                // TODO: Add telemetry for install failures
                 _installPackageException = e;
                 TelemetryHelper.LogAppInstallFailed(_package.Id, _package.CatalogId);
                 Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
