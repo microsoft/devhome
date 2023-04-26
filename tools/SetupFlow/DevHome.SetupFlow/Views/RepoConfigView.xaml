@@ -79,10 +79,10 @@
                         <DataTemplate x:Key="HorizontalBarTemplate" x:DataType="models:CloningInformation">
                             <StackPanel  Orientation="Horizontal">
                                 <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 1, 0">
-                                    <TextBlock Text="{x:Bind ProviderName}" MinWidth="150" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                    <TextBlock Text="{x:Bind ProviderName}" Width="150" MaxWidth="150" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="WordEllipsis"/>
                                 </Border>
                                 <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 1, 0">
-                                    <TextBlock Text="{x:Bind RepositoryId}" MinWidth="248" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                    <TextBlock Text="{x:Bind RepositoryId}" Width="248" MaxWidth="248" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="WordEllipsis"/>
                                 </Border>
                                 <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 0, 0">
                                     <StackPanel Orientation="Horizontal" Spacing="5">
@@ -91,12 +91,14 @@
                                                 IsEnabled="False"
                                                 Visibility="{x:Bind CloneToDevDrive, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                                 MinWidth="400"
+                                                MaxWidth="400"
                                                 Margin="10, 5, 0, 5"/>
                                         <TextBox 
                                                 Text="{x:Bind ClonePath}" 
                                                 IsEnabled="False"
                                                 Visibility="{x:Bind CloneToDevDrive, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
-                                                MinWidth="400"
+                                                Width="400"
+                                                MaxWidth="400"
                                                 Margin="10, 5, 0, 5" />
 
 

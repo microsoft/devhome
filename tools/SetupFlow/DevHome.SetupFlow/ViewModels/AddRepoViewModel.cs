@@ -244,7 +244,7 @@ public partial class AddRepoViewModel : ObservableObject
                 return false;
             }
 
-            if (!Uri.TryCreate(Url, UriKind.Relative, out _))
+            if (!Uri.TryCreate(Url, UriKind.Absolute, out _))
             {
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
                 ShouldShowUrlError = Visibility.Visible;
@@ -344,7 +344,7 @@ public partial class AddRepoViewModel : ObservableObject
     {
         // If the url isn't valid don't bother finding a provider.
         Uri uriToParse;
-        if (!Uri.TryCreate(url, UriKind.Relative, out uriToParse))
+        if (!Uri.TryCreate(url, UriKind.Absolute, out uriToParse))
         {
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
             ShouldShowUrlError = Visibility.Visible;
