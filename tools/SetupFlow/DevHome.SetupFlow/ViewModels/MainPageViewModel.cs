@@ -36,11 +36,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private bool _showDevDriveItem;
 
     [ObservableProperty]
-    private bool _showAppInstallerUpdate;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(AppInstallerStateText))]
-    private bool _isAppInstallerUpdating;
+    private bool _showAppInstallerUpdateNotification;
 
     /// <summary>
     /// Event raised when the user elects to start the setup flow.
@@ -48,8 +44,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// all the work needed at that point.
     /// </summary>
     public event EventHandler<(string, IList<ISetupTaskGroup>)> StartSetupFlow;
-
-    public string AppInstallerStateText => IsAppInstallerUpdating ? "Updating" : "Update";
 
     public MainPageViewModel(
         ISetupFlowStringResource stringResource,
@@ -65,12 +59,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
-        _wpm.AppInstallerUpdateCompleted += OnAppInstallerUpdateCompleted;
     }
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        ShowAppInstallerUpdate = await _wpm.IsAppInstallerUpdateAvailableAsync();
+        ShowAppInstallerUpdateNotification = await _wpm.IsAppInstallerUpdateAvailableAsync();
     }
 
     [RelayCommand]
@@ -164,9 +157,17 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand]
+    private void HideAppInstallUpdateNotification()
+    {
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Hiding AppInstaller update notification");
+        ShowAppInstallerUpdateNotification = false;
+    }
+
+    [RelayCommand]
     private async Task UpdateAppInstallerAsync()
     {
-        IsAppInstallerUpdating = true;
+        HideAppInstallUpdateNotification();
+
         if (await _wpm.StartAppInstallerUpdateAsync())
         {
             Log.Logger?.ReportInfo(Log.Component.MainPage, "AppInstaller update started");
@@ -174,17 +175,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         else
         {
             Log.Logger?.ReportInfo(Log.Component.MainPage, "AppInstaller update did not start");
-            IsAppInstallerUpdating = false;
         }
-    }
-
-    private void OnAppInstallerUpdateCompleted(object sender, EventArgs args)
-    {
-        // From the UI Thread
-        _dispatcherQueue.TryEnqueue(() =>
-        {
-            // Hide app installer update notification
-            ShowAppInstallerUpdate = false;
-        });
     }
 }

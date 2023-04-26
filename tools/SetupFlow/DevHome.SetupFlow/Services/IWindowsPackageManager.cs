@@ -78,9 +78,4 @@ public interface IWindowsPackageManager
     /// </summary>
     /// <returns>True if the update started, false otherwise.</returns>
     public Task<bool> StartAppInstallerUpdateAsync();
-
-    /// <summary>
-    /// Occurrs when AppInstaller update has completed
-    /// </summary>
-    public event EventHandler AppInstallerUpdateCompleted;
 }

@@ -10,7 +10,6 @@ using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.Management.Deployment;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
 
 namespace DevHome.SetupFlow.Services;
 
@@ -52,7 +51,6 @@ public class WindowsPackageManager : IWindowsPackageManager
         _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
         _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
 
-        _appInstallManagerService.ItemCompleted += OnAppInstallManagerItemCompleted;
         _isCOMServerAvailable = new (IsCOMServerAvailableInternal);
     }
 
@@ -63,8 +61,6 @@ public class WindowsPackageManager : IWindowsPackageManager
     public IWinGetCatalog AllCatalogs => _allCatalogs.Value;
 
     public IWinGetCatalog WinGetCatalog => _wingetCatalog.Value;
-
-    public event EventHandler AppInstallerUpdateCompleted;
 
     public async Task ConnectToAllCatalogsAsync()
     {
@@ -210,17 +206,6 @@ public class WindowsPackageManager : IWindowsPackageManager
         {
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create a {nameof(WindowsPackageManager)} COM object", e);
             return false;
-        }
-    }
-
-    private void OnAppInstallManagerItemCompleted(AppInstallManager appInstallManager, AppInstallManagerItemEventArgs itemEventArgs)
-    {
-        var item = itemEventArgs?.Item;
-        if (item?.ProductId == _setupFlowOptions.Value.AppInstallerProductId && item?.InstallType == AppInstallType.Update)
-        {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller update completed");
-            _appInstallerUpdateAvailable = false;
-            AppInstallerUpdateCompleted?.Invoke(null, EventArgs.Empty);
         }
     }
 }

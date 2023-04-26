@@ -48,15 +48,16 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <InfoBar
-            Visibility="{x:Bind ViewModel.ShowAppInstallerUpdate, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+            Visibility="{x:Bind ViewModel.ShowAppInstallerUpdateNotification, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
             Severity="Warning"
             IsOpen="True"
             Title="Update App Installer"
+            CloseButtonCommand="{x:Bind ViewModel.HideAppInstallUpdateNotificationCommand}"
             Message="Get the best experience and latest features when installing apps.">
             <InfoBar.ActionButton>
                 <Button
-                    Content="{x:Bind ViewModel.AppInstallerStateText, Mode=OneWay}"
-                    Command="{x:Bind ViewModel.UpdateAppInstallerCommand}"
+                    Content="Update"
+                    Click="UpdateAppInstallerButton_Click"
                     HorizontalAlignment="Right">
                 </Button>
             </InfoBar.ActionButton>
