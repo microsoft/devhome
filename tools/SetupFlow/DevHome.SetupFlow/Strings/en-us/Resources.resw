@@ -474,7 +474,7 @@
     <comment>Header for a section detailing the set up steps to be performed. "Set up" is the noun</comment>
   </data>
   <data name="Review_ReadAndAgree.Content" xml:space="preserve">
-    <value>I have read, understand and agree to the above set up</value>
+    <value>I agree and want to continue</value>
     <comment>Checkbox label that needs to be checked before starting the setup</comment>
   </data>
   <data name="Review_TermsTitle.Text" xml:space="preserve">

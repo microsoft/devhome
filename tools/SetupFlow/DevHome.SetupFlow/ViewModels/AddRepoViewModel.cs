@@ -409,7 +409,7 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Sets the clone location for all repositories to cloneLocation
+    /// Sets the clone location for all repositories to _cloneLocation
     /// </summary>
     /// <param name="cloneLocation">The location to clone all repositories to.</param>
     public void SetCloneLocation(string cloneLocation)

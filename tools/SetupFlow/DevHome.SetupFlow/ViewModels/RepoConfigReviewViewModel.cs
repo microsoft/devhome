@@ -30,7 +30,7 @@ public partial class RepoConfigReviewViewModel : ReviewTabViewModelBase
     {
         _stringResource = stringResource;
         _repositoriesToClone = new ReadOnlyObservableCollection<string>(
-            new ObservableCollection<string>(cloningTasks.Select(x => x.RepositoryToClone.DisplayName)));
+            new ObservableCollection<string>(cloningTasks.Select(x => x.CloneLocation.FullName)));
 
         TabTitle = stringResource.GetLocalized(StringResourceKey.Repository);
     }

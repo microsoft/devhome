@@ -8,6 +8,7 @@ using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
+using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
@@ -111,8 +112,8 @@ public partial class WidgetViewModel : ObservableObject
 
         if (string.IsNullOrEmpty(cardData))
         {
-            Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, didn't render card.");
-            ShowErrorCard("This widget could not be rendered because it has no data.");
+            Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
+            ShowErrorCard();
             return;
         }
 
@@ -135,8 +136,8 @@ public partial class WidgetViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data.", ex);
-            ShowErrorCard("This widget could not be rendered because the template could not be expanded with data.");
+            Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
+            ShowErrorCard();
             return;
         }
 
@@ -157,29 +158,43 @@ public partial class WidgetViewModel : ObservableObject
                     WidgetFrameworkElement = _renderedCard.FrameworkElement;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card.", e);
-                WidgetFrameworkElement = GetErrorCard("This widget could not be rendered.");
+                Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card: ", ex);
+                WidgetFrameworkElement = GetErrorCard();
             }
         });
     }
 
-    private void ShowErrorCard(string message)
+    private void ShowErrorCard()
     {
         _dispatcher.TryEnqueue(() =>
         {
-            // TODO: Create nice fallback element with localized text.
-            WidgetFrameworkElement = GetErrorCard(message);
+            WidgetFrameworkElement = GetErrorCard();
         });
     }
 
-    private FrameworkElement GetErrorCard(string message)
+    private FrameworkElement GetErrorCard()
     {
-        return new TextBlock
+        var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+
+        var grid = new Grid
         {
-            Text = message,
+            Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent),
+            Padding = new Thickness(15, 0, 15, 0),
         };
+
+        var textBlock = new TextBlock
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextWrapping = TextWrapping.WrapWholeWords,
+            FontWeight = FontWeights.Bold,
+            Text = resourceLoader.GetString("WidgetErrorCardText"),
+        };
+
+        grid.Children.Add(textBlock);
+        return grid;
     }
 
     private async void HandleAdaptiveAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
