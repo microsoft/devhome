@@ -144,6 +144,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
         // Empty out the collection since all failed tasks are being re-ran
         _retryCount++;
+        _failedTasks.Clear();
         ActionCenterItems = new ObservableCollection<ActionCenterMessages>();
         ShowRetryButton = Visibility.Collapsed;
         await StartAllTasks(TasksToRun);
@@ -190,7 +191,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             foreach (var task in taskGroup.SetupTasks)
             {
-                TasksToRun.Add(new TaskInformation { TaskIndex = taskIndex++, TaskToExecute = task, MessageToShow = task.GetLoadingMessages().Executing, StatusIconGridVisibility = Visibility.Collapsed });
+                TasksToRun.Add(new TaskInformation { TaskIndex = taskIndex++, TaskToExecute = task, MessageToShow = task.GetLoadingMessages().Executing, StatusIconGridVisibility = false });
             }
         }
 
@@ -276,10 +277,13 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             if (_retryCount < MAX_RETRIES)
             {
                 Log.Logger?.ReportDebug(Log.Component.Loading, "Adding task to list for retry");
+
+                information.StatusIconGridVisibility = false;
                 _failedTasks.Add(information);
             }
         }
 
+        information.StatusIconGridVisibility = true;
         information.StatusSymbolIcon = statusSymbolIcon;
         information.MessageToShow = stringToReplace;
     }

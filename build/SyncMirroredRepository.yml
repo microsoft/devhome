@@ -1,8 +1,3 @@
-parameters:
-- name: "SourceToTargetBranch"
-  type: string
-  default: "main"
-
 jobs:
 - job: SyncMirror
   dependsOn: []
@@ -19,5 +14,5 @@ jobs:
   - template: SyncMirror-Steps.yml
     parameters:
       SourceRepository: "https://$(GitHubPAT)@github.com/microsoft/DevHome.git"
-      TargetBranch: "${{ parameters.SourceToTargetBranch }}"
-      SourceBranch: "${{ parameters.SourceToTargetBranch }}"
+      TargetBranch: "$(SourceToTargetBranch)"
+      SourceBranch: "$(SourceToTargetBranch)"
