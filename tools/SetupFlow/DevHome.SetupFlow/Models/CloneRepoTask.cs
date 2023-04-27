@@ -4,6 +4,7 @@
 extern alias Projection;
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
@@ -152,6 +153,7 @@ public class CloneRepoTask : ISetupTask
             catch (Exception e)
             {
                 Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}", e);
+                _actionCenterErrorMessage.PrimaryMessage += " " + e.HResult.ToString(CultureInfo.CurrentCulture);
                 return TaskFinishedState.Failure;
             }
 
