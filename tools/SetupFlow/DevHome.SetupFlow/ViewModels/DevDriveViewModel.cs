@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Common.Telemetry;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
@@ -266,6 +267,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [RelayCommand]
     public async void LaunchDisksAndVolumesSettingsPage()
     {
+        TelemetryHelper.LogLaunchDisksAndVolumesSettingsPageTriggered("DevDriveView");
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
 
