@@ -1,0 +1,99 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "%Widget_Template/SSHWallet%",
+          "wrap": true,
+          "horizontalAlignment": "Center",
+          "size": "Large",
+          "weight": "Bolder"
+        },
+        {
+          "type": "TextBlock",
+          "text": "%Widget_Template/Target%",
+          "wrap": true,
+          "horizontalAlignment": "Center",
+          "spacing": "None",
+          "size": "Small",
+          "isSubtle": true,
+          "weight": "Lighter"
+        }
+      ]
+    },
+    {
+      "type": "Input.Text",
+      "id": "ConfigFile",
+      "label": "%Widget_Template_Label/ConfigFile%",
+      "inlineAction": {
+        "type": "Action.Execute",
+        "tooltip": "%Widget_Template_Tooltip/Submit%",
+        "verb": "CheckPath",
+        "iconUrl": "https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls/images/segoe-mdl/e122.png"
+      },
+      "spacing": "Medium",
+      "style": "Url",
+      "placeholder": "${$root.configuration.defaultConfigFile}",
+      "value": "${$root.configuration.configFile}"
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "${errorMessage}",
+          "wrap": true,
+          "horizontalAlignment": "Center"
+        }
+      ],
+      "$when": "${errorMessage != null}",
+      "separator": true,
+      "horizontalAlignment": "Center",
+      "verticalContentAlignment": "Center",
+      "style": "warning"
+    },
+    {
+      "type": "Container",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "%Widget_Template/ConfigFilePath%",
+          "wrap": true,
+          "spacing": "Medium",
+          "size": "Small"
+        },
+        {
+          "type": "TextBlock",
+          "text": "${configFile}",
+          "wrap": true,
+          "weight": "Bolder",
+          "spacing": "None"
+        },
+        {
+          "type": "TextBlock",
+          "text": "%Widget_Template/NumOfHosts%",
+          "wrap": true,
+          "spacing": "Medium",
+          "size": "Small"
+        },
+        {
+          "type": "TextBlock",
+          "text": "${numOfEntries}",
+          "wrap": true,
+          "weight": "Bolder",
+          "spacing": "None"
+        }
+      ],
+      "spacing": "Medium",
+      "$data": "${$root.configuration}",
+      "$when": "${$root.hasConfiguration}",
+      "horizontalAlignment": "Left",
+      "bleed": true
+    }
+  ]
+}

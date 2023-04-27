@@ -1,0 +1,90 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "width": 1,
+          "verticalContentAlignment": "Center",
+          "items": [
+            {
+              "type": "Image",
+              "url": "https://learn.microsoft.com/en-us/windows/apps/design/style/images/segoe-mdl/eda3.png",
+              "size": "Small"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": 9,
+          "verticalContentAlignment": "Center",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "${selected_config_file}",
+              "size": "Medium",
+              "style": "heading",
+              "wrap": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "$when": "${(count(hosts) == 0)}",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "%Widget_Template/EmptyHosts%",
+          "wrap": true,
+          "weight": "Bolder",
+          "horizontalAlignment": "Center"
+        }
+      ],
+      "spacing": "Medium",
+      "verticalContentAlignment": "Center"
+    },
+    {
+      "$data": "${hosts}",
+      "type": "ColumnSet",
+      "style": "emphasis",
+      "spacing": "Small",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "verticalContentAlignment": "Center",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "${host}",
+              "wrap": true
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "ActionSet",
+              "actions": [
+                {
+                  "type": "Action.Execute",
+                  "title": "%Widget_Template/Connect%",
+                  "verb": "Connect",
+                  "data": "${host}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5"
+}
