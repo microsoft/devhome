@@ -30,7 +30,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly IHost _host;
     private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
-    private readonly INavigationService _navigationService;
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -112,7 +111,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void GoToDevHomeSettings()
     {
-        _navigationService.NavigateTo(typeof(SettingsViewModel).FullName);
+        _host.GetService<INavigationService>().NavigateTo(typeof(SettingsViewModel).FullName);
     }
 
     [RelayCommand]
@@ -147,8 +146,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _configurationUnitResults = new (GetConfigurationUnitResults);
 
         _showRestartNeeded = Visibility.Collapsed;
-
-        _navigationService = _host.GetService<INavigationService>();
     }
 
     protected async override Task OnFirstNavigateToAsync()
@@ -156,13 +153,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _orchestrator.ReleaseRemoteFactory();
         await Task.CompletedTask;
     }
-
-    // This can possibly be moved to a more central location
-    public string GetFontIconForProvider(string providerName) => providerName switch
-    {
-        // Puzzle piece icon
-        _ => "\uEA86",
-    };
 
     /// <summary>
     /// Get the list of configuratoin unit restults for an applied
