@@ -127,16 +127,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         Task.Run(() => Launcher.LaunchUriAsync(new Uri("ms-settings:developers"))).Wait();
     }
 
-    [RelayCommand]
-    public void GoToLearnMorePage()
-    {
-        var browserProcessInfo = new ProcessStartInfo();
-        browserProcessInfo.UseShellExecute = true;
-        browserProcessInfo.FileName = "https://learn.microsoft.com/windows/";
-
-        Process.Start(browserProcessInfo);
-    }
-
     public SummaryViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
