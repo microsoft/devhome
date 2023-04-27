@@ -13,7 +13,6 @@
     <None Remove="Views\AccountsPage.xaml" />
     <None Remove="Views\ExtensionsPage.xaml" />
     <None Remove="Views\LoginUIDialog.xaml" />
-    <None Remove="Views\NotificationsPage.xaml" />
     <None Remove="Views\PreferencesPage.xaml" />
   </ItemGroup>
 
@@ -41,10 +40,6 @@
     </Page>
     <Page Update="Views\LoginUIDialog.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="Views\NotificationsPage.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\PreferencesPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

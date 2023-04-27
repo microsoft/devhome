@@ -27,6 +27,9 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ObservableObject _currentView;
 
+    [ObservableProperty]
+    private bool _searchBoxEnabled;
+
     public ReadOnlyObservableCollection<PackageViewModel> SelectedPackages => _packageProvider.SelectedPackages;
 
     public string ApplicationsAddedText => SelectedPackages.Count == 1 ?
@@ -64,6 +67,9 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         // (non-UI) thread to prevent lagging the UI.
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to composite catalog to enable searching for packages");
         await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
+
+        // Enable search box after catalog connection is complete
+        SearchBoxEnabled = true;
     }
 
     protected async override Task OnEachNavigateToAsync()

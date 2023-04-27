@@ -8,4 +8,12 @@
 
     <x:Double x:Key="SmallFontSize">14</x:Double>
 
+    <Style TargetType="BreadcrumbBarItem">
+        <Setter Property="FontSize" Value="24" />
+    </Style>
+
+    <Style TargetType="BreadcrumbBar">
+        <Setter Property="FontSize" Value="24" />
+    </Style>
+
 </ResourceDictionary>

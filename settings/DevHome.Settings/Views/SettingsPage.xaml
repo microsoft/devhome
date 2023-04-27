@@ -14,12 +14,7 @@
     mc:Ignorable="d">
     <ScrollViewer VerticalScrollBarVisibility="Auto" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}" HorizontalAlignment="Center">
         <StackPanel>
-            <Grid x:Name="Settings_Breadcrumbs" Margin="{StaticResource SettingsPageSubTitleMargin}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock x:Uid="Settings_SubTitle" Grid.Column="0" Style="{ThemeResource TitleTextBlockStyle}" />
-            </Grid>
+            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
 
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.SettingsList, Mode=OneWay}">
                 <ItemsRepeater.ItemTemplate>
