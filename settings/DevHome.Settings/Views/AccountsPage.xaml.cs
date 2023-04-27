@@ -2,8 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Common.Views;
 using DevHome.Settings.Helpers;
 using DevHome.Settings.Models;
@@ -12,7 +14,6 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
-using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Settings.Views;
 
@@ -23,10 +24,31 @@ public sealed partial class AccountsPage : Page
         get;
     }
 
+    public ObservableCollection<Breadcrumb> Breadcrumbs
+    {
+        get;
+    }
+
     public AccountsPage()
     {
         ViewModel = Application.Current.GetService<AccountsViewModel>();
         this.InitializeComponent();
+
+        var stringResource = new StringResource("DevHome.Settings/Resources");
+        Breadcrumbs = new ObservableCollection<Breadcrumb>
+        {
+            new Breadcrumb(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
+            new Breadcrumb(stringResource.GetLocalized("Settings_Accounts_Header"), typeof(AccountsViewModel).FullName!),
+        };
+    }
+
+    private void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
+    {
+        if (args.Index < Breadcrumbs.Count - 1)
+        {
+            var crumb = (Breadcrumb)args.Item;
+            crumb.NavigateTo();
+        }
     }
 
     private async void AddDeveloperId_Click(object sender, RoutedEventArgs e)

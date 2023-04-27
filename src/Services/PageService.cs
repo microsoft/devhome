@@ -25,7 +25,6 @@ public class PageService : IPageService
         Configure<SettingsViewModel, SettingsPage>();
         Configure<PreferencesViewModel, PreferencesPage>();
         Configure<AccountsViewModel, AccountsPage>();
-        Configure<NotificationsViewModel, NotificationsPage>();
         Configure<ExtensionsViewModel, ExtensionsPage>();
         Configure<AboutViewModel, AboutPage>();
         Configure<FeedbackViewModel, FeedbackPage>();
