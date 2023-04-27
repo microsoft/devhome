@@ -42,7 +42,13 @@
                 </Grid.RowDefinitions>
 
                 <!-- Search bar -->
-                <AutoSuggestBox x:Name="SearchBox" QueryIcon="Find" HorizontalAlignment="Left" Width="400" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SearchBox">
+                <AutoSuggestBox
+                    x:Name="SearchBox"
+                    QueryIcon="Find"
+                    HorizontalAlignment="Left"
+                    Width="400"
+                    IsEnabled="{x:Bind ViewModel.SearchBoxEnabled, Mode=OneWay}"
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SearchBox">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="TextChanged">
                             <ic:InvokeCommandAction Command="{x:Bind ViewModel.SearchTextChangedCommand}" CommandParameter="{Binding Text, ElementName=SearchBox}"/>
