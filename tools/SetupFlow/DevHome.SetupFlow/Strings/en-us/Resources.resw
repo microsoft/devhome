@@ -993,5 +993,22 @@
   </data>
   <data name="ClonePathNotFolder" xml:space="preserve">
     <value>Enter a folder name instead of a file</value>
+    <comment>Error when Clone Location is a fully qualified path to a file</comment>
+  </data>
+  <data name="SummaryPage_ChangeDeveloperSettingsInWindows.Content" xml:space="preserve">
+    <value>Change Developer settings in Windows</value>
+    <comment>Summary page prompt to open the dev settings in windows</comment>
+  </data>
+  <data name="SummaryPage_ChangeDevHomeSettings.Content" xml:space="preserve">
+    <value>Change Dev Home Settings</value>
+    <comment>Summary page prompt to bring users to the settings page</comment>
+  </data>
+  <data name="SummaryPage_LearnMoreAbountDevHome.Content" xml:space="preserve">
+    <value>Learn more about Dev Home</value>
+    <comment>Summary page prompt to open the browser to learn more about DevHome</comment>
+  </data>
+  <data name="SummaryPage_SetUpAnotherProject.Content" xml:space="preserve">
+    <value>Set up another project</value>
+    <comment>Summary page prompt to bring users back to the beginning of the setup flow</comment>
   </data>
 </root>
