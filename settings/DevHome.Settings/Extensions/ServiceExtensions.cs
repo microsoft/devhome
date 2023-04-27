@@ -20,8 +20,6 @@ public static class ServiceExtensions
         services.AddTransient<AccountsPage>();
         services.AddTransient<ExtensionsViewModel>();
         services.AddTransient<ExtensionsPage>();
-        services.AddTransient<NotificationsViewModel>();
-        services.AddTransient<NotificationsPage>();
         services.AddTransient<PreferencesViewModel>();
         services.AddTransient<PreferencesPage>();
 
