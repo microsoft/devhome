@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.Common.Telemetry;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
+using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Windows.System;
 
@@ -119,7 +120,10 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private async void LaunchDisksAndVolumesSettingsPage()
     {
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
-        TelemetryHelper.LogLaunchDisksAndVolumesSettingsPageTriggered("MainPageView");
+        TelemetryFactory.Get<ITelemetry>().Log(
+            "LaunchDisksAndVolumesSettingsPageTriggered",
+            LogLevel.Measure,
+            new DisksAndVolumesSettingsPageTriggeredEvent(source: "MainPageView"));
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
 

@@ -1,0 +1,35 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
+
+using System.Diagnostics.Tracing;
+using DevHome.Common.Models;
+using DevHome.Telemetry;
+using Microsoft.Diagnostics.Telemetry;
+using Microsoft.Diagnostics.Telemetry.Internal;
+
+namespace DevHome.SetupFlow.Common.TelemetryEvents;
+
+[EventData]
+internal class DevDriveTriggeredEvent : EventBase
+{
+    public DevDriveTriggeredEvent(IDevDrive devDrive, long duration, int hr)
+    {
+        _devDrive = devDrive;
+        errorCode = $"0x{hr:X}";
+        this.duration = duration;
+    }
+
+    private readonly IDevDrive _devDrive;
+
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+    public long duration { get; }
+
+    public string errorCode { get; }
+
+    public ulong volumeSizeInBytes => _devDrive.DriveSizeInBytes;
+
+    public uint diskMediaType => (uint)_devDrive.DriveMediaType;
+#pragma warning restore SA1300 // Element should begin with upper-case letter
+
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+}

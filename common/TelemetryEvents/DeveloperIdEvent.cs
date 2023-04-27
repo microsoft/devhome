@@ -7,11 +7,12 @@ using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace DevHome.Common.TelemetryEvents;
+namespace DevHome.TelemetryEvents;
 
 [EventData]
 public class DeveloperIdEvent : EventBase

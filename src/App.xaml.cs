@@ -73,7 +73,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IAccountsService, AccountsService>();
             services.AddSingleton<IInfoBarService, InfoBarService>();
             services.AddSingleton<IAppInfoService, AppInfoService>();
-            services.AddSingleton<ILogger>(LoggerFactory.Get<ILogger>());
+            services.AddSingleton<ITelemetry>(TelemetryFactory.Get<ITelemetry>());
             services.AddSingleton<IStringResource, StringResource>();
 
             // Core Services

@@ -2,9 +2,11 @@
 // Licensed under the MIT license.
 
 using System.Diagnostics.Tracing;
+using DevHome.Telemetry;
+using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents;
+namespace DevHome.TelemetryEvents;
 
 [EventData]
 public class AppInstallEvent : EventBase
@@ -13,7 +15,7 @@ public class AppInstallEvent : EventBase
 
     public string SourceId { get; }
 
-    public override PartA_PrivTags PartA_PrivTags => PartA_PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
     public AppInstallEvent(string packageId, string sourceId)
     {

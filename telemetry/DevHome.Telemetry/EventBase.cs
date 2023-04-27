@@ -4,7 +4,7 @@
 using System.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents;
+namespace DevHome.Telemetry;
 
 /// <summary>
 /// Base class for all telemetry events to ensure they are properly tagged.

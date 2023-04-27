@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
+using DevHome.Logging;
 using DevHome.Settings.Helpers;
 using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
@@ -77,14 +78,14 @@ public sealed partial class AccountsPage : Page
                 }
                 catch (Exception ex)
                 {
-                    LoggerFactory.Get<ILogger>().Log($"AddAccount_Click(): loginUIContentDialog failed", LogLevel.Local, $"Error: {ex} Sender: {sender} RoutedEventArgs: {e}");
+                    GlobalLog.Logger?.ReportError($"AddAccount_Click(): loginUIContentDialog failed - Error: {ex} Sender: {sender} RoutedEventArgs: {e}");
                 }
 
                 accountProvider.RefreshLoggedInAccounts();
             }
             else
             {
-                LoggerFactory.Get<ILogger>().Log($"AddAccount_Click(): addAccountButton.Tag is not AccountsProviderViewModel", LogLevel.Local, $"Sender: {sender} RoutedEventArgs: {e}");
+                GlobalLog.Logger?.ReportInfo($"AddAccount_Click(): addAccountButton.Tag is not AccountsProviderViewModel - Sender: {sender} RoutedEventArgs: {e}");
                 return;
             }
         }
