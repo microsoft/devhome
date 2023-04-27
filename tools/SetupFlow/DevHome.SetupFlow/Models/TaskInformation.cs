@@ -23,7 +23,7 @@ public partial class TaskInformation : ObservableObject
     private string _messageToShow;
 
     [ObservableProperty]
-    private Visibility _statusIconGridVisibility;
+    private bool _statusIconGridVisibility;
 
     [ObservableProperty]
     private BitmapImage _statusSymbolIcon;

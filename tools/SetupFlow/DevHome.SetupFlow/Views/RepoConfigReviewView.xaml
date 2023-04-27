@@ -21,34 +21,13 @@
             Visibility="{x:Bind ViewModel.RepositoriesToClone, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
             VerticalAlignment="Center"
             HorizontalAlignment="Center" />
-        <GridView
-            ScrollViewer.VerticalScrollMode="Enabled"
+        <ListView ScrollViewer.VerticalScrollMode="Enabled"
             ScrollViewer.VerticalScrollBarVisibility="Visible"
             ItemsSource="{x:Bind ViewModel.RepositoriesToClone, Mode=OneWay}"
             SelectionMode="None">
-            <GridView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </GridView.ItemsPanel>
-            <GridView.ItemTemplate>
-                <DataTemplate x:DataType="x:String">
-                    <ctControls:SettingsCard Width="200" Padding="5" Background="Transparent">
-                        <ctControls:SettingsCard.Resources>
-                            <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
-                            <Thickness x:Key="SettingsCardPadding">0</Thickness>
-                            <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
-                            <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
-                            <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
-                            <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
-                        </ctControls:SettingsCard.Resources>
-                        <ctControls:SettingsCard.Header>
-                            <TextBlock Text="{x:Bind}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
-                        </ctControls:SettingsCard.Header>
-                    </ctControls:SettingsCard>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-        </GridView>
+            <DataTemplate x:DataType="x:String">
+                <TextBlock Text="{x:Bind}" TextWrapping="NoWrap" TextTrimming="WordEllipsis" />
+            </DataTemplate>
+        </ListView>
     </Grid>
 </UserControl>
