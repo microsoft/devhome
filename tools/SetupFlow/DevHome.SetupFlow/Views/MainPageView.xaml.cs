@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading.Tasks;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 
@@ -22,14 +21,13 @@ public sealed partial class MainPageView : UserControl
         var dialog = new ContentDialog()
         {
             XamlRoot = this.XamlRoot,
-            Title = "Update App Installer",
-            Content = "Get the best experience and latest features when installing apps.",
-            PrimaryButtonText = "Update",
+            Title = ViewModel.AppInstallerUpdateAvailableTitle,
+            Content = ViewModel.AppInstallerUpdateAvailableMessage,
+            PrimaryButtonText = ViewModel.AppInstallerUpdateAvailableUpdateButton,
             PrimaryButtonCommand = ViewModel.UpdateAppInstallerCommand,
-            CloseButtonText = "Cancel",
+            CloseButtonText = ViewModel.AppInstallerUpdateAvailableCancelButton,
             DefaultButton = ContentDialogButton.Primary,
         };
-
         await dialog.ShowAsync();
     }
 }

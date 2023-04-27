@@ -47,21 +47,25 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+
+        <!-- App installer update notification -->
         <InfoBar
             Visibility="{x:Bind ViewModel.ShowAppInstallerUpdateNotification, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
             Severity="Warning"
             IsOpen="True"
-            Title="Update App Installer"
-            CloseButtonCommand="{x:Bind ViewModel.HideAppInstallUpdateNotificationCommand}"
-            Message="Get the best experience and latest features when installing apps.">
+            Title="{x:Bind ViewModel.AppInstallerUpdateAvailableTitle}"
+            Message="{x:Bind ViewModel.AppInstallerUpdateAvailableMessage}"
+            Margin="0,0,0,9"
+            CloseButtonCommand="{x:Bind ViewModel.HideAppInstallerUpdateNotificationCommand}">
             <InfoBar.ActionButton>
                 <Button
-                    Content="Update"
+                    Content="{x:Bind ViewModel.AppInstallerUpdateAvailableUpdateButton}"
                     Click="UpdateAppInstallerButton_Click"
-                    HorizontalAlignment="Right">
-                </Button>
+                    HorizontalAlignment="Right"/>
             </InfoBar.ActionButton>
         </InfoBar>
+
+        <!-- Main content -->
         <controls:SetupShell Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Spacing="30">

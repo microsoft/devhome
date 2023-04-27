@@ -2,12 +2,16 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.Foundation;
 
 namespace DevHome.Services;
 
+/// <summary>
+/// Service class for using <see cref="AppInstallManager"/>
+/// </summary>
 public class AppInstallManagerService : IAppInstallManagerService
 {
     private readonly AppInstallManager _appInstallManager;
@@ -45,24 +49,15 @@ public class AppInstallManagerService : IAppInstallManagerService
         });
     }
 
-    public async Task StartAppInstallAsync(string productId, bool repair, bool forceUseOfNonRemovableStorage)
-    {
-        await _appInstallManager.StartAppInstallAsync(
-            productId,
-            skuId: null,
-            repair,
-            forceUseOfNonRemovableStorage);
-    }
-
     /// <summary>
     /// Search for an update for the specified product id
     /// </summary>
     /// <param name="productId">Target product id</param>
     /// <param name="options">Update option</param>
-    /// <returns>True if an update is available</returns>
+    /// <returns>True if an update is available, false otherwise.</returns>
+    /// <exception cref="COMException">Throws exception if operation failed (e.g. product id was not found)</exception>
     private async Task<bool> SearchForUpdateAsync(string productId, AppUpdateOptions options)
     {
-        // Throws an exception if product id is invalid
         var appInstallItem = await _appInstallManager.SearchForUpdatesAsync(
             productId,
             skuId: null,

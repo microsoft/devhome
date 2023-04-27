@@ -8,7 +8,6 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models;
-using Microsoft.Extensions.Options;
 using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.Services;
@@ -18,9 +17,10 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public class WindowsPackageManager : IWindowsPackageManager
 {
+    private const string AppInstallerProductId = "9NBLGGH4NNS1";
+
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;
-    private readonly IOptions<SetupFlowOptions> _setupFlowOptions;
 
     // Custom composite catalogs
     private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
@@ -36,12 +36,10 @@ public class WindowsPackageManager : IWindowsPackageManager
 
     public WindowsPackageManager(
         WindowsPackageManagerFactory wingetFactory,
-        IAppInstallManagerService appInstallManagerService,
-        IOptions<SetupFlowOptions> setupFlowOptions)
+        IAppInstallManagerService appInstallManagerService)
     {
         _wingetFactory = wingetFactory;
         _appInstallManagerService = appInstallManagerService;
-        _setupFlowOptions = setupFlowOptions;
 
         // Lazy-initialize custom composite catalogs
         _allCatalogs = new (CreateAllCatalogs);
@@ -51,6 +49,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
         _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
 
+        // Lazy-initialize COM server availability
         _isCOMServerAvailable = new (IsCOMServerAvailableInternal);
     }
 
@@ -106,7 +105,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         try
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, "Checking if AppInstaller has an update ...");
-            _appInstallerUpdateAvailable = await _appInstallManagerService.IsAppUpdateAvailableAsync(_setupFlowOptions.Value.AppInstallerProductId);
+            _appInstallerUpdateAvailable = await _appInstallManagerService.IsAppUpdateAvailableAsync(AppInstallerProductId);
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller update available = {_appInstallerUpdateAvailable}");
             return _appInstallerUpdateAvailable;
         }
@@ -122,7 +121,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         try
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting AppInstaller update ...");
-            var updateStarted = await _appInstallManagerService.StartAppUpdateAsync(_setupFlowOptions.Value.AppInstallerProductId);
+            var updateStarted = await _appInstallManagerService.StartAppUpdateAsync(AppInstallerProductId);
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Start AppInstaller update = {updateStarted}");
             return updateStarted;
         }

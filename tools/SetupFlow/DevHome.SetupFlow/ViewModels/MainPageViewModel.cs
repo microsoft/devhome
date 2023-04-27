@@ -27,7 +27,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 {
     private readonly IHost _host;
     private readonly IWindowsPackageManager _wpm;
-    private readonly DispatcherQueue _dispatcherQueue;
 
     [ObservableProperty]
     private bool _showBanner = true;
@@ -48,6 +47,14 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// </summary>
     public event EventHandler<(string, IList<ISetupTaskGroup>)> StartSetupFlow;
 
+    public string AppInstallerUpdateAvailableTitle => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableTitle);
+
+    public string AppInstallerUpdateAvailableMessage => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableMessage);
+
+    public string AppInstallerUpdateAvailableUpdateButton => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableUpdateButton);
+
+    public string AppInstallerUpdateAvailableCancelButton => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableCancelButton);
+
     public MainPageViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
@@ -57,7 +64,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     {
         _host = host;
         _wpm = wpm;
-        _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
@@ -184,7 +190,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand]
-    private void HideAppInstallUpdateNotification()
+    private void HideAppInstallerUpdateNotification()
     {
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Hiding AppInstaller update notification");
         ShowAppInstallerUpdateNotification = false;
@@ -193,15 +199,16 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task UpdateAppInstallerAsync()
     {
-        HideAppInstallUpdateNotification();
-
+        // Hide notification and attempt the update in the background.
+        // Update progress should be reflected in the store app (if successful)
+        HideAppInstallerUpdateNotification();
         if (await _wpm.StartAppInstallerUpdateAsync())
         {
             Log.Logger?.ReportInfo(Log.Component.MainPage, "AppInstaller update started");
         }
         else
         {
-            Log.Logger?.ReportInfo(Log.Component.MainPage, "AppInstaller update did not start");
+            Log.Logger?.ReportWarn(Log.Component.MainPage, "AppInstaller update did not start");
         }
     }
 }
