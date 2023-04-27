@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Dashboard.ViewModels;
 using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Selectors;
@@ -106,6 +107,12 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     {
         var setupFlowViewModel = _host.GetService<SetupFlowViewModel>();
         setupFlowViewModel.Cancel();
+    }
+
+    [RelayCommand]
+    public void GoToDashboard()
+    {
+        _host.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName);
     }
 
     [RelayCommand]

@@ -166,7 +166,7 @@
                         <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedCount" />
                     </Grid>
                 </StackPanel>
-                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" HorizontalAlignment="Center" Command="{x:Bind ViewModel.GoToMainPageCommand, Mode=OneWay}" />
+                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" HorizontalAlignment="Center" Command="{x:Bind ViewModel.GoToDashboardCommand, Mode=OneWay}" />
 
                 <!-- Next steps section -->
                 <StackPanel Orientation="Vertical" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" Padding="0, 30, 0, 0">
