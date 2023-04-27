@@ -206,6 +206,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
 
             ViewModel.Widget = widget;
+            ViewModel.IsInAddMode = true;
             PinButton.Visibility = Visibility.Visible;
 
             clearWidgetTask.Wait();
