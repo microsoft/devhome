@@ -36,6 +36,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private bool _showDevDriveItem;
 
     [ObservableProperty]
+    private bool _showPackageInstallerItem;
+
+    [ObservableProperty]
     private bool _showAppInstallerUpdateNotification;
 
     /// <summary>
@@ -63,7 +66,19 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        ShowAppInstallerUpdateNotification = await _wpm.IsAppInstallerUpdateAvailableAsync();
+        // If IsCOMServerAvailable is still being (lazily) evaluated form a
+        // previous call, then await until the thread is unblocked and the
+        // already computed value is returned.
+        ShowPackageInstallerItem = await Task.Run(() => _wpm.IsCOMServerAvailable());
+        if (ShowPackageInstallerItem)
+        {
+            Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");
+            ShowAppInstallerUpdateNotification = await _wpm.IsAppInstallerUpdateAvailableAsync();
+        }
+        else
+        {
+            Log.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available. Package install item is hidden.");
+        }
     }
 
     [RelayCommand]
@@ -94,11 +109,23 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private void StartSetup(string flowTitle)
     {
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting end-to-end setup");
-        StartSetupFlowForTaskGroups(
-            flowTitle,
+
+        var taskGroups = new List<ISetupTaskGroup>
+        {
             _host.GetService<DevDriveTaskGroup>(),
             _host.GetService<RepoConfigTaskGroup>(),
-            _host.GetService<AppManagementTaskGroup>());
+        };
+
+        if (ShowPackageInstallerItem)
+        {
+            taskGroups.Add(_host.GetService<AppManagementTaskGroup>());
+        }
+        else
+        {
+            Log.Logger?.ReportInfo(Log.Component.MainPage, $"Skipping {nameof(AppManagementTaskGroup)} because COM server is not available");
+        }
+
+        StartSetupFlowForTaskGroups(flowTitle, taskGroups.ToArray());
     }
 
     /// <summary>

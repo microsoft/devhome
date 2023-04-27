@@ -116,6 +116,7 @@
                                            IsClickEnabled="True"
                                            Command="{x:Bind ViewModel.StartAppManagementCommand}"
                                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                                           Visibility="{x:Bind ViewModel.ShowPackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                            ActionIcon="{x:Null}" >
                             <labs:SettingsCard.HeaderIcon>
                                 <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_AppManagement.png" />

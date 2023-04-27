@@ -99,7 +99,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         };
     }
 
-    public bool IsCOMServerAvailable => _isCOMServerAvailable.Value;
+    public bool IsCOMServerAvailable() => _isCOMServerAvailable.Value;
 
     public async Task<bool> IsAppInstallerUpdateAvailableAsync()
     {
@@ -193,6 +193,11 @@ public class WindowsPackageManager : IWindowsPackageManager
         return compositeCatalog;
     }
 
+    /// <summary>
+    /// Check if WindowsPackageManager COM Server is available by creating a
+    /// dummy out-of-proc object
+    /// </summary>
+    /// <returns>True if server is available, false otherwise.</returns>
     private bool IsCOMServerAvailableInternal()
     {
         try

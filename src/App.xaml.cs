@@ -122,6 +122,16 @@ public partial class App : Application, IApp
 
         await GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data);
         await GetService<IAccountsService>().InitializeAsync();
+
+        Log.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at launch");
+        if (await Task.Run(() => GetService<IWindowsPackageManager>().IsCOMServerAvailable()))
+        {
+            Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
+        }
+        else
+        {
+            Log.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
+        }
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)

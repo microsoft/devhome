@@ -46,15 +46,6 @@ public interface IWindowsPackageManager
     }
 
     /// <summary>
-    /// Gets a value indicating whether the WindowsPackageManagerServer is available to create out-of-proc COM objects
-    /// </summary>
-    /// <returns>True if COM Server is available, false otherwise</returns>
-    public bool IsCOMServerAvailable
-    {
-        get;
-    }
-
-    /// <summary>
     /// Opens all custom composite catalogs.
     /// </summary>
     /// <exception cref="CatalogConnectionException">Exception thrown if a catalog connection failed</exception>
@@ -78,4 +69,11 @@ public interface IWindowsPackageManager
     /// </summary>
     /// <returns>True if the update started, false otherwise.</returns>
     public Task<bool> StartAppInstallerUpdateAsync();
+
+    /// <summary>
+    /// Check whether the WindowsPackageManagerServer is available to create
+    /// out-of-proc COM objects
+    /// </summary>
+    /// <returns>True if COM Server is available, false otherwise</returns>
+    public bool IsCOMServerAvailable();
 }
