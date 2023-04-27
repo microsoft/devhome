@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Selectors;
 using DevHome.SetupFlow.Services;
@@ -106,6 +107,12 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     {
         var setupFlowViewModel = _host.GetService<SetupFlowViewModel>();
         setupFlowViewModel.Cancel();
+    }
+
+    [RelayCommand]
+    public void GoToDevHomeSettings()
+    {
+        _navigationService.NavigateTo(typeof(SettingsViewModel).FullName);
     }
 
     [RelayCommand]

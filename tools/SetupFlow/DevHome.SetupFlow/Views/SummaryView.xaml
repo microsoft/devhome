@@ -174,7 +174,7 @@
                         <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
                     </StackPanel.BorderBrush>
                     <HyperlinkButton Content="Set up another project" Command="{x:Bind ViewModel.GoToMainPageCommand}"/>
-                    <HyperlinkButton Content="Change Dev Home settings"/>
+                    <HyperlinkButton Content="Change Dev Home settings" Command="{x:Bind ViewModel.GoToDevHomeSettingsCommand}"/>
                     <HyperlinkButton Content="Change Developer settings in Windows" Command="{x:Bind ViewModel.GoToForDevelopersSettingsPageCommand}"/>
                     <HyperlinkButton Content="Lean more about Dev Home" Command="{x:Bind ViewModel.GoToLearnMorePageCommand}"/>
                 </StackPanel>
