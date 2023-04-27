@@ -959,15 +959,15 @@
     <value>Return to main screen</value>
     <comment>Description of the 'go to main page' button for screen readers</comment>
   </data>
-  <data name="LoadingPage_SomeTasksFailed_First.Text" xml:space="preserve">
+  <data name="LoadingPage_SomeTasksFailed_Header.Text" xml:space="preserve">
     <value>Can't retry again</value>
     <comment>First part of the banner telling a user not all tasks were successful</comment>
   </data>
-  <data name="LoadingPage_SomeTasksFailed_Second.Text" xml:space="preserve">
+  <data name="LoadingPage_SomeTasksFailed_Body.Text" xml:space="preserve">
     <value>One or more tasks couldn't be completed.</value>
-    <comment>Asking users to go to the summary page if failures.</comment>
+    <comment>Second part of the banner letting know users that not all tasks were successful</comment>
   </data>
-  <data name="LoadingScreen_MaxRetiresReached_Button.Content" xml:space="preserve">
+  <data name="LoadingScreen_MaxRetriesReached_Button.Content" xml:space="preserve">
     <value>Continue</value>
     <comment>Button notifying users to go to the summary</comment>
   </data>
@@ -977,7 +977,7 @@
   </data>
   <data name="UrlValidationBadUrl" xml:space="preserve">
     <value>Enter a repository name beginning with https://</value>
-    <comment>Error string to show the user if the url isn't a url</comment>
+    <comment>Error string to show the user if the url is not an absolute URL</comment>
   </data>
   <data name="UrlValidationEmpty" xml:space="preserve">
     <value>Enter a repository name beginning with https://</value>
@@ -985,7 +985,7 @@
   </data>
   <data name="UrlValidationNotFound" xml:space="preserve">
     <value>The repository can't be found</value>
-    <comment>Eror string to show the user if the extension can't access the repo</comment>
+    <comment>Error string to show the user if the extension can't access the repo</comment>
   </data>
   <data name="UrlValidationRepoAlreadyAdded" xml:space="preserve">
     <value>The repository is already added</value>
@@ -1003,7 +1003,7 @@
     <value>Change Dev Home Settings</value>
     <comment>Summary page prompt to bring users to the settings page</comment>
   </data>
-  <data name="SummaryPage_LearnMoreAbountDevHome.Content" xml:space="preserve">
+  <data name="SummaryPage_LearnMoreAboutDevHome.Content" xml:space="preserve">
     <value>Learn more about Dev Home</value>
     <comment>Summary page prompt to open the browser to learn more about DevHome</comment>
   </data>
