@@ -155,8 +155,7 @@ public class DevDriveManager : IDevDriveManager
             return _devDrives.First();
         }
 
-        var devDrive = new Models.DevDrive();
-        UpdateDevDriveWithDefaultInfo(ref devDrive);
+        var devDrive = GetDevDriveWithDefaultInfo();
         var taskGroups = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
         var group = taskGroups.SingleOrDefault(x => x.GetType() == typeof(DevDriveTaskGroup));
         if (group is DevDriveTaskGroup driveTaskGroup)
@@ -253,62 +252,42 @@ public class DevDriveManager : IDevDriveManager
     }
 
     /// <summary>
-    /// Gets prepoppulated data and updates the passed in dev drive object with it.
+    /// Gets prepopulated data and updates the passed in dev drive object with it.
     /// </summary>
-    private void UpdateDevDriveWithDefaultInfo(ref Models.DevDrive devDrive)
+    private IDevDrive GetDevDriveWithDefaultInfo()
     {
-        try
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, "Setting default Dev Drive info");
+        var root = Path.GetPathRoot(Environment.SystemDirectory);
+        var validationSuccessful = true;
+        var drive = new DriveInfo(root);
+        if (DevDriveUtil.MinDevDriveSizeInBytes > (ulong)drive.AvailableFreeSpace)
         {
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Setting default Dev Drive info");
-            var root = Path.GetPathRoot(Environment.SystemDirectory);
-            var validationSuccessful = true;
-            var drive = new DriveInfo(root);
-            if (DevDriveUtil.MinDevDriveSizeInBytes > (ulong)drive.AvailableFreeSpace)
-            {
-                Log.Logger?.ReportError(Log.Component.DevDrive, "Not enough space available to create a Dev Drive");
-                validationSuccessful = false;
-            }
-
-            var availableLetters = GetAvailableDriveLetters();
-            if (!availableLetters.Any())
-            {
-                Log.Logger?.ReportError(Log.Component.DevDrive, "No drive letters available to assign to Dev Drive");
-                validationSuccessful = false;
-            }
-            else
-            {
-                devDrive.DriveLetter = availableLetters[0];
-            }
-
-            devDrive.DriveSizeInBytes = DevDriveUtil.MinDevDriveSizeInBytes;
-            devDrive.DriveUnitOfMeasure = ByteUnit.GB;
-
-            devDrive.DriveLocation = DefaultDevDriveLocation;
-            uint count = 1;
-            var fullPath = Path.Combine(DefaultDevDriveLocation, $"{_defaultVhdxName}.vhdx");
-            var fileName = _defaultVhdxName;
-
-            // If original default file name exists we'll increase the number next to the filename
-            while (File.Exists(fullPath) && count <= 1000)
-            {
-                fileName = $"{_defaultVhdxName} {count}";
-                fullPath = Path.Combine(DefaultDevDriveLocation, $"{fileName}.vhdx");
-                count++;
-            }
-
-            devDrive.DriveLabel = fileName;
-            if (validationSuccessful)
-            {
-                devDrive.State = DevDriveState.New;
-            }
-
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Default Dev Drive info: DriveLetter={devDrive.DriveLetter}, DriveSize={devDrive.DriveSizeInBytes}, Location={devDrive.DriveLocation}, Label={devDrive.DriveLabel}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, "Not enough space available to create a Dev Drive");
+            validationSuccessful = false;
         }
-        catch (Exception ex)
+
+        var availableLetters = GetAvailableDriveLetters();
+        var driveLetter = (availableLetters.Count == 0) ? '\0' : availableLetters[0];
+        if (driveLetter == '\0')
         {
-            // we don't need to rethrow the exception/crash, we need to tell the user we couldn't find the default folder.
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed Get default folder for Dev Drive. {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, "No drive letters available to assign to Dev Drive");
+            validationSuccessful = false;
         }
+
+        uint count = 1;
+        var fullPath = Path.Combine(DefaultDevDriveLocation, $"{_defaultVhdxName}.vhdx");
+        var fileName = _defaultVhdxName;
+
+        // If original default file name exists we'll increase the number next to the filename
+        while (File.Exists(fullPath) && count <= 1000)
+        {
+            fileName = $"{_defaultVhdxName} {count}";
+            fullPath = Path.Combine(DefaultDevDriveLocation, $"{fileName}.vhdx");
+            count++;
+        }
+
+        var devDriveState = validationSuccessful ? DevDriveState.New : DevDriveState.Invalid;
+        return new Models.DevDrive(driveLetter, DevDriveUtil.MinDevDriveSizeInBytes, ByteUnit.GB, DefaultDevDriveLocation, fileName, devDriveState, Guid.NewGuid());
     }
 
     /// <inheritdoc/>
@@ -324,7 +303,7 @@ public class DevDriveManager : IDevDriveManager
             return returnSet;
         }
 
-        if (devDrive.DriveLetter == '\0')
+        if (GetAvailableDriveLetters().Count == 0)
         {
             returnSet.Add(DevDriveValidationResult.NoDriveLettersAvailable);
         }
@@ -420,7 +399,7 @@ public class DevDriveManager : IDevDriveManager
         {
             var fileInfo = new FileInfo(devDrive.DriveLocation);
             locationRoot = Path.GetPathRoot(fileInfo.FullName);
-            if (!string.IsNullOrEmpty(locationRoot))
+            if (!string.IsNullOrEmpty(locationRoot) && Path.IsPathFullyQualified(fileInfo.FullName))
             {
                 var path = fileInfo.FullName.ToString();
                 var isNetworkPath = false;
@@ -432,18 +411,9 @@ public class DevDriveManager : IDevDriveManager
                     }
                 }
 
-                if (!isNetworkPath)
+                if (!isNetworkPath && File.Exists(Path.Combine(fileInfo.FullName, devDrive.DriveLabel + ".vhdx")))
                 {
-                    if (fileInfo.FullName != DefaultDevDriveLocation &&
-                        !Directory.Exists(fileInfo.FullName))
-                    {
-                        return DevDriveValidationResult.InvalidFolderLocation;
-                    }
-
-                    if (File.Exists(Path.Combine(fileInfo.FullName, devDrive.DriveLabel + ".vhdx")))
-                    {
-                        return DevDriveValidationResult.FileNameAlreadyExists;
-                    }
+                    return DevDriveValidationResult.FileNameAlreadyExists;
                 }
             }
             else

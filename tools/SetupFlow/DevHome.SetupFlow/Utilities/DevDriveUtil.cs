@@ -191,6 +191,8 @@ public static class DevDriveUtil
     public static bool IsInvalidFileNameOrPath(InvalidCharactersKind type, string fileNameOrPath)
     {
         var invalidChars = GetInvalidCharacters(type);
+        var oppositeSlash = fileNameOrPath.Contains('\\') ? '/' : '\\';
+        invalidChars.Add(oppositeSlash);
         return fileNameOrPath.Any(c => invalidChars.Contains(c));
     }
 
@@ -199,7 +201,9 @@ public static class DevDriveUtil
         char[] invalidFileChars;
         if (type == InvalidCharactersKind.Path)
         {
-            invalidFileChars = Path.GetInvalidPathChars();
+            var charList = Path.GetInvalidPathChars().ToList();
+            charList.AddRange(new List<char> { '*', '?', '\"', '<', '>', '|' });
+            invalidFileChars = charList.ToArray();
         }
         else
         {
