@@ -43,11 +43,11 @@
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="5" >
                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF167;" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" />
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_First" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_Second" VerticalAlignment="Center" />
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_Header" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_Body" VerticalAlignment="Center" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5" >
-                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_MaxRetiresReached_Button" Command="{x:Bind ViewModel.GoToSummaryPageCommand}" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
+                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_MaxRetriesReached_Button" Command="{x:Bind ViewModel.GoToSummaryPageCommand}" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
                 <Button Command="{x:Bind ViewModel.HideMaxRetryBannerCommand}" Style="{ThemeResource AlternateCloseButtonStyle}">
                     <Button.Content>
                         <SymbolIcon Symbol="Cancel"/>
