@@ -40,6 +40,7 @@ public class DevDrive : IDevDrive
         DriveLabel = devDrive.DriveLabel;
         State = devDrive.State;
         ID = devDrive.ID;
+        DriveMediaType = devDrive.DriveMediaType;
     }
 
     public DevDrive(IDevDrive devDrive)
@@ -50,6 +51,7 @@ public class DevDrive : IDevDrive
         DriveLabel = devDrive.DriveLabel;
         State = devDrive.State;
         ID = devDrive.ID;
+        DriveMediaType = devDrive.DriveMediaType;
 
         if (DriveSizeInBytes >= DevDriveUtil.OneTbInBytes)
         {
@@ -64,6 +66,7 @@ public class DevDrive : IDevDrive
     public DevDrive()
     {
         ID = Guid.NewGuid();
+        DriveMediaType = DiskMediaType.VirtualHD; // Other types are not supported/used at the moment.
     }
 
     /// <summary>
@@ -121,5 +124,13 @@ public class DevDrive : IDevDrive
     public Guid ID
     {
         get; set;
+    }
+
+    /// <summary>
+    /// Gets the drive media type.
+    /// </summary>
+    public DiskMediaType DriveMediaType
+    {
+        get;
     }
 }

@@ -3,12 +3,14 @@
 
 using System;
 using AdaptiveCards.Rendering.WinUI3;
+using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets.Hosts;
+using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
 public sealed partial class CustomizeWidgetDialog : ContentDialog
@@ -27,6 +29,9 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
 
         _widgetHost = host;
         _widgetDefinition = widgetDefinition;
+
+        // Get the application root window so we know when it has closed.
+        Application.Current.GetService<WindowEx>().Closed += OnMainWindowClosed;
 
         this.Loaded += InitializeWidgetCustomization;
     }
@@ -58,5 +63,11 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
 
         EditedWidget = null;
         this.Hide();
+    }
+
+    private async void OnMainWindowClosed(object sender, WindowEventArgs args)
+    {
+        Log.Logger()?.ReportInfo("CustomizeWidgetDialog", $"Window Closed, delete partially created widget");
+        await ViewModel.Widget.DeleteAsync();
     }
 }

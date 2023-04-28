@@ -234,7 +234,7 @@
     <comment>Title text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.Description" xml:space="preserve">
-    <value>Find out how you can use Dev Home to set up your development machine more quickly.</value>
+    <value>Find out how you can use Dev Home to quickly set up your development machine.</value>
     <comment>{Locked="Dev Home"}Description text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.ButtonText" xml:space="preserve">
@@ -994,5 +994,9 @@
   <data name="DevDriveDefaultDriveCheckBoxError.Message" xml:space="preserve">
     <value>Couldn't set default Dev Drive configuration. Select the customize button to update the configuration.</value>
     <comment>Error string to tell the user that DevHome couldn't use its default Dev Drive configuration to prepopulate the information it needs to create a Dev Drive. Information like its location, drive letter and size.</comment>
+  </data>
+  <data name="UrlValidationRepoAlreadyAdded" xml:space="preserve">
+    <value>This repo has already been added.</value>
+    <comment>Error string to show the user when they added a repo via URL that is already added.</comment>
   </data>
 </root>

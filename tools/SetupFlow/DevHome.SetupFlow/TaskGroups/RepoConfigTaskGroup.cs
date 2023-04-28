@@ -39,16 +39,16 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     /// <summary>
     /// Gets all the tasks to execute during the loading screen.
     /// </summary>
-    public IEnumerable<ISetupTask> SetupTasks => _cloneTasks;
+    public IEnumerable<ISetupTask> SetupTasks => CloneTasks;
+
+    /// <summary>
+    /// Gets all tasks that need to be ran.
+    /// </summary>
+    public IList<CloneRepoTask> CloneTasks { get; } = new List<CloneRepoTask>();
 
     public SetupPageViewModelBase GetSetupPageViewModel() => _repoConfigViewModel.Value;
 
-    public ReviewTabViewModelBase GetReviewTabViewModel() => _host.CreateInstance<RepoConfigReviewViewModel>(_cloneTasks);
-
-    /// <summary>
-    /// All tasks that need to be ran.
-    /// </summary>
-    private readonly IList<CloneRepoTask> _cloneTasks = new List<CloneRepoTask>();
+    public ReviewTabViewModelBase GetReviewTabViewModel() => _repoConfigReviewViewModel.Value;
 
     /// <summary>
     /// Converts CloningInformation to a CloneRepoTask.
@@ -57,20 +57,18 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     public void SaveSetupTaskInformation(List<CloningInformation> cloningInformations)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Saving cloning information to task group");
-        _cloneTasks.Clear();
+        CloneTasks.Clear();
         foreach (var cloningInformation in cloningInformations)
         {
-            var fullPath = Path.Combine(cloningInformation.CloningLocation.FullName, cloningInformation.ProviderName, cloningInformation.RepositoryToClone.DisplayName);
-
             // if the repo was added via URL.
             CloneRepoTask task;
             if (cloningInformation.OwningAccount == null)
             {
-                task = new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, _stringResource, cloningInformation.ProviderName);
+                task = new CloneRepoTask(new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, _stringResource, cloningInformation.ProviderName);
             }
             else
             {
-                task = new CloneRepoTask(new DirectoryInfo(fullPath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.ProviderName);
+                task = new CloneRepoTask(new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.ProviderName);
             }
 
             if (cloningInformation.CloneToDevDrive)
@@ -78,7 +76,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
                 task.DependsOnDevDriveToBeInstalled = true;
             }
 
-            _cloneTasks.Add(task);
+            CloneTasks.Add(task);
         }
     }
 }

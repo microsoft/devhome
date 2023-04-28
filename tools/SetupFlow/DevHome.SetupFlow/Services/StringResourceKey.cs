@@ -126,4 +126,5 @@ public static class StringResourceKey
     public static readonly string UrlValidationEmpty = nameof(UrlValidationEmpty);
     public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);
     public static readonly string UrlValidationNotFound = nameof(UrlValidationNotFound);
+    public static readonly string UrlValidationRepoAlreadyAdded = nameof(UrlValidationRepoAlreadyAdded);
 }

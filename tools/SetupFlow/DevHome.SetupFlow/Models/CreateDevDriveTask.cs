@@ -4,12 +4,15 @@
 extern alias Projection;
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
+using DevHome.Common.ResultHelper;
 using DevHome.Common.Services;
+using DevHome.Common.Telemetry;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
@@ -115,6 +118,9 @@ internal class CreateDevDriveTask : ISetupTask
     {
         return Task.Run(() =>
         {
+            Stopwatch timer = Stopwatch.StartNew();
+            var result = 0;
+
             try
             {
                 var manager = _host.GetService<IDevDriveManager>();
@@ -132,21 +138,20 @@ internal class CreateDevDriveTask : ISetupTask
 
                 var storageOperator = elevatedComponentFactory.CreateDevDriveStorageOperator();
                 var virtDiskPath = Path.Combine(DevDrive.DriveLocation, DevDrive.DriveLabel + ".vhdx");
-                var result = storageOperator.CreateDevDrive(virtDiskPath, DevDrive.DriveSizeInBytes, DevDrive.DriveLetter, DevDrive.DriveLabel);
-                if (result != 0)
-                {
-                    _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, GetLocalizedErrorMsg(result));
-                    Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to create Dev Drive, Error code. 0x{result:X}");
-                    return TaskFinishedState.Failure;
-                }
-
+                Result.ThrowIfFailed(storageOperator.CreateDevDrive(virtDiskPath, DevDrive.DriveSizeInBytes, DevDrive.DriveLetter, DevDrive.DriveLabel));
                 return TaskFinishedState.Success;
             }
             catch (Exception ex)
             {
+                result = ex.HResult;
                 Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to create Dev Drive. Due to Exception ErrorCode: 0x{ex.HResult:X}, Msg: {ex.Message}");
                 _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, GetLocalizedErrorMsg(ex.HResult));
                 return TaskFinishedState.Failure;
+            }
+            finally
+            {
+                timer.Stop();
+                TelemetryHelper.LogCreateDevDriveTriggered(timer.ElapsedTicks, result, DevDrive.DriveSizeInBytes, (uint)DevDrive.DriveMediaType);
             }
         }).AsAsyncOperation();
     }

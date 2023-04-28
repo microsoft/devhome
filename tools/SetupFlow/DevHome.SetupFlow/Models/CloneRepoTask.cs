@@ -24,7 +24,9 @@ public class CloneRepoTask : ISetupTask
     /// <summary>
     /// Absolute path the user wants to clone their repository to.
     /// </summary>
-    private readonly DirectoryInfo cloneLocation;
+    private readonly DirectoryInfo _cloneLocation;
+
+    public DirectoryInfo CloneLocation => _cloneLocation;
 
     /// <summary>
     /// Gets the repository the user wants to clone.
@@ -85,12 +87,12 @@ public class CloneRepoTask : ISetupTask
     /// <summary>
     /// Initializes a new instance of the <see cref="CloneRepoTask"/> class.
     /// </summary>
-    /// <param name="cloneLocation">Repository will be placed here. at cloneLocation.FullName</param>
+    /// <param name="cloneLocation">Repository will be placed here. at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
     /// <param name="developerId">Credentials needed to clone a private repo</param>
     public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName)
     {
-        this.cloneLocation = cloneLocation;
+        _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
         _developerId = developerId;
         SetMessages(stringResource);
@@ -101,11 +103,11 @@ public class CloneRepoTask : ISetupTask
     /// Initializes a new instance of the <see cref="CloneRepoTask"/> class.
     /// Task to clone a repository.
     /// </summary>
-    /// <param name="cloneLocation">Repository will be placed here. at cloneLocation.FullName</param>
+    /// <param name="cloneLocation">Repository will be placed here. at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The reposptyr to clone</param>
     public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName)
     {
-        this.cloneLocation = cloneLocation;
+        _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
         _developerId = null;
         ProviderName = providerName;
@@ -115,7 +117,7 @@ public class CloneRepoTask : ISetupTask
     private void SetMessages(IStringResource stringResource)
     {
         var executingMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoCreating, RepositoryToClone.DisplayName);
-        var finishedMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoCreated, cloneLocation.FullName);
+        var finishedMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoCreated, _cloneLocation.FullName);
         var errorMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoError, RepositoryToClone.DisplayName);
         var needsRebootMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoRestart, RepositoryToClone.DisplayName);
         _taskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsRebootMessage);
@@ -136,20 +138,6 @@ public class CloneRepoTask : ISetupTask
     {
         return Task.Run(async () =>
         {
-            if (!cloneLocation.Exists)
-            {
-                try
-                {
-                    Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Creating clone location for repository at {cloneLocation.FullName}");
-                    Directory.CreateDirectory(cloneLocation.FullName);
-                }
-                catch (Exception)
-                {
-                    Log.Logger?.ReportError(Log.Component.RepoConfig, "Failed to create clone location for repository");
-                    return TaskFinishedState.Failure;
-                }
-            }
-
             try
             {
                 // If the user used the repo tab to add repos then _developerId points to the account used to clone their repo.
@@ -159,7 +147,7 @@ public class CloneRepoTask : ISetupTask
                 // extension will iterate through all logged in Ids and clone with each one.
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
 
-                await RepositoryToClone.CloneRepositoryAsync(cloneLocation.FullName, _developerId);
+                await RepositoryToClone.CloneRepositoryAsync(_cloneLocation.FullName, _developerId);
             }
             catch (Exception e)
             {
