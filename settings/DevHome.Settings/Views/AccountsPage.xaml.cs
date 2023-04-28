@@ -100,7 +100,7 @@ public sealed partial class AccountsPage : Page
         var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
         var renderer = new AdaptiveCardRenderer();
         await ConfigureLoginUIRenderer(renderer);
-        renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+
         pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
         pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
 
@@ -134,7 +134,7 @@ public sealed partial class AccountsPage : Page
         }
         catch (Exception ex)
         {
-            LoggerFactory.Get<ILogger>().Log($"Failure occurred while retrieving the HostConfig file", LogLevel.Local, $"Error: {ex} RoutedEventArgs{hostConfigFileName}");
+            LoggerFactory.Get<ILogger>().Log($"Failure occurred while retrieving the HostConfig file", LogLevel.Local, $"Error: {ex} HostConfigFileName: {hostConfigFileName}");
         }
 
         // Add host config for current theme to renderer
@@ -146,9 +146,10 @@ public sealed partial class AccountsPage : Page
             }
             else
             {
-                LoggerFactory.Get<ILogger>().Log($"HostConfig file contents are null or empty", LogLevel.Local, $"RoutedEventArgs{hostConfigContents}");
+                LoggerFactory.Get<ILogger>().Log($"HostConfig file contents are null or empty", LogLevel.Local, $"HostConfigFileContents: {hostConfigContents}");
             }
         });
+        renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
         return;
     }
 
