@@ -117,17 +117,13 @@ internal class CreateDevDriveTask : ISetupTask
         {
             try
             {
-                // Create the location if it doesn't exist. Do this before validation.
-                if (!Directory.Exists(DevDrive.DriveLocation))
-                {
-                    Directory.CreateDirectory(DevDrive.DriveLocation);
-                }
-
                 var manager = _host.GetService<IDevDriveManager>();
                 var validation = manager.GetDevDriveValidationResults(DevDrive);
                 manager.RemoveAllDevDrives();
 
-                if (!validation.Contains(DevDriveValidationResult.Successful))
+                if (validation.Count > 1 ||
+                    (!validation.Contains(DevDriveValidationResult.Successful) &&
+                    !validation.Contains(DevDriveValidationResult.InvalidFolderLocation)))
                 {
                     var localizedMsg = _stringResource.GetLocalized("DevDrive" + validation.First().ToString());
                     _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, localizedMsg);

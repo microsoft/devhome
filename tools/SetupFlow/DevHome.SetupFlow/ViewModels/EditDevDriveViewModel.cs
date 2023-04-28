@@ -70,6 +70,9 @@ public partial class EditDevDriveViewModel : ObservableObject
     [ObservableProperty]
     private bool _isDevDriveCheckboxEnabled;
 
+    [ObservableProperty]
+    private bool _devDriveValidationError;
+
     public EditDevDriveViewModel(IDevDriveManager devDriveManager)
     {
         _devDriveManager = devDriveManager;
@@ -88,15 +91,9 @@ public partial class EditDevDriveViewModel : ObservableObject
     {
         // DevDrive SetToDefaults
         ShowCustomizeOption = Visibility.Visible;
-        var (result, devDrive) = _devDriveManager.GetNewDevDrive();
-        if (result == DevDriveValidationResult.Successful)
-        {
-            DevDrive = devDrive;
-            return true;
-        }
-
-        // TODO: Maybe we should show some UI to say that we couldn't make a default Dev Drive.
-        return false;
+        DevDrive = _devDriveManager.GetNewDevDrive();
+        DevDriveValidationError = (DevDrive.State == DevDriveState.New) ? false : true;
+        return DevDriveValidationError;
     }
 
     public void ShowDevDriveUIIfEnabled()
@@ -118,6 +115,7 @@ public partial class EditDevDriveViewModel : ObservableObject
         _devDriveManager.CancelChangesToDevDrive();
         DevDrive = null;
         ShowCustomizeOption = Visibility.Collapsed;
+        DevDriveValidationError = false;
     }
 
     /// <summary>
@@ -126,6 +124,11 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </summary>
     public string GetDriveDisplayName(DevDriveDisplayNameKind useDriveLetterOnly = DevDriveDisplayNameKind.DriveRootKind)
     {
+        if (DevDrive.DriveLetter == '\0')
+        {
+            return string.Empty;
+        }
+
         if (useDriveLetterOnly == DevDriveDisplayNameKind.DriveRootKind)
         {
             // Uses the actual place where we'll be cloning to
@@ -203,5 +206,11 @@ public partial class EditDevDriveViewModel : ObservableObject
         IsDevDriveCheckboxEnabled = true;
         DevDrive = devDrive;
         ClonePathUpdated();
+    }
+
+    public bool IsDevDriveValid()
+    {
+        var results = _devDriveManager.GetDevDriveValidationResults(DevDrive);
+        return results.Contains(DevDriveValidationResult.Successful);
     }
 }

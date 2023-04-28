@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Runtime.InteropServices;
 using DevHome.SetupFlow.Common.DevDriveFormatter;
 using DevHome.SetupFlow.Common.Helpers;
@@ -70,6 +71,13 @@ public sealed class DevDriveStorageOperator
     /// <returns>An int which is the Hresult code that indicates whether the operation succeeded or failed</returns>
     public int CreateDevDrive(string virtDiskPath, ulong sizeInBytes, char newDriveLetter, string driveLabel)
     {
+        // Create the location if it doesn't exist.
+        var location = Path.GetDirectoryName(virtDiskPath);
+        if (location != null && !Directory.Exists(location))
+        {
+            Directory.CreateDirectory(location);
+        }
+
         string virtDiskPhysicalPath;
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(CreateAndAttachVhdx)}");
         var result = CreateAndAttachVhdx(virtDiskPath, sizeInBytes, out virtDiskPhysicalPath);

@@ -35,6 +35,7 @@ public class DevDriveManager : IDevDriveManager
     private readonly string _defaultVhdxLocation;
     private readonly string _defaultVhdxName;
     private readonly ISetupFlowStringResource _stringResource;
+    private readonly string _defaultDevDriveLocation;
 
     // Query flag for persistent state info of the volume, the presense of this flag will let us know
     // its a Dev drive. TODO: Update this once in Windows SDK
@@ -63,6 +64,11 @@ public class DevDriveManager : IDevDriveManager
     {
         get; private set;
     }
+
+    /// <summary>
+    /// Gets the default location we use to save a Dev Drive to. Requires admin rights, to create, if not already created.
+    /// </summary>
+    public string DefaultDevDriveLocation => _defaultDevDriveLocation;
 
     /// <inheritdoc/>
     public IList<IDevDrive> DevDrivesMarkedForCreation => _devDrives.ToList();
@@ -95,6 +101,8 @@ public class DevDriveManager : IDevDriveManager
         _stringResource = stringResource;
         _defaultVhdxLocation = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFolderName);
         _defaultVhdxName = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFileName);
+        var location = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+        _defaultDevDriveLocation = Path.Combine(Path.Combine(location, @"Microsoft\Windows"), _defaultVhdxLocation);
     }
 
     /// <inheritdoc/>
@@ -129,36 +137,38 @@ public class DevDriveManager : IDevDriveManager
     /// name, folder location for vhdx file and drive letter will be prepopulated.
     /// </summary>
     /// <returns>
-    /// An Dev Drive thats associated with a viewmodel and a result that indicates whether the operation
-    /// was successful.
+    /// The Dev Drive to be created
     /// </returns>
-    public (DevDriveValidationResult, IDevDrive) GetNewDevDrive()
+    public IDevDrive GetNewDevDrive()
     {
         // Currently we only support creating one Dev Drive at a time. If one was
         // produced before reuse it.
         if (_devDrives.Any())
         {
             Log.Logger?.ReportInfo(Log.Component.DevDrive, "Reusing existing Dev Drive");
-            return (DevDriveValidationResult.Successful, _devDrives.First());
+            _devDrives.First().State = DevDriveState.New;
+            if (!GetDevDriveValidationResults(_devDrives.First()).Contains(DevDriveValidationResult.Successful))
+            {
+                _devDrives.First().State = DevDriveState.Invalid;
+            }
+
+            return _devDrives.First();
         }
 
         var devDrive = new Models.DevDrive();
-        var result = UpdateDevDriveWithDefaultInfo(ref devDrive);
-        if (result == DevDriveValidationResult.Successful)
+        UpdateDevDriveWithDefaultInfo(ref devDrive);
+        var taskGroups = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
+        var group = taskGroups.SingleOrDefault(x => x.GetType() == typeof(DevDriveTaskGroup));
+        if (group is DevDriveTaskGroup driveTaskGroup)
         {
-            var taskGroups = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
-            var group = taskGroups.SingleOrDefault(x => x.GetType() == typeof(DevDriveTaskGroup));
-            if (group is DevDriveTaskGroup driveTaskGroup)
-            {
-                ViewModel.TaskGroup = driveTaskGroup;
-            }
-
-            ViewModel.UpdateDevDriveInfo(devDrive);
-            _devDrives.Add(devDrive);
-            PreviousDevDrive = devDrive;
+            ViewModel.TaskGroup = driveTaskGroup;
         }
 
-        return (result, devDrive);
+        ViewModel.UpdateDevDriveInfo(devDrive);
+        _devDrives.Add(devDrive);
+        PreviousDevDrive = devDrive;
+
+        return devDrive;
     }
 
     /// <inheritdoc/>
@@ -245,71 +255,59 @@ public class DevDriveManager : IDevDriveManager
     /// <summary>
     /// Gets prepoppulated data and updates the passed in dev drive object with it.
     /// </summary>
-    /// <returns>
-    /// A result that indicates whether the operation was successful.
-    /// </returns>
-    private DevDriveValidationResult UpdateDevDriveWithDefaultInfo(ref Models.DevDrive devDrive)
+    private void UpdateDevDriveWithDefaultInfo(ref Models.DevDrive devDrive)
     {
         try
         {
             Log.Logger?.ReportInfo(Log.Component.DevDrive, "Setting default Dev Drive info");
-            var location = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var root = Path.GetPathRoot(Environment.SystemDirectory);
-            if (string.IsNullOrEmpty(location) || string.IsNullOrEmpty(root))
-            {
-                Log.Logger?.ReportError(Log.Component.DevDrive, "Default Dev Drive location is not available");
-                return DevDriveValidationResult.DefaultFolderNotAvailable;
-            }
-
+            var validationSuccessful = true;
             var drive = new DriveInfo(root);
             if (DevDriveUtil.MinDevDriveSizeInBytes > (ulong)drive.AvailableFreeSpace)
             {
                 Log.Logger?.ReportError(Log.Component.DevDrive, "Not enough space available to create a Dev Drive");
-                return DevDriveValidationResult.NotEnoughFreeSpace;
+                validationSuccessful = false;
             }
 
             var availableLetters = GetAvailableDriveLetters();
             if (!availableLetters.Any())
             {
                 Log.Logger?.ReportError(Log.Component.DevDrive, "No drive letters available to assign to Dev Drive");
-                return DevDriveValidationResult.NoDriveLettersAvailable;
+                validationSuccessful = false;
+            }
+            else
+            {
+                devDrive.DriveLetter = availableLetters[0];
             }
 
-            devDrive.DriveLetter = availableLetters[0];
             devDrive.DriveSizeInBytes = DevDriveUtil.MinDevDriveSizeInBytes;
             devDrive.DriveUnitOfMeasure = ByteUnit.GB;
-            location = Path.Combine(location, _defaultVhdxLocation);
 
-            // Create the location if it doesn't exist.
-            if (!Directory.Exists(location))
-            {
-                Directory.CreateDirectory(location);
-            }
-
-            devDrive.DriveLocation = location;
+            devDrive.DriveLocation = DefaultDevDriveLocation;
             uint count = 1;
-            var fullPath = Path.Combine(location, $"{_defaultVhdxName}.vhdx");
+            var fullPath = Path.Combine(DefaultDevDriveLocation, $"{_defaultVhdxName}.vhdx");
             var fileName = _defaultVhdxName;
 
             // If original default file name exists we'll increase the number next to the filename
             while (File.Exists(fullPath) && count <= 1000)
             {
                 fileName = $"{_defaultVhdxName} {count}";
-                fullPath = Path.Combine(location, $"{fileName}.vhdx");
+                fullPath = Path.Combine(DefaultDevDriveLocation, $"{fileName}.vhdx");
                 count++;
             }
 
             devDrive.DriveLabel = fileName;
-            devDrive.State = DevDriveState.New;
+            if (validationSuccessful)
+            {
+                devDrive.State = DevDriveState.New;
+            }
 
             Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Default Dev Drive info: DriveLetter={devDrive.DriveLetter}, DriveSize={devDrive.DriveSizeInBytes}, Location={devDrive.DriveLocation}, Label={devDrive.DriveLabel}");
-            return DevDriveValidationResult.Successful;
         }
         catch (Exception ex)
         {
             // we don't need to rethrow the exception/crash, we need to tell the user we couldn't find the default folder.
             Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed Get default folder for Dev Drive. {ex.Message}");
-            return DevDriveValidationResult.DefaultFolderNotAvailable;
         }
     }
 
@@ -324,6 +322,11 @@ public class DevDriveManager : IDevDriveManager
         {
             returnSet.Add(DevDriveValidationResult.ObjectWasNull);
             return returnSet;
+        }
+
+        if (devDrive.DriveLetter == '\0')
+        {
+            returnSet.Add(DevDriveValidationResult.NoDriveLettersAvailable);
         }
 
         if (minValue > devDrive.DriveSizeInBytes || devDrive.DriveSizeInBytes > maxValue)
@@ -431,7 +434,8 @@ public class DevDriveManager : IDevDriveManager
 
                 if (!isNetworkPath)
                 {
-                    if (!Directory.Exists(fileInfo.FullName))
+                    if (fileInfo.FullName != DefaultDevDriveLocation &&
+                        !Directory.Exists(fileInfo.FullName))
                     {
                         return DevDriveValidationResult.InvalidFolderLocation;
                     }

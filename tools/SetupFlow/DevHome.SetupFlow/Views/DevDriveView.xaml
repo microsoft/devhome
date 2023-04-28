@@ -59,7 +59,7 @@
                         Margin="10 0 10 0"
                         controls:DockPanel.Dock="Top">
                         <Grid
-                            Margin="0 0 0 10"
+                            Margin="0 0 0 12"
                             RowDefinitions="*, Auto, *, *"
                             ColumnDefinitions="*"
                             HorizontalAlignment="Left">
@@ -74,32 +74,31 @@
                                 Width="450"
                                 Grid.Row="1"
                                 TextWrapping="Wrap" >
-                                <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowOnlyOneDevDriveAllowedHeader" />
-                                <Hyperlink
-                                    UnderlineStyle="None"
-                                    NavigateUri="https://go.microsoft.com/fwlink/?linkid=2226090">
-                                    <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore" />
-                                </Hyperlink>
+                                <!-- 
+                                    The comment tags and the spaces Before the Run tags are necessary so the clickable area
+                                    of the hyperlink does not extend to edge of the grid column, and instead stay only over the text.
+                                -->
+                                <Span
+                                    xml:space="preserve">
+                                    <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowOnlyOneDevDriveAllowedHeader" /> <!--
+                                    --><Hyperlink
+                                            UnderlineStyle="None"
+                                            NavigateUri="https://go.microsoft.com/fwlink/?linkid=2226090"><!--
+                                        --> <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore" /> <!--
+                                        --></Hyperlink> <!--
+                                    --></Span>
                             </TextBlock>
                             <TextBlock
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLaunchSettingsDisksAndVolumesHeader"
                                 Grid.Row="2"
                                 TextWrapping="Wrap" 
                                 Margin="0 0 0 1"/>
-                            <TextBlock
+                            <HyperlinkButton
                                 Grid.Row="4"
-                                TextWrapping="Wrap"
-                                Margin="0 0 0 12">
-                                <Hyperlink
-                                    UnderlineStyle="None">
-                                    <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink" />
-                                    <i:Interaction.Behaviors>
-                                        <ic:EventTriggerBehavior EventName="Click">
-                                            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}"/>
-                                        </ic:EventTriggerBehavior>
-                                    </i:Interaction.Behaviors>
-                                </Hyperlink>
-                            </TextBlock>
+                                Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}"
+                                Padding="0"
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink">
+                            </HyperlinkButton>
                         </Grid>
                         <Grid
                             Margin="0 0 0 12"
@@ -113,7 +112,8 @@
                                 Margin="0 0 18 0"
                                 HorizontalAlignment="Stretch"
                                 Text="{x:Bind ViewModel.DriveLabel, Mode=TwoWay}"
-                                MaxLength="{x:Bind util:DevDriveUtil.MaxDriveLabelSize}">
+                                MaxLength="{x:Bind util:DevDriveUtil.MaxDriveLabelSize}"
+                                IsSpellCheckEnabled="False">
                             </TextBox>
                             <NumberBox 
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Size"
@@ -139,21 +139,22 @@
                                 DisplayMemberPath="Value"
                                 SelectedIndex="{x:Bind ViewModel.ComboBoxByteUnit, Mode=TwoWay }">
                             </ComboBox>
-                            <ListView
+                            <ItemsRepeater
                                 ItemsSource="{x:Bind ViewModel.FileNameAndSizeErrorList, Mode=OneWay}"
-                                SelectionMode="None"
                                 Grid.Row="1"
-                                Grid.ColumnSpan="3">
-                                <ListView.ItemTemplate>
+                                Grid.ColumnSpan="3"
+                                Margin="0, 5, 0, 0">
+                                <ItemsRepeater.ItemTemplate>
                                     <DataTemplate>
                                         <InfoBar
-            
-                                            IsClosable="True"
+                                            Margin="0, 3, 0, 3"
+                                            IsClosable="False"
                                             Severity="Error"
+                                            IsOpen="True"
                                             Message="{Binding}" />
                                     </DataTemplate>
-                                </ListView.ItemTemplate>
-                        </ListView>
+                                </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
                     </Grid>
                         <Grid
                             Margin="0 0 0 12"
@@ -184,40 +185,42 @@
                             <InfoBar
                                 Grid.Row="1"
                                 Grid.ColumnSpan="2"
-
-                                IsClosable="True"
+                                Margin="0 5 0 0"
+                                IsClosable="False"
+                                IsOpen="True"
                                 Severity="Error"
-                                Message="{x:Bind ViewModel.InvalidFolderLocation}"
-                                Visibility="{x:Bind ViewModel.InvalidFolderLocation, Mode=TwoWay, Converter={StaticResource StringVisibilityConverter}}"/>
+                                Message="{x:Bind ViewModel.InvalidFolderLocationError, Mode=OneWay}"
+                                Visibility="{x:Bind ViewModel.InvalidFolderLocationError, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"/>
                         </Grid>
                         <Grid
                             Margin="0 0 0 12"
-                            RowDefinitions="Auto, Auto">
+                            RowDefinitions="Auto, *">
                             <ComboBox 
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowDriveLettersComboBox"
                                 x:Name="NoDriveLettersAvailableBox"
                                 Grid.Row="0"
                                 Padding="20 5 40 5"
-                                Margin="5 5 0 5"
+                                Margin="0 5 0 5"
                                 VerticalAlignment="Top"
                                 ItemsSource="{x:Bind ViewModel.DriveLetters, Mode=OneWay}"
                                 SelectedValue="{x:Bind ViewModel.ComboBoxDriveLetter, Mode=TwoWay}">
                             </ComboBox>
-                            <InfoBar
-                                Grid.Row="1"
-
-                                IsClosable="True"
-                                Severity="Error"
-                                Message="{x:Bind ViewModel.NoDriveLettersAvailable}"
-                                Visibility="{x:Bind ViewModel.NoDriveLettersAvailable, Mode=TwoWay, Converter={StaticResource StringVisibilityConverter}}"/>
-                        </Grid>
+                        <InfoBar
+                            Grid.Row="1"
+                            Margin="0 5 0 0"
+                            IsClosable="False"
+                            IsOpen="True"
+                            Severity="Error"
+                            Message="{x:Bind ViewModel.NoDriveLettersAvailableError, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.NoDriveLettersAvailableError, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"/>
+                    </Grid>
                         <StackPanel 
                             VerticalAlignment="Bottom">
                             <Rectangle 
                                 Margin="0 10 0 15"
                                 HorizontalAlignment="Stretch" 
-                                Fill="{ThemeResource ControlFillColorDefaultBrush}" 
-                                Height="2"/>
+                                Fill="{ThemeResource ControlStrokeColorSecondaryBrush}" 
+                                Height="1"/>
                             <Grid
                                 VerticalAlignment="Bottom"
                                 ColumnDefinitions="Auto, Auto"
@@ -246,7 +249,6 @@
                             </Grid>
                         </StackPanel>
                     </StackPanel>
-                    
             </ScrollViewer>
         </Grid>
     </UserControl>

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -133,16 +134,16 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private char _comboBoxDriveLetter;
 
     /// <summary>
-    /// Gets or sets localized error text for when the folder location the user wants to save the virtual disk to is not found.
+    /// Gets or sets a value indicating whether we should show the the localized error text for when the folder location the user wants to save the virtual disk to is not found.
     /// </summary>
     [ObservableProperty]
-    private string _invalidFolderLocation;
+    private string _invalidFolderLocationError;
 
     /// <summary>
-    /// Gets or sets localized error text for when there are no drive letters to assign to a Dev Drive.
+    /// Gets or sets a value indicating whether we should show the localized error text for when there are no drive letters to assign to a Dev Drive.
     /// </summary>
     [ObservableProperty]
-    private string _noDriveLettersAvailable;
+    private string noDriveLettersAvailableError;
 
     /// <summary>
     /// Gets the drive letters available on the system and is not already in use by a Dev Drive
@@ -336,6 +337,13 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         DevDriveWindowContainer.Closed += ViewContainerClosed;
         DevDriveWindowContainer.Activate();
         IsDevDriveWindowOpen = true;
+
+        // If state is invalid then show errors in the UI as soon as we launch the window.
+        if (_concreteDevDrive.State != DevDriveState.New)
+        {
+            ShowErrorInUI(_devDriveManager.GetDevDriveValidationResults(_concreteDevDrive));
+        }
+
         return Task.FromResult(IsDevDriveWindowOpen);
     }
 
@@ -356,8 +364,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         var prefix = "DevDrive";
         var tempfileNameAndSizeErrorList = new List<string>();
-        NoDriveLettersAvailable = string.Empty;
-        InvalidFolderLocation = string.Empty;
+        NoDriveLettersAvailableError = string.Empty;
+        InvalidFolderLocationError = string.Empty;
         foreach (DevDriveValidationResult result in resultSet)
         {
             Log.Logger?.ReportError(Log.Component.DevDrive, $"Input validation Error in Dev Drive window: {result.ToString()}");
@@ -365,13 +373,15 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
 
             if (result == DevDriveValidationResult.NoDriveLettersAvailable)
             {
-                NoDriveLettersAvailable = errorString;
+                NoDriveLettersAvailableError = errorString;
             }
             else if (result == DevDriveValidationResult.InvalidFolderLocation)
             {
-                InvalidFolderLocation = errorString;
+                InvalidFolderLocationError = errorString;
             }
-            else if (result == DevDriveValidationResult.InvalidDriveLabel || result == DevDriveValidationResult.NotEnoughFreeSpace)
+            else if (result == DevDriveValidationResult.InvalidDriveLabel ||
+                result == DevDriveValidationResult.NotEnoughFreeSpace ||
+                result == DevDriveValidationResult.FileNameAlreadyExists)
             {
                 tempfileNameAndSizeErrorList.Add(errorString);
             }
@@ -382,6 +392,16 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
             FileNameAndSizeErrorList.Clear();
         }
 
+        // Remove errors from list that were resolved.
+        for (var i = FileNameAndSizeErrorList.Count - 1; i >= 0; i--)
+        {
+            if (!tempfileNameAndSizeErrorList.Contains(FileNameAndSizeErrorList[i]))
+            {
+                FileNameAndSizeErrorList.Remove(FileNameAndSizeErrorList[i]);
+            }
+        }
+
+        // Add new errors to the list.
         foreach (var error in tempfileNameAndSizeErrorList)
         {
             if (!FileNameAndSizeErrorList.Contains(error))
@@ -392,12 +412,12 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// Resets erros shown in the UI
+    /// Resets errors shown in the UI
     /// </summary>
     private void ResetErrors()
     {
-        NoDriveLettersAvailable = string.Empty;
-        InvalidFolderLocation = string.Empty;
+        NoDriveLettersAvailableError = string.Empty;
+        InvalidFolderLocationError = string.Empty;
         FileNameAndSizeErrorList.Clear();
     }
 }
