@@ -7,6 +7,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d"
     Style="{StaticResource DefaultContentDialogStyle}">
 
@@ -19,6 +20,7 @@
         <Thickness x:Key="ContentDialogTitleMargin">0,0,0,0</Thickness>
         <Thickness x:Key="ContentDialogPadding">0,0,0,0</Thickness>
         <Thickness x:Key="NavigationViewContentMargin">0,0,0,0</Thickness>
+        <converters:BoolNegationConverter x:Key="BoolNegation"/>
     </ContentDialog.Resources>
 
     <StackPanel>
@@ -69,6 +71,7 @@
                     <Button x:Name="PinButton" x:Uid="PinButton"
                             VerticalAlignment="Bottom" HorizontalAlignment="Center"
                             Visibility="Collapsed"
+                            IsEnabled="{x:Bind ViewModel.Configuring, Mode=OneWay, Converter={StaticResource BoolNegation}}"
                             Height="32" Width="118"
                             Click="PinButton_Click"
                             Margin="0,40" />

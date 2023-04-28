@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Windows.Data.Json;
 using Windows.System;
 
 namespace DevHome.Dashboard.ViewModels;
@@ -42,8 +43,13 @@ public partial class WidgetViewModel : ObservableObject
     [ObservableProperty]
     private Microsoft.UI.Xaml.Media.Brush _widgetBackground;
 
+    public bool IsInAddMode { get; set; }
+
     [ObservableProperty]
     private bool _isInEditMode;
+
+    [ObservableProperty]
+    private bool _configuring;
 
     partial void OnWidgetChanging(Widget value)
     {
@@ -120,6 +126,13 @@ public partial class WidgetViewModel : ObservableObject
         Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
         Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
 
+        // If we're in the Add or Edit dialog, check the cardData to see if the card is in a configuration state
+        // or if it is pinnable yet. If still configuring, the Pin button will be disabled.
+        if (IsInAddMode || IsInEditMode)
+        {
+            GetConfiguring(cardData);
+        }
+
         // Use the data to fill in the template.
         AdaptiveCardParseResult card;
         try
@@ -164,6 +177,20 @@ public partial class WidgetViewModel : ObservableObject
                 WidgetFrameworkElement = GetErrorCard();
             }
         });
+    }
+
+    // Check if the card data indicates a configuration state. Configuring is bound to the Pin button and will disable it if true.
+    private void GetConfiguring(string cardData)
+    {
+        var jsonObj = JsonObject.Parse(cardData);
+        if (jsonObj != null)
+        {
+            var isConfiguring = jsonObj.GetNamedBoolean("configuring", false);
+            _dispatcher.TryEnqueue(() =>
+            {
+                Configuring = isConfiguring;
+            });
+        }
     }
 
     private void ShowErrorCard()
