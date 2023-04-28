@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Diagnostics.Tracing;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
@@ -14,6 +15,10 @@ internal class DisksAndVolumesSettingsPageTriggeredEvent : EventBase
     public DisksAndVolumesSettingsPageTriggeredEvent(string source)
     {
         this.source = source;
+    }
+
+    public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
+    {
     }
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter

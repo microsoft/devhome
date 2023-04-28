@@ -36,6 +36,11 @@ public class DeveloperIdEvent : EventBase
         this.developerId = string.Join(" , ", devIds.Select(devId => GetHashedDeveloperId(providerName, devId)));
     }
 
+    public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
+    {
+        // The only sensitive strings are the dev IDs, but we already hashed them
+    }
+
     private static string GetHashedDeveloperId(string providerName, IDeveloperId devId)
     {
         // TODO: Instead of LoginId, hash a globally unique id of DeveloperId (like url)

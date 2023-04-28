@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Diagnostics.Tracing;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
@@ -21,5 +22,9 @@ public class AppInstallEvent : EventBase
     {
         PackageId = packageId;
         SourceId = sourceId;
+    }
+
+    public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
+    {
     }
 }

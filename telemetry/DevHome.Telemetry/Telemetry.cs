@@ -147,7 +147,7 @@ internal class Telemetry : ITelemetry
             innerException = innerException.InnerException;
         }
 
-        this.LogErrorInternal(
+        this.LogInternal(
             ExceptionThrownEventName,
             LogLevel.Measure,
             new
@@ -160,7 +160,8 @@ internal class Telemetry : ITelemetry
                 innerStackTrace = innerStackTrace.ToString(),
                 message = this.ReplaceSensitiveStrings(e.Message),
             },
-            relatedActivityId ?? DefaultRelatedActivityId);
+            relatedActivityId,
+            isError: true);
     }
 
     /// <summary>
@@ -179,7 +180,8 @@ internal class Telemetry : ITelemetry
                 eventName,
                 timeTakenMilliseconds,
             },
-            relatedActivityId ?? DefaultRelatedActivityId);
+            relatedActivityId,
+            isError: false);
     }
 
     /// <summary>
@@ -193,12 +195,8 @@ internal class Telemetry : ITelemetry
     public void Log<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
         where T : EventBase
     {
-        this.LogInternal(eventName, level, data, relatedActivityId);
-    }
-
-    private void LogInternal<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
-    {
-        this.WriteTelemetryEvent(eventName, level, relatedActivityId ?? DefaultRelatedActivityId, false, data);
+        data.ReplaceSensitiveStrings(this.ReplaceSensitiveStrings);
+        this.LogInternal(eventName, level, data, relatedActivityId, isError: false);
     }
 
     /// <summary>
@@ -212,12 +210,13 @@ internal class Telemetry : ITelemetry
     public void LogError<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
         where T : EventBase
     {
-        LogErrorInternal(eventName, level, data, relatedActivityId);
+        data.ReplaceSensitiveStrings(this.ReplaceSensitiveStrings);
+        this.LogInternal(eventName, level, data, relatedActivityId, isError: true);
     }
 
-    private void LogErrorInternal<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
+    private void LogInternal<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId, bool isError)
     {
-        this.WriteTelemetryEvent(eventName, level, relatedActivityId ?? DefaultRelatedActivityId, true, data);
+        this.WriteTelemetryEvent(eventName, level, relatedActivityId ?? DefaultRelatedActivityId, isError, data);
     }
 
     /// <summary>
@@ -303,9 +302,9 @@ internal class Telemetry : ITelemetry
     {
         try
         {
-            // This should convert "c:\users\johndoe" to "<SpecialFolder>".
-            var userDirectory = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).FullName;
-            this.AddSensitiveString(Directory.GetParent(userDirectory).ToString(), "<SpecialFolder>");
+            // This should convert "c:\users\johndoe" to "<UserProfile>".
+            var userDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            this.AddSensitiveString(userDirectory.ToString(), "<UserDirectory>");
 
             // Include both these names, since they should cover the logged on user, and the user who is running the tools built on top of these API's
             // These names should almost always be the same, but technically could be different.

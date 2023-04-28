@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Diagnostics.Tracing;
 using DevHome.Common.Models;
 using DevHome.Telemetry;
@@ -17,6 +18,10 @@ internal class DevDriveTriggeredEvent : EventBase
         _devDrive = devDrive;
         errorCode = $"0x{hr:X}";
         this.duration = duration;
+    }
+
+    public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
+    {
     }
 
     private readonly IDevDrive _devDrive;
