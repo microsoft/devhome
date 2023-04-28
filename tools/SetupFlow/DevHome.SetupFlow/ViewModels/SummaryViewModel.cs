@@ -4,16 +4,24 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
+using DevHome.Dashboard.ViewModels;
+using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Selectors;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.SetupFlow.Views;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -89,22 +97,34 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         ConfigurationUnitSkippedCount);
 
     [RelayCommand]
-    public void OpenDashboard()
-    {
-        throw new NotImplementedException();
-    }
-
-    [RelayCommand]
     public void RemoveRestartGrid()
     {
         _showRestartNeeded = Visibility.Collapsed;
     }
 
     [RelayCommand]
-    public void GoBackToMainPage()
+    public void GoToMainPage()
     {
-        var things = _host.GetService<SetupFlowViewModel>();
-        things.Cancel();
+        var setupFlowViewModel = _host.GetService<SetupFlowViewModel>();
+        setupFlowViewModel.Cancel();
+    }
+
+    [RelayCommand]
+    public void GoToDashboard()
+    {
+        _host.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName);
+    }
+
+    [RelayCommand]
+    public void GoToDevHomeSettings()
+    {
+        _host.GetService<INavigationService>().NavigateTo(typeof(SettingsViewModel).FullName);
+    }
+
+    [RelayCommand]
+    public void GoToForDevelopersSettingsPage()
+    {
+        Task.Run(() => Launcher.LaunchUriAsync(new Uri("ms-settings:developers"))).Wait();
     }
 
     public SummaryViewModel(
@@ -130,13 +150,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _orchestrator.ReleaseRemoteFactory();
         await Task.CompletedTask;
     }
-
-    // This can possibly be moved to a more central location
-    public string GetFontIconForProvider(string providerName) => providerName switch
-    {
-        // Puzzle piece icon
-        _ => "\uEA86",
-    };
 
     /// <summary>
     /// Get the list of configuratoin unit restults for an applied
