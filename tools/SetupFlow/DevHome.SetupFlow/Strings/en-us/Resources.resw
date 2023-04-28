@@ -234,7 +234,7 @@
     <comment>Title text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.Description" xml:space="preserve">
-    <value>Find out how you can use Dev Home to set up your development machine more quickly.</value>
+    <value>Find out how you can use Dev Home to quickly set up your development machine.</value>
     <comment>{Locked="Dev Home"}Description text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.ButtonText" xml:space="preserve">
