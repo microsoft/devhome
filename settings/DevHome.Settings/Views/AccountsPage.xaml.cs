@@ -119,7 +119,6 @@ public sealed partial class AccountsPage : Page
 
     private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer)
     {
-        // The UI rendering must occu rin smae thread
         Microsoft.UI.Dispatching.DispatcherQueue dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
@@ -138,7 +137,7 @@ public sealed partial class AccountsPage : Page
             LoggerFactory.Get<ILogger>().Log($"Failure occurred while retrieving the HostConfig file", LogLevel.Local, $"Error: {ex} RoutedEventArgs{hostConfigFileName}");
         }
 
-        // Add host config for current theme using current thread.
+        // Add host config for current theme to renderer
         dispatcher.TryEnqueue(() =>
         {
             if (!string.IsNullOrEmpty(hostConfigContents))
