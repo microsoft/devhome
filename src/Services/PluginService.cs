@@ -4,6 +4,7 @@
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Helpers;
 using DevHome.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
@@ -24,6 +25,12 @@ public class PluginService : IPluginService
     private static List<IPluginWrapper> _installedPlugins = new ();
     private static List<IPluginWrapper> _enabledPlugins = new ();
 #pragma warning restore IDE0044 // Add readonly modifier
+
+    private readonly IReadOnlyDictionary<string, Type> _providerTypeMap = new Dictionary<string, Type>()
+    {
+        ["DeveloperIdProvider"] = typeof(IDeveloperIdProvider),
+        ["RepositoryProvider"] = typeof(IRepositoryProvider),
+    };
 
     public PluginService()
     {
@@ -102,43 +109,76 @@ public class PluginService : IPluginService
         {
             if (package.Id.FullName == extension.Package.Id.FullName)
             {
-                var (devHomeProvider, classId) = await GetDevHomeExtensionPropertiesAsync(extension);
-                return devHomeProvider != null && classId != null;
+                return await ParsePlugin(extension) is not null;
             }
         }
 
         return false;
     }
 
-    private async Task<(IPropertySet?, string?)> GetDevHomeExtensionPropertiesAsync(AppExtension extension)
+    private async Task<IPluginWrapper?> ParsePlugin(AppExtension extension)
     {
         var properties = await extension.GetExtensionPropertiesAsync();
+        var id = extension.Id;
+        var name = extension.DisplayName;
+        var description = extension.Description;
+        var publicFolder = await extension.GetPublicFolderAsync();
+        var packageFullName = extension.Package.Id.FullName;
+        var providers = new Dictionary<Type, string>();
 
-        var devHomeProvider = GetSubPropertySet(properties, "DevHomeProvider");
-        if (devHomeProvider is null)
+        foreach (var property in properties)
         {
-            return (null, null);
+            if (_providerTypeMap.TryGetValue(property.Key, out var providerType))
+            {
+                var value = property.Value;
+                if (value is null)
+                {
+                    Log.Logger?.ReportDebug($"{name}: Property value for {property.Key} cannot be null.");
+                    continue;
+                }
+
+                if (value is not IPropertySet)
+                {
+                    Log.Logger?.ReportDebug($"{name}: Invalid property value for {property.Key}");
+                    continue;
+                }
+
+                var activation = GetSubPropertySet((property.Value as IPropertySet)!, "Activation");
+                if (activation is null)
+                {
+                    Log.Logger?.ReportDebug($"{name}: {property.Key} must have an Activation element");
+                    continue;
+                }
+
+                var comActivation = GetSubPropertySet(activation, "CreateInstance");
+                if (comActivation is null)
+                {
+                    Log.Logger?.ReportDebug($"{name}: Activation element must have a CreateInstance element");
+                    continue;
+                }
+
+                var classId = GetProperty(comActivation, "@ClassId");
+                if (classId is null)
+                {
+                    Log.Logger?.ReportDebug($"{name}: CreateInstance must have a ClassId attribute");
+                    continue;
+                }
+
+                providers.Add(providerType, classId);
+            }
+            else
+            {
+                Log.Logger?.ReportDebug($"{name}: Unsupported property {property.Key}");
+            }
         }
 
-        var activation = GetSubPropertySet(devHomeProvider, "Activation");
-        if (activation is null)
+        if (!providers.Any())
         {
-            return (devHomeProvider, null);
+            Log.Logger?.ReportWarn($"Invalid Extension {id}, {name}. It does not support any valid providers.");
+            return null;
         }
 
-        var comActivation = GetSubPropertySet(activation, "CreateInstance");
-        if (comActivation is null)
-        {
-            return (devHomeProvider, null);
-        }
-
-        var classId = GetProperty(comActivation, "@ClassId");
-        if (classId is null)
-        {
-            return (devHomeProvider, null);
-        }
-
-        return (devHomeProvider, classId);
+        return new PluginWrapper(id, name, description, publicFolder, packageFullName, providers);
     }
 
     public async Task<IEnumerable<AppExtension>> GetInstalledAppExtensionsAsync()
@@ -153,34 +193,14 @@ public class PluginService : IPluginService
             var extensions = await GetInstalledAppExtensionsAsync();
             foreach (var extension in extensions)
             {
-                var (devHomeProvider, classId) = await GetDevHomeExtensionPropertiesAsync(extension);
-                if (devHomeProvider == null || classId == null)
+                var pluginWrapper = await ParsePlugin(extension);
+                if (pluginWrapper is null)
                 {
                     continue;
                 }
 
-                var name = extension.DisplayName;
-                var pluginWrapper = new PluginWrapper(name, extension.Package.Id.FullName, classId);
-
-                var supportedInterfaces = GetSubPropertySet(devHomeProvider, "SupportedInterfaces");
-                if (supportedInterfaces is not null)
-                {
-                    foreach (var supportedInterface in supportedInterfaces)
-                    {
-                        ProviderType pt;
-                        if (Enum.TryParse<ProviderType>(supportedInterface.Key, out pt))
-                        {
-                            pluginWrapper.AddProviderType(pt);
-                        }
-                        else
-                        {
-                            // TODO: throw warning or fire notification that plugin declared unsupported plugin interface
-                        }
-                    }
-                }
-
                 var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(classId + "-ExtensionDisabled");
+                var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(pluginWrapper.Id + "-ExtensionDisabled");
 
                 _installedPlugins.Add(pluginWrapper);
                 if (!isPluginDisabled)
@@ -193,55 +213,28 @@ public class PluginService : IPluginService
         return includeDisabledPlugins ? _installedPlugins : _enabledPlugins;
     }
 
-    public async Task<IEnumerable<IPluginWrapper>> StartAllPluginsAsync()
-    {
-        var installedPlugins = await GetInstalledPluginsAsync();
-        foreach (var installedPlugin in installedPlugins)
-        {
-            if (!installedPlugin.IsRunning())
-            {
-                await installedPlugin.StartPluginAsync();
-            }
-        }
-
-        return installedPlugins;
-    }
-
     public async Task SignalStopPluginsAsync()
     {
-        var installedPlugins = await GetInstalledPluginsAsync();
-        foreach (var installedPlugin in installedPlugins)
-        {
-            if (installedPlugin.IsRunning())
-            {
-                installedPlugin.SignalDispose();
-            }
-        }
-    }
 
-    public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(ProviderType providerType, bool includeDisabledPlugins = false)
-    {
-        var installedPlugins = await GetInstalledPluginsAsync(includeDisabledPlugins);
-
-        List<IPluginWrapper> filteredPlugins = new ();
-        foreach (var installedPlugin in installedPlugins)
-        {
-            if (installedPlugin.HasProviderType(providerType))
-            {
-                filteredPlugins.Add(installedPlugin);
-            }
-        }
-
-        return filteredPlugins;
     }
 
     private IPropertySet? GetSubPropertySet(IPropertySet propSet, string name)
     {
-        return propSet[name] as IPropertySet;
+        if (propSet.TryGetValue(name, out var value))
+        {
+            return value is IPropertySet ? value as IPropertySet : null;
+        }
+
+        return null;
     }
 
     private string? GetProperty(IPropertySet propSet, string name)
     {
-        return propSet[name] as string;
+        if (propSet.TryGetValue(name, out var value))
+        {
+            return value is string ? value as string : null;
+        }
+
+        return null;
     }
 }

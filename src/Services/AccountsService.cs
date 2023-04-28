@@ -39,7 +39,7 @@ public class AccountsService : IAccountsService
     {
         var devIdProviders = new List<IDeveloperIdProvider>();
         var pluginService = Application.Current.GetService<IPluginService>();
-        var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
+        var plugins = (await pluginService.GetInstalledPluginsAsync()).Where(plugin => plugin.HasProvider<IDeveloperIdProvider>());
 
         foreach (var plugin in plugins)
         {
@@ -54,16 +54,6 @@ public class AccountsService : IAccountsService
     }
 
     public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider) => iDevIdProvider.GetLoggedInDeveloperIds().ToList();
-
-    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IPlugin plugin)
-    {
-        if (plugin.GetProvider(ProviderType.DeveloperId) is IDeveloperIdProvider devIdProvider)
-        {
-            return GetDeveloperIds(devIdProvider);
-        }
-
-        return new List<IDeveloperId>();
-    }
 
     public void LoggedInEventHandler(object? sender, IDeveloperId developerId)
     {

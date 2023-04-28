@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Windows.DevHome.SDK;
 
-public sealed class PluginServer : IDisposable
+public sealed class RegistrationManager : IDisposable
 {
     private readonly HashSet<int> registrationCookies = new ();
 
-    public void RegisterPlugin<T>(Func<T> createPlugin, bool restrictToMicrosoftPluginHosts = false)
-        where T : IPlugin
+    public void RegisterProvider<T>(Func<T> createProvider, bool restrictToMicrosoftPluginHosts = false)
+        where T : class
     {
         Trace.WriteLine($"Registering class object:");
         Trace.Indent();
@@ -22,7 +22,7 @@ public sealed class PluginServer : IDisposable
         var clsid = typeof(T).GUID;
         var hr = Ole32.CoRegisterClassObject(
             ref clsid,
-            new PluginInstanceManager<T>(createPlugin, restrictToMicrosoftPluginHosts),
+            new ProviderInstanceManager<T>(createProvider, restrictToMicrosoftPluginHosts),
             Ole32.CLSCTX_LOCAL_SERVER,
             Ole32.REGCLS_MULTIPLEUSE | Ole32.REGCLS_SUSPENDED,
             out cookie);
@@ -41,14 +41,6 @@ public sealed class PluginServer : IDisposable
         {
             Marshal.ThrowExceptionForHR(hr);
         }
-    }
-
-    public void Run()
-    {
-        // TODO : We need to handle lifetime management of the server.
-        // For details around ref counting and locking of out-of-proc COM servers, see
-        // https://docs.microsoft.com/windows/win32/com/out-of-process-server-implementation-helpers
-        Console.ReadLine();
     }
 
     public void Dispose()

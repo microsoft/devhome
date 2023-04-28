@@ -22,10 +22,7 @@ using Windows.Storage.Streams;
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 namespace SamplePlugin;
 
-[ComVisible(true)]
-[Guid("BEA53870-57BA-4741-B849-DBC8A3A06CC6")]
-[ComDefaultInterface(typeof(IPlugin))]
-public sealed class SamplePlugin : IPlugin
+public sealed class SamplePlugin
 {
     private readonly ManualResetEvent _pluginDisposedEvent;
 
@@ -34,22 +31,8 @@ public sealed class SamplePlugin : IPlugin
         this._pluginDisposedEvent = pluginDisposedEvent;
     }
 
-    public object GetProvider(ProviderType providerType)
-    {
-        switch (providerType)
-        {
-            case ProviderType.DevId:
-                return new DevIDProvider();
-            case ProviderType.Repository:
-                return new RepositoryProvider();
-            default:
-                return null;
-        }
-    }
-
     public void Dispose()
     {
         this._pluginDisposedEvent.Set();
     }
-
 }

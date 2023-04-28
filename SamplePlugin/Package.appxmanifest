@@ -46,25 +46,27 @@
           <com:ComServer>
             <com:ExeServer Executable="DevHomeSamplePlugin.exe" Arguments="-RegisterProcessAsComServer" DisplayName="DevHomeSamplePluginApp">
               <com:Class Id="BEA53870-57BA-4741-B849-DBC8A3A06CC6" DisplayName="DevHomeSamplePlugin" />
+		      <com:Class Id="E99E3C0B-77F2-403E-A3B7-38EC9E410E4D" DisplayName="DevHomeSamplePlugin" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
         <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.devhome"
-            Id="PG-SP-ID"
-            PublicFolder="Public"
+            Id="Microsoft.Windows.DevHomeSamplePlugin"
             DisplayName="Dev Home Sample Plugin"
+            PublicFolder="Public"
             Description="Sample Plugin for Dev Home">
             <uap3:Properties>
-              <DevHomeProvider>
+              <DeveloperIdProvider>
                 <Activation>
                   <CreateInstance ClassId="BEA53870-57BA-4741-B849-DBC8A3A06CC6" />
                 </Activation>
-                <SupportedInterfaces>
-                  <Settings />
-                  <Widget />
-                </SupportedInterfaces>
-              </DevHomeProvider>
+              </DeveloperIdProvider>
+			  <RepositoryProvider>
+				<Activation>
+				  <CreateInstance ClassId="E99E3C0B-77F2-403E-A3B7-38EC9E410E4D" />
+				</Activation>
+			  </RepositoryProvider>
             </uap3:Properties>
           </uap3:AppExtension>
         </uap3:Extension>

@@ -14,6 +14,4 @@ public interface IAccountsService
     Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders();
 
     IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider);
-
-    IReadOnlyList<IDeveloperId> GetDeveloperIds(IPlugin plugin);
 }

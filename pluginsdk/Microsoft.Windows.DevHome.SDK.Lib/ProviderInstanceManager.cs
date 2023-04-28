@@ -15,8 +15,8 @@ using WinRT;
 namespace Microsoft.Windows.DevHome.SDK;
 
 [ComVisible(true)]
-internal class PluginInstanceManager<T> : IClassFactory
-    where T : IPlugin
+internal class ProviderInstanceManager<T> : IClassFactory
+    where T : class
 {
 #pragma warning disable SA1310 // Field names should not contain underscore
 
@@ -28,7 +28,7 @@ internal class PluginInstanceManager<T> : IClassFactory
 
     // Known constant ignored by win32metadata and cswin32 projections.
     // https://github.com/microsoft/win32metadata/blob/main/generation/WinSDK/RecompiledIdlHeaders/um/processthreadsapi.h
-    private static HANDLE CURRENT_THREAD_PSEUDO_HANDLE = (HANDLE)(IntPtr)(-6);
+    private static readonly HANDLE CURRENT_THREAD_PSEUDO_HANDLE = (HANDLE)(IntPtr)(-6);
 
     private static readonly Guid IID_IUnknown = Guid.Parse("00000000-0000-0000-C000-000000000046");
 
@@ -38,7 +38,7 @@ internal class PluginInstanceManager<T> : IClassFactory
 
     private readonly bool _restrictToMicrosoftPluginHosts;
 
-    public PluginInstanceManager(Func<T> createPlugin, bool restrictToMicrosoftPluginHosts)
+    public ProviderInstanceManager(Func<T> createPlugin, bool restrictToMicrosoftPluginHosts)
     {
         this._createPlugin = createPlugin;
         this._restrictToMicrosoftPluginHosts = restrictToMicrosoftPluginHosts;

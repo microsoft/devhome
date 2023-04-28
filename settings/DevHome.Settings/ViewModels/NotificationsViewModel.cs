@@ -79,7 +79,7 @@ public partial class NotificationsViewModel : ObservableRecipient
 
         foreach (var notificationWrapper in notificationWrappers)
         {
-            var setting = new Setting("Notifications/" + notificationWrapper.PluginClassId, notificationWrapper.PluginClassId, notificationWrapper.Name, string.Empty, true);
+            var setting = new Setting("Notifications/" + notificationWrapper.Id, notificationWrapper.Id, notificationWrapper.Name, string.Empty, true);
             SettingsList.Add(new NotificationViewModel(setting, this));
         }
     }

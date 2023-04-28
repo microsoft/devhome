@@ -12,7 +12,10 @@ using Windows.Foundation;
 
 namespace SamplePlugin;
 
-internal class DevIDProvider : IDevIdProvider
+[ComVisible(true)]
+[Guid("BEA53870-57BA-4741-B849-DBC8A3A06CC6")]
+[ComDefaultInterface(typeof(IDeveloperIdProvider))]
+internal class DevIDProvider : IDeveloperIdProvider
 {
     public event EventHandler<IDeveloperId> LoggedIn;
 
@@ -20,25 +23,27 @@ internal class DevIDProvider : IDevIdProvider
 
     public event EventHandler<IDeveloperId> Updated;
 
-    public IEnumerable<IDeveloperId> GetLoggedInDeveloperIds() => throw new NotImplementedException();
-
-    public string GetName() => "Sample Dev ID Provider";
-
     public IPluginAdaptiveCardController GetAdaptiveCardController(string[] args)
     {
         if (args.Length > 0 && args[0] == "LoginUI")
         {
+            LoggedIn.Invoke(this, null);
+            LoggedOut.Invoke(this, null);
+            Updated.Invoke(this, null);
+
             return new LoginUI();
         }
 
         return null;
     }
 
-    public void LoginNewDeveloperId() => throw new NotImplementedException();
+    public IEnumerable<IDeveloperId> GetLoggedInDeveloperIds() => throw new NotImplementedException();
+
+    public string GetName() => throw new NotImplementedException();
+
+    public IAsyncOperation<IDeveloperId> LoginNewDeveloperIdAsync() => throw new NotImplementedException();
 
     public void LogoutDeveloperId(IDeveloperId developerId) => throw new NotImplementedException();
 
-    public string LogoutUI() => throw new NotImplementedException();
-
-    IAsyncOperation<IDeveloperId> IDevIdProvider.LoginNewDeveloperIdAsync() => throw new NotImplementedException();
+    public void SignalDispose() => throw new NotImplementedException();
 }

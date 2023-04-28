@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using DevHome.Common.Services;
 using DevHome.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Storage;
 using Windows.Win32;
 using Windows.Win32.System.Com;
 using WinRT;
@@ -16,26 +17,29 @@ public class PluginWrapper : IPluginWrapper
     private const int HResultRpcServerNotRunning = -2147023174;
 
     private readonly object _lock = new ();
-    private readonly List<ProviderType> _providerTypes = new ();
 
-    private readonly Dictionary<Type, ProviderType> _providerTypeMap = new ()
+    private readonly Dictionary<Type, object> _providerTypeToObjectMap = new ();
+    private readonly IReadOnlyDictionary<Type, string> _providerTypeToClassIdMap;
+
+    public PluginWrapper(
+        string id,
+        string name,
+        string? description,
+        StorageFolder? publicFolder,
+        string packageFullName,
+        IReadOnlyDictionary<Type, string> providerToClassIdMap)
     {
-        [typeof(IDeveloperIdProvider)] = ProviderType.DeveloperId,
-        [typeof(IRepositoryProvider)] = ProviderType.Repository,
-        [typeof(INotificationsProvider)] = ProviderType.Notifications,
-        [typeof(IWidgetProvider)] = ProviderType.Widget,
-        [typeof(ISettingsProvider)] = ProviderType.Settings,
-        [typeof(IDevDoctorProvider)] = ProviderType.DevDoctor,
-        [typeof(ISetupFlowProvider)] = ProviderType.SetupFlow,
-    };
-
-    private IPlugin? _pluginObject;
-
-    public PluginWrapper(string name, string packageFullName, string classId)
-    {
+        Id = id ?? throw new ArgumentNullException(nameof(id));
         Name = name ?? throw new ArgumentNullException(nameof(name));
-        PackageFullName = packageFullName ?? throw new ArgumentNullException(nameof(packageFullName));
-        PluginClassId = classId ?? throw new ArgumentNullException(nameof(classId));
+        Description = description;
+        PackageFullName = packageFullName ?? throw new ArgumentNullException(nameof(providerToClassIdMap));
+        PublicFolder = publicFolder;
+        _providerTypeToClassIdMap = providerToClassIdMap ?? throw new ArgumentNullException(nameof(providerToClassIdMap));
+    }
+
+    public string Id
+    {
+        get;
     }
 
     public string Name
@@ -48,110 +52,74 @@ public class PluginWrapper : IPluginWrapper
         get;
     }
 
-    public string PluginClassId
+    public string? Description
     {
         get;
     }
 
-    public bool IsRunning()
+    public StorageFolder? PublicFolder
     {
-        if (_pluginObject is null)
-        {
-            return false;
-        }
-
-        try
-        {
-            _pluginObject.As<IInspectable>().GetRuntimeClassName();
-        }
-        catch (COMException e)
-        {
-            if (e.ErrorCode == HResultRpcServerNotRunning)
-            {
-                return false;
-            }
-
-            throw;
-        }
-
-        return true;
+        get;
     }
 
-    public async Task StartPluginAsync()
+    public async Task<T?> GetProviderAsync<T>(bool invalidateCache = false)
+        where T : class
     {
-        await Task.Run(() =>
+        if (!HasProvider<T>())
+        {
+            return await Task.FromResult(default(T));
+        }
+
+        return await Task.Run(() =>
         {
             lock (_lock)
             {
-                if (!IsRunning())
+                if (invalidateCache)
                 {
-                    IntPtr pluginPtr = IntPtr.Zero;
-                    try
-                    {
-                        var hr = PInvoke.CoCreateInstance(Guid.Parse(PluginClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IPlugin).GUID, out var pluginObj);
-                        pluginPtr = Marshal.GetIUnknownForObject(pluginObj);
-                        if (hr < 0)
-                        {
-                            Marshal.ThrowExceptionForHR(hr);
-                        }
+                    _providerTypeToObjectMap.Remove(typeof(T));
+                }
+                else if (_providerTypeToObjectMap.TryGetValue(typeof(T), out var providerType))
+                {
+                    return providerType as T;
+                }
 
-                        _pluginObject = MarshalInterface<IPlugin>.FromAbi(pluginPtr);
-                    }
-                    finally
+                IntPtr pluginPtr = IntPtr.Zero;
+                try
+                {
+                    var guid = Guid.Parse(_providerTypeToClassIdMap[typeof(T)]);
+                    var hr = PInvoke.CoCreateInstance(guid, null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(T).GUID, out var pluginObj);
+                    if (hr < 0)
                     {
-                        if (pluginPtr != IntPtr.Zero)
-                        {
-                            Marshal.Release(pluginPtr);
-                        }
+                        Marshal.ThrowExceptionForHR(hr);
+                    }
+
+                    if (pluginObj is null)
+                    {
+                        return null;
+                    }
+
+                    var provider = MarshalInterface<T>.FromAbi(Marshal.GetIUnknownForObject(pluginObj));
+                    if (provider is null)
+                    {
+                        return null;
+                    }
+
+                    _providerTypeToObjectMap.Add(typeof(T), provider);
+                    return provider;
+                }
+                finally
+                {
+                    if (pluginPtr != IntPtr.Zero)
+                    {
+                        Marshal.Release(pluginPtr);
                     }
                 }
             }
         });
     }
 
-    public void SignalDispose()
+    public bool HasProvider<T>()
     {
-        lock (_lock)
-        {
-            if (IsRunning())
-            {
-                _pluginObject?.Dispose();
-            }
-
-            _pluginObject = null;
-        }
-    }
-
-    public IPlugin? GetPluginObject()
-    {
-        lock (_lock)
-        {
-            if (IsRunning())
-            {
-                return _pluginObject;
-            }
-            else
-            {
-                return null;
-            }
-        }
-    }
-
-    public async Task<T?> GetProviderAsync<T>()
-        where T : class
-    {
-        await StartPluginAsync();
-
-        return GetPluginObject()?.GetProvider(_providerTypeMap[typeof(T)]) as T;
-    }
-
-    public void AddProviderType(ProviderType providerType)
-    {
-        _providerTypes.Add(providerType);
-    }
-
-    public bool HasProviderType(ProviderType providerType)
-    {
-        return _providerTypes.Contains(providerType);
+        return _providerTypeToClassIdMap.ContainsKey(typeof(T));
     }
 }

@@ -88,7 +88,7 @@ public partial class ExtensionsViewModel : ObservableRecipient
 
         foreach (var pluginWrapper in pluginWrappers)
         {
-            var setting = new Setting("Plugins/" + pluginWrapper.PluginClassId, pluginWrapper.PluginClassId, pluginWrapper.Name, string.Empty, true);
+            var setting = new Setting("Plugins/" + pluginWrapper.Id, pluginWrapper.Id, pluginWrapper.Name, string.Empty, true);
             SettingsList.Add(new ExtensionViewModel(setting, this));
         }
     }

@@ -33,46 +33,10 @@ public interface IPluginWrapper
     /// <summary>
     /// Gets class id (GUID) of the plugin class (which implements IPlugin) as mentioned in the manifest
     /// </summary>
-    string PluginClassId
+    string Id
     {
         get;
     }
-
-    /// <summary>
-    /// Checks whether we have a reference to the plugin process and we are able to call methods on the interface.
-    /// </summary>
-    /// <returns>whether we have a reference to the plugin process and we are able to call methods on the interface</returns>
-    bool IsRunning();
-
-    /// <summary>
-    /// Starts the plugin if not running
-    /// </summary>
-    /// <returns>An awaitable task</returns>
-    Task StartPluginAsync();
-
-    /// <summary>
-    /// Signals the plugin to dispose itself and removes the reference to the plugin com object
-    /// </summary>
-    void SignalDispose();
-
-    /// <summary>
-    /// Gets the underlying instance of IPlugin
-    /// </summary>
-    /// <returns>Instance of IPlugin</returns>
-    IPlugin? GetPluginObject();
-
-    /// <summary>
-    /// Tells the wrapper that the plugin implements the given provider
-    /// </summary>
-    /// <param name="providerType">The type of provider to be added</param>
-    void AddProviderType(ProviderType providerType);
-
-    /// <summary>
-    /// Checks whether the given provider was added through `AddProviderType` method
-    /// </summary>
-    /// <param name="providerType">The type of the provider to be checked for</param>
-    /// <returns>Whether the given provider was added through `AddProviderType` method</returns>
-    bool HasProviderType(ProviderType providerType);
 
     /// <summary>
     /// Starts the plugin if not running and gets the provider from the underlying IPlugin object
@@ -80,6 +44,8 @@ public interface IPluginWrapper
     /// </summary>
     /// <typeparam name="T">The type of provider</typeparam>
     /// <returns>Nullable instance of the provider</returns>
-    Task<T?> GetProviderAsync<T>()
+    Task<T?> GetProviderAsync<T>(bool invalidateCache = false)
         where T : class;
+
+    bool HasProvider<T>();
 }
