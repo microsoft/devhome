@@ -11,17 +11,17 @@ namespace DevHome.SetupFlow.ViewModels;
 public partial class RepoConfigReviewViewModel : ReviewTabViewModelBase
 {
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly ReadOnlyObservableCollection<string> _repositoriesToClone;
+    private readonly RepoConfigTaskGroup _repoTaskGroup;
 
-    public ReadOnlyObservableCollection<string> RepositoriesToClone => _repositoriesToClone;
+    public ReadOnlyObservableCollection<string> RepositoriesToClone =>
+        new (new ObservableCollection<string>(_repoTaskGroup.CloneTasks.Select(x => x.CloneLocation.FullName)));
 
-    public override bool HasItems => _repositoriesToClone.Any();
+    public override bool HasItems => RepositoriesToClone.Any();
 
     public RepoConfigReviewViewModel(ISetupFlowStringResource stringResource, RepoConfigTaskGroup taskGroup)
     {
         _stringResource = stringResource;
-        _repositoriesToClone = new ReadOnlyObservableCollection<string>(
-            new ObservableCollection<string>(taskGroup.CloneTasks.Select(x => x.CloneLocation.FullName)));
+        _repoTaskGroup = taskGroup;
 
         TabTitle = stringResource.GetLocalized(StringResourceKey.Repository);
     }

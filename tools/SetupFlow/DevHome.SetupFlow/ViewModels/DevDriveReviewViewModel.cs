@@ -3,9 +3,12 @@
 
 using System.Collections.ObjectModel;
 using System.Linq;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskGroups;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -13,17 +16,17 @@ public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
 {
     private readonly IHost _host;
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly IDevDriveManager _devDriveManager;
+    private readonly DevDriveTaskGroup _devDriveTaskGroup;
 
-    public DevDriveReviewViewModel(IHost host, ISetupFlowStringResource stringResource, IDevDriveManager devDriveManager)
+    public DevDriveReviewViewModel(IHost host, ISetupFlowStringResource stringResource, DevDriveTaskGroup devDriveTaskGroup)
     {
         _host = host;
         _stringResource = stringResource;
-        _devDriveManager = devDriveManager;
         TabTitle = stringResource.GetLocalized(StringResourceKey.DevDriveReviewTitle);
+        _devDriveTaskGroup = devDriveTaskGroup;
     }
 
-    public override bool HasItems => _devDriveManager.DevDrivesMarkedForCreation.Any();
+    public override bool HasItems => Application.Current.GetService<IDevDriveManager>().DevDrivesMarkedForCreation.Any();
 
     /// <summary>
     /// Gets the a collection of <see cref="DevDriveReviewTabItem"/> to be displayed on the Basics review tab in the
@@ -34,9 +37,10 @@ public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
         get
         {
             ObservableCollection<DevDriveReviewTabItem> devDriveReviewTabItem = new ();
-            if (_devDriveManager.RepositoriesUsingDevDrive > 0)
+            var manager = Application.Current.GetService<IDevDriveManager>();
+            if (manager.RepositoriesUsingDevDrive > 0)
             {
-                foreach (var devDrive in _devDriveManager.DevDrivesMarkedForCreation)
+                foreach (var devDrive in manager.DevDrivesMarkedForCreation)
                 {
                     devDriveReviewTabItem.Add(new DevDriveReviewTabItem(devDrive));
                 }

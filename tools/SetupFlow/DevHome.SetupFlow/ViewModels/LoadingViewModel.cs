@@ -274,13 +274,10 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             ActionCenterItems.Add(information.TaskToExecute.GetErrorMessages());
             TasksFailed++;
 
-            if (_retryCount < MAX_RETRIES)
-            {
-                Log.Logger?.ReportDebug(Log.Component.Loading, "Adding task to list for retry");
+            Log.Logger?.ReportDebug(Log.Component.Loading, "Adding task to list for retry");
 
-                information.StatusIconGridVisibility = false;
-                _failedTasks.Add(information);
-            }
+            information.StatusIconGridVisibility = false;
+            _failedTasks.Add(information);
         }
 
         information.StatusIconGridVisibility = true;
