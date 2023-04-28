@@ -37,7 +37,7 @@
                 <Expander.Content>
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Uid="Settings_About_Version" Width="150" />
+                            <TextBlock x:Uid="Settings_About_Version" Width="100" />
                             <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" />
                         </StackPanel>
                     </StackPanel>
