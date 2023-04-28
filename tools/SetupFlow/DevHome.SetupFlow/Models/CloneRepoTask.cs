@@ -153,7 +153,7 @@ public class CloneRepoTask : ISetupTask
             catch (Exception e)
             {
                 Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}", e);
-                _actionCenterErrorMessage.PrimaryMessage += " " + e.HResult.ToString(CultureInfo.CurrentCulture);
+                _actionCenterErrorMessage.PrimaryMessage += " 0x" + e.HResult.ToString("X", CultureInfo.CurrentCulture);
                 return TaskFinishedState.Failure;
             }
 
