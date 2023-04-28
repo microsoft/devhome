@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
+using DevHome.Common.ResultHelper;
 using DevHome.Common.Services;
 using DevHome.Common.Telemetry;
 using DevHome.SetupFlow.Common.Helpers;
@@ -141,7 +142,7 @@ internal class CreateDevDriveTask : ISetupTask
 
                 var storageOperator = elevatedComponentFactory.CreateDevDriveStorageOperator();
                 var virtDiskPath = Path.Combine(DevDrive.DriveLocation, DevDrive.DriveLabel + ".vhdx");
-                storageOperator.CreateDevDrive(virtDiskPath, DevDrive.DriveSizeInBytes, DevDrive.DriveLetter, DevDrive.DriveLabel);
+                Result.ThrowIfFailed(storageOperator.CreateDevDrive(virtDiskPath, DevDrive.DriveSizeInBytes, DevDrive.DriveLetter, DevDrive.DriveLabel));
                 return TaskFinishedState.Success;
             }
             catch (Exception ex)
