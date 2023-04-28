@@ -66,15 +66,21 @@
                            Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}" />
                 </ScrollViewer>
 
+                <!-- Pin button -->
                 <Grid Grid.Row="1"
                       Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
-                    <Button x:Name="PinButton" x:Uid="PinButton"
+                    <Button x:Name="PinButton"
                             VerticalAlignment="Bottom" HorizontalAlignment="Center"
                             Visibility="Collapsed"
                             IsEnabled="{x:Bind ViewModel.Configuring, Mode=OneWay, Converter={StaticResource BoolNegation}}"
                             Height="32" Width="118"
                             Click="PinButton_Click"
-                            Margin="0,40" />
+                            Margin="0,40">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="16" Glyph="&#xE840;" />
+                            <TextBlock FontSize="14" x:Uid="PinButtonText" />
+                        </StackPanel>
+                    </Button>
                 </Grid>
             </Grid>
         </NavigationView>
