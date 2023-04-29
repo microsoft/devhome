@@ -105,7 +105,6 @@ public sealed partial class EditClonePathDialog
         if (isChecked.Value)
         {
             AddDevDriveInfo();
-            IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
         }
         else
         {
