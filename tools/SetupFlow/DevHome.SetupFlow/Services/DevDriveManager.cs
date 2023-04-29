@@ -32,7 +32,7 @@ namespace DevHome.SetupFlow.Services;
 public class DevDriveManager : IDevDriveManager
 {
     private readonly IHost _host;
-    private readonly string _defaultVhdxLocation;
+    private readonly string _defaultVhdxFolderName;
     private readonly string _defaultVhdxName;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly string _defaultDevDriveLocation;
@@ -99,10 +99,10 @@ public class DevDriveManager : IDevDriveManager
     {
         _host = host;
         _stringResource = stringResource;
-        _defaultVhdxLocation = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFolderName);
+        _defaultVhdxFolderName = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFolderName);
         _defaultVhdxName = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFileName);
         var location = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-        _defaultDevDriveLocation = Path.Combine(Path.Combine(location, @"Microsoft\Windows"), _defaultVhdxLocation);
+        _defaultDevDriveLocation = Path.Combine(Path.Combine(location, @"Microsoft\Windows"), _defaultVhdxFolderName);
     }
 
     /// <inheritdoc/>
@@ -156,9 +156,8 @@ public class DevDriveManager : IDevDriveManager
         }
 
         var devDrive = GetDevDriveWithDefaultInfo();
-        var taskGroups = _host.GetService<SetupFlowOrchestrator>().TaskGroups;
-        var group = taskGroups.SingleOrDefault(x => x.GetType() == typeof(DevDriveTaskGroup));
-        if (group is DevDriveTaskGroup driveTaskGroup)
+        var driveTaskGroup = _host.GetService<SetupFlowOrchestrator>().GetTaskGroup<DevDriveTaskGroup>();
+        if (driveTaskGroup != null)
         {
             ViewModel.TaskGroup = driveTaskGroup;
         }

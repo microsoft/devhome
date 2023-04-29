@@ -6,6 +6,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Utilities;
 using Microsoft.UI.Xaml;
 
@@ -51,6 +52,14 @@ public partial class EditDevDriveViewModel : ObservableObject
     }
 
     private bool _canShowDevDriveUI;
+
+    /// <summary>
+    /// Gets a value indicating whether the the drive label, location, size or drive letter has changed when the Dev Drive window closes.
+    /// </summary>
+    public bool DevDriveDetailsChanged
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Some builds don't have dev drives.
@@ -204,6 +213,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     {
         IsWindowOpen = false;
         IsDevDriveCheckboxEnabled = true;
+        DevDriveDetailsChanged = DevDriveChanged(devDrive);
         DevDrive = devDrive;
         ClonePathUpdated();
     }
@@ -212,5 +222,23 @@ public partial class EditDevDriveViewModel : ObservableObject
     {
         var results = _devDriveManager.GetDevDriveValidationResults(DevDrive);
         return results.Contains(DevDriveValidationResult.Successful);
+    }
+
+    public bool DevDriveChanged(IDevDrive newDevDrive)
+    {
+        if (DevDrive == null)
+        {
+            return true;
+        }
+
+        if (!string.Equals(DevDrive.DriveLocation, newDevDrive.DriveLocation, StringComparison.Ordinal) ||
+            !string.Equals(DevDrive.DriveLabel, newDevDrive.DriveLabel, StringComparison.Ordinal) ||
+            DevDrive.DriveLetter != newDevDrive.DriveLetter ||
+            DevDrive.DriveSizeInBytes != newDevDrive.DriveSizeInBytes)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

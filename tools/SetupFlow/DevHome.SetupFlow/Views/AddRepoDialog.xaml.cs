@@ -22,8 +22,6 @@ namespace DevHome.SetupFlow.Views;
 /// </summary>
 internal partial class AddRepoDialog
 {
-    private readonly IDevDriveManager _devDriveManager;
-
     /// <summary>
     /// Gets or sets the view model to handle selecting and de-selecting repositories.
     /// </summary>
@@ -66,7 +64,6 @@ internal partial class AddRepoDialog
         };
 
         IsPrimaryButtonEnabled = false;
-        _devDriveManager = devDriveManager;
     }
 
     /// <summary>

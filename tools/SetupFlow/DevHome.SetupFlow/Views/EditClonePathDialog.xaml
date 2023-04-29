@@ -44,16 +44,16 @@
                 </Grid.ColumnDefinitions>
                 <!--WINUI3 does not have a folder/file picker control.  Lets make one that looks like it.-->
                 <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
-                            Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"
-                            Text="{x:Bind FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
-                            IsReadOnly="True"
-                            Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay}"
-                            x:Name="DevDriveCloneLocationAliasTextBox"/>
+                        Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"
+                        Text="{x:Bind FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
+                        IsReadOnly="True"
+                        Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay}"
+                        x:Name="DevDriveCloneLocationAliasTextBox"/>
                 <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
-                            Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"
-                            Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
-                            IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
-                            Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
+                        Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"
+                        Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
+                        IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
+                        Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
                 <Button 
                     IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" 
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" 
@@ -66,7 +66,7 @@
             <Grid 
                 Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" 
                 ColumnSpacing="10"
-                Margin="0 10 0 10">
+                Margin="0,10,0,10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="7*"/>
                     <ColumnDefinition Width="3*"/>

@@ -198,16 +198,15 @@ public static class DevDriveUtil
 
     private static ISet<char> GetInvalidCharacters(InvalidCharactersKind type)
     {
-        char[] invalidFileChars;
+        List<char> invalidFileChars;
         if (type == InvalidCharactersKind.Path)
         {
-            var charList = Path.GetInvalidPathChars().ToList();
-            charList.AddRange(new List<char> { '*', '?', '\"', '<', '>', '|' });
-            invalidFileChars = charList.ToArray();
+            invalidFileChars = Path.GetInvalidPathChars().ToList();
+            invalidFileChars.AddRange(new List<char> { '*', '?', '\"', '<', '>', '|' });
         }
         else
         {
-            invalidFileChars = Path.GetInvalidFileNameChars();
+            invalidFileChars = Path.GetInvalidFileNameChars().ToList();
         }
 
         var returnSet = new HashSet<char>();
