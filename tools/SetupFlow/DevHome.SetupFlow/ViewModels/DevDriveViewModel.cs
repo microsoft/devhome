@@ -19,6 +19,7 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.Windows;
 using Microsoft.UI.Xaml;
+using Windows.Globalization.NumberFormatting;
 using Windows.Storage.Pickers;
 using Windows.System;
 using WinUIEx;
@@ -52,6 +53,24 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     public DevDriveWindow DevDriveWindowContainer
     {
         get; private set;
+    }
+
+    /// <summary>
+    /// Gets the decimal formatter that will allow us to take only whole numbers in the number box.
+    /// </summary>
+    public DecimalFormatter DevDriveDecimalFormatter
+    {
+        get
+        {
+            IncrementNumberRounder rounder = new IncrementNumberRounder();
+            rounder.Increment = 1;
+            rounder.RoundingAlgorithm = RoundingAlgorithm.RoundTowardsZero;
+            DecimalFormatter formatter = new DecimalFormatter();
+            formatter.IntegerDigits = 1;
+            formatter.FractionDigits = 0;
+            formatter.NumberRounder = rounder;
+            return formatter;
+        }
     }
 
     /// <summary>
@@ -129,8 +148,10 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <summary>
     /// Gets or sets Drive letter in combo box.
     /// </summary>
-    [ObservableProperty]
-    private char _comboBoxDriveLetter;
+    public char ComboBoxDriveLetter
+    {
+        get; set;
+    }
 
     /// <summary>
     /// Gets the drive letters available on the system and is not already in use by a Dev Drive

@@ -125,7 +125,8 @@
                                 Value="{x:Bind ViewModel.Size, Mode=TwoWay}"
                                 Maximum="{x:Bind ViewModel.MaximumAllowedSize, Mode=OneWay}"
                                 Minimum="{x:Bind ViewModel.MinimumAllowedSize, Mode=OneWay}"
-                                AcceptsExpression="False"/>
+                                AcceptsExpression="False"
+                                NumberFormatter="{x:Bind ViewModel.DevDriveDecimalFormatter, Mode=OneWay}"/>
                             <ComboBox 
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowByteUnitComboBox"
                                 x:Name="DriveByteUnitComboBox"

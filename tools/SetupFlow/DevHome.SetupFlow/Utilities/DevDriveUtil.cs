@@ -40,7 +40,7 @@ public static class DevDriveUtil
 
     public static double MaxSizeForTbComboBox => 64d;
 
-    public static double MinSizeForTbComboBox => 0.5D;
+    public static double MinSizeForTbComboBox => 1D;
 
     public static int MaxDriveLabelSize => 32;
 
@@ -113,28 +113,13 @@ public static class DevDriveUtil
             throw new ArgumentException(FormatExceptionString(unit, value, minSize, maxSize));
         }
 
-        if (unitIsTb && value.CompareTo(1.0d) < 0)
+        // We only allow users to create Dev Drives using whole numbers, so there is no need to worry about decimals here.
+        if (unitIsTb)
         {
-            // Switch this to Gb, e.g if value is 0.05 we make this 50 by multiplying by 1000.
-            unit = ByteUnit.GB;
-            value *= 1000d;
-        }
-        else if (!unitIsTb && value.CompareTo(1000.0d) >= 0)
-        {
-            // Switch this to Tb, e.g if value is 4322 we make this 4.322 by dividing by 1000.
-            unit = ByteUnit.TB;
-            value /= 1000d;
+            return (ulong)value << 40;
         }
 
-        // Since we only care about Gb and Tb here we can use the power function
-        // to get our value in bytes. Where 1024.0^3 gives us 1 Gb and 1024.0^4 gives
-        // us 1 Tb.
-        if (unit == ByteUnit.TB)
-        {
-            return (ulong)(value * OneTbInBytes);
-        }
-
-        return (ulong)(value * OneGbInBytes);
+        return (ulong)value << 30;
     }
 
     /// <summary>
