@@ -12,6 +12,7 @@ using DevHome.Helpers;
 using DevHome.Services;
 using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
+using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
 using DevHome.Views;
@@ -75,6 +76,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IAppInfoService, AppInfoService>();
             services.AddSingleton<ILogger>(LoggerFactory.Get<ILogger>());
             services.AddSingleton<IStringResource, StringResource>();
+            services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -120,6 +122,20 @@ public partial class App : Application, IApp
 
         await GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data);
         await GetService<IAccountsService>().InitializeAsync();
+        await WindowsPackageManagerValidationAsync();
+    }
+
+    private async Task WindowsPackageManagerValidationAsync()
+    {
+        Log.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at app launch");
+        if (await Task.Run(() => GetService<IWindowsPackageManager>().IsCOMServerAvailable()))
+        {
+            Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
+        }
+        else
+        {
+            Log.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
+        }
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)
