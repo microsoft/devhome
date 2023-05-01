@@ -100,6 +100,7 @@ public sealed partial class AccountsPage : Page
         var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
         var renderer = new AdaptiveCardRenderer();
         await ConfigureLoginUIRenderer(renderer);
+        renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
 
         pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
         pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
@@ -149,7 +150,6 @@ public sealed partial class AccountsPage : Page
                 LoggerFactory.Get<ILogger>().Log($"HostConfig file contents are null or empty", LogLevel.Local, $"HostConfigFileContents: {hostConfigContents}");
             }
         });
-        renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
         return;
     }
 
