@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Extensions;
@@ -22,6 +23,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private readonly WidgetHost _widgetHost;
     private readonly WidgetCatalog _widgetCatalog;
     private Widget _currentWidget;
+    private static DispatcherQueue _dispatcher;
 
     public Widget AddedWidget { get; set; }
 
@@ -39,12 +41,15 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         _widgetHost = host;
         _widgetCatalog = catalog;
+        _dispatcher = dispatcher;
 
         // Strange behavior: setting the requested theme in the constructor isn't enough, so do it here.
         RequestedTheme = theme;
 
         // Get the application root window so we know when it has closed.
         Application.Current.GetService<WindowEx>().Closed += OnMainWindowClosed;
+
+        _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
 
         FillAvailableWidgets();
         SelectFirstWidgetByDefault();
@@ -102,6 +107,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     AddWidgetNavigationView.MenuItems.Add(navItem);
                 }
             }
+        }
+
+        // If there were no available widgets, show a message.
+        if (!AddWidgetNavigationView.MenuItems.Any())
+        {
+            ViewModel.ShowErrorCard("WidgetErrorCardNoWidgetsText");
         }
     }
 
@@ -187,6 +198,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
         Log.Logger()?.ReportDebug("AddWidgetDialog", $"Widget selection changed, delete widget if one exists");
         var clearWidgetTask = ClearCurrentWidget();
 
+        // Selected item could be null if list of widgets became empty.
+        if (sender.SelectedItem is null)
+        {
+            return;
+        }
+
         // Load selected widget configuration.
         var selectedTag = (sender.SelectedItem as NavigationViewItem).Tag;
         if (selectedTag is null)
@@ -203,13 +220,22 @@ public sealed partial class AddWidgetDialog : ContentDialog
             // Create the widget for configuration. We will need to delete it if the user closes the dialog
             // without pinning, or selects a different widget.
             var widget = await _widgetHost.CreateWidgetAsync(selectedWidgetDefinition.Id, size);
-            Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
+            if (widget is not null)
+            {
+                Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
 
-            ViewModel.Widget = widget;
-            ViewModel.IsInAddMode = true;
-            PinButton.Visibility = Visibility.Visible;
+                ViewModel.Widget = widget;
+                ViewModel.IsInAddMode = true;
+                PinButton.Visibility = Visibility.Visible;
 
-            clearWidgetTask.Wait();
+                clearWidgetTask.Wait();
+            }
+            else
+            {
+                Log.Logger()?.ReportWarn("AddWidgetDialog", $"Widget creation failed.");
+                ViewModel.ShowErrorCard("WidgetErrorCardCreate1Text", "WidgetErrorCardCreate2Text");
+            }
+
             _currentWidget = widget;
         }
         else if (selectedTag as WidgetProviderDefinition is not null)
@@ -226,7 +252,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         AddedWidget = _currentWidget;
         ViewModel = null;
 
-        this.Hide();
+        HideDialog();
     }
 
     private async void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -235,6 +261,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
         Log.Logger()?.ReportDebug("AddWidgetDialog", $"Exiting dialog, delete widget");
         await ClearCurrentWidget();
 
+        HideDialog();
+    }
+
+    private void HideDialog()
+    {
+        _widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
         this.Hide();
     }
 
@@ -253,5 +285,50 @@ public sealed partial class AddWidgetDialog : ContentDialog
             Log.Logger()?.ReportInfo("AddWidgetDialog", $"Deleted Widget {widgetIdToDelete}");
             _currentWidget = null;
         }
+    }
+
+    private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
+    {
+        var deletedDefinitionId = args.DefinitionId;
+
+        _dispatcher.TryEnqueue(() =>
+        {
+            // If we currently have the deleted widget open, show an error message instead.
+            if (_currentWidget is not null &&
+                _currentWidget.DefinitionId.Equals(deletedDefinitionId, StringComparison.Ordinal))
+            {
+                Log.Logger()?.ReportInfo("AddWidgetDialog", $"Widget definition deleted while creating that widget.");
+                ViewModel.ShowErrorCard("WidgetErrorCardCreate1Text", "WidgetErrorCardCreate2Text");
+                AddWidgetNavigationView.SelectedItem = null;
+            }
+
+            // Remove the deleted WidgetDefinition from the list of available widgets.
+            var menuItems = AddWidgetNavigationView.MenuItems;
+            foreach (var providerItem in menuItems.Cast<NavigationViewItem>())
+            {
+                foreach (var widgetItem in providerItem.MenuItems.Cast<NavigationViewItem>())
+                {
+                    if (widgetItem.Tag is WidgetDefinition tagDefinition)
+                    {
+                        if (tagDefinition.Id.Equals(deletedDefinitionId, StringComparison.Ordinal))
+                        {
+                            providerItem.MenuItems.Remove(widgetItem);
+
+                            // If we've removed all widgets from a provider, remove the provider from the list.
+                            if (!providerItem.MenuItems.Any())
+                            {
+                                menuItems.Remove(providerItem);
+
+                                // If we've removed all providers from the list, show a message
+                                if (!menuItems.Any())
+                                {
+                                    ViewModel.ShowErrorCard("WidgetErrorCardNoWidgetsText");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 }
