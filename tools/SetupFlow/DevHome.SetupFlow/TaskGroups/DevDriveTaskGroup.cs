@@ -80,5 +80,6 @@ public class DevDriveTaskGroup : ISetupTaskGroup
 
     public SetupPageViewModelBase GetSetupPageViewModel() => null;
 
-    public ReviewTabViewModelBase GetReviewTabViewModel() => _devDriveReviewViewModel.Value;
+    // Only show this tab when we are actually creating a dev drive
+    public ReviewTabViewModelBase GetReviewTabViewModel() => SetupTasks.Any() ? _devDriveReviewViewModel.Value : null;
 }

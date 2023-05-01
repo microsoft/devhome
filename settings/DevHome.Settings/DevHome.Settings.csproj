@@ -8,6 +8,14 @@
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
+	<ItemGroup>
+	    <Content Update="Assets\LightHostConfig.json">
+		    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    </Content>
+	    <Content Update="Assets\DarkHostConfig.json">
+		    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    </Content>
+	</ItemGroup>
   <ItemGroup>
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\AccountsPage.xaml" />
@@ -48,5 +56,8 @@
     <Page Update="Views\ExtensionsPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helpers\" />
   </ItemGroup>
 </Project>

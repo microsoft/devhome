@@ -119,7 +119,7 @@ public partial class WidgetViewModel : ObservableObject
         if (string.IsNullOrEmpty(cardData))
         {
             Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
-            ShowErrorCard();
+            ShowErrorCard("WidgetErrorCardDisplayText");
             return;
         }
 
@@ -150,7 +150,7 @@ public partial class WidgetViewModel : ObservableObject
         catch (Exception ex)
         {
             Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
-            ShowErrorCard();
+            ShowErrorCard("WidgetErrorCardDisplayText");
             return;
         }
 
@@ -174,7 +174,7 @@ public partial class WidgetViewModel : ObservableObject
             catch (Exception ex)
             {
                 Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card: ", ex);
-                WidgetFrameworkElement = GetErrorCard();
+                WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
             }
         });
     }
@@ -193,15 +193,16 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    private void ShowErrorCard()
+    // Used to show a message instead of Adaptive Card content in a widget.
+    public void ShowErrorCard(string error, string subError = null)
     {
         _dispatcher.TryEnqueue(() =>
         {
-            WidgetFrameworkElement = GetErrorCard();
+            WidgetFrameworkElement = GetErrorCard(error, subError);
         });
     }
 
-    private FrameworkElement GetErrorCard()
+    private FrameworkElement GetErrorCard(string error, string subError = null)
     {
         var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
 
@@ -211,16 +212,34 @@ public partial class WidgetViewModel : ObservableObject
             Padding = new Thickness(15, 0, 15, 0),
         };
 
-        var textBlock = new TextBlock
+        var sp = new StackPanel
         {
             HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            TextWrapping = TextWrapping.WrapWholeWords,
-            FontWeight = FontWeights.Bold,
-            Text = resourceLoader.GetString("WidgetErrorCardText"),
         };
 
-        grid.Children.Add(textBlock);
+        var errorText = new TextBlock
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            TextWrapping = TextWrapping.WrapWholeWords,
+            FontWeight = FontWeights.Bold,
+            Text = resourceLoader.GetString(error),
+        };
+        sp.Children.Add(errorText);
+
+        if (subError is not null)
+        {
+            var subErrorText = new TextBlock
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextWrapping = TextWrapping.WrapWholeWords,
+                Text = resourceLoader.GetString(subError),
+                Margin = new Thickness(0, 12, 0, 0),
+            };
+
+            sp.Children.Add(subErrorText);
+        }
+
+        grid.Children.Add(sp);
         return grid;
     }
 
