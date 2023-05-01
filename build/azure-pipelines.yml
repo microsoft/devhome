@@ -201,7 +201,7 @@ stages:
             MaxConcurrency: '50'
             MaxRetryAttempts: '5'
 
-        - task:PublishPipelineAritfact@0
+        - task: PublishPipelineArtifact@0
           displayName: Publish Stub
           inputs:
              artifactName:stub\*.msix
