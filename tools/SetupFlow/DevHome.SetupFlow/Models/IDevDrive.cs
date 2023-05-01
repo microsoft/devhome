@@ -35,6 +35,19 @@ public enum DevDriveState
 }
 
 /// <summary>
+///  Dev Drive media type. Matches DiskMediaType in OS code/telemetry.
+/// </summary>
+public enum DiskMediaType
+{
+    Unknown = 0,
+    HDD = 1,
+    SSD = 2,
+    Removable = 3,
+    VirtualHD = 4,
+    SCM = 5,
+}
+
+/// <summary>
 /// Interface representation for Dev Drives.
 /// </summary>
 public interface IDevDrive
@@ -85,6 +98,14 @@ public interface IDevDrive
     /// association the dev drive belongs to.
     /// </summary>
     public Guid ID
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the drive media type.
+    /// </summary>
+    public DiskMediaType DriveMediaType
     {
         get;
     }

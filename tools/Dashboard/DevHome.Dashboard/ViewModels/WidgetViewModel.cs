@@ -13,6 +13,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Windows.Data.Json;
 using Windows.System;
 
 namespace DevHome.Dashboard.ViewModels;
@@ -42,8 +43,13 @@ public partial class WidgetViewModel : ObservableObject
     [ObservableProperty]
     private Microsoft.UI.Xaml.Media.Brush _widgetBackground;
 
+    public bool IsInAddMode { get; set; }
+
     [ObservableProperty]
     private bool _isInEditMode;
+
+    [ObservableProperty]
+    private bool _configuring;
 
     partial void OnWidgetChanging(Widget value)
     {
@@ -113,12 +119,19 @@ public partial class WidgetViewModel : ObservableObject
         if (string.IsNullOrEmpty(cardData))
         {
             Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
-            ShowErrorCard();
+            ShowErrorCard("WidgetErrorCardDisplayText");
             return;
         }
 
         Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
         Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
+
+        // If we're in the Add or Edit dialog, check the cardData to see if the card is in a configuration state
+        // or if it is pinnable yet. If still configuring, the Pin button will be disabled.
+        if (IsInAddMode || IsInEditMode)
+        {
+            GetConfiguring(cardData);
+        }
 
         // Use the data to fill in the template.
         AdaptiveCardParseResult card;
@@ -137,7 +150,7 @@ public partial class WidgetViewModel : ObservableObject
         catch (Exception ex)
         {
             Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
-            ShowErrorCard();
+            ShowErrorCard("WidgetErrorCardDisplayText");
             return;
         }
 
@@ -161,20 +174,35 @@ public partial class WidgetViewModel : ObservableObject
             catch (Exception ex)
             {
                 Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card: ", ex);
-                WidgetFrameworkElement = GetErrorCard();
+                WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
             }
         });
     }
 
-    private void ShowErrorCard()
+    // Check if the card data indicates a configuration state. Configuring is bound to the Pin button and will disable it if true.
+    private void GetConfiguring(string cardData)
+    {
+        var jsonObj = JsonObject.Parse(cardData);
+        if (jsonObj != null)
+        {
+            var isConfiguring = jsonObj.GetNamedBoolean("configuring", false);
+            _dispatcher.TryEnqueue(() =>
+            {
+                Configuring = isConfiguring;
+            });
+        }
+    }
+
+    // Used to show a message instead of Adaptive Card content in a widget.
+    public void ShowErrorCard(string error, string subError = null)
     {
         _dispatcher.TryEnqueue(() =>
         {
-            WidgetFrameworkElement = GetErrorCard();
+            WidgetFrameworkElement = GetErrorCard(error, subError);
         });
     }
 
-    private FrameworkElement GetErrorCard()
+    private FrameworkElement GetErrorCard(string error, string subError = null)
     {
         var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
 
@@ -184,16 +212,34 @@ public partial class WidgetViewModel : ObservableObject
             Padding = new Thickness(15, 0, 15, 0),
         };
 
-        var textBlock = new TextBlock
+        var sp = new StackPanel
         {
             HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            TextWrapping = TextWrapping.WrapWholeWords,
-            FontWeight = FontWeights.Bold,
-            Text = resourceLoader.GetString("WidgetErrorCardText"),
         };
 
-        grid.Children.Add(textBlock);
+        var errorText = new TextBlock
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+            TextWrapping = TextWrapping.WrapWholeWords,
+            FontWeight = FontWeights.Bold,
+            Text = resourceLoader.GetString(error),
+        };
+        sp.Children.Add(errorText);
+
+        if (subError is not null)
+        {
+            var subErrorText = new TextBlock
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextWrapping = TextWrapping.WrapWholeWords,
+                Text = resourceLoader.GetString(subError),
+                Margin = new Thickness(0, 12, 0, 0),
+            };
+
+            sp.Children.Add(subErrorText);
+        }
+
+        grid.Children.Add(sp);
         return grid;
     }
 
