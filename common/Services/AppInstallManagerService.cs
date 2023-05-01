@@ -10,7 +10,7 @@ using Windows.Foundation;
 namespace DevHome.Services;
 
 /// <summary>
-/// Service class for using <see cref="AppInstallManager"/>
+/// Service class for using the Store API <see cref="AppInstallManager"/>
 /// </summary>
 public class AppInstallManagerService : IAppInstallManagerService
 {

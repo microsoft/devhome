@@ -135,7 +135,7 @@
   </data>
   <data name="AppInstallerUpdateAvailableTitle" xml:space="preserve">
     <value>Update App Installer</value>
-    <comment>{Locked="App Installer"}Title of a notification panel for updating 'App Installer' application</comment>
+    <comment>Title of a notification panel for updating 'App Installer' application</comment>
   </data>
   <data name="AppInstallerUpdateAvailableUpdateButton" xml:space="preserve">
     <value>Update</value>
