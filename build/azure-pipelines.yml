@@ -204,7 +204,7 @@ stages:
         - task: PublishPipelineArtifact@0
           displayName: Publish Stub
           inputs:
-             artifactName:stub\*.msix
+             artifactName: stub\*.msix
              targetPath: $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub
 
         - task: EsrpCodeSigning@2
