@@ -1027,4 +1027,8 @@
     <value>Set up another project</value>
     <comment>Summary page prompt to bring users back to the beginning of the setup flow</comment>
   </data>
+  <data name="ClonePathDriveDoesNotExist" xml:space="preserve">
+    <value>Enter a drive that exists</value>
+    <comment>Error string to show the user if the drive they want to clone to does not exist.  Should be used if not making a devdrive</comment>
+  </data>
 </root>

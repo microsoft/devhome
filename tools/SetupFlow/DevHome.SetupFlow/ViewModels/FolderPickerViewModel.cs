@@ -169,6 +169,15 @@ public partial class FolderPickerViewModel : ObservableObject
                 ShowFolderPickerError = true;
                 return false;
             }
+
+            // User could put in a drive letter that does not exist.
+            var drive = Path.GetPathRoot(CloneLocation);
+            if (!Directory.Exists(drive))
+            {
+                FolderPickerErrorMessage = _stringResource.GetLocalized(StringResourceKey.ClonePathDriveDoesNotExist);
+                ShowFolderPickerError = true;
+                return false;
+            }
         }
 
         ShowFolderPickerError = false;
