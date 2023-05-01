@@ -9,6 +9,7 @@
                xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
                xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
                xmlns:i="using:Microsoft.Xaml.Interactivity"
+               xmlns:labs="using:CommunityToolkit.Labs.WinUI"
                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
                mc:Ignorable="d"
                xmlns:models="using:DevHome.SetupFlow.Models"
@@ -42,14 +43,18 @@
                 </Style>
             </ResourceDictionary>
         </StackPanel.Resources>
-        <Grid x:Name="RepoCloneOptionGrid">
+        <labs:Segmented HorizontalAlignment="Stretch" SelectionMode="Single" SelectionChanged="Segmented_SelectionChanged">
+            <labs:SegmentedItem x:Name="AddViaAccountSegmentedItem" Content="Account"/>
+            <labs:SegmentedItem x:Name="AddViaUrlSegmentedItem" Content="URL"/>
+        </labs:Segmented>
+        <!--<Grid x:Name="RepoCloneOptionGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <ToggleButton x:Name="AddViaAccountToggleButton" Click="AddViaAccountToggleButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton" IsChecked="{x:Bind AddRepoViewModel.IsAccountToggleButtonChecked, Mode=OneWay}" Grid.Column="0" HorizontalAlignment="Stretch"/>
             <ToggleButton x:Name="AddViaUrlToggleButton" Click="AddViaUrlToggleButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" Grid.Column="1" IsChecked="{x:Bind AddRepoViewModel.IsUrlAccountButtonChecked, Mode=OneWay}" HorizontalAlignment="Stretch"/>
-        </Grid>
+        </Grid>-->
 
         <!-- Adding a repo via URL -->
         <TextBox x:Name="RepoUrlTextBox" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoUrl" Visibility="{x:Bind AddRepoViewModel.ShowUrlPage, Mode=OneWay}" LostFocus="RepoUrlTextBox_LostFocus" Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}"/>

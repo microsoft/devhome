@@ -64,6 +64,7 @@ internal partial class AddRepoDialog
         };
 
         IsPrimaryButtonEnabled = false;
+        AddViaUrlSegmentedItem.IsSelected = true;
     }
 
     /// <summary>
@@ -92,7 +93,7 @@ internal partial class AddRepoDialog
         });
     }
 
-    private void AddViaAccountToggleButton_Click(object sender, RoutedEventArgs e)
+    private void ChangeToAccountPage()
     {
         AddRepoViewModel.ChangeToAccountPage();
         FolderPickerViewModel.CloseFolderPicker();
@@ -109,7 +110,7 @@ internal partial class AddRepoDialog
         ToggleCloneButton();
     }
 
-    private void AddViaUrlToggleButton_Click(object sender, RoutedEventArgs e)
+    private void ChangeToUrlPage()
     {
         RepositoryProviderComboBox.SelectedIndex = -1;
         AddRepoViewModel.ChangeToUrlPage();
@@ -329,5 +330,17 @@ internal partial class AddRepoDialog
         }
 
         ToggleCloneButton();
+    }
+
+    private void Segmented_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
+        {
+            ChangeToAccountPage();
+        }
+        else
+        {
+            ChangeToUrlPage();
+        }
     }
 }
