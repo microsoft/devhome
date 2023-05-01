@@ -73,7 +73,7 @@ public sealed class DevDriveStorageOperator
     {
         // Create the location if it doesn't exist.
         var location = Path.GetDirectoryName(virtDiskPath);
-        if (location != null && !Directory.Exists(location))
+        if (!string.IsNullOrEmpty(location) && !Directory.Exists(location))
         {
             Directory.CreateDirectory(location);
         }

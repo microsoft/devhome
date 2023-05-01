@@ -989,7 +989,7 @@
   </data>
   <data name="CustomizeHyperLink.Content" xml:space="preserve">
     <value>Customize</value>
-    <comment>.Contents</comment>
+    <comment>Text for hyperlink that users see when they click the drive drive checkbox. The customize hyperlink when click will open a window where users can change the details of their dev drive.</comment>
   </data>
   <data name="DevDriveDefaultDriveCheckBoxError.Message" xml:space="preserve">
     <value>Couldn't set default Dev Drive configuration. Select the customize button to update the configuration.</value>

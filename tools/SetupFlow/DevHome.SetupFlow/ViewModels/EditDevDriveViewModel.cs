@@ -33,6 +33,11 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// <summary>
     /// The manager to handle dev drives.
     /// </summary>
+    private const char InvalidCharacterForDriveLetter = '\0';
+
+    /// <summary>
+    /// The manager to handle dev drives.
+    /// </summary>
     private readonly IDevDriveManager _devDriveManager;
 
     /// <summary>
@@ -133,7 +138,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </summary>
     public string GetDriveDisplayName(DevDriveDisplayNameKind useDriveLetterOnly = DevDriveDisplayNameKind.DriveRootKind)
     {
-        if (DevDrive.DriveLetter == '\0')
+        if (DevDrive.DriveLetter == InvalidCharacterForDriveLetter)
         {
             return string.Empty;
         }
@@ -224,17 +229,31 @@ public partial class EditDevDriveViewModel : ObservableObject
         return results.Contains(DevDriveValidationResult.Successful);
     }
 
-    public bool DevDriveChanged(IDevDrive newDevDrive)
+    /// <summary>
+    /// Checks whether the information inside the Dev Drive has changed.
+    /// </summary>
+    /// <param name="newDevDrive"> the new Dev Drive object that will replace the original Dev Drive</param>
+    /// <returns>Return bool stating whether the Dev Drive info has changed</returns>
+    private bool DevDriveChanged(IDevDrive newDevDrive)
     {
         if (DevDrive == null)
         {
             return true;
         }
 
-        if (!string.Equals(DevDrive.DriveLocation, newDevDrive.DriveLocation, StringComparison.Ordinal) ||
-            !string.Equals(DevDrive.DriveLabel, newDevDrive.DriveLabel, StringComparison.Ordinal) ||
-            DevDrive.DriveLetter != newDevDrive.DriveLetter ||
-            DevDrive.DriveSizeInBytes != newDevDrive.DriveSizeInBytes)
+        if (!string.Equals(DevDrive.DriveLocation, newDevDrive.DriveLocation, StringComparison.Ordinal))
+        {
+            return true;
+        }
+        else if (!string.Equals(DevDrive.DriveLabel, newDevDrive.DriveLabel, StringComparison.Ordinal))
+        {
+            return true;
+        }
+        else if (DevDrive.DriveLetter != newDevDrive.DriveLetter)
+        {
+            return true;
+        }
+        else if (DevDrive.DriveSizeInBytes != newDevDrive.DriveSizeInBytes)
         {
             return true;
         }

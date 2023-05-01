@@ -36,6 +36,7 @@ public class DevDriveManager : IDevDriveManager
     private readonly string _defaultVhdxName;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly string _defaultDevDriveLocation;
+    private const uint MaxNumberToAppendToFileName = 1000;
 
     // Query flag for persistent state info of the volume, the presense of this flag will let us know
     // its a Dev drive. TODO: Update this once in Windows SDK
@@ -273,16 +274,16 @@ public class DevDriveManager : IDevDriveManager
             validationSuccessful = false;
         }
 
-        uint count = 1;
+        uint numberToAppendToFileNameIfExists = 1;
         var fullPath = Path.Combine(DefaultDevDriveLocation, $"{_defaultVhdxName}.vhdx");
         var fileName = _defaultVhdxName;
 
         // If original default file name exists we'll increase the number next to the filename
-        while (File.Exists(fullPath) && count <= 1000)
+        while (File.Exists(fullPath) && numberToAppendToFileNameIfExists <= MaxNumberToAppendToFileName)
         {
-            fileName = $"{_defaultVhdxName} {count}";
+            fileName = $"{_defaultVhdxName} {numberToAppendToFileNameIfExists}";
             fullPath = Path.Combine(DefaultDevDriveLocation, $"{fileName}.vhdx");
-            count++;
+            numberToAppendToFileNameIfExists++;
         }
 
         var devDriveState = validationSuccessful ? DevDriveState.New : DevDriveState.Invalid;
@@ -396,21 +397,19 @@ public class DevDriveManager : IDevDriveManager
         string locationRoot;
         try
         {
-            var fileInfo = new FileInfo(devDrive.DriveLocation);
-            locationRoot = Path.GetPathRoot(fileInfo.FullName);
-            if (!string.IsNullOrEmpty(locationRoot) && Path.IsPathFullyQualified(fileInfo.FullName))
+            locationRoot = Path.GetPathRoot(devDrive.DriveLocation);
+            if (!string.IsNullOrEmpty(locationRoot) && Path.IsPathFullyQualified(devDrive.DriveLocation))
             {
-                var path = fileInfo.FullName.ToString();
                 var isNetworkPath = false;
                 unsafe
                 {
-                    fixed (char* tempPath = path)
+                    fixed (char* tempPath = devDrive.DriveLocation)
                     {
                         isNetworkPath = PInvoke.PathIsNetworkPath(tempPath).Equals(new BOOL(true));
                     }
                 }
 
-                if (!isNetworkPath && File.Exists(Path.Combine(fileInfo.FullName, devDrive.DriveLabel + ".vhdx")))
+                if (!isNetworkPath && File.Exists(Path.Combine(devDrive.DriveLocation, devDrive.DriveLabel + ".vhdx")))
                 {
                     return DevDriveValidationResult.FileNameAlreadyExists;
                 }

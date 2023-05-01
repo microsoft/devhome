@@ -127,9 +127,7 @@ internal class CreateDevDriveTask : ISetupTask
                 var validation = manager.GetDevDriveValidationResults(DevDrive);
                 manager.RemoveAllDevDrives();
 
-                if (validation.Count > 1 ||
-                    (!validation.Contains(DevDriveValidationResult.Successful) &&
-                    !validation.Contains(DevDriveValidationResult.InvalidFolderLocation)))
+                if (!validation.Contains(DevDriveValidationResult.Successful))
                 {
                     var localizedMsg = _stringResource.GetLocalized("DevDrive" + validation.First().ToString());
                     _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, localizedMsg);
