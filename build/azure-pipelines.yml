@@ -202,7 +202,7 @@ stages:
             MaxRetryAttempts: '5'
 
         - task:PublishPipelineAritfact@0
-          displayName: Piblish Stub
+          displayName: Publish Stub
           inputs:
              artifactName:stub\*.msix
              targetPath: $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub
