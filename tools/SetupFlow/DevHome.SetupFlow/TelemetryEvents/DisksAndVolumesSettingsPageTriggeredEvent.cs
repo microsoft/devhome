@@ -19,6 +19,7 @@ internal class DisksAndVolumesSettingsPageTriggeredEvent : EventBase
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
+        // No sensitive strings to replace
     }
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
