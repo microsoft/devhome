@@ -12,6 +12,7 @@ using DevHome.Helpers;
 using DevHome.Services;
 using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
+using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
 using DevHome.Views;
@@ -120,6 +121,10 @@ public partial class App : Application, IApp
 
         await GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data);
         await GetService<IAccountsService>().InitializeAsync();
+
+        await GetService<CatalogProvider>().InitializeAsync();
+        await Task.Run(async () => await GetService<IWindowsPackageManager>().ConnectToAllCatalogsAsync());
+        await Task.Run(async () => await GetService<CatalogProvider>().LoadCatalogsAsync());
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)

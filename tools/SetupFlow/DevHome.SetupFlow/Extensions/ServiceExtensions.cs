@@ -61,8 +61,9 @@ public static class ServiceExtensions
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();
-        services.AddTransient<WinGetPackageRestoreDataSource>();
-        services.AddTransient<WinGetPackageJsonDataSource>(sp =>
+        services.AddSingleton<CatalogProvider>();
+        services.AddSingleton<WinGetPackageRestoreDataSource>();
+        services.AddSingleton<WinGetPackageJsonDataSource>(sp =>
         {
             var dataSourcePath = sp.GetService<IOptions<SetupFlowOptions>>().Value.WinGetPackageJsonDataSourcePath;
             var dataSourceFullPath = Path.Combine(AppContext.BaseDirectory, dataSourcePath);

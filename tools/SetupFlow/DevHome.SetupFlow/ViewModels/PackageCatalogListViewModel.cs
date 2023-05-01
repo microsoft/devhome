@@ -13,8 +13,7 @@ namespace DevHome.SetupFlow.ViewModels;
 public partial class PackageCatalogListViewModel : ObservableObject
 {
     private readonly IWindowsPackageManager _wpm;
-    private readonly WinGetPackageJsonDataSource _jsonDataSource;
-    private readonly WinGetPackageRestoreDataSource _restoreDataSource;
+    private readonly CatalogProvider _catalogProvider;
     private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
     private bool _initialized;
 
@@ -30,13 +29,11 @@ public partial class PackageCatalogListViewModel : ObservableObject
     public ObservableCollection<int> PackageCatalogShimmers { get; } = new ();
 
     public PackageCatalogListViewModel(
-        WinGetPackageJsonDataSource jsonDataSource,
-        WinGetPackageRestoreDataSource restoreDataSource,
+        CatalogProvider catalogProvider,
         IWindowsPackageManager wpm,
         PackageCatalogViewModelFactory packageCatalogViewModelFactory)
     {
-        _jsonDataSource = jsonDataSource;
-        _restoreDataSource = restoreDataSource;
+        _catalogProvider = catalogProvider;
         _wpm = wpm;
         _packageCatalogViewModelFactory = packageCatalogViewModelFactory;
     }
@@ -51,36 +48,34 @@ public partial class PackageCatalogListViewModel : ObservableObject
             _initialized = true;
 
             // Initialize all data sources and load package ids into memory
-            await InitializeDataSourceAsync(_jsonDataSource);
-            await InitializeDataSourceAsync(_restoreDataSource);
+            await InitializeDataSourceAsync();
 
             // Connect to winget catalog on a separate (non-UI) thread to prevent lagging the UI.
             await Task.Run(async () => await _wpm.WinGetCatalog.ConnectAsync());
 
             // Resolve package ids and create corresponding catalogs
-            await LoadCatalogsFromDataSourceAsync(_restoreDataSource);
-            await LoadCatalogsFromDataSourceAsync(_jsonDataSource);
+            await LoadCatalogsFromDataSourceAsync();
         }
     }
 
     /// <summary>
     /// Initialize JSON data source
     /// </summary>
-    private async Task InitializeDataSourceAsync(WinGetPackageDataSource dataSource)
+    private async Task InitializeDataSourceAsync()
     {
         try
         {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing package list from data source {dataSource.GetType().Name}");
-            await dataSource.InitializeAsync();
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing package list from data source");
+            await _catalogProvider.InitializeAsync();
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while initializing data source of type {dataSource.GetType().Name}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while initializing data source of type");
             Log.Logger?.ReportError(Log.Component.AppManagement, e.Message);
         }
         finally
         {
-            AddShimmers(dataSource.CatalogCount);
+            AddShimmers(_catalogProvider.CatalogCount);
         }
     }
 
@@ -88,14 +83,14 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// Load catalogs from the provided data source and remove corresponding shimmers
     /// </summary>
     /// <param name="dataSource">Target data source</param>
-    private async Task LoadCatalogsFromDataSourceAsync(WinGetPackageDataSource dataSource)
+    private async Task LoadCatalogsFromDataSourceAsync()
     {
-        if (dataSource.CatalogCount > 0)
+        if (_catalogProvider.CatalogCount > 0)
         {
             // Load catalogs on a separate thread to avoid lagging the UI
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
-            var catalogs = await Task.Run(async () => await dataSource.LoadCatalogsAsync());
-            RemoveShimmers(dataSource.CatalogCount);
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source");
+            var catalogs = await Task.Run(async () => await _catalogProvider.LoadCatalogsAsync());
+            RemoveShimmers(_catalogProvider.CatalogCount);
             foreach (var catalog in catalogs)
             {
                 var catalogViewModel = _packageCatalogViewModelFactory(catalog);
