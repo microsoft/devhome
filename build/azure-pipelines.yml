@@ -201,6 +201,53 @@ stages:
             MaxConcurrency: '50'
             MaxRetryAttempts: '5'
 
+        - task:PublishPipelineAritfact@0
+          displayName: Piblish Stub
+          inputs:
+             artifactName:stub\*.msix
+             targetPath: $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub
+
+        - task: EsrpCodeSigning@2
+          inputs:
+            ConnectedServiceName: 'Xlang Code Signing'
+            FolderPath: '$(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub'
+            Pattern: '*.msix'
+            signConfigType: 'inlineSignParams'
+            inlineOperation: |
+              [
+                {
+                  "keycode": "CP-230012",
+                  "operationSetCode": "SigntoolSign",
+                  "parameters": [
+                    {
+                      "parameterName": "OpusName",
+                      "parameterValue": "Microsoft"
+                    },
+                    {
+                      "parameterName": "OpusInfo",
+                      "parameterValue": "http://www.microsoft.com"
+                    },
+                    {
+                      "parameterName": "PageHash",
+                      "parameterValue": "/NPH"
+                    },
+                    {
+                      "parameterName": "FileDigest",
+                      "parameterValue": "/fd sha256"
+                    },
+                    {
+                      "parameterName": "TimeStamp",
+                      "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+                    }
+                  ],
+                  "toolName": "signtool.exe",
+                  "toolVersion": "6.2.9304.0"
+                }
+              ]
+            SessionTimeout: '60'
+            MaxConcurrency: '50'
+            MaxRetryAttempts: '5'
+
         - task: PublishPipelineArtifact@0
           displayName: Publish MSIX Artifacts
           inputs:
