@@ -125,6 +125,22 @@
     <value>Select packages to restore from your backup, clone from repository, or search with Windows Package Manager.</value>
     <comment>Description for Add packages page</comment>
   </data>
+  <data name="AppInstallerUpdateAvailableCancelButton" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Text for a button to cancel a dialog window for updating 'App Installer' application</comment>
+  </data>
+  <data name="AppInstallerUpdateAvailableMessage" xml:space="preserve">
+    <value>Get the best experience and latest features when installing apps.</value>
+    <comment>Content of a notification panel for updating 'App Installer' application</comment>
+  </data>
+  <data name="AppInstallerUpdateAvailableTitle" xml:space="preserve">
+    <value>Update App Installer</value>
+    <comment>Title of a notification panel for updating 'App Installer' application</comment>
+  </data>
+  <data name="AppInstallerUpdateAvailableUpdateButton" xml:space="preserve">
+    <value>Update</value>
+    <comment>Text for a button to update 'App Installer' application</comment>
+  </data>
   <data name="AppListBackupBanner.Title" xml:space="preserve">
     <value>Transfer developer machine settings</value>
     <comment>Title text of an instruction banner section for transferring settings from a developer machine</comment>
@@ -761,11 +777,11 @@
     <comment>Message when a repository is cloning.  Param:Clone Path</comment>
   </data>
   <data name="CloneRepoError" xml:space="preserve">
-    <value>Couldn't clone  {0}</value>
+    <value>Couldn't clone {0}</value>
     <comment>Message when a repository encountered an error when cloning. Param: Repo Name</comment>
   </data>
   <data name="CloneRepoRestart" xml:space="preserve">
-    <value>Cloned to  {0} (restart required)</value>
+    <value>Cloned to {0} (restart required)</value>
     <comment>Message when a repository is cloned but needs to reboot the computer. Param: Repo name</comment>
   </data>
   <data name="ConfigureTaskCreated" xml:space="preserve">

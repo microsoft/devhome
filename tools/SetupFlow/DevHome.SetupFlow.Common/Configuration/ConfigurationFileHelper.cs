@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Common.TelemetryEvents;
+using DevHome.Telemetry;
 using Microsoft.Management.Configuration;
 using Microsoft.Management.Configuration.Processor;
 using Windows.Storage;
@@ -89,6 +90,14 @@ public class ConfigurationFileHelper
 
         Log.Logger?.ReportInfo(Log.Component.Configuration, "Starting to apply configuration set");
         var result = await _processor.ApplySetAsync(_configSet, ApplyConfigurationSetFlags.None);
+
+        foreach (var unitResult in result.UnitResults)
+        {
+            TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_UnitResult", LogLevel.Critical, new ConfigurationUnitResultEvent(unitResult));
+        }
+
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Result", LogLevel.Critical, new ConfigurationSetResultEvent(_configSet, result));
+
         Log.Logger?.ReportInfo(Log.Component.Configuration, $"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
         return new ApplicationResult(result);
     }
