@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using DevHome.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
@@ -16,7 +17,10 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public class WindowsPackageManager : IWindowsPackageManager
 {
+    private const string AppInstallerProductId = "9NBLGGH4NNS1";
+
     private readonly WindowsPackageManagerFactory _wingetFactory;
+    private readonly IAppInstallManagerService _appInstallManagerService;
 
     // Custom composite catalogs
     private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
@@ -26,9 +30,16 @@ public class WindowsPackageManager : IWindowsPackageManager
     private readonly Lazy<string> _wingetCatalogId;
     private readonly Lazy<string> _msStoreCatalogId;
 
-    public WindowsPackageManager(WindowsPackageManagerFactory wingetFactory)
+    // App installer
+    private readonly Lazy<bool> _isCOMServerAvailable;
+    private bool _appInstallerUpdateAvailable;
+
+    public WindowsPackageManager(
+        WindowsPackageManagerFactory wingetFactory,
+        IAppInstallManagerService appInstallManagerService)
     {
         _wingetFactory = wingetFactory;
+        _appInstallManagerService = appInstallManagerService;
 
         // Lazy-initialize custom composite catalogs
         _allCatalogs = new (CreateAllCatalogs);
@@ -37,6 +48,9 @@ public class WindowsPackageManager : IWindowsPackageManager
         // Lazy-initialize predefined catalog ids
         _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
         _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
+
+        // Lazy-initialize COM server availability
+        _isCOMServerAvailable = new (IsCOMServerAvailableInternal);
     }
 
     public string WinGetCatalogId => _wingetCatalogId.Value;
@@ -82,6 +96,40 @@ public class WindowsPackageManager : IWindowsPackageManager
         {
             RebootRequired = installResult.RebootRequired,
         };
+    }
+
+    public bool IsCOMServerAvailable() => _isCOMServerAvailable.Value;
+
+    public async Task<bool> IsAppInstallerUpdateAvailableAsync()
+    {
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Checking if AppInstaller has an update ...");
+            _appInstallerUpdateAvailable = await _appInstallManagerService.IsAppUpdateAvailableAsync(AppInstallerProductId);
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller update available = {_appInstallerUpdateAvailable}");
+            return _appInstallerUpdateAvailable;
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to check if AppInstaller has an update, defaulting to false", e);
+            return false;
+        }
+    }
+
+    public async Task<bool> StartAppInstallerUpdateAsync()
+    {
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting AppInstaller update ...");
+            var updateStarted = await _appInstallManagerService.StartAppUpdateAsync(AppInstallerProductId);
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Start AppInstaller update = {updateStarted}");
+            return updateStarted;
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to start AppInstaller update", e);
+            return false;
+        }
     }
 
     /// <summary>
@@ -142,5 +190,26 @@ public class WindowsPackageManager : IWindowsPackageManager
         var catalog = packageManager.GetPredefinedPackageCatalog(predefinedPackageCatalog);
         compositeCatalog.AddPackageCatalog(catalog);
         return compositeCatalog;
+    }
+
+    /// <summary>
+    /// Check if WindowsPackageManager COM Server is available by creating a
+    /// dummy out-of-proc object
+    /// </summary>
+    /// <returns>True if server is available, false otherwise.</returns>
+    private bool IsCOMServerAvailableInternal()
+    {
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to create a dummy out-of-proc {nameof(WindowsPackageManager)} COM object to test if the COM server is available");
+            _wingetFactory.CreatePackageManager();
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"{nameof(WindowsPackageManager)} COM object created successfully");
+            return true;
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create a {nameof(WindowsPackageManager)} COM object", e);
+            return false;
+        }
     }
 }

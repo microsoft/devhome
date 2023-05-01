@@ -159,6 +159,17 @@ public partial class FolderPickerViewModel : ObservableObject
             return false;
         }
 
+        if (!InDevDriveScenario)
+        {
+            var fileAttributes = File.GetAttributes(CloneLocation);
+            if (!fileAttributes.HasFlag(FileAttributes.Directory))
+            {
+                FolderPickerErrorMessage = _stringResource.GetLocalized(StringResourceKey.ClonePathNotFolder);
+                ShowFolderPickerError = true;
+                return false;
+            }
+        }
+
         ShowFolderPickerError = false;
         return true;
     }

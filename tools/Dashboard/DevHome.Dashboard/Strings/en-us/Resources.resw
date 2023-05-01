@@ -86,7 +86,7 @@
     <value>Pin Widgets</value>
     <comment>Title for "Pin Widgets" dialog</comment>
   </data>
-  <data name="PinButton.Content" xml:space="preserve">
+  <data name="PinButtonText.Text" xml:space="preserve">
     <value>Pin</value>
     <comment>Label for button that pins the widget</comment>
   </data>

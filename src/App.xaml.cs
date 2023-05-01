@@ -76,6 +76,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IAppInfoService, AppInfoService>();
             services.AddSingleton<ILogger>(LoggerFactory.Get<ILogger>());
             services.AddSingleton<IStringResource, StringResource>();
+            services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -121,10 +122,30 @@ public partial class App : Application, IApp
 
         await GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data);
         await GetService<IAccountsService>().InitializeAsync();
+        await WindowsPackageManagerValidationAsync();
+    }
 
-        await GetService<CatalogProvider>().InitializeAsync();
-        await Task.Run(async () => await GetService<IWindowsPackageManager>().ConnectToAllCatalogsAsync());
-        await Task.Run(async () => await GetService<CatalogProvider>().LoadCatalogsAsync());
+    private async Task WindowsPackageManagerValidationAsync()
+    {
+        Log.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at app launch");
+        var wpm = GetService<IWindowsPackageManager>();
+        if (await Task.Run(() => wpm.IsCOMServerAvailable()))
+        {
+            Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
+
+            // Initial all catalogs
+            var catalogProvider = GetService<CatalogProvider>();
+            await catalogProvider.InitializeAsync();
+            await Task.Run(async () =>
+            {
+                await wpm.ConnectToAllCatalogsAsync();
+                await catalogProvider.LoadCatalogsAsync();
+            });
+        }
+        else
+        {
+            Log.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
+        }
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)
