@@ -9,6 +9,7 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
+using DevHome.Logging;
 using DevHome.Services;
 using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
@@ -74,7 +75,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IAccountsService, AccountsService>();
             services.AddSingleton<IInfoBarService, InfoBarService>();
             services.AddSingleton<IAppInfoService, AppInfoService>();
-            services.AddSingleton<ILogger>(LoggerFactory.Get<ILogger>());
+            services.AddSingleton<ITelemetry>(TelemetryFactory.Get<ITelemetry>());
             services.AddSingleton<IStringResource, StringResource>();
             services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
 
@@ -127,14 +128,14 @@ public partial class App : Application, IApp
 
     private async Task WindowsPackageManagerValidationAsync()
     {
-        Log.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at app launch");
+        GlobalLog.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at app launch");
         if (await Task.Run(() => GetService<IWindowsPackageManager>().IsCOMServerAvailable()))
         {
-            Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
+            GlobalLog.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
         }
         else
         {
-            Log.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
+            GlobalLog.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
         }
     }
 

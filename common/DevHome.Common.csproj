@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\logging\DevHome.Logging.csproj" />
     <ProjectReference Include="..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
   </ItemGroup>
 
