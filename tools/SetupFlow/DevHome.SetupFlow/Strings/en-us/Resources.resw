@@ -777,11 +777,11 @@
     <comment>Message when a repository is cloning.  Param:Clone Path</comment>
   </data>
   <data name="CloneRepoError" xml:space="preserve">
-    <value>Couldn't clone  {0}</value>
+    <value>Couldn't clone {0}</value>
     <comment>Message when a repository encountered an error when cloning. Param: Repo Name</comment>
   </data>
   <data name="CloneRepoRestart" xml:space="preserve">
-    <value>Cloned to  {0} (restart required)</value>
+    <value>Cloned to {0} (restart required)</value>
     <comment>Message when a repository is cloned but needs to reboot the computer. Param: Repo name</comment>
   </data>
   <data name="ConfigureTaskCreated" xml:space="preserve">
