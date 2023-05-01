@@ -63,8 +63,11 @@ internal partial class AddRepoDialog
             FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
         };
 
+        // Changing view to account so the selection changed event for Segment correctly shows URL.
+        AddRepoViewModel.CurrentPage = PageKind.AddViaAccount;
         IsPrimaryButtonEnabled = false;
         AddViaUrlSegmentedItem.IsSelected = true;
+        SwitchViewsSegmentedView.SelectedIndex = 1;
     }
 
     /// <summary>
@@ -95,6 +98,7 @@ internal partial class AddRepoDialog
 
     private void ChangeToAccountPage()
     {
+        SwitchViewsSegmentedView.IsEnabled = false;
         AddRepoViewModel.ChangeToAccountPage();
         FolderPickerViewModel.CloseFolderPicker();
         EditDevDriveViewModel.HideDevDriveUI();
@@ -107,6 +111,7 @@ internal partial class AddRepoDialog
             SwitchToRepoPage(AddRepoViewModel.ProviderNames[0]);
         }
 
+        SwitchViewsSegmentedView.IsEnabled = true;
         ToggleCloneButton();
     }
 
