@@ -138,8 +138,12 @@ public partial class App : Application, IApp
             await catalogProvider.InitializeAsync();
             await Task.Run(async () =>
             {
+                Log.Logger?.ReportInfo($"Found {catalogProvider.CatalogCount} catalogs to load");
                 await wpm.ConnectToAllCatalogsAsync();
-                await catalogProvider.LoadCatalogsAsync();
+                await foreach (var dataSourceCatalogs in catalogProvider.LoadCatalogsAsync())
+                {
+                    Log.Logger?.ReportInfo($"Catalogs loaded {dataSourceCatalogs.Count} / {catalogProvider.CatalogCount}");
+                }
             });
         }
         else

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
+using Microsoft.UI.Dispatching;
 
 namespace DevHome.SetupFlow.ViewModels;
 public partial class PackageCatalogListViewModel : ObservableObject
@@ -38,6 +38,8 @@ public partial class PackageCatalogListViewModel : ObservableObject
         _packageCatalogViewModelFactory = packageCatalogViewModelFactory;
     }
 
+#pragma warning disable
+
     /// <summary>
     /// Load the package catalogs to display
     /// </summary>
@@ -46,57 +48,21 @@ public partial class PackageCatalogListViewModel : ObservableObject
         if (!_initialized)
         {
             _initialized = true;
-
-            // Initialize all data sources and load package ids into memory
-            await InitializeDataSourceAsync();
-
-            // Connect to winget catalog on a separate (non-UI) thread to prevent lagging the UI.
-            await Task.Run(async () => await _wpm.WinGetCatalog.ConnectAsync());
-
-            // Resolve package ids and create corresponding catalogs
-            await LoadCatalogsFromDataSourceAsync();
-        }
-    }
-
-    /// <summary>
-    /// Initialize JSON data source
-    /// </summary>
-    private async Task InitializeDataSourceAsync()
-    {
-        try
-        {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing package list from data source");
-            await _catalogProvider.InitializeAsync();
-        }
-        catch (Exception e)
-        {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while initializing data source of type");
-            Log.Logger?.ReportError(Log.Component.AppManagement, e.Message);
-        }
-        finally
-        {
             AddShimmers(_catalogProvider.CatalogCount);
-        }
-    }
-
-    /// <summary>
-    /// Load catalogs from the provided data source and remove corresponding shimmers
-    /// </summary>
-    /// <param name="dataSource">Target data source</param>
-    private async Task LoadCatalogsFromDataSourceAsync()
-    {
-        if (_catalogProvider.CatalogCount > 0)
-        {
-            // Load catalogs on a separate thread to avoid lagging the UI
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source");
-            var catalogs = await Task.Run(async () => await _catalogProvider.LoadCatalogsAsync());
-            RemoveShimmers(_catalogProvider.CatalogCount);
-            foreach (var catalog in catalogs)
+            await Task.Run(async () => await _wpm.WinGetCatalog.ConnectAsync());
+            await foreach (var dataSourceCatalogs in _catalogProvider.LoadCatalogsAsync())
             {
-                var catalogViewModel = _packageCatalogViewModelFactory(catalog);
-                catalogViewModel.CanAddAllPackages = true;
-                PackageCatalogs.Add(catalogViewModel);
+                foreach (var catalog in dataSourceCatalogs)
+                {
+                    var catalogVM = await Task.Run(() => _packageCatalogViewModelFactory(catalog));
+                    PackageCatalogs.Add(catalogVM);
+                }
+
+                RemoveShimmers(dataSourceCatalogs.Count);
             }
+
+            // Remove any remaining shimmers
+            RemoveShimmers(_catalogProvider.CatalogCount);
         }
     }
 

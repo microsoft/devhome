@@ -63,9 +63,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Loading package catalogs from all sources");
         await _packageCatalogListViewModel.LoadCatalogsAsync();
 
-        // Connect to composite catalog used for searching on a separate
-        // (non-UI) thread to prevent lagging the UI.
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to composite catalog to enable searching for packages");
         await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
 
         // Enable search box after catalog connection is complete
