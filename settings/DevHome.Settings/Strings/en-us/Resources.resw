@@ -112,11 +112,33 @@
   <data name="Settings_AboutDescription.Text" xml:space="preserve">
     <value>TODO: Replace with your app description.</value>
   </data>
-  <data name="SettingsPage_PrivacyTermsLink.Content" xml:space="preserve">
-    <value>Privacy Statement</value>
+  <data name="SettingsPage_SourceCodeLink.Content" xml:space="preserve">
+    <value>Source Code</value>
   </data>
-  <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
-    <value>https://YourPrivacyUrlGoesHere/</value>
+  <data name="SettingsPage_SourceCodeLink.NavigateUri" xml:space="preserve">
+    <value>https://go.microsoft.com/fwlink/?linkid=2234396</value>
+    <comment>URL</comment>
+  </data>
+  <data name="SettingsPage_DocumentationLink.Content" xml:space="preserve">
+    <value>Documentation</value>
+  </data>
+  <data name="SettingsPage_DocumentationLink.NavigateUri" xml:space="preserve">
+    <value>https://go.microsoft.com/fwlink/?linkid=2234883</value>
+    <comment>URL</comment>
+  </data>
+  <data name="SettingsPage_ReleaseNotesLink.Content" xml:space="preserve">
+    <value>Release Notes</value>
+  </data>
+  <data name="SettingsPage_ReleaseNotesLink.NavigateUri" xml:space="preserve">
+    <value>https://go.microsoft.com/fwlink/?linkid=2234586</value>
+    <comment>URL</comment>
+  </data>
+  <data name="SettingsPage_PrivacyPolicyLink.Content" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="SettingsPage_PrivacyPolicyLink.NavigateUri" xml:space="preserve">
+    <value>https://go.microsoft.com/fwlink/?linkid=2234882</value>
+    <comment>URL</comment>
   </data>
   <data name="Settings_Accounts_AddAccountButton.Content" xml:space="preserve">
     <value>Add Account</value>
@@ -162,5 +184,14 @@
   </data>
   <data name="LoginUIDialogTitle.Text" xml:space="preserve">
     <value>Connect your account</value>
+  </data>
+  <data name="Settings_About_Specifications.Text" xml:space="preserve">
+    <value>Dev Home specifications</value>
+  </data>
+  <data name="Settings_About_Version.Text" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Settings_About_RelatedLinks.Text" xml:space="preserve">
+    <value>Related links</value>
   </data>
 </root>

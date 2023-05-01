@@ -9,20 +9,48 @@
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
-        <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <Color x:Key="CardBackground">#B3FFFFFF</Color>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="CardBackground">#0DFFFFFF</Color>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
     </Page.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <StackPanel Margin="{StaticResource XSmallTopMargin}">
             <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
 
-            <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
-
-            <TextBlock
-                        x:Uid="Settings_AboutDescription"
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Style="{ThemeResource BodyTextBlockStyle}" />
-            <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+            <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                          IsExpanded="true" Background="{ThemeResource CardBackground}"
+                          MinHeight="64" CornerRadius="6,6,0,0" Padding="47,0,47,7" >
+                <Expander.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Assets/DevHome.ico" HorizontalAlignment="Left" Width="16" Height="16" />
+                        <TextBlock x:Uid="Settings_About_Specifications" Margin="20,0,0,0" />
+                    </StackPanel>
+                </Expander.Header>
+                <Expander.Content>
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="Settings_About_Version" Width="100" />
+                            <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Expander.Content>
+            </Expander>
+            <StackPanel Orientation="Horizontal" Background="{ThemeResource CardBackground}"
+                        CornerRadius="0,0,6,6" Padding="15,0,47,7" Margin="1,0,1,0">
+                <TextBlock x:Uid="Settings_About_RelatedLinks" VerticalAlignment="Center" />
+                <HyperlinkButton x:Uid="SettingsPage_SourceCodeLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+                <HyperlinkButton x:Uid="SettingsPage_DocumentationLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+                <HyperlinkButton x:Uid="SettingsPage_ReleaseNotesLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+                <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </Page>

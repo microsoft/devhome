@@ -125,6 +125,22 @@
     <value>Select packages to restore from your backup, clone from repository, or search with Windows Package Manager.</value>
     <comment>Description for Add packages page</comment>
   </data>
+  <data name="AppInstallerUpdateAvailableCancelButton" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Text for a button to cancel a dialog window for updating 'App Installer' application</comment>
+  </data>
+  <data name="AppInstallerUpdateAvailableMessage" xml:space="preserve">
+    <value>Get the best experience and latest features when installing apps.</value>
+    <comment>Content of a notification panel for updating 'App Installer' application</comment>
+  </data>
+  <data name="AppInstallerUpdateAvailableTitle" xml:space="preserve">
+    <value>Update App Installer</value>
+    <comment>Title of a notification panel for updating 'App Installer' application</comment>
+  </data>
+  <data name="AppInstallerUpdateAvailableUpdateButton" xml:space="preserve">
+    <value>Update</value>
+    <comment>Text for a button to update 'App Installer' application</comment>
+  </data>
   <data name="AppListBackupBanner.Title" xml:space="preserve">
     <value>Transfer developer machine settings</value>
     <comment>Title text of an instruction banner section for transferring settings from a developer machine</comment>
@@ -761,11 +777,11 @@
     <comment>Message when a repository is cloning.  Param:Clone Path</comment>
   </data>
   <data name="CloneRepoError" xml:space="preserve">
-    <value>Couldn't clone  {0}</value>
+    <value>Couldn't clone {0}</value>
     <comment>Message when a repository encountered an error when cloning. Param: Repo Name</comment>
   </data>
   <data name="CloneRepoRestart" xml:space="preserve">
-    <value>Cloned to  {0} (restart required)</value>
+    <value>Cloned to {0} (restart required)</value>
     <comment>Message when a repository is cloned but needs to reboot the computer. Param: Repo name</comment>
   </data>
   <data name="ConfigureTaskCreated" xml:space="preserve">
@@ -959,36 +975,56 @@
     <value>Return to main screen</value>
     <comment>Description of the 'go to main page' button for screen readers</comment>
   </data>
-  <data name="LoadingPage_SomeTasksFailed_First.Text" xml:space="preserve">
-    <value>Title</value>
+  <data name="LoadingPage_SomeTasksFailed_Header.Text" xml:space="preserve">
+    <value>Can't retry again</value>
     <comment>First part of the banner telling a user not all tasks were successful</comment>
   </data>
-  <data name="LoadingPage_SomeTasksFailed_Second.Text" xml:space="preserve">
-    <value>You have reached max re-try, please proceed to the summary page to learn more.</value>
-    <comment>Asking users to go to the summary page if failures.</comment>
+  <data name="LoadingPage_SomeTasksFailed_Body.Text" xml:space="preserve">
+    <value>One or more tasks couldn't be completed.</value>
+    <comment>Second part of the banner letting know users that not all tasks were successful</comment>
   </data>
-  <data name="LoadingScreen_MaxRetiresReached_Button.Content" xml:space="preserve">
-    <value>Summary</value>
+  <data name="LoadingScreen_MaxRetriesReached_Button.Content" xml:space="preserve">
+    <value>Continue</value>
     <comment>Button notifying users to go to the summary</comment>
   </data>
   <data name="ClonePathNotFullyQualifiedMessage" xml:space="preserve">
-    <value>Clone path is not fully qualified</value>
+    <value>Enter the full path and folder name</value>
     <comment>Error message to tell the user to fully qualify their clone path</comment>
   </data>
   <data name="UrlValidationBadUrl" xml:space="preserve">
-    <value>URL is not valid or not relative</value>
-    <comment>Error string to show the user if the url isn't a url</comment>
+    <value>Enter a repository name beginning with https://</value>
+    <comment>Error string to show the user if the url is not an absolute URL</comment>
   </data>
   <data name="UrlValidationEmpty" xml:space="preserve">
-    <value>Field is empty.</value>
+    <value>Enter a repository name beginning with https://</value>
     <comment>Error string to show the user if the URL field is empty</comment>
   </data>
   <data name="UrlValidationNotFound" xml:space="preserve">
-    <value>Can't find repository.</value>
-    <comment>Eror string to show the user if the extension can't access the repo</comment>
+    <value>The repository can't be found</value>
+    <comment>Error string to show the user if the extension can't access the repo</comment>
   </data>
   <data name="UrlValidationRepoAlreadyAdded" xml:space="preserve">
-    <value>This repo has already been added.</value>
+    <value>The repository is already added</value>
     <comment>Error string to show the user when they added a repo via URL that is already added.</comment>
+  </data>
+  <data name="ClonePathNotFolder" xml:space="preserve">
+    <value>Enter a folder name instead of a file</value>
+    <comment>Error when Clone Location is a fully qualified path to a file</comment>
+  </data>
+  <data name="SummaryPage_ChangeDeveloperSettingsInWindows.Content" xml:space="preserve">
+    <value>Change Developer settings in Windows</value>
+    <comment>Summary page prompt to open the dev settings in windows</comment>
+  </data>
+  <data name="SummaryPage_ChangeDevHomeSettings.Content" xml:space="preserve">
+    <value>Change Dev Home Settings</value>
+    <comment>Summary page prompt to bring users to the settings page</comment>
+  </data>
+  <data name="SummaryPage_LearnMoreAboutDevHome.Content" xml:space="preserve">
+    <value>Learn more about Dev Home</value>
+    <comment>Summary page prompt to open the browser to learn more about DevHome</comment>
+  </data>
+  <data name="SummaryPage_SetUpAnotherProject.Content" xml:space="preserve">
+    <value>Set up another project</value>
+    <comment>Summary page prompt to bring users back to the beginning of the setup flow</comment>
   </data>
 </root>
