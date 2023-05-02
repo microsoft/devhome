@@ -59,18 +59,20 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// Gets the decimal formatter that will allow us to take only whole numbers in the number box.
+    /// Gets the decimal formatter that will format the value in the numberbox. RoundHalfTowardsZero is used since we
+    /// utilize the SFBS_FLAGS_TRUNCATE_UNDISPLAYED_DECIMAL_DIGITS flag in <see cref="DevDriveUtil.ConvertBytesToString"/> to
+    /// get the formatted Drive size. RoundHalfTowardsZero will effectively truncate all values after the hundredth position.
     /// </summary>
     public DecimalFormatter DevDriveDecimalFormatter
     {
         get
         {
             IncrementNumberRounder rounder = new IncrementNumberRounder();
-            rounder.Increment = 1;
-            rounder.RoundingAlgorithm = RoundingAlgorithm.RoundTowardsZero;
+            rounder.Increment = 0.01;
+            rounder.RoundingAlgorithm = RoundingAlgorithm.RoundHalfTowardsZero;
             DecimalFormatter formatter = new DecimalFormatter();
             formatter.IntegerDigits = 1;
-            formatter.FractionDigits = 0;
+            formatter.FractionDigits = 2;
             formatter.NumberRounder = rounder;
             return formatter;
         }

@@ -47,6 +47,10 @@ public static class DevDriveUtil
 
     public static int MaxDrivePathLength => 32767;
 
+    public static ulong OneKbInBytes => 1ul << 10;
+
+    public static ulong OneMbInBytes => 1ul << 20;
+
     public static ulong OneGbInBytes => 1ul << 30;
 
     public static ulong OneTbInBytes => 1ul << 40;
@@ -116,13 +120,17 @@ public static class DevDriveUtil
             throw new ArgumentException(FormatExceptionString(unit, value, minSize, maxSize));
         }
 
-        // We only allow users to create Dev Drives using whole numbers, so there is no need to worry about decimals here.
+        // Deal with decimal portion by getting the floor of the value in KB + half. This is to allow us to round up.
+        // should the decimal portion be greater than 0.5. Also helps keep the value a multiple of 512 when we multiply
+        // by either 1 MB or 1 GB further down. This is crucial for the Version2.MaximumSize parameter in CREATE_VIRTUAL_DISK_PARAMETERS that we use to
+        // create the virtual disk. https://learn.microsoft.com/en-us/windows/win32/api/virtdisk/ns-virtdisk-create_virtual_disk_parameters
+        var floorOfValueInKB = (ulong)Math.Floor((value * OneKbInBytes) + 0.5);
         if (unitIsTb)
         {
-            return (ulong)value << 40;
+            return floorOfValueInKB * OneGbInBytes;
         }
 
-        return (ulong)value << 30;
+        return floorOfValueInKB * OneMbInBytes;
     }
 
     /// <summary>
