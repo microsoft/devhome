@@ -22,6 +22,8 @@ namespace DevHome.SetupFlow.Views;
 /// </summary>
 internal partial class AddRepoDialog
 {
+    private readonly string _defaultClonePath;
+
     /// <summary>
     /// Gets or sets the view model to handle selecting and de-selecting repositories.
     /// </summary>
@@ -57,13 +59,22 @@ internal partial class AddRepoDialog
         AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
+
+        var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        _defaultClonePath = Path.Join(userFolder, "source", "repos");
+        FolderPickerViewModel.CloneLocation = _defaultClonePath;
+
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {
             FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
             FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
         };
 
+        // Changing view to account so the selection changed event for Segment correctly shows URL.
+        AddRepoViewModel.CurrentPage = PageKind.AddViaAccount;
         IsPrimaryButtonEnabled = false;
+        AddViaUrlSegmentedItem.IsSelected = true;
+        SwitchViewsSegmentedView.SelectedIndex = 1;
     }
 
     /// <summary>
@@ -92,8 +103,9 @@ internal partial class AddRepoDialog
         });
     }
 
-    private void AddViaAccountToggleButton_Click(object sender, RoutedEventArgs e)
+    private void ChangeToAccountPage()
     {
+        SwitchViewsSegmentedView.IsEnabled = false;
         AddRepoViewModel.ChangeToAccountPage();
         FolderPickerViewModel.CloseFolderPicker();
         EditDevDriveViewModel.HideDevDriveUI();
@@ -106,10 +118,11 @@ internal partial class AddRepoDialog
             SwitchToRepoPage(AddRepoViewModel.ProviderNames[0]);
         }
 
+        SwitchViewsSegmentedView.IsEnabled = true;
         ToggleCloneButton();
     }
 
-    private void AddViaUrlToggleButton_Click(object sender, RoutedEventArgs e)
+    private void ChangeToUrlPage()
     {
         RepositoryProviderComboBox.SelectedIndex = -1;
         AddRepoViewModel.ChangeToUrlPage();
@@ -260,19 +273,12 @@ internal partial class AddRepoDialog
         var isChecked = (sender as CheckBox).IsChecked;
         if (isChecked.Value)
         {
-            if (EditDevDriveViewModel.MakeDefaultDevDrive())
-            {
-                FolderPickerViewModel.DisableBrowseButton();
-                _oldCloneLocation = FolderPickerViewModel.CloneLocation;
-                FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
-                FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-                FolderPickerViewModel.InDevDriveScenario = true;
-                return;
-            }
-
-            // TODO: Add UX to tell user we couldn't create one. Highly unlikely to happen but would happen
-            // if the user doesn't have the required space in the drive that has their OS. Minimum is 50 GB.
-            // Or if the user runs out of drive letters.
+            EditDevDriveViewModel.MakeDefaultDevDrive();
+            FolderPickerViewModel.DisableBrowseButton();
+            _oldCloneLocation = FolderPickerViewModel.CloneLocation;
+            FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
+            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+            FolderPickerViewModel.InDevDriveScenario = true;
         }
         else
         {
@@ -298,6 +304,11 @@ internal partial class AddRepoDialog
     private void ToggleCloneButton()
     {
         var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
+        if (EditDevDriveViewModel.DevDrive != null && EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
+        {
+            isEverythingGood &= EditDevDriveViewModel.IsDevDriveValid();
+        }
+
         if (isEverythingGood)
         {
             IsPrimaryButtonEnabled = true;
@@ -329,5 +340,17 @@ internal partial class AddRepoDialog
         }
 
         ToggleCloneButton();
+    }
+
+    private void Segmented_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
+        {
+            ChangeToAccountPage();
+        }
+        else
+        {
+            ChangeToUrlPage();
+        }
     }
 }

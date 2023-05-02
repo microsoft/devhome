@@ -14,8 +14,8 @@ public sealed partial class DevDriveWindow : SecondaryWindowExtension
 {
     private readonly DevDriveViewModel _devDriveViewModel;
     private readonly DevDriveView _devDriveView;
-    private const double InitialHeight = 600;
-    private const double InitialWidth = 650;
+    private const double InitialHeight = 518;
+    private const double InitialWidth = 577;
 
     public DevDriveWindow(DevDriveViewModel viewModel)
         : base()

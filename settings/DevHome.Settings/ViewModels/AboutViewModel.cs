@@ -26,9 +26,8 @@ public partial class AboutViewModel : ObservableRecipient
     private static string GetVersionDescription()
     {
         IAppInfoService appInfoService = Application.Current.GetService<IAppInfoService>();
-        var localizedAppName = appInfoService.GetAppNameLocalized();
         var version = appInfoService.GetAppVersion();
 
-        return $"{localizedAppName} - {version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
+        return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
     }
 }

@@ -9,6 +9,7 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
+using DevHome.Logging;
 using DevHome.Services;
 using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
@@ -74,7 +75,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IAccountsService, AccountsService>();
             services.AddSingleton<IInfoBarService, InfoBarService>();
             services.AddSingleton<IAppInfoService, AppInfoService>();
-            services.AddSingleton<ILogger>(LoggerFactory.Get<ILogger>());
+            services.AddSingleton<ITelemetry>(TelemetryFactory.Get<ITelemetry>());
             services.AddSingleton<IStringResource, StringResource>();
             services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
 
@@ -127,35 +128,35 @@ public partial class App : Application, IApp
 
     private async Task WindowsPackageManagerInitializationAsync()
     {
-        Log.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at app launch");
+        GlobalLog.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at app launch");
         var wpm = GetService<IWindowsPackageManager>();
         if (await Task.Run(() => wpm.IsCOMServerAvailable()))
         {
-            Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
+            GlobalLog.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
 
             // Initialize/Load catalogs from all data sources
-            Log.Logger?.ReportInfo($"Initializing App install catalogs data sources");
+            GlobalLog.Logger?.ReportInfo($"Initializing App install catalogs data sources");
             var catalogDataSourceLoader = GetService<CatalogDataSourceLoacder>();
             await catalogDataSourceLoader.InitializeAsync();
-            Log.Logger?.ReportInfo($"Found a total of {catalogDataSourceLoader.CatalogCount} catalogs");
+            GlobalLog.Logger?.ReportInfo($"Found a total of {catalogDataSourceLoader.CatalogCount} catalogs");
 
             // Connect and load catalogs on a separate (non-UI) thread to
             // prevent lagging the UI
             await Task.Run(async () =>
             {
-                Log.Logger?.ReportInfo($"Calling {nameof(wpm.ConnectToAllCatalogsAsync)} to connect to catalogs");
+                GlobalLog.Logger?.ReportInfo($"Calling {nameof(wpm.ConnectToAllCatalogsAsync)} to connect to catalogs");
                 await wpm.ConnectToAllCatalogsAsync();
 
-                Log.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to reduce the wait time when this information is requested");
+                GlobalLog.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to reduce the wait time when this information is requested");
                 await foreach (var dataSourceCatalogs in catalogDataSourceLoader.LoadCatalogsAsync())
                 {
-                    Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
+                    GlobalLog.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
                 }
             });
         }
         else
         {
-            Log.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
+            GlobalLog.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
         }
     }
 

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using CommunityToolkit.Common;
 using DevHome.SetupFlow.Common.Helpers;
+using Windows.Media.Streaming.Adaptive;
 using Windows.Win32;
 using Windows.Win32.UI.Shell;
 using ToolKitHelpers = CommunityToolkit.WinUI.Helpers;
@@ -56,6 +57,8 @@ public static class DevDriveUtil
     /// Gets the list of the latin alphabet. Windows uses the latin letters as its drive letters.
     /// </summary>
     public static IList<char> DriveLetterCharArray => new List<char>("CDEFGHIJKLMNOPQRSTUVWXYZ");
+
+    public static readonly List<char> InvalidCharactersNotInGetInvalidPathChars = new () { '*', '?', '\"', '<', '>', '|' };
 
     /// <summary>
     /// Gets a value indicating whether the system has the ability to create Dev Drives
@@ -188,22 +191,36 @@ public static class DevDriveUtil
         return (tempValue, ByteUnit.GB);
     }
 
+    /// <summary>
+    /// Checks whether a filename or a path is invalid.
+    /// </summary>
+    /// <param name="type">The type of invalid characters we need to get. Either for a path or filename</param>
+    /// <param name="fileNameOrPath">A string that is either a path or a filename</param>
+    /// <returns>Bool stating whether string is invalid based on the type passed in</returns>
     public static bool IsInvalidFileNameOrPath(InvalidCharactersKind type, string fileNameOrPath)
     {
         var invalidChars = GetInvalidCharacters(type);
+        var oppositeSlash = fileNameOrPath.Contains('\\') ? '/' : '\\';
+        invalidChars.Add(oppositeSlash);
         return fileNameOrPath.Any(c => invalidChars.Contains(c));
     }
 
+    /// <summary>
+    /// Gets the set of invalid characters based on the passed in type. Type can be either a path or filename.
+    /// </summary>
+    /// <param name="type">The type of invalid characters we need to get. Either for a path or filename</param>
+    /// <returns>Set of invalid characters based on the type passed in</returns>
     private static ISet<char> GetInvalidCharacters(InvalidCharactersKind type)
     {
-        char[] invalidFileChars;
+        List<char> invalidFileChars;
         if (type == InvalidCharactersKind.Path)
         {
-            invalidFileChars = Path.GetInvalidPathChars();
+            invalidFileChars = Path.GetInvalidPathChars().ToList();
+            invalidFileChars.AddRange(InvalidCharactersNotInGetInvalidPathChars);
         }
         else
         {
-            invalidFileChars = Path.GetInvalidFileNameChars();
+            invalidFileChars = Path.GetInvalidFileNameChars().ToList();
         }
 
         var returnSet = new HashSet<char>();
