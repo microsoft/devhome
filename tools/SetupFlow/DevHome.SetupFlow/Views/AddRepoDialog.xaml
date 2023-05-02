@@ -9,6 +9,7 @@
                xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
                xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
                xmlns:i="using:Microsoft.Xaml.Interactivity"
+               xmlns:labs="using:CommunityToolkit.Labs.WinUI"
                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
                mc:Ignorable="d"
                xmlns:models="using:DevHome.SetupFlow.Models"
@@ -30,7 +31,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ContentDialog.Resources>
-    <StackPanel x:Name="AddRepoStackPanel" Orientation="Vertical" Spacing="10" MinWidth="450" MinHeight="565">
+    <StackPanel x:Name="AddRepoStackPanel" Orientation="Vertical" Spacing="10" MinWidth="450" MinHeight="600">
         <StackPanel.Resources>
             <ResourceDictionary>
                 <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource DefaultButtonStyle}">
@@ -42,14 +43,10 @@
                 </Style>
             </ResourceDictionary>
         </StackPanel.Resources>
-        <Grid x:Name="RepoCloneOptionGrid">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <ToggleButton x:Name="AddViaAccountToggleButton" Click="AddViaAccountToggleButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton" IsChecked="{x:Bind AddRepoViewModel.IsAccountToggleButtonChecked, Mode=OneWay}" Grid.Column="0" HorizontalAlignment="Stretch"/>
-            <ToggleButton x:Name="AddViaUrlToggleButton" Click="AddViaUrlToggleButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" Grid.Column="1" IsChecked="{x:Bind AddRepoViewModel.IsUrlAccountButtonChecked, Mode=OneWay}" HorizontalAlignment="Stretch"/>
-        </Grid>
+        <labs:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single" SelectionChanged="Segmented_SelectionChanged">
+            <labs:SegmentedItem x:Name="AddViaAccountSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton"/>
+            <labs:SegmentedItem x:Name="AddViaUrlSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" />
+        </labs:Segmented>
 
         <!-- Adding a repo via URL -->
         <TextBox x:Name="RepoUrlTextBox" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoUrl" Visibility="{x:Bind AddRepoViewModel.ShowUrlPage, Mode=OneWay}" LostFocus="RepoUrlTextBox_LostFocus" Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}" Margin="0, 20, 0, 0"/>
@@ -88,7 +85,6 @@
                 </ListView.ItemTemplate>
             </ListView>
         </StackPanel>
-
         <TextBlock x:Name="ErrorTextBlock" Style="{ThemeResource BodyStrongTextBlockStyle}" Visibility="{x:Bind AddRepoViewModel.ShowErrorTextBox, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Repo_ToolClonePathError"/>
         <!-- Repo page and URL page both have clonepath + dev drive check box-->
         <Grid Visibility="{x:Bind FolderPickerViewModel.ShouldShowFolderPicker, Mode=OneWay}">

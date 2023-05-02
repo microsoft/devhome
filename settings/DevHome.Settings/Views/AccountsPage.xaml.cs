@@ -9,13 +9,13 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
+using DevHome.Logging;
 using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
-using Microsoft.Windows.DevHome.SDK;
 using Windows.Storage;
 
 namespace DevHome.Settings.Views;
@@ -80,14 +80,14 @@ public sealed partial class AccountsPage : Page
                 }
                 catch (Exception ex)
                 {
-                    LoggerFactory.Get<ILogger>().Log($"AddAccount_Click(): loginUIContentDialog failed", LogLevel.Local, $"Error: {ex} Sender: {sender} RoutedEventArgs: {e}");
+                    GlobalLog.Logger?.ReportError($"AddAccount_Click(): loginUIContentDialog failed - Error: {ex} Sender: {sender} RoutedEventArgs: {e}");
                 }
 
                 accountProvider.RefreshLoggedInAccounts();
             }
             else
             {
-                LoggerFactory.Get<ILogger>().Log($"AddAccount_Click(): addAccountButton.Tag is not AccountsProviderViewModel", LogLevel.Local, $"Sender: {sender} RoutedEventArgs: {e}");
+                GlobalLog.Logger?.ReportInfo($"AddAccount_Click(): addAccountButton.Tag is not AccountsProviderViewModel - Sender: {sender} RoutedEventArgs: {e}");
                 return;
             }
         }
@@ -135,7 +135,7 @@ public sealed partial class AccountsPage : Page
         }
         catch (Exception ex)
         {
-            LoggerFactory.Get<ILogger>().Log($"Failure occurred while retrieving the HostConfig file", LogLevel.Local, $"Error: {ex} HostConfigFileName: {hostConfigFileName}");
+            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file - Error: {ex} HostConfigFileName: {hostConfigFileName}");
         }
 
         // Add host config for current theme to renderer
@@ -147,7 +147,7 @@ public sealed partial class AccountsPage : Page
             }
             else
             {
-                LoggerFactory.Get<ILogger>().Log($"HostConfig file contents are null or empty", LogLevel.Local, $"HostConfigFileContents: {hostConfigContents}");
+                GlobalLog.Logger?.ReportInfo($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
             }
         });
         return;
