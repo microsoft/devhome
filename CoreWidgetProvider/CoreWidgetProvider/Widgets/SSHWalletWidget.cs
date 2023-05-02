@@ -21,6 +21,8 @@ public class SSHWalletWidget : WidgetImpl
     protected static readonly string EmptyJson = new JsonObject().ToJsonString();
     protected static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
 
+    private static readonly Regex HostRegex = new (@"^Host\s+(.*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
     protected string ContentData { get; set; } = EmptyJson;
 
     protected static readonly string Name = nameof(SSHWalletWidget);
@@ -51,7 +53,7 @@ public class SSHWalletWidget : WidgetImpl
 
     public virtual void LoadContentData()
     {
-        if (ConfigFile == string.Empty)
+        if (ConfigFile.Equals(string.Empty, StringComparison.Ordinal))
         {
             ContentData = string.Empty;
             DataState = WidgetDataState.Okay;
@@ -65,18 +67,16 @@ public class SSHWalletWidget : WidgetImpl
             var hostsData = new JsonObject();
             var hostsArray = new JsonArray();
 
-            StringBuilder configStr = new StringBuilder();
             using var reader = new StreamReader(ConfigFile);
 
             string? line;
-            Regex hostRegex = new (@"^Host\s+(.*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
             while ((line = reader.ReadLine()) != null)
             {
                 line = line.Trim();
-                if (hostRegex.IsMatch(line))
+                if (HostRegex.IsMatch(line))
                 {
-                    Match m = hostRegex.Match(line);
+                    Match m = HostRegex.Match(line);
                     if (m.Success)
                     {
                         var host = m.Groups[1].Value;
@@ -209,6 +209,26 @@ public class SSHWalletWidget : WidgetImpl
         }
     }
 
+    private int GetNumberOfHostEntries()
+    {
+        var numberOfEntries = 0;
+
+        using var reader = new StreamReader(ConfigFile);
+
+        string? line;
+
+        while ((line = reader.ReadLine()) != null)
+        {
+            line = line.Trim();
+            if (HostRegex.IsMatch(line))
+            {
+                numberOfEntries++;
+            }
+        }
+
+        return numberOfEntries;
+    }
+
     public string GetConfiguration(string data)
     {
         var configurationData = new JsonObject();
@@ -223,8 +243,6 @@ public class SSHWalletWidget : WidgetImpl
             };
 
             configurationData.Add("configuration", repositoryData);
-
-            return configurationData.ToString();
         }
         else
         {
@@ -234,26 +252,13 @@ public class SSHWalletWidget : WidgetImpl
                 {
                     ConfigFile = data;
 
-                    StringBuilder configStr = new StringBuilder();
-                    using var reader = new StreamReader(data);
-
-                    string? line;
-                    Regex hostRegex = new (@"^Host\s+(.*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                    var count = 0;
-                    while ((line = reader.ReadLine()) != null)
-                    {
-                        line = line.Trim();
-                        if (hostRegex.IsMatch(line))
-                        {
-                            count++;
-                        }
-                    }
+                    var numberOfEntries = GetNumberOfHostEntries();
 
                     var repositoryData = new JsonObject
                     {
                         { "configFile", ConfigFile },
                         { "defaultConfigFile", DefaultConfigFile },
-                        { "numOfEntries", count.ToString(CultureInfo.InvariantCulture) },
+                        { "numOfEntries", numberOfEntries.ToString(CultureInfo.InvariantCulture) },
                     };
 
                     configurationData.Add("hasConfiguration", true);
@@ -270,8 +275,6 @@ public class SSHWalletWidget : WidgetImpl
 
                     configurationData.Add("errorMessage", Resources.GetResource(@"Widget_Template/ConfigFileNotFound", Logger()));
                     configurationData.Add("configuration", repositoryData);
-
-                    return configurationData.ToString();
                 }
             }
             catch (Exception ex)
@@ -291,9 +294,9 @@ public class SSHWalletWidget : WidgetImpl
 
                 return configurationData.ToString();
             }
-
-            return configurationData.ToString();
         }
+
+        return configurationData.ToString();
     }
 
     public void UpdateActivityState()

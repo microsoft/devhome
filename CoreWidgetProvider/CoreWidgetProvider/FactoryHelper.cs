@@ -1,4 +1,5 @@
-﻿// FactoryHelper.cs
+﻿// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using System.Runtime.InteropServices;
 using Microsoft.Windows.Widgets.Providers;
@@ -30,6 +31,11 @@ internal interface IClassFactory
 internal class WidgetProviderFactory<T> : IClassFactory
 where T : IWidgetProvider, new()
 {
+#pragma warning disable SA1310 // Field names should not contain underscore
+    private const int CLASS_E_NOAGGREGATION = -2147221232;
+    private const int E_NOINTERFACE = -2147467262;
+#pragma warning restore SA1310 // Field names should not contain underscore
+
     public int CreateInstance(IntPtr pUnkOuter, ref Guid riid, out IntPtr ppvObject)
     {
         ppvObject = IntPtr.Zero;
@@ -58,9 +64,4 @@ where T : IWidgetProvider, new()
     {
         return 0;
     }
-
-#pragma warning disable SA1310 // Field names should not contain underscore
-    private const int CLASS_E_NOAGGREGATION = -2147221232;
-    private const int E_NOINTERFACE = -2147467262;
-#pragma warning restore SA1310 // Field names should not contain underscore
 }

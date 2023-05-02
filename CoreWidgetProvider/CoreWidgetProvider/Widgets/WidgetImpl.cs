@@ -8,6 +8,10 @@ using Microsoft.Windows.Widgets.Providers;
 namespace CoreWidgetProvider.Widgets;
 public abstract class WidgetImpl
 {
+#pragma warning disable SA1310 // Field names should not contain underscore
+    private const int SHORT_ID_LENGTH = 6;
+#pragma warning restore SA1310 // Field names should not contain underscore
+
     private string _state = string.Empty;
 
     public WidgetImpl()
@@ -23,7 +27,7 @@ public abstract class WidgetImpl
 
     // This is not a unique identifier, but is easier to read in a log and highly unlikely to
     // match another running widget.
-    protected string ShortId => Id.Length > 6 ? Id[..6] : Id;
+    protected string ShortId => Id.Length > SHORT_ID_LENGTH ? Id[..SHORT_ID_LENGTH] : Id;
 
     public string State()
     {

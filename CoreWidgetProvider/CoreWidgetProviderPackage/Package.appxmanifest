@@ -8,10 +8,10 @@
   xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
   IgnorableNamespaces="uap rescap">
 
-  <Identity Name="Microsoft.Windows.DevHomeCoreWidgetProvider.Dev" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.0.0.0" />
+  <Identity Name="Microsoft.Windows.DevHomeCoreWidgetProvider" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="0.0.0.0" />
   <Properties>
     <DisplayName>CoreWidgetProviderPackage</DisplayName>
-    <PublisherDisplayName>v-smarkovic</PublisherDisplayName>
+    <PublisherDisplayName>Microsoft</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
 

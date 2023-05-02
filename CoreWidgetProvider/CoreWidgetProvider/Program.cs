@@ -1,4 +1,5 @@
-﻿// Program.cs
+﻿// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using System.Runtime.InteropServices;
 using COM;

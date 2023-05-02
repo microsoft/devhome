@@ -28,23 +28,21 @@ internal class WidgetProvider : IWidgetProvider
         var widgetDefinitionId = widgetContext.DefinitionId;
         Log.Logger()?.ReportDebug($"Calling Initialize for Widget Id: {widgetId} - {widgetDefinitionId}");
 
-        if (widgetDefinitionRegistry.ContainsKey(widgetDefinitionId))
-        {
-            if (!runningWidgets.ContainsKey(widgetId))
-            {
-                var factory = widgetDefinitionRegistry[widgetDefinitionId];
-                var widgetImpl = factory.Create(widgetContext, state);
-                runningWidgets.Add(widgetId, widgetImpl);
-            }
-            else
-            {
-                Log.Logger()?.ReportWarn($"Attempted to initialize a widget twice: {widgetDefinitionId} - {widgetId}");
-            }
-        }
-        else
+        if (!widgetDefinitionRegistry.ContainsKey(widgetDefinitionId))
         {
             Log.Logger()?.ReportError($"Unknown widget DefinitionId: {widgetDefinitionId}");
+            return;
         }
+
+        if (runningWidgets.ContainsKey(widgetId))
+        {
+            Log.Logger()?.ReportWarn($"Attempted to initialize a widget twice: {widgetDefinitionId} - {widgetId}");
+            return;
+        }
+
+        var factory = widgetDefinitionRegistry[widgetDefinitionId];
+        var widgetImpl = factory.Create(widgetContext, state);
+        runningWidgets.Add(widgetId, widgetImpl);
     }
 
     private void RecoverRunningWidgets()
@@ -53,16 +51,16 @@ internal class WidgetProvider : IWidgetProvider
         try
         {
             runningWidgets = WidgetManager.GetDefault().GetWidgetInfos();
+
+            if (runningWidgets is null)
+            {
+                Log.Logger()?.ReportDebug("No running widgets to recover.");
+                return;
+            }
         }
         catch (Exception e)
         {
             Log.Logger()?.ReportError("Failed retrieving list of running widgets.", e);
-            return;
-        }
-
-        if (runningWidgets is null)
-        {
-            Log.Logger()?.ReportDebug("No running widgets to recover.");
             return;
         }
 
