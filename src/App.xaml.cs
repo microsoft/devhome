@@ -120,10 +120,10 @@ public partial class App : Application, IApp
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
-
-        await GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data);
-        await GetService<IAccountsService>().InitializeAsync();
-        await WindowsPackageManagerInitializationAsync();
+        await Task.WhenAll(
+            GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data),
+            GetService<IAccountsService>().InitializeAsync(),
+            WindowsPackageManagerInitializationAsync());
     }
 
     private async Task WindowsPackageManagerInitializationAsync()

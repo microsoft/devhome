@@ -14,12 +14,11 @@ public class CatalogDataSourceLoacder : IDisposable
 {
     private readonly SemaphoreSlim _lock = new (initialCount: 1, maxCount: 1);
     private readonly IEnumerable<WinGetPackageDataSource> _dataSources;
-    private readonly Dictionary<WinGetPackageDataSource, IList<PackageCatalog>> _catalogsMap;
+    private readonly Dictionary<WinGetPackageDataSource, IList<PackageCatalog>> _catalogsMap = new ();
 
     public CatalogDataSourceLoacder(IEnumerable<WinGetPackageDataSource> dataSources)
     {
         _dataSources = dataSources;
-        _catalogsMap = new ();
     }
 
     public int CatalogCount => _dataSources.Sum(dataSource => dataSource.CatalogCount);

@@ -22,6 +22,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
     private readonly CreateCompositePackageCatalogOptions _compositeCatalogOptions;
     private readonly SemaphoreSlim _connectionLock = new (1, 1);
     private Microsoft.Management.Deployment.PackageCatalog _catalog;
+    private bool _disposedValue;
 
     public bool IsConnected => _catalog != null;
 
@@ -42,14 +43,14 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         set => _compositeCatalogOptions.CompositeSearchBehavior = value;
     }
 
-    public async Task ConnectAsync(bool force)
+    public async Task ConnectAsync(bool forceReconnect)
     {
         await _connectionLock.WaitAsync();
 
         try
         {
             // Skip if already connected and should not force re-connect
-            if (IsConnected && !force)
+            if (IsConnected && !forceReconnect)
             {
                 return;
             }
@@ -133,8 +134,22 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         }
     }
 
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _connectionLock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
     public void Dispose()
     {
+        Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
 
