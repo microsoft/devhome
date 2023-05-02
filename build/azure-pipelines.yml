@@ -205,13 +205,7 @@ stages:
           displayName: Create Stub Directory
           inputs:
             targetType: 'inline'
-            script: New-Item -Path $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub -ItemType Directory
-
-        - task: PublishPipelineArtifact@0
-          displayName: Publish Stub
-          inputs:
-             artifactName: stub\*.msix
-             targetPath: $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub
+            script: New-Item -Path $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub -ItemType Directory ; Copy-Item -Path "stub\*" -Destination $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub\
 
         - task: EsrpCodeSigning@2
           inputs:
