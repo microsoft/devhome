@@ -410,7 +410,7 @@
     <comment>Text shown if no applications were selected to install</comment>
   </data>
   <data name="NavigationPane.Content" xml:space="preserve">
-    <value>Machine Configuration</value>
+    <value>Machine configuration</value>
     <comment>Navigation pane content</comment>
   </data>
   <data name="NoApplicationsAdded.Text" xml:space="preserve">
