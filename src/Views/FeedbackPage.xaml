@@ -146,14 +146,14 @@
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea86;"/>
                         </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Feedback_BuildExtension_Button"/>
+                        <Button x:Uid="Feedback_BuildExtension_Button" Click="BuildExtensionButtonClicked"/>
                     </labs:SettingsCard>
                     <labs:SettingsCard x:Uid="Feedback_ReportSecurity">
                         <labs:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xf552;"/>
                         </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Feedback_ReportSecurity_Button"/>
+                        <Button x:Uid="Feedback_ReportSecurity_Button" Click="ReportSecurityButtonClicked"/>
                     </labs:SettingsCard>
                 </StackPanel>
             </StackPanel>
