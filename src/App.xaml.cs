@@ -146,7 +146,7 @@ public partial class App : Application, IApp
                 Log.Logger?.ReportInfo($"Calling {nameof(wpm.ConnectToAllCatalogsAsync)} to connect to catalogs");
                 await wpm.ConnectToAllCatalogsAsync();
 
-                Log.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to redcude the wait time when this information is requested");
+                Log.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to reduce the wait time when this information is requested");
                 await foreach (var dataSourceCatalogs in catalogDataSourceLoader.LoadCatalogsAsync())
                 {
                     Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");

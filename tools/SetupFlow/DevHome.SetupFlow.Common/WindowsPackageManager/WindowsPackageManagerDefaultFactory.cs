@@ -28,6 +28,8 @@ public class WindowsPackageManagerDefaultFactory : WindowsPackageManagerFactory
         }
         finally
         {
+            // CoCreateInstance and FromAbi both AddRef on the native object.
+            // Release once to prevent memory leak.
             if (pUnknown != IntPtr.Zero)
             {
                 Marshal.Release(pUnknown);

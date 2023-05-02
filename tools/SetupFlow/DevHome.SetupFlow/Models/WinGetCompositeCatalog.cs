@@ -48,7 +48,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
 
         try
         {
-            // Skip if already connected
+            // Skip if already connected and should not force re-connect
             if (IsConnected && !force)
             {
                 return;
