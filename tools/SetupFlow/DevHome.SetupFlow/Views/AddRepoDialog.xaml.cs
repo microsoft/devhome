@@ -273,19 +273,12 @@ internal partial class AddRepoDialog
         var isChecked = (sender as CheckBox).IsChecked;
         if (isChecked.Value)
         {
-            if (EditDevDriveViewModel.MakeDefaultDevDrive())
-            {
-                FolderPickerViewModel.DisableBrowseButton();
-                _oldCloneLocation = FolderPickerViewModel.CloneLocation;
-                FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
-                FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-                FolderPickerViewModel.InDevDriveScenario = true;
-                return;
-            }
-
-            // TODO: Add UX to tell user we couldn't create one. Highly unlikely to happen but would happen
-            // if the user doesn't have the required space in the drive that has their OS. Minimum is 50 GB.
-            // Or if the user runs out of drive letters.
+            EditDevDriveViewModel.MakeDefaultDevDrive();
+            FolderPickerViewModel.DisableBrowseButton();
+            _oldCloneLocation = FolderPickerViewModel.CloneLocation;
+            FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
+            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+            FolderPickerViewModel.InDevDriveScenario = true;
         }
         else
         {
@@ -311,6 +304,11 @@ internal partial class AddRepoDialog
     private void ToggleCloneButton()
     {
         var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
+        if (EditDevDriveViewModel.DevDrive != null && EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
+        {
+            isEverythingGood &= EditDevDriveViewModel.IsDevDriveValid();
+        }
+
         if (isEverythingGood)
         {
             IsPrimaryButtonEnabled = true;
