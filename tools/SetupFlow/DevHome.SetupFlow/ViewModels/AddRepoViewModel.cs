@@ -127,6 +127,9 @@ public partial class AddRepoViewModel : ObservableObject
     private string _urlParsingError;
 
     [ObservableProperty]
+    private bool _isAccountComboBoxEnabled;
+
+    [ObservableProperty]
     private Visibility _shouldShowUrlError;
 
     [RelayCommand]
@@ -316,6 +319,15 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId()));
+
+        if (Accounts.Count == 1)
+        {
+            IsAccountComboBoxEnabled = false;
+        }
+        else
+        {
+            IsAccountComboBoxEnabled = true;
+        }
     }
 
     /// <summary>
