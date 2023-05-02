@@ -20,23 +20,17 @@ public partial class SetupFlowViewModel : ObservableObject
     private readonly IHost _host;
     private readonly MainPageViewModel _mainPageViewModel;
     private readonly PackageProvider _packageProvider;
-    private readonly CatalogProvider _catalogProvider;
-    private readonly IWindowsPackageManager _wpm;
 
     public SetupFlowOrchestrator Orchestrator { get; }
 
     public SetupFlowViewModel(
         IHost host,
         SetupFlowOrchestrator orchestrator,
-        PackageProvider packageProvider,
-        CatalogProvider catalogProvider,
-        IWindowsPackageManager wpm)
+        PackageProvider packageProvider)
     {
         _host = host;
         Orchestrator = orchestrator;
         _packageProvider = packageProvider;
-        _catalogProvider = catalogProvider;
-        _wpm = wpm;
 
         // Set initial view
         _mainPageViewModel = _host.GetService<MainPageViewModel>();

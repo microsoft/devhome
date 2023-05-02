@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Configuration;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -16,13 +14,10 @@ using DevHome.Dashboard.ViewModels;
 using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
-using DevHome.SetupFlow.Selectors;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
-using DevHome.SetupFlow.Views;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -34,6 +29,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
     private readonly IWindowsPackageManager _wpm;
+    private readonly PackageProvider _packageProvider;
+    private readonly CatalogDataSourceLoacder _catalogDataSourceLoacder;
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -69,8 +66,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         get
         {
             var packagesInstalled = new ObservableCollection<PackageViewModel>();
-            var packageProvider = _host.GetService<PackageProvider>();
-            var packages = packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true);
+            var packages = _packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true);
             foreach (var package in packages)
             {
                 packagesInstalled.Add(package);
@@ -134,13 +130,17 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         SetupFlowOrchestrator orchestrator,
         IHost host,
         ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory,
-        IWindowsPackageManager wpm)
+        IWindowsPackageManager wpm,
+        PackageProvider packageProvider,
+        CatalogDataSourceLoacder catalogDataSourceLoader)
         : base(stringResource, orchestrator)
     {
         _orchestrator = orchestrator;
         _host = host;
         _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
         _wpm = wpm;
+        _packageProvider = packageProvider;
+        _catalogDataSourceLoacder = catalogDataSourceLoader;
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
@@ -157,13 +157,10 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     private async Task ReloadCatalogsAsync()
     {
-        var packageProvider = _host.GetService<PackageProvider>();
-        var catalogProvider = _host.GetService<CatalogProvider>();
-
         // After installing packages, we should reconnect to catalogs to
         // reflect the latest changes when new Package COM objects are created
         Log.Logger?.ReportInfo(Log.Component.Summary, $"Checking if a new catalog connections should be established");
-        if (packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
+        if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
         {
             await Task.Run(async () =>
             {
@@ -171,8 +168,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 await _wpm.ConnectToAllCatalogsAsync(force: true);
 
                 Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloading catalogs from all data sources");
-                catalogProvider.Clear();
-                await foreach (var dataSourceCatalogs in catalogProvider.LoadCatalogsAsync())
+                _catalogDataSourceLoacder.Clear();
+                await foreach (var dataSourceCatalogs in _catalogDataSourceLoacder.LoadCatalogsAsync())
                 {
                     Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloaded {dataSourceCatalogs.Count} catalog(s)");
                 }

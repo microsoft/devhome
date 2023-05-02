@@ -122,10 +122,10 @@ public partial class App : Application, IApp
 
         await GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data);
         await GetService<IAccountsService>().InitializeAsync();
-        await WindowsPackageManagerValidationAsync();
+        await WindowsPackageManagerInitializationAsync();
     }
 
-    private async Task WindowsPackageManagerValidationAsync()
+    private async Task WindowsPackageManagerInitializationAsync()
     {
         Log.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at app launch");
         var wpm = GetService<IWindowsPackageManager>();
@@ -135,9 +135,9 @@ public partial class App : Application, IApp
 
             // Initialize/Load catalogs from all data sources
             Log.Logger?.ReportInfo($"Initializing App install catalogs data sources");
-            var catalogProvider = GetService<CatalogProvider>();
-            await catalogProvider.InitializeAsync();
-            Log.Logger?.ReportInfo($"Found a total of {catalogProvider.CatalogCount} catalogs");
+            var catalogDataSourceLoader = GetService<CatalogDataSourceLoacder>();
+            await catalogDataSourceLoader.InitializeAsync();
+            Log.Logger?.ReportInfo($"Found a total of {catalogDataSourceLoader.CatalogCount} catalogs");
 
             // Connect and load catalogs on a separate (non-UI) thread to
             // prevent lagging the UI
@@ -147,7 +147,7 @@ public partial class App : Application, IApp
                 await wpm.ConnectToAllCatalogsAsync();
 
                 Log.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to redcude the wait time when this information is requested");
-                await foreach (var dataSourceCatalogs in catalogProvider.LoadCatalogsAsync())
+                await foreach (var dataSourceCatalogs in catalogDataSourceLoader.LoadCatalogsAsync())
                 {
                     Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
                 }

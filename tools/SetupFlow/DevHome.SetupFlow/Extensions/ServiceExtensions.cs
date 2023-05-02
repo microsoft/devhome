@@ -60,7 +60,7 @@ public static class ServiceExtensions
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();
-        services.AddSingleton<CatalogProvider>();
+        services.AddSingleton<CatalogDataSourceLoacder>();
 
         services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
         services.AddSingleton<WinGetPackageDataSource,  WinGetPackageJsonDataSource>(sp =>

@@ -10,13 +10,13 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services;
-public class CatalogProvider : IDisposable
+public class CatalogDataSourceLoacder : IDisposable
 {
     private readonly SemaphoreSlim _lock = new (initialCount: 1, maxCount: 1);
     private readonly IEnumerable<WinGetPackageDataSource> _dataSources;
     private readonly Dictionary<WinGetPackageDataSource, IList<PackageCatalog>> _catalogsMap;
 
-    public CatalogProvider(IEnumerable<WinGetPackageDataSource> dataSources)
+    public CatalogDataSourceLoacder(IEnumerable<WinGetPackageDataSource> dataSources)
     {
         _dataSources = dataSources;
         _catalogsMap = new ();
