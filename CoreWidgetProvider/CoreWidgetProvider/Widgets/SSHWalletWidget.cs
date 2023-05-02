@@ -53,7 +53,7 @@ public class SSHWalletWidget : WidgetImpl
 
     public virtual void LoadContentData()
     {
-        if (ConfigFile.Equals(string.Empty, StringComparison.Ordinal))
+        if (string.IsNullOrWhiteSpace(ConfigFile))
         {
             ContentData = string.Empty;
             DataState = WidgetDataState.Okay;
