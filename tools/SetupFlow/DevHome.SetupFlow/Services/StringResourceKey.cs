@@ -126,6 +126,7 @@ public static class StringResourceKey
     public static readonly string RepoPageRemoveRepoAutomationProperties = nameof(RepoPageRemoveRepoAutomationProperties);
     public static readonly string ClonePathNotFullyQualifiedMessage = nameof(ClonePathNotFullyQualifiedMessage);
     public static readonly string ClonePathNotFolder = nameof(ClonePathNotFolder);
+    public static readonly string ClonePathDriveDoesNotExist = nameof(ClonePathDriveDoesNotExist);
 
     // Url Validation
     public static readonly string UrlValidationEmpty = nameof(UrlValidationEmpty);

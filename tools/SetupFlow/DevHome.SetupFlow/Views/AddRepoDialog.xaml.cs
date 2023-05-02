@@ -22,6 +22,8 @@ namespace DevHome.SetupFlow.Views;
 /// </summary>
 internal partial class AddRepoDialog
 {
+    private readonly string _defaultClonePath;
+
     /// <summary>
     /// Gets or sets the view model to handle selecting and de-selecting repositories.
     /// </summary>
@@ -57,6 +59,11 @@ internal partial class AddRepoDialog
         AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
+
+        var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        _defaultClonePath = Path.Join(userFolder, "source", "repos");
+        FolderPickerViewModel.CloneLocation = _defaultClonePath;
+
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {
             FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
