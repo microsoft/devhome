@@ -18,8 +18,6 @@ public sealed partial class WidgetControl : UserControl
     public WidgetControl()
     {
         this.InitializeComponent();
-
-        WidgetScrollViewer.RegisterPropertyChangedCallback(ScrollViewer.ComputedVerticalScrollBarVisibilityProperty, OnWidgetScrollBarVisibilityChanged);
     }
 
     public WidgetViewModel WidgetSource
@@ -30,21 +28,6 @@ public sealed partial class WidgetControl : UserControl
 
     public static readonly DependencyProperty WidgetSourceProperty = DependencyProperty.Register(
         nameof(WidgetSource), typeof(WidgetViewModel), typeof(WidgetControl), new PropertyMetadata(null));
-
-    private void OnWidgetScrollBarVisibilityChanged(DependencyObject sender, DependencyProperty dp)
-    {
-        var padding = new Thickness(0, 0, 0, 0);
-
-        if (sender as ScrollViewer is ScrollViewer sv)
-        {
-            if (sv.ComputedVerticalScrollBarVisibility == Visibility.Visible)
-            {
-                padding.Right = 13;
-            }
-        }
-
-        WidgetScrollViewer.Padding = padding;
-    }
 
     private void OpenWidgetMenu(object sender, RoutedEventArgs e)
     {
