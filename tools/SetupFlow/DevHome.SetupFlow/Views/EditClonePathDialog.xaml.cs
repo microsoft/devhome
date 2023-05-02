@@ -65,13 +65,14 @@ public sealed partial class EditClonePathDialog
             FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
             IsPrimaryButtonEnabled = IsPrimaryButtonEnabled || EditDevDriveViewModel.DevDriveDetailsChanged;
         };
-        IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
+
         if (cloningInfo.CloneToDevDrive)
         {
             AddDevDriveInfo();
         }
 
         FolderPickerViewModel.CloneLocation = cloningInfo.CloningLocation.FullName;
+        EditClonePathViewModel.IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
         _stringResource = Application.Current.GetService<ISetupFlowStringResource>();
         PrevCheckBoxSelection = DevDriveCheckBox.IsChecked.GetValueOrDefault(false);
         UpdateDialogState();
