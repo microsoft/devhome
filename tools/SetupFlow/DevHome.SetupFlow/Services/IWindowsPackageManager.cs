@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 
@@ -56,4 +57,23 @@ public interface IWindowsPackageManager
     /// <param name="package">Package to install</param>
     /// <returns>Install package result</returns>
     public Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package);
+
+    /// <summary>
+    /// Checks if AppInstaller has an available update
+    /// </summary>
+    /// <returns>True if an AppInstaller update is available, false otherwise</returns>
+    public Task<bool> IsAppInstallerUpdateAvailableAsync();
+
+    /// <summary>
+    /// Start AppInstaller update
+    /// </summary>
+    /// <returns>True if the update started, false otherwise.</returns>
+    public Task<bool> StartAppInstallerUpdateAsync();
+
+    /// <summary>
+    /// Check whether the WindowsPackageManagerServer is available to create
+    /// out-of-proc COM objects
+    /// </summary>
+    /// <returns>True if COM Server is available, false otherwise</returns>
+    public bool IsCOMServerAvailable();
 }

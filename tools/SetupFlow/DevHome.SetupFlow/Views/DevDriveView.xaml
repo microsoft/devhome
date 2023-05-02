@@ -18,6 +18,7 @@
     <Page.Resources>
         <ResourceDictionary>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+            <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
         </ResourceDictionary>
     </Page.Resources>
     <UserControl 
@@ -49,78 +50,77 @@
                 HorizontalScrollBarVisibility="Disabled"
                 Name="Scroller"
                 Margin="10 30 10 20"
-                Canvas.ZIndex="1">
-                <controls:DockPanel Name="SampleDockPanel" Margin="2" LastChildFill="False" >
+                Canvas.ZIndex="1"
+                MaxWidth="924"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                TabNavigation="Cycle">
                     <StackPanel
                         Margin="10 0 10 0"
                         controls:DockPanel.Dock="Top">
                         <Grid
-                            Margin="0 0 0 10"
-                            RowDefinitions="*, *, *, *, *"
-                            ColumnDefinitions="Auto"
+                            Margin="0 0 0 12"
+                            RowDefinitions="*, Auto, *, *"
+                            ColumnDefinitions="*"
                             HorizontalAlignment="Left">
                             <TextBlock
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowTitle"
                                 Style="{ThemeResource SubtitleTextBlockStyle}"
-                                Margin="0 5 0 0"
+                                Margin="0 5 0 12"
                                 Grid.Row="0"
                                 TextWrapping="Wrap" />
                             <TextBlock
-                                Margin="0 20 20 5"
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowOnlyOneDevDriveAllowedHeader"
-                                MinWidth="100"
-                                Width="{Binding ElementName=Scroller, Path=ViewportWidth}"
+                                Margin="0 0 0 12"
+                                Width="450"
                                 Grid.Row="1"
-                                TextWrapping="Wrap" />
-
-                            <TextBlock
-                                TextWrapping="Wrap"
-                                Grid.Row="2"
-                                Margin="0 5 0 5">
-                                <Hyperlink
-                                    UnderlineStyle="None"
-                                    NavigateUri="https://go.microsoft.com/fwlink/?linkid=2226090">
-                                    <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore" />
-                                </Hyperlink>
+                                TextWrapping="Wrap" >
+                                <!-- 
+                                    The comment tags and the spaces Before the Run tags are necessary so the clickable area
+                                    of the hyperlink does not extend to edge of the grid column, and instead stay only over the text.
+                                -->
+                                <Span
+                                    xml:space="preserve">
+                                    <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowOnlyOneDevDriveAllowedHeader" /> <!--
+                                    --><Hyperlink
+                                            UnderlineStyle="None"
+                                            NavigateUri="https://go.microsoft.com/fwlink/?linkid=2226090"><!--
+                                        --> <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore" /> <!--
+                                        --></Hyperlink> <!--
+                                    --></Span>
                             </TextBlock>
                             <TextBlock
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLaunchSettingsDisksAndVolumesHeader"
-                                Grid.Row="3"
+                                Grid.Row="2"
                                 TextWrapping="Wrap" 
-                                Margin="0 5 0 5"/>
-                            <TextBlock
+                                Margin="0 0 0 1"/>
+                            <HyperlinkButton
                                 Grid.Row="4"
-                                Margin="-20 5 0 5"
-                                TextWrapping="Wrap"
-                                Width="{Binding ElementName=Scroller, Path=ViewportWidth}">
-                                <Hyperlink
-                                    UnderlineStyle="None">
-                                    <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink" />
-                                    <i:Interaction.Behaviors>
-                                        <ic:EventTriggerBehavior EventName="Click">
-                                            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}"/>
-                                        </ic:EventTriggerBehavior>
-                                    </i:Interaction.Behaviors>
-                                </Hyperlink>
-                            </TextBlock>
+                                Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}"
+                                Padding="0"
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink">
+                            </HyperlinkButton>
                         </Grid>
                         <Grid
-                        Margin="0 10 0 10"
-                        ColumnDefinitions="4*, *, Auto">
+                            Margin="0 0 0 12"
+                            ColumnDefinitions="4*, *, Auto"
+                            RowDefinitions="*, *">
                             <TextBox 
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowNameTextBox"
                                 x:Name="DriveLabelTextBox"
                                 Grid.Column="0"
-                                Margin="0"
+                                Grid.Row="0"
+                                Margin="0 0 18 0"
                                 HorizontalAlignment="Stretch"
                                 Text="{x:Bind ViewModel.DriveLabel, Mode=TwoWay}"
-                                MaxLength="{x:Bind util:DevDriveUtil.MaxDriveLabelSize}">
+                                MaxLength="{x:Bind util:DevDriveUtil.MaxDriveLabelSize}"
+                                IsSpellCheckEnabled="False">
                             </TextBox>
                             <NumberBox 
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Size"
                                 x:Name="DriveSizeTextBox"
                                 Grid.Column="1"
-                                Margin="5 0 0 0"
+                                Grid.Row="0"
+                                Margin="0"
                                 HorizontalAlignment="Stretch"
                                 Value="{x:Bind ViewModel.Size, Mode=TwoWay}"
                                 Maximum="{x:Bind ViewModel.MaximumAllowedSize, Mode=OneWay}"
@@ -131,22 +131,42 @@
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowByteUnitComboBox"
                                 x:Name="DriveByteUnitComboBox"
                                 Grid.Column="2"
-                                Margin="5 26 0 0"
+                                Grid.Row="0"
+                                Margin="13 26 0 0"
                                 Padding="5"
                                 HorizontalAlignment="Stretch"
+                                VerticalAlignment="Bottom"
                                 ItemsSource="{x:Bind ViewModel.ByteUnitList, Mode=OneWay}"
                                 DisplayMemberPath="Value"
                                 SelectedIndex="{x:Bind ViewModel.ComboBoxByteUnit, Mode=TwoWay }">
                             </ComboBox>
-                        </Grid>
+                            <ItemsRepeater
+                                ItemsSource="{x:Bind ViewModel.FileNameAndSizeErrorList, Mode=OneWay}"
+                                Grid.Row="1"
+                                Grid.ColumnSpan="3"
+                                Margin="0, 5, 0, 0">
+                                <ItemsRepeater.ItemTemplate>
+                                    <DataTemplate>
+                                        <InfoBar
+                                            Margin="0, 3, 0, 3"
+                                            IsClosable="False"
+                                            Severity="Error"
+                                            IsOpen="True"
+                                            Message="{Binding}" />
+                                    </DataTemplate>
+                                </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                    </Grid>
                         <Grid
-                            Margin="0 10 0 10"
-                            ColumnDefinitions="*, Auto">
+                            Margin="0 0 0 12"
+                            ColumnDefinitions="*, Auto"
+                            RowDefinitions="*, *">
                             <TextBox 
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLocationTextBox"
                                 x:Name="DriveLocationTextBox"
                                 Grid.Column="0"
-                                Margin="0 0 0 10"
+                                Grid.Row="0"
+                                Margin="0"
                                 Text="{x:Bind ViewModel.Location, Mode=TwoWay}"
                                 MaxLength="{x:Bind util:DevDriveUtil.MaxDrivePathLength}"
                                 IsSpellCheckEnabled="False" 
@@ -154,100 +174,82 @@
                             </TextBox>
                             <Button 
                                 Grid.Column="1"
+                                Grid.Row="0"
                                 Margin="10 26 0 0"
                                 Padding="30 7 33 7"
                                 HorizontalContentAlignment="Center"
-                                VerticalAlignment="Top"
-                                Command="{x:Bind ViewModel.ChooseFolderLocationCommand, Mode=OneWay}"
-                                Width="110">
-                                <TextBlock 
-                                    TextWrapping="Wrap"
+                                VerticalAlignment="Bottom"
+                                Command="{x:Bind ViewModel.ChooseFolderLocationCommand, Mode=OneWay}">
+                            <TextBlock 
                                     Text="{x:Bind ViewModel.LocalizedBrowseButtonText, Mode=OneWay}"/>
                             </Button>
+                            <InfoBar
+                                Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                Margin="0 5 0 0"
+                                IsClosable="False"
+                                IsOpen="True"
+                                Severity="Error"
+                                Message="{x:Bind ViewModel.InvalidFolderLocationError, Mode=OneWay}"
+                                Visibility="{x:Bind ViewModel.InvalidFolderLocationError, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"/>
                         </Grid>
                         <Grid
-                            Margin="0 10 0 10"
-                            ColumnDefinitions="Auto, Auto"
-                            Width="{Binding ElementName=Scroller, Path=ViewportWidth}">
+                            Margin="0 0 0 12"
+                            RowDefinitions="Auto, *">
                             <ComboBox 
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowDriveLettersComboBox"
                                 x:Name="NoDriveLettersAvailableBox"
-                                Grid.Column="0"
+                                Grid.Row="0"
                                 Padding="20 5 40 5"
+                                Margin="0 5 0 5"
                                 VerticalAlignment="Top"
                                 ItemsSource="{x:Bind ViewModel.DriveLetters, Mode=OneWay}"
                                 SelectedValue="{x:Bind ViewModel.ComboBoxDriveLetter, Mode=TwoWay}">
                             </ComboBox>
+                        <InfoBar
+                            Grid.Row="1"
+                            Margin="0 5 0 0"
+                            IsClosable="False"
+                            IsOpen="True"
+                            Severity="Error"
+                            Message="{x:Bind ViewModel.NoDriveLettersAvailableError, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.NoDriveLettersAvailableError, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"/>
+                    </Grid>
+                        <StackPanel 
+                            VerticalAlignment="Bottom">
+                            <Rectangle 
+                                Margin="0 10 0 15"
+                                HorizontalAlignment="Stretch" 
+                                Fill="{ThemeResource ControlStrokeColorSecondaryBrush}" 
+                                Height="1"/>
                             <Grid
-                                Grid.Column="1"
-                                Margin="10 0 0 0">
-                                <ListView
-                                    ItemsSource="{x:Bind ViewModel.ErrorList, Mode=OneWay}"
-                                    SelectionMode="None">
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="*" />
-                                                </Grid.ColumnDefinitions>
-                                                <Ellipse 
-                                                    Grid.Column="0"
-                                                    Height="5" 
-                                                    Width="5" 
-                                                    Margin="2 0 5 0"
-                                                    VerticalAlignment="Center"
-                                                    Fill="{ThemeResource SystemFillColorCriticalBrush}"/>
-                                                <TextBlock
-                                                    Grid.Column="1"
-                                                    Text="{Binding}"
-                                                    Style="{StaticResource BodyTextBlockStyle}"
-                                                    Foreground="{ThemeResource SystemFillColorCriticalBrush}"
-                                                    Width="425"
-                                                    TextWrapping="Wrap"
-                                                    IsTextSelectionEnabled="True"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
+                                VerticalAlignment="Bottom"
+                                ColumnDefinitions="Auto, Auto"
+                                HorizontalAlignment="Right">
+                                <Button 
+                                    Grid.Column="0"
+                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Save"
+                                    Style="{StaticResource AccentButtonStyle}"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Padding="50 10 50 10"
+                                    Margin="0 0 5 0"
+                                    Command="{x:Bind ViewModel.SaveButtonCommand, Mode=OneWay}"/>
+                                <Button 
+                                    Grid.Column="1"
+                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel"
+                                    VerticalContentAlignment="Center"
+                                    HorizontalContentAlignment="Center"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Padding="50 10 50 10"
+                                    Margin="5 0 0 0"
+                                    Command="{x:Bind ViewModel.CancelButtonCommand, Mode=OneWay}"/>
                             </Grid>
-                        </Grid>
+                        </StackPanel>
                     </StackPanel>
-                    <StackPanel 
-                        Margin="10 0 10 0" 
-                        Height="60" 
-                        controls:DockPanel.Dock="Bottom"
-                        VerticalAlignment="Bottom"
-                        Width="{Binding ElementName=Scroller, Path=ViewportWidth}">
-                        <Grid
-                            VerticalAlignment="Bottom"
-                            Margin="5 10 5 0"
-                            ColumnDefinitions="Auto, Auto"
-                            HorizontalAlignment="Right">
-                            <Button 
-                                Grid.Column="0"
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Save"
-                                Style="{StaticResource AccentButtonStyle}"
-                                VerticalContentAlignment="Center"
-                                HorizontalContentAlignment="Center"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Bottom"
-                                Padding="50 10 50 10"
-                                Margin="0 0 5 0"
-                                Command="{x:Bind ViewModel.SaveButtonCommand, Mode=OneWay}"/>
-                            <Button 
-                                Grid.Column="1"
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel"
-                                VerticalContentAlignment="Center"
-                                HorizontalContentAlignment="Center"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Bottom"
-                                Padding="50 10 50 10"
-                                Margin="5 0 20 0"
-                                Command="{x:Bind ViewModel.CancelButtonCommand, Mode=OneWay}"/>
-                        </Grid>
-                    </StackPanel>
-                </controls:DockPanel>
             </ScrollViewer>
         </Grid>
     </UserControl>

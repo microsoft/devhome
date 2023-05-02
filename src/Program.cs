@@ -1,14 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.UI.Dispatching;
-using Microsoft.Windows.AppLifecycle;
-using Windows.ApplicationModel.Activation;
 
 namespace DevHome;
 public static class Program
