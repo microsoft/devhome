@@ -586,7 +586,7 @@
     <comment>Header for choosing a clone path</comment>
   </data>
   <data name="ClonePath.PlaceholderText" xml:space="preserve">
-    <value>Choose a clone path</value>
+    <value>Choose a location</value>
     <comment>Prompts the user to choose a path</comment>
   </data>
   <data name="ClonePath_Button.Content" xml:space="preserve">
@@ -598,15 +598,15 @@
     <comment>Header for the textbox for entering in a URL</comment>
   </data>
   <data name="RepoUrl.PlaceholderText" xml:space="preserve">
-    <value>URL</value>
+    <value>Enter a URL</value>
     <comment>Text to appear in the textbox for entering in a URL</comment>
   </data>
   <data name="CloneRepoDialog.Title" xml:space="preserve">
-    <value>Clone a repository</value>
+    <value>Clone repository</value>
     <comment>Header for the dialog bos to clone repositories</comment>
   </data>
   <data name="NewDevDriveComboBox.Content" xml:space="preserve">
-    <value>Optimize repo performance with a new Dev Drive</value>
+    <value>Create a Dev Drive to optimize performance</value>
     <comment>Check box label to notify users of making a new dev drive</comment>
   </data>
   <data name="RepositoryDisplay.Header" xml:space="preserve">
@@ -1026,5 +1026,9 @@
   <data name="SummaryPage_SetUpAnotherProject.Content" xml:space="preserve">
     <value>Set up another project</value>
     <comment>Summary page prompt to bring users back to the beginning of the setup flow</comment>
+  </data>
+  <data name="ClearCheckboxToBrowse.Content" xml:space="preserve">
+    <value>Clear the checkbox to select a new path.</value>
+    <comment>Tooltip telling users to uncheck the dev drive box to re-enable the browse button.</comment>
   </data>
 </root>

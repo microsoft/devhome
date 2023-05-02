@@ -30,7 +30,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ContentDialog.Resources>
-    <StackPanel x:Name="AddRepoStackPanel" Orientation="Vertical" Spacing="10" MinWidth="400" MinHeight="500">
+    <StackPanel x:Name="AddRepoStackPanel" Orientation="Vertical" Spacing="10" MinWidth="450" MinHeight="565">
         <StackPanel.Resources>
             <ResourceDictionary>
                 <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource DefaultButtonStyle}">
@@ -52,7 +52,7 @@
         </Grid>
 
         <!-- Adding a repo via URL -->
-        <TextBox x:Name="RepoUrlTextBox" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoUrl" Visibility="{x:Bind AddRepoViewModel.ShowUrlPage, Mode=OneWay}" LostFocus="RepoUrlTextBox_LostFocus" Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}"/>
+        <TextBox x:Name="RepoUrlTextBox" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoUrl" Visibility="{x:Bind AddRepoViewModel.ShowUrlPage, Mode=OneWay}" LostFocus="RepoUrlTextBox_LostFocus" Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}" Margin="0, 20, 0, 0"/>
         <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.UrlParsingError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlError, Mode=OneWay}"/>
 
         <!-- Log into account -->
@@ -93,8 +93,8 @@
         <!-- Repo page and URL page both have clonepath + dev drive check box-->
         <Grid Visibility="{x:Bind FolderPickerViewModel.ShouldShowFolderPicker, Mode=OneWay}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="310"/>
-                <ColumnDefinition />
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <!--WINUI3 does not have a folder/file picker control.  Lets make one that looks like it.-->
             <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
@@ -104,23 +104,29 @@
                      Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay}"
                      x:Name="DevDriveCloneLocationAliasTextBox"/>
             <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
-                     TextChanged="CloneLocation_TextChanged" Grid.Column="0"
+                     TextChanged="CloneLocation_TextChanged" Grid.Column="0" 
                      Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
                      IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
                      Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
-            <Button IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click" Grid.Column="1" Margin="5, 25, 0, 0"/>
+            <Grid Grid.Column="1">
+                <TextBlock>
+                    <ToolTipService.ToolTip>
+                        <ToolTip x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClearCheckboxToBrowse" Visibility="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
+                    </ToolTipService.ToolTip>
+                </TextBlock>
+                <Button IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click" Margin="5, 25, 0, 0"/>
+            </Grid>
         </Grid>
         <TextBlock Text="{x:Bind FolderPickerViewModel.FolderPickerErrorMessage, Mode=OneWay}" Visibility="{x:Bind FolderPickerViewModel.ShowFolderPickerError, Mode=OneWay}"/>
         <Grid 
             Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" 
-            ColumnSpacing="10"
             Margin="0 10 0 10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="350"/>
+                <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <CheckBox Click="MakeNewDevDriveCheckBox_Click" IsEnabled="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NewDevDriveComboBox"/>
-            <HyperlinkButton Content="Customize" Grid.Column="1" Visibility="{x:Bind EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" Click="CustomizeDevDriveHyperlinkButton_Click"/>
+            <HyperlinkButton Content="Customize" Grid.Column="1" Visibility="{x:Bind EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" Click="CustomizeDevDriveHyperlinkButton_Click" HorizontalAlignment="Left" />
         </Grid>
     </StackPanel>
 </ContentDialog>
