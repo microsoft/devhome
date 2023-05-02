@@ -161,11 +161,17 @@ public class SSHWalletWidget : WidgetImpl
         var data = args.Data;
 
         Process cmd = new Process();
-        cmd.StartInfo.FileName = "cmd.exe";
-        cmd.StartInfo.RedirectStandardInput = true;
-        cmd.StartInfo.RedirectStandardOutput = true;
-        cmd.StartInfo.CreateNoWindow = true;
-        cmd.StartInfo.UseShellExecute = false;
+
+        var startInfo = new ProcessStartInfo()
+        {
+            FileName = "cmd.exe",
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            CreateNoWindow = true,
+            UseShellExecute = false,
+        };
+        cmd.StartInfo = startInfo;
+
         cmd.Start();
         cmd.StandardInput.WriteLine("wt Powershell.exe -Command ssh " + data);
         cmd.StandardInput.Flush();
