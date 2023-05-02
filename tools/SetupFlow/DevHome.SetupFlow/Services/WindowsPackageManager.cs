@@ -61,17 +61,17 @@ public class WindowsPackageManager : IWindowsPackageManager
 
     public IWinGetCatalog WinGetCatalog => _wingetCatalog.Value;
 
-    public async Task ConnectToAllCatalogsAsync()
+    public async Task ConnectToAllCatalogsAsync(bool force)
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs");
 
         // Connect predefined winget catalog to enable loading
         // package with a known source (e.g. for restoring packages)
-        await WinGetCatalog.ConnectAsync();
+        await WinGetCatalog.ConnectAsync(force);
 
         // Connect composite catalog for all local and remote catalogs to
         // enable searching for pacakges from any source
-        await AllCatalogs.ConnectAsync();
+        await AllCatalogs.ConnectAsync(force);
     }
 
     public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package)

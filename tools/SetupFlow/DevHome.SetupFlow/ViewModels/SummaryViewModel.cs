@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Settings.ViewModels;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Selectors;
 using DevHome.SetupFlow.Services;
@@ -31,6 +33,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly IHost _host;
     private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
+    private readonly IWindowsPackageManager _wpm;
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -73,7 +76,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 packagesInstalled.Add(package);
             }
 
-            packageProvider.Clear();
             return packagesInstalled;
         }
     }
@@ -131,12 +133,14 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         IHost host,
-        ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory)
+        ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory,
+        IWindowsPackageManager wpm)
         : base(stringResource, orchestrator)
     {
         _orchestrator = orchestrator;
         _host = host;
         _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
+        _wpm = wpm;
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
@@ -148,7 +152,32 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     protected async override Task OnFirstNavigateToAsync()
     {
         _orchestrator.ReleaseRemoteFactory();
-        await Task.CompletedTask;
+        await ReloadCatalogsAsync();
+    }
+
+    private async Task ReloadCatalogsAsync()
+    {
+        var packageProvider = _host.GetService<PackageProvider>();
+        var catalogProvider = _host.GetService<CatalogProvider>();
+
+        // After installing packages, we should reconnect to catalogs to
+        // reflect the latest changes when new Package COM objects are created
+        Log.Logger?.ReportInfo(Log.Component.Summary, $"Checking if a new catalog connections should be established");
+        if (packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
+        {
+            await Task.Run(async () =>
+            {
+                Log.Logger?.ReportInfo(Log.Component.Summary, $"Creating a new catalog connections");
+                await _wpm.ConnectToAllCatalogsAsync(force: true);
+
+                Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloading catalogs from all data sources");
+                catalogProvider.Clear();
+                await foreach (var dataSourceCatalogs in catalogProvider.LoadCatalogsAsync())
+                {
+                    Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloaded {dataSourceCatalogs.Count} catalog(s)");
+                }
+            });
+        }
     }
 
     /// <summary>

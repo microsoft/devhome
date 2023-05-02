@@ -25,8 +25,9 @@ public interface IWinGetCatalog
     /// Opens a catalog before searching.
     /// This method calls <c>ConnectAsync()</c> from <c>PackageManager.idl</c>
     /// </summary>
+    /// <param name="force">Force connect</param>
     /// <exception cref="CatalogConnectionException">Exception thrown if a catalog connection failed</exception>
-    public Task ConnectAsync();
+    public Task ConnectAsync(bool force = false);
 
     /// <summary>
     /// Search for packages in this catalog.

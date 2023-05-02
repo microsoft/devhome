@@ -133,16 +133,23 @@ public partial class App : Application, IApp
         {
             Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
 
-            // Initial all catalogs
+            // Initialize/Load catalogs from all data sources
+            Log.Logger?.ReportInfo($"Initializing App install catalogs data sources");
             var catalogProvider = GetService<CatalogProvider>();
             await catalogProvider.InitializeAsync();
+            Log.Logger?.ReportInfo($"Found a total of {catalogProvider.CatalogCount} catalogs");
+
+            // Connect and load catalogs on a separate (non-UI) thread to
+            // prevent lagging the UI
             await Task.Run(async () =>
             {
-                Log.Logger?.ReportInfo($"Found {catalogProvider.CatalogCount} catalogs to load");
+                Log.Logger?.ReportInfo($"Calling {nameof(wpm.ConnectToAllCatalogsAsync)} to connect to catalogs");
                 await wpm.ConnectToAllCatalogsAsync();
+
+                Log.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to redcude the wait time when this information is requested");
                 await foreach (var dataSourceCatalogs in catalogProvider.LoadCatalogsAsync())
                 {
-                    Log.Logger?.ReportInfo($"Catalogs loaded {dataSourceCatalogs.Count} / {catalogProvider.CatalogCount}");
+                    Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
                 }
             });
         }

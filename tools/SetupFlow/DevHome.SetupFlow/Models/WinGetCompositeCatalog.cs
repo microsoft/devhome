@@ -42,14 +42,14 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         set => _compositeCatalogOptions.CompositeSearchBehavior = value;
     }
 
-    public async Task ConnectAsync()
+    public async Task ConnectAsync(bool force)
     {
         await _connectionLock.WaitAsync();
 
         try
         {
             // Skip if already connected
-            if (IsConnected)
+            if (IsConnected && !force)
             {
                 return;
             }

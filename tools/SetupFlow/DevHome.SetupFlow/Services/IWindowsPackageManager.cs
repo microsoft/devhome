@@ -48,8 +48,9 @@ public interface IWindowsPackageManager
     /// <summary>
     /// Opens all custom composite catalogs.
     /// </summary>
+    /// <param name="force">Force connect</param>
     /// <exception cref="CatalogConnectionException">Exception thrown if a catalog connection failed</exception>
-    public Task ConnectToAllCatalogsAsync();
+    public Task ConnectToAllCatalogsAsync(bool force = false);
 
     /// <summary>
     /// Install a winget package

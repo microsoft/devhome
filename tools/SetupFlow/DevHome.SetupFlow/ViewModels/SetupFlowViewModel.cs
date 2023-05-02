@@ -19,13 +19,24 @@ public partial class SetupFlowViewModel : ObservableObject
 {
     private readonly IHost _host;
     private readonly MainPageViewModel _mainPageViewModel;
+    private readonly PackageProvider _packageProvider;
+    private readonly CatalogProvider _catalogProvider;
+    private readonly IWindowsPackageManager _wpm;
 
     public SetupFlowOrchestrator Orchestrator { get; }
 
-    public SetupFlowViewModel(IHost host, SetupFlowOrchestrator orchestrator)
+    public SetupFlowViewModel(
+        IHost host,
+        SetupFlowOrchestrator orchestrator,
+        PackageProvider packageProvider,
+        CatalogProvider catalogProvider,
+        IWindowsPackageManager wpm)
     {
         _host = host;
         Orchestrator = orchestrator;
+        _packageProvider = packageProvider;
+        _catalogProvider = catalogProvider;
+        _wpm = wpm;
 
         // Set initial view
         _mainPageViewModel = _host.GetService<MainPageViewModel>();
@@ -87,6 +98,7 @@ public partial class SetupFlowViewModel : ObservableObject
         Log.Logger?.ReportInfo(Log.Component.Orchestrator, "Cancelling flow");
         Orchestrator.ReleaseRemoteFactory();
         _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
+        _packageProvider.Clear();
         Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };
     }
 }

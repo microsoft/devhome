@@ -40,6 +40,7 @@ public class PackageProvider
     }
 
     private readonly PackageViewModelFactory _packageViewModelFactory;
+    private readonly object _lock = new ();
 
     /// <summary>
     /// Dictionary for caching package view models
@@ -89,67 +90,73 @@ public class PackageProvider
     /// <returns>Package view model</returns>
     public PackageViewModel CreateOrGet(IWinGetPackage package, bool cachePermanently = false)
     {
-        // Check if package is cached
-        if (_packageViewModelCache.TryGetValue(package.UniqueKey, out var value))
+        lock (_lock)
         {
-            // Promote to permanent cache if requested
-            Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Package [{package.Id}] is cached; returning");
-            value.IsPermanent = value.IsPermanent || cachePermanently;
-            return value.PackageViewModel;
-        }
-
-        // Package is not cached, create a new one
-        Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Creating view model for package [{package.Id}]");
-        var viewModel = _packageViewModelFactory(package);
-        viewModel.SelectionChanged += OnPackageSelectionChanged;
-        viewModel.SelectionChanged += (sender, package) => PackageSelectionChanged?.Invoke(sender, package);
-
-        // Cache if requested
-        if (cachePermanently)
-        {
-            Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Caching package {package.Id}");
-            _packageViewModelCache.TryAdd(package.UniqueKey, new PackageCache()
+            // Check if package is cached
+            if (_packageViewModelCache.TryGetValue(package.UniqueKey, out var value))
             {
-                PackageViewModel = viewModel,
-                IsPermanent = true,
-            });
-        }
+                // Promote to permanent cache if requested
+                Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Package [{package.Id}] is cached; returning");
+                value.IsPermanent = value.IsPermanent || cachePermanently;
+                return value.PackageViewModel;
+            }
 
-        return viewModel;
+            // Package is not cached, create a new one
+            Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Creating view model for package [{package.Id}]");
+            var viewModel = _packageViewModelFactory(package);
+            viewModel.SelectionChanged += OnPackageSelectionChanged;
+            viewModel.SelectionChanged += (sender, package) => PackageSelectionChanged?.Invoke(sender, package);
+
+            // Cache if requested
+            if (cachePermanently)
+            {
+                Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Caching package {package.Id}");
+                _packageViewModelCache.TryAdd(package.UniqueKey, new PackageCache()
+                {
+                    PackageViewModel = viewModel,
+                    IsPermanent = true,
+                });
+            }
+
+            return viewModel;
+        }
     }
 
     public void OnPackageSelectionChanged(object sender, PackageViewModel packageViewModel)
     {
-        if (packageViewModel.IsSelected)
+        lock (_lock)
         {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Package [{packageViewModel.Package.Id}] has been selected");
-
-            // If a package is selected and is not already cached permanently,
-            // cache it temporarily
-            Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Caching package [{packageViewModel.Package.Id}]");
-            _packageViewModelCache.TryAdd(packageViewModel.UniqueKey, new PackageCache()
+            if (packageViewModel.IsSelected)
             {
-                PackageViewModel = packageViewModel,
-                IsPermanent = false,
-            });
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Package [{packageViewModel.Package.Id}] has been selected");
 
-            // Add to the selected package collection
-            _selectedPackages.Add(packageViewModel);
-        }
-        else
-        {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Package [{packageViewModel.Package.Id}] has been un-selected");
+                // If a package is selected and is not already cached permanently,
+                // cache it temporarily
+                Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Caching package [{packageViewModel.Package.Id}]");
+                _packageViewModelCache.TryAdd(packageViewModel.UniqueKey, new PackageCache()
+                {
+                    PackageViewModel = packageViewModel,
+                    IsPermanent = false,
+                });
 
-            // If a package is unselected and is cached temporarily, remove it
-            // from the cache
-            if (_packageViewModelCache.TryGetValue(packageViewModel.UniqueKey, out var value) && !value.IsPermanent)
-            {
-                Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Removing package [{packageViewModel.Package.Id}] from cache");
-                _packageViewModelCache.Remove(packageViewModel.UniqueKey);
+                // Add to the selected package collection
+                _selectedPackages.Add(packageViewModel);
             }
+            else
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Package [{packageViewModel.Package.Id}] has been un-selected");
 
-            // Remove from the selected package collection
-            _selectedPackages.Remove(packageViewModel);
+                // If a package is unselected and is cached temporarily, remove it
+                // from the cache
+                if (_packageViewModelCache.TryGetValue(packageViewModel.UniqueKey, out var value) && !value.IsPermanent)
+                {
+                    Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Removing package [{packageViewModel.Package.Id}] from cache");
+                    _packageViewModelCache.Remove(packageViewModel.UniqueKey);
+                }
+
+                // Remove from the selected package collection
+                _selectedPackages.Remove(packageViewModel);
+            }
         }
     }
 
@@ -158,12 +165,15 @@ public class PackageProvider
     /// </summary>
     public void Clear()
     {
-        // Clear cache
-        Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Clearing package view model cache");
-        _packageViewModelCache.Clear();
+        lock (_lock)
+        {
+            // Clear cache
+            Log.Logger?.ReportDebug(Log.Component.AppManagement, $"Clearing package view model cache");
+            _packageViewModelCache.Clear();
 
-        // Clear list of selected packages
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Clearing selected packages");
-        _selectedPackages.Clear();
+            // Clear list of selected packages
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Clearing selected packages");
+            _selectedPackages.Clear();
+        }
     }
 }
