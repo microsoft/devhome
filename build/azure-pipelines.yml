@@ -205,7 +205,7 @@ stages:
           displayName: Create Stub Directory
           inputs:
             targetType: 'inline'
-            script: New-Item $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub
+            script: New-Item -Path $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub -ItemType Directory
 
         - task: PublishPipelineArtifact@0
           displayName: Publish Stub
