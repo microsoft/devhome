@@ -5,7 +5,6 @@ using System;
 using System.Runtime.InteropServices;
 using DevHome.SetupFlow.Common.DevDriveFormatter;
 using DevHome.SetupFlow.Common.Helpers;
-using Microsoft.VisualBasic.FileIO;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -101,7 +100,7 @@ public sealed class DevDriveStorageOperator
         }
 
         var finishedResult = FormatPartitionAsDevDrive(newDriveLetter, driveLabel);
-        if (finishedResult != 0 || true)
+        if (finishedResult != 0)
         {
             DetachVirtualDisk(virtDiskPath);
         }
