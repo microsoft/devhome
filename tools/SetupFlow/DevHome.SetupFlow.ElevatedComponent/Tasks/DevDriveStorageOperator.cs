@@ -577,6 +577,10 @@ public sealed class DevDriveStorageOperator
         return devDriveFormatter.FormatPartitionAsDevDrive(curDriveLetter, driveLabel);
     }
 
+    /// <summary>
+    /// Detaches the virtual disk and removes the vhdx file associated with it.
+    /// </summary>
+    /// <param name="virtDiskPath">The path in the file system to the vhdx file</param>
     private void DetachVirtualDisk(string virtDiskPath)
     {
         if (File.Exists(virtDiskPath))
@@ -591,7 +595,6 @@ public sealed class DevDriveStorageOperator
                 VendorId = PInvoke.VIRTUAL_STORAGE_TYPE_VENDOR_MICROSOFT,
                 DeviceId = PInvoke.VIRTUAL_STORAGE_TYPE_DEVICE_VHDX,
             };
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(DetachVirtualDisk), $"starting OpenVirtualDisk");
 
             SafeFileHandle tempHandle;
             var result = PInvoke.OpenVirtualDisk(
@@ -601,12 +604,12 @@ public sealed class DevDriveStorageOperator
                 OPEN_VIRTUAL_DISK_FLAG.OPEN_VIRTUAL_DISK_FLAG_NONE,
                 vhdParams,
                 out tempHandle);
+
             if (result != WIN32_ERROR.NO_ERROR)
             {
                 Log.Logger?.ReportError(Log.Component.DevDrive, nameof(DetachVirtualDisk), $"OpenVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
             }
 
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(DetachVirtualDisk), $"starting DetachVirtualDisk");
             result = PInvoke.DetachVirtualDisk(
                 tempHandle,
                 DETACH_VIRTUAL_DISK_FLAG.DETACH_VIRTUAL_DISK_FLAG_NONE,
