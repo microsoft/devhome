@@ -13,7 +13,8 @@
     IsPrimaryButtonEnabled="{x:Bind EditClonePathViewModel.IsPrimaryButtonEnabled, Mode=OneWay}"
     PrimaryButtonClick="EditClonePathDialog_PrimaryButtonClick"
     CloseButtonClick="EditClonePathDialog_CloseButtonClick"
-    Style="{StaticResource DefaultContentDialogStyle}">
+    Style="{StaticResource DefaultContentDialogStyle}"
+    CornerRadius="8">
     <ContentDialog.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -25,7 +26,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ContentDialog.Resources>
-    <StackPanel>
+    <StackPanel MinWidth="420">
         <StackPanel
             Visibility="{x:Bind EditClonePathViewModel.ShouldShowAreYouSureMessage, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
             Width="400"
@@ -35,8 +36,21 @@
                 TextWrapping="Wrap"/>
         </StackPanel>
         <StackPanel
+            x:Name="EditClonePathStackPanel"
             Visibility="{x:Bind EditClonePathViewModel.ShouldShowAreYouSureMessage, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
+            Margin="0, 12, 0, 0"
             MinWidth="500">
+            <StackPanel.Resources>
+                <ResourceDictionary>
+                    <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+                        <Setter Property="Background">
+                            <Setter.Value>
+                                <SolidColorBrush Color="{ThemeResource SystemAccentColor}"/>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ResourceDictionary>
+            </StackPanel.Resources>
             <TextBlock x:Name="ErrorTextBlock" Style="{ThemeResource BodyStrongTextBlockStyle}" Visibility="{x:Bind EditClonePathViewModel.ShowErrorTextBox, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Repo_ToolClonePathError"/>
             <Grid Visibility="{x:Bind FolderPickerViewModel.ShouldShowFolderPicker, Mode=OneWay}">
                 <Grid.ColumnDefinitions>
@@ -49,7 +63,7 @@
                         Text="{x:Bind FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
                         IsReadOnly="True"
                         Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay}"
-                        x:Name="DevDriveCloneLocationAliasTextBox"/>
+                        x:Name="DevDriveCloneLocationAliasTextBox" />
                 <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
                          Grid.Column="0" TextChanged="CloneLocationTextBox_TextChanged"
                          Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
