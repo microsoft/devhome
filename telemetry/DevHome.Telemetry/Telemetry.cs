@@ -16,7 +16,7 @@ using Microsoft.Win32;
 
 namespace DevHome.Telemetry;
 
-internal class Logger : ILogger
+internal class Telemetry : ITelemetry
 {
     private const string ProviderName = "Microsoft.Windows.DevHome"; // Generated provider GUID: {2e74ff65-bbda-5e80-4c0a-bd8320d4223b}
 
@@ -95,10 +95,10 @@ internal class Logger : ILogger
     private readonly List<KeyValuePair<string, string>> sensitiveStrings = new ();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Logger"/> class.
-    /// Prevents a default instance of the Logger class from being created.
+    /// Initializes a new instance of the <see cref="Telemetry"/> class.
+    /// Prevents a default instance of the Telemetry class from being created.
     /// </summary>
-    internal Logger()
+    internal Telemetry()
     {
     }
 
@@ -147,7 +147,7 @@ internal class Logger : ILogger
             innerException = innerException.InnerException;
         }
 
-        this.LogError(
+        this.LogInternal(
             ExceptionThrownEventName,
             LogLevel.Measure,
             new
@@ -160,7 +160,8 @@ internal class Logger : ILogger
                 innerStackTrace = innerStackTrace.ToString(),
                 message = this.ReplaceSensitiveStrings(e.Message),
             },
-            relatedActivityId ?? DefaultRelatedActivityId);
+            relatedActivityId,
+            isError: true);
     }
 
     /// <summary>
@@ -171,7 +172,7 @@ internal class Logger : ILogger
     /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and corelate them</param>
     public void LogTimeTaken(string eventName, uint timeTakenMilliseconds, Guid? relatedActivityId = null)
     {
-        this.Log(
+        this.LogInternal(
             TimeTakenEventName,
             LogLevel.Critical,
             new
@@ -179,7 +180,8 @@ internal class Logger : ILogger
                 eventName,
                 timeTakenMilliseconds,
             },
-            relatedActivityId ?? DefaultRelatedActivityId);
+            relatedActivityId,
+            isError: false);
     }
 
     /// <summary>
@@ -191,8 +193,10 @@ internal class Logger : ILogger
     /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and corelate them</param>
     /// <typeparam name="T">Anonymous type.</typeparam>
     public void Log<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
+        where T : EventBase
     {
-        this.WriteTelemetryEvent(eventName, level, relatedActivityId ?? DefaultRelatedActivityId, false, data);
+        data.ReplaceSensitiveStrings(this.ReplaceSensitiveStrings);
+        this.LogInternal(eventName, level, data, relatedActivityId, isError: false);
     }
 
     /// <summary>
@@ -204,8 +208,15 @@ internal class Logger : ILogger
     /// <param name="relatedActivityId">Optional Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and corelate them</param>
     /// <typeparam name="T">Anonymous type.</typeparam>
     public void LogError<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
+        where T : EventBase
     {
-        this.WriteTelemetryEvent(eventName, level, relatedActivityId ?? DefaultRelatedActivityId, true, data);
+        data.ReplaceSensitiveStrings(this.ReplaceSensitiveStrings);
+        this.LogInternal(eventName, level, data, relatedActivityId, isError: true);
+    }
+
+    private void LogInternal<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId, bool isError)
+    {
+        this.WriteTelemetryEvent(eventName, level, relatedActivityId ?? DefaultRelatedActivityId, isError, data);
     }
 
     /// <summary>
@@ -264,24 +275,24 @@ internal class Logger : ILogger
             switch (level)
             {
                 case LogLevel.Critical:
-                    telemetryOptions = isError ? Logger.CriticalDataErrorOption : Logger.CriticalDataOption;
+                    telemetryOptions = isError ? Telemetry.CriticalDataErrorOption : Telemetry.CriticalDataOption;
                     break;
                 case LogLevel.Measure:
-                    telemetryOptions = isError ? Logger.MeasureErrorOption : Logger.MeasureOption;
+                    telemetryOptions = isError ? Telemetry.MeasureErrorOption : Telemetry.MeasureOption;
                     break;
                 case LogLevel.Info:
-                    telemetryOptions = isError ? Logger.InfoErrorOption : Logger.InfoOption;
+                    telemetryOptions = isError ? Telemetry.InfoErrorOption : Telemetry.InfoOption;
                     break;
                 case LogLevel.Local:
                 default:
-                    telemetryOptions = isError ? Logger.LocalErrorOption : Logger.LocalOption;
+                    telemetryOptions = isError ? Telemetry.LocalErrorOption : Telemetry.LocalOption;
                     break;
             }
         }
         else
         {
             // The telemetry is not turned on, downgrade to local telemetry
-            telemetryOptions = isError ? Logger.LocalErrorOption : Logger.LocalOption;
+            telemetryOptions = isError ? Telemetry.LocalErrorOption : Telemetry.LocalOption;
         }
 
         TelemetryEventSourceInstance.Write(eventName, ref telemetryOptions, ref activityId, ref relatedActivityId, ref data);
@@ -291,9 +302,9 @@ internal class Logger : ILogger
     {
         try
         {
-            // This should convert "c:\users\johndoe" to "<SpecialFolder>".
-            var userDirectory = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)).FullName;
-            this.AddSensitiveString(Directory.GetParent(userDirectory).ToString(), "<SpecialFolder>");
+            // This should convert "c:\users\johndoe" to "<UserProfile>".
+            var userDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            this.AddSensitiveString(userDirectory.ToString(), "<UserDirectory>");
 
             // Include both these names, since they should cover the logged on user, and the user who is running the tools built on top of these API's
             // These names should almost always be the same, but technically could be different.

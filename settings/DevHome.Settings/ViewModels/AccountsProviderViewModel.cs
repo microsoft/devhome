@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Logging;
 using DevHome.Settings.Models;
 using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
@@ -44,7 +45,7 @@ public partial class AccountsProviderViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                LoggerFactory.Get<ILogger>().Log($"RemoveAccount() failed", LogLevel.Local, $"developerId: {loginId} Error: {ex}");
+                GlobalLog.Logger?.ReportError($"RemoveAccount() failed - developerId: {loginId} Error: {ex}");
                 throw;
             }
         }

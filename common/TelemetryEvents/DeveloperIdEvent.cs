@@ -7,11 +7,12 @@ using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace DevHome.Common.TelemetryEvents;
+namespace DevHome.TelemetryEvents;
 
 [EventData]
 public class DeveloperIdEvent : EventBase
@@ -33,6 +34,11 @@ public class DeveloperIdEvent : EventBase
     public DeveloperIdEvent(string providerName, IEnumerable<IDeveloperId> devIds)
     {
         this.developerId = string.Join(" , ", devIds.Select(devId => GetHashedDeveloperId(providerName, devId)));
+    }
+
+    public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
+    {
+        // The only sensitive strings are the dev IDs, but we already hashed them
     }
 
     private static string GetHashedDeveloperId(string providerName, IDeveloperId devId)
