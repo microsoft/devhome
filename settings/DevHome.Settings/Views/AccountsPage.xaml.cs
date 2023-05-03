@@ -115,7 +115,6 @@ public sealed partial class AccountsPage : Page
             };
 
             await loginUIContentDialog.ShowAsync();
-            accountProvider.RefreshLoggedInAccounts();
 
             // TODO: Await Login event to match up the loginEntryPoint and return DeveloperId
             loginUIAdaptiveCardController.Dispose();
