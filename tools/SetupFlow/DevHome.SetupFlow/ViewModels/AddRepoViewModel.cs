@@ -13,9 +13,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.Telemetry;
+using DevHome.TelemetryEvents;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using static DevHome.SetupFlow.Models.Common;
@@ -309,10 +312,16 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_Login_Event", LogLevel.Measure, new RepoToolEvent());
+
             // Throw away developer id becase we're calling GetAllLoggedInAccounts in anticipation
             // of 1 Provider : N DeveloperIds
             await Task.Run(() => _providers.LogInToProvider(repositoryProviderName));
             loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
+        }
+        else
+        {
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AlreadyLoggedIn_Event", LogLevel.Measure, new RepoToolEvent());
         }
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId()));

@@ -176,7 +176,7 @@
                     <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_SetUpAnotherProject" Command="{x:Bind ViewModel.GoToMainPageCommand}"/>
                     <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDevHomeSettings" Command="{x:Bind ViewModel.GoToDevHomeSettingsCommand}"/>
                     <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDeveloperSettingsInWindows" Command="{x:Bind ViewModel.GoToForDevelopersSettingsPageCommand}"/>
-                    <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_LearnMoreAboutDevHome" NavigateUri="https://learn.microsoft.com/windows/"/>
+                    <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_LearnMoreAboutDevHome" NavigateUri="https://learn.microsoft.com/windows/" Command="{x:Bind ViewModel.LearnMoreCommand}"/>
                 </StackPanel>
             </StackPanel>
 

@@ -11,11 +11,13 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -133,6 +135,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [RelayCommand]
     public async void RestartFailedTasks()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("Loading_RestartFailedTasks_Event", LogLevel.Measure, new LoadingEvent());
         Log.Logger?.ReportInfo(Log.Component.Loading, "Restarting all failed tasks");
 
         // Keep the number of successful tasks and needs attention tasks the same.
@@ -375,6 +378,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             // Give the user the option to re try them all or move to the next screen.
             ShowRetryButton = Visibility.Visible;
             IsNavigationBarVisible = true;
+        }
+
+        if (_failedTasks.Count > 0)
+        {
+            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Measure, new LoadingRetryEvent(_failedTasks.Count));
         }
     }
 

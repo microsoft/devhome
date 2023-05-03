@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Models;
@@ -92,6 +93,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void HideBanner()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_HideLearnMoreBanner_Event", LogLevel.Measure, new MainPageEvent());
         ShowBanner = false;
     }
 
@@ -116,6 +118,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartSetup(string flowTitle)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartEndtoEnd_Event", LogLevel.Measure, new MainPageEvent());
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting end-to-end setup");
 
         var taskGroups = new List<ISetupTaskGroup>
@@ -142,6 +145,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartRepoConfig(string flowTitle)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartOnlyRepoConfig_Event", LogLevel.Measure, new MainPageEvent());
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for repo config");
         StartSetupFlowForTaskGroups(
             flowTitle,
@@ -155,6 +159,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartAppManagement(string flowTitle)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartOnlyAppManagement_Event", LogLevel.Measure, new MainPageEvent());
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for app management");
         StartSetupFlowForTaskGroups(flowTitle,  _host.GetService<AppManagementTaskGroup>());
     }
@@ -179,6 +184,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task StartConfigurationFileAsync()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartOnlyConfigurationFile_Event", LogLevel.Measure, new MainPageEvent());
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
         if (await configFileSetupFlow.PickConfigurationFileAsync())
         {
@@ -191,6 +198,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private async Task BannerButtonAsync()
     {
         // TODO Update code with the "Learn more" button behavior
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_LearnMore_Event", LogLevel.Measure, new MainPageEvent());
         await Launcher.LaunchUriAsync(new ("https://microsoft.com"));
     }
 
