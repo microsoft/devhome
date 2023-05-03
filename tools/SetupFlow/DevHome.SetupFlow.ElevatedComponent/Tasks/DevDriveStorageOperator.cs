@@ -5,6 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using DevHome.SetupFlow.Common.DevDriveFormatter;
 using DevHome.SetupFlow.Common.Helpers;
+using Microsoft.VisualBasic.FileIO;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -83,32 +84,29 @@ public sealed class DevDriveStorageOperator
         var result = CreateAndAttachVhdx(virtDiskPath, sizeInBytes, out virtDiskPhysicalPath);
         if (result.Failed)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(CreateAndAttachVhdx)} failed with error: {result:X}");
+            DetachVirtualDisk(virtDiskPath);
             return result.Value;
         }
 
         uint diskNumber;
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(CreatePartition)}");
         result = CreatePartition(virtDiskPhysicalPath, out diskNumber);
         if (result.Failed)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(CreatePartition)} failed with error: {result:X}");
+            DetachVirtualDisk(virtDiskPath);
             return result.Value;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(AssignDriveLetterToPartition)}");
         result = AssignDriveLetterToPartition(diskNumber, newDriveLetter);
         if (result.Failed)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(AssignDriveLetterToPartition)} failed with error: {result:X}");
+            DetachVirtualDisk(virtDiskPath);
             return result.Value;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(FormatPartitionAsDevDrive)}");
         var finishedResult = FormatPartitionAsDevDrive(newDriveLetter, driveLabel);
-        if (finishedResult != 0)
+        if (finishedResult != 0 || true)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(FormatPartitionAsDevDrive)} failed with error: 0x{finishedResult:X}");
+            DetachVirtualDisk(virtDiskPath);
         }
 
         return finishedResult;
@@ -577,5 +575,50 @@ public sealed class DevDriveStorageOperator
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Creating DevDriveFormatter");
         var devDriveFormatter = new DevDriveFormatter();
         return devDriveFormatter.FormatPartitionAsDevDrive(curDriveLetter, driveLabel);
+    }
+
+    private void DetachVirtualDisk(string virtDiskPath)
+    {
+        if (File.Exists(virtDiskPath))
+        {
+            var vhdParams = new OPEN_VIRTUAL_DISK_PARAMETERS
+            {
+                Version = OPEN_VIRTUAL_DISK_VERSION.OPEN_VIRTUAL_DISK_VERSION_2,
+            };
+
+            var storageType = new VIRTUAL_STORAGE_TYPE
+            {
+                VendorId = PInvoke.VIRTUAL_STORAGE_TYPE_VENDOR_MICROSOFT,
+                DeviceId = PInvoke.VIRTUAL_STORAGE_TYPE_DEVICE_VHDX,
+            };
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(DetachVirtualDisk), $"starting OpenVirtualDisk");
+
+            SafeFileHandle tempHandle;
+            var result = PInvoke.OpenVirtualDisk(
+                storageType,
+                virtDiskPath,
+                VIRTUAL_DISK_ACCESS_MASK.VIRTUAL_DISK_ACCESS_NONE,
+                OPEN_VIRTUAL_DISK_FLAG.OPEN_VIRTUAL_DISK_FLAG_NONE,
+                vhdParams,
+                out tempHandle);
+            if (result != WIN32_ERROR.NO_ERROR)
+            {
+                Log.Logger?.ReportError(Log.Component.DevDrive, nameof(DetachVirtualDisk), $"OpenVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
+            }
+
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(DetachVirtualDisk), $"starting DetachVirtualDisk");
+            result = PInvoke.DetachVirtualDisk(
+                tempHandle,
+                DETACH_VIRTUAL_DISK_FLAG.DETACH_VIRTUAL_DISK_FLAG_NONE,
+                0);
+
+            if (result != WIN32_ERROR.NO_ERROR)
+            {
+                Log.Logger?.ReportError(Log.Component.DevDrive, nameof(DetachVirtualDisk), $"DetachVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
+            }
+
+            tempHandle.Close();
+            File.Delete(virtDiskPath);
+        }
     }
 }
