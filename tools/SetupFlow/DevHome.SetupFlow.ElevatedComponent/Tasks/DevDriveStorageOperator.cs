@@ -26,8 +26,6 @@ public sealed class DevDriveStorageOperator
     /// </summary>
     public static readonly long _oneKb = 1024;
     public static readonly long _oneMb = _oneKb * _oneKb;
-    public static readonly long _fourKb = _oneKb * 4;
-    public static readonly string _fileSytem = "ReFS";
 
     /// <summary>
     /// We need a way to hold the partition information, when we call IoDeviceControl with IOCTL_DISK_GET_DRIVE_LAYOUT_EX.
@@ -80,7 +78,6 @@ public sealed class DevDriveStorageOperator
         }
 
         string virtDiskPhysicalPath;
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(CreateAndAttachVhdx)}");
         var result = CreateAndAttachVhdx(virtDiskPath, sizeInBytes, out virtDiskPhysicalPath);
         if (result.Failed)
         {
