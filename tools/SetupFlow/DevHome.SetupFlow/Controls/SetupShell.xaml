@@ -27,12 +27,12 @@
         <!-- Title -->
         <StackPanel Grid.Row="0">
             <TextBlock
-                Style="{ThemeResource SubtitleTextBlockStyle}"
+                Style="{ThemeResource TitleTextBlockStyle}"
                 TextWrapping="WrapWholeWords"
                 Visibility="{x:Bind UseOrchestratorTitle, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                 Text="{x:Bind Orchestrator.FlowTitle}" />
             <TextBlock
-                Style="{ThemeResource SubtitleTextBlockStyle}"
+                Style="{ThemeResource TitleTextBlockStyle}"
                 TextWrapping="WrapWholeWords"
                 Visibility="{x:Bind Title, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
                 Text="{x:Bind Title, Mode=OneWay}" />

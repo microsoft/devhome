@@ -52,10 +52,9 @@ public interface IDevDriveManager
     /// Gets a new Dev Drive object.
     /// </summary>
     /// <returns>
-    /// An Dev Drive a new Dev Drive and a result that indicates whether the operation
-    /// was successful.
+    /// The Dev Drive to be created
     /// </returns>
-    public (DevDriveValidationResult, IDevDrive) GetNewDevDrive();
+    public IDevDrive GetNewDevDrive();
 
     /// <summary>
     /// Gets a list of all Dev Drives currently on the local system.

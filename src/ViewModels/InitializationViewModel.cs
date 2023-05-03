@@ -1,19 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Management.Automation;
-using System.Text;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.Helpers;
-using DevHome.SetupFlow.Services;
-using DevHome.Telemetry;
+using DevHome.Logging;
 using DevHome.Views;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
@@ -60,7 +53,7 @@ public class InitializationViewModel : ObservableRecipient
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError("GitHubExtension Hydration Failed", ex);
+            GlobalLog.Logger?.ReportError("GitHubExtension Hydration Failed", ex);
         }
 
         App.MainWindow.Content = Application.Current.GetService<ShellPage>();
@@ -78,12 +71,12 @@ public class InitializationViewModel : ObservableRecipient
 
             try
             {
-                Log.Logger?.ReportInfo("Initialization Page: Starting extension app install");
+                GlobalLog.Logger?.ReportInfo("Initialization Page: Starting extension app install");
                 installItem = new AppInstallManager().StartAppInstallAsync(packageId, null, true, false).GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
-                Log.Logger?.ReportInfo("Initialization Page: Extension app install success");
+                GlobalLog.Logger?.ReportInfo("Initialization Page: Extension app install success");
                 tcs.SetException(ex);
                 return tcs.Task;
             }

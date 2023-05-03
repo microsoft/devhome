@@ -5,7 +5,7 @@ using System;
 using System.Text.Json.Nodes;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Templating;
-using DevHome.Telemetry;
+using DevHome.Logging;
 using Microsoft.Windows.DevHome.SDK;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -36,10 +36,7 @@ public class PluginAdaptiveCard : IPluginAdaptiveCard
 
         if (parseResult.AdaptiveCard is null)
         {
-            LoggerFactory.Get<ILogger>().LogError(
-                $"PluginAdaptiveCard.Update(): AdaptiveCard is null",
-                LogLevel.Local,
-                $"templateJson: {templateJson} dataJson: {dataJson} state: {state}");
+            GlobalLog.Logger?.ReportError($"PluginAdaptiveCard.Update(): AdaptiveCard is null - templateJson: {templateJson} dataJson: {dataJson} state: {state}");
             return;
         }
 

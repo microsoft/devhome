@@ -55,7 +55,7 @@
                                         Margin="0 5 0 0"
                                         TextWrapping="Wrap"/>
                                     <Grid
-                                        ColumnDefinitions="Auto, Auto, Auto, Auto"
+                                        ColumnDefinitions="Auto, Auto, Auto, *"
                                         Margin="0 5 45 2">
                                         <TextBlock
                                             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SizeWithColon"
@@ -79,6 +79,7 @@
                                             Text="{x:Bind Location}"
                                             IsTextSelectionEnabled="True"
                                             Grid.Column="3"
+                                            MaxWidth="500"
                                             Margin="10 0 10 0"
                                             TextWrapping="Wrap"/>
                                     </Grid>
