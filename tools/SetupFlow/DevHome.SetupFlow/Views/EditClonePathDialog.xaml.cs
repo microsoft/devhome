@@ -76,6 +76,15 @@ public sealed partial class EditClonePathDialog
         _stringResource = Application.Current.GetService<ISetupFlowStringResource>();
         PrevCheckBoxSelection = DevDriveCheckBox.IsChecked.GetValueOrDefault(false);
         UpdateDialogState();
+
+        if (EditClonePathViewModel.IsPrimaryButtonEnabled)
+        {
+            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+        }
+        else
+        {
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+        }
     }
 
     /// <summary>
@@ -85,6 +94,15 @@ public sealed partial class EditClonePathDialog
     {
         await FolderPickerViewModel.ChooseCloneLocation();
         IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
+
+        if (EditClonePathViewModel.IsPrimaryButtonEnabled)
+        {
+            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+        }
+        else
+        {
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+        }
     }
 
     /// <summary>
@@ -144,7 +162,16 @@ public sealed partial class EditClonePathDialog
             validationResult &= EditDevDriveViewModel.IsDevDriveValid();
         }
 
-        IsPrimaryButtonEnabled = validationResult;
+        EditClonePathViewModel.IsPrimaryButtonEnabled = validationResult;
+
+        if (EditClonePathViewModel.IsPrimaryButtonEnabled)
+        {
+            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+        }
+        else
+        {
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+        }
     }
 
     /// <summary>
@@ -223,6 +250,7 @@ public sealed partial class EditClonePathDialog
             Title = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialogUncheckCheckMark + $"/Title");
             PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialogUncheckCheckMark + $"/PrimaryButtonText");
             EditClonePathViewModel.ShouldShowAreYouSureMessage = true;
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
             IsPrimaryButtonEnabled = true;
         }
         else
@@ -230,6 +258,7 @@ public sealed partial class EditClonePathDialog
             Title = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/Title");
             PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/PrimaryButtonText");
             EditClonePathViewModel.ShouldShowAreYouSureMessage = false;
+            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
         }
     }
 
