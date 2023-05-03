@@ -135,6 +135,7 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     private void FilterRepositories(string text)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_FilterRepo_Event", LogLevel.Measure, new RepoToolEvent());
         IEnumerable<RepoViewListItem> filteredRepositories;
         if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
         {
@@ -205,6 +206,7 @@ public partial class AddRepoViewModel : ObservableObject
         _providers = new RepositoryProviders(plugins);
 
         ProviderNames = new ObservableCollection<string>(_providers.GetAllProviderNames());
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForProviders_Event", LogLevel.Measure, new ProviderEvent(ProviderNames.Count));
     }
 
     public void ChangeToUrlPage()
@@ -404,6 +406,7 @@ public partial class AddRepoViewModel : ObservableObject
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationNotFound);
             ShouldShowUrlError = Visibility.Visible;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, e.ToString());
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_CantFindRepo_Event", LogLevel.Measure, new RepoToolEvent());
             return;
         }
 
@@ -414,6 +417,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = providerNameAndRepo.Item1;
             cloningInformation.RepositoryToClone = repository;
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+            TelemetryFactory.Get<ITelemetry>().Log("Provider_Parsed_Event", LogLevel.Measure, new ProviderUrlParseEvent(providerNameAndRepo.Item1)););
         }
         else
         {
@@ -424,6 +428,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = "git";
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_NoProvidersCanParseUrl_Event", LogLevel.Measure, new RepoToolEvent());
         }
 
         // User could paste in a url of an already added repo.  Check for that here.
@@ -433,6 +438,7 @@ public partial class AddRepoViewModel : ObservableObject
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
             ShouldShowUrlError = Visibility.Visible;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repository has already been added.");
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_UrlAlreadyAdded_Event", LogLevel.Measure, new RepoToolEvent());
             return;
         }
 

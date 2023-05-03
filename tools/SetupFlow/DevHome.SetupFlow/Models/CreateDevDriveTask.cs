@@ -124,6 +124,7 @@ internal class CreateDevDriveTask : ISetupTask
 
             try
             {
+                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDrive_CreatingDevDrive_Event", LogLevel.Measure, new CreateDevDriveTask());
                 var manager = _host.GetService<IDevDriveManager>();
                 var validation = manager.GetDevDriveValidationResults(DevDrive);
                 manager.RemoveAllDevDrives();
@@ -145,6 +146,7 @@ internal class CreateDevDriveTask : ISetupTask
                 result = ex.HResult;
                 Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to create Dev Drive. Due to Exception ErrorCode: 0x{ex.HResult:X}, Msg: {ex.Message}");
                 _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, GetLocalizedErrorMsg(ex.HResult));
+                TelemetryFactory.Get<ITelemetry>().LogException("CreatingDevDrive", ex);
                 return TaskFinishedState.Failure;
             }
             finally

@@ -3,9 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.Telemetry;
+using DevHome.TelemetryEvents;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -67,6 +71,7 @@ internal class RepositoryProvider
     /// </remarks>
     public IRepository ParseRepositoryFromUri(Uri uri)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("Provider_ParseUrl_Event", LogLevel.Measure, new ProviderUrlParseEvent(_repositoryProvider.DisplayName));
         return _repositoryProvider.ParseRepositoryFromUrlAsync(uri).AsTask().Result;
     }
 
@@ -75,6 +80,7 @@ internal class RepositoryProvider
     /// </summary>
     public IDeveloperId LogIntoProvider()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_LoggingIn_Event", LogLevel.Measure, new RepoToolEvent());
         return _devIdProvider.LoginNewDeveloperIdAsync().AsTask().Result;
     }
 
@@ -84,6 +90,7 @@ internal class RepositoryProvider
     /// <returns>A list of all accounts.  May be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllLoggedInAccounts_Event", LogLevel.Measure, new RepoToolEvent());
         return _devIdProvider.GetLoggedInDeveloperIds() ?? new List<IDeveloperId>();
     }
 
@@ -96,7 +103,13 @@ internal class RepositoryProvider
     {
         if (!_repositories.IsValueCreated)
         {
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_FetchingRepos_Event", LogLevel.Measure, new ReposFetchEvent(_repositoryProvider.DisplayName, developerId));
             _repositories = new Lazy<IEnumerable<IRepository>>(_repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result);
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_ReposFound_Event", LogLevel.Measure, new ReposFetchedEvent(_repositories.Value.Count()));
+        }
+        else
+        {
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AlreadyFetched_Event", LogLevel.Measure, new ReposFetchedEvent(_repositories.Value.Count());
         }
 
         return _repositories.Value;
