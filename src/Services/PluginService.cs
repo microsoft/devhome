@@ -3,6 +3,8 @@
 
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Helpers;
 using DevHome.Models;
@@ -11,6 +13,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation.Collections;
+using Log = DevHome.Helpers.Log;
 
 namespace DevHome.Services;
 
@@ -216,6 +219,34 @@ public class PluginService : IPluginService
     public async Task SignalStopPluginsAsync()
     {
 
+    }
+
+    public async Task<ExtensionQueryResult<TResult>> RunQueryAsync<TResult>(Func<Task<TResult>> query, int timeoutMs = 200)
+    {
+        try
+        {
+            var result = await query.Invoke().WithTimeout(timeoutMs);
+            return new ExtensionQueryResult<TResult>(true, result, null);
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError($"Exception occured while calling an extension api", e);
+            return new ExtensionQueryResult<TResult>(false, default, e);
+        }
+    }
+
+    public ExtensionQueryResult<TResult> RunQueryAsync<TResult>(Func<TResult> query)
+    {
+        try
+        {
+            var result = query.Invoke();
+            return new ExtensionQueryResult<TResult>(true, result, null);
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError($"Exception occured while calling an extension api", e);
+            return new ExtensionQueryResult<TResult>(false, default, e);
+        }
     }
 
     private IPropertySet? GetSubPropertySet(IPropertySet propSet, string name)

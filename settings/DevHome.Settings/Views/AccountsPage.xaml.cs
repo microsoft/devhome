@@ -70,8 +70,7 @@ public sealed partial class AccountsPage : Page
 
     public async Task ShowLoginUIAsync(string loginEntryPoint, Page parentPage, AccountsProviderViewModel accountProvider)
     {
-        string[] args = { loginEntryPoint };
-        var loginUIAdaptiveCardController = accountProvider.DeveloperIdProvider.GetAdaptiveCardController(args);
+        var loginUIAdaptiveCardController = accountProvider.DeveloperIdProvider.GetLoginAdaptiveCardSession();
         var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
         pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, AdaptiveCardRendererHelper.GetLoginUIRenderer());
         pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;

@@ -9,19 +9,15 @@ namespace DevHome.Settings.Models;
 
 public partial class Account : ObservableObject
 {
-    private readonly IDeveloperId _devId;
-
     private readonly AccountsProviderViewModel _accountsProvider;
 
-    internal IDeveloperId GetDevId() => _devId;
-
-    public Account(AccountsProviderViewModel accountsProvider, IDeveloperId devId)
+    public Account(AccountsProviderViewModel accountsProvider, string loginId)
     {
         _accountsProvider = accountsProvider;
-        _devId = devId;
+        LoginId = loginId;
     }
 
-    public string LoginId => _devId.LoginId();
+    public string LoginId { get; }
 
-    public void RemoveAccount() => _accountsProvider.RemoveAccount(_devId.LoginId());
+    public void RemoveAccount() => _accountsProvider.RemoveAccount(LoginId);
 }

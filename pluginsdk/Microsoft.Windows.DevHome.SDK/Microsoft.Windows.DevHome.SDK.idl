@@ -30,15 +30,15 @@ namespace Microsoft.Windows.DevHome.SDK
     }
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    interface IPluginAdaptiveCardController 
+    interface IExtensionAdaptiveCardSession 
     {
-        void Initialize(IPluginAdaptiveCard pluginUI);
+        void Initialize(IExtensionAdaptiveCard pluginUI);
         void Dispose();
         void OnAction(String action, String inputs);
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-    interface IPluginAdaptiveCard
+    interface IExtensionAdaptiveCard
     {
         String TemplateJson { get; };
         String DataJson { get; };
@@ -58,7 +58,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
         void LogoutDeveloperId(IDeveloperId developerId);
 
-        IPluginAdaptiveCardController GetAdaptiveCardController(String[] args);
+        IExtensionAdaptiveCardSession GetLoginAdaptiveCardSession();
 
         event Windows.Foundation.EventHandler<IDeveloperId> LoggedIn;
 

@@ -5,6 +5,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Helpers;
+using DevHome.Common.Services;
 using DevHome.Settings.Models;
 using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
@@ -12,41 +14,57 @@ using Microsoft.Windows.DevHome.SDK;
 namespace DevHome.Settings.ViewModels;
 public partial class AccountsProviderViewModel : ObservableObject
 {
+    private IPluginService _pluginService;
+
     public IDeveloperIdProvider DeveloperIdProvider { get; }
 
     public string ProviderName => DeveloperIdProvider.GetName();
 
     public ObservableCollection<Account> LoggedInAccounts { get; } = new ();
 
-    public AccountsProviderViewModel(IDeveloperIdProvider devIdProvider)
+    public AccountsProviderViewModel(IDeveloperIdProvider devIdProvider, IPluginService pluginService)
     {
         DeveloperIdProvider = devIdProvider;
         RefreshLoggedInAccounts();
+        _pluginService = pluginService;
     }
 
     public void RefreshLoggedInAccounts()
     {
         LoggedInAccounts.Clear();
-        DeveloperIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
+        var result = _pluginService.RunQueryAsync(() => DeveloperIdProvider.GetLoggedInDeveloperIds().Select((devId) => new Account(this, devId.LoginId())));
+        if (result.IsSuccessful)
         {
-            LoggedInAccounts.Add(new Account(this, devId));
-        });
+            foreach (var account in result.ResultData!)
+            {
+                LoggedInAccounts.Add(account);
+            }
+        }
+        else
+        {
+            // TODO: Display Error
+            LoggedInAccounts.Clear();
+        }
     }
 
     public void RemoveAccount(string loginId)
     {
-        var accountToRemove = LoggedInAccounts.FirstOrDefault(x => x.LoginId == loginId);
-        if (accountToRemove != null)
+        var result = _pluginService.RunQueryAsync(() =>
         {
-            try
+            var devIdToLogout = DeveloperIdProvider.GetLoggedInDeveloperIds().Where(devId => devId.LoginId() == loginId).FirstOrDefault();
+            if (devIdToLogout != null)
             {
-                DeveloperIdProvider.LogoutDeveloperId(accountToRemove.GetDevId());
+                DeveloperIdProvider.LogoutDeveloperId(devIdToLogout);
+                return true;
             }
-            catch (Exception ex)
-            {
-                LoggerFactory.Get<ILogger>().Log($"RemoveAccount() failed", LogLevel.Local, $"developerId: {loginId} Error: {ex}");
-                throw;
-            }
+
+            return false;
+        });
+
+        if (!result.IsSuccessful)
+        {
+            // TODO Display Error
+            Log.Logger?.ReportError($"developerId: {loginId} Error: {result.Exception}", result.Exception!);
         }
 
         RefreshLoggedInAccounts();

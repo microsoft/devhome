@@ -1,14 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
+using CommunityToolkit.WinUI.UI.Converters;
+using DevHome.Common.Helpers;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Helpers;
 using DevHome.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Storage;
 using Windows.Win32;
 using Windows.Win32.System.Com;
 using WinRT;
+using Log = DevHome.Common.Helpers.Log;
 
 namespace DevHome.Models;
 
@@ -121,5 +127,26 @@ public class PluginWrapper : IPluginWrapper
     public bool HasProvider<T>()
     {
         return _providerTypeToClassIdMap.ContainsKey(typeof(T));
+    }
+
+    public async Task<ExtensionQueryResult<TResult>> QueryAsync<TProvider, TResult>(Func<TProvider, Task<TResult>> handler, int timeoutMs = 200)
+        where TProvider : class
+    {
+        try
+        {
+            var provider = await GetProviderAsync<TProvider>().WithTimeout(2000);
+            if (provider is null)
+            {
+                throw new ExtensionException($"Invalid provider {typeof(TProvider)} for extension {Id}: {Name}");
+            }
+
+            var result = await handler.Invoke(provider).WithTimeout(timeoutMs);
+            return new ExtensionQueryResult<TResult>(true, result, null);
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError($"Exception occured while calling an api in {Id}: {Name}", e);
+            return new ExtensionQueryResult<TResult>(false, default, e);
+        }
     }
 }
