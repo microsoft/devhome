@@ -76,15 +76,7 @@ public sealed partial class EditClonePathDialog
         _stringResource = Application.Current.GetService<ISetupFlowStringResource>();
         PrevCheckBoxSelection = DevDriveCheckBox.IsChecked.GetValueOrDefault(false);
         UpdateDialogState();
-
-        if (EditClonePathViewModel.IsPrimaryButtonEnabled)
-        {
-            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
-        }
-        else
-        {
-            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-        }
+        ChangePrimaryButtonStyleIfEnabled();
     }
 
     /// <summary>
@@ -95,14 +87,7 @@ public sealed partial class EditClonePathDialog
         await FolderPickerViewModel.ChooseCloneLocation();
         IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
 
-        if (EditClonePathViewModel.IsPrimaryButtonEnabled)
-        {
-            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
-        }
-        else
-        {
-            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-        }
+        ChangePrimaryButtonStyleIfEnabled();
     }
 
     /// <summary>
@@ -164,14 +149,7 @@ public sealed partial class EditClonePathDialog
 
         EditClonePathViewModel.IsPrimaryButtonEnabled = validationResult;
 
-        if (EditClonePathViewModel.IsPrimaryButtonEnabled)
-        {
-            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
-        }
-        else
-        {
-            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-        }
+        ChangePrimaryButtonStyleIfEnabled();
     }
 
     /// <summary>
@@ -259,6 +237,22 @@ public sealed partial class EditClonePathDialog
             PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/PrimaryButtonText");
             EditClonePathViewModel.ShouldShowAreYouSureMessage = false;
             PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+        }
+    }
+
+    /// <summary>
+    /// Make the primary button accent color if enabled.
+    /// Otherwise use the default style
+    /// </summary>
+    private void ChangePrimaryButtonStyleIfEnabled()
+    {
+        if (EditClonePathViewModel.IsPrimaryButtonEnabled)
+        {
+            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+        }
+        else
+        {
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
         }
     }
 
