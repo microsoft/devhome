@@ -601,6 +601,8 @@ public sealed class DevDriveStorageOperator
                 vhdParams,
                 out tempHandle);
 
+            // We pass through errors here and after the detach call below instead of returning immediately because there are instances
+            // where the virtual disk file is created but not mounted. So in those instance a failure from OpenVirtualDisk and DetachVirtualDisk are expected.
             if (result != WIN32_ERROR.NO_ERROR)
             {
                 Log.Logger?.ReportError(Log.Component.DevDrive, nameof(DetachVirtualDisk), $"OpenVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
