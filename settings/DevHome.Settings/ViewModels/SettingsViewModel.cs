@@ -29,6 +29,8 @@ public partial class SettingViewModel : ObservableRecipient
 
     public string Description => _setting.Description;
 
+    public string Glyph => _setting.Glyph;
+
     public bool HasToggleSwitch => _setting.HasToggleSwitch;
 
     [RelayCommand]
@@ -49,10 +51,10 @@ public partial class SettingsViewModel : ObservableRecipient
 
         var settings = new[]
         {
-            new Setting("Preferences", string.Empty, stringResource.GetLocalized("Settings_Preferences_Header"), stringResource.GetLocalized("Settings_Preferences_Description"), false),
-            new Setting("Accounts", string.Empty, stringResource.GetLocalized("Settings_Accounts_Header"), stringResource.GetLocalized("Settings_Accounts_Description"), false),
-            new Setting("Extensions", string.Empty, stringResource.GetLocalized("Settings_Extensions_Header"), stringResource.GetLocalized("Settings_Extensions_Description"), false),
-            new Setting("About", string.Empty, stringResource.GetLocalized("Settings_About_Header"), stringResource.GetLocalized("Settings_About_Description"), false),
+            new Setting("Preferences", string.Empty, stringResource.GetLocalized("Settings_Preferences_Header"), stringResource.GetLocalized("Settings_Preferences_Description"), "\ue713", false),
+            new Setting("Accounts", string.Empty, stringResource.GetLocalized("Settings_Accounts_Header"), stringResource.GetLocalized("Settings_Accounts_Description"), "\ue77b", false),
+            new Setting("Extensions", string.Empty, stringResource.GetLocalized("Settings_Extensions_Header"), stringResource.GetLocalized("Settings_Extensions_Description"), "\ued35", false),
+            new Setting("About", string.Empty, stringResource.GetLocalized("Settings_About_Header"), stringResource.GetLocalized("Settings_About_Description"), "\ue946", false),
         };
 
         foreach (var setting in settings)
