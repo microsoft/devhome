@@ -12,7 +12,7 @@ public class SetupFlowScenarioStandard : SetupFlowSession
     [TestMethod]
     public void SetupFlowTest1()
     {
-        session.FindElementByName("Machine Configuration").Click();
+        session.FindElementByName("Machine configuration").Click();
         WindowsElement title = session.FindElementByName("Add packages");
         Assert.AreEqual("Add packages", title.Text);
     }
