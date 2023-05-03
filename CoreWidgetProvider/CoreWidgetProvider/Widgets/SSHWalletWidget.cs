@@ -23,6 +23,8 @@ public class SSHWalletWidget : WidgetImpl
 
     private static readonly Regex HostRegex = new (@"^Host\s+(.*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+    private FileSystemWatcher? FileWatcher { get; set; }
+
     protected string ContentData { get; set; } = EmptyJson;
 
     protected static readonly string Name = nameof(SSHWalletWidget);
@@ -51,6 +53,11 @@ public class SSHWalletWidget : WidgetImpl
     {
     }
 
+    ~SSHWalletWidget()
+    {
+        FileWatcher?.Dispose();
+    }
+
     public virtual void LoadContentData()
     {
         if (string.IsNullOrWhiteSpace(ConfigFile))
@@ -67,7 +74,10 @@ public class SSHWalletWidget : WidgetImpl
             var hostsData = new JsonObject();
             var hostsArray = new JsonArray();
 
-            using var reader = new StreamReader(ConfigFile);
+            FileStreamOptions options = new FileStreamOptions();
+            options.Access = FileAccess.Read;
+
+            using var reader = new StreamReader(ConfigFile, options);
 
             string? line;
 
@@ -219,7 +229,10 @@ public class SSHWalletWidget : WidgetImpl
     {
         var numberOfEntries = 0;
 
-        using var reader = new StreamReader(ConfigFile);
+        FileStreamOptions options = new FileStreamOptions();
+        options.Access = FileAccess.Read;
+
+        using var reader = new StreamReader(ConfigFile, options);
 
         string? line;
 
@@ -233,6 +246,50 @@ public class SSHWalletWidget : WidgetImpl
         }
 
         return numberOfEntries;
+    }
+
+    private void SetupFileWatcher()
+    {
+        var configFileDir = Path.GetDirectoryName(ConfigFile);
+        var configFileName = Path.GetFileName(ConfigFile);
+
+        if (configFileDir != null && configFileName != null )
+        {
+            FileWatcher = new FileSystemWatcher(configFileDir, configFileName);
+
+            FileWatcher.NotifyFilter = NotifyFilters.Attributes
+                                 | NotifyFilters.DirectoryName
+                                 | NotifyFilters.FileName
+                                 | NotifyFilters.LastAccess
+                                 | NotifyFilters.LastWrite
+                                 | NotifyFilters.Security
+                                 | NotifyFilters.Size;
+
+            FileWatcher.Changed += OnConfigFileChanged;
+            FileWatcher.Deleted += OnConfigFileDeleted;
+            FileWatcher.Renamed += OnConfigFileRenamed;
+
+            FileWatcher.IncludeSubdirectories = true;
+            FileWatcher.EnableRaisingEvents = true;
+        }
+    }
+
+    private void OnConfigFileChanged(object sender, FileSystemEventArgs e)
+    {
+        LoadContentData();
+        UpdateWidget();
+    }
+
+    private void OnConfigFileDeleted(object sender, FileSystemEventArgs e)
+    {
+        SetConfigure();
+    }
+
+    private void OnConfigFileRenamed(object sender, FileSystemEventArgs e)
+    {
+        ConfigFile = e.FullPath;
+        LoadContentData();
+        UpdateWidget();
     }
 
     public string GetConfiguration(string data)
@@ -257,6 +314,7 @@ public class SSHWalletWidget : WidgetImpl
                 if (File.Exists(data))
                 {
                     ConfigFile = data;
+                    SetupFileWatcher();
 
                     var numberOfEntries = GetNumberOfHostEntries();
 
@@ -414,7 +472,9 @@ public class SSHWalletWidget : WidgetImpl
 
     private void SetConfigure()
     {
+        FileWatcher?.Dispose();
         ActivityState = WidgetActivityState.Configure;
+        ConfigFile = string.Empty;
         Page = WidgetPageState.Configure;
         LogCurrentState();
         UpdateWidget();
