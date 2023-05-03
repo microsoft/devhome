@@ -70,7 +70,7 @@
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Spacing="30">
                     <commonviews:Banner
-                        TextWidth="400"
+                        TextWidth="345"
                         HideButtonVisibility="True"
                         HideButtonCommand="{x:Bind ViewModel.HideBannerCommand}"
                         Visibility="{x:Bind ViewModel.ShowBanner, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"

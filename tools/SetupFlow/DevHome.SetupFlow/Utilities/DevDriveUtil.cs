@@ -41,11 +41,15 @@ public static class DevDriveUtil
 
     public static double MaxSizeForTbComboBox => 64d;
 
-    public static double MinSizeForTbComboBox => 0.5D;
+    public static double MinSizeForTbComboBox => 1D;
 
     public static int MaxDriveLabelSize => 32;
 
     public static int MaxDrivePathLength => 32767;
+
+    public static ulong OneKbInBytes => 1ul << 10;
+
+    public static ulong OneMbInBytes => 1ul << 20;
 
     public static ulong OneGbInBytes => 1ul << 30;
 
@@ -116,28 +120,17 @@ public static class DevDriveUtil
             throw new ArgumentException(FormatExceptionString(unit, value, minSize, maxSize));
         }
 
-        if (unitIsTb && value.CompareTo(1.0d) < 0)
+        // Deal with decimal portion by getting the floor of the value in KB + half. This is to allow us to round up.
+        // should the decimal portion be greater than 0.5. Also helps keep the value a multiple of 512 when we multiply
+        // by either 1 MB or 1 GB further down. This is crucial for the Version2.MaximumSize parameter in CREATE_VIRTUAL_DISK_PARAMETERS that we use to
+        // create the virtual disk. https://learn.microsoft.com/en-us/windows/win32/api/virtdisk/ns-virtdisk-create_virtual_disk_parameters
+        var floorOfValueInKB = (ulong)Math.Floor((value * OneKbInBytes) + 0.5);
+        if (unitIsTb)
         {
-            // Switch this to Gb, e.g if value is 0.05 we make this 50 by multiplying by 1000.
-            unit = ByteUnit.GB;
-            value *= 1000d;
-        }
-        else if (!unitIsTb && value.CompareTo(1000.0d) >= 0)
-        {
-            // Switch this to Tb, e.g if value is 4322 we make this 4.322 by dividing by 1000.
-            unit = ByteUnit.TB;
-            value /= 1000d;
+            return floorOfValueInKB * OneGbInBytes;
         }
 
-        // Since we only care about Gb and Tb here we can use the power function
-        // to get our value in bytes. Where 1024.0^3 gives us 1 Gb and 1024.0^4 gives
-        // us 1 Tb.
-        if (unit == ByteUnit.TB)
-        {
-            return (ulong)(value * OneTbInBytes);
-        }
-
-        return (ulong)(value * OneGbInBytes);
+        return floorOfValueInKB * OneMbInBytes;
     }
 
     /// <summary>

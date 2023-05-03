@@ -22,6 +22,7 @@ using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.Windows;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
+using Windows.Globalization.NumberFormatting;
 using Windows.Storage.Pickers;
 using Windows.System;
 using WinUIEx;
@@ -55,6 +56,26 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     public DevDriveWindow DevDriveWindowContainer
     {
         get; private set;
+    }
+
+    /// <summary>
+    /// Gets the decimal formatter that will format the value in the numberbox. RoundHalfTowardsZero is used since we
+    /// utilize the SFBS_FLAGS_TRUNCATE_UNDISPLAYED_DECIMAL_DIGITS flag in <see cref="DevDriveUtil.ConvertBytesToString"/> to
+    /// get the formatted Drive size. RoundHalfTowardsZero will effectively truncate all values after the hundredth position.
+    /// </summary>
+    public DecimalFormatter DevDriveDecimalFormatter
+    {
+        get
+        {
+            IncrementNumberRounder rounder = new IncrementNumberRounder();
+            rounder.Increment = 0.01;
+            rounder.RoundingAlgorithm = RoundingAlgorithm.RoundHalfTowardsZero;
+            DecimalFormatter formatter = new DecimalFormatter();
+            formatter.IntegerDigits = 1;
+            formatter.FractionDigits = 2;
+            formatter.NumberRounder = rounder;
+            return formatter;
+        }
     }
 
     /// <summary>
@@ -132,8 +153,10 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <summary>
     /// Gets or sets Drive letter in combo box.
     /// </summary>
-    [ObservableProperty]
-    private char _comboBoxDriveLetter;
+    public char ComboBoxDriveLetter
+    {
+        get; set;
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether we should show the the localized error text for when the folder location the user wants to save the virtual disk to is not found.
