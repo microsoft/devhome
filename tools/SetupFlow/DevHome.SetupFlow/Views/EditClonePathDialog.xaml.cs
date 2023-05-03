@@ -223,6 +223,7 @@ public sealed partial class EditClonePathDialog
     {
         CloseButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/CloseButtonText");
 
+        // Manually change the styles here because the "Are you sure" confirm button should not have the accent style"
         if (PrevCheckBoxSelection && PrevCheckBoxSelection != DevDriveCheckBox.IsChecked.GetValueOrDefault(false))
         {
             Title = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialogUncheckCheckMark + $"/Title");
