@@ -1,10 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -45,17 +47,24 @@ public partial class PackageCatalogListViewModel : ObservableObject
         {
             _initialized = true;
             AddShimmers(_catalogDataSourceLoacder.CatalogCount);
-            await Task.Run(async () => await _wpm.WinGetCatalog.ConnectAsync());
-            await foreach (var dataSourceCatalogs in _catalogDataSourceLoacder.LoadCatalogsAsync())
+            try
             {
-                foreach (var catalog in dataSourceCatalogs)
+                await Task.Run(async () => await _wpm.WinGetCatalog.ConnectAsync());
+                await foreach (var dataSourceCatalogs in _catalogDataSourceLoacder.LoadCatalogsAsync())
                 {
-                    var catalogVM = await Task.Run(() => _packageCatalogViewModelFactory(catalog));
-                    catalogVM.CanAddAllPackages = true;
-                    PackageCatalogs.Add(catalogVM);
-                }
+                    foreach (var catalog in dataSourceCatalogs)
+                    {
+                        var catalogVM = await Task.Run(() => _packageCatalogViewModelFactory(catalog));
+                        catalogVM.CanAddAllPackages = true;
+                        PackageCatalogs.Add(catalogVM);
+                    }
 
-                RemoveShimmers(dataSourceCatalogs.Count);
+                    RemoveShimmers(dataSourceCatalogs.Count);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {nameof(_wpm.WinGetCatalog)}. Skipping catalogs loading operation.", e);
             }
 
             // Remove any remaining shimmers:

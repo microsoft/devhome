@@ -130,20 +130,19 @@ public partial class App : Application, IApp
     {
         GlobalLog.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at app launch");
         var wpm = GetService<IWindowsPackageManager>();
-        if (await Task.Run(() => wpm.IsCOMServerAvailable()))
+        var catalogDataSourceLoader = GetService<CatalogDataSourceLoacder>();
+
+        await Task.Run(async () =>
         {
-            GlobalLog.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
-
-            // Initialize/Load catalogs from all data sources
-            GlobalLog.Logger?.ReportInfo($"Initializing App install catalogs data sources");
-            var catalogDataSourceLoader = GetService<CatalogDataSourceLoacder>();
-            await catalogDataSourceLoader.InitializeAsync();
-            GlobalLog.Logger?.ReportInfo($"Found a total of {catalogDataSourceLoader.CatalogCount} catalogs");
-
-            // Connect and load catalogs on a separate (non-UI) thread to
-            // prevent lagging the UI
-            await Task.Run(async () =>
+            if (wpm.IsCOMServerAvailable())
             {
+                GlobalLog.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
+
+                // Initialize/Load catalogs from all data sources
+                GlobalLog.Logger?.ReportInfo($"Initializing App install catalogs data sources");
+                await catalogDataSourceLoader.InitializeAsync();
+                GlobalLog.Logger?.ReportInfo($"Found a total of {catalogDataSourceLoader.CatalogCount} catalogs");
+
                 GlobalLog.Logger?.ReportInfo($"Calling {nameof(wpm.ConnectToAllCatalogsAsync)} to connect to catalogs");
                 await wpm.ConnectToAllCatalogsAsync();
 
@@ -152,12 +151,12 @@ public partial class App : Application, IApp
                 {
                     GlobalLog.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
                 }
-            });
-        }
-        else
-        {
-            GlobalLog.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
-        }
+            }
+            else
+            {
+                GlobalLog.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
+            }
+        });
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)
