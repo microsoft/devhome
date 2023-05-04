@@ -407,7 +407,9 @@ public class SSHWalletWidget : WidgetImpl
             WidgetPageState.Configure => GetConfiguration(ConfigFile),
             WidgetPageState.Content => ContentData,
             WidgetPageState.Loading => EmptyJson,
-            _ => throw new NotImplementedException(Page.GetType().Name),
+
+            // In case of unknown state default to empty data
+            _ => EmptyJson,
         };
     }
 
