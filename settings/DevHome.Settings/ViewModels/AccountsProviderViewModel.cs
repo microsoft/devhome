@@ -9,30 +9,29 @@ using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Settings.Models;
 using DevHome.Telemetry;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Settings.ViewModels;
 public partial class AccountsProviderViewModel : ObservableObject
 {
-    private IPluginService _pluginService;
-
     public IDeveloperIdProvider DeveloperIdProvider { get; }
 
     public string ProviderName => DeveloperIdProvider.GetName();
 
     public ObservableCollection<Account> LoggedInAccounts { get; } = new ();
 
-    public AccountsProviderViewModel(IDeveloperIdProvider devIdProvider, IPluginService pluginService)
+    public AccountsProviderViewModel(IDeveloperIdProvider devIdProvider)
     {
         DeveloperIdProvider = devIdProvider;
         RefreshLoggedInAccounts();
-        _pluginService = pluginService;
     }
 
     public void RefreshLoggedInAccounts()
     {
         LoggedInAccounts.Clear();
-        var result = _pluginService.RunQueryAsync(() => DeveloperIdProvider.GetLoggedInDeveloperIds().Select((devId) => new Account(this, devId.LoginId())));
+        var pluginService = (Application.Current as IApp)!.GetService<IPluginService>();
+        var result = pluginService.RunQueryAsync(() => DeveloperIdProvider.GetLoggedInDeveloperIds().Select((devId) => new Account(this, devId.LoginId())));
         if (result.IsSuccessful)
         {
             foreach (var account in result.ResultData!)
@@ -49,7 +48,7 @@ public partial class AccountsProviderViewModel : ObservableObject
 
     public void RemoveAccount(string loginId)
     {
-        var result = _pluginService.RunQueryAsync(() =>
+        var result = (Application.Current as IApp)!.GetService<IPluginService>().RunQueryAsync(() =>
         {
             var devIdToLogout = DeveloperIdProvider.GetLoggedInDeveloperIds().Where(devId => devId.LoginId() == loginId).FirstOrDefault();
             if (devIdToLogout != null)
@@ -63,7 +62,7 @@ public partial class AccountsProviderViewModel : ObservableObject
 
         if (!result.IsSuccessful)
         {
-            // TODO Display Error
+            // TODO: Display Error
             Log.Logger?.ReportError($"developerId: {loginId} Error: {result.Exception}", result.Exception!);
         }
 

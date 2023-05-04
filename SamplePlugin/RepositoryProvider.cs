@@ -23,5 +23,5 @@ internal class RepositoryProvider : IRepositoryProvider
 
     public IAsyncOperation<IRepository> ParseRepositoryFromUrlAsync(Uri uri) => throw new NotImplementedException();
 
-    public void SignalDispose() => throw new NotImplementedException();
+    public void Dispose() => throw new NotImplementedException();
 }

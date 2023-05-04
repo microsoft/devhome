@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace SamplePlugin;
-internal class LoginUI : IPluginAdaptiveCardController
+internal class LoginUI : IExtensionAdaptiveCardSession
 {
-    private IPluginAdaptiveCard pluginUI;
+    private IExtensionAdaptiveCard pluginUI;
 
-    public void Initialize(IPluginAdaptiveCard pluginUI)
+    public void Initialize(IExtensionAdaptiveCard pluginUI)
     {
         this.pluginUI = pluginUI;
 

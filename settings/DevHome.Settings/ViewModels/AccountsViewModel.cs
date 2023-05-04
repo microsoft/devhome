@@ -21,7 +21,7 @@ public class AccountsViewModel : ObservableRecipient
         var devIdProviders = Task.Run(async () => await Application.Current.GetService<IAccountsService>().GetDevIdProviders()).Result;
         devIdProviders.ToList().ForEach((devIdProvider) =>
         {
-            AccountsProviders.Add(new AccountsProviderViewModel(devIdProvider, Application.Current.GetService<IPluginService>()));
+            AccountsProviders.Add(new AccountsProviderViewModel(devIdProvider));
         });
     }
 }

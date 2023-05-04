@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -23,27 +24,32 @@ internal class DevIDProvider : IDeveloperIdProvider
 
     public event EventHandler<IDeveloperId> Updated;
 
-    public IPluginAdaptiveCardController GetAdaptiveCardController(string[] args)
+    public IExtensionAdaptiveCardSession GetLoginAdaptiveCardSession()
     {
-        if (args.Length > 0 && args[0] == "LoginUI")
-        {
-            LoggedIn.Invoke(this, null);
-            LoggedOut.Invoke(this, null);
-            Updated.Invoke(this, null);
-
-            return new LoginUI();
-        }
-
-        return null;
+        return new LoginUI();
     }
 
-    public IEnumerable<IDeveloperId> GetLoggedInDeveloperIds() => throw new NotImplementedException();
+    public IEnumerable<IDeveloperId> GetLoggedInDeveloperIds()
+    {
+        return ImmutableList.Create(new DeveloperId("user", "http://localhost/"));
+    }
 
-    public string GetName() => throw new NotImplementedException();
+    public string GetName()
+    {
+        return "Sample Login UI";
+    }
 
-    public IAsyncOperation<IDeveloperId> LoginNewDeveloperIdAsync() => throw new NotImplementedException();
+    public IAsyncOperation<IDeveloperId> LoginNewDeveloperIdAsync()
+    {
+        var devId = new DeveloperId("user", "http://localhost/");
+        LoggedIn.Invoke(this, devId);
+        return Task.FromResult<IDeveloperId>(devId).AsAsyncOperation();
+    }
 
-    public void LogoutDeveloperId(IDeveloperId developerId) => throw new NotImplementedException();
+    public void LogoutDeveloperId(IDeveloperId developerId)
+    {
+    }
 
     public void SignalDispose() => throw new NotImplementedException();
+    public void Dispose() => throw new NotImplementedException();
 }
