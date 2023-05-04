@@ -58,7 +58,7 @@ public sealed class DevDriveStorageOperator
     // Signals to the system to reattach the virtual disk at boot time. This flag will be present in the public
     // virtdisk.h file in the Windows SDK on systems that have it. For now since CsWin32 will not find this, we have to manually add it.
     // This will be documented here: https://learn.microsoft.com/en-us/windows/win32/api/virtdisk/ne-virtdisk-attach_virtual_disk_flag
-    // This is only temporary, and will be removed once we can use it with CSWin32 out the box.
+    // This is only temporary, and will be removed once we can use it with CSWin32 out of the box.
     private const uint AttachVirtualDiskFlagAtBoot = 0x00000400;
 
     public DevDriveStorageOperator()
@@ -164,8 +164,8 @@ public sealed class DevDriveStorageOperator
 
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"Starting AttachVirtualDisk");
 
-        // This is only temporary until the api updates to AttachVirtualDisk have propagated. AttachVirtualDisk will return an invalid argument
-        // when passed an attach disk flag that it does not support. This failure is not a deal breaker as we should still be able to attach the virtual
+        // This is only temporary until the api updates to AttachVirtualDisk have propagated. AttachVirtualDisk will return an invalid argument error (E_INVALIDARG)
+        // when passed an attach virt disk flag that it does not support. This failure is not a deal breaker as we should still be able to attach the virtual
         // disk without the AttachVirtualDiskFlagAtBoot flag. Users would just have to manually remount their virtual disk file instead of the system
         // doing it for them at boot time. Once the api changes have propagated we will update this to remove the loop and use both flags in a single
         // call with no fallback. We only make 2 attempts, first with the new flag and one second without.
