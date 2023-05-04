@@ -15,7 +15,6 @@
       ],
       "horizontalAlignment": "Center",
       "verticalContentAlignment": "Center",
-      "style": "accent",
       "spacing": "ExtraLarge",
       "separator": true
     }
