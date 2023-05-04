@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;

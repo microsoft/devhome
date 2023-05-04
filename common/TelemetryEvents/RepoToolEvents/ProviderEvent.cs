@@ -2,20 +2,26 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Diagnostics.Tracing;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents;
-internal class RepoToolAddedEvent : EventBase
-{
-    public int NumberOfReposAdded { get; }
+namespace DevHome.Common.TelemetryEvents.RepoToolEvents;
 
+[EventData]
+public class ProviderEvent : EventBase
+{
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public RepoToolAddedEvent(int numberOfReposAdded)
+    public int NumberOfProviders
     {
-        NumberOfReposAdded = numberOfReposAdded;
+        get;
+    }
+
+    public ProviderEvent(int numberOfProviders)
+    {
+        NumberOfProviders = numberOfProviders;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)

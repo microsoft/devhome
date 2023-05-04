@@ -10,7 +10,7 @@ using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace DevHome.Common.TelemetryEvents;
+namespace DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 
 [EventData]
 public class ReposCloneEvent : EventBase

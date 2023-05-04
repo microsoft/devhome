@@ -10,16 +10,22 @@ using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace DevHome.Common.TelemetryEvents;
+namespace DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 
 [EventData]
 public class ReposFetchEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public string ProviderName { get; }
+    public string ProviderName
+    {
+        get;
+    }
 
-    public string DeveloperId { get; }
+    public string DeveloperId
+    {
+        get;
+    }
 
     public ReposFetchEvent(string providerName, IDeveloperId developerId)
     {

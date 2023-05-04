@@ -7,18 +7,21 @@ using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents;
+namespace DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 
 [EventData]
-public class ProviderEvent : EventBase
+public class ReposFetchedEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public int NumberOfProviders { get; }
-
-    public ProviderEvent(int numberOfProviders)
+    public int ReposFound
     {
-        NumberOfProviders = numberOfProviders;
+        get;
+    }
+
+    public ReposFetchedEvent(int reposFound)
+    {
+        ReposFound = reposFound;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
