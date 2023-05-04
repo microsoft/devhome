@@ -320,7 +320,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId()));
 
-        if (Accounts.Count == 1)
+        if (Accounts.Count <= 1)
         {
             IsAccountComboBoxEnabled = false;
         }
