@@ -20,7 +20,7 @@ public class SSHWalletWidget : WidgetImpl
     protected static readonly string EmptyJson = new JsonObject().ToJsonString();
     protected static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
 
-    private static readonly Regex HostRegex = new (@"^Host\s+(.*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    private static readonly Regex HostRegex = new (@"^Host\s+(.*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
     private FileSystemWatcher? FileWatcher { get; set; }
 
@@ -223,25 +223,19 @@ public class SSHWalletWidget : WidgetImpl
 
     private int GetNumberOfHostEntries()
     {
-        var numberOfEntries = 0;
-
         FileStreamOptions options = new FileStreamOptions();
         options.Access = FileAccess.Read;
 
         using var reader = new StreamReader(ConfigFile, options);
 
-        string? line;
+        var fileContent = reader.ReadToEnd();
 
-        while ((line = reader.ReadLine()) != null)
+        if (!string.IsNullOrEmpty(fileContent))
         {
-            line = line.Trim();
-            if (HostRegex.IsMatch(line))
-            {
-                numberOfEntries++;
-            }
+            return HostRegex.Matches(fileContent).Count;
         }
 
-        return numberOfEntries;
+        return 0;
     }
 
     private void SetupFileWatcher()
@@ -288,20 +282,35 @@ public class SSHWalletWidget : WidgetImpl
         UpdateWidget();
     }
 
-    public string GetConfiguration(string data)
+    private JsonObject FillConfigurationData(bool hasConfiguration, string configFile, int numOfEntries = 0, string errorMessage = "")
     {
         var configurationData = new JsonObject();
 
-        if (string.IsNullOrWhiteSpace(data))
-        {
-            configurationData.Add("hasConfiguration", false);
-            var sshConfigData = new JsonObject
+        var sshConfigData = new JsonObject
             {
-                { "configFile", string.Empty },
+                { "configFile", configFile },
                 { "defaultConfigFile", DefaultConfigFile },
+                { "numOfEntries", numOfEntries.ToString(CultureInfo.InvariantCulture) },
             };
 
-            configurationData.Add("configuration", sshConfigData);
+        configurationData.Add("hasConfiguration", hasConfiguration);
+        configurationData.Add("configuration", sshConfigData);
+
+        if (!string.IsNullOrEmpty(errorMessage))
+        {
+            configurationData.Add("errorMessage", errorMessage);
+        }
+
+        return configurationData;
+    }
+
+    public string GetConfiguration(string data)
+    {
+        JsonObject? configurationData;
+
+        if (string.IsNullOrWhiteSpace(data))
+        {
+            configurationData = FillConfigurationData(false, string.Empty);
         }
         else
         {
@@ -314,43 +323,18 @@ public class SSHWalletWidget : WidgetImpl
 
                     var numberOfEntries = GetNumberOfHostEntries();
 
-                    var sshConfigData = new JsonObject
-                    {
-                        { "configFile", ConfigFile },
-                        { "defaultConfigFile", DefaultConfigFile },
-                        { "numOfEntries", numberOfEntries.ToString(CultureInfo.InvariantCulture) },
-                    };
-
-                    configurationData.Add("hasConfiguration", true);
-                    configurationData.Add("configuration", sshConfigData);
+                    configurationData = FillConfigurationData(true, ConfigFile, numberOfEntries);
                 }
                 else
                 {
-                    configurationData.Add("hasConfiguration", false);
-                    var sshConfigData = new JsonObject
-                    {
-                        { "configFile", data },
-                        { "defaultConfigFile", DefaultConfigFile },
-                    };
-
-                    configurationData.Add("errorMessage", Resources.GetResource(@"SSH_Widget_Template/ConfigFileNotFound", Logger()));
-                    configurationData.Add("configuration", sshConfigData);
+                    configurationData = FillConfigurationData(false, data, 0, Resources.GetResource(@"SSH_Widget_Template/ConfigFileNotFound", Logger()));
                 }
             }
             catch (Exception ex)
             {
                 Log.Logger()?.ReportError(Name, ShortId, $"Failed getting configuration information for input config file path: {data}", ex);
 
-                configurationData.Clear();
-                configurationData.Add("hasConfiguration", false);
-                var sshConfigData = new JsonObject
-                {
-                    { "configFile", data },
-                    { "defaultConfigFile", DefaultConfigFile },
-                };
-
-                configurationData.Add("errorMessage", Resources.GetResource(@"SSH_Widget_Template/ErrorProcessingConfigFile", Logger()));
-                configurationData.Add("configuration", sshConfigData);
+                configurationData = FillConfigurationData(false, data, 0, Resources.GetResource(@"SSH_Widget_Template/ErrorProcessingConfigFile", Logger()));
 
                 return configurationData.ToString();
             }
