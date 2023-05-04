@@ -1,0 +1,107 @@
+{
+  "fontTypes": {
+    "default": {
+      "fontFamily": "'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+      "fontSizes": {
+        "small": 12,
+        "default": 12,
+        "medium": 14,
+        "large": 18,
+        "extraLarge": 26
+      },
+      "fontWeights": {
+        "lighter": 600,
+        "default": 800,
+        "bolder": 1000
+      }
+    },
+    "monospace": {
+      "fontFamily": "'Courier New', Courier, monospace",
+      "fontSizes": {
+        "small": 12,
+        "default": 12,
+        "medium": 14,
+        "large": 18,
+        "extraLarge": 26
+      },
+      "fontWeights": {
+        "lighter": 200,
+        "default": 400,
+        "bolder": 600
+      }
+    }
+  },
+  "containerStyles": {
+    "default": {
+      "backgroundColor": "#06FFFFFF",
+      "borderColor": "#06FFFFFF",
+      "foregroundColors": {
+        "default": {
+          "default": "#FFFFFF",
+          "subtle": "#C8FFFFFF"
+        },
+        "accent": {
+          "default": "#0063B1",
+          "subtle": "#880063B1"
+        },
+        "attention": {
+          "default": "#FF0000",
+          "subtle": "#DDFF0000"
+        },
+        "good": {
+          "default": "#54a254",
+          "subtle": "#DD54a254"
+        },
+        "warning": {
+          "default": "#c3ab23",
+          "subtle": "#DDc3ab23"
+        }
+      }
+    },
+    "emphasis": {
+      "backgroundColor": "#09FFFFFF",
+      "borderColor": "#09FFFFFF",
+      "foregroundColors": {
+        "default": {
+          "default": "#FFFFFF",
+          "subtle": "#C8FFFFFF"
+        },
+        "accent": {
+          "default": "#2E89FC",
+          "subtle": "#882E89FC"
+        },
+        "attention": {
+          "default": "#FF0000",
+          "subtle": "#DDFF0000"
+        },
+        "good": {
+          "default": "#54a254",
+          "subtle": "#DD54a254"
+        },
+        "warning": {
+          "default": "#c3ab23",
+          "subtle": "#DDc3ab23"
+        }
+      }
+    }
+  },
+  "imageSizes": {
+    "small": 130,
+    "medium": 170,
+    "large": 210
+  },
+  "actions": {
+    "maxActions": 5,
+    "spacing": "default",
+    "buttonSpacing": 8,
+    "showCard": {
+      "actionMode": "inline",
+      "inlineTopMargin": 8
+    },
+    "actionsOrientation": "vertical",
+    "actionAlignment": "stretch"
+  },
+  "adaptiveCard": {
+    "allowCustomStyle": false
+  }
+}

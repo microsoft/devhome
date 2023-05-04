@@ -86,7 +86,7 @@
     <value>Pin Widgets</value>
     <comment>Title for "Pin Widgets" dialog</comment>
   </data>
-  <data name="PinButton.Content" xml:space="preserve">
+  <data name="PinButtonText.Text" xml:space="preserve">
     <value>Pin</value>
     <comment>Label for button that pins the widget</comment>
   </data>
@@ -125,5 +125,21 @@
   <data name="AddFirstWidgetLink.Content" xml:space="preserve">
     <value>+ Add new widget</value>
     <comment>The hyperlink to bring the user to the Add Widget dialog. Shows if the user hasn't pinned any widgets.</comment>
+  </data>
+  <data name="WidgetErrorCardDisplayText" xml:space="preserve">
+    <value>This widget could not be displayed</value>
+    <comment>Message shown in the widget if the widget was given bad data and can't be rendered.</comment>
+  </data>
+  <data name="WidgetErrorCardCreate1Text" xml:space="preserve">
+    <value>This widget cannot be created</value>
+    <comment>Message shown when the user tries to create a widet but the widget provider is not installed.</comment>
+  </data>
+  <data name="WidgetErrorCardCreate2Text" xml:space="preserve">
+    <value>Please ensure the app that provides this widget is installed.</value>
+    <comment>Second part of message shown when the user tries to create a widet but the widget provider is not installed.</comment>
+  </data>
+  <data name="WidgetErrorCardNoWidgetsText" xml:space="preserve">
+    <value>There are no widgets available to pin</value>
+    <comment>Message shown when the user tries to create a widet but there are no installed widgets.</comment>
   </data>
 </root>

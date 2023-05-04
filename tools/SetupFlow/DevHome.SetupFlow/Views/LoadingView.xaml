@@ -20,6 +20,7 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
                 <ResourceDictionary>
                     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
+                    <converters:BoolNegationConverter x:Key="BoolNegation"/>
                 </ResourceDictionary>
                 <ResourceDictionary>
                     <Style x:Key="DevHomeBorderStyle" TargetType="Border" >
@@ -42,11 +43,11 @@
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="5" >
                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF167;" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" />
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_First" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_Second" VerticalAlignment="Center" />
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_Header" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_SomeTasksFailed_Body" VerticalAlignment="Center" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5" >
-                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_MaxRetiresReached_Button" Command="{x:Bind ViewModel.GoToSummaryPageCommand}" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
+                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_MaxRetriesReached_Button" Command="{x:Bind ViewModel.GoToSummaryPageCommand}" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
                 <Button Command="{x:Bind ViewModel.HideMaxRetryBannerCommand}" Style="{ThemeResource AlternateCloseButtonStyle}">
                     <Button.Content>
                         <SymbolIcon Symbol="Cancel"/>
@@ -66,52 +67,61 @@
         </Grid>
         <ProgressBar AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_SetupProgressBar_Description" x:Name="SetupTaskProgressBar" Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
         <TextBlock Text="{x:Bind ViewModel.ExecutingTasks, Mode=OneWay}" />
-        <Grid ColumnSpacing="50" >
+        <Grid ColumnSpacing="50" Height="500" RowSpacing="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <StackPanel x:Name="ExecutingTasksStackPanel" Grid.Column="0" Padding="0, 11, 0, 0">
-                <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
-                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Padding="0, 0, 0, 12" Style="{StaticResource SemiBoldTextStyle}"/>
-                </Border>
-                <ScrollViewer x:Name="AllRunningTasksScrollViewer" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" Margin="0, 20, 0, 0">
-                    <StackPanel>
-                        <StackPanel.Resources>
-                            <StackLayout x:Name="VerticalStackLayout" Orientation="Vertical" Spacing="8"/>
-                            <DataTemplate x:Key="HorizontalBarTemplate" x:DataType="models:TaskInformation">
-                                <StackPanel Orientation="Horizontal" Spacing="5">
-                                    <ImageIcon
-                                    Width="16"
-                                    Height="16"
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="500"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Style="{StaticResource SemiBoldTextStyle}"/>
+            </Border>
+            <ScrollViewer Grid.Column="0" Grid.Row="1" x:Name="AllRunningTasksScrollViewer" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" Margin="0, 10, 0, 0">
+                <StackPanel>
+                    <StackPanel.Resources>
+                        <StackLayout x:Name="VerticalStackLayout" Orientation="Vertical" Spacing="10"/>
+                        <DataTemplate x:Key="HorizontalBarTemplate" x:DataType="models:TaskInformation">
+                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                <ImageIcon
+                                    Width="18"
+                                    Height="18"
                                     Source="{x:Bind StatusSymbolIcon, Mode=OneWay}"/>
-                                    <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </StackPanel.Resources>
-                        <ItemsRepeater x:Name="TasksItemsRepeater" ItemsSource="{x:Bind ViewModel.TasksToRun, Mode=OneWay}"
+                                <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}"  VerticalAlignment="Center"/>
+
+                                <!-- If the status icon is visible it means the task has stopped.  Don't show progress ring.-->
+                                <ProgressRing IsActive="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource BoolNegation}}" Width="20" Height="20"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </StackPanel.Resources>
+                    <ItemsRepeater x:Name="TasksItemsRepeater" ItemsSource="{x:Bind ViewModel.TasksToRun, Mode=OneWay}"
                            Layout="{StaticResource VerticalStackLayout}" 
                            ItemTemplate="{StaticResource HorizontalBarTemplate}">
-                        </ItemsRepeater>
-                    </StackPanel>
-                </ScrollViewer>
-            </StackPanel>
-            <StackPanel x:Name="ActionCenterStackPanel" Grid.Column="1">
-                <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1" >
-                    <Grid Padding="0, 0, 0, 9">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="33"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter" VerticalAlignment="Center" Style="{StaticResource SemiBoldTextStyle}"/>
-                        <HyperlinkButton Grid.Row="0" Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}" HorizontalAlignment="right"/>
-                    </Grid>
-                </Border>
-                <TextBlock Grid.Column="0" Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}"  Margin="0, 10, 0, 10"/>
-                <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
+                    </ItemsRepeater>
+                </StackPanel>
+            </ScrollViewer>
+            <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="33"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter" VerticalAlignment="Center" Style="{StaticResource SemiBoldTextStyle}"/>
+                    <HyperlinkButton Grid.Row="0" Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}" HorizontalAlignment="right"/>
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="500"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}" Margin="0, 0, 0,10"/>
+                <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <StackPanel.Resources>
                             <StackLayout x:Name="SecondVerticalStackLayout" Orientation="Vertical" Spacing="8"/>
@@ -127,7 +137,7 @@
                         </ItemsRepeater>
                     </StackPanel>
                 </ScrollViewer>
-            </StackPanel>
+            </Grid>
         </Grid>
     </StackPanel>
 </UserControl>

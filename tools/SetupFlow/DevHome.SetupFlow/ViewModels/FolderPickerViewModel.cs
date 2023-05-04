@@ -159,6 +159,27 @@ public partial class FolderPickerViewModel : ObservableObject
             return false;
         }
 
+        if (!InDevDriveScenario)
+        {
+            // User could enter a path that does not exist.  That is okay.  Clone will make the path.
+            // If the location does exist, make sure it does not point to a file.
+            if (File.Exists(CloneLocation))
+            {
+                FolderPickerErrorMessage = _stringResource.GetLocalized(StringResourceKey.ClonePathNotFolder);
+                ShowFolderPickerError = true;
+                return false;
+            }
+
+            // User could put in a drive letter that does not exist.
+            var drive = Path.GetPathRoot(CloneLocation);
+            if (!Directory.Exists(drive))
+            {
+                FolderPickerErrorMessage = _stringResource.GetLocalized(StringResourceKey.ClonePathDriveDoesNotExist);
+                ShowFolderPickerError = true;
+                return false;
+            }
+        }
+
         ShowFolderPickerError = false;
         return true;
     }

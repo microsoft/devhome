@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Logging;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Settings.Models;
@@ -63,7 +64,7 @@ public partial class AccountsProviderViewModel : ObservableObject
         if (!result.IsSuccessful)
         {
             // TODO: Display Error
-            Log.Logger?.ReportError($"developerId: {loginId} Error: {result.Exception}", result.Exception!);
+            GlobalLog.Logger?.ReportError($"Account logout failed. developerId: {loginId} Error: {result.Exception}", result.Exception!);
         }
 
         RefreshLoggedInAccounts();

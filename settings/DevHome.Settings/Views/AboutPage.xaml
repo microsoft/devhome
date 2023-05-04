@@ -5,34 +5,52 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:DevHome.Common.Helpers"
-    xmlns:xaml="using:Microsoft.UI.Xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
-        <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <Color x:Key="CardBackground">#B3FFFFFF</Color>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="CardBackground">#0DFFFFFF</Color>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
     </Page.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <StackPanel Margin="{StaticResource XSmallTopMargin}">
-            <Grid x:Name="Settings_Breadcrumbs" Margin="{StaticResource SettingsPageSubTitleMargin}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock x:Uid="Settings_SubTitle" Grid.Column="0" Style="{ThemeResource TitleTextBlockStyle}" />
-                <TextBlock Text=">" Grid.Column="1" Style="{ThemeResource TitleTextBlockStyle}" Margin="{StaticResource SettingsPageSubTitleArrowMargin}" />
-                <TextBlock x:Uid="Settings_About_SubTitle" Grid.Column="2" Style="{ThemeResource TitleTextBlockStyle}" />
-            </Grid>
+            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
 
-            <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" Style="{ThemeResource BodyTextBlockStyle}" />
-
-            <TextBlock
-                        x:Uid="Settings_AboutDescription"
-                        Margin="{StaticResource XSmallTopMargin}"
-                        Style="{ThemeResource BodyTextBlockStyle}" />
-            <HyperlinkButton x:Uid="SettingsPage_PrivacyTermsLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+            <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                          IsExpanded="true" Background="{ThemeResource CardBackground}"
+                          MinHeight="64" CornerRadius="6,6,0,0" Padding="47,0,47,7" >
+                <Expander.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Assets/DevHome.ico" HorizontalAlignment="Left" Width="16" Height="16" />
+                        <TextBlock x:Uid="Settings_About_Specifications" Margin="20,0,0,0" />
+                    </StackPanel>
+                </Expander.Header>
+                <Expander.Content>
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="Settings_About_Version" Width="100" />
+                            <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Expander.Content>
+            </Expander>
+            <StackPanel Orientation="Horizontal" Background="{ThemeResource CardBackground}"
+                        CornerRadius="0,0,6,6" Padding="15,0,47,7" Margin="1,0,1,0">
+                <TextBlock x:Uid="Settings_About_RelatedLinks" VerticalAlignment="Center" />
+                <HyperlinkButton x:Uid="SettingsPage_SourceCodeLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+                <HyperlinkButton x:Uid="SettingsPage_DocumentationLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+                <HyperlinkButton x:Uid="SettingsPage_ReleaseNotesLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+                <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </Page>

@@ -63,62 +63,34 @@
     <comment>Navigation pane content</comment>
   </data>
   <data name="Settings_Preferences_Description" xml:space="preserve">
-    <value>Description: Preferences</value>
+    <value>Theme, on startup, get started content</value>
     <comment>Body text description for a card than when clicked takes the user to the Preferences settings page</comment>
   </data>
   <data name="Settings_Preferences_Header" xml:space="preserve">
     <value>Preferences</value>
     <comment>Header for a card than when clicked takes the user to the Preferences settings page</comment>
   </data>
-  <data name="Settings_Preferences_SubTitle.Text" xml:space="preserve">
-    <value>Preferences</value>
-    <comment>Header for a card than when clicked takes the user to the Preferences settings page</comment>
-  </data>
   <data name="Settings_Accounts_Description" xml:space="preserve">
-    <value>Description: Accounts</value>
+    <value>Add accounts, sign in or out</value>
     <comment>Body text description for a card than when clicked takes the user to the Accounts settings page</comment>
   </data>
   <data name="Settings_Accounts_Header" xml:space="preserve">
     <value>Accounts</value>
     <comment>Header for a card than when clicked takes the user to the Accounts settings page</comment>
   </data>
-  <data name="Settings_Accounts_SubTitle.Text" xml:space="preserve">
-    <value>Accounts</value>
-    <comment>Header for a card than when clicked takes the user to the Accounts settings page</comment>
-  </data>
-  <data name="Settings_Notifications_Description" xml:space="preserve">
-    <value>Description: Notifications</value>
-    <comment>Body text description for a card than when clicked takes the user to the Notifications settings page</comment>
-  </data>
-  <data name="Settings_Notifications_Header" xml:space="preserve">
-    <value>Notifications</value>
-    <comment>Header for a card than when clicked takes the user to the Notifications settings page</comment>
-  </data>
-  <data name="Settings_Notifications_SubTitle.Text" xml:space="preserve">
-    <value>Notifications</value>
-    <comment>Header for a card than when clicked takes the user to the Notifications settings page</comment>
-  </data>
   <data name="Settings_Extensions_Description" xml:space="preserve">
-    <value>Description: Extensions</value>
+    <value>Add or remove, manage</value>
     <comment>Body text description for a card than when clicked takes the user to the Extensions settings page</comment>
   </data>
   <data name="Settings_Extensions_Header" xml:space="preserve">
     <value>Extensions</value>
     <comment>Header for a card than when clicked takes the user to the Extensions settings page</comment>
   </data>
-  <data name="Settings_Extensions_SubTitle.Text" xml:space="preserve">
-    <value>Extensions</value>
-    <comment>Header for a card than when clicked takes the user to the Extensions settings page</comment>
-  </data>
   <data name="Settings_About_Description" xml:space="preserve">
-    <value>Description: About</value>
+    <value>App info, Privacy statement, Terms of Use</value>
     <comment>Body text description for a card than when clicked takes the user to the About settings page</comment>
   </data>
   <data name="Settings_About_Header" xml:space="preserve">
-    <value>About</value>
-    <comment>Header for a card than when clicked takes the user to the About settings page</comment>
-  </data>
-  <data name="Settings_About_SubTitle.Text" xml:space="preserve">
     <value>About</value>
     <comment>Header for a card than when clicked takes the user to the About settings page</comment>
   </data>
@@ -140,11 +112,33 @@
   <data name="Settings_AboutDescription.Text" xml:space="preserve">
     <value>TODO: Replace with your app description.</value>
   </data>
-  <data name="SettingsPage_PrivacyTermsLink.Content" xml:space="preserve">
-    <value>Privacy Statement</value>
+  <data name="SettingsPage_SourceCodeLink.Content" xml:space="preserve">
+    <value>Source Code</value>
   </data>
-  <data name="SettingsPage_PrivacyTermsLink.NavigateUri" xml:space="preserve">
-    <value>https://YourPrivacyUrlGoesHere/</value>
+  <data name="SettingsPage_SourceCodeLink.NavigateUri" xml:space="preserve">
+    <value>https://go.microsoft.com/fwlink/?linkid=2234396</value>
+    <comment>URL</comment>
+  </data>
+  <data name="SettingsPage_DocumentationLink.Content" xml:space="preserve">
+    <value>Documentation</value>
+  </data>
+  <data name="SettingsPage_DocumentationLink.NavigateUri" xml:space="preserve">
+    <value>https://go.microsoft.com/fwlink/?linkid=2234883</value>
+    <comment>URL</comment>
+  </data>
+  <data name="SettingsPage_ReleaseNotesLink.Content" xml:space="preserve">
+    <value>Release Notes</value>
+  </data>
+  <data name="SettingsPage_ReleaseNotesLink.NavigateUri" xml:space="preserve">
+    <value>https://go.microsoft.com/fwlink/?linkid=2234586</value>
+    <comment>URL</comment>
+  </data>
+  <data name="SettingsPage_PrivacyPolicyLink.Content" xml:space="preserve">
+    <value>Privacy Policy</value>
+  </data>
+  <data name="SettingsPage_PrivacyPolicyLink.NavigateUri" xml:space="preserve">
+    <value>https://go.microsoft.com/fwlink/?linkid=2234882</value>
+    <comment>URL</comment>
   </data>
   <data name="Settings_Accounts_AddAccountButton.Content" xml:space="preserve">
     <value>Add Account</value>
@@ -185,10 +179,19 @@
   <data name="Settings_Accounts_NoProvidersContentDialog_Title" xml:space="preserve">
     <value>No Dev Home Plugins found!</value>
   </data>
-  <data name="Settings_SubTitle.Text" xml:space="preserve">
+  <data name="Settings_Header" xml:space="preserve">
     <value>Settings</value>
   </data>
   <data name="LoginUIDialogTitle.Text" xml:space="preserve">
     <value>Connect your account</value>
+  </data>
+  <data name="Settings_About_Specifications.Text" xml:space="preserve">
+    <value>Dev Home specifications</value>
+  </data>
+  <data name="Settings_About_Version.Text" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="Settings_About_RelatedLinks.Text" xml:space="preserve">
+    <value>Related links</value>
   </data>
 </root>

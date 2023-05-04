@@ -353,9 +353,12 @@ public partial class DashboardView : ToolPage
 
             // Put new widget on the Dashboard.
             var widgetDef = _widgetCatalog.GetWidgetDefinition(newWidget.DefinitionId);
-            var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
-            await newWidget.SetSizeAsync(size);
-            AddWidgetToPinnedWidgets(newWidget, size);
+            if (widgetDef is not null)
+            {
+                var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
+                await newWidget.SetSizeAsync(size);
+                AddWidgetToPinnedWidgets(newWidget, size);
+            }
         }
     }
 
@@ -504,7 +507,7 @@ public partial class DashboardView : ToolPage
         var widgetDef = _widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
 
         var configurationRenderer = await GetConfigurationRendererAsync();
-        var dialog = new CustomizeWidgetDialog(_widgetHost, configurationRenderer, _dispatcher, widgetDef)
+        var dialog = new CustomizeWidgetDialog(_widgetHost, _widgetCatalog, configurationRenderer, _dispatcher, widgetDef)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,

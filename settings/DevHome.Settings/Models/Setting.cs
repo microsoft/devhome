@@ -1,12 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using CommunityToolkit.Labs.WinUI;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using Microsoft.UI.Xaml;
@@ -25,6 +20,8 @@ public class Setting
     public string Header { get; }
 
     public string Description { get; }
+
+    public string Glyph { get; }
 
     public bool HasToggleSwitch { get; }
 
@@ -66,12 +63,13 @@ public class Setting
         }
     }
 
-    public Setting(string path, string classId, string header, string description, bool hasToggleSwitch)
+    public Setting(string path, string classId, string header, string description, string glyph, bool hasToggleSwitch)
     {
         Path = path;
         ClassId = classId;
         Header = header;
         Description = description;
+        Glyph = glyph;
         HasToggleSwitch = hasToggleSwitch;
 
         _isExtensionEnabled = GetIsExtensionEnabled();

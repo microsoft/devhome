@@ -3,6 +3,7 @@
 
 using System;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
@@ -62,17 +63,20 @@ public sealed partial class EditClonePathDialog
         {
             FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
             FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
+            IsPrimaryButtonEnabled = IsPrimaryButtonEnabled || EditDevDriveViewModel.DevDriveDetailsChanged;
         };
-        IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
+
         if (cloningInfo.CloneToDevDrive)
         {
             AddDevDriveInfo();
         }
 
         FolderPickerViewModel.CloneLocation = cloningInfo.CloningLocation.FullName;
+        EditClonePathViewModel.IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
         _stringResource = Application.Current.GetService<ISetupFlowStringResource>();
         PrevCheckBoxSelection = DevDriveCheckBox.IsChecked.GetValueOrDefault(false);
         UpdateDialogState();
+        ChangePrimaryButtonStyleIfEnabled();
     }
 
     /// <summary>
@@ -82,6 +86,8 @@ public sealed partial class EditClonePathDialog
     {
         await FolderPickerViewModel.ChooseCloneLocation();
         IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
+
+        ChangePrimaryButtonStyleIfEnabled();
     }
 
     /// <summary>
@@ -123,18 +129,27 @@ public sealed partial class EditClonePathDialog
     /// </summary>
     private void CloneLocationTextBox_TextChanged(object sender, RoutedEventArgs e)
     {
+        var isDevDriveAvailable = EditDevDriveViewModel.DevDrive != null;
         if (sender is TextBox cloneLocationTextBox)
         {
             var location = cloneLocationTextBox.Text;
             if (string.Equals(cloneLocationTextBox.Name, "DevDriveCloneLocationAliasTextBox", StringComparison.Ordinal))
             {
-                location = (EditDevDriveViewModel.DevDrive != null) ? EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
+                location = isDevDriveAvailable ? EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
             }
 
             FolderPickerViewModel.CloneLocation = location;
         }
 
-        IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
+        var validationResult = FolderPickerViewModel.ValidateCloneLocation();
+        if (isDevDriveAvailable && EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
+        {
+            validationResult &= EditDevDriveViewModel.IsDevDriveValid();
+        }
+
+        EditClonePathViewModel.IsPrimaryButtonEnabled = validationResult;
+
+        ChangePrimaryButtonStyleIfEnabled();
     }
 
     /// <summary>
@@ -142,20 +157,13 @@ public sealed partial class EditClonePathDialog
     /// </summary>
     private void AddDevDriveInfo()
     {
-        if (EditDevDriveViewModel.MakeDefaultDevDrive())
-        {
-            DevDriveCheckBox.IsChecked = true;
-            FolderPickerViewModel.InDevDriveScenario = true;
-            FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
-            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-            FolderPickerViewModel.DisableBrowseButton();
-            PrevCheckBoxSelection = true;
-        }
-        else
-        {
-            // TODO: Add simple error Text in UI, e.g MakeDefaultDevDrive could return
-            // the actual result and we could display the error text related to it from the .resw file.
-        }
+        EditDevDriveViewModel.MakeDefaultDevDrive();
+        DevDriveCheckBox.IsChecked = true;
+        FolderPickerViewModel.InDevDriveScenario = true;
+        FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
+        FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+        FolderPickerViewModel.DisableBrowseButton();
+        PrevCheckBoxSelection = true;
     }
 
     /// <summary>
@@ -215,11 +223,13 @@ public sealed partial class EditClonePathDialog
     {
         CloseButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/CloseButtonText");
 
+        // Manually change the styles here because the "Are you sure" confirm button should not have the accent style"
         if (PrevCheckBoxSelection && PrevCheckBoxSelection != DevDriveCheckBox.IsChecked.GetValueOrDefault(false))
         {
             Title = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialogUncheckCheckMark + $"/Title");
             PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialogUncheckCheckMark + $"/PrimaryButtonText");
             EditClonePathViewModel.ShouldShowAreYouSureMessage = true;
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
             IsPrimaryButtonEnabled = true;
         }
         else
@@ -227,6 +237,23 @@ public sealed partial class EditClonePathDialog
             Title = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/Title");
             PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/PrimaryButtonText");
             EditClonePathViewModel.ShouldShowAreYouSureMessage = false;
+            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+        }
+    }
+
+    /// <summary>
+    /// Make the primary button accent color if enabled.
+    /// Otherwise use the default style
+    /// </summary>
+    private void ChangePrimaryButtonStyleIfEnabled()
+    {
+        if (EditClonePathViewModel.IsPrimaryButtonEnabled)
+        {
+            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+        }
+        else
+        {
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
         }
     }
 

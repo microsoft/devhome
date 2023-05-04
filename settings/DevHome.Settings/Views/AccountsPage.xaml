@@ -40,22 +40,16 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <StackPanel x:Name="AccountsContentArea">
-            <Grid x:Name="Settings_Breadcrumbs" Margin="{StaticResource SettingsPageSubTitleMargin}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock x:Uid="Settings_SubTitle" Grid.Column="0" Style="{ThemeResource TitleTextBlockStyle}" />
-                <TextBlock Text=">" Grid.Column="1" Style="{ThemeResource TitleTextBlockStyle}" Margin="{StaticResource SettingsPageSubTitleArrowMargin}" />
-                <TextBlock x:Uid="Settings_Accounts_SubTitle" Grid.Column="2" Style="{ThemeResource TitleTextBlockStyle}" />
-            </Grid>
+            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
 
             <StackPanel x:Name="AddAccountMainStackPanel" Margin="{StaticResource XSmallTopMargin}">
                 <labs:SettingsCard x:Uid="Settings_Accounts_AddAccount">
-                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right">
-                        <Button.Flyout>
-                            <Flyout Placement="Bottom">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8fa;"/>
+                    </labs:SettingsCard.HeaderIcon>
+                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right" Click="AddAccountButton_Click">
+                        <Button.Resources>
+                            <Flyout x:Name="AccountsProvidersFlyout" Placement="Bottom">
                                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}"
                                                ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
                                                HorizontalAlignment="Stretch" VerticalAlignment="Center">
@@ -68,7 +62,7 @@
                                     </Style>
                                 </Flyout.FlyoutPresenterStyle>
                             </Flyout>
-                        </Button.Flyout>
+                        </Button.Resources>
                     </Button>
                 </labs:SettingsCard>
             </StackPanel>

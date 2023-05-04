@@ -2,11 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
@@ -20,6 +22,8 @@ namespace DevHome.SetupFlow.Views;
 /// </summary>
 internal partial class AddRepoDialog
 {
+    private readonly string _defaultClonePath;
+
     /// <summary>
     /// Gets or sets the view model to handle selecting and de-selecting repositories.
     /// </summary>
@@ -49,19 +53,28 @@ internal partial class AddRepoDialog
     /// </summary>
     private string _oldCloneLocation;
 
-    public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource)
+    public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
     {
         this.InitializeComponent();
-        AddRepoViewModel = new AddRepoViewModel(stringResource);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
+
+        var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        _defaultClonePath = Path.Join(userFolder, "source", "repos");
+        FolderPickerViewModel.CloneLocation = _defaultClonePath;
+
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {
             FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
             FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
         };
 
+        // Changing view to account so the selection changed event for Segment correctly shows URL.
+        AddRepoViewModel.CurrentPage = PageKind.AddViaAccount;
         IsPrimaryButtonEnabled = false;
+        AddViaUrlSegmentedItem.IsSelected = true;
+        SwitchViewsSegmentedView.SelectedIndex = 1;
     }
 
     /// <summary>
@@ -90,15 +103,26 @@ internal partial class AddRepoDialog
         });
     }
 
-    private void AddViaAccountToggleButton_Click(object sender, RoutedEventArgs e)
+    private void ChangeToAccountPage()
     {
+        SwitchViewsSegmentedView.IsEnabled = false;
         AddRepoViewModel.ChangeToAccountPage();
         FolderPickerViewModel.CloseFolderPicker();
         EditDevDriveViewModel.HideDevDriveUI();
+
+        // If DevHome has 1 provider installed and the provider has 1 logged in account
+        // switch to the repo page.
+        if (AddRepoViewModel.CanSkipAccountConnection)
+        {
+            RepositoryProviderComboBox.SelectedValue = AddRepoViewModel.ProviderNames[0];
+            SwitchToRepoPage(AddRepoViewModel.ProviderNames[0]);
+        }
+
+        SwitchViewsSegmentedView.IsEnabled = true;
         ToggleCloneButton();
     }
 
-    private void AddViaUrlToggleButton_Click(object sender, RoutedEventArgs e)
+    private void ChangeToUrlPage()
     {
         RepositoryProviderComboBox.SelectedIndex = -1;
         AddRepoViewModel.ChangeToUrlPage();
@@ -198,7 +222,7 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Adds the repository from the URL screen to the list of repos to be cloned.
     /// </summary>
-    private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
@@ -215,21 +239,26 @@ internal partial class AddRepoDialog
             var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
             if (!string.IsNullOrEmpty(repositoryProviderName))
             {
-                var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
-                AddRepoViewModel.ChangeToRepoPage();
-                FolderPickerViewModel.ShowFolderPicker();
-                EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-
-                await getAccountsTask;
-                if (AddRepoViewModel.Accounts.Any())
-                {
-                    AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
-                }
-
-                PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-                IsPrimaryButtonEnabled = false;
+                SwitchToRepoPage(repositoryProviderName);
             }
         }
+    }
+
+    private async void SwitchToRepoPage(string repositoryProviderName)
+    {
+        var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
+        AddRepoViewModel.ChangeToRepoPage();
+        FolderPickerViewModel.ShowFolderPicker();
+        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+
+        await getAccountsTask;
+        if (AddRepoViewModel.Accounts.Any())
+        {
+            AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+        }
+
+        PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+        IsPrimaryButtonEnabled = false;
     }
 
     /// <summary>
@@ -244,19 +273,12 @@ internal partial class AddRepoDialog
         var isChecked = (sender as CheckBox).IsChecked;
         if (isChecked.Value)
         {
-            if (EditDevDriveViewModel.MakeDefaultDevDrive())
-            {
-                FolderPickerViewModel.DisableBrowseButton();
-                _oldCloneLocation = FolderPickerViewModel.CloneLocation;
-                FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
-                FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-                FolderPickerViewModel.InDevDriveScenario = true;
-                return;
-            }
-
-            // TODO: Add UX to tell user we couldn't create one. Highly unlikely to happen but would happen
-            // if the user doesn't have the required space in the drive that has their OS. Minimum is 50 GB.
-            // Or if the user runs out of drive letters.
+            EditDevDriveViewModel.MakeDefaultDevDrive();
+            FolderPickerViewModel.DisableBrowseButton();
+            _oldCloneLocation = FolderPickerViewModel.CloneLocation;
+            FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
+            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+            FolderPickerViewModel.InDevDriveScenario = true;
         }
         else
         {
@@ -282,6 +304,11 @@ internal partial class AddRepoDialog
     private void ToggleCloneButton()
     {
         var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
+        if (EditDevDriveViewModel.DevDrive != null && EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
+        {
+            isEverythingGood &= EditDevDriveViewModel.IsDevDriveValid();
+        }
+
         if (isEverythingGood)
         {
             IsPrimaryButtonEnabled = true;
@@ -313,5 +340,17 @@ internal partial class AddRepoDialog
         }
 
         ToggleCloneButton();
+    }
+
+    private void Segmented_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
+        {
+            ChangeToAccountPage();
+        }
+        else
+        {
+            ChangeToUrlPage();
+        }
     }
 }

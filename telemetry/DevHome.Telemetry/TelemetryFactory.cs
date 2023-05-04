@@ -1,0 +1,37 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
+
+namespace DevHome.Telemetry;
+
+/// <summary>
+/// Creates instance of Telemetry
+/// This would be useful for future when we have updated interfaces for logger like ITelemetry2, ITelemetry3 and so on
+public class TelemetryFactory
+{
+    private static readonly object LockObj = new ();
+
+    private static Telemetry telemetryInstance;
+
+    private static Telemetry GetTelemetryInstance()
+    {
+        if (telemetryInstance == null)
+        {
+            lock (LockObj)
+            {
+                telemetryInstance ??= new Telemetry();
+                telemetryInstance.AddWellKnownSensitiveStrings();
+            }
+        }
+
+        return telemetryInstance;
+    }
+
+    /// <summary>
+    /// Gets a singleton instance of Telemetry
+    /// This would be useful for future when we have updated interfaces for logger like ITelemetry2, ITelemetry3 and so on
+    public static T Get<T>()
+        where T : ITelemetry
+    {
+        return (T)(object)GetTelemetryInstance();
+    }
+}

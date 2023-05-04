@@ -27,13 +27,15 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.230118.102" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230331000" />
     <PackageReference Include="System.Management" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
+    <ProjectReference Include="..\..\..\settings\DevHome.Settings\DevHome.Settings.csproj" />
+    <ProjectReference Include="..\..\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Projection\DevHome.SetupFlow.ElevatedComponent.Projection.csproj">
       <Aliases>Projection</Aliases>

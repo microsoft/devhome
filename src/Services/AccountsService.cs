@@ -1,14 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Configuration.Provider;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Helpers;
+using DevHome.Telemetry;
+using DevHome.TelemetryEvents;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace DevHome.Services;
 
@@ -28,7 +31,7 @@ public class AccountsService : IAccountsService
         {
             var devIds = devIdProvider.GetLoggedInDeveloperIds().ToList();
 
-            TelemetryHelper.AccountStartupEvent("Startup_DevId_Event", devIdProvider.GetName(), devIds);
+            TelemetryFactory.Get<ITelemetry>().Log("Startup_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.GetName(), devIds));
 
             devIdProvider.LoggedIn += LoggedInEventHandler;
             devIdProvider.LoggedOut += LoggedOutEventHandler;
@@ -59,7 +62,7 @@ public class AccountsService : IAccountsService
     {
         if (sender is IDeveloperIdProvider devIdProvider)
         {
-            TelemetryHelper.AccountEvent("Login_DevId_Event", devIdProvider.GetName(), developerId.LoginId());
+            TelemetryFactory.Get<ITelemetry>().Log("Login_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.GetName(), developerId));
         }
 
         // Bring focus back to DevHome after login
@@ -70,7 +73,7 @@ public class AccountsService : IAccountsService
     {
         if (sender is IDeveloperIdProvider devIdProvider)
         {
-            TelemetryHelper.AccountEvent("Logout_DevId_Event", devIdProvider.GetName(), developerId.LoginId());
+            TelemetryFactory.Get<ITelemetry>().Log("Logout_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.GetName(), developerId));
         }
     }
 }
