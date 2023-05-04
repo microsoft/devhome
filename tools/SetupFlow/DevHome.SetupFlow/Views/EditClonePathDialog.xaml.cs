@@ -295,11 +295,12 @@ public sealed partial class EditClonePathDialog
             return;
         }
 
-        if (FolderPickerViewModel.CloneLocation.Length >= 3)
+        var cloneLocation = FolderPickerViewModel.CloneLocation.Trim();
+        if (cloneLocation.Length >= 3)
         {
-            var letter = char.ToUpper(FolderPickerViewModel.CloneLocation[0], CultureInfo.InvariantCulture);
-            var secondCharIsColon = FolderPickerViewModel.CloneLocation[1] == ':';
-            var thirdCharIsSlash = FolderPickerViewModel.CloneLocation[2] == '\\' || FolderPickerViewModel.CloneLocation[2] == '/';
+            var letter = char.ToUpper(cloneLocation[0], CultureInfo.InvariantCulture);
+            var secondCharIsColon = cloneLocation[1] == ':';
+            var thirdCharIsSlash = cloneLocation[2] == '\\' || cloneLocation[2] == '/';
             if (DriveLettersInUseByDevDrivesOnSystem.Contains(letter) && secondCharIsColon && thirdCharIsSlash)
             {
                 EditDevDriveViewModel.HideDevDriveUI();
