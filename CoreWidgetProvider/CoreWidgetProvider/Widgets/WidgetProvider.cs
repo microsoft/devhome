@@ -47,12 +47,12 @@ internal class WidgetProvider : IWidgetProvider
 
     private void RecoverRunningWidgets()
     {
-        WidgetInfo[] runningWidgets;
+        WidgetInfo[] recoveredWidgets;
         try
         {
-            runningWidgets = WidgetManager.GetDefault().GetWidgetInfos();
+            recoveredWidgets = WidgetManager.GetDefault().GetWidgetInfos();
 
-            if (runningWidgets is null)
+            if (recoveredWidgets is null)
             {
                 Log.Logger()?.ReportDebug("No running widgets to recover.");
                 return;
@@ -64,9 +64,9 @@ internal class WidgetProvider : IWidgetProvider
             return;
         }
 
-        foreach (var widgetInfo in runningWidgets)
+        foreach (var widgetInfo in recoveredWidgets)
         {
-            if (!this.runningWidgets.ContainsKey(widgetInfo.WidgetContext.Id))
+            if (!runningWidgets.ContainsKey(widgetInfo.WidgetContext.Id))
             {
                 InitializeWidget(widgetInfo.WidgetContext, widgetInfo.CustomState);
             }

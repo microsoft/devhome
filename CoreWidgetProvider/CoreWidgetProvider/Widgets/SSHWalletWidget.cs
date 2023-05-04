@@ -295,13 +295,13 @@ public class SSHWalletWidget : WidgetImpl
         if (string.IsNullOrWhiteSpace(data))
         {
             configurationData.Add("hasConfiguration", false);
-            var repositoryData = new JsonObject
+            var sshConfigData = new JsonObject
             {
                 { "configFile", string.Empty },
                 { "defaultConfigFile", DefaultConfigFile },
             };
 
-            configurationData.Add("configuration", repositoryData);
+            configurationData.Add("configuration", sshConfigData);
         }
         else
         {
@@ -314,7 +314,7 @@ public class SSHWalletWidget : WidgetImpl
 
                     var numberOfEntries = GetNumberOfHostEntries();
 
-                    var repositoryData = new JsonObject
+                    var sshConfigData = new JsonObject
                     {
                         { "configFile", ConfigFile },
                         { "defaultConfigFile", DefaultConfigFile },
@@ -322,19 +322,19 @@ public class SSHWalletWidget : WidgetImpl
                     };
 
                     configurationData.Add("hasConfiguration", true);
-                    configurationData.Add("configuration", repositoryData);
+                    configurationData.Add("configuration", sshConfigData);
                 }
                 else
                 {
                     configurationData.Add("hasConfiguration", false);
-                    var repositoryData = new JsonObject
+                    var sshConfigData = new JsonObject
                     {
                         { "configFile", data },
                         { "defaultConfigFile", DefaultConfigFile },
                     };
 
                     configurationData.Add("errorMessage", Resources.GetResource(@"Widget_Template/ConfigFileNotFound", Logger()));
-                    configurationData.Add("configuration", repositoryData);
+                    configurationData.Add("configuration", sshConfigData);
                 }
             }
             catch (Exception ex)
@@ -343,14 +343,14 @@ public class SSHWalletWidget : WidgetImpl
 
                 configurationData.Clear();
                 configurationData.Add("hasConfiguration", false);
-                var repositoryData = new JsonObject
+                var sshConfigData = new JsonObject
                 {
                     { "configFile", data },
                     { "defaultConfigFile", DefaultConfigFile },
                 };
 
                 configurationData.Add("errorMessage", Resources.GetResource(@"Widget_Template/ErrorProcessingConfigFile", Logger()));
-                configurationData.Add("configuration", repositoryData);
+                configurationData.Add("configuration", sshConfigData);
 
                 return configurationData.ToString();
             }
