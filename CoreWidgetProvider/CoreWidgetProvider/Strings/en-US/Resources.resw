@@ -62,35 +62,32 @@
     <value>Loading...</value>
     <comment>Shown in Widget, when loading config file content</comment>
   </data>
-  <data name="Widget_Template.SSHWallet" xml:space="preserve">
-    <value>Microsoft SSH Wallet</value>
-  </data>
-  <data name="Widget_Template.Target" xml:space="preserve">
-    <value>Local</value>
-  </data>
-  <data name="Widget_Template_Label.ConfigFile" xml:space="preserve">
-    <value>Config File Path</value>
-  </data>
   <data name="Widget_Template_Tooltip.Submit" xml:space="preserve">
     <value>Submit</value>
     <comment>Shown in Widget, Tooltip text</comment>
   </data>
-  <data name="Widget_Template.ConfigFilePath" xml:space="preserve">
+  <data name="SSH_Widget_Template.Name" xml:space="preserve">
+    <value>Microsoft SSH Wallet</value>
+  </data>
+  <data name="SSH_Widget_Template.Target" xml:space="preserve">
+    <value>Local</value>
+  </data>
+  <data name="SSH_Widget_Template.ConfigFilePath" xml:space="preserve">
     <value>Config File Path</value>
   </data>
-  <data name="Widget_Template.ConfigFileNotFound" xml:space="preserve">
+  <data name="SSH_Widget_Template.ConfigFileNotFound" xml:space="preserve">
     <value>File not found</value>
   </data>
-  <data name="Widget_Template.EmptyHosts" xml:space="preserve">
+  <data name="SSH_Widget_Template.EmptyHosts" xml:space="preserve">
     <value>There are no hosts in this config file.</value>
   </data>
-  <data name="Widget_Template.NumOfHosts" xml:space="preserve">
+  <data name="SSH_Widget_Template.NumOfHosts" xml:space="preserve">
     <value>Number Of Hosts Found</value>
   </data>
-  <data name="Widget_Template.Connect" xml:space="preserve">
+  <data name="SSH_Widget_Template.Connect" xml:space="preserve">
     <value>Connect</value>
   </data>
-  <data name="Widget_Template.ErrorProcessingConfigFile" xml:space="preserve">
+  <data name="SSH_Widget_Template.ErrorProcessingConfigFile" xml:space="preserve">
     <value>Processing Config File Failed</value>
   </data>
 </root>

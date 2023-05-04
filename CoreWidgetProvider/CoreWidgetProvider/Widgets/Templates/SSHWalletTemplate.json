@@ -39,7 +39,7 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "%Widget_Template/EmptyHosts%",
+          "text": "%SSH_Widget_Template/EmptyHosts%",
           "wrap": true,
           "weight": "Bolder",
           "horizontalAlignment": "Center"
@@ -75,7 +75,7 @@
               "actions": [
                 {
                   "type": "Action.Execute",
-                  "title": "%Widget_Template/Connect%",
+                  "title": "%SSH_Widget_Template/Connect%",
                   "verb": "Connect",
                   "data": "${host}"
                 }

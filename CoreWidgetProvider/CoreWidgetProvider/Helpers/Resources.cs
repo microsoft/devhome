@@ -54,16 +54,15 @@ public static class Resources
         return new string[]
         {
             "Widget_Template/Loading",
-            "Widget_Template/SSHWallet",
-            "Widget_Template/Target",
-            "Widget_Template_Label/ConfigFile",
             "Widget_Template_Tooltip/Submit",
-            "Widget_Template/ConfigFilePath",
-            "Widget_Template/ConfigFileNotFound",
-            "Widget_Template/NumOfHosts",
-            "Widget_Template/EmptyHosts",
-            "Widget_Template/Connect",
-            "Widget_Template/ErrorProcessingConfigFile",
+            "SSH_Widget_Template/Name",
+            "SSH_Widget_Template/Target",
+            "SSH_Widget_Template/ConfigFilePath",
+            "SSH_Widget_Template/ConfigFileNotFound",
+            "SSH_Widget_Template/NumOfHosts",
+            "SSH_Widget_Template/EmptyHosts",
+            "SSH_Widget_Template/Connect",
+            "SSH_Widget_Template/ErrorProcessingConfigFile",
         };
     }
 }

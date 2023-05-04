@@ -8,7 +8,7 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "%Widget_Template/SSHWallet%",
+          "text": "%SSH_Widget_Template/Name%",
           "wrap": true,
           "horizontalAlignment": "Center",
           "size": "Large",
@@ -16,7 +16,7 @@
         },
         {
           "type": "TextBlock",
-          "text": "%Widget_Template/Target%",
+          "text": "%SSH_Widget_Template/Target%",
           "wrap": true,
           "horizontalAlignment": "Center",
           "spacing": "None",
@@ -29,7 +29,7 @@
     {
       "type": "Input.Text",
       "id": "ConfigFile",
-      "label": "%Widget_Template_Label/ConfigFile%",
+      "label": "%SSH_Widget_Template/ConfigFilePath%",
       "inlineAction": {
         "type": "Action.Execute",
         "tooltip": "%Widget_Template_Tooltip/Submit%",
@@ -62,7 +62,7 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "%Widget_Template/ConfigFilePath%",
+          "text": "%SSH_Widget_Template/ConfigFilePath%",
           "wrap": true,
           "spacing": "Medium",
           "size": "Small"
@@ -76,7 +76,7 @@
         },
         {
           "type": "TextBlock",
-          "text": "%Widget_Template/NumOfHosts%",
+          "text": "%SSH_Widget_Template/NumOfHosts%",
           "wrap": true,
           "spacing": "Medium",
           "size": "Small"

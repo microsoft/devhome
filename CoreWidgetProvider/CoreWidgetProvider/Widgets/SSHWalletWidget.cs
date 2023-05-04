@@ -333,7 +333,7 @@ public class SSHWalletWidget : WidgetImpl
                         { "defaultConfigFile", DefaultConfigFile },
                     };
 
-                    configurationData.Add("errorMessage", Resources.GetResource(@"Widget_Template/ConfigFileNotFound", Logger()));
+                    configurationData.Add("errorMessage", Resources.GetResource(@"SSH_Widget_Template/ConfigFileNotFound", Logger()));
                     configurationData.Add("configuration", sshConfigData);
                 }
             }
@@ -349,7 +349,7 @@ public class SSHWalletWidget : WidgetImpl
                     { "defaultConfigFile", DefaultConfigFile },
                 };
 
-                configurationData.Add("errorMessage", Resources.GetResource(@"Widget_Template/ErrorProcessingConfigFile", Logger()));
+                configurationData.Add("errorMessage", Resources.GetResource(@"SSH_Widget_Template/ErrorProcessingConfigFile", Logger()));
                 configurationData.Add("configuration", sshConfigData);
 
                 return configurationData.ToString();
