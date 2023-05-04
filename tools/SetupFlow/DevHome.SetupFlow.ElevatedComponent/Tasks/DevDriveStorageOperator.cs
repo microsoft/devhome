@@ -168,7 +168,7 @@ public sealed class DevDriveStorageOperator
         // when passed an attach virt disk flag that it does not support. This failure is not a deal breaker as we should still be able to attach the virtual
         // disk without the AttachVirtualDiskFlagAtBoot flag. Users would just have to manually remount their virtual disk file instead of the system
         // doing it for them at boot time. Once the api changes have propagated we will update this to remove the loop and use both flags in a single
-        // call with no fallback. We only make 2 attempts, first with the new flag and one second without.
+        // call with no fallback. We only make 2 attempts, first with the new flag and then a second attempt without the new flag.
         var numberOfAttemptsToAttachVirtDisk = 0;
         while (++numberOfAttemptsToAttachVirtDisk <= 2)
         {
