@@ -67,6 +67,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// Names of all accounts the user has logged into for a particular provider.
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsAccountComboBoxEnabled))]
     private ObservableCollection<string> _accounts = new ();
 
     /// <summary>
@@ -126,8 +127,7 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private string _urlParsingError;
 
-    [ObservableProperty]
-    private bool _isAccountComboBoxEnabled;
+    public bool IsAccountComboBoxEnabled => Accounts.Count > 1;
 
     [ObservableProperty]
     private Visibility _shouldShowUrlError;
@@ -319,15 +319,6 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId()));
-
-        if (Accounts.Count <= 1)
-        {
-            IsAccountComboBoxEnabled = false;
-        }
-        else
-        {
-            IsAccountComboBoxEnabled = true;
-        }
     }
 
     /// <summary>
