@@ -170,7 +170,7 @@ stages:
               [
                 {
                   "keycode": "CP-230012",
-                  "operationSetCode": "SigntoolSign",
+                  "operationSetCode": "SigntoolvNextSign",
                   "parameters": [
                     {
                       "parameterName": "OpusName",
@@ -301,7 +301,7 @@ stages:
               [
                 {
                   "keycode": "CP-230012",
-                  "operationSetCode": "SigntoolSign",
+                  "operationSetCode": "SigntoolvNextSign",
                   "parameters": [
                     {
                       "parameterName": "OpusName",
@@ -348,7 +348,7 @@ stages:
               [
                 {
                   "keycode": "CP-230012",
-                  "operationSetCode": "SigntoolSign",
+                  "operationSetCode": "SigntoolvNextSign",
                   "parameters": [
                     {
                       "parameterName": "OpusName",
