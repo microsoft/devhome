@@ -93,6 +93,7 @@ public static class StringResourceKey
     public static readonly string CloneRepoCreating = nameof(CloneRepoCreating);
     public static readonly string CloneRepoCreated = nameof(CloneRepoCreated);
     public static readonly string CloneRepoError = nameof(CloneRepoError);
+    public static readonly string CloneRepoErrorForActionCenter = nameof(CloneRepoErrorForActionCenter);
     public static readonly string CloneRepoRestart = nameof(CloneRepoRestart);
 
     // Configure task loading screen messages
@@ -119,6 +120,7 @@ public static class StringResourceKey
     public static readonly string LoadingScreenGoToSummaryButtonContent = nameof(LoadingScreenGoToSummaryButtonContent);
 
     // Repo tool
+    public static readonly string RepoDialogName = nameof(RepoDialogName);
     public static readonly string RepoToolNextButtonTooltip = nameof(RepoToolNextButtonTooltip);
     public static readonly string RepoAccountPagePrimaryButtonText = nameof(RepoAccountPagePrimaryButtonText);
     public static readonly string RepoEverythingElsePrimaryButtonText = nameof(RepoEverythingElsePrimaryButtonText);
@@ -127,6 +129,7 @@ public static class StringResourceKey
     public static readonly string ClonePathNotFullyQualifiedMessage = nameof(ClonePathNotFullyQualifiedMessage);
     public static readonly string ClonePathNotFolder = nameof(ClonePathNotFolder);
     public static readonly string ClonePathDriveDoesNotExist = nameof(ClonePathDriveDoesNotExist);
+    public static readonly string EditClonePathDialogName = nameof(EditClonePathDialogName);
 
     // Url Validation
     public static readonly string UrlValidationEmpty = nameof(UrlValidationEmpty);

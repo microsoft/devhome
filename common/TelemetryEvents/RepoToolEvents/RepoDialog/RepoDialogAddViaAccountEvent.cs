@@ -7,15 +7,25 @@ using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents;
+namespace DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 
 [EventData]
-public class SearchApplicationEvent : EventBase
+public class RepoDialogAddViaAccountEvent : EventBase
 {
+    public int ReposAdded
+    {
+        get;
+    }
+
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+
+    public RepoDialogAddViaAccountEvent(int reposAdded)
+    {
+        ReposAdded = reposAdded;
+    }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // No sensitive data held
+        // No sensitive strings to replace
     }
 }

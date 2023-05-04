@@ -110,7 +110,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void LearnMore()
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_LearnMore_Event", false);
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_LearnMore_Event");
     }
 
     private void CancelSetupFlow()
@@ -122,35 +122,35 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void SetUpAnotherProject()
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_SetUpAnotherProject_Event", false);
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_SetUpAnotherProject_Event");
         CancelSetupFlow();
     }
 
     [RelayCommand]
     public void GoToMainPage()
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_GoToMainPage_Event", false);
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_GoToMainPage_Event");
         CancelSetupFlow();
     }
 
     [RelayCommand]
     public void GoToDashboard()
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_GoToDashboard_Event", false);
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_GoToDashboard_Event");
         _host.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName);
     }
 
     [RelayCommand]
     public void GoToDevHomeSettings()
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_GoToDevHomeSettings_Event", false);
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_GoToDevHomeSettings_Event");
         _host.GetService<INavigationService>().NavigateTo(typeof(SettingsViewModel).FullName);
     }
 
     [RelayCommand]
     public void GoToForDevelopersSettingsPage()
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_GoToWindowsSettings_Event", false);
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_GoToWindowsSettings_Event");
         Task.Run(() => Launcher.LaunchUriAsync(new Uri("ms-settings:developers"))).Wait();
     }
 

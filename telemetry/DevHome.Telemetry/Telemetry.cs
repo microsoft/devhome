@@ -179,11 +179,11 @@ internal class Telemetry : ITelemetry
     }
 
     /// <summary>
-    /// Log an informal event with no additional data.  Does not allow for corrdinating activities.
+    /// Log an informal event with no additional data at log level measure.  Does not allow for coordinating activities.
     /// </summary>
     /// <param name="eventName">The name of the event to log</param>
     /// <param name="isError">Set to true if an error condition raised this event.</param>
-    public void LogMeasure(string eventName, bool isError, Guid? relatedActivityId = null)
+    public void LogMeasure(string eventName, bool isError = false, Guid? relatedActivityId = null)
     {
         this.LogInternal(eventName, LogLevel.Measure, new EmptyEvent(), relatedActivityId, isError);
     }

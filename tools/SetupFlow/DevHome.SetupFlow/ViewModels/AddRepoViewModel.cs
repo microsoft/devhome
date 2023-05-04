@@ -4,16 +4,16 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Configuration.Provider;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.RepoToolEvents;
+using DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
@@ -135,7 +135,6 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     private void FilterRepositories(string text)
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_FilterRepo_Event", false);
         IEnumerable<RepoViewListItem> filteredRepositories;
         if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
         {
@@ -314,7 +313,7 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
-            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_Login_Event", false);
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Measure, new RepoDialogGetAccountEvent(repositoryProviderName, false));
 
             // Throw away developer id becase we're calling GetAllLoggedInAccounts in anticipation
             // of 1 Provider : N DeveloperIds
@@ -323,7 +322,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
         else
         {
-            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_AlreadyLoggedIn_Event", false);
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Measure, new RepoDialogGetAccountEvent(repositoryProviderName, true));
         }
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId()));
@@ -367,6 +366,9 @@ public partial class AddRepoViewModel : ObservableObject
 
             EverythingToClone.Add(cloningInformation);
         }
+
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_RepoListClicked_Event", LogLevel.Measure, new RepoDialogRemovedViaAccountEvent(repositoriesToRemove.Count));
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_RepoListClicked_Event", LogLevel.Measure, new RepoDialogAddViaAccountEvent(repositoriesToAdd.Count));
     }
 
     /// <summary>
@@ -406,7 +408,7 @@ public partial class AddRepoViewModel : ObservableObject
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationNotFound);
             ShouldShowUrlError = Visibility.Visible;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, e.ToString());
-            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_CantFindRepo_Event", false);
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddViaUrl_Event", LogLevel.Measure, new RepoDialogAddViaUrlEvent(string.Empty, false, false));
             return;
         }
 
@@ -417,7 +419,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = providerNameAndRepo.Item1;
             cloningInformation.RepositoryToClone = repository;
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-            TelemetryFactory.Get<ITelemetry>().Log("Provider_Parsed_Event", LogLevel.Measure, new ProviderUrlParseEvent(providerNameAndRepo.Item1));
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddViaUrl_Event", LogLevel.Measure, new RepoDialogAddViaUrlEvent(providerNameAndRepo.Item1, true, true));
         }
         else
         {
@@ -428,7 +430,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = "git";
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_NoProvidersCanParseUrl_Event", false);
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddViaUrl_Event", LogLevel.Measure, new RepoDialogAddViaUrlEvent("git", false, false));
         }
 
         // User could paste in a url of an already added repo.  Check for that here.
@@ -438,7 +440,7 @@ public partial class AddRepoViewModel : ObservableObject
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
             ShouldShowUrlError = Visibility.Visible;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repository has already been added.");
-            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_UrlAlreadyAdded_Event", false);
+            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_AddViaUrl_Event");
             return;
         }
 
@@ -453,7 +455,10 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="loginId">The login Id to get the repositories for</param>
     public void GetRepositories(string repositoryProvider, string loginId)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent(nameof(_providers.GetAllLoggedInAccounts)));
         var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
+
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent(nameof(_providers.GetAllRepositories)));
         _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
 
         // TODO: What if the user comes back here with repos selected?

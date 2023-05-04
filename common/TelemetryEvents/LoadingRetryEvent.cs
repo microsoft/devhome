@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.Tracing;
 using DevHome.Telemetry;
+using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
 namespace DevHome.Common.TelemetryEvents;
@@ -13,7 +14,7 @@ public class LoadingRetryEvent : EventBase
 {
     public int NumberOfFailedTasks { get; }
 
-    public override PartA_PrivTags PartA_PrivTags => throw new NotImplementedException();
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
     public LoadingRetryEvent(int numberOfFailedTasks)
     {

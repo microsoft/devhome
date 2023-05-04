@@ -7,15 +7,25 @@ using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents;
+namespace DevHome.Common.TelemetryEvents.RepoToolEvents;
 
 [EventData]
-public class SearchApplicationEvent : EventBase
+public class DialogEndEvent : EventBase
 {
+    public string DialogName { get; }
+
+    public bool WasDialogCanceled { get; }
+
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+
+    public DialogEndEvent(string dialogName, bool wasCanceled)
+    {
+        DialogName = dialogName;
+        WasDialogCanceled = wasCanceled;
+    }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // No sensitive data held
+        // No sensitive strings to replace
     }
 }

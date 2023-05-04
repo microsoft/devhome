@@ -135,7 +135,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [RelayCommand]
     public async void RestartFailedTasks()
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("Loading_RestartFailedTasks_Event", false);
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Loading_RestartFailedTasks_Event");
         Log.Logger?.ReportInfo(Log.Component.Loading, "Restarting all failed tasks");
 
         // Keep the number of successful tasks and needs attention tasks the same.
@@ -359,7 +359,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         });
 
         // All the tasks are done.  Re-try logic follows.
-        if (_failedTasks.Count == 0)
+        if (!_failedTasks.Any())
         {
             Log.Logger?.ReportInfo(Log.Component.Loading, "All tasks succeeded.  Moving to next page");
             ExecutionFinished.Invoke(null, null);
@@ -380,7 +380,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             IsNavigationBarVisible = true;
         }
 
-        if (_failedTasks.Count > 0)
+        if (_failedTasks.Any())
         {
             TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Measure, new LoadingRetryEvent(_failedTasks.Count));
         }

@@ -36,14 +36,7 @@ public class ReposCloneEvent : EventBase
     {
         ProviderName = providerName;
 
-        if (developerId == null)
-        {
-            DeveloperId = "N/A";
-        }
-        else
-        {
-            DeveloperId = GetHashedDeveloperId(providerName, developerId);
-        }
+        DeveloperId = developerId is null ? string.Empty : GetHashedDeveloperId(providerName, developerId);
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
