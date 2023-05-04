@@ -3,19 +3,18 @@
 
 using System;
 using System.Diagnostics.Tracing;
-using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents;
+namespace DevHome.Telemetry;
 
 [EventData]
-public class CreateDevDriveEvent : EventBase
+public class EmptyEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // No sensitive strings.
+        // No sensitive string
     }
 }

@@ -135,7 +135,7 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     private void FilterRepositories(string text)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_FilterRepo_Event", LogLevel.Measure, new RepoToolEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_FilterRepo_Event", false);
         IEnumerable<RepoViewListItem> filteredRepositories;
         if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
         {
@@ -314,7 +314,7 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_Login_Event", LogLevel.Measure, new RepoToolEvent());
+            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_Login_Event", false);
 
             // Throw away developer id becase we're calling GetAllLoggedInAccounts in anticipation
             // of 1 Provider : N DeveloperIds
@@ -323,7 +323,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
         else
         {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AlreadyLoggedIn_Event", LogLevel.Measure, new RepoToolEvent());
+            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_AlreadyLoggedIn_Event", false);
         }
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId()));
@@ -406,7 +406,7 @@ public partial class AddRepoViewModel : ObservableObject
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationNotFound);
             ShouldShowUrlError = Visibility.Visible;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, e.ToString());
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_CantFindRepo_Event", LogLevel.Measure, new RepoToolEvent());
+            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_CantFindRepo_Event", false);
             return;
         }
 
@@ -428,7 +428,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = "git";
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_NoProvidersCanParseUrl_Event", LogLevel.Measure, new RepoToolEvent());
+            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_NoProvidersCanParseUrl_Event", false);
         }
 
         // User could paste in a url of an already added repo.  Check for that here.
@@ -438,7 +438,7 @@ public partial class AddRepoViewModel : ObservableObject
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
             ShouldShowUrlError = Visibility.Visible;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repository has already been added.");
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_UrlAlreadyAdded_Event", LogLevel.Measure, new RepoToolEvent());
+            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_UrlAlreadyAdded_Event", false);
             return;
         }
 

@@ -80,7 +80,7 @@ internal class RepositoryProvider
     /// </summary>
     public IDeveloperId LogIntoProvider()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_LoggingIn_Event", LogLevel.Measure, new RepoToolEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_LoggingIn_Event", false);
         return _devIdProvider.LoginNewDeveloperIdAsync().AsTask().Result;
     }
 
@@ -90,7 +90,7 @@ internal class RepositoryProvider
     /// <returns>A list of all accounts.  May be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllLoggedInAccounts_Event", LogLevel.Measure, new RepoToolEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_GetAllLoggedInAccounts_Event", false);
         return _devIdProvider.GetLoggedInDeveloperIds() ?? new List<IDeveloperId>();
     }
 

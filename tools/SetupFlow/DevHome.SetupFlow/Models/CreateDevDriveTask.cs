@@ -125,7 +125,7 @@ internal class CreateDevDriveTask : ISetupTask
 
             try
             {
-                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDrive_CreatingDevDrive_Event", LogLevel.Measure, new CreateDevDriveEvent());
+                TelemetryFactory.Get<ITelemetry>().LogMeasure("CreateDevDrive_CreatingDevDrive_Event", false);
                 var manager = _host.GetService<IDevDriveManager>();
                 var validation = manager.GetDevDriveValidationResults(DevDrive);
                 manager.RemoveAllDevDrives();

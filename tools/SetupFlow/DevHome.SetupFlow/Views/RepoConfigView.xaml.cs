@@ -90,30 +90,30 @@ public sealed partial class RepoConfigView : UserControl
             {
                 if (devDrive.State == DevDriveState.New)
                 {
-                    TelemetryFactory.Get<ITelemetry>().Log("RepoTool_CloneToNewDevDrive_Event", LogLevel.Measure, new RepoToolEvent());
+                    TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_CloneToNewDevDrive_Event", false);
                 }
                 else if (devDrive.State == DevDriveState.ExistsOnSystem)
                 {
-                    TelemetryFactory.Get<ITelemetry>().Log("RepoTool_CloneToExistingDevDrive_Event", LogLevel.Measure, new RepoToolEvent());
+                    TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_CloneToExistingDevDrive_Event", false);
                 }
 
                 if (addRepoDialog.EditDevDriveViewModel.DevDriveDetailsChanged)
                 {
-                    TelemetryFactory.Get<ITelemetry>().Log("RepoTool_DevDriveEdited_Event", LogLevel.Measure, new RepoToolEvent());
+                    TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_DevDriveEdited_Event", false);
                 }
             }
             else
             {
-                TelemetryFactory.Get<ITelemetry>().Log("RepoTool_CloneToLocalPath_Event", LogLevel.Measure, new RepoToolEvent());
+                TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_CloneToLocalPath_Event", false);
             }
 
             if (addRepoDialog.AddRepoViewModel.CurrentPage == Models.Common.PageKind.AddViaUrl)
             {
-                TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddedViaUrl_Event", LogLevel.Measure, new RepoToolEvent());
+                TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_AddedViaUrl_Event", false);
             }
             else if (addRepoDialog.AddRepoViewModel.CurrentPage == Models.Common.PageKind.Repositories)
             {
-                TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddedViaRepos_Event", LogLevel.Measure, new RepoToolEvent());
+                TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_AddedViaRepos_Event", false);
             }
 
             ViewModel.SaveSetupTaskInformation(everythingToClone);
@@ -131,7 +131,7 @@ public sealed partial class RepoConfigView : UserControl
     /// <param name="sender">Used to find the cloning information clicked on.</param>
     private async void EditClonePathButton_Click(object sender, RoutedEventArgs e)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("EditClonePath_Clicked_Event", LogLevel.Measure, new EditClonePathEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("EditClonePath_Clicked_Event", false);
         var cloningInformation = (sender as Button).DataContext as CloningInformation;
         var oldLocation = cloningInformation.CloningLocation;
         var wasCloningToDevDrive = cloningInformation.CloneToDevDrive;
@@ -146,7 +146,7 @@ public sealed partial class RepoConfigView : UserControl
 
         if (result == ContentDialogResult.Primary)
         {
-            TelemetryFactory.Get<ITelemetry>().Log("EditClonePath_Edited_Event", LogLevel.Measure, new EditClonePathEvent());
+            TelemetryFactory.Get<ITelemetry>().LogMeasure("EditClonePath_Edited_Event", false);
             cloningInformation.CloningLocation = new System.IO.DirectoryInfo(editClonePathDialog.FolderPickerViewModel.CloneLocation);
             ViewModel.UpdateCloneLocation(cloningInformation);
 
@@ -181,7 +181,7 @@ public sealed partial class RepoConfigView : UserControl
         }
         else
         {
-            TelemetryFactory.Get<ITelemetry>().Log("EditClonePath_Canceled_Event", LogLevel.Measure, new EditClonePathEvent());
+            TelemetryFactory.Get<ITelemetry>().LogMeasure("EditClonePath_Canceled_Event", false);
 
             // User cancelled the dialog, Report back to the Dev drive Manager to revert any changes.
             ViewModel.ReportDialogCancellation();

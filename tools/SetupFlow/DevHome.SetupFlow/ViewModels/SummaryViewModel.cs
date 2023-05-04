@@ -110,7 +110,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void LearnMore()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_LearnMore_Event", LogLevel.Measure, new SummaryEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_LearnMore_Event", false);
     }
 
     private void CancelSetupFlow()
@@ -122,35 +122,35 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void SetUpAnotherProject()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_SetUpAnotherProject_Event", LogLevel.Measure, new SummaryEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_SetUpAnotherProject_Event", false);
         CancelSetupFlow();
     }
 
     [RelayCommand]
     public void GoToMainPage()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_GoToMainPage_Event", LogLevel.Measure, new SummaryEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_GoToMainPage_Event", false);
         CancelSetupFlow();
     }
 
     [RelayCommand]
     public void GoToDashboard()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_GoToDashboard_Event", LogLevel.Measure, new SummaryEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_GoToDashboard_Event", false);
         _host.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName);
     }
 
     [RelayCommand]
     public void GoToDevHomeSettings()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_GoToDevHomeSettings_Event", LogLevel.Measure, new SummaryEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_GoToDevHomeSettings_Event", false);
         _host.GetService<INavigationService>().NavigateTo(typeof(SettingsViewModel).FullName);
     }
 
     [RelayCommand]
     public void GoToForDevelopersSettingsPage()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_GoToWindowsSettings_Event", LogLevel.Measure, new SummaryEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_GoToWindowsSettings_Event", false);
         Task.Run(() => Launcher.LaunchUriAsync(new Uri("ms-settings:developers"))).Wait();
     }
 

@@ -93,7 +93,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void HideBanner()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("MainPage_HideLearnMoreBanner_Event", LogLevel.Measure, new MainPageEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("MainPage_HideLearnMoreBanner_Event", false);
         ShowBanner = false;
     }
 
@@ -118,7 +118,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartSetup(string flowTitle)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartEndtoEnd_Event", LogLevel.Measure, new MainPageEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("MainPage_StartEndtoEnd_Event", false);
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting end-to-end setup");
 
         var taskGroups = new List<ISetupTaskGroup>
@@ -145,7 +145,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartRepoConfig(string flowTitle)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartOnlyRepoConfig_Event", LogLevel.Measure, new MainPageEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("MainPage_StartOnlyRepoConfig_Event", false);
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for repo config");
         StartSetupFlowForTaskGroups(
             flowTitle,
@@ -159,7 +159,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartAppManagement(string flowTitle)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartOnlyAppManagement_Event", LogLevel.Measure, new MainPageEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("MainPage_StartOnlyAppManagement_Event", false);
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for app management");
         StartSetupFlowForTaskGroups(flowTitle,  _host.GetService<AppManagementTaskGroup>());
     }
@@ -184,7 +184,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task StartConfigurationFileAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartOnlyConfigurationFile_Event", LogLevel.Measure, new MainPageEvent());
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("MainPage_StartOnlyConfigurationFile_Event", false);
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
         if (await configFileSetupFlow.PickConfigurationFileAsync())
