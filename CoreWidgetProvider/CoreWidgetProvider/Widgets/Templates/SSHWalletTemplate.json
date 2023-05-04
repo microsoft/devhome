@@ -6,19 +6,20 @@
       "columns": [
         {
           "type": "Column",
-          "width": 1,
-          "verticalContentAlignment": "Center",
+          "width": "auto",
+          "verticalContentAlignment": "center",
           "items": [
             {
               "type": "Image",
               "url": "https://learn.microsoft.com/en-us/windows/apps/design/style/images/segoe-mdl/eda3.png",
-              "size": "Small"
+              "size": "large",
+              "horizontalAlignment": "left"
             }
           ]
         },
         {
           "type": "Column",
-          "width": 9,
+          "width": "stretch",
           "verticalContentAlignment": "Center",
           "items": [
             {
