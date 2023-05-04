@@ -101,7 +101,6 @@
                      Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay}"
                      x:Name="DevDriveCloneLocationAliasTextBox"/>
                 <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
-                     x:Name="CloneLocationTextBox"
                      TextChanged="CloneLocation_TextChanged" Grid.Column="0" 
                      Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
                      IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
