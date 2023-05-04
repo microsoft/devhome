@@ -3,18 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.Tracing;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Diagnostics.Telemetry;
-using Microsoft.Win32;
-using Windows.ApplicationModel.Email.DataProvider;
 
 namespace DevHome.Telemetry;
 
