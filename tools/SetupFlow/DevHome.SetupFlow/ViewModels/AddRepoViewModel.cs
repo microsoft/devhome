@@ -417,7 +417,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = providerNameAndRepo.Item1;
             cloningInformation.RepositoryToClone = repository;
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-            TelemetryFactory.Get<ITelemetry>().Log("Provider_Parsed_Event", LogLevel.Measure, new ProviderUrlParseEvent(providerNameAndRepo.Item1)););
+            TelemetryFactory.Get<ITelemetry>().Log("Provider_Parsed_Event", LogLevel.Measure, new ProviderUrlParseEvent(providerNameAndRepo.Item1));
         }
         else
         {

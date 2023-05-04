@@ -109,7 +109,7 @@ internal class RepositoryProvider
         }
         else
         {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AlreadyFetched_Event", LogLevel.Measure, new ReposFetchedEvent(_repositories.Value.Count());
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AlreadyFetched_Event", LogLevel.Measure, new ReposFetchedEvent(_repositories.Value.Count()));
         }
 
         return _repositories.Value;

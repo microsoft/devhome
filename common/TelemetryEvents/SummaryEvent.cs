@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.Tracing;
 using DevHome.Telemetry;
+using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
 namespace DevHome.Common.TelemetryEvents;
@@ -11,7 +12,7 @@ namespace DevHome.Common.TelemetryEvents;
 [EventData]
 public class SummaryEvent : EventBase
 {
-    public override PartA_PrivTags PartA_PrivTags => throw new NotImplementedException();
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {

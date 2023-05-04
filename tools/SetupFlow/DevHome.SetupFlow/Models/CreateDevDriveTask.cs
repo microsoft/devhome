@@ -12,6 +12,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.ResultHelper;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Services;
@@ -124,7 +125,7 @@ internal class CreateDevDriveTask : ISetupTask
 
             try
             {
-                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDrive_CreatingDevDrive_Event", LogLevel.Measure, new CreateDevDriveTask());
+                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDrive_CreatingDevDrive_Event", LogLevel.Measure, new CreateDevDriveEvent());
                 var manager = _host.GetService<IDevDriveManager>();
                 var validation = manager.GetDevDriveValidationResults(DevDrive);
                 manager.RemoveAllDevDrives();

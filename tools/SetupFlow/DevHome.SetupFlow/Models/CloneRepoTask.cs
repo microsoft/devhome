@@ -82,6 +82,8 @@ public class CloneRepoTask : ISetupTask
 
     public ActionCenterMessages GetRebootMessage() => _needsRebootMessage;
 
+    private readonly IStringResource _stringResource;
+
     public bool DependsOnDevDriveToBeInstalled
     {
         get; set;
@@ -100,6 +102,7 @@ public class CloneRepoTask : ISetupTask
         _developerId = developerId;
         SetMessages(stringResource);
         ProviderName = providerName;
+        _stringResource = stringResource;
     }
 
     /// <summary>
@@ -115,6 +118,7 @@ public class CloneRepoTask : ISetupTask
         _developerId = null;
         ProviderName = providerName;
         SetMessages(stringResource);
+        _stringResource = stringResource;
     }
 
     private void SetMessages(IStringResource stringResource)
@@ -155,7 +159,8 @@ public class CloneRepoTask : ISetupTask
             catch (Exception e)
             {
                 Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}", e);
-                _actionCenterErrorMessage.PrimaryMessage += " 0x" + e.HResult.ToString("X", CultureInfo.CurrentCulture);
+                var errorMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoError, RepositoryToClone.DisplayName);
+                _actionCenterErrorMessage.PrimaryMessage = errorMessage += " 0x" + e.HResult.ToString("X", CultureInfo.CurrentCulture);
                 TelemetryFactory.Get<ITelemetry>().LogException("CloningRepository", e);
                 return TaskFinishedState.Failure;
             }
