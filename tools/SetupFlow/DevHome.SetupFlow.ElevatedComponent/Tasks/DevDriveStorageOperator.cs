@@ -55,6 +55,11 @@ public sealed class DevDriveStorageOperator
         public static uint CtlCodeOutput => (uint)(_deviceType << 16 | _access << 14 | _function << 2);
     }
 
+    // Signals to the system to reattach the virtual disk at boot time. This flag will be present in the public
+    // virtdisk.h file in the Windows SDK. For now since CsWin32 will not find this we have to manually add it.
+    // will be documented here: https://learn.microsoft.com/en-us/windows/win32/api/virtdisk/ne-virtdisk-attach_virtual_disk_flag
+    private const uint AttachVirtualDiskFlagAtBoot = 0x00000400;
+
     public DevDriveStorageOperator()
     {
     }
@@ -157,13 +162,42 @@ public sealed class DevDriveStorageOperator
         }
 
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"Starting AttachVirtualDisk");
-        result = PInvoke.AttachVirtualDisk(
-            tempHandle,
-            (PSECURITY_DESCRIPTOR)null,
-            ATTACH_VIRTUAL_DISK_FLAG.ATTACH_VIRTUAL_DISK_FLAG_PERMANENT_LIFETIME,
-            0,
-            null,
-            null);
+
+        // This is only temporary until the api updates to AttachVirtualDisk have propagated. AttachVirtualDisk will return an invalid argument
+        // when passed an attach disk flag that it does not support. This failure is not a deal breaker as we should still be able to attach the virtual
+        // disk without the AttachVirtualDiskFlagAtBoot flag. Users would just have to manually remount their virtual disk file instead of the system
+        // doing it for them at boot time. Once the api changes have propagated we will update this to remove the loop and use both flags in a single
+        // call with no fallback.
+        var numberOfAttemptsToAttachVirtDisk = 2;
+        while (numberOfAttemptsToAttachVirtDisk > 0)
+        {
+            var attachFlags = ATTACH_VIRTUAL_DISK_FLAG.ATTACH_VIRTUAL_DISK_FLAG_PERMANENT_LIFETIME;
+            if (numberOfAttemptsToAttachVirtDisk == 2)
+            {
+                attachFlags |= (ATTACH_VIRTUAL_DISK_FLAG)AttachVirtualDiskFlagAtBoot;
+            }
+
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"AttachVirtualDisk Attempt: {numberOfAttemptsToAttachVirtDisk} flags {attachFlags}");
+
+            result = PInvoke.AttachVirtualDisk(
+               tempHandle,
+               (PSECURITY_DESCRIPTOR)null,
+               attachFlags,
+               0,
+               null,
+               null);
+
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"AttachVirtualDisk Attempt: {numberOfAttemptsToAttachVirtDisk}, result {PInvoke.HRESULT_FROM_WIN32(result):X}, flags {attachFlags}");
+
+            // break early if successful.
+            if (result == WIN32_ERROR.NO_ERROR)
+            {
+                break;
+            }
+
+            numberOfAttemptsToAttachVirtDisk--;
+        }
+
         if (result != WIN32_ERROR.NO_ERROR)
         {
             Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"AttachVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
