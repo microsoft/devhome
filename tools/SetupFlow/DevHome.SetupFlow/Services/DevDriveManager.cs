@@ -474,4 +474,19 @@ public class DevDriveManager : IDevDriveManager
             }
         }
     }
+
+    /// <inheritdoc/>
+    public HashSet<char> DriveLettersInUseByDevDrivesCurrentlyOnSystem
+    {
+        get
+        {
+            var listOfLetters = new HashSet<char>();
+            foreach (var devDrive in GetAllDevDrivesThatExistOnSystem())
+            {
+                listOfLetters.Add(devDrive.DriveLetter);
+            }
+
+            return listOfLetters;
+        }
+    }
 }
