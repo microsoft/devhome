@@ -6,16 +6,11 @@
 
     <Thickness x:Key="BreadcrumbBarChevronPadding">12,0</Thickness>
 
-    <Style TargetType="BreadcrumbBarItem">
-        <Setter Property="FontFamily" Value="XamlAutoFontFamily" />
-        <Setter Property="FontSize" Value="28" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-    </Style>
+    <FontFamily x:Key="ContentControlThemeFontFamily">XamlAutoFontFamily</FontFamily>
 
-    <Style TargetType="BreadcrumbBar">
-        <Setter Property="FontFamily" Value="XamlAutoFontFamily" />
-        <Setter Property="FontSize" Value="28" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-    </Style>
+    <x:Double x:Key="BreadcrumbBarItemFontSize">28</x:Double>
+    <StaticResource x:Key="BreadcrumbBarItemThemeFontSize" ResourceKey="BreadcrumbBarItemFontSize" />
+
+    <FontWeight x:Key="BreadcrumbBarItemFontWeight">SemiBold</FontWeight>
 
 </ResourceDictionary>
