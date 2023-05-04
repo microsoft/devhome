@@ -338,28 +338,28 @@
     <comment>{Locked="{0}"} Label displayed when a package failed to install. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorBlockedByPolicy" xml:space="preserve">
-    <value>Operation is blocked by Group Policy</value>
-    <comment>Label displayed when a package installation fails because it is blocked by group policy</comment>
+    <value>{0} couldn't be installed due to a Group Policy setting.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it is blocked by group policy. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorInternalError" xml:space="preserve">
-    <value>Internal error</value>
-    <comment>Label displayed when a package installation fails because of an internal error</comment>
+    <value>{0} couldn't be installed due to an internal error.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because of an internal error. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorInstallError" xml:space="preserve">
-    <value>Install error code ({0})</value>
-    <comment>{Locked="{0}"}Label displayed when a package installation fails because of an error. {0} is replaced by a numeric value</comment>
+    <value>{0} couldn't be installed ({1})</value>
+    <comment>{Locked="{0}","{1}"}Label displayed when a package installation fails because of an error.{0} is replaced by the package name and {1} is replaced by a numeric value</comment>
   </data>
   <data name="InstallPackageErrorDownloadError" xml:space="preserve">
-    <value>Downloading installer failed</value>
-    <comment>{Locked="(0x{0})"}Label displayed when a package installation fails because the downloading the installer failed</comment>
+    <value>{0} couldn't be installed because the installer couldn't be downloaded.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because the downloading the installer failed. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorNoApplicableInstallers" xml:space="preserve">
-    <value>None of the installers are applicable for the current system</value>
-    <comment>Label displayed when a package installation fails because no applicable installer found for the current system</comment>
+    <value>{0} couldn't be installed because none of the installers are supported.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because no applicable installer found for the current system. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorUnknownError" xml:space="preserve">
-    <value>Unknown error</value>
-    <comment>Label displayed when a package installation fails because of an unknown error</comment>
+    <value>{0} couldn't be installed due to an unknown error.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because of an unknown error. {0} is replaced by the package name.</comment>
   </data>
   <data name="LearnMore.Text" xml:space="preserve">
     <value>Learn more</value>

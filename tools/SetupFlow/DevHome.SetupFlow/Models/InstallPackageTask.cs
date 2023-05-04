@@ -14,6 +14,7 @@ using DevHome.TelemetryEvents;
 using Microsoft.Management.Deployment;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
+using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -27,7 +28,9 @@ public class InstallPackageTask : ISetupTask
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly Lazy<bool> _requiresElevation;
 
-    private InstallPackageException _installPackageException;
+    private InstallResultStatus _installResultStatus;
+    private uint _installerErrorCode;
+    private int _extendedErrorCode;
 
     public bool RequiresAdmin => _requiresElevation.Value;
 
@@ -76,7 +79,7 @@ public class InstallPackageTask : ISetupTask
     {
         return new ()
         {
-            PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.InstallPackageError, _package.Name),
+            PrimaryMessage = GetErrorReason(),
         };
     }
 
@@ -105,7 +108,9 @@ public class InstallPackageTask : ISetupTask
             }
             catch (InstallPackageException e)
             {
-                _installPackageException = e;
+                _installResultStatus = e.Status;
+                _extendedErrorCode = e.ExtendedErrorCode;
+                _installerErrorCode = e.InstallerErrorCode;
                 ReportAppInstallFailedEvent();
                 Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
                 return TaskFinishedState.Failure;
@@ -129,6 +134,9 @@ public class InstallPackageTask : ISetupTask
             var elevatedResult = await elevatedTask.InstallPackage(_package.Id, _package.CatalogName);
             WasInstallSuccessful = elevatedResult.TaskSucceeded;
             RequiresReboot = elevatedResult.RebootRequired;
+            _installResultStatus = (InstallResultStatus)elevatedResult.Status;
+            _extendedErrorCode = elevatedResult.ExtendedErrorCode;
+            _installerErrorCode = elevatedResult.InstallerErrorCode;
 
             if (elevatedResult.TaskSucceeded)
             {
@@ -145,19 +153,30 @@ public class InstallPackageTask : ISetupTask
 
     private string GetErrorReason()
     {
-        return _installPackageException?.Status switch
+        var packageName = _package.Name;
+
+        // Get the error code of the overall operation
+        var errorCodes = $"0x{_extendedErrorCode:X}";
+
+        // Append the installer specific error code if available
+        if (_installerErrorCode != HRESULT.S_OK)
+        {
+            errorCodes += $", 0x{_installerErrorCode:X}";
+        }
+
+        return _installResultStatus switch
         {
             InstallResultStatus.BlockedByPolicy =>
-                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorBlockedByPolicy),
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorBlockedByPolicy, packageName),
             InstallResultStatus.InternalError =>
-                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorInternalError),
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorInternalError, packageName),
             InstallResultStatus.DownloadError =>
-                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorDownloadError),
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorDownloadError, packageName),
             InstallResultStatus.InstallError =>
-                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorInstallError, $"0x{_installPackageException.InstallerErrorCode:X}"),
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorInstallError, packageName, errorCodes),
             InstallResultStatus.NoApplicableInstallers =>
-                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorNoApplicableInstallers),
-            _ => _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownError),
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorNoApplicableInstallers, packageName),
+            _ => _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownError, packageName),
         };
     }
 

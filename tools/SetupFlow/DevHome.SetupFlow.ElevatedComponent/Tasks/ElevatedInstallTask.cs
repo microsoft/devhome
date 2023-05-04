@@ -4,8 +4,10 @@
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
+using DevHome.SetupFlow.Extensions;
 using Microsoft.Management.Deployment;
 using Windows.Foundation;
+using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.ElevatedComponent.Tasks;
 
@@ -69,10 +71,18 @@ public sealed class ElevatedInstallTask
 
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initiating install of package {packageId}");
             var installResult = await packageManager.InstallPackageAsync(packageToInstall, installOptions);
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Install finished. Status={installResult.Status}, InstallerErrorCode={installResult.InstallerErrorCode}, RebootRequired={installResult.RebootRequired}");
+            var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
+
+            // Contract version 4
+            var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK);
+
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Install finished. Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
             result.TaskAttempted = true;
             result.TaskSucceeded = installResult.Status == InstallResultStatus.Ok;
             result.RebootRequired = installResult.RebootRequired;
+            result.Status = (int)installResult.Status;
+            result.ExtendedErrorCode = extendedErrorCode;
+            result.InstallerErrorCode = installErrorCode;
 
             return result;
         }).AsAsyncOperation();

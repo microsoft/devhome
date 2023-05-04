@@ -21,11 +21,14 @@ public class InstallPackageException : Exception
     /// </remarks>
     public uint InstallerErrorCode { get; }
 
+    public int ExtendedErrorCode { get; set; }
+
     public InstallResultStatus Status { get; }
 
-    public InstallPackageException(InstallResultStatus status, uint installerErrorCode)
+    public InstallPackageException(InstallResultStatus status, int extendedErrorCode, uint installerErrorCode)
     {
         Status = status;
         InstallerErrorCode = installerErrorCode;
+        ExtendedErrorCode = extendedErrorCode;
     }
 }
