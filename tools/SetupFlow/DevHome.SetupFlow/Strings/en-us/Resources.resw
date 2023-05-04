@@ -321,6 +321,10 @@
     <value>File type not supported</value>
     <comment>File type not supported error message</comment>
   </data>
+  <data name="Installed.Text" xml:space="preserve">
+    <value>Installed</value>
+    <comment>Label for a package that is already installed.</comment>
+  </data>
   <data name="InstalledPackage" xml:space="preserve">
     <value>Installed {0}</value>
     <comment>{Locked="{0}"} Label displayed when a package has been installed. {0} is replaced by the package name.</comment>
