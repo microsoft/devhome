@@ -65,16 +65,18 @@ public sealed partial class EditClonePathDialog
             FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
             IsPrimaryButtonEnabled = IsPrimaryButtonEnabled || EditDevDriveViewModel.DevDriveDetailsChanged;
         };
-        IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
+
         if (cloningInfo.CloneToDevDrive)
         {
             AddDevDriveInfo();
         }
 
         FolderPickerViewModel.CloneLocation = cloningInfo.CloningLocation.FullName;
+        EditClonePathViewModel.IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
         _stringResource = Application.Current.GetService<ISetupFlowStringResource>();
         PrevCheckBoxSelection = DevDriveCheckBox.IsChecked.GetValueOrDefault(false);
         UpdateDialogState();
+        ChangePrimaryButtonStyleIfEnabled();
     }
 
     /// <summary>
@@ -84,6 +86,8 @@ public sealed partial class EditClonePathDialog
     {
         await FolderPickerViewModel.ChooseCloneLocation();
         IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
+
+        ChangePrimaryButtonStyleIfEnabled();
     }
 
     /// <summary>
@@ -143,7 +147,9 @@ public sealed partial class EditClonePathDialog
             validationResult &= EditDevDriveViewModel.IsDevDriveValid();
         }
 
-        IsPrimaryButtonEnabled = validationResult;
+        EditClonePathViewModel.IsPrimaryButtonEnabled = validationResult;
+
+        ChangePrimaryButtonStyleIfEnabled();
     }
 
     /// <summary>
@@ -217,11 +223,13 @@ public sealed partial class EditClonePathDialog
     {
         CloseButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/CloseButtonText");
 
+        // Manually change the styles here because the "Are you sure" confirm button should not have the accent style"
         if (PrevCheckBoxSelection && PrevCheckBoxSelection != DevDriveCheckBox.IsChecked.GetValueOrDefault(false))
         {
             Title = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialogUncheckCheckMark + $"/Title");
             PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialogUncheckCheckMark + $"/PrimaryButtonText");
             EditClonePathViewModel.ShouldShowAreYouSureMessage = true;
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
             IsPrimaryButtonEnabled = true;
         }
         else
@@ -229,6 +237,23 @@ public sealed partial class EditClonePathDialog
             Title = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/Title");
             PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/PrimaryButtonText");
             EditClonePathViewModel.ShouldShowAreYouSureMessage = false;
+            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+        }
+    }
+
+    /// <summary>
+    /// Make the primary button accent color if enabled.
+    /// Otherwise use the default style
+    /// </summary>
+    private void ChangePrimaryButtonStyleIfEnabled()
+    {
+        if (EditClonePathViewModel.IsPrimaryButtonEnabled)
+        {
+            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+        }
+        else
+        {
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
         }
     }
 
