@@ -47,9 +47,9 @@
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8fa;"/>
                     </labs:SettingsCard.HeaderIcon>
-                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right">
-                        <Button.Flyout>
-                            <Flyout Placement="Bottom">
+                    <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right" Click="AddAccountButton_Click">
+                        <Button.Resources>
+                            <Flyout x:Name="AccountsProvidersFlyout" Placement="Bottom">
                                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}"
                                                ItemTemplate="{StaticResource AccountsProviderButtonTemplate}"
                                                HorizontalAlignment="Stretch" VerticalAlignment="Center">
@@ -62,7 +62,7 @@
                                     </Style>
                                 </Flyout.FlyoutPresenterStyle>
                             </Flyout>
-                        </Button.Flyout>
+                        </Button.Resources>
                     </Button>
                 </labs:SettingsCard>
             </StackPanel>
