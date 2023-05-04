@@ -12,7 +12,6 @@ using System.Text.RegularExpressions;
 using CoreWidgetProvider.Helpers;
 using CoreWidgetProvider.Widgets.Enums;
 using Microsoft.Windows.Widgets.Providers;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CoreWidgetProvider.Widgets;
 
@@ -293,7 +292,7 @@ public class SSHWalletWidget : WidgetImpl
     {
         var configurationData = new JsonObject();
 
-        if (data == string.Empty)
+        if (string.IsNullOrWhiteSpace(data))
         {
             configurationData.Add("hasConfiguration", false);
             var repositoryData = new JsonObject
@@ -330,7 +329,7 @@ public class SSHWalletWidget : WidgetImpl
                     configurationData.Add("hasConfiguration", false);
                     var repositoryData = new JsonObject
                     {
-                        { "configFile", ConfigFile },
+                        { "configFile", data },
                         { "defaultConfigFile", DefaultConfigFile },
                     };
 
@@ -342,15 +341,15 @@ public class SSHWalletWidget : WidgetImpl
             {
                 Log.Logger()?.ReportError(Name, ShortId, $"Failed getting configuration information for input config file path: {data}", ex);
 
-                // TODO handle this and show something meaningful in the widget to indicate invalid input.
+                configurationData.Clear();
                 configurationData.Add("hasConfiguration", false);
                 var repositoryData = new JsonObject
                 {
-                    { "configFile", ConfigFile },
+                    { "configFile", data },
                     { "defaultConfigFile", DefaultConfigFile },
                 };
 
-                configurationData.Add("errorMessage", ex.Message);
+                configurationData.Add("errorMessage", Resources.GetResource(@"Widget_Template/ErrorProcessingConfigFile", Logger()));
                 configurationData.Add("configuration", repositoryData);
 
                 return configurationData.ToString();

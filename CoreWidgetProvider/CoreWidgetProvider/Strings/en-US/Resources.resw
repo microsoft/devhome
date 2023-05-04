@@ -149,4 +149,7 @@
   <data name="Widget_Template.Connect" xml:space="preserve">
     <value>Connect</value>
   </data>
+  <data name="Widget_Template.ErrorProcessingConfigFile" xml:space="preserve">
+    <value>Processing Config File Failed</value>
+  </data>
 </root>

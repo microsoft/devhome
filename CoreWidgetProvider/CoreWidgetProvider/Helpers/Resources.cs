@@ -63,6 +63,7 @@ public static class Resources
             "Widget_Template/NumOfHosts",
             "Widget_Template/EmptyHosts",
             "Widget_Template/Connect",
+            "Widget_Template/ErrorProcessingConfigFile",
         };
     }
 }
