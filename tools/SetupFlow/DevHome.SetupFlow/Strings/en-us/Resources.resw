@@ -513,6 +513,10 @@
     <value>https://www.microsoft.com/store/b/terms-of-sale</value>
     <comment>{Locked}Uri to the Microsoft Store terms of sale</comment>
   </data>
+  <data name="Review_NothingToSetUp.Text" xml:space="preserve">
+    <value>Nothing to set up</value>
+    <comment>Text shown as the Setup details when there is noting to set up</comment>
+  </data>
   <data name="ReviewNothingToSetUpToolTip" xml:space="preserve">
     <value>There's nothing to set up</value>
     <comment>Text shown on a tool tip for a "Start set up" button if there is noting to set up</comment>
