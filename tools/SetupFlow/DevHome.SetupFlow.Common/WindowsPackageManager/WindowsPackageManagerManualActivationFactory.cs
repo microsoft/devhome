@@ -32,11 +32,23 @@ public class WindowsPackageManagerManualActivationFactory : WindowsPackageManage
 
     protected override T CreateInstance<T>(Guid clsid, Guid iid)
     {
-        var hr = WinGetServerManualActivation_CreateInstance(clsid, iid, 0, out var instance);
-        Marshal.ThrowExceptionForHR(hr);
-
-        IntPtr pointer = Marshal.GetIUnknownForObject(instance);
-        return MarshalInterface<T>.FromAbi(pointer);
+        var pUnknown = IntPtr.Zero;
+        try
+        {
+            var hr = WinGetServerManualActivation_CreateInstance(clsid, iid, 0, out var instance);
+            Marshal.ThrowExceptionForHR(hr);
+            pUnknown = Marshal.GetIUnknownForObject(instance);
+            return MarshalInterface<T>.FromAbi(pUnknown);
+        }
+        finally
+        {
+            // CoCreateInstance and FromAbi both AddRef on the native object.
+            // Release once to prevent memory leak.
+            if (pUnknown != IntPtr.Zero)
+            {
+                Marshal.Release(pUnknown);
+            }
+        }
     }
 
     [DllImport("winrtact.dll", EntryPoint = "WinGetServerManualActivation_CreateInstance", ExactSpelling = true, PreserveSig = true)]

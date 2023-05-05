@@ -104,7 +104,7 @@ public partial class SearchViewModel : ObservableObject
 
             // Update the UI only if the operation was successful
             SearchText = text;
-            ResultPackages = matches.Select(m => _packageProvider.CreateOrGet(m)).ToList();
+            ResultPackages = await Task.Run(() => matches.Select(m => _packageProvider.CreateOrGet(m)).ToList());
             return (SearchResultStatus.Ok, ResultPackages);
         }
         catch (OperationCanceledException)

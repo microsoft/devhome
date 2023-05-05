@@ -61,17 +61,41 @@ public class WindowsPackageManager : IWindowsPackageManager
 
     public IWinGetCatalog WinGetCatalog => _wingetCatalog.Value;
 
-    public async Task ConnectToAllCatalogsAsync()
+    public async Task ConnectToAllCatalogsAsync(bool force)
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs");
 
-        // Connect composite catalog for all local and remote catalogs to
-        // enable searching for pacakges from any source
-        await AllCatalogs.ConnectAsync();
-
         // Connect predefined winget catalog to enable loading
         // package with a known source (e.g. for restoring packages)
-        await WinGetCatalog.ConnectAsync();
+        var wingetConnect = Task.Run(async () =>
+        {
+            try
+            {
+                await WinGetCatalog.ConnectAsync(force);
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {WinGetCatalog} when connecting to all catalogs", e);
+            }
+        });
+
+        // Connect composite catalog for all local and remote catalogs to
+        // enable searching for pacakges from any source
+        var allCatalogsConnect = Task.Run(async () =>
+        {
+            try
+            {
+                await AllCatalogs.ConnectAsync(force);
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {AllCatalogs} (search) when connecting to all catalogs", e);
+            }
+        });
+
+        await Task.WhenAll(wingetConnect, allCatalogsConnect);
+
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs completed");
     }
 
     public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package)
