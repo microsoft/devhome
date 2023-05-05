@@ -374,7 +374,7 @@
     <comment>{Locked="{0}"}Label displayed when a package installation fails because there's not enough memory available to install. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorMessageNoNetwork" xml:space="preserve">
-    <value>{0} couldn't be installed because requires internet connectivity. Connect to a network then try again.</value>
+    <value>{0} couldn't be installed because it requires internet connectivity. Connect to a network then try again.</value>
     <comment>{Locked="{0}"}Label displayed when a package installation fails because it requires internet connectivity. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorMessageContactSupport" xml:space="preserve">
