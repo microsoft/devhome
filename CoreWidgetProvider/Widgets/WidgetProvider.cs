@@ -1,10 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Runtime.InteropServices;
 using CoreWidgetProvider.Helpers;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
+
+[ComVisible(true)]
+[ClassInterface(ClassInterfaceType.None)]
+[Guid("F8B2DBB9-3687-4C6E-99B2-B92C82905937")]
 internal class WidgetProvider : IWidgetProvider
 {
     private readonly Dictionary<string, IWidgetImplFactory> widgetDefinitionRegistry = new ();

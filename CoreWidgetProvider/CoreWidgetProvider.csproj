@@ -1,7 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -13,21 +18,22 @@
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.206-beta">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.100.105" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\logging\DevHome.Logging.csproj" />
+    <ProjectReference Include="..\logging\DevHome.Logging.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Widgets\Templates\LoadingTemplate.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Widgets\Templates\SSHWalletConfigurationTemplate.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Widgets\Templates\SSHWalletTemplate.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

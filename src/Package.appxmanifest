@@ -31,6 +31,76 @@
             <uap:DisplayName>Dev Home</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="CoreWidgetProvider">
+              <com:Class Id="F8B2DBB9-3687-4C6E-99B2-B92C82905937" DisplayName="CoreWidgetProvider" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription">
+            <uap3:Properties>
+              <DevHomeProvider>
+                  <Activation>
+                    <CreateInstance ClassId="F8B2DBB9-3687-4C6E-99B2-B92C82905937" />
+                  </Activation>
+                  <SupportedInterfaces>
+                  </SupportedInterfaces>
+                </DevHomeProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="Core" Id="CoreWidgetProvider" PublicFolder="Public">
+            <uap3:Properties>
+              <WidgetProvider>
+                <ProviderIcons>
+                  <Icon Path="Images\StoreLogo.png" />
+                </ProviderIcons>
+                <Activation>
+                  <!-- Apps exports COM interface which implements IWidgetProvider -->
+                  <CreateInstance ClassId="F8B2DBB9-3687-4C6E-99B2-B92C82905937" />
+                </Activation>
+
+                <TrustedPackageFamilyNames>
+                  <TrustedPackageFamilyName>Microsoft.MicrosoftEdge.Stable_8wekyb3d8bbwe</TrustedPackageFamilyName>
+                </TrustedPackageFamilyNames>
+
+                <Definitions>
+                  <Definition Id="SSH_Wallet"
+                      DisplayName="Microsoft SSH Wallet"
+                      Description="Microsoft SSH Wallet Widget Description"
+                      AllowMultiple="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="ProviderAssets\Counting_Icon.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="ProviderAssets\Counting_Screenshot.png" DisplayAltText="For accessibility" />
+                      </Screenshots>
+                      <DarkMode>
+                        <!-- DarkMode and LightMode are optional -->
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                </Definitions>
+              </WidgetProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
       </Extensions>
     </Application>
   </Applications>

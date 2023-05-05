@@ -71,9 +71,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.SetupFlow.ElevatedC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CoreWidgetProvider", "CoreWidgetProvider", "{32C0052F-10AF-48C0-A7A3-B0A1793397FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWidgetProvider", "CoreWidgetProvider\CoreWidgetProvider\CoreWidgetProvider.csproj", "{0D879E08-99AA-4019-9D04-DEA9F7C7BFC1}"
-EndProject
-Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "CoreWidgetProviderPackage", "CoreWidgetProvider\CoreWidgetProviderPackage\CoreWidgetProviderPackage.wapproj", "{2EB40022-F8ED-4BFC-BC88-52289D614D7D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWidgetProvider", "CoreWidgetProvider\CoreWidgetProvider.csproj", "{0D879E08-99AA-4019-9D04-DEA9F7C7BFC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

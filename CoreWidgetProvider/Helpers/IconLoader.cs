@@ -18,7 +18,7 @@ internal class IconLoader
 
     private static string ConvertIconToDataString(string fileName)
     {
-        var path = Path.Combine(AppContext.BaseDirectory, "../../CoreWidgetProvider/Widgets/Assets/", fileName);
+        var path = Path.Combine(AppContext.BaseDirectory, "Widgets/Assets/", fileName);
         var imageData = Convert.ToBase64String(File.ReadAllBytes(path.ToString()));
         return imageData;
     }
