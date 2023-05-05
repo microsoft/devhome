@@ -146,7 +146,7 @@
     <comment>Title text of an instruction banner section for transferring settings from a developer machine</comment>
   </data>
   <data name="AppListBackupBanner.Description" xml:space="preserve">
-    <value>Use Dev Home to quickly transfer you development machine settings from another PC to get back to coding.</value>
+    <value>Use Dev Home to quickly transfer your development machine settings from another PC to get back to coding.</value>
     <comment>{Locked="Dev Home"}Description text of an instruction banner section for transferring settings from a developer machine</comment>
   </data>
   <data name="AppListBackupBanner.ButtonText" xml:space="preserve">
