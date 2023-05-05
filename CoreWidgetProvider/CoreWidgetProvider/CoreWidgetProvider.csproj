@@ -31,4 +31,9 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Widgets\Assets\ssh_wallet_icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

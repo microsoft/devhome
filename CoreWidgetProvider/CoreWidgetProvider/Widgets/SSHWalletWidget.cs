@@ -87,6 +87,7 @@ public class SSHWalletWidget : WidgetImpl
                 });
             }
 
+            hostsData.Add("icon_data", IconLoader.GetIconAsBase64("ssh_wallet_icon.png"));
             hostsData.Add("hosts", hostsArray);
             hostsData.Add("selected_config_file", ConfigFile);
 
