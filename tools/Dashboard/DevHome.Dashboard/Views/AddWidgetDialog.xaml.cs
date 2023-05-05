@@ -43,7 +43,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _widgetCatalog = catalog;
         _dispatcher = dispatcher;
 
-        // Strange behavior: setting the requested theme in the constructor isn't enough, so do it here.
+        // Strange behavior: setting the requested theme when we new-up the dialog isn't enough, so do it here.
         RequestedTheme = theme;
 
         // Get the application root window so we know when it has closed.
@@ -196,7 +196,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // Delete previously shown configuation widget.
         // Clearing the UI here results in a flash, so don't bother. It will update soon.
         Log.Logger()?.ReportDebug("AddWidgetDialog", $"Widget selection changed, delete widget if one exists");
-        var clearWidgetTask = ClearCurrentWidget();
+        var clearWidgetTask = DeletePartiallyCreatedWidget();
 
         // Selected item could be null if list of widgets became empty.
         if (sender.SelectedItem is null)
@@ -250,7 +250,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private void PinButton_Click(object sender, RoutedEventArgs e)
     {
         AddedWidget = _currentWidget;
-        ViewModel = null;
 
         HideDialog();
     }
@@ -258,25 +257,30 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private async void CancelButton_Click(object sender, RoutedEventArgs e)
     {
         // Delete previously shown configuation card.
-        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Exiting dialog, delete widget");
-        await ClearCurrentWidget();
+        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Canceled dialog, delete partially created widget");
+        await DeletePartiallyCreatedWidget();
 
         HideDialog();
     }
 
     private void HideDialog()
     {
+        _currentWidget = null;
+        ViewModel = null;
+
+        Application.Current.GetService<WindowEx>().Closed -= OnMainWindowClosed;
         _widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+
         this.Hide();
     }
 
     private async void OnMainWindowClosed(object sender, WindowEventArgs args)
     {
         Log.Logger()?.ReportInfo("AddWidgetDialog", $"Window Closed, delete partially created widget");
-        await ClearCurrentWidget();
+        await DeletePartiallyCreatedWidget();
     }
 
-    private async Task ClearCurrentWidget()
+    private async Task DeletePartiallyCreatedWidget()
     {
         if (_currentWidget != null)
         {
