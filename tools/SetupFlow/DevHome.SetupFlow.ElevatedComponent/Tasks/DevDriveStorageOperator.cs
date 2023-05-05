@@ -25,8 +25,6 @@ public sealed class DevDriveStorageOperator
     /// </summary>
     public static readonly long _oneKb = 1024;
     public static readonly long _oneMb = _oneKb * _oneKb;
-    public static readonly long _fourKb = _oneKb * 4;
-    public static readonly string _fileSytem = "ReFS";
 
     /// <summary>
     /// We need a way to hold the partition information, when we call IoDeviceControl with IOCTL_DISK_GET_DRIVE_LAYOUT_EX.
@@ -79,36 +77,32 @@ public sealed class DevDriveStorageOperator
         }
 
         string virtDiskPhysicalPath;
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(CreateAndAttachVhdx)}");
         var result = CreateAndAttachVhdx(virtDiskPath, sizeInBytes, out virtDiskPhysicalPath);
         if (result.Failed)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(CreateAndAttachVhdx)} failed with error: {result:X}");
+            DetachVirtualDisk(virtDiskPath);
             return result.Value;
         }
 
         uint diskNumber;
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(CreatePartition)}");
         result = CreatePartition(virtDiskPhysicalPath, out diskNumber);
         if (result.Failed)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(CreatePartition)} failed with error: {result:X}");
+            DetachVirtualDisk(virtDiskPath);
             return result.Value;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(AssignDriveLetterToPartition)}");
         result = AssignDriveLetterToPartition(diskNumber, newDriveLetter);
         if (result.Failed)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(AssignDriveLetterToPartition)} failed with error: {result:X}");
+            DetachVirtualDisk(virtDiskPath);
             return result.Value;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(FormatPartitionAsDevDrive)}");
         var finishedResult = FormatPartitionAsDevDrive(newDriveLetter, driveLabel);
         if (finishedResult != 0)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(FormatPartitionAsDevDrive)} failed with error: 0x{finishedResult:X}");
+            DetachVirtualDisk(virtDiskPath);
         }
 
         return finishedResult;
@@ -577,5 +571,55 @@ public sealed class DevDriveStorageOperator
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Creating DevDriveFormatter");
         var devDriveFormatter = new DevDriveFormatter();
         return devDriveFormatter.FormatPartitionAsDevDrive(curDriveLetter, driveLabel);
+    }
+
+    /// <summary>
+    /// Detaches the virtual disk and removes the vhdx file associated with it.
+    /// </summary>
+    /// <param name="virtDiskPath">The path in the file system to the vhdx file</param>
+    private void DetachVirtualDisk(string virtDiskPath)
+    {
+        if (File.Exists(virtDiskPath))
+        {
+            var vhdParams = new OPEN_VIRTUAL_DISK_PARAMETERS
+            {
+                Version = OPEN_VIRTUAL_DISK_VERSION.OPEN_VIRTUAL_DISK_VERSION_2,
+            };
+
+            var storageType = new VIRTUAL_STORAGE_TYPE
+            {
+                VendorId = PInvoke.VIRTUAL_STORAGE_TYPE_VENDOR_MICROSOFT,
+                DeviceId = PInvoke.VIRTUAL_STORAGE_TYPE_DEVICE_VHDX,
+            };
+
+            SafeFileHandle tempHandle;
+            var result = PInvoke.OpenVirtualDisk(
+                storageType,
+                virtDiskPath,
+                VIRTUAL_DISK_ACCESS_MASK.VIRTUAL_DISK_ACCESS_NONE,
+                OPEN_VIRTUAL_DISK_FLAG.OPEN_VIRTUAL_DISK_FLAG_NONE,
+                vhdParams,
+                out tempHandle);
+
+            // We pass through errors here and after the detach call below instead of returning immediately because there are instances
+            // where the virtual disk file is created but not mounted. So in those instance a failure from OpenVirtualDisk and DetachVirtualDisk are expected.
+            if (result != WIN32_ERROR.NO_ERROR)
+            {
+                Log.Logger?.ReportError(Log.Component.DevDrive, nameof(DetachVirtualDisk), $"OpenVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
+            }
+
+            result = PInvoke.DetachVirtualDisk(
+                tempHandle,
+                DETACH_VIRTUAL_DISK_FLAG.DETACH_VIRTUAL_DISK_FLAG_NONE,
+                0);
+
+            if (result != WIN32_ERROR.NO_ERROR)
+            {
+                Log.Logger?.ReportError(Log.Component.DevDrive, nameof(DetachVirtualDisk), $"DetachVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
+            }
+
+            tempHandle.Close();
+            File.Delete(virtDiskPath);
+        }
     }
 }
