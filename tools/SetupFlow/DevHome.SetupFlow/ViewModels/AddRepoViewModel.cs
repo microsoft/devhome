@@ -313,7 +313,7 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Measure, new RepoDialogGetAccountEvent(repositoryProviderName, false));
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Measure, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false));
 
             // Throw away developer id becase we're calling GetAllLoggedInAccounts in anticipation
             // of 1 Provider : N DeveloperIds
@@ -322,7 +322,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
         else
         {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Measure, new RepoDialogGetAccountEvent(repositoryProviderName, true));
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Measure, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: true));
         }
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId()));
@@ -366,16 +366,17 @@ public partial class AddRepoViewModel : ObservableObject
 
             EverythingToClone.Add(cloningInformation);
         }
-
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_RepoListClicked_Event", LogLevel.Measure, new RepoDialogRemovedViaAccountEvent(repositoriesToRemove.Count));
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_RepoListClicked_Event", LogLevel.Measure, new RepoDialogAddViaAccountEvent(repositoriesToAdd.Count));
     }
 
     /// <summary>
     /// Adds a repository from the URL page. Steps to determine what repoProvider to use.
     /// 1. All providers are asked "Can you parse this into a URL you understand."  If yes, that provider to clone the repo.
     /// 2. If no providers can parse the URL a fall back "GitProvider" is used that uses libgit2sharp to clone the repo.
+    /// ShouldShowUrlError is set here.
     /// </summary>
+    /// <remarks>
+    /// If ShouldShowUrlError == Visible the repo is not added to the list of repos to clone.
+    /// </remarks>
     /// <param name="cloneLocation">The location to clone the repo to</param>
     public void AddRepositoryViaUri(string url, string cloneLocation)
     {
@@ -408,7 +409,7 @@ public partial class AddRepoViewModel : ObservableObject
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationNotFound);
             ShouldShowUrlError = Visibility.Visible;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, e.ToString());
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddViaUrl_Event", LogLevel.Measure, new RepoDialogAddViaUrlEvent(providerName: string.Empty, foundProvider: true, foundRepo: false));
+            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoDialog_RepoNotFound_Event");
             return;
         }
 
@@ -419,7 +420,6 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = providerNameAndRepo.Item1;
             cloningInformation.RepositoryToClone = repository;
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddViaUrl_Event", LogLevel.Measure, new RepoDialogAddViaUrlEvent(providerName: providerNameAndRepo.Item1, foundProvider: true, foundRepo: true));
         }
         else
         {
@@ -430,7 +430,6 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = "git";
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddViaUrl_Event", LogLevel.Measure, new RepoDialogAddViaUrlEvent(providerName: "git", foundProvider: false, foundRepo: false));
         }
 
         // User could paste in a url of an already added repo.  Check for that here.
@@ -440,7 +439,7 @@ public partial class AddRepoViewModel : ObservableObject
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
             ShouldShowUrlError = Visibility.Visible;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repository has already been added.");
-            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_AddViaUrl_Event");
+            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_RepoAlreadyAdded_Event");
             return;
         }
 
@@ -455,10 +454,10 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="loginId">The login Id to get the repositories for</param>
     public void GetRepositories(string repositoryProvider, string loginId)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent(nameof(_providers.GetAllLoggedInAccounts)));
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
         var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
 
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent(nameof(_providers.GetAllRepositories)));
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
         _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
 
         // TODO: What if the user comes back here with repos selected?

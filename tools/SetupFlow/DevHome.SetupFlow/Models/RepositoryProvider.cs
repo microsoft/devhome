@@ -101,11 +101,11 @@ internal class RepositoryProvider
     {
         if (!_repositories.IsValueCreated)
         {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Measure, new ReposFetchEvent(_repositoryProvider.DisplayName, developerId));
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Measure, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
             _repositories = new Lazy<IEnumerable<IRepository>>(_repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result);
         }
 
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Measure, new ReposFetchedEvent(_repositories.Value.Count()));
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Measure, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
         return _repositories.Value;
     }

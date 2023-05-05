@@ -2,27 +2,20 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
+namespace DevHome.Common.TelemetryEvents.RepoToolEvents;
 
 [EventData]
-public class ReposFetchedEvent : EventBase
+public class RepoToolNextButtonEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public int ReposFound
-    {
-        get;
-    }
-
-    public ReposFetchedEvent(int reposFound)
-    {
-        ReposFound = reposFound;
-    }
+    public List<int> NumbersForLogging => new () { 1, 2, 3, 4 };
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {

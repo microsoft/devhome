@@ -13,24 +13,44 @@ using Microsoft.Windows.DevHome.SDK;
 namespace DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 
 [EventData]
-public class ReposFetchEvent : EventBase
+public class GetReposEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public string ProviderName
-    {
-        get;
-    }
+    public string StageName { get; }
 
-    public string DeveloperId
-    {
-        get;
-    }
+    public string ProviderName { get; }
 
-    public ReposFetchEvent(string providerName, IDeveloperId developerId)
+    public string DeveloperId { get; }
+
+    public int NumberOfReposFound { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetReposEvent"/> class.
+    /// </summary>
+    /// <param name="stageName">Where this event falls in getting repositories</param>
+    /// <param name="providerName">Name of the provider to use to clone the repo</param>
+    /// <param name="developerId">The account to use for private/org repos.  Can be null</param>
+    public GetReposEvent(string stageName, string providerName, IDeveloperId developerId)
     {
+        StageName = stageName;
         ProviderName = providerName;
-        DeveloperId = GetHashedDeveloperId(providerName, developerId);
+        DeveloperId = developerId is null ? string.Empty : GetHashedDeveloperId(providerName, developerId);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GetReposEvent"/> class.
+    /// </summary>
+    /// <param name="stageName">Where this event falls in getting repositories</param>
+    /// <param name="providerName">Name of the provider to use to clone the repo</param>
+    /// <param name="developerId">The account to use for private/org repos.  Can be null</param>
+    /// <param name="reposFound">The number of repos found</param>
+    public GetReposEvent(string stageName, string providerName, IDeveloperId developerId, int reposFound)
+    {
+        StageName = stageName;
+        ProviderName = providerName;
+        DeveloperId = developerId is null ? string.Empty : GetHashedDeveloperId(providerName, developerId);
+        NumberOfReposFound = reposFound;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
