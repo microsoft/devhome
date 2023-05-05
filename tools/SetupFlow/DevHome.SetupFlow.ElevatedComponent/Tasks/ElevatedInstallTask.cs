@@ -1,9 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.SetupFlow.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
-using DevHome.SetupFlow.Common.Extensions;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Microsoft.Management.Deployment;
 using Windows.Foundation;
