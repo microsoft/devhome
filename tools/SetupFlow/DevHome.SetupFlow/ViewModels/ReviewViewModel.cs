@@ -64,15 +64,16 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     protected async override Task OnEachNavigateToAsync()
     {
+        // We re-compute the list of tabs as it can change depending on the current selections
+        ReviewTabs =
+            Orchestrator.TaskGroups
+            .Select(taskGroup => taskGroup.GetReviewTabViewModel())
+            .Where(tab => tab?.HasItems == true)
+            .ToList();
+        SelectedReviewTab = ReviewTabs.FirstOrDefault();
+
         NextPageButtonToolTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
         UpdateCanGoToNextPage();
-        await Task.CompletedTask;
-    }
-
-    protected async override Task OnFirstNavigateToAsync()
-    {
-        ReviewTabs = Orchestrator.TaskGroups.Select(taskGroup => taskGroup.GetReviewTabViewModel()).ToList();
-        SelectedReviewTab = ReviewTabs.FirstOrDefault();
         await Task.CompletedTask;
     }
 

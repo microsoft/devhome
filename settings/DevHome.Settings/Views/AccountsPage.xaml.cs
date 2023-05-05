@@ -4,16 +4,18 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Extensions;
+using DevHome.Common.Renderers;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
-using DevHome.Settings.Helpers;
+using DevHome.Logging;
 using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Windows.Storage;
 
 namespace DevHome.Settings.Views;
 
@@ -51,9 +53,18 @@ public sealed partial class AccountsPage : Page
         }
     }
 
-    private async void AddDeveloperId_Click(object sender, RoutedEventArgs e)
+    private async void AddAccountButton_Click(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.AccountsProviders.Count == 0)
+        var numProviders = ViewModel.AccountsProviders.Count;
+        if (numProviders == 1)
+        {
+            await ShowLoginUIAsync("Settings", this, ViewModel.AccountsProviders[0]);
+        }
+        else if (numProviders > 1)
+        {
+            AccountsProvidersFlyout.ShowAt(sender as Button);
+        }
+        else
         {
             var resourceLoader = new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath(), "DevHome.Settings/Resources");
             var noProvidersContentDialog = new ContentDialog
@@ -64,27 +75,20 @@ public sealed partial class AccountsPage : Page
                 XamlRoot = XamlRoot,
             };
             await noProvidersContentDialog.ShowAsync();
-            return;
         }
+    }
 
+    private async void AddDeveloperId_Click(object sender, RoutedEventArgs e)
+    {
         if (sender as Button is Button addAccountButton)
         {
             if (addAccountButton.Tag is AccountsProviderViewModel accountProvider)
             {
-                try
-                {
-                    await ShowLoginUIAsync("Settings", this, accountProvider);
-                }
-                catch (Exception ex)
-                {
-                    LoggerFactory.Get<ILogger>().Log($"AddAccount_Click(): loginUIContentDialog failed", LogLevel.Local, $"Error: {ex} Sender: {sender} RoutedEventArgs: {e}");
-                }
-
-                accountProvider.RefreshLoggedInAccounts();
+                await ShowLoginUIAsync("Settings", this, accountProvider);
             }
             else
             {
-                LoggerFactory.Get<ILogger>().Log($"AddAccount_Click(): addAccountButton.Tag is not AccountsProviderViewModel", LogLevel.Local, $"Sender: {sender} RoutedEventArgs: {e}");
+                GlobalLog.Logger?.ReportInfo($"AddAccount_Click(): addAccountButton.Tag is not AccountsProviderViewModel - Sender: {sender} RoutedEventArgs: {e}");
                 return;
             }
         }
@@ -92,23 +96,70 @@ public sealed partial class AccountsPage : Page
 
     public async Task ShowLoginUIAsync(string loginEntryPoint, Page parentPage, AccountsProviderViewModel accountProvider)
     {
-        string[] args = { loginEntryPoint };
-        var loginUIAdaptiveCardController = accountProvider.DeveloperIdProvider.GetAdaptiveCardController(args);
-        var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
-        pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, AdaptiveCardRendererHelper.GetLoginUIRenderer());
-        pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
-
-        var loginUIContentDialog = new LoginUIDialog(pluginAdaptiveCardPanel)
+        try
         {
-            XamlRoot = parentPage.XamlRoot,
-            RequestedTheme = parentPage.ActualTheme,
-        };
+            string[] args = { loginEntryPoint };
+            var loginUIAdaptiveCardController = accountProvider.DeveloperIdProvider.GetAdaptiveCardController(args);
+            var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
+            var renderer = new AdaptiveCardRenderer();
+            await ConfigureLoginUIRenderer(renderer);
+            renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
 
-        await loginUIContentDialog.ShowAsync();
+            pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
+            pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
+
+            var loginUIContentDialog = new LoginUIDialog(pluginAdaptiveCardPanel)
+            {
+                XamlRoot = parentPage.XamlRoot,
+                RequestedTheme = parentPage.ActualTheme,
+            };
+
+            await loginUIContentDialog.ShowAsync();
+
+            // TODO: Await Login event to match up the loginEntryPoint and return DeveloperId
+            loginUIAdaptiveCardController.Dispose();
+        }
+        catch (Exception ex)
+        {
+            GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed - Error: {ex}");
+        }
+
         accountProvider.RefreshLoggedInAccounts();
+    }
 
-        // TODO: Await Login event to match up the loginEntryPoint and return DeveloperId
-        loginUIAdaptiveCardController.Dispose();
+    private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer)
+    {
+        Microsoft.UI.Dispatching.DispatcherQueue dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+        // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
+        renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
+
+        var hostConfigContents = string.Empty;
+        var hostConfigFileName = (ActualTheme == ElementTheme.Light) ? "LightHostConfig.json" : "DarkHostConfig.json";
+        try
+        {
+            var uri = new Uri($"ms-appx:////DevHome.Settings/Assets/{hostConfigFileName}");
+            var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
+            hostConfigContents = await FileIO.ReadTextAsync(file);
+        }
+        catch (Exception ex)
+        {
+            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file - Error: {ex} HostConfigFileName: {hostConfigFileName}");
+        }
+
+        // Add host config for current theme to renderer
+        dispatcher.TryEnqueue(() =>
+        {
+            if (!string.IsNullOrEmpty(hostConfigContents))
+            {
+                renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+            }
+            else
+            {
+                GlobalLog.Logger?.ReportInfo($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
+            }
+        });
+        return;
     }
 
     private async void Logout_Click(object sender, RoutedEventArgs e)
@@ -122,6 +173,7 @@ public sealed partial class AccountsPage : Page
             SecondaryButtonText = resourceLoader.GetString("Settings_Accounts_ConfirmLogoutContentDialog_SecondaryButtonText"),
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = XamlRoot,
+            RequestedTheme = ActualTheme,
         };
         var contentDialogResult = await confirmLogoutContentDialog.ShowAsync();
 
@@ -143,6 +195,7 @@ public sealed partial class AccountsPage : Page
                 Content = $"{accountToRemove.LoginId} " + resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_Content"),
                 CloseButtonText = resourceLoader.GetString("Settings_Accounts_AfterLogoutContentDialog_PrimaryButtonText"),
                 XamlRoot = XamlRoot,
+                RequestedTheme = ActualTheme,
             };
             _ = await afterLogoutContentDialog.ShowAsync();
         }

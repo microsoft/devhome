@@ -15,10 +15,8 @@
       "Google.AndroidStudio",
       "JetBrains.IntelliJIDEA.Community",
       "JetBrains.PyCharm.Community",
-      "Cygwin.Cygwin",
       "Python.Python.3.11",
       "Microsoft.DotNet.SDK.7",
-      "GitHub.Atom",
       "Docker.DockerDesktop",
       "PuTTY.PuTTY",
       "Unity.Unity.2022",
@@ -29,7 +27,6 @@
       "Postman.Postman",
       "GitHub.GitHubDesktop",
       "OpenJS.NodeJS"
-
     ]
   }
 ]

@@ -9,11 +9,16 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
+using DevHome.Dashboard.ViewModels;
+using DevHome.Settings.ViewModels;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -23,6 +28,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly IHost _host;
     private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
+    private readonly IWindowsPackageManager _wpm;
+    private readonly PackageProvider _packageProvider;
+    private readonly CatalogDataSourceLoacder _catalogDataSourceLoacder;
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -58,14 +66,12 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         get
         {
             var packagesInstalled = new ObservableCollection<PackageViewModel>();
-            var packageProvider = _host.GetService<PackageProvider>();
-            var packages = packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true);
+            var packages = _packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true);
             foreach (var package in packages)
             {
                 packagesInstalled.Add(package);
             }
 
-            packageProvider.Clear();
             return packagesInstalled;
         }
     }
@@ -89,34 +95,52 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         ConfigurationUnitSkippedCount);
 
     [RelayCommand]
-    public void OpenDashboard()
-    {
-        throw new NotImplementedException();
-    }
-
-    [RelayCommand]
     public void RemoveRestartGrid()
     {
         _showRestartNeeded = Visibility.Collapsed;
     }
 
     [RelayCommand]
-    public void GoBackToMainPage()
+    public void GoToMainPage()
     {
-        var things = _host.GetService<SetupFlowViewModel>();
-        things.Cancel();
+        var setupFlowViewModel = _host.GetService<SetupFlowViewModel>();
+        setupFlowViewModel.Cancel();
+    }
+
+    [RelayCommand]
+    public void GoToDashboard()
+    {
+        _host.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName);
+    }
+
+    [RelayCommand]
+    public void GoToDevHomeSettings()
+    {
+        _host.GetService<INavigationService>().NavigateTo(typeof(SettingsViewModel).FullName);
+    }
+
+    [RelayCommand]
+    public void GoToForDevelopersSettingsPage()
+    {
+        Task.Run(() => Launcher.LaunchUriAsync(new Uri("ms-settings:developers"))).Wait();
     }
 
     public SummaryViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         IHost host,
-        ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory)
+        ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory,
+        IWindowsPackageManager wpm,
+        PackageProvider packageProvider,
+        CatalogDataSourceLoacder catalogDataSourceLoader)
         : base(stringResource, orchestrator)
     {
         _orchestrator = orchestrator;
         _host = host;
         _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
+        _wpm = wpm;
+        _packageProvider = packageProvider;
+        _catalogDataSourceLoacder = catalogDataSourceLoader;
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
@@ -128,15 +152,30 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     protected async override Task OnFirstNavigateToAsync()
     {
         _orchestrator.ReleaseRemoteFactory();
-        await Task.CompletedTask;
+        await ReloadCatalogsAsync();
     }
 
-    // This can possibly be moved to a more central location
-    public string GetFontIconForProvider(string providerName) => providerName switch
+    private async Task ReloadCatalogsAsync()
     {
-        // Puzzle piece icon
-        _ => "\uEA86",
-    };
+        // After installing packages, we should reconnect to catalogs to
+        // reflect the latest changes when new Package COM objects are created
+        Log.Logger?.ReportInfo(Log.Component.Summary, $"Checking if a new catalog connections should be established");
+        if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
+        {
+            await Task.Run(async () =>
+            {
+                Log.Logger?.ReportInfo(Log.Component.Summary, $"Creating a new catalog connections");
+                await _wpm.ConnectToAllCatalogsAsync(force: true);
+
+                Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloading catalogs from all data sources");
+                _catalogDataSourceLoacder.Clear();
+                await foreach (var dataSourceCatalogs in _catalogDataSourceLoacder.LoadCatalogsAsync())
+                {
+                    Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloaded {dataSourceCatalogs.Count} catalog(s)");
+                }
+            });
+        }
+    }
 
     /// <summary>
     /// Get the list of configuratoin unit restults for an applied

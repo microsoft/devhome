@@ -9,6 +9,7 @@
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.22000.0" />
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.22000.0" />
+    <PackageDependency Name="Microsoft.VCLibs.140.00.UWPDesktop" MinVersion="14.0.24217.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
   </Dependencies>
   <Resources>
     <Resource Language="x-generate" />
@@ -25,11 +26,11 @@
             <uap3:Name>com.microsoft.devhome</uap3:Name>
           </uap3:AppExtensionHost>
         </uap3:Extension>
-		<uap:Extension Category="windows.protocol">
-		  <uap:Protocol Name="ms-devhome">
-		    <uap:DisplayName>Dev Home</uap:DisplayName>
-		  </uap:Protocol>
-		</uap:Extension>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="ms-devhome">
+            <uap:DisplayName>Dev Home</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
       </Extensions>
     </Application>
   </Applications>

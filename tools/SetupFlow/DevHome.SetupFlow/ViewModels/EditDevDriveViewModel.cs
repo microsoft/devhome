@@ -6,6 +6,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Utilities;
 using Microsoft.UI.Xaml;
 
@@ -32,6 +33,11 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// <summary>
     /// The manager to handle dev drives.
     /// </summary>
+    private const char InvalidCharacterForDriveLetter = '\0';
+
+    /// <summary>
+    /// The manager to handle dev drives.
+    /// </summary>
     private readonly IDevDriveManager _devDriveManager;
 
     /// <summary>
@@ -53,6 +59,14 @@ public partial class EditDevDriveViewModel : ObservableObject
     private bool _canShowDevDriveUI;
 
     /// <summary>
+    /// Gets a value indicating whether the the drive label, location, size or drive letter has changed when the Dev Drive window closes.
+    /// </summary>
+    public bool DevDriveDetailsChanged
+    {
+        get; private set;
+    }
+
+    /// <summary>
     /// Some builds don't have dev drives.
     /// </summary>
     [ObservableProperty]
@@ -69,6 +83,9 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private bool _isDevDriveCheckboxEnabled;
+
+    [ObservableProperty]
+    private bool _devDriveValidationError;
 
     public EditDevDriveViewModel(IDevDriveManager devDriveManager)
     {
@@ -88,15 +105,9 @@ public partial class EditDevDriveViewModel : ObservableObject
     {
         // DevDrive SetToDefaults
         ShowCustomizeOption = Visibility.Visible;
-        var (result, devDrive) = _devDriveManager.GetNewDevDrive();
-        if (result == DevDriveValidationResult.Successful)
-        {
-            DevDrive = devDrive;
-            return true;
-        }
-
-        // TODO: Maybe we should show some UI to say that we couldn't make a default Dev Drive.
-        return false;
+        DevDrive = _devDriveManager.GetNewDevDrive();
+        DevDriveValidationError = (DevDrive.State == DevDriveState.New) ? false : true;
+        return DevDriveValidationError;
     }
 
     public void ShowDevDriveUIIfEnabled()
@@ -118,6 +129,7 @@ public partial class EditDevDriveViewModel : ObservableObject
         _devDriveManager.CancelChangesToDevDrive();
         DevDrive = null;
         ShowCustomizeOption = Visibility.Collapsed;
+        DevDriveValidationError = false;
     }
 
     /// <summary>
@@ -126,6 +138,11 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </summary>
     public string GetDriveDisplayName(DevDriveDisplayNameKind useDriveLetterOnly = DevDriveDisplayNameKind.DriveRootKind)
     {
+        if (DevDrive.DriveLetter == InvalidCharacterForDriveLetter)
+        {
+            return string.Empty;
+        }
+
         if (useDriveLetterOnly == DevDriveDisplayNameKind.DriveRootKind)
         {
             // Uses the actual place where we'll be cloning to
@@ -201,7 +218,47 @@ public partial class EditDevDriveViewModel : ObservableObject
     {
         IsWindowOpen = false;
         IsDevDriveCheckboxEnabled = true;
+        DevDriveDetailsChanged = DevDriveChanged(devDrive);
         DevDrive = devDrive;
+        DevDriveValidationError = (DevDrive.State == DevDriveState.New) ? false : true;
         ClonePathUpdated();
+    }
+
+    public bool IsDevDriveValid()
+    {
+        var results = _devDriveManager.GetDevDriveValidationResults(DevDrive);
+        return results.Contains(DevDriveValidationResult.Successful);
+    }
+
+    /// <summary>
+    /// Checks whether the information inside the Dev Drive has changed.
+    /// </summary>
+    /// <param name="newDevDrive"> the new Dev Drive object that will replace the original Dev Drive</param>
+    /// <returns>Return bool stating whether the Dev Drive info has changed</returns>
+    private bool DevDriveChanged(IDevDrive newDevDrive)
+    {
+        if (DevDrive == null)
+        {
+            return true;
+        }
+
+        if (!string.Equals(DevDrive.DriveLocation, newDevDrive.DriveLocation, StringComparison.Ordinal))
+        {
+            return true;
+        }
+        else if (!string.Equals(DevDrive.DriveLabel, newDevDrive.DriveLabel, StringComparison.Ordinal))
+        {
+            return true;
+        }
+        else if (DevDrive.DriveLetter != newDevDrive.DriveLetter)
+        {
+            return true;
+        }
+        else if (DevDrive.DriveSizeInBytes != newDevDrive.DriveSizeInBytes)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

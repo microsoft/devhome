@@ -9,9 +9,11 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
+using DevHome.Logging;
 using DevHome.Services;
 using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
+using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
 using DevHome.Views;
@@ -73,8 +75,9 @@ public partial class App : Application, IApp
             services.AddSingleton<IAccountsService, AccountsService>();
             services.AddSingleton<IInfoBarService, InfoBarService>();
             services.AddSingleton<IAppInfoService, AppInfoService>();
-            services.AddSingleton<ILogger>(LoggerFactory.Get<ILogger>());
+            services.AddSingleton<ITelemetry>(TelemetryFactory.Get<ITelemetry>());
             services.AddSingleton<IStringResource, StringResource>();
+            services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -117,9 +120,43 @@ public partial class App : Application, IApp
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
+        await Task.WhenAll(
+            GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data),
+            GetService<IAccountsService>().InitializeAsync(),
+            WindowsPackageManagerInitializationAsync());
+    }
 
-        await GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data);
-        await GetService<IAccountsService>().InitializeAsync();
+    private async Task WindowsPackageManagerInitializationAsync()
+    {
+        GlobalLog.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at app launch");
+        var wpm = GetService<IWindowsPackageManager>();
+        var catalogDataSourceLoader = GetService<CatalogDataSourceLoacder>();
+
+        await Task.Run(async () =>
+        {
+            if (wpm.IsCOMServerAvailable())
+            {
+                GlobalLog.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
+
+                // Initialize/Load catalogs from all data sources
+                GlobalLog.Logger?.ReportInfo($"Initializing App install catalogs data sources");
+                await catalogDataSourceLoader.InitializeAsync();
+                GlobalLog.Logger?.ReportInfo($"Found a total of {catalogDataSourceLoader.CatalogCount} catalogs");
+
+                GlobalLog.Logger?.ReportInfo($"Calling {nameof(wpm.ConnectToAllCatalogsAsync)} to connect to catalogs");
+                await wpm.ConnectToAllCatalogsAsync();
+
+                GlobalLog.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to reduce the wait time when this information is requested");
+                await foreach (var dataSourceCatalogs in catalogDataSourceLoader.LoadCatalogsAsync())
+                {
+                    GlobalLog.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
+                }
+            }
+            else
+            {
+                GlobalLog.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
+            }
+        });
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)
