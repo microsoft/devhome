@@ -287,7 +287,7 @@ public class SSHWalletWidget : WidgetImpl
         UpdateWidget();
     }
 
-    private JsonObject FillConfigurationData(bool hasConfiguration, string configFile, int numOfEntries = 0, string errorMessage = "")
+    private JsonObject FillConfigurationData(bool hasConfiguration, string configFile, int numOfEntries = 0, bool configuring = true, string errorMessage = "")
     {
         var configurationData = new JsonObject();
 
@@ -298,6 +298,7 @@ public class SSHWalletWidget : WidgetImpl
                 { "numOfEntries", numOfEntries.ToString(CultureInfo.InvariantCulture) },
             };
 
+        configurationData.Add("configuring", configuring);
         configurationData.Add("hasConfiguration", hasConfiguration);
         configurationData.Add("configuration", sshConfigData);
         configurationData.Add("submitIcon", IconLoader.GetIconAsBase64("arrow.png"));
@@ -329,18 +330,18 @@ public class SSHWalletWidget : WidgetImpl
 
                     var numberOfEntries = GetNumberOfHostEntries();
 
-                    configurationData = FillConfigurationData(true, ConfigFile, numberOfEntries);
+                    configurationData = FillConfigurationData(true, ConfigFile, numberOfEntries, false);
                 }
                 else
                 {
-                    configurationData = FillConfigurationData(false, data, 0, Resources.GetResource(@"SSH_Widget_Template/ConfigFileNotFound", Logger()));
+                    configurationData = FillConfigurationData(false, data, 0, true, Resources.GetResource(@"SSH_Widget_Template/ConfigFileNotFound", Logger()));
                 }
             }
             catch (Exception ex)
             {
                 Log.Logger()?.ReportError(Name, ShortId, $"Failed getting configuration information for input config file path: {data}", ex);
 
-                configurationData = FillConfigurationData(false, data, 0, Resources.GetResource(@"SSH_Widget_Template/ErrorProcessingConfigFile", Logger()));
+                configurationData = FillConfigurationData(false, data, 0, true, Resources.GetResource(@"SSH_Widget_Template/ErrorProcessingConfigFile", Logger()));
 
                 return configurationData.ToString();
             }
