@@ -20,7 +20,7 @@ public class SSHWalletWidget : WidgetImpl
     protected static readonly string EmptyJson = new JsonObject().ToJsonString();
     protected static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
 
-    private static readonly Regex HostRegex = new (@"^Host\s+(.*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+    private static readonly Regex HostRegex = new (@"^Host\s+(\S*)\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
     private FileSystemWatcher? FileWatcher { get; set; }
 
@@ -73,29 +73,18 @@ public class SSHWalletWidget : WidgetImpl
             var hostsData = new JsonObject();
             var hostsArray = new JsonArray();
 
-            FileStreamOptions options = new FileStreamOptions();
-            options.Access = FileAccess.Read;
-
-            using var reader = new StreamReader(ConfigFile, options);
-
-            string? line;
-
-            while ((line = reader.ReadLine()) != null)
+            var hostEntries = GetHostEntries();
+            if (hostEntries != null)
             {
-                line = line.Trim();
-                if (HostRegex.IsMatch(line))
+                hostEntries.ToList().ForEach(hostEntry =>
                 {
-                    Match m = HostRegex.Match(line);
-                    if (m.Success)
-                    {
-                        var host = m.Groups[1].Value;
-                        var hostJson = new JsonObject
+                    var host = hostEntry.Groups[1].Value;
+                    var hostJson = new JsonObject
                         {
                             { "host", host },
                         };
-                        ((IList<JsonNode?>)hostsArray).Add(hostJson);
-                    }
-                }
+                    ((IList<JsonNode?>)hostsArray).Add(hostJson);
+                });
             }
 
             hostsData.Add("hosts", hostsArray);
@@ -221,7 +210,7 @@ public class SSHWalletWidget : WidgetImpl
         }
     }
 
-    private int GetNumberOfHostEntries()
+    private MatchCollection? GetHostEntries()
     {
         FileStreamOptions options = new FileStreamOptions();
         options.Access = FileAccess.Read;
@@ -232,10 +221,21 @@ public class SSHWalletWidget : WidgetImpl
 
         if (!string.IsNullOrEmpty(fileContent))
         {
-            return HostRegex.Matches(fileContent).Count;
+            return HostRegex.Matches(fileContent);
         }
 
-        return 0;
+        return null;
+    }
+
+    private int GetNumberOfHostEntries()
+    {
+        var hostEntries = GetHostEntries();
+        if (hostEntries == null)
+        {
+            return 0;
+        }
+
+        return hostEntries.Count;
     }
 
     private void SetupFileWatcher()
