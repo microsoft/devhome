@@ -79,7 +79,7 @@ public class InstallPackageTask : ISetupTask
     {
         return new ()
         {
-            PrimaryMessage = GetErrorReason(),
+            PrimaryMessage = GetInstallResultMessage(),
         };
     }
 
@@ -87,7 +87,9 @@ public class InstallPackageTask : ISetupTask
     {
         return new ()
         {
-            PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.InstalledPackageReboot, _package.Name),
+            PrimaryMessage = _extendedErrorCode == HRESULT.S_OK ?
+                _stringResource.GetLocalized(StringResourceKey.InstalledPackageReboot, _package.Name) :
+                GetExtendedErrorCodeMessage(),
         };
     }
 
@@ -102,6 +104,9 @@ public class InstallPackageTask : ISetupTask
                 var installResult = await _wpm.InstallPackageAsync(_package);
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
+
+                // Set the extended error code in case a reboot is required
+                _extendedErrorCode = installResult.ExtendedErrorCode;
 
                 ReportAppInstallSucceededEvent();
                 return TaskFinishedState.Success;
@@ -151,19 +156,9 @@ public class InstallPackageTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    private string GetErrorReason()
+    private string GetInstallResultMessage()
     {
         var packageName = _package.Name;
-
-        // Get the error code of the overall operation
-        var errorCodes = $"0x{_extendedErrorCode:X}";
-
-        // Append the installer specific error code if available
-        if (_installerErrorCode != HRESULT.S_OK)
-        {
-            errorCodes += $", 0x{_installerErrorCode:X}";
-        }
-
         return _installResultStatus switch
         {
             InstallResultStatus.BlockedByPolicy =>
@@ -173,10 +168,75 @@ public class InstallPackageTask : ISetupTask
             InstallResultStatus.DownloadError =>
                 _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorDownloadError, packageName),
             InstallResultStatus.InstallError =>
-                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorInstallError, packageName, errorCodes),
+                GetExtendedErrorCodeMessage(),
             InstallResultStatus.NoApplicableInstallers =>
                 _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorNoApplicableInstallers, packageName),
-            _ => _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownError, packageName),
+            _ => _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownErrorWithErrorCode, packageName, $"0x{_extendedErrorCode:X}"),
+        };
+    }
+
+    /// <summary>
+    /// Extracts the facility of the specified HRESULT
+    /// </summary>
+    /// <param name="hr">The HRESULT value</param>
+    /// <returns>Facility of the specified HRESULT</returns>
+    /// <remarks>https://learn.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_facility</remarks>
+    private int HResultFacility(int hr) => (hr >> 16) & 0x1FFF;
+
+    public bool IsAppInstallerErrorFacility(int hr) => HResultFacility(hr) == WindowsPackageManager.AppInstallerErrorFacility;
+
+    private string GetExtendedErrorCodeMessage()
+    {
+        var packageName = _package.Name;
+        if (!IsAppInstallerErrorFacility(_extendedErrorCode))
+        {
+            var errorMessage = _stringResource.GetLocalizedErrorMsg(_extendedErrorCode, Log.Component.AppManagement);
+            return _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageSystemMessage, packageName, errorMessage);
+        }
+
+        return _extendedErrorCode switch
+        {
+            InstallPackageException.InstallErrorPackageInUse =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessagePackageInUse, packageName),
+            InstallPackageException.InstallErrorInstallInProgress =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageInstallInProgress, packageName),
+            InstallPackageException.InstallErrorFileInUse =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageFileInUse, packageName),
+            InstallPackageException.InstallErrorMissingDependency =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageMissingDependency, packageName),
+            InstallPackageException.InstallErrorDiskFull =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageDiskFull, packageName),
+            InstallPackageException.InstallErrorInsufficientMemory =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageInsufficientMemory, packageName),
+            InstallPackageException.InstallErrorNoNetwork =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageNoNetwork, packageName),
+            InstallPackageException.InstallErrorContactSupport =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageContactSupport, packageName),
+            InstallPackageException.InstallErrorRebootRequiredToFinish =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageRebootRequiredToFinish, packageName),
+            InstallPackageException.InstallErrorRebootRequiredToInstall =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageRebootRequiredToInstall, packageName),
+            InstallPackageException.InstallErrorRebootInitiated =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageRebootInitiated, packageName),
+            InstallPackageException.InstallErrorCancelledByUser =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageCancelledByUser, packageName),
+            InstallPackageException.InstallErrorAlreadyInstalled =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageAlreadyInstalled, packageName),
+            InstallPackageException.InstallErrorDowngrade =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageDowngrade, packageName),
+            InstallPackageException.InstallErrorBlockedByPolicy =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageBlockedByPolicy, packageName),
+            InstallPackageException.InstallErrorDependencies =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageDependencies, packageName),
+            InstallPackageException.InstallErrorPackageInUseByApplication =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessagePackageInUseByApplication, packageName),
+            InstallPackageException.InstallErrorInvalidParameter =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageInvalidParameter, packageName),
+            InstallPackageException.InstallErrorSystemNotSupported =>
+                _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorMessageSystemNotSupported, packageName),
+            _ => _installerErrorCode == HRESULT.S_OK ?
+                    _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownErrorWithErrorCode, packageName, $"0x{_extendedErrorCode:X}") :
+                    _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode, packageName, $"0x{_extendedErrorCode:X}", _installerErrorCode),
         };
     }
 

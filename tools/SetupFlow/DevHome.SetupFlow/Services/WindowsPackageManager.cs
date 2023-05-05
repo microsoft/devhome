@@ -11,6 +11,7 @@ using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
 using Namotion.Reflection;
+using Windows.Win32;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.Services;
@@ -20,6 +21,7 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public class WindowsPackageManager : IWindowsPackageManager
 {
+    public const int AppInstallerErrorFacility = 0xA15;
     private const string AppInstallerProductId = "9NBLGGH4NNS1";
 
     private readonly WindowsPackageManagerFactory _wingetFactory;
@@ -101,6 +103,7 @@ public class WindowsPackageManager : IWindowsPackageManager
 
         return new ()
         {
+            ExtendedErrorCode = extendedErrorCode,
             RebootRequired = installResult.RebootRequired,
         };
     }
