@@ -58,12 +58,12 @@
 
             <!-- Show Repositories -->
             <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
-                <Grid ColumnSpacing="10">
+                <Grid ColumnSpacing="8">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="310"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="3*"/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="AccountsComboBox" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AccountComboBox_Description" Grid.Column="0" SelectionChanged="AccountsComboBox_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Accounts, Mode=OneWay}" />
+                    <ComboBox x:Name="AccountsComboBox" IsEnabled="{x:Bind AddRepoViewModel.IsAccountComboBoxEnabled, Mode=OneWay}" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AccountComboBox_Description" Grid.Column="0" SelectionChanged="AccountsComboBox_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Accounts, Mode=OneWay}" />
                     <TextBox x:Name="FilterTextBox" Grid.Column="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" >
                         <i:Interaction.Behaviors>
                             <ic:EventTriggerBehavior EventName="TextChanged">
@@ -72,9 +72,9 @@
                         </i:Interaction.Behaviors>
                     </TextBox>
                 </Grid>
-                <ListView x:Name="RepositoriesListView" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}">
+                <ListView x:Name="RepositoriesListView" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
                     <ListView.Header>
-                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoriesList" />
+                        <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoriesList" Margin="0, 0, 0, 8"/>
                     </ListView.Header>
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:RepoViewListItem">
@@ -94,12 +94,18 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <!--WINUI3 does not have a folder/file picker control.  Lets make one that looks like it.-->
-                <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
-                     TextChanged="CloneLocation_TextChanged" Grid.Column="0"
-                     Text="{x:Bind FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
-                     IsReadOnly="True"
-                     Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay}"
-                     x:Name="DevDriveCloneLocationAliasTextBox"/>
+                <StackPanel
+                    Grid.Column="0"
+                    Spacing="7">
+                    <TextBlock 
+                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePathForTextBlock" />
+                    <TextBox
+                        TextChanged="CloneLocation_TextChanged"
+                        Text="{x:Bind FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
+                        IsEnabled="False"
+                        Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay}"
+                        x:Name="DevDriveCloneLocationAliasTextBox" />
+                </StackPanel>
                 <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
                      TextChanged="CloneLocation_TextChanged" Grid.Column="0" 
                      Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
