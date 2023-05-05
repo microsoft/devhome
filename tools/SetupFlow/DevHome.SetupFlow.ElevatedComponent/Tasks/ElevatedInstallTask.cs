@@ -3,8 +3,8 @@
 
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
+using DevHome.SetupFlow.Common.Extensions;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
-using DevHome.SetupFlow.Extensions;
 using Microsoft.Management.Deployment;
 using Windows.Foundation;
 using Windows.Win32.Foundation;
