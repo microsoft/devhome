@@ -107,9 +107,9 @@ public partial class FolderPickerViewModel : ObservableObject
         var maybeCloneLocation = await PickCloneDirectoryAsync();
         if (maybeCloneLocation != null)
         {
-            CloneLocation = maybeCloneLocation.FullName;
-            CloneLocationAlias = string.Empty;
             InDevDriveScenario = false;
+            CloneLocationAlias = string.Empty;
+            CloneLocation = maybeCloneLocation.FullName;
         }
 
         EnableBrowseButton();
