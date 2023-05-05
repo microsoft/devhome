@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Models;
@@ -14,6 +15,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
+using DevHome.TelemetryEvents;
 using Microsoft.Extensions.Hosting;
 using Windows.System;
 
@@ -92,6 +94,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void HideBanner()
     {
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("MainPage_HideLearnMoreBanner_Event");
         ShowBanner = false;
     }
 
@@ -100,6 +103,10 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// </summary>
     /// <param name="flowTitle">Title to show in the flow; will use the SetupShell.Title property if empty</param>
     /// <param name="taskGroups">The task groups that will be included in this setup flow.</param>
+    /// <remarks>
+    /// Note that the order of the task groups here will influence the order of the pages in
+    /// the flow and the tabs in the review page.
+    /// </remarks>
     private void StartSetupFlowForTaskGroups(string flowTitle, params ISetupTaskGroup[] taskGroups)
     {
         StartSetupFlow.Invoke(null, (flowTitle, taskGroups));
@@ -116,11 +123,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartSetup(string flowTitle)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartFlow_Event", LogLevel.Measure, new StartFlowEvent(flowTitle));
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting end-to-end setup");
 
         var taskGroups = new List<ISetupTaskGroup>
         {
-            _host.GetService<DevDriveTaskGroup>(),
             _host.GetService<RepoConfigTaskGroup>(),
         };
 
@@ -133,6 +140,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
             Log.Logger?.ReportInfo(Log.Component.MainPage, $"Skipping {nameof(AppManagementTaskGroup)} because COM server is not available");
         }
 
+        taskGroups.Add(_host.GetService<DevDriveTaskGroup>());
+
         StartSetupFlowForTaskGroups(flowTitle, taskGroups.ToArray());
     }
 
@@ -142,11 +151,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartRepoConfig(string flowTitle)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartFlow_Event", LogLevel.Measure, new StartFlowEvent("RepoConfig"));
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for repo config");
         StartSetupFlowForTaskGroups(
             flowTitle,
-            _host.GetService<DevDriveTaskGroup>(),
-            _host.GetService<RepoConfigTaskGroup>());
+            _host.GetService<RepoConfigTaskGroup>(),
+            _host.GetService<DevDriveTaskGroup>());
     }
 
     /// <summary>
@@ -155,6 +165,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartAppManagement(string flowTitle)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartFlow_Event", LogLevel.Measure, new StartFlowEvent("AppManagement"));
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for app management");
         StartSetupFlowForTaskGroups(flowTitle,  _host.GetService<AppManagementTaskGroup>());
     }
@@ -179,6 +190,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task StartConfigurationFileAsync()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartFlow_Event", LogLevel.Measure, new StartFlowEvent("ConfigurationFile"));
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
         if (await configFileSetupFlow.PickConfigurationFileAsync())
         {

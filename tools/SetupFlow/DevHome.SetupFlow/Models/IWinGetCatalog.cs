@@ -25,8 +25,12 @@ public interface IWinGetCatalog
     /// Opens a catalog before searching.
     /// This method calls <c>ConnectAsync()</c> from <c>PackageManager.idl</c>
     /// </summary>
+    /// <param name="forceReconnect">Force re-connect</param>
     /// <exception cref="CatalogConnectionException">Exception thrown if a catalog connection failed</exception>
-    public Task ConnectAsync();
+    /// <remarks>If a catalog is already connected, then attempting to connect
+    /// again will simply omit the operation, unless the <paramref name="forceReconnect"/>
+    /// is set to <c>true</c></remarks>
+    public Task ConnectAsync(bool forceReconnect = false);
 
     /// <summary>
     /// Search for packages in this catalog.

@@ -3,16 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.Tracing;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Diagnostics.Telemetry;
-using Microsoft.Win32;
 
 namespace DevHome.Telemetry;
 
@@ -182,6 +176,16 @@ internal class Telemetry : ITelemetry
             },
             relatedActivityId,
             isError: false);
+    }
+
+    /// <summary>
+    /// Log an informal event with no additional data at log level measure.  Does not allow for coordinating activities.
+    /// </summary>
+    /// <param name="eventName">The name of the event to log</param>
+    /// <param name="isError">Set to true if an error condition raised this event.</param>
+    public void LogMeasure(string eventName, bool isError = false, Guid? relatedActivityId = null)
+    {
+        this.LogInternal(eventName, LogLevel.Measure, new EmptyEvent(), relatedActivityId, isError);
     }
 
     /// <summary>

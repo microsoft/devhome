@@ -88,7 +88,7 @@
                             <Border Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 1, 0, 0">
                                 <StackPanel Orientation="Horizontal" Spacing="5">
                                     <TextBox 
-                                                Text="{x:Bind CloneLocationAlias}" 
+                                                Text="{x:Bind CloneLocationAlias, Mode=OneWay}" 
                                                 IsEnabled="False"
                                                 Visibility="{x:Bind CloneToDevDrive, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                                 MinWidth="350"

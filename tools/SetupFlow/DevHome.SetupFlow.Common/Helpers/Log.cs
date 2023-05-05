@@ -35,6 +35,7 @@ public class Log
         public static readonly string Orchestrator = nameof(Orchestrator);
         public static readonly string MainPage = nameof(MainPage);
         public static readonly string Loading = nameof(Loading);
+        public static readonly string Summary = nameof(Summary);
 
         public static readonly string IPCClient = nameof(IPCClient);
         public static readonly string IPCServer = nameof(IPCServer);

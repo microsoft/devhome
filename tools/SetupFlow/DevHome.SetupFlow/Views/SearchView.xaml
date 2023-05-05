@@ -10,8 +10,8 @@
     <UserControl.Resources>
         <converters:CollectionVisibilityConverter x:Name="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         <converters:StringFormatConverter x:Name="StringFormatConverter" />
-        <!-- Show `Undo` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
-        <converters:BoolToObjectConverter x:Name="SelectButtonGlyphConverter" TrueValue="&#xE7A7;" FalseValue="&#xE109;" />
+        <!-- Show `RevToggleKey` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
+        <converters:BoolToObjectConverter x:Name="SelectButtonGlyphConverter" TrueValue="&#xE845;" FalseValue="&#xE109;" />
         <converters:BoolNegationConverter x:Name="BoolNegationConverter" />
         <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
     </UserControl.Resources>
@@ -63,6 +63,22 @@
                         <Setter.Value>
                             <ControlTemplate>
                                 <Grid>
+                                    <Grid.Resources>
+                                        <ResourceDictionary>
+                                            <!--  Show "Learn more" or "Installed"-->
+                                            <converters:BoolToObjectConverter x:Key="LearnMoreInstalledConverter">
+                                                <converters:BoolToObjectConverter.FalseValue>
+                                                    <HyperlinkButton Name="LearnMoreButton" Command="{Binding LearnMoreCommand,Mode=OneWay}">
+                                                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
+                                                    </HyperlinkButton>
+                                                </converters:BoolToObjectConverter.FalseValue>
+                                                <converters:BoolToObjectConverter.TrueValue>
+                                                    <TextBlock Padding="0,0,12,0" Foreground="{ThemeResource TextFillColorDisabled}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Installed"/>
+                                                </converters:BoolToObjectConverter.TrueValue>
+                                            </converters:BoolToObjectConverter>
+                                        </ResourceDictionary>
+                                    </Grid.Resources>
+
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="CommonStates">
                                             <VisualState>
@@ -128,11 +144,7 @@
                                             <ImageIcon Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
                                         </controls:SettingsCard.HeaderIcon>
                                         <StackPanel Orientation="Horizontal" Spacing="10">
-                                            <HyperlinkButton
-                                                Name="LearnMoreButton"
-                                                Command="{Binding LearnMoreCommand,Mode=OneWay}">
-                                                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
-                                            </HyperlinkButton>
+                                            <ContentControl Content="{Binding IsInstalled, Converter={StaticResource LearnMoreInstalledConverter}}" />
                                             <Button
                                                 IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
                                                 Command="{Binding ToggleSelectionCommand,Mode=OneWay}"

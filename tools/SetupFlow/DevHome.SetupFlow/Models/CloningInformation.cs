@@ -53,13 +53,19 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     }
 
     /// <summary>
-    /// Gets or sets a value indicating the alias associated with the Dev drive in the form of
-    /// "Drive label" (Drive letter:) [Size GB/TB]. E.g Dev Drive (D:) [50.0 GB]
+    /// Gets or sets a value indicating whether used specifically for telemetry to get insights if repos are being cloned to an existing devdrive.
     /// </summary>
-    public string CloneLocationAlias
+    public bool CloneToExistingDevDrive
     {
         get; set;
     }
+
+    /// <summary>
+    /// Gets or sets a value indicating the alias associated with the Dev drive in the form of
+    /// "Drive label" (Drive letter:) [Size GB/TB]. E.g Dev Drive (D:) [50.0 GB]
+    /// </summary>
+    [ObservableProperty]
+    private string _cloneLocationAlias;
 
     /// <summary>
     /// Gets the repo name and formats it for the Repo Review view.

@@ -4,23 +4,22 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Settings.ViewModels;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
-using DevHome.SetupFlow.Selectors;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
-using DevHome.SetupFlow.Views;
+using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -31,6 +30,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly IHost _host;
     private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
+    private readonly IWindowsPackageManager _wpm;
+    private readonly PackageProvider _packageProvider;
+    private readonly CatalogDataSourceLoacder _catalogDataSourceLoacder;
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -66,14 +68,12 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         get
         {
             var packagesInstalled = new ObservableCollection<PackageViewModel>();
-            var packageProvider = _host.GetService<PackageProvider>();
-            var packages = packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true);
+            var packages = _packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true);
             foreach (var package in packages)
             {
                 packagesInstalled.Add(package);
             }
 
-            packageProvider.Clear();
             return packagesInstalled;
         }
     }
@@ -102,28 +102,56 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _showRestartNeeded = Visibility.Collapsed;
     }
 
+    /// <summary>
+    /// Method here for telemetry
+    /// </summary>
     [RelayCommand]
-    public void GoToMainPage()
+    public async void LearnMore()
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("LearnMoreAboutDevHome"));
+        await Launcher.LaunchUriAsync(new Uri("https://learn.microsoft.com/windows/"));
+    }
+
+    private void CancelSetupFlow()
     {
         var setupFlowViewModel = _host.GetService<SetupFlowViewModel>();
         setupFlowViewModel.Cancel();
     }
 
     [RelayCommand]
+    public void SetUpAnotherProject()
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("MachineConfiguration"));
+        CancelSetupFlow();
+    }
+
+    [RelayCommand]
+    public void GoToMainPage()
+    {
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("MachineConfiguration"));
+        CancelSetupFlow();
+    }
+
+    [RelayCommand]
     public void GoToDashboard()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("Dashboard"));
         _host.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName);
+        CancelSetupFlow();
     }
 
     [RelayCommand]
     public void GoToDevHomeSettings()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("DevHomeSettings"));
         _host.GetService<INavigationService>().NavigateTo(typeof(SettingsViewModel).FullName);
+        CancelSetupFlow();
     }
 
     [RelayCommand]
     public void GoToForDevelopersSettingsPage()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("WindowsDeveloperSettings"));
         Task.Run(() => Launcher.LaunchUriAsync(new Uri("ms-settings:developers"))).Wait();
     }
 
@@ -131,12 +159,18 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         IHost host,
-        ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory)
+        ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory,
+        IWindowsPackageManager wpm,
+        PackageProvider packageProvider,
+        CatalogDataSourceLoacder catalogDataSourceLoader)
         : base(stringResource, orchestrator)
     {
         _orchestrator = orchestrator;
         _host = host;
         _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
+        _wpm = wpm;
+        _packageProvider = packageProvider;
+        _catalogDataSourceLoacder = catalogDataSourceLoader;
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
@@ -148,7 +182,29 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     protected async override Task OnFirstNavigateToAsync()
     {
         _orchestrator.ReleaseRemoteFactory();
-        await Task.CompletedTask;
+        await ReloadCatalogsAsync();
+    }
+
+    private async Task ReloadCatalogsAsync()
+    {
+        // After installing packages, we should reconnect to catalogs to
+        // reflect the latest changes when new Package COM objects are created
+        Log.Logger?.ReportInfo(Log.Component.Summary, $"Checking if a new catalog connections should be established");
+        if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
+        {
+            await Task.Run(async () =>
+            {
+                Log.Logger?.ReportInfo(Log.Component.Summary, $"Creating a new catalog connections");
+                await _wpm.ConnectToAllCatalogsAsync(force: true);
+
+                Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloading catalogs from all data sources");
+                _catalogDataSourceLoacder.Clear();
+                await foreach (var dataSourceCatalogs in _catalogDataSourceLoacder.LoadCatalogsAsync())
+                {
+                    Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloaded {dataSourceCatalogs.Count} catalog(s)");
+                }
+            });
+        }
     }
 
     /// <summary>

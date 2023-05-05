@@ -50,8 +50,12 @@
         </Grid>
 
         <!-- Widget content -->
-        <ScrollViewer x:Name="WidgetScrollViewer" Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}" Grid.Row="1" 
-                      VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled" />
+        <Grid Grid.Row="1" x:Name="ScollBarOffsetGridLeft" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}" Width="5"
+                      HorizontalAlignment="Left" />
+        <Grid Grid.Row="1" x:Name="ScollBarOffsetGridRight" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}" Width="5"
+                      HorizontalAlignment="Right" />
+        <ScrollViewer Grid.Row="1" x:Name="WidgetScrollViewer" Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}"
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled" Padding="5,0" />
 
     </Grid>
 </UserControl>
