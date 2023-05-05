@@ -61,7 +61,7 @@ public class SSHWalletWidget : WidgetImpl
     {
         if (string.IsNullOrWhiteSpace(ConfigFile))
         {
-            ContentData = string.Empty;
+            ContentData = new JsonObject { { "configuring", true } }.ToJsonString();
             DataState = WidgetDataState.Okay;
             return;
         }
@@ -391,7 +391,7 @@ public class SSHWalletWidget : WidgetImpl
         {
             WidgetPageState.Configure => GetConfiguration(ConfigFile),
             WidgetPageState.Content => ContentData,
-            WidgetPageState.Loading => EmptyJson,
+            WidgetPageState.Loading => new JsonObject { { "configuring", true } }.ToJsonString(),
 
             // In case of unknown state default to empty data
             _ => EmptyJson,
