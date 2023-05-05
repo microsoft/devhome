@@ -196,7 +196,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // Delete previously shown configuation widget.
         // Clearing the UI here results in a flash, so don't bother. It will update soon.
         Log.Logger()?.ReportDebug("AddWidgetDialog", $"Widget selection changed, delete widget if one exists");
-        var clearWidgetTask = DeletePartiallyCreatedWidget();
+        var clearWidgetTask = ClearCurrentWidget();
 
         // Selected item could be null if list of widgets became empty.
         if (sender.SelectedItem is null)
@@ -258,7 +258,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         // Delete previously shown configuation card.
         Log.Logger()?.ReportDebug("AddWidgetDialog", $"Canceled dialog, delete partially created widget");
-        await DeletePartiallyCreatedWidget();
+        await ClearCurrentWidget();
 
         HideDialog();
     }
@@ -277,10 +277,10 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private async void OnMainWindowClosed(object sender, WindowEventArgs args)
     {
         Log.Logger()?.ReportInfo("AddWidgetDialog", $"Window Closed, delete partially created widget");
-        await DeletePartiallyCreatedWidget();
+        await ClearCurrentWidget();
     }
 
-    private async Task DeletePartiallyCreatedWidget()
+    private async Task ClearCurrentWidget()
     {
         if (_currentWidget != null)
         {
