@@ -151,7 +151,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartRepoConfig(string flowTitle)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartFlow_Event", LogLevel.Measure, new StartFlowEvent(flowTitle));
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartFlow_Event", LogLevel.Measure, new StartFlowEvent("RepoConfig"));
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for repo config");
         StartSetupFlowForTaskGroups(
             flowTitle,
@@ -165,7 +165,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartAppManagement(string flowTitle)
     {
-        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartFlow_Event", LogLevel.Measure, new StartFlowEvent(flowTitle));
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartFlow_Event", LogLevel.Measure, new StartFlowEvent("AppManagement"));
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for app management");
         StartSetupFlowForTaskGroups(flowTitle,  _host.GetService<AppManagementTaskGroup>());
     }

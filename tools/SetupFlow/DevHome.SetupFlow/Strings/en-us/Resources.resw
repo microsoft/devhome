@@ -1053,7 +1053,7 @@
   </data>
   <data name="CloneRepoErrorForActionCenter" xml:space="preserve">
     <value>Couldn't clone {0} 0x{1}</value>
-    <comment>{Locked="{0}.{1}"}Action center message to give the hresult as to why the repo could not be cloned {0}: name of repo {1}:Hresult as a hex</comment>
+    <comment>{Locked="{0}","{1}"}Action center message to give the hresult as to why the repo could not be cloned {0}: name of repo {1}:Hresult as a hex</comment>
   </data>
   <data name="ClonePathForTextBlock.Text" xml:space="preserve">
     <value>Clone path</value>

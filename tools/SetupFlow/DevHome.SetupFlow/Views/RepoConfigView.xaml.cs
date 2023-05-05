@@ -100,7 +100,15 @@ public sealed partial class RepoConfigView : UserControl
                 ViewModel.UpdateCollectionWithDevDriveInfo(everythingToClone.First());
                 ViewModel.DevDriveManager.IncreaseRepositoriesCount(everythingToClone.Count);
                 ViewModel.DevDriveManager.ConfirmChangesToDevDrive();
+            }
+
+            if (devDrive != null)
+            {
                 cloneLocationKind = CloneLocationKind.DevDrive;
+                foreach (var cloneInfo in everythingToClone)
+                {
+                    cloneInfo.CloneToExistingDevDrive = devDrive.State == DevDriveState.ExistsOnSystem;
+                }
             }
 
             ViewModel.SaveSetupTaskInformation(everythingToClone);
@@ -122,6 +130,7 @@ public sealed partial class RepoConfigView : UserControl
         // Okay to use EverythingToClone[0].ProviderName here.
         var providerName = addRepoDialog.AddRepoViewModel.EverythingToClone.Any() ? addRepoDialog.AddRepoViewModel.EverythingToClone[0].ProviderName : string.Empty;
 
+        // If needs be, this can run inside a foreach loop to capture details on each repo.
         if (cloneLocationKind == CloneLocationKind.DevDrive)
         {
             TelemetryFactory.Get<ITelemetry>().Log(
