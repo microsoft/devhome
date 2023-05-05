@@ -630,7 +630,7 @@
     <comment>Content for URL button</comment>
   </data>
   <data name="RepoTool_FilterTextBox.PlaceholderText" xml:space="preserve">
-    <value>Filter</value>
+    <value>Filter your repositories</value>
     <comment>Prompt user to filter</comment>
   </data>
   <data name="Repo_ToolClonePathError.Text" xml:space="preserve">
