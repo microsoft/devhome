@@ -43,7 +43,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
         _widgetCatalog = catalog;
         _dispatcher = dispatcher;
 
-        // Strange behavior: setting the requested theme when we new-up the dialog isn't enough, so do it here.
+        // Strange behavior: just setting the requested theme when we new-up the dialog results in
+        // the wrong theme's resources being used. Setting RequestedTheme here fixes the problem.
         RequestedTheme = theme;
 
         // Get the application root window so we know when it has closed.
@@ -257,7 +258,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private async void CancelButton_Click(object sender, RoutedEventArgs e)
     {
         // Delete previously shown configuation card.
-        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Canceled dialog, delete partially created widget");
+        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Canceled dialog, delete widget");
         await ClearCurrentWidget();
 
         HideDialog();
