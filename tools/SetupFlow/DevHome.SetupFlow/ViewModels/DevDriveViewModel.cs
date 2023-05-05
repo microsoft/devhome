@@ -21,6 +21,7 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.Windows;
 using DevHome.Telemetry;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.UI.Xaml;
 using Windows.Globalization.NumberFormatting;
 using Windows.Storage.Pickers;
@@ -35,6 +36,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private readonly IDevDriveManager _devDriveManager;
     private readonly string _localizedBrowseButtonText;
     private readonly ObservableCollection<string> _fileNameAndSizeErrorList = new ();
+    private readonly Dictionary<DevDriveValidationResult, string> _localizedDevDriveValidationErrorStrings = new ();
+    private readonly Dictionary<char, ulong> _driveLetterToSizeMapping = new ();
 
     private readonly string _devHomeIconPath = "Assets/DevHome.ico";
     private readonly Dictionary<ByteUnit, string> _byteUnitList;
@@ -57,6 +60,13 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         get; private set;
     }
+
+    /// <summary>
+    /// Gets the window that will contain the view.
+    /// </summary>
+    public Dictionary<DevDriveValidationResult, string> LocalizedDevDriveValidationErrorStrings => _localizedDevDriveValidationErrorStrings;
+
+    public Dictionary<char, ulong> DriveLetterToSizeMapping => _driveLetterToSizeMapping;
 
     /// <summary>
     /// Gets the decimal formatter that will format the value in the numberbox. RoundHalfTowardsZero is used since we
@@ -117,6 +127,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         _localizedBrowseButtonText = _stringResource.GetLocalized(StringResourceKey.BrowseTextBlock);
         _devDriveManager = devDriveManager;
         _devDriveManager.RequestToCloseViewModelWindow += CloseRequestedDevDriveWindow;
+        BuildSetOfLocalizedErrorMessages();
+        UpdateDriveLetterToSizeMapping();
     }
 
     /// <summary>
@@ -366,6 +378,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         DevDriveWindowContainer.Closed += ViewContainerClosed;
         DevDriveWindowContainer.Activate();
         IsDevDriveWindowOpen = true;
+        UpdateDriveLetterToSizeMapping();
 
         // If state is invalid then show errors in the UI as soon as we launch the window.
         if (_concreteDevDrive.State != DevDriveState.New)
@@ -391,28 +404,30 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     public void ShowErrorInUI(ISet<DevDriveValidationResult> resultSet)
     {
-        var prefix = "DevDrive";
         var tempfileNameAndSizeErrorList = new List<string>();
         NoDriveLettersAvailableError = string.Empty;
         InvalidFolderLocationError = string.Empty;
         foreach (DevDriveValidationResult result in resultSet)
         {
             Log.Logger?.ReportError(Log.Component.DevDrive, $"Input validation Error in Dev Drive window: {result.ToString()}");
-            var errorString = _stringResource.GetLocalized(prefix + result.ToString());
 
-            if (result == DevDriveValidationResult.NoDriveLettersAvailable)
+            string errorString;
+            if (LocalizedDevDriveValidationErrorStrings.TryGetValue(result, out errorString))
             {
-                NoDriveLettersAvailableError = errorString;
-            }
-            else if (result == DevDriveValidationResult.InvalidFolderLocation)
-            {
-                InvalidFolderLocationError = errorString;
-            }
-            else if (result == DevDriveValidationResult.InvalidDriveLabel ||
-                result == DevDriveValidationResult.NotEnoughFreeSpace ||
-                result == DevDriveValidationResult.FileNameAlreadyExists)
-            {
-                tempfileNameAndSizeErrorList.Add(errorString);
+                if (result == DevDriveValidationResult.NoDriveLettersAvailable)
+                {
+                    NoDriveLettersAvailableError = errorString;
+                }
+                else if (result == DevDriveValidationResult.InvalidFolderLocation)
+                {
+                    InvalidFolderLocationError = errorString;
+                }
+                else if (result == DevDriveValidationResult.InvalidDriveLabel ||
+                    result == DevDriveValidationResult.NotEnoughFreeSpace ||
+                    result == DevDriveValidationResult.FileNameAlreadyExists)
+                {
+                    tempfileNameAndSizeErrorList.Add(errorString);
+                }
             }
         }
 
@@ -448,5 +463,70 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         NoDriveLettersAvailableError = string.Empty;
         InvalidFolderLocationError = string.Empty;
         FileNameAndSizeErrorList.Clear();
+    }
+
+    private void BuildSetOfLocalizedErrorMessages()
+    {
+        var resultsList = Enum.GetValues(typeof(DevDriveValidationResult));
+        foreach (DevDriveValidationResult result in resultsList)
+        {
+            LocalizedDevDriveValidationErrorStrings.Add(
+                result,
+                _stringResource.GetLocalized("DevDrive" + result.ToString()));
+        }
+    }
+
+    private void UpdateDriveLetterToSizeMapping()
+    {
+        DriveLetterToSizeMapping.Clear();
+        foreach (var curDriveOnSystem in DriveInfo.GetDrives())
+        {
+            DriveLetterToSizeMapping.Add(curDriveOnSystem.Name[0], (ulong)curDriveOnSystem.TotalFreeSpace);
+        }
+    }
+
+    [RelayCommand]
+    private void DriveLabelChanged(string text)
+    {
+        var isFileNameInvalidErrorInList = FileNameAndSizeErrorList.Contains(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.InvalidDriveLabel]);
+        var isFileExistsErrorInList = FileNameAndSizeErrorList.Contains(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.InvalidDriveLabel]);
+        if (DevDriveUtil.IsInvalidFileNameOrPath(InvalidCharactersKind.FileName, text) && !isFileNameInvalidErrorInList)
+        {
+            FileNameAndSizeErrorList.Add(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.InvalidDriveLabel]);
+        }
+        else
+        {
+            FileNameAndSizeErrorList.Remove(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.InvalidDriveLabel]);
+        }
+
+        if (File.Exists(Path.Combine(Location, DriveLabel + ".vhdx")) && !isFileExistsErrorInList)
+        {
+            FileNameAndSizeErrorList.Add(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.FileNameAlreadyExists]);
+        }
+        else
+        {
+            FileNameAndSizeErrorList.Remove(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.FileNameAlreadyExists]);
+        }
+    }
+
+    [RelayCommand]
+    private void DriveSizeChanged(double value)
+    {
+        FileNameAndSizeErrorList.Remove(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.NotEnoughFreeSpace]);
+        var lengthAfterTrim = Location.Trim();
+        var shouldShowSizeError = false;
+        if (double.IsFinite(value) && lengthAfterTrim.Length > 0)
+        {
+            ulong totalAvailableSpace;
+            if (DriveLetterToSizeMapping.TryGetValue(char.ToUpperInvariant(lengthAfterTrim[0]), out totalAvailableSpace))
+            {
+                shouldShowSizeError = DevDriveUtil.ConvertToBytes(value, (ByteUnit)_comboBoxByteUnit) > totalAvailableSpace;
+            }
+        }
+
+        if (shouldShowSizeError)
+        {
+            FileNameAndSizeErrorList.Add(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.NotEnoughFreeSpace]);
+        }
     }
 }

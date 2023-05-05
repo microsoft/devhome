@@ -114,10 +114,15 @@
                                 Text="{x:Bind ViewModel.DriveLabel, Mode=TwoWay}"
                                 MaxLength="{x:Bind util:DevDriveUtil.MaxDriveLabelSize}"
                                 IsSpellCheckEnabled="False">
-                            </TextBox>
+                                <i:Interaction.Behaviors>
+                                    <ic:EventTriggerBehavior EventName="TextChanged">
+                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.DriveLabelChangedCommand}" CommandParameter="{Binding Text, ElementName=DriveLabelTextBox}"/>
+                                    </ic:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
+                        </TextBox>
                             <NumberBox 
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Size"
-                                x:Name="DriveSizeTextBox"
+                                x:Name="DriveSizeNumberBox"
                                 Grid.Column="1"
                                 Grid.Row="0"
                                 Margin="0"
@@ -126,7 +131,13 @@
                                 Maximum="{x:Bind ViewModel.MaximumAllowedSize, Mode=OneWay}"
                                 Minimum="{x:Bind ViewModel.MinimumAllowedSize, Mode=OneWay}"
                                 AcceptsExpression="False"
-                                NumberFormatter="{x:Bind ViewModel.DevDriveDecimalFormatter, Mode=OneWay}"/>
+                                NumberFormatter="{x:Bind ViewModel.DevDriveDecimalFormatter, Mode=OneWay}"  >
+                                <i:Interaction.Behaviors>
+                                <ic:EventTriggerBehavior EventName="ValueChanged">
+                                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.DriveSizeChangedCommand}" CommandParameter="{Binding Value, ElementName=DriveSizeNumberBox}"/>
+                                    </ic:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
+                            </NumberBox> 
                             <ComboBox 
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowByteUnitComboBox"
                                 x:Name="DriveByteUnitComboBox"
