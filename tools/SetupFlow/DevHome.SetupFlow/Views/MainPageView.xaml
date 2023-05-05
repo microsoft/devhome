@@ -74,7 +74,7 @@
                         HideButtonVisibility="True"
                         HideButtonCommand="{x:Bind ViewModel.HideBannerCommand}"
                         Visibility="{x:Bind ViewModel.ShowBanner, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                        ButtonCommand="{x:Bind ViewModel.BannerButtonCommand,Mode=OneWay}"
+                        ButtonCommand="{x:Bind ViewModel.BannerButtonCommand, Mode=OneWay}"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DefaultBanner"
                         BackgroundSource="{ThemeResource Setup_Banner_Back}"
                         OverlaySource="{ThemeResource Setup_Banner_Front}" />

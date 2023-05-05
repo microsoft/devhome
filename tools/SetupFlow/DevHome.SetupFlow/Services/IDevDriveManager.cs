@@ -156,4 +156,12 @@ public interface IDevDriveManager
     {
         get;
     }
+
+    /// <summary>
+    /// Gets a value indicating the set of drive letters currently in use by Dev Drives on the system.
+    /// </summary>
+    public HashSet<char> DriveLettersInUseByDevDrivesCurrentlyOnSystem
+    {
+        get;
+    }
 }

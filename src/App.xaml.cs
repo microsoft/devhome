@@ -120,23 +120,43 @@ public partial class App : Application, IApp
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
-
-        await GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data);
-        await GetService<IAccountsService>().InitializeAsync();
-        await WindowsPackageManagerValidationAsync();
+        await Task.WhenAll(
+            GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data),
+            GetService<IAccountsService>().InitializeAsync(),
+            WindowsPackageManagerInitializationAsync());
     }
 
-    private async Task WindowsPackageManagerValidationAsync()
+    private async Task WindowsPackageManagerInitializationAsync()
     {
         GlobalLog.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at app launch");
-        if (await Task.Run(() => GetService<IWindowsPackageManager>().IsCOMServerAvailable()))
+        var wpm = GetService<IWindowsPackageManager>();
+        var catalogDataSourceLoader = GetService<CatalogDataSourceLoacder>();
+
+        await Task.Run(async () =>
         {
-            GlobalLog.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
-        }
-        else
-        {
-            GlobalLog.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
-        }
+            if (wpm.IsCOMServerAvailable())
+            {
+                GlobalLog.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
+
+                // Initialize/Load catalogs from all data sources
+                GlobalLog.Logger?.ReportInfo($"Initializing App install catalogs data sources");
+                await catalogDataSourceLoader.InitializeAsync();
+                GlobalLog.Logger?.ReportInfo($"Found a total of {catalogDataSourceLoader.CatalogCount} catalogs");
+
+                GlobalLog.Logger?.ReportInfo($"Calling {nameof(wpm.ConnectToAllCatalogsAsync)} to connect to catalogs");
+                await wpm.ConnectToAllCatalogsAsync();
+
+                GlobalLog.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to reduce the wait time when this information is requested");
+                await foreach (var dataSourceCatalogs in catalogDataSourceLoader.LoadCatalogsAsync())
+                {
+                    GlobalLog.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
+                }
+            }
+            else
+            {
+                GlobalLog.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
+            }
+        });
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)

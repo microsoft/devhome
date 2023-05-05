@@ -57,14 +57,14 @@ public abstract class WinGetPackageDataSource
     protected delegate Task PackageProcessorCallback<T>(IWinGetPackage package, T item);
 
     /// <summary>
-    /// Get a list of non-installed packages from WinGet catalog ordered based
+    /// Get a list of packages from WinGet catalog ordered based
     /// on the input list and processes them according to the provided callback
     /// function
     /// </summary>
     /// <typeparam name="T">Input type</typeparam>
     /// <param name="items">List of objects that can be mapped to package IDs</param>
     /// <param name="packageIdCallback">Callback for retrieving the package id</param>
-    /// <param name="packageProcessorCallback">Callback for processing a non-installed package</param>
+    /// <param name="packageProcessorCallback">Callback for processing a package</param>
     /// <returns>List of packages</returns>
     protected async Task<IList<IWinGetPackage>> GetPackagesAsync<T>(
         IList<T> items,
@@ -88,7 +88,7 @@ public abstract class WinGetPackageDataSource
         foreach (var item in items)
         {
             var package = unorderedPackagesMap.GetValueOrDefault(packageIdCallback(item), null);
-            if (package?.IsInstalled == false)
+            if (package != null)
             {
                 // Process package if a callback was provided
                 if (packageProcessorCallback != null)

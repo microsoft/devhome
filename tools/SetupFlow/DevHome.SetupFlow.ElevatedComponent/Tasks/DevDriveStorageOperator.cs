@@ -25,8 +25,6 @@ public sealed class DevDriveStorageOperator
     /// </summary>
     public static readonly long _oneKb = 1024;
     public static readonly long _oneMb = _oneKb * _oneKb;
-    public static readonly long _fourKb = _oneKb * 4;
-    public static readonly string _fileSytem = "ReFS";
 
     /// <summary>
     /// We need a way to hold the partition information, when we call IoDeviceControl with IOCTL_DISK_GET_DRIVE_LAYOUT_EX.
@@ -55,6 +53,12 @@ public sealed class DevDriveStorageOperator
         public static uint CtlCodeOutput => (uint)(_deviceType << 16 | _access << 14 | _function << 2);
     }
 
+    // Signals to the system to reattach the virtual disk at boot time. This flag will be present in the public
+    // virtdisk.h file in the Windows SDK on systems that have it. For now since CsWin32 will not find this, we have to manually add it.
+    // This will be documented here: https://learn.microsoft.com/en-us/windows/win32/api/virtdisk/ne-virtdisk-attach_virtual_disk_flag
+    // This is only temporary, and will be removed once we can use it with CSWin32 out of the box.
+    private const uint AttachVirtualDiskFlagAtBoot = 0x00000400;
+
     public DevDriveStorageOperator()
     {
     }
@@ -79,36 +83,32 @@ public sealed class DevDriveStorageOperator
         }
 
         string virtDiskPhysicalPath;
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(CreateAndAttachVhdx)}");
         var result = CreateAndAttachVhdx(virtDiskPath, sizeInBytes, out virtDiskPhysicalPath);
         if (result.Failed)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(CreateAndAttachVhdx)} failed with error: {result:X}");
+            DetachVirtualDisk(virtDiskPath);
             return result.Value;
         }
 
         uint diskNumber;
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(CreatePartition)}");
         result = CreatePartition(virtDiskPhysicalPath, out diskNumber);
         if (result.Failed)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(CreatePartition)} failed with error: {result:X}");
+            DetachVirtualDisk(virtDiskPath);
             return result.Value;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(AssignDriveLetterToPartition)}");
         result = AssignDriveLetterToPartition(diskNumber, newDriveLetter);
         if (result.Failed)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(AssignDriveLetterToPartition)} failed with error: {result:X}");
+            DetachVirtualDisk(virtDiskPath);
             return result.Value;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateDevDrive), $"Starting {nameof(FormatPartitionAsDevDrive)}");
         var finishedResult = FormatPartitionAsDevDrive(newDriveLetter, driveLabel);
         if (finishedResult != 0)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateDevDrive), $"{nameof(FormatPartitionAsDevDrive)} failed with error: 0x{finishedResult:X}");
+            DetachVirtualDisk(virtDiskPath);
         }
 
         return finishedResult;
@@ -157,13 +157,38 @@ public sealed class DevDriveStorageOperator
         }
 
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"Starting AttachVirtualDisk");
-        result = PInvoke.AttachVirtualDisk(
-            tempHandle,
-            (PSECURITY_DESCRIPTOR)null,
-            ATTACH_VIRTUAL_DISK_FLAG.ATTACH_VIRTUAL_DISK_FLAG_PERMANENT_LIFETIME,
-            0,
-            null,
-            null);
+
+        // This is only temporary until the api updates to AttachVirtualDisk have propagated. AttachVirtualDisk will return an invalid argument error (E_INVALIDARG)
+        // when passed an attach virt disk flag that it does not support. This failure is not a deal breaker as we should still be able to attach the virtual
+        // disk without the AttachVirtualDiskFlagAtBoot flag. Users would just have to manually remount their virtual disk file instead of the system
+        // doing it for them at boot time. Once the api changes have propagated we will update this to remove the loop and use both flags in a single
+        // call with no fallback. We only make 2 attempts, first with the new flag and then a second attempt without the new flag.
+        var numberOfAttemptsToAttachVirtDisk = 0;
+        while (++numberOfAttemptsToAttachVirtDisk <= 2)
+        {
+            var attachFlags = ATTACH_VIRTUAL_DISK_FLAG.ATTACH_VIRTUAL_DISK_FLAG_PERMANENT_LIFETIME;
+            if (numberOfAttemptsToAttachVirtDisk == 1)
+            {
+                attachFlags |= (ATTACH_VIRTUAL_DISK_FLAG)AttachVirtualDiskFlagAtBoot;
+            }
+
+            result = PInvoke.AttachVirtualDisk(
+               tempHandle,
+               (PSECURITY_DESCRIPTOR)null,
+               attachFlags,
+               0,
+               null,
+               null);
+
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"AttachVirtualDisk Attempt: {numberOfAttemptsToAttachVirtDisk}, result {PInvoke.HRESULT_FROM_WIN32(result):X}, flags 0x{attachFlags:X}");
+
+            // break early if successful.
+            if (result == WIN32_ERROR.NO_ERROR)
+            {
+                break;
+            }
+        }
+
         if (result != WIN32_ERROR.NO_ERROR)
         {
             Log.Logger?.ReportError(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"AttachVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
@@ -577,5 +602,55 @@ public sealed class DevDriveStorageOperator
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Creating DevDriveFormatter");
         var devDriveFormatter = new DevDriveFormatter();
         return devDriveFormatter.FormatPartitionAsDevDrive(curDriveLetter, driveLabel);
+    }
+
+    /// <summary>
+    /// Detaches the virtual disk and removes the vhdx file associated with it.
+    /// </summary>
+    /// <param name="virtDiskPath">The path in the file system to the vhdx file</param>
+    private void DetachVirtualDisk(string virtDiskPath)
+    {
+        if (File.Exists(virtDiskPath))
+        {
+            var vhdParams = new OPEN_VIRTUAL_DISK_PARAMETERS
+            {
+                Version = OPEN_VIRTUAL_DISK_VERSION.OPEN_VIRTUAL_DISK_VERSION_2,
+            };
+
+            var storageType = new VIRTUAL_STORAGE_TYPE
+            {
+                VendorId = PInvoke.VIRTUAL_STORAGE_TYPE_VENDOR_MICROSOFT,
+                DeviceId = PInvoke.VIRTUAL_STORAGE_TYPE_DEVICE_VHDX,
+            };
+
+            SafeFileHandle tempHandle;
+            var result = PInvoke.OpenVirtualDisk(
+                storageType,
+                virtDiskPath,
+                VIRTUAL_DISK_ACCESS_MASK.VIRTUAL_DISK_ACCESS_NONE,
+                OPEN_VIRTUAL_DISK_FLAG.OPEN_VIRTUAL_DISK_FLAG_NONE,
+                vhdParams,
+                out tempHandle);
+
+            // We pass through errors here and after the detach call below instead of returning immediately because there are instances
+            // where the virtual disk file is created but not mounted. So in those instance a failure from OpenVirtualDisk and DetachVirtualDisk are expected.
+            if (result != WIN32_ERROR.NO_ERROR)
+            {
+                Log.Logger?.ReportError(Log.Component.DevDrive, nameof(DetachVirtualDisk), $"OpenVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
+            }
+
+            result = PInvoke.DetachVirtualDisk(
+                tempHandle,
+                DETACH_VIRTUAL_DISK_FLAG.DETACH_VIRTUAL_DISK_FLAG_NONE,
+                0);
+
+            if (result != WIN32_ERROR.NO_ERROR)
+            {
+                Log.Logger?.ReportError(Log.Component.DevDrive, nameof(DetachVirtualDisk), $"DetachVirtualDisk failed with error: {PInvoke.HRESULT_FROM_WIN32(result):X}");
+            }
+
+            tempHandle.Close();
+            File.Delete(virtDiskPath);
+        }
     }
 }

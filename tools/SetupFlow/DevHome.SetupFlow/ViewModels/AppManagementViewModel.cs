@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Dispatching;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -20,6 +22,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
     private readonly IWindowsPackageManager _wpm;
     private readonly PackageProvider _packageProvider;
+    private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
     /// <summary>
     /// Current view to display in the main content control
@@ -61,15 +64,27 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     {
         // Load catalogs from all data sources
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Loading package catalogs from all sources");
-        await _packageCatalogListViewModel.LoadCatalogsAsync();
+        var loadCatalogs = _packageCatalogListViewModel.LoadCatalogsAsync();
 
         // Connect to composite catalog used for searching on a separate
         // (non-UI) thread to prevent lagging the UI.
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to composite catalog to enable searching for packages");
-        await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
+        var allCatalogsConnect = Task.Run(async () =>
+        {
+            try
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to composite catalog to enable searching for packages");
+                await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
 
-        // Enable search box after catalog connection is complete
-        SearchBoxEnabled = true;
+                // Enable search box after catalog connection is complete
+                _dispatcherQueue.TryEnqueue(() => SearchBoxEnabled = _wpm.AllCatalogs.IsConnected);
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to connect to composite catalog to  enable searching. Search will be disabled.", e);
+            }
+        });
+
+        await Task.WhenAll(allCatalogsConnect, loadCatalogs);
     }
 
     protected async override Task OnEachNavigateToAsync()

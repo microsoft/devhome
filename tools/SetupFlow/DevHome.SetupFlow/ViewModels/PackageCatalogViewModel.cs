@@ -38,7 +38,10 @@ public partial class PackageCatalogViewModel : ObservableObject
     public PackageCatalogViewModel(PackageProvider packageProvider, PackageCatalog packageCatalog)
     {
         _packageCatalog = packageCatalog;
-        Packages = packageCatalog.Packages.Select(p => packageProvider.CreateOrGet(p, cachePermanently: true)).ToReadOnlyCollection();
+        Packages = packageCatalog.Packages
+            .Select(p => packageProvider.CreateOrGet(p, cachePermanently: true))
+            .OrderBy(p => p.IsInstalled)
+            .ToReadOnlyCollection();
     }
 
     [RelayCommand]

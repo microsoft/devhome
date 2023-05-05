@@ -56,10 +56,8 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// Gets or sets a value indicating the alias associated with the Dev drive in the form of
     /// "Drive label" (Drive letter:) [Size GB/TB]. E.g Dev Drive (D:) [50.0 GB]
     /// </summary>
-    public string CloneLocationAlias
-    {
-        get; set;
-    }
+    [ObservableProperty]
+    private string _cloneLocationAlias;
 
     /// <summary>
     /// Gets the repo name and formats it for the Repo Review view.

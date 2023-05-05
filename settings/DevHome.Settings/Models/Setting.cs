@@ -21,6 +21,8 @@ public class Setting
 
     public string Description { get; }
 
+    public string Glyph { get; }
+
     public bool HasToggleSwitch { get; }
 
     public bool IsExtensionEnabled
@@ -61,12 +63,13 @@ public class Setting
         }
     }
 
-    public Setting(string path, string classId, string header, string description, bool hasToggleSwitch)
+    public Setting(string path, string classId, string header, string description, string glyph, bool hasToggleSwitch)
     {
         Path = path;
         ClassId = classId;
         Header = header;
         Description = description;
+        Glyph = glyph;
         HasToggleSwitch = hasToggleSwitch;
 
         _isExtensionEnabled = GetIsExtensionEnabled();

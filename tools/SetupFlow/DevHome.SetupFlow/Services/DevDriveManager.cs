@@ -102,8 +102,8 @@ public class DevDriveManager : IDevDriveManager
         _stringResource = stringResource;
         _defaultVhdxFolderName = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFolderName);
         _defaultVhdxName = stringResource.GetLocalized(StringResourceKey.DevDriveDefaultFileName);
-        var location = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-        _defaultDevDriveLocation = Path.Combine(Path.Combine(location, @"Microsoft\Windows"), _defaultVhdxFolderName);
+        var location = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        _defaultDevDriveLocation = Path.Combine(location, _defaultVhdxFolderName);
     }
 
     /// <inheritdoc/>
@@ -472,6 +472,21 @@ public class DevDriveManager : IDevDriveManager
                 PreviousDevDrive = null;
                 ViewModel.RemoveTasks();
             }
+        }
+    }
+
+    /// <inheritdoc/>
+    public HashSet<char> DriveLettersInUseByDevDrivesCurrentlyOnSystem
+    {
+        get
+        {
+            var listOfLetters = new HashSet<char>();
+            foreach (var devDrive in GetAllDevDrivesThatExistOnSystem())
+            {
+                listOfLetters.Add(devDrive.DriveLetter);
+            }
+
+            return listOfLetters;
         }
     }
 }

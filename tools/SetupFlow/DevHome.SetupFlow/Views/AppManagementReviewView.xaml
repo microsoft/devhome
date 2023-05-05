@@ -68,10 +68,18 @@
                                 TextTrimming="CharacterEllipsis" />
                         </ctControls:SettingsCard.Header>
                         <ctControls:SettingsCard.Description>
-                            <TextBlock
-                                Text="{x:Bind PackageDescription, Mode=OneWay}"
-                                MaxLines="1"
-                                TextTrimming="CharacterEllipsis" />
+                            <StackPanel>
+                                <TextBlock
+                                    Text="{x:Bind PackageDescription, Mode=OneWay}"
+                                    MaxLines="1"
+                                    TextTrimming="CharacterEllipsis" />
+                                <HyperlinkButton
+                                    Padding="0"
+                                    Style="{ThemeResource TextBlockButtonStyle}"
+                                    Command="{x:Bind LearnMoreCommand, Mode=OneWay}">
+                                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
+                                </HyperlinkButton>
+                            </StackPanel>
                         </ctControls:SettingsCard.Description>
                         <ctControls:SettingsCard.HeaderIcon>
                             <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
