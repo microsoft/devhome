@@ -59,6 +59,8 @@ public class SSHWalletWidget : WidgetImpl
 
     public virtual void LoadContentData()
     {
+        // If ConfigFile is not set, do nothing.
+        // Widget will remain in configuring state, waiting for config file path input.
         if (string.IsNullOrWhiteSpace(ConfigFile))
         {
             ContentData = new JsonObject { { "configuring", true } }.ToJsonString();
@@ -68,6 +70,8 @@ public class SSHWalletWidget : WidgetImpl
 
         Log.Logger()?.ReportDebug(Name, ShortId, "Getting SSH Hosts");
 
+        // Read host entries from SSH config file and fill ContentData.
+        // Widget will show host entries declared in ConfigFile.
         try
         {
             var hostsData = new JsonObject();
