@@ -93,6 +93,7 @@ public static class StringResourceKey
     public static readonly string CloneRepoCreating = nameof(CloneRepoCreating);
     public static readonly string CloneRepoCreated = nameof(CloneRepoCreated);
     public static readonly string CloneRepoError = nameof(CloneRepoError);
+    public static readonly string CloneRepoErrorForActionCenter = nameof(CloneRepoErrorForActionCenter);
     public static readonly string CloneRepoRestart = nameof(CloneRepoRestart);
 
     // Configure task loading screen messages

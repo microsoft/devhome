@@ -9,7 +9,7 @@ namespace DevHome.SetupFlow.Models;
 public class ActionCenterMessages
 {
     /// <summary>
-    /// Gets or sets tain message to show to the user
+    /// Gets or sets the message to show to the user
     /// </summary>
     public string PrimaryMessage
     {

@@ -1051,6 +1051,10 @@
     <value>Enter a drive that exists</value>
     <comment>Error string to show the user if the drive they want to clone to does not exist.  Should be used if not making a devdrive</comment>
   </data>
+  <data name="CloneRepoErrorForActionCenter" xml:space="preserve">
+    <value>Couldn't clone {0} 0x{1}</value>
+    <comment>{Locked="{0}","{1}"}Action center message to give the hresult as to why the repo could not be cloned {0}: name of repo {1}:Hresult as a hex</comment>
+  </data>
   <data name="ClonePathForTextBlock.Text" xml:space="preserve">
     <value>Clone path</value>
     <comment>Text for choosing a clone path in a block of text</comment>

@@ -5,9 +5,15 @@ using System;
 using System.Linq;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
+using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.RepoToolEvents;
+using DevHome.Common.TelemetryEvents.RepoToolEvents.EditDialogEvents;
+using DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -18,8 +24,11 @@ namespace DevHome.SetupFlow.Views;
 /// </summary>
 public sealed partial class RepoConfigView : UserControl
 {
+    private readonly Guid relatedActivityId;
+
     public RepoConfigView()
     {
+        relatedActivityId = Guid.NewGuid();
         this.InitializeComponent();
     }
 
@@ -30,6 +39,13 @@ public sealed partial class RepoConfigView : UserControl
     /// </summary>
     private async void AddRepoButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        // hold information for telemetry calls
+        const string EventName = "RepoTool_AddRepos_Event";
+        var dialogName = "RepoDialog";
+        var telemetryLogger = TelemetryFactory.Get<ITelemetry>();
+
+        telemetryLogger.Log(EventName, LogLevel.Measure, new DialogEvent("Open", dialogName), relatedActivityId);
+
         // Both the hyperlink button and button call this.
         // disable the button to prevent users from double clicking it.
         var senderAsButton = sender as Button;
@@ -62,6 +78,8 @@ public sealed partial class RepoConfigView : UserControl
             ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(devDrive);
         }
 
+        // save cloneLocationKind for telemetry
+        CloneLocationKind cloneLocationKind = CloneLocationKind.LocalPath;
         var everythingToClone = addRepoDialog.AddRepoViewModel.EverythingToClone;
         if (result == ContentDialogResult.Primary && everythingToClone.Any())
         {
@@ -84,6 +102,15 @@ public sealed partial class RepoConfigView : UserControl
                 ViewModel.DevDriveManager.ConfirmChangesToDevDrive();
             }
 
+            if (devDrive != null)
+            {
+                cloneLocationKind = CloneLocationKind.DevDrive;
+                foreach (var cloneInfo in everythingToClone)
+                {
+                    cloneInfo.CloneToExistingDevDrive = devDrive.State == DevDriveState.ExistsOnSystem;
+                }
+            }
+
             ViewModel.SaveSetupTaskInformation(everythingToClone);
         }
         else
@@ -91,6 +118,45 @@ public sealed partial class RepoConfigView : UserControl
             // User cancelled the dialog, Report back to the Dev drive Manager to revert any changes.
             ViewModel.ReportDialogCancellation();
         }
+
+        // Convert current page to addkind.  Currently users can add either by URL or account (via the repos page)
+        AddKind addKind = AddKind.URL;
+        if (addRepoDialog.AddRepoViewModel.CurrentPage == Models.Common.PageKind.Repositories)
+        {
+            addKind = AddKind.Account;
+        }
+
+        // Only 1 provider can be selected per repo dialog session.
+        // Okay to use EverythingToClone[0].ProviderName here.
+        var providerName = addRepoDialog.AddRepoViewModel.EverythingToClone.Any() ? addRepoDialog.AddRepoViewModel.EverythingToClone[0].ProviderName : string.Empty;
+
+        // If needs be, this can run inside a foreach loop to capture details on each repo.
+        if (cloneLocationKind == CloneLocationKind.DevDrive)
+        {
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "RepoDialog_RepoAdded_Event",
+                LogLevel.Measure,
+                RepoDialogAddRepoEvent.AddWithDevDrive(
+                addKind,
+                addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
+                providerName,
+                addRepoDialog.EditDevDriveViewModel.DevDrive.State == DevDriveState.New,
+                addRepoDialog.EditDevDriveViewModel.DevDriveDetailsChanged),
+                relatedActivityId);
+        }
+        else if (cloneLocationKind == CloneLocationKind.LocalPath)
+        {
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "RepoDialog_RepoAdded_Event",
+                LogLevel.Measure,
+                RepoDialogAddRepoEvent.AddWithLocalPath(
+                addKind,
+                addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
+                providerName),
+                relatedActivityId);
+        }
+
+        telemetryLogger.Log(EventName, LogLevel.Measure, new DialogEvent("Close", dialogName, result), relatedActivityId);
     }
 
     /// <summary>
@@ -99,6 +165,13 @@ public sealed partial class RepoConfigView : UserControl
     /// <param name="sender">Used to find the cloning information clicked on.</param>
     private async void EditClonePathButton_Click(object sender, RoutedEventArgs e)
     {
+        const string EventName = "RepoTool_EditClonePath_Event";
+        var dialogName = "EditClonePath";
+        var relatedActivityId = Guid.NewGuid();
+        var telemetryLogger = TelemetryFactory.Get<ITelemetry>();
+
+        telemetryLogger.Log(EventName, LogLevel.Measure, new DialogEvent("Open", dialogName), relatedActivityId);
+
         var cloningInformation = (sender as Button).DataContext as CloningInformation;
         var oldLocation = cloningInformation.CloningLocation;
         var wasCloningToDevDrive = cloningInformation.CloneToDevDrive;
@@ -120,6 +193,7 @@ public sealed partial class RepoConfigView : UserControl
             // so decrease the Dev Managers count.
             if (wasCloningToDevDrive && !cloningInformation.CloneToDevDrive)
             {
+                telemetryLogger.Log(EventName, LogLevel.Measure, new SwitchedCloningLocationEvent(CloneLocationKind.LocalPath, devDrive.State == DevDriveState.New, devDrive.State == DevDriveState.ExistsOnSystem), relatedActivityId);
                 ViewModel.DevDriveManager.DecreaseRepositoriesCount();
                 ViewModel.DevDriveManager.CancelChangesToDevDrive();
             }
@@ -131,6 +205,7 @@ public sealed partial class RepoConfigView : UserControl
                 // User switched from local path to Dev Drive
                 if (!wasCloningToDevDrive)
                 {
+                    telemetryLogger.Log(EventName, LogLevel.Measure, new SwitchedCloningLocationEvent(CloneLocationKind.DevDrive), relatedActivityId);
                     ViewModel.DevDriveManager.IncreaseRepositoriesCount(1);
                 }
 
@@ -156,6 +231,8 @@ public sealed partial class RepoConfigView : UserControl
         {
             ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(editClonePathDialog.EditDevDriveViewModel.DevDrive);
         }
+
+        telemetryLogger.Log(EventName, LogLevel.Measure, new DialogEvent("Close", dialogName, result), relatedActivityId);
     }
 
     /// <summary>
@@ -170,5 +247,7 @@ public sealed partial class RepoConfigView : UserControl
         {
             ViewModel.DevDriveManager.DecreaseRepositoriesCount();
         }
+
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_RemoveRepo_Event");
     }
 }

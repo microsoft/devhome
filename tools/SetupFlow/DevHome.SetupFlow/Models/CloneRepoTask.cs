@@ -8,8 +8,11 @@ using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
+using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
@@ -80,6 +83,8 @@ public class CloneRepoTask : ISetupTask
 
     public ActionCenterMessages GetRebootMessage() => _needsRebootMessage;
 
+    private readonly IStringResource _stringResource;
+
     public bool DependsOnDevDriveToBeInstalled
     {
         get; set;
@@ -98,6 +103,7 @@ public class CloneRepoTask : ISetupTask
         _developerId = developerId;
         SetMessages(stringResource);
         ProviderName = providerName;
+        _stringResource = stringResource;
     }
 
     /// <summary>
@@ -113,6 +119,7 @@ public class CloneRepoTask : ISetupTask
         _developerId = null;
         ProviderName = providerName;
         SetMessages(stringResource);
+        _stringResource = stringResource;
     }
 
     private void SetMessages(IStringResource stringResource)
@@ -147,13 +154,14 @@ public class CloneRepoTask : ISetupTask
                 // _developerId will be null in the case of adding via URL.  _developerId will be null.
                 // extension will iterate through all logged in Ids and clone with each one.
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
-
+                TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Measure, new ReposCloneEvent(ProviderName, _developerId));
                 await RepositoryToClone.CloneRepositoryAsync(_cloneLocation.FullName, _developerId);
             }
             catch (Exception e)
             {
                 Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}", e);
-                _actionCenterErrorMessage.PrimaryMessage += " 0x" + e.HResult.ToString("X", CultureInfo.CurrentCulture);
+                _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, e.HResult.ToString("X", CultureInfo.CurrentCulture));
+                TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_ClouldNotClone_Event", LogLevel.Measure, new ExceptionEvent(e.HResult));
                 return TaskFinishedState.Failure;
             }
 

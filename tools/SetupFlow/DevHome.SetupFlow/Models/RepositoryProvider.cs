@@ -3,9 +3,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.Telemetry;
+using DevHome.TelemetryEvents;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -96,8 +101,11 @@ internal class RepositoryProvider
     {
         if (!_repositories.IsValueCreated)
         {
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Measure, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
             _repositories = new Lazy<IEnumerable<IRepository>>(_repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result);
         }
+
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Measure, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
         return _repositories.Value;
     }
