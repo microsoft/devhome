@@ -300,6 +300,7 @@ public class SSHWalletWidget : WidgetImpl
 
         configurationData.Add("hasConfiguration", hasConfiguration);
         configurationData.Add("configuration", sshConfigData);
+        configurationData.Add("submitIcon", IconLoader.GetIconAsBase64("arrow.png"));
 
         if (!string.IsNullOrEmpty(errorMessage))
         {

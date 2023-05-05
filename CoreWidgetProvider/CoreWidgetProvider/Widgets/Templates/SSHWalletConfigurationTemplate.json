@@ -34,7 +34,7 @@
         "type": "Action.Execute",
         "tooltip": "%Widget_Template_Tooltip/Submit%",
         "verb": "CheckPath",
-        "iconUrl": "https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.controls/images/segoe-mdl/e122.png"
+        "iconUrl": "data:image/png;base64,${submitIcon}"
       },
       "spacing": "Medium",
       "style": "Url",
