@@ -9,10 +9,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Documents;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Storage;
 using WinRT;
 
 namespace DevHome.Common.Services;
-public interface IPluginWrapper
+public interface IPluginWrapper : IDisposable
 {
     /// <summary>
     /// Gets name of the plugin as mentioned in the manifest
@@ -34,6 +35,16 @@ public interface IPluginWrapper
     /// Gets class id (GUID) of the plugin class (which implements IPlugin) as mentioned in the manifest
     /// </summary>
     string Id
+    {
+        get;
+    }
+
+    string? Description
+    {
+        get;
+    }
+
+    StorageFolder? PublicFolder
     {
         get;
     }

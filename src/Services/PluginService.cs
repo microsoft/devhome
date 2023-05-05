@@ -13,7 +13,6 @@ using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppExtensions;
 using Windows.Foundation.Collections;
-using Log = DevHome.Helpers.Log;
 
 namespace DevHome.Services;
 
@@ -216,11 +215,6 @@ public class PluginService : IPluginService
         return includeDisabledPlugins ? _installedPlugins : _enabledPlugins;
     }
 
-    public async Task SignalStopPluginsAsync()
-    {
-
-    }
-
     public async Task<ExtensionQueryResult<TResult>> RunQueryAsync<TResult>(Func<Task<TResult>> query, int timeoutMs = 200)
     {
         try
@@ -267,5 +261,14 @@ public class PluginService : IPluginService
         }
 
         return null;
+    }
+
+    public async Task SignalStopPluginsAsync()
+    {
+        var plugins = await GetInstalledPluginsAsync();
+        foreach (var plugin in plugins)
+        {
+            plugin.Dispose();
+        }
     }
 }

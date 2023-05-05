@@ -18,7 +18,7 @@ using Log = DevHome.Common.Helpers.Log;
 
 namespace DevHome.Models;
 
-public class PluginWrapper : IPluginWrapper
+public sealed class PluginWrapper : IPluginWrapper
 {
     private const int HResultRpcServerNotRunning = -2147023174;
 
@@ -117,6 +117,12 @@ public class PluginWrapper : IPluginWrapper
                 {
                     if (pluginPtr != IntPtr.Zero)
                     {
+                        // There are 3 addrefs happening in total
+                        // First in CoCreateInstance
+                        // Then in Marshal.GetIUnknown
+                        // Then in MarshalInterface.FromAbi
+                        // Thus we do a release twice so we have exactly once reference to the underlying com object.
+                        Marshal.Release(pluginPtr);
                         Marshal.Release(pluginPtr);
                     }
                 }
@@ -148,5 +154,20 @@ public class PluginWrapper : IPluginWrapper
             Log.Logger?.ReportError($"Exception occured while calling an api in {Id}: {Name}", e);
             return new ExtensionQueryResult<TResult>(false, default, e);
         }
+    }
+
+    public void Dispose()
+    {
+        if (_providerTypeToObjectMap.TryGetValue(typeof(IDeveloperIdProvider), out var devIdProvider))
+        {
+            (devIdProvider as IDeveloperIdProvider)!.Dispose();
+        }
+
+        if (_providerTypeToObjectMap.TryGetValue(typeof(IRepositoryProvider), out var repoProvider))
+        {
+            (repoProvider as IRepositoryProvider)!.Dispose();
+        }
+
+        _providerTypeToObjectMap.Clear();
     }
 }

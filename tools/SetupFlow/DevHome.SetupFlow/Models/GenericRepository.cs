@@ -71,5 +71,6 @@ internal class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
     }
 
     public IAsyncAction CloneRepositoryAsync(string cloneDestination) => throw new NotImplementedException();
+
     public void SignalDispose() => throw new NotImplementedException();
 }
