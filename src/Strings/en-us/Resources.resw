@@ -145,7 +145,7 @@
     <comment>Begin to fill out the feature request content dialog</comment>
   </data>
   <data name="Feedback_ReportBug_Internal.Description" xml:space="preserve">
-    <value>Report errors or unexpected behavior via Feedback Hub prior to May 1st, 2023</value>
+    <value>Report errors or unexpected behavior via Feedback Hub prior to May 17th, 2023</value>
     <comment>Tell us about issues internally prior to May 1st</comment>
   </data>
   <data name="Feedback_ReportBug_Internal.Header" xml:space="preserve">
