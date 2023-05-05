@@ -408,7 +408,7 @@ public partial class AddRepoViewModel : ObservableObject
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationNotFound);
             ShouldShowUrlError = Visibility.Visible;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, e.ToString());
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddViaUrl_Event", LogLevel.Measure, new RepoDialogAddViaUrlEvent(string.Empty, false, false));
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddViaUrl_Event", LogLevel.Measure, new RepoDialogAddViaUrlEvent(providerName: string.Empty, foundProvider: true, foundRepo: false));
             return;
         }
 
@@ -419,7 +419,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = providerNameAndRepo.Item1;
             cloningInformation.RepositoryToClone = repository;
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddViaUrl_Event", LogLevel.Measure, new RepoDialogAddViaUrlEvent(providerNameAndRepo.Item1, true, true));
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddViaUrl_Event", LogLevel.Measure, new RepoDialogAddViaUrlEvent(providerName: providerNameAndRepo.Item1, foundProvider: true, foundRepo: true));
         }
         else
         {
@@ -430,7 +430,7 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = "git";
             cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddViaUrl_Event", LogLevel.Measure, new RepoDialogAddViaUrlEvent("git", false, false));
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AddViaUrl_Event", LogLevel.Measure, new RepoDialogAddViaUrlEvent(providerName: "git", foundProvider: false, foundRepo: false));
         }
 
         // User could paste in a url of an already added repo.  Check for that here.

@@ -1045,14 +1045,6 @@
   </data>
   <data name="CloneRepoErrorForActionCenter" xml:space="preserve">
     <value>Couldn't clone {0} 0x{1}</value>
-    <comment>Action center message to give the hresult as to why the repo could not be cloned 0: name of repo 1:Hresult as a hex</comment>
-  </data>
-  <data name="EditClonePathDialogName" xml:space="preserve">
-    <value>EditClonePath</value>
-    <comment>Name of the dialog the repo page makes when the edit clone path button is clicked</comment>
-  </data>
-  <data name="RepoDialogName" xml:space="preserve">
-    <value>RepoDialog</value>
-    <comment>Name of the dialog the repo page makes</comment>
+    <comment>{Locked="{0}.{1}"}Action center message to give the hresult as to why the repo could not be cloned {0}: name of repo {1}:Hresult as a hex</comment>
   </data>
 </root>

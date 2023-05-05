@@ -40,7 +40,7 @@ public sealed partial class RepoConfigView : UserControl
     {
         // hold information for telemetry calls
         const string EventName = "RepoTool_AddRepos_Event";
-        var dialogName = ViewModel.LocalStringResource.GetLocalized(StringResourceKey.RepoDialogName);
+        var dialogName = "RepoDialog";
         var telemetryLogger = TelemetryFactory.Get<ITelemetry>();
 
         telemetryLogger.Log(EventName, LogLevel.Measure, new DialogStartEvent(dialogName), relatedActivityId);
@@ -144,7 +144,7 @@ public sealed partial class RepoConfigView : UserControl
     private async void EditClonePathButton_Click(object sender, RoutedEventArgs e)
     {
         const string EventName = "RepoTool_EditClonePath_Event";
-        var dialogName = ViewModel.LocalStringResource.GetLocalized(StringResourceKey.EditClonePathDialog);
+        var dialogName = "EditClonePath";
         var relatedActivityId = Guid.NewGuid();
         var telemetryLogger = TelemetryFactory.Get<ITelemetry>();
 

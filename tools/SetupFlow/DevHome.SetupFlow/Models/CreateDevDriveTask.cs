@@ -147,7 +147,7 @@ internal class CreateDevDriveTask : ISetupTask
                 result = ex.HResult;
                 Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to create Dev Drive. Due to Exception ErrorCode: 0x{ex.HResult:X}, Msg: {ex.Message}");
                 _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, GetLocalizedErrorMsg(ex.HResult));
-                TelemetryFactory.Get<ITelemetry>().LogException("CreatingDevDrive", ex);
+                TelemetryFactory.Get<ITelemetry>().LogException("CreatingDevDriveException", ex);
                 return TaskFinishedState.Failure;
             }
             finally
