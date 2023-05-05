@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
@@ -15,11 +16,13 @@ namespace DevHome.SetupFlow.Models;
 /// <summary>
 /// Model class for a composite catalog from remote and/or local packages
 /// </summary>
-public class WinGetCompositeCatalog : IWinGetCatalog
+public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
 {
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly CreateCompositePackageCatalogOptions _compositeCatalogOptions;
+    private readonly SemaphoreSlim _connectionLock = new (1, 1);
     private Microsoft.Management.Deployment.PackageCatalog _catalog;
+    private bool _disposedValue;
 
     public bool IsConnected => _catalog != null;
 
@@ -40,16 +43,18 @@ public class WinGetCompositeCatalog : IWinGetCatalog
         set => _compositeCatalogOptions.CompositeSearchBehavior = value;
     }
 
-    public async Task ConnectAsync()
+    public async Task ConnectAsync(bool forceReconnect)
     {
-        // Skip if already connected
-        if (IsConnected)
-        {
-            return;
-        }
+        await _connectionLock.WaitAsync();
 
         try
         {
+            // Skip if already connected and should not force re-connect
+            if (IsConnected && !forceReconnect)
+            {
+                return;
+            }
+
             var packageManager = _wingetFactory.CreatePackageManager();
             var compositeCatalog = packageManager.CreateCompositePackageCatalog(_compositeCatalogOptions);
             Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to composite catalog");
@@ -66,6 +71,10 @@ public class WinGetCompositeCatalog : IWinGetCatalog
         {
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Error connecting to catalog reference: {e.Message}");
             throw;
+        }
+        finally
+        {
+            _connectionLock.Release();
         }
     }
 
@@ -123,6 +132,25 @@ public class WinGetCompositeCatalog : IWinGetCatalog
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Error getting packages: {e.Message}");
             throw;
         }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _connectionLock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>

@@ -55,6 +55,9 @@
         <Page Update="Styles\Feedback_ThemeResources.xaml">
             <Generator>MSBuild:Compile</Generator>
         </Page>
+        <Page Update="Styles\BreadcrumbBar.xaml">
+          <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
     </ItemGroup>
 
     <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
@@ -62,6 +65,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Remove="Styles\BreadcrumbBar.xaml" />
         <None Remove="Styles\Feedback_ThemeResources.xaml" />
     </ItemGroup>
 

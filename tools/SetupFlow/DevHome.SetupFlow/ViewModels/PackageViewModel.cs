@@ -168,6 +168,7 @@ public partial class PackageViewModel : ObservableObject
     private BitmapImage CreateBitmapImage(IRandomAccessStream stream)
     {
         var bitmapImage = new BitmapImage();
+        stream.Seek(0);
         bitmapImage.SetSource(stream);
         return bitmapImage;
     }

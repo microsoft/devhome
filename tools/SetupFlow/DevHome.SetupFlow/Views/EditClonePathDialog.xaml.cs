@@ -2,11 +2,14 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
@@ -53,6 +56,14 @@ public sealed partial class EditClonePathDialog
         get; private set;
     }
 
+    /// <summary>
+    /// Gets a value indicating the set of drive letters currently in use by a Dev Drives on the system.
+    /// </summary>
+    public HashSet<char> DriveLettersInUseByDevDrivesOnSystem
+    {
+        get; private set;
+    }
+
     public EditClonePathDialog(IDevDriveManager devDriveManager, CloningInformation cloningInfo, ISetupFlowStringResource stringResource)
     {
         this.InitializeComponent();
@@ -65,16 +76,20 @@ public sealed partial class EditClonePathDialog
             FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
             IsPrimaryButtonEnabled = IsPrimaryButtonEnabled || EditDevDriveViewModel.DevDriveDetailsChanged;
         };
-        IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
+
         if (cloningInfo.CloneToDevDrive)
         {
             AddDevDriveInfo();
         }
 
         FolderPickerViewModel.CloneLocation = cloningInfo.CloningLocation.FullName;
+        EditClonePathViewModel.IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
         _stringResource = Application.Current.GetService<ISetupFlowStringResource>();
         PrevCheckBoxSelection = DevDriveCheckBox.IsChecked.GetValueOrDefault(false);
+        DriveLettersInUseByDevDrivesOnSystem = devDriveManager.DriveLettersInUseByDevDrivesCurrentlyOnSystem;
+        ShowCheckboxIfPathNotAnExistingDevDrive();
         UpdateDialogState();
+        ChangePrimaryButtonStyleIfEnabled();
     }
 
     /// <summary>
@@ -84,6 +99,8 @@ public sealed partial class EditClonePathDialog
     {
         await FolderPickerViewModel.ChooseCloneLocation();
         IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
+
+        ChangePrimaryButtonStyleIfEnabled();
     }
 
     /// <summary>
@@ -143,7 +160,10 @@ public sealed partial class EditClonePathDialog
             validationResult &= EditDevDriveViewModel.IsDevDriveValid();
         }
 
-        IsPrimaryButtonEnabled = validationResult;
+        ShowCheckboxIfPathNotAnExistingDevDrive();
+        EditClonePathViewModel.IsPrimaryButtonEnabled = validationResult;
+
+        ChangePrimaryButtonStyleIfEnabled();
     }
 
     /// <summary>
@@ -217,11 +237,13 @@ public sealed partial class EditClonePathDialog
     {
         CloseButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/CloseButtonText");
 
+        // Manually change the styles here because the "Are you sure" confirm button should not have the accent style"
         if (PrevCheckBoxSelection && PrevCheckBoxSelection != DevDriveCheckBox.IsChecked.GetValueOrDefault(false))
         {
             Title = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialogUncheckCheckMark + $"/Title");
             PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialogUncheckCheckMark + $"/PrimaryButtonText");
             EditClonePathViewModel.ShouldShowAreYouSureMessage = true;
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
             IsPrimaryButtonEnabled = true;
         }
         else
@@ -229,6 +251,23 @@ public sealed partial class EditClonePathDialog
             Title = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/Title");
             PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.EditClonePathDialog + $"/PrimaryButtonText");
             EditClonePathViewModel.ShouldShowAreYouSureMessage = false;
+            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+        }
+    }
+
+    /// <summary>
+    /// Make the primary button accent color if enabled.
+    /// Otherwise use the default style
+    /// </summary>
+    private void ChangePrimaryButtonStyleIfEnabled()
+    {
+        if (EditClonePathViewModel.IsPrimaryButtonEnabled)
+        {
+            PrimaryButtonStyle = EditClonePathStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
+        }
+        else
+        {
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
         }
     }
 
@@ -242,5 +281,33 @@ public sealed partial class EditClonePathDialog
         FolderPickerViewModel.CloneLocationAlias = string.Empty;
         FolderPickerViewModel.CloneLocation = string.Empty;
         FolderPickerViewModel.EnableBrowseButton();
+    }
+
+    /// <summary>
+    /// Shows or hides the checkbox based on whether the path entered in the textbox is to an existing Dev Drive or not. If the path is an
+    /// existing Dev Drive we don't show the checkbox. If it is not an existing Dev Drive we show the checkbox.
+    /// </summary>
+    public void ShowCheckboxIfPathNotAnExistingDevDrive()
+    {
+        if (!DevDriveUtil.IsDevDriveFeatureEnabled)
+        {
+            EditDevDriveViewModel.HideDevDriveUI();
+            return;
+        }
+
+        var cloneLocation = FolderPickerViewModel.CloneLocation.Trim();
+        if (cloneLocation.Length >= 3)
+        {
+            var letter = char.ToUpper(cloneLocation[0], CultureInfo.InvariantCulture);
+            var secondCharIsColon = cloneLocation[1] == ':';
+            var thirdCharIsSlash = cloneLocation[2] == '\\' || cloneLocation[2] == '/';
+            if (DriveLettersInUseByDevDrivesOnSystem.Contains(letter) && secondCharIsColon && thirdCharIsSlash)
+            {
+                EditDevDriveViewModel.HideDevDriveUI();
+                return;
+            }
+        }
+
+        EditDevDriveViewModel.ShowDevDriveInformation = Visibility.Visible;
     }
 }
