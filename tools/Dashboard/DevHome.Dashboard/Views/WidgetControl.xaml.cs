@@ -15,11 +15,11 @@ using Microsoft.Windows.Widgets.Hosts;
 namespace DevHome.Dashboard.Views;
 public sealed partial class WidgetControl : UserControl
 {
+    private MenuFlyoutItem _currentSelectedSize;
+
     public WidgetControl()
     {
         this.InitializeComponent();
-
-        WidgetScrollViewer.RegisterPropertyChangedCallback(ScrollViewer.ComputedVerticalScrollBarVisibilityProperty, OnWidgetScrollBarVisibilityChanged);
     }
 
     public WidgetViewModel WidgetSource
@@ -30,21 +30,6 @@ public sealed partial class WidgetControl : UserControl
 
     public static readonly DependencyProperty WidgetSourceProperty = DependencyProperty.Register(
         nameof(WidgetSource), typeof(WidgetViewModel), typeof(WidgetControl), new PropertyMetadata(null));
-
-    private void OnWidgetScrollBarVisibilityChanged(DependencyObject sender, DependencyProperty dp)
-    {
-        var padding = new Thickness(0, 0, 0, 0);
-
-        if (sender as ScrollViewer is ScrollViewer sv)
-        {
-            if (sv.ComputedVerticalScrollBarVisibility == Visibility.Visible)
-            {
-                padding.Right = 13;
-            }
-        }
-
-        WidgetScrollViewer.Padding = padding;
-    }
 
     private void OpenWidgetMenu(object sender, RoutedEventArgs e)
     {
@@ -73,13 +58,13 @@ public sealed partial class WidgetControl : UserControl
         var removeWidgetText = resourceLoader.GetString("RemoveWidgetMenuText");
         var icon = new FontIcon()
         {
-            FontFamily = new FontFamily("Segoe MDL2 Assets"),
-            Glyph = "\uE77A;",
+            Glyph = "\xE77A",
         };
         var menuItemClose = new MenuFlyoutItem
         {
             Tag = widgetViewModel,
             Text = removeWidgetText,
+            Icon = icon,
         };
         menuItemClose.Click += OnRemoveWidgetClick;
         widgetMenuFlyout.Items.Add(menuItemClose);
@@ -137,6 +122,23 @@ public sealed partial class WidgetControl : UserControl
         };
         menuItemLarge.Click += OnMenuItemSizeClick;
         widgetMenuFlyout.Items.Add(menuItemLarge);
+
+        // Mark current widget size.
+        var size = widgetViewModel.WidgetSize;
+        switch (size)
+        {
+            case WidgetSize.Small:
+                _currentSelectedSize = menuItemSmall;
+                break;
+            case WidgetSize.Medium:
+                _currentSelectedSize = menuItemMedium;
+                break;
+            case WidgetSize.Large:
+                _currentSelectedSize = menuItemLarge;
+                break;
+        }
+
+        MarkSize(_currentSelectedSize);
     }
 
     private async void OnMenuItemSizeClick(object sender, RoutedEventArgs e)
@@ -145,11 +147,31 @@ public sealed partial class WidgetControl : UserControl
         {
             if (menuSizeItem.DataContext is WidgetViewModel widgetViewModel)
             {
+                // Unset mark on current size.
+                if (_currentSelectedSize is not null)
+                {
+                    _currentSelectedSize.Icon = null;
+                }
+
+                // Resize widget.
                 var size = (WidgetSize)menuSizeItem.Tag;
                 widgetViewModel.WidgetSize = size;
                 await widgetViewModel.Widget.SetSizeAsync(size);
+
+                // Set mark on new size.
+                _currentSelectedSize = menuSizeItem;
+                MarkSize(_currentSelectedSize);
             }
         }
+    }
+
+    private void MarkSize(MenuFlyoutItem menuSizeItem)
+    {
+        var fontIcon = new FontIcon
+        {
+            Glyph = "\xE915",
+        };
+        menuSizeItem.Icon = fontIcon;
     }
 
     private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
@@ -157,13 +179,13 @@ public sealed partial class WidgetControl : UserControl
         var customizeWidgetText = resourceLoader.GetString("CustomizeWidgetMenuText");
         var icon = new FontIcon()
         {
-            FontFamily = new FontFamily("Segoe MDL2 Assets"),
-            Glyph = "\uE70F;",
+            Glyph = "\xE70F",
         };
         var menuItemCustomize = new MenuFlyoutItem
         {
             Tag = widgetViewModel,
             Text = customizeWidgetText,
+            Icon = icon,
         };
         menuItemCustomize.Click += OnCustomizeWidgetClick;
         widgetMenuFlyout.Items.Add(menuItemCustomize);

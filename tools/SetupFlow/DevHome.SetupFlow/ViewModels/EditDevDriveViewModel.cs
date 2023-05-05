@@ -220,6 +220,7 @@ public partial class EditDevDriveViewModel : ObservableObject
         IsDevDriveCheckboxEnabled = true;
         DevDriveDetailsChanged = DevDriveChanged(devDrive);
         DevDrive = devDrive;
+        DevDriveValidationError = (DevDrive.State == DevDriveState.New) ? false : true;
         ClonePathUpdated();
     }
 

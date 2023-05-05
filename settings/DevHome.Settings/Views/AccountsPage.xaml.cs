@@ -12,7 +12,6 @@ using DevHome.Common.Views;
 using DevHome.Logging;
 using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
@@ -54,9 +53,18 @@ public sealed partial class AccountsPage : Page
         }
     }
 
-    private async void AddDeveloperId_Click(object sender, RoutedEventArgs e)
+    private async void AddAccountButton_Click(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.AccountsProviders.Count == 0)
+        var numProviders = ViewModel.AccountsProviders.Count;
+        if (numProviders == 1)
+        {
+            await ShowLoginUIAsync("Settings", this, ViewModel.AccountsProviders[0]);
+        }
+        else if (numProviders > 1)
+        {
+            AccountsProvidersFlyout.ShowAt(sender as Button);
+        }
+        else
         {
             var resourceLoader = new ResourceLoader(ResourceLoader.GetDefaultResourceFilePath(), "DevHome.Settings/Resources");
             var noProvidersContentDialog = new ContentDialog
@@ -67,23 +75,16 @@ public sealed partial class AccountsPage : Page
                 XamlRoot = XamlRoot,
             };
             await noProvidersContentDialog.ShowAsync();
-            return;
         }
+    }
 
+    private async void AddDeveloperId_Click(object sender, RoutedEventArgs e)
+    {
         if (sender as Button is Button addAccountButton)
         {
             if (addAccountButton.Tag is AccountsProviderViewModel accountProvider)
             {
-                try
-                {
-                    await ShowLoginUIAsync("Settings", this, accountProvider);
-                }
-                catch (Exception ex)
-                {
-                    GlobalLog.Logger?.ReportError($"AddAccount_Click(): loginUIContentDialog failed - Error: {ex} Sender: {sender} RoutedEventArgs: {e}");
-                }
-
-                accountProvider.RefreshLoggedInAccounts();
+                await ShowLoginUIAsync("Settings", this, accountProvider);
             }
             else
             {
@@ -95,27 +96,35 @@ public sealed partial class AccountsPage : Page
 
     public async Task ShowLoginUIAsync(string loginEntryPoint, Page parentPage, AccountsProviderViewModel accountProvider)
     {
-        string[] args = { loginEntryPoint };
-        var loginUIAdaptiveCardController = accountProvider.DeveloperIdProvider.GetAdaptiveCardController(args);
-        var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
-        var renderer = new AdaptiveCardRenderer();
-        await ConfigureLoginUIRenderer(renderer);
-        renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
-
-        pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
-        pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
-
-        var loginUIContentDialog = new LoginUIDialog(pluginAdaptiveCardPanel)
+        try
         {
-            XamlRoot = parentPage.XamlRoot,
-            RequestedTheme = parentPage.ActualTheme,
-        };
+            string[] args = { loginEntryPoint };
+            var loginUIAdaptiveCardController = accountProvider.DeveloperIdProvider.GetAdaptiveCardController(args);
+            var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
+            var renderer = new AdaptiveCardRenderer();
+            await ConfigureLoginUIRenderer(renderer);
+            renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
 
-        await loginUIContentDialog.ShowAsync();
+            pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
+            pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
+
+            var loginUIContentDialog = new LoginUIDialog(pluginAdaptiveCardPanel)
+            {
+                XamlRoot = parentPage.XamlRoot,
+                RequestedTheme = parentPage.ActualTheme,
+            };
+
+            await loginUIContentDialog.ShowAsync();
+
+            // TODO: Await Login event to match up the loginEntryPoint and return DeveloperId
+            loginUIAdaptiveCardController.Dispose();
+        }
+        catch (Exception ex)
+        {
+            GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed - Error: {ex}");
+        }
+
         accountProvider.RefreshLoggedInAccounts();
-
-        // TODO: Await Login event to match up the loginEntryPoint and return DeveloperId
-        loginUIAdaptiveCardController.Dispose();
     }
 
     private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer)

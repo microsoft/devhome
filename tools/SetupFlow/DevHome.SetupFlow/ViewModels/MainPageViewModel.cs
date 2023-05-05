@@ -103,6 +103,10 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// </summary>
     /// <param name="flowTitle">Title to show in the flow; will use the SetupShell.Title property if empty</param>
     /// <param name="taskGroups">The task groups that will be included in this setup flow.</param>
+    /// <remarks>
+    /// Note that the order of the task groups here will influence the order of the pages in
+    /// the flow and the tabs in the review page.
+    /// </remarks>
     private void StartSetupFlowForTaskGroups(string flowTitle, params ISetupTaskGroup[] taskGroups)
     {
         StartSetupFlow.Invoke(null, (flowTitle, taskGroups));
@@ -124,7 +128,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
         var taskGroups = new List<ISetupTaskGroup>
         {
-            _host.GetService<DevDriveTaskGroup>(),
             _host.GetService<RepoConfigTaskGroup>(),
         };
 
@@ -136,6 +139,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         {
             Log.Logger?.ReportInfo(Log.Component.MainPage, $"Skipping {nameof(AppManagementTaskGroup)} because COM server is not available");
         }
+
+        taskGroups.Add(_host.GetService<DevDriveTaskGroup>());
 
         StartSetupFlowForTaskGroups(flowTitle, taskGroups.ToArray());
     }
@@ -150,8 +155,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for repo config");
         StartSetupFlowForTaskGroups(
             flowTitle,
-            _host.GetService<DevDriveTaskGroup>(),
-            _host.GetService<RepoConfigTaskGroup>());
+            _host.GetService<RepoConfigTaskGroup>(),
+            _host.GetService<DevDriveTaskGroup>());
     }
 
     /// <summary>

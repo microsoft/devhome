@@ -29,6 +29,8 @@
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionToVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
+            <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionToInverseVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -53,50 +55,56 @@
                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_SetUpDetails" />
                     </Expander.Header>
                     <Expander.Content>
-                        <NavigationView x:Name="ReviewNavigationView"
-                                        HorizontalAlignment="Stretch"
-                                        Padding="0" Margin="0"
-                                        MinHeight="266"
-                                        PaneDisplayMode="Top"
-                                        SelectionFollowsFocus="Enabled"
-                                        IsBackButtonVisible="Collapsed"
-                                        IsSettingsVisible="False"
-                                        MenuItemsSource="{x:Bind ViewModel.ReviewTabs, Mode=OneWay}"
-                                        SelectedItem="{x:Bind ViewModel.SelectedReviewTab, Mode=TwoWay}">
-                            <NavigationView.Resources>
-                                <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
-                            </NavigationView.Resources>
-                            <NavigationView.MenuItemTemplate>
-                                <DataTemplate x:DataType="viewModels:ReviewTabViewModelBase">
-                                    <TextBlock Text="{x:Bind TabTitle}" />
-                                </DataTemplate>
-                            </NavigationView.MenuItemTemplate>
-                            <Frame MinHeight="100" Padding="12" HorizontalAlignment="Stretch">
-                                <ContentControl Content="{x:Bind ViewModel.SelectedReviewTab, Mode=OneWay}"
-                                                HorizontalContentAlignment="Stretch"
-                                                VerticalContentAlignment="Stretch" >
-                                    <ContentControl.ContentTemplateSelector>
-                                        <selectors:ReviewTabViewSelector>
-                                            <selectors:ReviewTabViewSelector.DevDriveTabTemplate>
-                                                <DataTemplate>
-                                                    <views:DevDriveReviewView />
-                                                </DataTemplate>
-                                            </selectors:ReviewTabViewSelector.DevDriveTabTemplate>
-                                            <selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
-                                                <DataTemplate>
-                                                    <views:RepoConfigReviewView />
-                                                </DataTemplate>
-                                            </selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
-                                            <selectors:ReviewTabViewSelector.AppManagementTabTemplate>
-                                                <DataTemplate>
-                                                    <views:AppManagementReviewView />
-                                                </DataTemplate>
-                                            </selectors:ReviewTabViewSelector.AppManagementTabTemplate>
-                                        </selectors:ReviewTabViewSelector>
-                                    </ContentControl.ContentTemplateSelector>
-                                </ContentControl>
-                            </Frame>
-                        </NavigationView>
+                        <Grid MinHeight="266">
+                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Visibility="{x:Bind ViewModel.ReviewTabs, Converter={StaticResource EmptyCollectionToInverseVisibilityConverter}}"
+                                       x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_NothingToSetUp" />
+
+                            <NavigationView x:Name="ReviewNavigationView"
+                                            Visibility="{x:Bind ViewModel.ReviewTabs, Converter={StaticResource EmptyCollectionToVisibilityConverter}}"
+                                            HorizontalAlignment="Stretch"
+                                            Padding="0" Margin="0"
+                                            PaneDisplayMode="Top"
+                                            SelectionFollowsFocus="Enabled"
+                                            IsBackButtonVisible="Collapsed"
+                                            IsSettingsVisible="False"
+                                            MenuItemsSource="{x:Bind ViewModel.ReviewTabs, Mode=OneWay}"
+                                            SelectedItem="{x:Bind ViewModel.SelectedReviewTab, Mode=TwoWay}">
+                                <NavigationView.Resources>
+                                    <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>
+                                </NavigationView.Resources>
+                                <NavigationView.MenuItemTemplate>
+                                    <DataTemplate x:DataType="viewModels:ReviewTabViewModelBase">
+                                        <TextBlock Text="{x:Bind TabTitle}" />
+                                    </DataTemplate>
+                                </NavigationView.MenuItemTemplate>
+                                <Frame MinHeight="100" Padding="12" HorizontalAlignment="Stretch">
+                                    <ContentControl Content="{x:Bind ViewModel.SelectedReviewTab, Mode=OneWay}"
+                                                    HorizontalContentAlignment="Stretch"
+                                                    VerticalContentAlignment="Stretch" >
+                                        <ContentControl.ContentTemplateSelector>
+                                            <selectors:ReviewTabViewSelector>
+                                                <selectors:ReviewTabViewSelector.DevDriveTabTemplate>
+                                                    <DataTemplate>
+                                                        <views:DevDriveReviewView />
+                                                    </DataTemplate>
+                                                </selectors:ReviewTabViewSelector.DevDriveTabTemplate>
+                                                <selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
+                                                    <DataTemplate>
+                                                        <views:RepoConfigReviewView />
+                                                    </DataTemplate>
+                                                </selectors:ReviewTabViewSelector.RepoConfigTabTemplate>
+                                                <selectors:ReviewTabViewSelector.AppManagementTabTemplate>
+                                                    <DataTemplate>
+                                                        <views:AppManagementReviewView />
+                                                    </DataTemplate>
+                                                </selectors:ReviewTabViewSelector.AppManagementTabTemplate>
+                                            </selectors:ReviewTabViewSelector>
+                                        </ContentControl.ContentTemplateSelector>
+                                    </ContentControl>
+                                </Frame>
+                            </NavigationView>
+                        </Grid>
                     </Expander.Content>
                 </Expander>
 
