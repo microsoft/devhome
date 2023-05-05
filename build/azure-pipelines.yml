@@ -285,15 +285,13 @@ stages:
 
         - task: PowerShell@2
           displayName: Create Stub Directory
-          condition: eq('${{ configuration }}', 'Release')
-          condition: eq(variables['BuildingBranch'], 'release')
+          condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
           inputs:
             targetType: 'inline'
             script: New-Item -Path $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub -ItemType Directory ; Copy-Item -Path "stub\*" -Destination $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub\
 
         - task: EsrpCodeSigning@2
-          condition: eq('${{ configuration }}', 'Release')
-          condition: eq(variables['BuildingBranch'], 'release')
+          condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
           inputs:
             ConnectedServiceName: 'Xlang Code Signing'
             FolderPath: '$(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub'
