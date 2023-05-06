@@ -120,7 +120,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         _localizedBrowseButtonText = _stringResource.GetLocalized(StringResourceKey.BrowseTextBlock);
         _devDriveManager = devDriveManager;
         _devDriveManager.RequestToCloseViewModelWindow += CloseRequestedDevDriveWindow;
-        BuildSetOfLocalizedErrorMessages();
+        BuildMapOfLocalizedErrorMessages();
         RefreshDriveLetterToSizeMapping();
     }
 
@@ -480,9 +480,9 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// Builds a list of localized input validation error messages to be used.
+    /// Builds a Dictionary mapping of localized input validation error messages to be used.
     /// </summary>
-    private void BuildSetOfLocalizedErrorMessages()
+    private void BuildMapOfLocalizedErrorMessages()
     {
         var resultsList = Enum.GetValues(typeof(DevDriveValidationResult));
         foreach (DevDriveValidationResult result in resultsList)
