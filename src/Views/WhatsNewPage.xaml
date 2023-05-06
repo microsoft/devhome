@@ -185,7 +185,7 @@
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Top" />
 
-                                <StackPanel Grid.Row="1">
+                                <StackPanel Grid.Row="1" Padding="15 0" >
                                     
 
                                     <TextBlock
@@ -194,11 +194,13 @@
                                         Text="{x:Bind Title}" />
 
                                     <TextBlock
-                                        Margin="0 8"
+                                        Margin="0 16 0 25"
                                         TextWrapping="Wrap"
                                         Text="{x:Bind Description}"/>
 
-                                    <Button Content="{x:Bind Button}" />
+                                    <Button 
+                                        HorizontalAlignment="Stretch"
+                                        Content="{x:Bind Button}" />
 
                                 </StackPanel>
                             </Grid>
