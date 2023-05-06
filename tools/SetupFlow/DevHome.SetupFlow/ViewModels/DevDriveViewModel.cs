@@ -62,13 +62,6 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// Gets the window that will contain the view.
-    /// </summary>
-    public Dictionary<DevDriveValidationResult, string> LocalizedDevDriveValidationErrors => _localizedDevDriveValidationErrors;
-
-    public Dictionary<char, ulong> DriveLetterToSizeMapping => _driveLetterToSizeMapping;
-
-    /// <summary>
     /// Gets the decimal formatter that will format the value in the numberbox. RoundHalfTowardsZero is used since we
     /// utilize the SFBS_FLAGS_TRUNCATE_UNDISPLAYED_DECIMAL_DIGITS flag in <see cref="DevDriveUtil.ConvertBytesToString"/> to
     /// get the formatted Drive size. RoundHalfTowardsZero will effectively truncate all values after the hundredth position.
@@ -229,6 +222,21 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
+    /// Gets a value indicating whether errors are still being shown to the user in the Dev Drive window.
+    /// </summary>
+    public bool AreErrorsStillInTheUI => InvalidFolderLocationError.Length > 0 || NoDriveLettersAvailableError.Length > 0 || FileNameAndSizeErrorList.Any();
+
+    /// <summary>
+    /// Gets a Dictionary where the keys are Dev Drive validation results and the values are the associated localized error string associated with the result.
+    /// </summary>
+    public Dictionary<DevDriveValidationResult, string> LocalizedDevDriveValidationErrors => _localizedDevDriveValidationErrors;
+
+    /// <summary>
+    /// Gets a Dictionary where the keys are current drive letters in use by the system and the values are the free space in bytes the drives have available.
+    /// </summary>
+    public Dictionary<char, ulong> DriveLetterToSizeMapping => _driveLetterToSizeMapping;
+
+    /// <summary>
     /// gets the localized Browse button text for the browse button.
     /// </summary>
     public string LocalizedBrowseButtonText => _localizedBrowseButtonText;
@@ -332,6 +340,12 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [RelayCommand]
     private void SaveButton()
     {
+        // Errors are still shown in the UI so don't proceed.
+        if (AreErrorsStillInTheUI)
+        {
+            return;
+        }
+
         Log.Logger?.ReportInfo(Log.Component.DevDrive, "Saving changes to Dev Drive");
         ByteUnit driveUnitOfMeasure = (ByteUnit)_comboBoxByteUnit;
         var tempDrive = new Models.DevDrive()

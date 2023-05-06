@@ -343,7 +343,7 @@ public class DevDriveManager : IDevDriveManager
             }
 
             // If drive location is invalid, we would have already captured this in the IsPathValid call above.
-            var potentialRoot = string.IsNullOrEmpty(devDrive.DriveLocation) ? '\0' : devDrive.DriveLocation[0];
+            var potentialRoot = string.IsNullOrEmpty(devDrive.DriveLocation) ? '\0' : char.ToUpperInvariant(devDrive.DriveLocation[0]);
             if (potentialRoot == curDriveOnSystem.Name[0] &&
                 (devDrive.DriveSizeInBytes > (ulong)curDriveOnSystem.TotalFreeSpace))
             {
