@@ -52,10 +52,10 @@ public sealed partial class WhatsNewPage : Page
         }
     }
 
-    private void ConnectToAccountsButton_Click(object sender, RoutedEventArgs e)
+    private void MachineConfigButton_Click(object sender, RoutedEventArgs e)
     {
         var navigationService = Application.Current.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(AccountsViewModel).FullName!);
+        navigationService.NavigateTo(typeof(DevHome.SetupFlow.ViewModels.SetupFlowViewModel).FullName!);
     }
 
     private async void Button_ClickAsync(object sender, RoutedEventArgs e)

@@ -40,16 +40,14 @@
             </Grid>
             <Grid x:Name="ContentArea" Padding="35 0 35 30" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="341" />
+                    <RowDefinition Height="330" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Padding="32 0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
+                        <RowDefinition Height="100" />
                         <RowDefinition Height="65" />
-                        <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
@@ -65,19 +63,25 @@
                         Style="{ThemeResource TitleLargeTextBlockStyle}"
                         VerticalAlignment="Bottom" />
 
-                    <TextBlock
-                        Grid.Row="2"
-                        Margin="0 12"
-                        VerticalAlignment="Top"
-                        x:Uid="WhatsNewPage_Description"
-                        Width="400"
-                        HorizontalAlignment="Left"
-                        TextWrapping="Wrap"
-                        Text="{StaticResource SplitViewPaneAnimationOpenDuration}" />
+                    <StackPanel Grid.Row="2">
+                        
+                        <TextBlock
+                            Margin="0 12 0 0"
+                            x:Uid="WhatsNewPage_Description"
+                            Width="400"
+                            HorizontalAlignment="Left"
+                            TextWrapping="Wrap"
+                            Text="{StaticResource SplitViewPaneAnimationOpenDuration}" />
 
-                    <Button 
-                        Grid.Row="3"
-                        x:Uid="WhatsNewPage_GetStartedButton" />
+                        <Button
+                            Margin="0 16"
+                            MinWidth="258"
+                            Background="#47E1DA"
+                            Foreground="#000000"
+                            Click="MachineConfigButton_Click"
+                            x:Uid="WhatsNewPage_GetStartedButton" />
+                        
+                    </StackPanel>
                 </Grid>
 
                 <!--<Grid 
@@ -207,16 +211,19 @@
                                         TextWrapping="Wrap"
                                         Text="{x:Bind Description}"/>
 
-                                    <Button 
-                                        DataContext="{x:Bind PageKey}"
+                                    <!--<Button 
+                                        
                                         HorizontalAlignment="Stretch"
                                         Content="{x:Bind Button}"
-                                        Click="Button_ClickAsync" />
+                                         />-->
 
                                 </StackPanel>
 
                                 <Button 
                                     Grid.Row="1"
+                                    Margin="15 0 15 10"
+                                    DataContext="{x:Bind PageKey}"
+                                    Click="Button_ClickAsync"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Bottom"
                                     Content="{x:Bind Button}" />
