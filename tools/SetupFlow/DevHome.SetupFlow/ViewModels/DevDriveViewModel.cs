@@ -480,7 +480,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// refreshes the our mapping between Drive letters currently in use on the users machines and the total free space
+    /// Refreshes the mapping between Drive letters currently in use on the users machines and the total free space
     /// available on them.
     /// </summary>
     private void RefreshDriveLetterToSizeMapping()
