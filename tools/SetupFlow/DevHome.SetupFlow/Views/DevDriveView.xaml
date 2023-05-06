@@ -116,7 +116,9 @@
                                 IsSpellCheckEnabled="False">
                                 <i:Interaction.Behaviors>
                                     <ic:EventTriggerBehavior EventName="TextChanged">
-                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.DriveLabelChangedCommand}" CommandParameter="{Binding Text, ElementName=DriveLabelTextBox}"/>
+                                    <ic:InvokeCommandAction 
+                                        Command="{x:Bind ViewModel.DriveLabelChangedCommand}" 
+                                        CommandParameter="{Binding Text, ElementName=DriveLabelTextBox}"/>
                                     </ic:EventTriggerBehavior>
                                 </i:Interaction.Behaviors>
                         </TextBox>
@@ -131,10 +133,11 @@
                                 Maximum="{x:Bind ViewModel.MaximumAllowedSize, Mode=OneWay}"
                                 Minimum="{x:Bind ViewModel.MinimumAllowedSize, Mode=OneWay}"
                                 AcceptsExpression="False"
-                                NumberFormatter="{x:Bind ViewModel.DevDriveDecimalFormatter, Mode=OneWay}"  >
+                                NumberFormatter="{x:Bind ViewModel.DevDriveDecimalFormatter, Mode=OneWay}"
+                                ValidationMode="InvalidInputOverwritten">
                                 <i:Interaction.Behaviors>
-                                <ic:EventTriggerBehavior EventName="ValueChanged">
-                                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.DriveSizeChangedCommand}" CommandParameter="{Binding Value, ElementName=DriveSizeNumberBox}"/>
+                                    <ic:EventTriggerBehavior EventName="ValueChanged">
+                                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.DriveSizeChangedCommand}"/>
                                     </ic:EventTriggerBehavior>
                                 </i:Interaction.Behaviors>
                             </NumberBox> 
@@ -182,6 +185,12 @@
                                 MaxLength="{x:Bind util:DevDriveUtil.MaxDrivePathLength}"
                                 IsSpellCheckEnabled="False" 
                                 TextWrapping="Wrap">
+                                <i:Interaction.Behaviors>
+                                    <ic:EventTriggerBehavior EventName="TextChanged">
+                                        <ic:InvokeCommandAction 
+                                            Command="{x:Bind ViewModel.DriveLocationChangedCommand}"/>
+                                    </ic:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
                             </TextBox>
                             <Button 
                                 Grid.Column="1"

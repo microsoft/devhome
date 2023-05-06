@@ -21,8 +21,8 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.Windows;
 using DevHome.Telemetry;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Windows.Globalization.NumberFormatting;
 using Windows.Storage.Pickers;
 using Windows.System;
@@ -128,7 +128,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         _devDriveManager = devDriveManager;
         _devDriveManager.RequestToCloseViewModelWindow += CloseRequestedDevDriveWindow;
         BuildSetOfLocalizedErrorMessages();
-        UpdateDriveLetterToSizeMapping();
+        RefreshDriveLetterToSizeMapping();
     }
 
     /// <summary>
@@ -378,7 +378,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         DevDriveWindowContainer.Closed += ViewContainerClosed;
         DevDriveWindowContainer.Activate();
         IsDevDriveWindowOpen = true;
-        UpdateDriveLetterToSizeMapping();
+        RefreshDriveLetterToSizeMapping();
 
         // If state is invalid then show errors in the UI as soon as we launch the window.
         if (_concreteDevDrive.State != DevDriveState.New)
@@ -465,6 +465,9 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         FileNameAndSizeErrorList.Clear();
     }
 
+    /// <summary>
+    /// Builds a list of localized input validation error messages to be used.
+    /// </summary>
     private void BuildSetOfLocalizedErrorMessages()
     {
         var resultsList = Enum.GetValues(typeof(DevDriveValidationResult));
@@ -476,7 +479,11 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
     }
 
-    private void UpdateDriveLetterToSizeMapping()
+    /// <summary>
+    /// refreshes the our mapping between Drive letters currently in use on the users machines and the total free space
+    /// available on them.
+    /// </summary>
+    private void RefreshDriveLetterToSizeMapping()
     {
         DriveLetterToSizeMapping.Clear();
         foreach (var curDriveOnSystem in DriveInfo.GetDrives())
@@ -485,6 +492,15 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
     }
 
+    /// <summary>
+    /// Validates the text input in the Dev Drive name textbox when the text changes. We show an error infobar when the text is invalid.
+    /// </summary>
+    /// <remarks>
+    /// There are currently only 2 invalid states
+    /// 1.When the text has invalid characters. <see cref="DevDriveUtil.IsInvalidFileNameOrPath="/>
+    /// 2.When the file name already exists in the given location.
+    /// </remarks
+    /// <param name="text">input string the user enters into the textbox</param>
     [RelayCommand]
     private void DriveLabelChanged(string text)
     {
@@ -509,24 +525,82 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
     }
 
-    [RelayCommand]
-    private void DriveSizeChanged(double value)
+    /// <summary>
+    /// Validates the numeric input value in the size numberbox. We show an error infobar when the value is invalid.
+    /// </summary>
+    /// <remarks>
+    /// There is currently only 1 invalid state
+    /// 1.When numeric value given is greater than the total available free space on the Drive the user intends to create the virtual disk file on.
+    /// </remarks
+    /// <param name="newValue">input value the user enters into the numberbox</param>
+    /// <param name="location">location string the user intends to create the virtual disk file in</param>
+    private void UpdateDriveSizeError(double newValue, string location)
     {
         FileNameAndSizeErrorList.Remove(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.NotEnoughFreeSpace]);
-        var lengthAfterTrim = Location.Trim();
-        var shouldShowSizeError = false;
-        if (double.IsFinite(value) && lengthAfterTrim.Length > 0)
+        var lengthAfterTrim = location.Trim();
+
+        // If newValue is not a number, show the error infobar.
+        var shouldShowSizeError = !double.IsFinite(newValue);
+        if (!shouldShowSizeError && lengthAfterTrim.Length > 0)
         {
+            // We need to refresh the mapping because when the user frees up drive space, we need the updated totalAvailableSpace for the drive they plan
+            // on using.
+            RefreshDriveLetterToSizeMapping();
             ulong totalAvailableSpace;
             if (DriveLetterToSizeMapping.TryGetValue(char.ToUpperInvariant(lengthAfterTrim[0]), out totalAvailableSpace))
             {
-                shouldShowSizeError = DevDriveUtil.ConvertToBytes(value, (ByteUnit)_comboBoxByteUnit) > totalAvailableSpace;
+                shouldShowSizeError = DevDriveUtil.ConvertToBytes(newValue, (ByteUnit)_comboBoxByteUnit) > totalAvailableSpace;
             }
         }
 
         if (shouldShowSizeError)
         {
             FileNameAndSizeErrorList.Add(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.NotEnoughFreeSpace]);
+        }
+    }
+
+    /// <summary>
+    /// Command that is called when the ValueChanged event is fired.
+    /// </summary>
+    /// <remarks>
+    /// This happens when the user has committed the value by typing in the numberbox then doing one of the following:
+    /// 1. Clicking away from the numberbox
+    /// 2. Tabbing away from the numberbox
+    /// 3. Pressing the enter key while in the numberbox
+    /// </remarks>
+    /// <param name="args">the argument from the ValueChanged event that we use to get the newly committed value by the user</param>
+    [RelayCommand]
+    private void DriveSizeChanged(NumberBoxValueChangedEventArgs args)
+    {
+        UpdateDriveSizeError(args.NewValue, Location);
+    }
+
+    /// <summary>
+    /// Called when there is a TextChanged event from the Dev Drive location textbox. We show an error infobar when the text is invalid.
+    /// </summary>
+    /// <remarks>
+    /// There are currently 4 invalid states
+    /// 1. When the location is empty or null
+    /// 2. When the path root to the location does not exist. E.g user attempting to use a drive that does not exist.
+    /// 3. When the location is not fully qualified.
+    /// 4. When the location has invalid characters. <see cref="DevDriveUtil.IsInvalidFileNameOrPath="/>
+    /// </remarks>
+    /// <param name="location">The folder path the user will use to create virtual disk in</param>
+    [RelayCommand]
+    private void DriveLocationChanged(string location)
+    {
+        InvalidFolderLocationError = string.Empty;
+        if (string.IsNullOrEmpty(location) ||
+            !Directory.Exists(Path.GetPathRoot(location)) ||
+            !Path.IsPathFullyQualified(location) ||
+            DevDriveUtil.IsInvalidFileNameOrPath(InvalidCharactersKind.Path, location))
+        {
+            InvalidFolderLocationError = LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.InvalidFolderLocation];
+        }
+        else
+        {
+            // Location changed, so the size may now be too large for this location.
+            UpdateDriveSizeError(Size, location);
         }
     }
 }
