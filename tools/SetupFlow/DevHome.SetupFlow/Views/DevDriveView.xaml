@@ -188,7 +188,8 @@
                                 <i:Interaction.Behaviors>
                                     <ic:EventTriggerBehavior EventName="TextChanged">
                                         <ic:InvokeCommandAction 
-                                            Command="{x:Bind ViewModel.DriveLocationChangedCommand}"/>
+                                            Command="{x:Bind ViewModel.DriveLocationChangedCommand}"
+                                            CommandParameter="{Binding Text, ElementName=DriveLocationTextBox}"/>
                                     </ic:EventTriggerBehavior>
                                 </i:Interaction.Behaviors>
                             </TextBox>
