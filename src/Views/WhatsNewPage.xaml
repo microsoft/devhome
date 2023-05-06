@@ -22,8 +22,8 @@
                     <Color x:Key="CardBackground">#fdfdfd</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
-                    <x:String x:Key="BackgroundFront">/Assets/WhatsNewPage/DarkTheme/BackgroundFront.png</x:String>
-                    <x:String x:Key="BackgroundBack">/Assets/WhatsNewPage/DarkTheme/BackgroundBack.png</x:String>
+                    <x:String x:Key="BackgroundFront">/Assets/WhatsNewPage/DarkTheme/DevVisual_Splash_BUILD_M_v02_ox003_dark_01_noBG 2.png</x:String>
+                    <x:String x:Key="BackgroundBack">/Assets/WhatsNewPage/DarkTheme/DevVisual_Splash_BUILD_M_v02_ox003_dark_01_BG 2.png</x:String>
                     <x:String x:Key="BackgroundShadow">/Assets/WhatsNewPage/DarkTheme/BackgroundShadow.png</x:String>
                     <Color x:Key="CardBackground">#323232</Color>
                 </ResourceDictionary>
@@ -48,23 +48,36 @@
                 <Grid Grid.Row="0" Padding="32 0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="65" />
+                        <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
                     <TextBlock
+                        Grid.Row="0"
+                        x:Uid="WhatsNewPage_Header"
+                        Style="{ThemeResource SubtitleTextBlockStyle}"
+                        VerticalAlignment="Bottom" />
+                    
+                    <TextBlock
+                        Grid.Row="1"
                         x:Uid="WhatsNewPage_Title"
-                        Style="{ThemeResource TitleTextBlockStyle}"
+                        Style="{ThemeResource TitleLargeTextBlockStyle}"
                         VerticalAlignment="Bottom" />
 
                     <TextBlock
-                        Grid.Row="1"
+                        Grid.Row="2"
                         Margin="0 12"
                         VerticalAlignment="Top"
                         x:Uid="WhatsNewPage_Description"
-                        Width="300"
+                        Width="400"
                         HorizontalAlignment="Left"
                         TextWrapping="Wrap"
                         Text="{StaticResource SplitViewPaneAnimationOpenDuration}" />
+
+                    <Button 
+                        Grid.Row="3"
+                        x:Uid="WhatsNewPage_GetStartedButton" />
                 </Grid>
 
                 <!--<Grid 
@@ -182,7 +195,7 @@
                                         VerticalAlignment="Top" />
 
                                 <StackPanel Grid.Row="1" Padding="15 0" >
-                                    
+
 
                                     <TextBlock
                                         HorizontalAlignment="Left"
@@ -201,6 +214,13 @@
                                         Click="Button_ClickAsync" />
 
                                 </StackPanel>
+
+                                <Button 
+                                    Grid.Row="1"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Bottom"
+                                    Content="{x:Bind Button}" />
+
                             </Grid>
                         </DataTemplate>
                     </muxc:ItemsRepeater.ItemTemplate>

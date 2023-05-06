@@ -373,7 +373,7 @@
     <value>Create a Dev Drive</value>
   </data>
   <data name="WhatsNewPage_Description.Text" xml:space="preserve">
-    <value>Take a few minutes to learn how you can use Dev Home for development.</value>
+    <value>Use the streamlined end-to-end setup to clone multiple repositories and install all the applications you need.</value>
   </data>
   <data name="WhatsNewPage_DevDashCard.Description" xml:space="preserve">
     <value>Get the info you need in one place—add widgets to track issues, pull requests, and system performance.</value>
@@ -418,7 +418,7 @@
     <value>Dev Home is getting things ready for you...</value>
   </data>
   <data name="WhatsNewPage_Title.Text" xml:space="preserve">
-    <value>Introducing Dev Home</value>
+    <value>Setup your dev environment</value>
   </data>
   <data name="Feedback_Title.Text" xml:space="preserve">
     <value>Feedback</value>
@@ -437,5 +437,11 @@
   </data>
   <data name="WhatsNewPage_DevIdCard.Button" xml:space="preserve">
     <value>Connect accounts</value>
+  </data>
+  <data name="WhatsNewPage_GetStartedButton.Content" xml:space="preserve">
+    <value>Get started</value>
+  </data>
+  <data name="WhatsNewPage_Header.Text" xml:space="preserve">
+    <value>Introducing Dev Home</value>
   </data>
 </root>
