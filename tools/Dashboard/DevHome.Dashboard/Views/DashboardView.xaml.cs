@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.WinUI;
 using DevHome.Common;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
@@ -285,9 +286,14 @@ public partial class DashboardView : ToolPage
 
     public static async Task<BitmapImage> WidgetIconToBitmapImage(IRandomAccessStreamReference iconStreamRef)
     {
-        using var bitmapStream = await iconStreamRef.OpenReadAsync();
-        var itemImage = new BitmapImage();
-        await itemImage.SetSourceAsync(bitmapStream);
+        var itemImage = await _dispatcher.EnqueueAsync(async () =>
+        {
+            using var bitmapStream = await iconStreamRef.OpenReadAsync();
+            var itemImage = new BitmapImage();
+            await itemImage.SetSourceAsync(bitmapStream);
+            return itemImage;
+        });
+
         return itemImage;
     }
 
