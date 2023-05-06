@@ -30,7 +30,12 @@ public class WhatsNewCard
         get; set;
     }
 
-    public string? Icon
+    public string? Image
+    {
+        get; set;
+    }
+
+    public string? Button
     {
         get; set;
     }

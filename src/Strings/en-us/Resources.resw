@@ -360,17 +360,17 @@
     <value>https://YourSecurityLinkGoesHere/</value>
     <comment>httpsYourSecurityLinkGoesHere is a dummy security guidance link that goes here. Will be replaced with an aka.ms link later.</comment>
   </data>
-  <data name="WhatsNewPage_DevIdCard_Description.Text" xml:space="preserve">
+  <data name="WhatsNewPage_DevIdCard.Description" xml:space="preserve">
     <value>Sign in to your developer account to clone repositories and get notifications for them.</value>
   </data>
   <data name="WhatsNew.Content" xml:space="preserve">
     <value>Introducing Dev Home</value>
   </data>
-  <data name="WhatsNewPage_ConfigMachineCard.Description" xml:space="preserve">
-    <value>Use the streamlined end-to-end setup to clone multiple repositories and install all the applications you need at once.</value>
+  <data name="WhatsNewPage_DevDriveCard.Description" xml:space="preserve">
+    <value>Use the streamlined end-to-end setup to clone multiple repositories and install all the applications you need.</value>
   </data>
-  <data name="WhatsNewPage_ConfigMachineCard.Title" xml:space="preserve">
-    <value>Set up your dev machine seamlessly</value>
+  <data name="WhatsNewPage_DevDriveCard.Title" xml:space="preserve">
+    <value>Create a Dev Drive</value>
   </data>
   <data name="WhatsNewPage_Description.Text" xml:space="preserve">
     <value>Take a few minutes to learn how you can use Dev Home for development.</value>
@@ -381,11 +381,8 @@
   <data name="WhatsNewPage_DevDashCard.Title" xml:space="preserve">
     <value>Monitor projects in your dashboard</value>
   </data>
-  <data name="WhatsNewPage_DevIdCard_Title.Text" xml:space="preserve">
-    <value>Connect your developer account</value>
-  </data>
-  <data name="WhatsNewPage_DevIdCard_Button.Content" xml:space="preserve">
-    <value>Connect accounts</value>
+  <data name="WhatsNewPage_DevIdCard.Title" xml:space="preserve">
+    <value>Connect your account</value>
   </data>
   <data name="WhatsNewPage_DevPFeaturesCard.Description" xml:space="preserve">
     <value>Optimize performance with a Dev Drive—Dev Home sets it up for you.</value>
@@ -431,5 +428,14 @@
   </data>
   <data name="AppDisplayNameStable" xml:space="preserve">
     <value>Dev Home (Preview)</value>
+  </data>
+  <data name="WhatsNewPage_DevDashCard.Button" xml:space="preserve">
+    <value>Pin widgets</value>
+  </data>
+  <data name="WhatsNewPage_DevDriveCard.Button" xml:space="preserve">
+    <value>Create Dev Drive</value>
+  </data>
+  <data name="WhatsNewPage_DevIdCard.Button" xml:space="preserve">
+    <value>Connect accounts</value>
   </data>
 </root>

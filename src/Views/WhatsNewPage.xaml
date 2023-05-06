@@ -40,7 +40,7 @@
             </Grid>
             <Grid x:Name="ContentArea" Padding="35 0 35 30" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="236" />
+                    <RowDefinition Height="341" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
@@ -67,7 +67,7 @@
                         Text="{StaticResource SplitViewPaneAnimationOpenDuration}" />
                 </Grid>
 
-                <Grid 
+                <!--<Grid 
                     x:Name="ConnectDevIdContentArea"
                     Grid.Row="1"
                     Padding="28"
@@ -109,43 +109,40 @@
                             x:Uid="WhatsNewPage_DevIdCard_Button"
                             Click="ConnectToAccountsButton_Click" />
                     </StackPanel>
-                </Grid>
+                </Grid>-->
 
                 <muxc:ItemsRepeater
                     Name="FeaturesContainer"
-                    Grid.Row="2"
+                    Grid.Row="1"
                     animations:Connected.ListItemElementName="itemThumbnail"
                     animations:Connected.ListItemKey="animationKeyContentGrid"
                     ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}">
 
                     <muxc:ItemsRepeater.Resources>
                         <models:WhatsNewCard 
-                            x:Uid="WhatsNewPage_ConfigMachineCard"
-                            x:Key="WhatsNewPage_ConfigMachineCard"
-                            Icon="/Assets/WhatsNewPage/ConfigNewMachine.png"
-                            Priority="0"
-                            LearnMoreUrl="https://microsoft.com/" />
+                            x:Uid="WhatsNewPage_DevDriveCard"
+                            x:Key="WhatsNewPage_DevDriveCard"
+                            Image="/Assets/WhatsNewPage/DevDriveHero.png"
+                            Priority="2" />
 
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDashCard"
                             x:Key="WhatsNewPage_DevDashCard"
-                            Icon="/Assets/WhatsNewPage/DevDashboards.png"
-                            Priority="2"
-                            LearnMoreUrl="https://microsoft.com/" />
+                            Image="/Assets/WhatsNewPage/DashboardHero.png"
+                            Priority="0" />
 
                         <models:WhatsNewCard 
-                            x:Uid="WhatsNewPage_DevPFeaturesCard"
-                            x:Key="WhatsNewPage_DevPFeaturesCard"
-                            Icon="/Assets/WhatsNewPage/DevPFeatures.png"
-                            Priority="1"
-                            LearnMoreUrl="https://microsoft.com/" />
+                            x:Uid="WhatsNewPage_DevIdCard"
+                            x:Key="WhatsNewPage_DevIdCard"
+                            Image="/Assets/WhatsNewPage/DevIdHero.png"
+                            Priority="1" />
 
-                        <models:WhatsNewCard
+                        <!--<models:WhatsNewCard
                             x:Uid="WhatsNewPage_NotifCard"
                             x:Key="WhatsNewPage_NotifCard"
                             Icon="/Assets/WhatsNewPage/RepoNotifications.png"
                             Priority="3"
-                            LearnMoreUrl="https://microsoft.com/" />
+                            LearnMoreUrl="https://microsoft.com/" />-->
 
                     </muxc:ItemsRepeater.Resources>
 
@@ -153,8 +150,8 @@
                         <muxc:UniformGridLayout 
                             x:Name="CardGrid"
                             Orientation="Horizontal" 
-                            MinItemWidth="400" 
-                            MinItemHeight="200"
+                            MinItemWidth="250" 
+                            MinItemHeight="358"
                             MinRowSpacing="12" 
                             MinColumnSpacing="12"
                             ItemsStretch="Fill" />
@@ -165,7 +162,7 @@
                             x:DataType="models:WhatsNewCard">
                             <Grid
                                 HorizontalAlignment="Stretch"
-                                Padding="30 25"
+                                Padding="15 15"
                                 CornerRadius="{ThemeResource ControlCornerRadius}"
                                 Margin="0"
                                 Background="{ThemeResource CardBackground}"
@@ -173,19 +170,23 @@
                                 BorderThickness="{ThemeResource ExpanderBorderThickness}">
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="48" />
+                                    <!--<ColumnDefinition Width="48" />-->
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <Image 
-                                    Source="{x:Bind Icon}"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Grid.Column="0"
-                                    Width="32"
-                                    Height="32" />
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="120" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
 
-                                <StackPanel Grid.Column="1">
+                                <Image 
+                                        Grid.Row="0"    
+                                        Source="{x:Bind Image}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Top" />
+
+                                <StackPanel Grid.Row="1">
+                                    
 
                                     <TextBlock
                                         HorizontalAlignment="Left"
@@ -197,14 +198,7 @@
                                         TextWrapping="Wrap"
                                         Text="{x:Bind Description}"/>
 
-                                    <TextBlock
-                                        Foreground="#99EBFF">
-                                        <Hyperlink
-                                            NavigateUri="https://microsoft.com"
-                                            TextDecorations="None">
-                                            Learn more
-                                        </Hyperlink>
-                                    </TextBlock>
+                                    <Button Content="{x:Bind Button}" />
 
                                 </StackPanel>
                             </Grid>
