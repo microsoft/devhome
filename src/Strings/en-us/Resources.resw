@@ -384,12 +384,6 @@
   <data name="WhatsNewPage_DevIdCard.Title" xml:space="preserve">
     <value>Connect your account</value>
   </data>
-  <data name="WhatsNewPage_DevPFeaturesCard.Description" xml:space="preserve">
-    <value>Optimize performance with a Dev Drive—Dev Home sets it up for you.</value>
-  </data>
-  <data name="WhatsNewPage_DevPFeaturesCard.Title" xml:space="preserve">
-    <value>Create a Dev Drive</value>
-  </data>
   <data name="WhatsNewPage_NotifCard.Description" xml:space="preserve">
     <value>Keep up with pull requests, checks, merges, and more.</value>
   </data>

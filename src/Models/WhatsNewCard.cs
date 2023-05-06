@@ -19,11 +19,6 @@ public class WhatsNewCard
         get; set;
     }
 
-    public string? LearnMoreUrl
-    {
-        get; set;
-    }
-
     public string? Image
     {
         get; set;
