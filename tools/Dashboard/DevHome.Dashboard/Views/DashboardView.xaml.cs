@@ -232,7 +232,6 @@ public partial class DashboardView : ToolPage
             try
             {
                 Log.Logger()?.ReportDebug("DashboardView", $"Cache widget provider icon for {providerDefId}");
-                var itemImage = await WidgetIconToBitmapImage(providerDef.Icon);
 
                 // There is a widget bug where Definition update events are being raised as added events.
                 // If we already have an icon for this key, just remove and add again.
@@ -241,6 +240,7 @@ public partial class DashboardView : ToolPage
                     _providerIconCache.Remove(providerDefId);
                 }
 
+                var itemImage = await WidgetIconToBitmapImage(providerDef.Icon);
                 _providerIconCache.Add(providerDefId, itemImage);
             }
             catch (Exception ex)
