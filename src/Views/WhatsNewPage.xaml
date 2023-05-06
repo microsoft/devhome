@@ -133,30 +133,26 @@
 
                     <muxc:ItemsRepeater.Resources>
                         <models:WhatsNewCard 
-                            x:Uid="WhatsNewPage_DevDriveCard"
-                            x:Key="WhatsNewPage_DevDriveCard"
-                            Image="/Assets/WhatsNewPage/DevDriveHero.png"
-                            Priority="2" />
-
-                        <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDashCard"
                             x:Key="WhatsNewPage_DevDashCard"
                             Image="/Assets/WhatsNewPage/DashboardHero.png"
+                            PageKey="DevHome.Dashboard.ViewModels.DashboardViewModel"
                             Priority="0" />
 
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevIdCard"
                             x:Key="WhatsNewPage_DevIdCard"
                             Image="/Assets/WhatsNewPage/DevIdHero.png"
+                            PageKey="DevHome.Settings.ViewModels.AccountsViewModel"
                             Priority="1" />
-
-                        <!--<models:WhatsNewCard
-                            x:Uid="WhatsNewPage_NotifCard"
-                            x:Key="WhatsNewPage_NotifCard"
-                            Icon="/Assets/WhatsNewPage/RepoNotifications.png"
-                            Priority="3"
-                            LearnMoreUrl="https://microsoft.com/" />-->
-
+                        
+                        <models:WhatsNewCard 
+                            x:Uid="WhatsNewPage_DevDriveCard"
+                            x:Key="WhatsNewPage_DevDriveCard"
+                            Image="/Assets/WhatsNewPage/DevDriveHero.png"
+                            PageKey="ms-settings:disksandvolumes"
+                            Priority="2" />
+                        
                     </muxc:ItemsRepeater.Resources>
 
                     <muxc:ItemsRepeater.Layout>
@@ -210,6 +206,12 @@
                                         Margin="0 16 0 25"
                                         TextWrapping="Wrap"
                                         Text="{x:Bind Description}"/>
+
+                                    <Button 
+                                        DataContext="{x:Bind PageKey}"
+                                        HorizontalAlignment="Stretch"
+                                        Content="{x:Bind Button}"
+                                        Click="Button_ClickAsync" />
 
                                 </StackPanel>
 
