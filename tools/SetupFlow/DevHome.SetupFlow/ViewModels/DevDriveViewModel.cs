@@ -36,7 +36,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private readonly IDevDriveManager _devDriveManager;
     private readonly string _localizedBrowseButtonText;
     private readonly ObservableCollection<string> _fileNameAndSizeErrorList = new ();
-    private readonly Dictionary<DevDriveValidationResult, string> _localizedDevDriveValidationErrorStrings = new ();
+    private readonly Dictionary<DevDriveValidationResult, string> _localizedDevDriveValidationErrors = new ();
     private readonly Dictionary<char, ulong> _driveLetterToSizeMapping = new ();
 
     private readonly string _devHomeIconPath = "Assets/DevHome.ico";
@@ -64,7 +64,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <summary>
     /// Gets the window that will contain the view.
     /// </summary>
-    public Dictionary<DevDriveValidationResult, string> LocalizedDevDriveValidationErrorStrings => _localizedDevDriveValidationErrorStrings;
+    public Dictionary<DevDriveValidationResult, string> LocalizedDevDriveValidationErrors => _localizedDevDriveValidationErrors;
 
     public Dictionary<char, ulong> DriveLetterToSizeMapping => _driveLetterToSizeMapping;
 
@@ -412,7 +412,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
             Log.Logger?.ReportError(Log.Component.DevDrive, $"Input validation Error in Dev Drive window: {result.ToString()}");
 
             string errorString;
-            if (LocalizedDevDriveValidationErrorStrings.TryGetValue(result, out errorString))
+            if (LocalizedDevDriveValidationErrors.TryGetValue(result, out errorString))
             {
                 if (result == DevDriveValidationResult.NoDriveLettersAvailable)
                 {
@@ -473,7 +473,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         var resultsList = Enum.GetValues(typeof(DevDriveValidationResult));
         foreach (DevDriveValidationResult result in resultsList)
         {
-            LocalizedDevDriveValidationErrorStrings.Add(
+            LocalizedDevDriveValidationErrors.Add(
                 result,
                 _stringResource.GetLocalized("DevDrive" + result.ToString()));
         }
@@ -504,24 +504,24 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [RelayCommand]
     private void DriveLabelChanged(string text)
     {
-        var isFileNameInvalidErrorInList = FileNameAndSizeErrorList.Contains(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.InvalidDriveLabel]);
-        var isFileExistsErrorInList = FileNameAndSizeErrorList.Contains(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.InvalidDriveLabel]);
+        var isFileNameInvalidErrorInList = FileNameAndSizeErrorList.Contains(LocalizedDevDriveValidationErrors[DevDriveValidationResult.InvalidDriveLabel]);
+        var isFileExistsErrorInList = FileNameAndSizeErrorList.Contains(LocalizedDevDriveValidationErrors[DevDriveValidationResult.InvalidDriveLabel]);
         if (DevDriveUtil.IsInvalidFileNameOrPath(InvalidCharactersKind.FileName, text) && !isFileNameInvalidErrorInList)
         {
-            FileNameAndSizeErrorList.Add(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.InvalidDriveLabel]);
+            FileNameAndSizeErrorList.Add(LocalizedDevDriveValidationErrors[DevDriveValidationResult.InvalidDriveLabel]);
         }
         else
         {
-            FileNameAndSizeErrorList.Remove(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.InvalidDriveLabel]);
+            FileNameAndSizeErrorList.Remove(LocalizedDevDriveValidationErrors[DevDriveValidationResult.InvalidDriveLabel]);
         }
 
         if (File.Exists(Path.Combine(Location, DriveLabel + ".vhdx")) && !isFileExistsErrorInList)
         {
-            FileNameAndSizeErrorList.Add(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.FileNameAlreadyExists]);
+            FileNameAndSizeErrorList.Add(LocalizedDevDriveValidationErrors[DevDriveValidationResult.FileNameAlreadyExists]);
         }
         else
         {
-            FileNameAndSizeErrorList.Remove(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.FileNameAlreadyExists]);
+            FileNameAndSizeErrorList.Remove(LocalizedDevDriveValidationErrors[DevDriveValidationResult.FileNameAlreadyExists]);
         }
     }
 
@@ -536,7 +536,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <param name="location">location string the user intends to create the virtual disk file in</param>
     private void UpdateDriveSizeError(double newValue, string location)
     {
-        FileNameAndSizeErrorList.Remove(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.NotEnoughFreeSpace]);
+        FileNameAndSizeErrorList.Remove(LocalizedDevDriveValidationErrors[DevDriveValidationResult.NotEnoughFreeSpace]);
         var lengthAfterTrim = location.Trim();
 
         // If newValue is not a number, show the error infobar.
@@ -555,7 +555,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
 
         if (shouldShowSizeError)
         {
-            FileNameAndSizeErrorList.Add(LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.NotEnoughFreeSpace]);
+            FileNameAndSizeErrorList.Add(LocalizedDevDriveValidationErrors[DevDriveValidationResult.NotEnoughFreeSpace]);
         }
     }
 
@@ -595,7 +595,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
             !Path.IsPathFullyQualified(location) ||
             DevDriveUtil.IsInvalidFileNameOrPath(InvalidCharactersKind.Path, location))
         {
-            InvalidFolderLocationError = LocalizedDevDriveValidationErrorStrings[DevDriveValidationResult.InvalidFolderLocation];
+            InvalidFolderLocationError = LocalizedDevDriveValidationErrors[DevDriveValidationResult.InvalidFolderLocation];
         }
         else
         {
