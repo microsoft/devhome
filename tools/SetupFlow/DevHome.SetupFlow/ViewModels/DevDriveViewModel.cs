@@ -26,6 +26,8 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Globalization.NumberFormatting;
 using Windows.Storage.Pickers;
 using Windows.System;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -595,16 +597,19 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <remarks>
     /// There are currently 4 invalid states
     /// 1. When the location is empty or null
-    /// 2. When the path root to the location does not exist. E.g user attempting to use a drive that does not exist.
-    /// 3. When the location is not fully qualified.
-    /// 4. When the location has invalid characters. <see cref="DevDriveUtil.IsInvalidFileNameOrPath="/>
+    /// 2. Path is a network path.
+    /// 3. When the path root to the location does not exist. E.g user attempting to use a drive that does not exist.
+    /// 4. When the location is not fully qualified.
+    /// 5. When the location has invalid characters. <see cref="DevDriveUtil.IsInvalidFileNameOrPath="/>
     /// </remarks>
     /// <param name="location">The folder path the user will use to create virtual disk in</param>
     [RelayCommand]
     private void DriveLocationChanged(string location)
     {
         InvalidFolderLocationError = string.Empty;
-        if (string.IsNullOrEmpty(location) ||
+
+        if (location.Length < 3 ||
+            IsNetworkPath(location) ||
             !Directory.Exists(Path.GetPathRoot(location)) ||
             !Path.IsPathFullyQualified(location) ||
             DevDriveUtil.IsInvalidFileNameOrPath(InvalidCharactersKind.Path, location))
@@ -615,6 +620,22 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         {
             // Location changed, so the size may now be too large for this location.
             UpdateDriveSizeError(Size, location);
+        }
+    }
+
+    /// <summary>
+    /// Checks whether the path is a network path.
+    /// </summary>
+    /// <param name="path">The path that could possibly be a network path</param>
+    /// <returns>Boolean where true means the path is a network path and false otherwise.</returns>
+    private bool IsNetworkPath(string path)
+    {
+        unsafe
+        {
+            fixed (char* tempPath = path)
+            {
+                return PInvoke.PathIsNetworkPath(tempPath).Equals(new BOOL(true));
+            }
         }
     }
 }
