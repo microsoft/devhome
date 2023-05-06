@@ -153,7 +153,6 @@ public static class StringResourceKey
     public static readonly string InstallPackageErrorBlockedByPolicy = nameof(InstallPackageErrorBlockedByPolicy);
     public static readonly string InstallPackageErrorDownloadError = nameof(InstallPackageErrorDownloadError);
     public static readonly string InstallPackageErrorInternalError = nameof(InstallPackageErrorInternalError);
-    public static readonly string InstallPackageErrorInstallError = nameof(InstallPackageErrorInstallError);
     public static readonly string InstallPackageErrorNoApplicableInstallers = nameof(InstallPackageErrorNoApplicableInstallers);
     public static readonly string InstallPackageErrorUnknownErrorWithErrorCode = nameof(InstallPackageErrorUnknownErrorWithErrorCode);
     public static readonly string InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode = nameof(InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode);

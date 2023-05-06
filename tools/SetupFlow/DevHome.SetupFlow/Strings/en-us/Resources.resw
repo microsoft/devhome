@@ -349,10 +349,6 @@
     <value>{0} couldn't be installed due to an internal error.</value>
     <comment>{Locked="{0}"}Label displayed when a package installation fails because of an internal error. {0} is replaced by the package name.</comment>
   </data>
-  <data name="InstallPackageErrorInstallError" xml:space="preserve">
-    <value>{0} couldn't be installed ({1})</value>
-    <comment>{Locked="{0}","{1}"}Label displayed when a package installation fails because of an error.{0} is replaced by the package name and {1} is replaced by a numeric value</comment>
-  </data>
   <data name="InstallPackageErrorMessagePackageInUse" xml:space="preserve">
     <value>{0} couldn't be installed because the application is currently running. Exit the application then try again.</value>
     <comment>{Locked="{0}"}Label displayed when a package installation fails because the application is currently running. {0} is replaced by the package name.</comment>
@@ -398,7 +394,7 @@
     <comment>{Locked="{0}"}Label displayed when a package installation requires restarting the user's PC to finish installation. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorMessageCancelledByUser" xml:space="preserve">
-    <value>{0} couldn't be installed because you cancelled the installation.</value>
+    <value>{0} couldn't be installed because the installation was cancelled by the user.</value>
     <comment>{Locked="{0}"}Label displayed when a package installation fails because the user cancelled the installation. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorMessageAlreadyInstalled" xml:space="preserve">
@@ -431,14 +427,14 @@
   </data>
   <data name="InstallPackageErrorMessageSystemMessage" xml:space="preserve">
     <value>{0} couldn't be installed: {1}</value>
-    <comment>{Locked="{0}"}Label displayed when a package installation fails. {0} is replaced by the package name.</comment>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails. {0} is replaced by the package name and {1} is replaced by an error message.</comment>
   </data>
   <data name="InstallPackageErrorDownloadError" xml:space="preserve">
     <value>{0} couldn't be installed because the installer couldn't be downloaded.</value>
     <comment>{Locked="{0}"}Label displayed when a package installation fails because the downloading the installer failed. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorNoApplicableInstallers" xml:space="preserve">
-    <value>{0} couldn't be installed because none of the installers are supported.</value>
+    <value>{0} couldn't be installed because none of the available installers are supported.</value>
     <comment>{Locked="{0}"}Label displayed when a package installation fails because no applicable installer found for the current system. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorUnknownErrorWithErrorCode" xml:space="preserve">
