@@ -595,8 +595,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// Called when there is a TextChanged event from the Dev Drive location textbox. We show an error infobar when the text is invalid.
     /// </summary>
     /// <remarks>
-    /// There are currently 4 invalid states
-    /// 1. When the location is empty or null
+    /// There are currently 5 invalid states
+    /// 1. When the location length is less than 3. We expect the location to be in the form of drive letter, followed by a colon followed by a slash. E.g C:\
     /// 2. Path is a network path.
     /// 3. When the path root to the location does not exist. E.g user attempting to use a drive that does not exist.
     /// 4. When the location is not fully qualified.
