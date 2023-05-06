@@ -342,28 +342,108 @@
     <comment>{Locked="{0}"} Label displayed when a package failed to install. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorBlockedByPolicy" xml:space="preserve">
-    <value>Operation is blocked by Group Policy</value>
-    <comment>Label displayed when a package installation fails because it is blocked by group policy</comment>
+    <value>{0} couldn't be installed due to a Group Policy setting.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it is blocked by group policy. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorInternalError" xml:space="preserve">
-    <value>Internal error</value>
-    <comment>Label displayed when a package installation fails because of an internal error</comment>
+    <value>{0} couldn't be installed due to an internal error.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because of an internal error. {0} is replaced by the package name.</comment>
   </data>
-  <data name="InstallPackageErrorInstallError" xml:space="preserve">
-    <value>Install error code ({0})</value>
-    <comment>{Locked="{0}"}Label displayed when a package installation fails because of an error. {0} is replaced by a numeric value</comment>
+  <data name="InstallPackageErrorMessagePackageInUse" xml:space="preserve">
+    <value>{0} couldn't be installed because the application is currently running. Exit the application then try again.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because the application is currently running. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageInstallInProgress" xml:space="preserve">
+    <value>{0} couldn't be installed because another installation is already in progress. Try again later.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because another installation is already in progress. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageFileInUse" xml:space="preserve">
+    <value>{0} couldn't be installed because one or more file is being used. Exit the application then try again.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because one or more file is being used. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageMissingDependency" xml:space="preserve">
+    <value>{0} couldn't be installed because this package has a dependency missing from your system.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it has a dependency missing from the user's system. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageDiskFull" xml:space="preserve">
+    <value>{0} couldn't be installed because there's no more space on your PC. Make space, then try again.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because there's no more space on the user's PC. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageInsufficientMemory" xml:space="preserve">
+    <value>{0} couldn't be installed because there's not enough memory available to install. Close other applications then try again.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because there's not enough memory available to install. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageNoNetwork" xml:space="preserve">
+    <value>{0} couldn't be installed because it requires internet connectivity. Connect to a network then try again.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it requires internet connectivity. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageContactSupport" xml:space="preserve">
+    <value>{0} couldn't be installed because it encountered an error during installation. Contact support.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it encountered an error during installation. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageRebootRequiredToFinish" xml:space="preserve">
+    <value>{0}: Restart your PC to finish installation.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation requires restarting the user's PC to finish installation. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageRebootRequiredToInstall" xml:space="preserve">
+    <value>{0} couldn't be installed. Restart your PC then try again.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails with a suggestion to re-attempt installation after a restarting the user's PC. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageRebootInitiated" xml:space="preserve">
+    <value>{0}: Your PC will restart to finish installation.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation requires restarting the user's PC to finish installation. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageCancelledByUser" xml:space="preserve">
+    <value>{0} couldn't be installed because the installation was cancelled by the user.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because the user cancelled the installation. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageAlreadyInstalled" xml:space="preserve">
+    <value>{0} couldn't be installed because another version of this application is already installed.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because another version is already installed. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageDowngrade" xml:space="preserve">
+    <value>{0} couldn't be installed because a higher version of this application is already installed.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because a higher version is already installed. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageBlockedByPolicy" xml:space="preserve">
+    <value>{0} couldn't be installed due to organization policies preventing installation. Contact your admin.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails due to organization policies preventing installation. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageDependencies" xml:space="preserve">
+    <value>{0} couldn't be installed because package dependencies failed to install.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because its dependencies failed to install. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessagePackageInUseByApplication" xml:space="preserve">
+    <value>{0} couldn't be installed because the application is currently in use by another application.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it is in use by another application. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageInvalidParameter" xml:space="preserve">
+    <value>{0} couldn't be installed due to invalid parameter.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails due to invalid parameter. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageSystemNotSupported" xml:space="preserve">
+    <value>{0} couldn't be installed because the package is not supported by the system.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it is not supported by the system. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageSystemMessage" xml:space="preserve">
+    <value>{0} couldn't be installed: {1}</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails. {0} is replaced by the package name and {1} is replaced by an error message.</comment>
   </data>
   <data name="InstallPackageErrorDownloadError" xml:space="preserve">
-    <value>Downloading installer failed</value>
-    <comment>{Locked="(0x{0})"}Label displayed when a package installation fails because the downloading the installer failed</comment>
+    <value>{0} couldn't be installed because the installer couldn't be downloaded.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because the downloading the installer failed. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorNoApplicableInstallers" xml:space="preserve">
-    <value>None of the installers are applicable for the current system</value>
-    <comment>Label displayed when a package installation fails because no applicable installer found for the current system</comment>
+    <value>{0} couldn't be installed because none of the available installers are supported.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because no applicable installer found for the current system. {0} is replaced by the package name.</comment>
   </data>
-  <data name="InstallPackageErrorUnknownError" xml:space="preserve">
-    <value>Unknown error</value>
-    <comment>Label displayed when a package installation fails because of an unknown error</comment>
+  <data name="InstallPackageErrorUnknownErrorWithErrorCode" xml:space="preserve">
+    <value>{0} couldn't be installed due to an unknown error. Error code: {1}.</value>
+    <comment>{Locked="{0}","{1}"}Label displayed when a package installation fails because of an unknown error. {0} is replaced by the package name and {1} is replaced by the operation error code.</comment>
+  </data>
+  <data name="InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode" xml:space="preserve">
+    <value>{0} couldn't be installed due to an unknown error. Error code: {1}. Installer exit code: {2}</value>
+    <comment>{Locked="{0}","{1}","{2}"}Label displayed when a package installation fails because of an unknown error. {0} is replaced by the package name and {1} is replaced by the operation error code and {2} is replaced by the installer exit code.</comment>
   </data>
   <data name="LearnMore.Text" xml:space="preserve">
     <value>Learn more</value>
