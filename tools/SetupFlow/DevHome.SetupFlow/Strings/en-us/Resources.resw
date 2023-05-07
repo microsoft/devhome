@@ -290,8 +290,8 @@
     <comment>Header for the Dev Drive location text box. This location can be on the location system or on a network share</comment>
   </data>
   <data name="DevDriveWindowLocationTextBox.PlaceholderText" xml:space="preserve">
-    <value>C:\ProgramData\Microsoft\Windows\DevDrives</value>
-    <comment>Placeholder value within the Dev Drive location text box to show the user an example input of a folder location</comment>
+    <value>C:\Users\User\DevDrives</value>
+    <comment>{Locked="C:\"} Placeholder value within the Dev Drive location text box to show the user an example input of a folder location</comment>
   </data>
   <data name="DevDriveWindowNameTextBox.Header" xml:space="preserve">
     <value>Dev Drive name</value>
@@ -768,7 +768,7 @@
     <value>Size:</value>
     <comment>Text label for any item that will display a number size. Example could be a using this with a textblock to make a label that is on the same line as another textblock that displays the amount of free storage space on a computer.</comment>
   </data>
-  <data name="DevDriveFilenameAlreadyExists" xml:space="preserve">
+  <data name="DevDriveFileNameAlreadyExists" xml:space="preserve">
     <value>The filename already exists in the selected location. Enter a new file name and try again.</value>
     <comment>Text that advises the user that the file name of the virtual hard disk they were trying to create already exists in the location they selected and that they should enter a new name.</comment>
   </data>

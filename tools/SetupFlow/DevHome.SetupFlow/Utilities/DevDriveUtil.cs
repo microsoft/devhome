@@ -67,6 +67,7 @@ public static class DevDriveUtil
     /// <summary>
     /// Gets a value indicating whether the system has the ability to create Dev Drives
     /// and whether the ability is enabled. Win10 machines will not have this ability.
+    /// This is temporary and will be replaced by an API call once it is created.
     /// </summary>
     /// <returns>
     /// Returns true if Dev Drive creation functionality is present on the machine
@@ -261,6 +262,16 @@ public static class DevDriveUtil
                 }
             }
         }
+    }
+
+    public static bool IsCharValidDriveLetter(char? letter)
+    {
+        if (letter.HasValue)
+        {
+            return DriveLetterCharArray.Contains(char.ToUpperInvariant(letter.Value));
+        }
+
+        return false;
     }
 
     private static string FormatExceptionString(ByteUnit unit, double value, double minSize, double maxSize)

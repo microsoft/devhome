@@ -39,7 +39,8 @@ public static class StringResourceKey
     public static readonly string DevDriveReviewTitle = nameof(DevDriveReviewTitle);
     public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
     public static readonly string DevDriveDefaultFolderName = nameof(DevDriveDefaultFolderName);
-    public static readonly string DevDriveFilenameAlreadyExists = nameof(DevDriveFilenameAlreadyExists);
+    public static readonly string DevDriveDriveLetterNotAvailable = nameof(DevDriveDriveLetterNotAvailable);
+    public static readonly string DevDriveFileNameAlreadyExists = nameof(DevDriveFileNameAlreadyExists);
     public static readonly string DevDriveInvalidDriveLabel = nameof(DevDriveInvalidDriveLabel);
     public static readonly string DevDriveInvalidDriveSize = nameof(DevDriveInvalidDriveSize);
     public static readonly string DevDriveInvalidFolderLocation = nameof(DevDriveInvalidFolderLocation);

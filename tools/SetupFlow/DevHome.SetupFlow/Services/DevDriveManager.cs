@@ -320,9 +320,9 @@ public class DevDriveManager : IDevDriveManager
             returnSet.Add(DevDriveValidationResult.InvalidDriveLabel);
         }
 
-        // Only check if the drive letter isn't already being used by another Dev Drive object in memory
-        // if we're not in the process of creating it on the System.
-        if (_devDrives.FirstOrDefault(drive => drive.DriveLetter == devDrive.DriveLetter && drive.ID != devDrive.ID) != null)
+        // Check if the drive letter isn't already being used by another Dev Drive object in memory and if its an actual valid drive letter.
+        if (!DevDriveUtil.IsCharValidDriveLetter(devDrive.DriveLetter) ||
+            _devDrives.FirstOrDefault(drive => drive.DriveLetter == devDrive.DriveLetter && drive.ID != devDrive.ID) != null)
         {
             returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
         }
