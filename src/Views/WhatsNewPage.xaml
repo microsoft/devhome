@@ -19,13 +19,19 @@
                     <x:String x:Key="BackgroundFront">/Assets/WhatsNewPage/LightTheme/BackgroundFront.png</x:String>
                     <x:String x:Key="BackgroundBack">/Assets/WhatsNewPage/LightTheme/BackgroundBack.png</x:String>
                     <x:String x:Key="BackgroundShadow">/Assets/WhatsNewPage/LightTheme/BackgroundShadow.png</x:String>
+                    <x:String x:Key="DashboardHero">/Assets/WhatsNewPage/LightTheme/DashboardHero.png</x:String>
                     <Color x:Key="CardBackground">#fdfdfd</Color>
+                    <Color x:Key="ButtonAccentBackground">#6659CA</Color>
+                    <Color x:Key="ButtonAccentForeground">#FFFFFF</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <x:String x:Key="BackgroundFront">/Assets/WhatsNewPage/DarkTheme/BackgroundFront.png</x:String>
                     <x:String x:Key="BackgroundBack">/Assets/WhatsNewPage/DarkTheme/BackgroundBack.png</x:String>
                     <x:String x:Key="BackgroundShadow">/Assets/WhatsNewPage/DarkTheme/BackgroundShadow.png</x:String>
+                    <x:String x:Key="DashboardHero">/Assets/WhatsNewPage/DarkTheme/DashboardHero.png</x:String>
                     <Color x:Key="CardBackground">#323232</Color>
+                    <Color x:Key="ButtonAccentBackground">#47E1DA</Color>
+                    <Color x:Key="ButtonAccentForeground">#000000</Color>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
@@ -76,8 +82,7 @@
                         <Button
                             Margin="0 16"
                             MinWidth="258"
-                            Background="#47E1DA"
-                            Foreground="#000000"
+                            Background="{ThemeResource ButtonAccentBackground}"
                             Click="MachineConfigButton_Click"
                             x:Uid="WhatsNewPage_GetStartedButton" />
                         
@@ -95,21 +100,21 @@
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDashCard"
                             x:Key="WhatsNewPage_DevDashCard"
-                            Image="/Assets/WhatsNewPage/DashboardHero.png"
+                            Image=""
                             PageKey="DevHome.Dashboard.ViewModels.DashboardViewModel"
                             Priority="0" />
 
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevIdCard"
                             x:Key="WhatsNewPage_DevIdCard"
-                            Image="/Assets/WhatsNewPage/DevIdHero.png"
+                            Image=""
                             PageKey="DevHome.Settings.ViewModels.AccountsViewModel"
                             Priority="1" />
                         
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDriveCard"
                             x:Key="WhatsNewPage_DevDriveCard"
-                            Image="/Assets/WhatsNewPage/DevDriveHero.png"
+                            Image=""
                             PageKey="ms-settings:disksandvolumes"
                             Priority="2" />
                         
