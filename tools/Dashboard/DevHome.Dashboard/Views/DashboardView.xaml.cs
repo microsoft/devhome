@@ -314,7 +314,7 @@ public partial class DashboardView : ToolPage
                         if (stateObj.Host == WidgetHelpers.DevHomeHostName)
                         {
                             var size = await widget.GetSizeAsync();
-                            AddWidgetToPinnedWidgets(widget, size);
+                            AddWidgetToPinnedWidgetsAsync(widget, size);
                         }
                     }
                 }
@@ -357,29 +357,42 @@ public partial class DashboardView : ToolPage
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
                 await newWidget.SetSizeAsync(size);
-                AddWidgetToPinnedWidgets(newWidget, size);
+                AddWidgetToPinnedWidgetsAsync(newWidget, size);
             }
         }
     }
 
-    private void AddWidgetToPinnedWidgets(Widget widget, WidgetSize size)
+    private async void AddWidgetToPinnedWidgetsAsync(Widget widget, WidgetSize size)
     {
         Log.Logger()?.ReportDebug("DashboardView", $"Add widget to pinned widgets, id = {widget.Id}");
-        InsertWidgetInPinnedWidgets(widget, size, PinnedWidgets.Count);
+        await InsertWidgetInPinnedWidgetsAsync(widget, size, PinnedWidgets.Count);
     }
 
-    private void InsertWidgetInPinnedWidgets(Widget widget, WidgetSize size, int index)
+    private async Task InsertWidgetInPinnedWidgetsAsync(Widget widget, WidgetSize size, int index)
     {
-        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widget.DefinitionId);
+        var widgetDefintionId = widget.DefinitionId;
+        var widgetId = widget.Id;
+        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetDefintionId);
+
         if (widgetDefinition != null)
         {
-            Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widget.Id}, index = {index}");
+            Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
             var wvm = new WidgetViewModel(widget, size, widgetDefinition, _renderer, _dispatcher);
             PinnedWidgets.Insert(index, wvm);
         }
         else
         {
-            Log.Logger()?.ReportWarn("DashboardView", $"WidgetPlatform did not clean up widgets with defintion '{widget.DefinitionId}'");
+            // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
+            Log.Logger()?.ReportInfo("DashboardView", $"No widget defintion '{widgetDefintionId}', delete widget {widgetId} with that definition");
+            try
+            {
+                await widget.SetCustomStateAsync(string.Empty);
+                await widget.DeleteAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Logger()?.ReportInfo("DashboardView", $"Error deleting widget", ex);
+            }
         }
     }
 
@@ -447,13 +460,16 @@ public partial class DashboardView : ToolPage
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
         var definitionId = args.DefinitionId;
-        _dispatcher.TryEnqueue(() =>
+        _dispatcher.TryEnqueue(async () =>
         {
             Log.Logger()?.ReportInfo("DashboardView", $"WidgetDefinitionDeleted {definitionId}");
             foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
             {
                 Log.Logger()?.ReportInfo("DashboardView", $"Remove widget {widgetToRemove.Widget.Id}");
                 PinnedWidgets.Remove(widgetToRemove);
+
+                // The widget definition is gone, so delete widgets with that definition.
+                await widgetToRemove.Widget.DeleteAsync();
             }
         });
 
@@ -529,7 +545,7 @@ public partial class DashboardView : ToolPage
 
             // Set the original size on the new widget and add it to the list.
             await newWidget.SetSizeAsync(originalSize);
-            InsertWidgetInPinnedWidgets(newWidget, originalSize, index);
+            await InsertWidgetInPinnedWidgetsAsync(newWidget, originalSize, index);
         }
 
         widgetViewModel.IsInEditMode = false;
