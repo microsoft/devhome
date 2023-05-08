@@ -1,15 +1,30 @@
-trigger: none
-pr: none
-
-pool:
-  vmImage: 'windows-latest'
-
-steps:
+jobs:
+- job: Localization
+  dependsOn: []
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - task: AzureKeyVault@1
+    inputs:
+      azureSubscription: 'DevHomeAzureServiceConnection'
+      KeyVaultName: 'DevHomeKeyVault'
+      SecretsFilter: 'GitHubPAT'
+      RunAsPreJob: false
+      
 - checkout: self
-  clean: true
-  submodules: false
-  fetchDepth: 1 # Don't need a deep checkout for loc files!
   persistCredentials: true
+
+- task: powershell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $repo = "https://$(GitHubPAT)@github.com/microsoft/DevHome.git"
+      git remote add mirror $repo
+      git remote
+
+      $source = "${{ parameters.SourceBranch }}"
+      git fetch mirror "user/ejohn/initLocPipeline"
+      git pull mirror "user/ejohn/initLocPipeline"
 
 - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
   displayName: Download Localization Files
@@ -41,7 +56,7 @@ steps:
       git add *.resw
       git add *.resx
       git commit --message "Updating loc files"
-      git push
+      git push mirror
 
 # Saving one of these makes it really easy to inspect the loc output...
 - powershell: 'tar czf LocOutput.tar.gz LocOutput'
