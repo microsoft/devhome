@@ -1,2 +1,4 @@
 ﻿CoRegisterClassObject
 CoRevokeClassObject
+MEMORYSTATUSEX
+GlobalMemoryStatusEx

@@ -96,6 +96,34 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
+                  <Definition Id="System_Memory"
+                      DisplayName="Microsoft System Memory"
+                      Description="Microsoft System Memory Widget Description"
+                      AllowMultiple="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="ProviderAssets\Counting_Icon.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="ProviderAssets\Counting_Screenshot.png" DisplayAltText="For accessibility" />
+                      </Screenshots>
+                      <DarkMode>
+                        <!-- DarkMode and LightMode are optional -->
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
                 </Definitions>
               </WidgetProvider>
             </uap3:Properties>
