@@ -2,9 +2,13 @@
   {
     "NameResourceKey": "mockTitle_1",
     "DescriptionResourceKey": "mockDescription_1",
-    "WinGetPackageIds": [
-      "mock1",
-      "mock2"
+    "WinGetPackages": [
+      {
+        "Id": "mock1"
+      },
+      {
+        "Id": "mock2"
+      }
     ]
   }
 ]

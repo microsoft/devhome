@@ -25,7 +25,8 @@
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Notepad++.Notepad++.ico"
       },
       {
-        "Id": "Microsoft.SQLServerManagementStudio"
+        "Id": "Microsoft.SQLServerManagementStudio",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.SQLServerManagementStudio.ico"
       },
       {
         "Id": "Microsoft.PowerToys",
@@ -60,26 +61,32 @@
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Docker.DockerDesktop.ico"
       },
       {
-        "Id": "PuTTY.PuTTY"
+        "Id": "PuTTY.PuTTY",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/PuTTY.PuTTY.ico"
       },
       {
-        "Id": "Unity.Unity.2022"
+        "Id": "Unity.Unity.2022",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Unity.Unity.2022.ico"
       },
       {
-        "Id": "Orwell.Dev-C++"
+        "Id": "Orwell.Dev-C++",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Orwell.Dev-C++.ico"
       },
       {
-        "Id": "Codeblocks.Codeblocks"
+        "Id": "Codeblocks.Codeblocks",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Codeblocks.Codeblocks.ico"
       },
       {
-        "Id": "SublimeHQ.SublimeText.4"
+        "Id": "SublimeHQ.SublimeText.4",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/SublimeHQ.SublimeText.4.ico"
       },
       {
         "Id": "vim.vim",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/vim.vim.ico"
       },
       {
-        "Id": "Postman.Postman"
+        "Id": "Postman.Postman",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Postman.Postman.ico"
       },
       {
         "Id": "GitHub.GitHubDesktop",
