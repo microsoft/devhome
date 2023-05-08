@@ -36,6 +36,11 @@ internal class DataManager : IDisposable
         systemData.NetStats.GetData();
     }
 
+    private void GetGPUData()
+    {
+        systemData.GPUStats.GetData();
+    }
+
     private void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         lock (systemData)
@@ -45,6 +50,9 @@ internal class DataManager : IDisposable
 
             // network
             GetNetworkData();
+
+            // gpu
+            GetGPUData();
         }
 
         updateAction();
@@ -58,6 +66,11 @@ internal class DataManager : IDisposable
     internal NetworkStats GetNetworkStats()
     {
         return systemData.NetStats;
+    }
+
+    internal GPUStats GetGPUStats()
+    {
+        return systemData.GPUStats;
     }
 
     public void Start()

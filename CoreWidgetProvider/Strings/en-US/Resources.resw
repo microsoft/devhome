@@ -135,4 +135,19 @@
   <data name="NetworkUsage_Widget_Template.Ethernet_Heading" xml:space="preserve">
     <value>Ethernet</value>
   </data>
+  <data name="GPUUsage_Widget_Template.GPU_Usage" xml:space="preserve">
+    <value>GPU usage</value>
+  </data>
+  <data name="GPUUsage_Widget_Template.GPU_Name" xml:space="preserve">
+    <value>GPU name</value>
+  </data>
+  <data name="GPUUsage_Widget_Template.GPU_Temperature" xml:space="preserve">
+    <value>GPU temperature</value>
+  </data>
+  <data name="GPUUsage_Widget_Template.Previous_GPU" xml:space="preserve">
+    <value>Previous GPU</value>
+  </data>
+  <data name="GPUUsage_Widget_Template.Next_GPU" xml:space="preserve">
+    <value>Next GPU</value>
+  </data>
 </root>
