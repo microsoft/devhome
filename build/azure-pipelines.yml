@@ -154,6 +154,39 @@ stages:
             artifactName: 'SdkNugetPackage'
             targetPath: '$(Pipeline.Workspace)\sdkArtifacts\'
 
+        - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
+          displayName: Download Localization Files
+          inputs:
+            teamId: 71220
+            authId: $(TouchdownAppId)
+            authKey: $(TouchdownAppKey)
+            resourceFilePath: |
+              **\en-US\*.resw
+            outputDirectoryRoot: LocOutput
+            localizationTarget: false
+            appendRelativeDir: true
+            pseudoSetting: Included
+
+        - task: PowerShell@2
+          displayName: Move Loc files one level up
+          inputs:
+            targetType: inline
+            script: >-
+              $Files = Get-ChildItem . -R -Filter 'Resources.resw' | ? FullName -Like '*en-US\*\Resources.resw'
+
+              $Files | % { Move-Item -Verbose $_.Directory $_.Directory.Parent.Parent -EA:Ignore }
+            pwsh: true
+
+        # Saving one of these makes it really easy to inspect the loc output...
+        - powershell: 'tar czf LocOutput.tar.gz LocOutput'
+          displayName: 'Archive Loc Output for Submission'
+
+        - task: PublishBuildArtifacts@1
+          displayName: 'Publish Artifact: LocOutput'
+          inputs:
+            PathtoPublish: LocOutput.tar.gz
+            ArtifactName: LocOutput
+
         - task: PowerShell@2
           displayName: Build Dev Home
           inputs:
