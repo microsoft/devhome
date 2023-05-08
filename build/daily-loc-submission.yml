@@ -57,13 +57,14 @@ jobs:
   - task: CmdLine@2
     inputs:
       script: |
-        $repo = "https://$(GitHubPAT)@github.com/microsoft/DevHome.git"
         git add *.resw
         git add *.resx
+        git config --global user.email "DevHomeLocalization@microsoft.com"
+        git config --global user.name "Microsoft"
         git commit --message "Updating loc files"
         git status
         git branch
-        git push $repo
+        git push "https://$(GitHubPAT)@github.com/microsoft/DevHome.git"
 
   # Saving one of these makes it really easy to inspect the loc output...
   - powershell: 'tar czf LocOutput.tar.gz LocOutput'
