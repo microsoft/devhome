@@ -23,6 +23,7 @@
                     <Color x:Key="CardBackground">#fdfdfd</Color>
                     <Color x:Key="ButtonAccentBackground">#6659CA</Color>
                     <Color x:Key="ButtonAccentForeground">#FFFFFF</Color>
+                    <Color x:Key="LearnMoreForeground">#005FB8</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <x:String x:Key="BackgroundFront">/Assets/WhatsNewPage/DarkTheme/BackgroundFront.png</x:String>
@@ -32,6 +33,7 @@
                     <Color x:Key="CardBackground">#323232</Color>
                     <Color x:Key="ButtonAccentBackground">#47E1DA</Color>
                     <Color x:Key="ButtonAccentForeground">#000000</Color>
+                    <Color x:Key="LearnMoreForeground">#60CDFF</Color>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
@@ -174,7 +176,7 @@
 
                                     <HyperlinkButton
                                         Content="{x:Bind Link}"
-                                        Foreground="#60CDFF"
+                                        Foreground="{ThemeResource LearnMoreForeground}"
                                         NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
                                         Padding="0"
                                         Margin="0"></HyperlinkButton>
