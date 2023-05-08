@@ -1,3 +1,8 @@
+parameters:
+  - name: TargetBranch
+    type: string
+    default: "user/ejohn/initLocPipeline"
+
 jobs:
 - job: Localization
   dependsOn: []
@@ -22,9 +27,8 @@ jobs:
         git remote add mirror $repo
         git remote
 
-        $source = "${{ parameters.SourceBranch }}"
-        git fetch mirror "user/ejohn/initLocPipeline"
-        git pull mirror "user/ejohn/initLocPipeline"
+        git fetch mirror "${{ parameters.TargetBranch }}"
+        git pull mirror "${{ parameters.TargetBranch }}"
 
   - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
     displayName: Download Localization Files
