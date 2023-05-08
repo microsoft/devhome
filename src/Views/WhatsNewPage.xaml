@@ -83,6 +83,7 @@
                             Margin="0 16"
                             MinWidth="258"
                             Background="{ThemeResource ButtonAccentBackground}"
+                            Foreground="{ThemeResource ButtonAccentForeground}"
                             Click="MachineConfigButton_Click"
                             x:Uid="WhatsNewPage_GetStartedButton" />
                         
@@ -100,21 +101,21 @@
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDashCard"
                             x:Key="WhatsNewPage_DevDashCard"
-                            Image=""
+                            Image="/Assets/WhatsNewPage/DarkTheme/DashboardHero.png"
                             PageKey="DevHome.Dashboard.ViewModels.DashboardViewModel"
                             Priority="0" />
 
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevIdCard"
                             x:Key="WhatsNewPage_DevIdCard"
-                            Image=""
+                            Image="/Assets/WhatsNewPage/DarkTheme/DevIdHero.png"
                             PageKey="DevHome.Settings.ViewModels.AccountsViewModel"
                             Priority="1" />
                         
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDriveCard"
                             x:Key="WhatsNewPage_DevDriveCard"
-                            Image=""
+                            Image="/Assets/WhatsNewPage/DarkTheme/DevDriveHero.png"
                             PageKey="ms-settings:disksandvolumes"
                             Priority="2" />
                         
