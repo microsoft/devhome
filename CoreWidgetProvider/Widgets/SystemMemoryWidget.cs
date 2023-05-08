@@ -33,6 +33,29 @@ internal class SystemMemoryWidget : CoreWidget, IDisposable
         return ((int)(value * 100)).ToString(CultureInfo.InvariantCulture) + "%";
     }
 
+    private string MemUlongToString(ulong memBytes)
+    {
+        if (memBytes < 1024)
+        {
+            return memBytes.ToString(CultureInfo.InvariantCulture) + " B";
+        }
+
+        var memSize = memBytes / 1024.0;
+        if (memSize < 1024)
+        {
+            return memSize.ToString("0.00", CultureInfo.InvariantCulture) + " kB";
+        }
+
+        memSize /= 1024;
+        if (memSize < 1024)
+        {
+            return memSize.ToString("0.00", CultureInfo.InvariantCulture) + " MB";
+        }
+
+        memSize /= 1024;
+        return memSize.ToString("0.00", CultureInfo.InvariantCulture) + " GB";
+    }
+
     public override void LoadContentData()
     {
         Log.Logger()?.ReportDebug(Name, ShortId, "Getting Data for Pull Requests");
@@ -43,14 +66,14 @@ internal class SystemMemoryWidget : CoreWidget, IDisposable
 
             var currentData = dataManager.GetMemoryStats();
 
-            memoryData.Add("allMem", currentData.AllMem);
-            memoryData.Add("usedMem", currentData.UsedMem);
+            memoryData.Add("allMem", MemUlongToString(currentData.AllMem));
+            memoryData.Add("usedMem", MemUlongToString(currentData.UsedMem));
             memoryData.Add("memUsage", FloatToPercentString(currentData.MemUsage));
-            memoryData.Add("commitedMem", currentData.MemCommited);
-            memoryData.Add("commitedLimitMem", currentData.MemCommitLimit);
-            memoryData.Add("cachedMem", currentData.MemCached);
-            memoryData.Add("pagedPoolMem", currentData.MemPagedPool);
-            memoryData.Add("nonPagedPoolMem", currentData.MemNonPagedPool);
+            memoryData.Add("commitedMem", MemUlongToString(currentData.MemCommited));
+            memoryData.Add("commitedLimitMem", MemUlongToString(currentData.MemCommitLimit));
+            memoryData.Add("cachedMem", MemUlongToString(currentData.MemCached));
+            memoryData.Add("pagedPoolMem", MemUlongToString(currentData.MemPagedPool));
+            memoryData.Add("nonPagedPoolMem", MemUlongToString(currentData.MemNonPagedPool));
             memoryData.Add("memGraphUrl", dataManager.CreateMemImageUrl());
 
             DataState = WidgetDataState.Okay;
