@@ -56,13 +56,6 @@ public static class StringResourceKey
     public static readonly string InstalledPackage = nameof(InstalledPackage);
     public static readonly string InstalledPackageReboot = nameof(InstalledPackageReboot);
     public static readonly string InstallingPackage = nameof(InstallingPackage);
-    public static readonly string InstallPackageErrorBlockedByPolicy = nameof(InstallPackageErrorBlockedByPolicy);
-    public static readonly string InstallPackageErrorDownloadError = nameof(InstallPackageErrorDownloadError);
-    public static readonly string InstallPackageErrorInternalError = nameof(InstallPackageErrorInternalError);
-    public static readonly string InstallPackageErrorInstallError = nameof(InstallPackageErrorInstallError);
-    public static readonly string InstallPackageErrorNoApplicableInstallers = nameof(InstallPackageErrorNoApplicableInstallers);
-    public static readonly string InstallPackageError = nameof(InstallPackageError);
-    public static readonly string InstallPackageErrorUnknownError = nameof(InstallPackageErrorUnknownError);
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
     public static readonly string PackagesCount = nameof(PackagesCount);
@@ -93,6 +86,7 @@ public static class StringResourceKey
     public static readonly string CloneRepoCreating = nameof(CloneRepoCreating);
     public static readonly string CloneRepoCreated = nameof(CloneRepoCreated);
     public static readonly string CloneRepoError = nameof(CloneRepoError);
+    public static readonly string CloneRepoErrorForActionCenter = nameof(CloneRepoErrorForActionCenter);
     public static readonly string CloneRepoRestart = nameof(CloneRepoRestart);
 
     // Configure task loading screen messages
@@ -133,4 +127,33 @@ public static class StringResourceKey
     public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);
     public static readonly string UrlValidationNotFound = nameof(UrlValidationNotFound);
     public static readonly string UrlValidationRepoAlreadyAdded = nameof(UrlValidationRepoAlreadyAdded);
+
+    // Install errors
+    public static readonly string InstallPackageError = nameof(InstallPackageError);
+    public static readonly string InstallPackageErrorMessagePackageInUse = nameof(InstallPackageErrorMessagePackageInUse);
+    public static readonly string InstallPackageErrorMessageInstallInProgress = nameof(InstallPackageErrorMessageInstallInProgress);
+    public static readonly string InstallPackageErrorMessageFileInUse = nameof(InstallPackageErrorMessageFileInUse);
+    public static readonly string InstallPackageErrorMessageMissingDependency = nameof(InstallPackageErrorMessageMissingDependency);
+    public static readonly string InstallPackageErrorMessageDiskFull = nameof(InstallPackageErrorMessageDiskFull);
+    public static readonly string InstallPackageErrorMessageInsufficientMemory = nameof(InstallPackageErrorMessageInsufficientMemory);
+    public static readonly string InstallPackageErrorMessageNoNetwork = nameof(InstallPackageErrorMessageNoNetwork);
+    public static readonly string InstallPackageErrorMessageContactSupport = nameof(InstallPackageErrorMessageContactSupport);
+    public static readonly string InstallPackageErrorMessageRebootRequiredToFinish = nameof(InstallPackageErrorMessageRebootRequiredToFinish);
+    public static readonly string InstallPackageErrorMessageRebootRequiredToInstall = nameof(InstallPackageErrorMessageRebootRequiredToInstall);
+    public static readonly string InstallPackageErrorMessageRebootInitiated = nameof(InstallPackageErrorMessageRebootInitiated);
+    public static readonly string InstallPackageErrorMessageCancelledByUser = nameof(InstallPackageErrorMessageCancelledByUser);
+    public static readonly string InstallPackageErrorMessageAlreadyInstalled = nameof(InstallPackageErrorMessageAlreadyInstalled);
+    public static readonly string InstallPackageErrorMessageDowngrade = nameof(InstallPackageErrorMessageDowngrade);
+    public static readonly string InstallPackageErrorMessageBlockedByPolicy = nameof(InstallPackageErrorMessageBlockedByPolicy);
+    public static readonly string InstallPackageErrorMessageDependencies = nameof(InstallPackageErrorMessageDependencies);
+    public static readonly string InstallPackageErrorMessagePackageInUseByApplication = nameof(InstallPackageErrorMessagePackageInUseByApplication);
+    public static readonly string InstallPackageErrorMessageInvalidParameter = nameof(InstallPackageErrorMessageInvalidParameter);
+    public static readonly string InstallPackageErrorMessageSystemNotSupported = nameof(InstallPackageErrorMessageSystemNotSupported);
+    public static readonly string InstallPackageErrorMessageSystemMessage = nameof(InstallPackageErrorMessageSystemMessage);
+    public static readonly string InstallPackageErrorBlockedByPolicy = nameof(InstallPackageErrorBlockedByPolicy);
+    public static readonly string InstallPackageErrorDownloadError = nameof(InstallPackageErrorDownloadError);
+    public static readonly string InstallPackageErrorInternalError = nameof(InstallPackageErrorInternalError);
+    public static readonly string InstallPackageErrorNoApplicableInstallers = nameof(InstallPackageErrorNoApplicableInstallers);
+    public static readonly string InstallPackageErrorUnknownErrorWithErrorCode = nameof(InstallPackageErrorUnknownErrorWithErrorCode);
+    public static readonly string InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode = nameof(InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode);
 }

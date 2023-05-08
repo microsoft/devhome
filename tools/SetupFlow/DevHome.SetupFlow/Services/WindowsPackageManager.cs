@@ -4,11 +4,16 @@
 using System;
 using System.Threading.Tasks;
 using DevHome.Services;
+using DevHome.SetupFlow.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
+using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
+using Namotion.Reflection;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.Services;
 
@@ -17,6 +22,7 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public class WindowsPackageManager : IWindowsPackageManager
 {
+    public const int AppInstallerErrorFacility = 0xA15;
     private const string AppInstallerProductId = "9NBLGGH4NNS1";
 
     private readonly WindowsPackageManagerFactory _wingetFactory;
@@ -106,18 +112,23 @@ public class WindowsPackageManager : IWindowsPackageManager
 
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package install for {package.Id}");
         var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options).AsTask();
+        var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
+
+        // Contract version 4
+        var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK);
 
         Log.Logger?.ReportInfo(
             Log.Component.AppManagement,
-            $"Install result: Status={installResult.Status}, InstallerErrorCode={installResult.InstallerErrorCode}, RebootRequired={installResult.RebootRequired}");
+            $"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
 
         if (installResult.Status != InstallResultStatus.Ok)
         {
-            throw new InstallPackageException(installResult.Status, installResult.InstallerErrorCode);
+            throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
         }
 
         return new ()
         {
+            ExtendedErrorCode = extendedErrorCode,
             RebootRequired = installResult.RebootRequired,
         };
     }

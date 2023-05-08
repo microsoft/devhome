@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Models;
@@ -14,6 +15,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
+using DevHome.TelemetryEvents;
 using Microsoft.Extensions.Hosting;
 using Windows.System;
 
@@ -92,6 +94,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void HideBanner()
     {
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("MainPage_HideLearnMoreBanner_Event");
         ShowBanner = false;
     }
 
@@ -120,6 +123,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartSetup(string flowTitle)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartFlow_Event", LogLevel.Measure, new StartFlowEvent(flowTitle));
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting end-to-end setup");
 
         var taskGroups = new List<ISetupTaskGroup>
@@ -147,6 +151,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartRepoConfig(string flowTitle)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartFlow_Event", LogLevel.Measure, new StartFlowEvent("RepoConfig"));
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for repo config");
         StartSetupFlowForTaskGroups(
             flowTitle,
@@ -160,6 +165,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void StartAppManagement(string flowTitle)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartFlow_Event", LogLevel.Measure, new StartFlowEvent("AppManagement"));
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for app management");
         StartSetupFlowForTaskGroups(flowTitle,  _host.GetService<AppManagementTaskGroup>());
     }
@@ -184,6 +190,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task StartConfigurationFileAsync()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("MainPage_StartFlow_Event", LogLevel.Measure, new StartFlowEvent("ConfigurationFile"));
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
         if (await configFileSetupFlow.PickConfigurationFileAsync())
         {

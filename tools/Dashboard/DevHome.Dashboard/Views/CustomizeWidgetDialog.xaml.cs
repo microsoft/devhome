@@ -73,7 +73,9 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
 
     private void HideDialog()
     {
+        Application.Current.GetService<WindowEx>().Closed -= OnMainWindowClosed;
         _widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+
         this.Hide();
     }
 

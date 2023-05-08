@@ -3,8 +3,11 @@
 
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
+using DevHome.Common.TelemetryEvents.RepoToolEvents;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.Telemetry;
 
 namespace DevHome.SetupFlow.ViewModels;
 
