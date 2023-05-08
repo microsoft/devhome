@@ -367,7 +367,7 @@
     <value>Introducing Dev Home</value>
   </data>
   <data name="WhatsNewPage_DevDriveCard.Description" xml:space="preserve">
-    <value>Use the streamlined end-to-end setup to clone multiple repositories and install all the applications you need.</value>
+    <value>Optimize performance with a Dev Drive—Dev Home sets it up for you.</value>
   </data>
   <data name="WhatsNewPage_DevDriveCard.Title" xml:space="preserve">
     <value>Create a Dev Drive</value>
@@ -428,6 +428,9 @@
   </data>
   <data name="WhatsNewPage_DevDriveCard.Button" xml:space="preserve">
     <value>Create Dev Drive</value>
+  </data>
+  <data name="WhatsNewPage_DevDriveCard.Link" xml:space="preserve">
+    <value>Learn more</value>
   </data>
   <data name="WhatsNewPage_DevIdCard.Button" xml:space="preserve">
     <value>Connect accounts</value>

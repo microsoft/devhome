@@ -33,4 +33,9 @@ public class WhatsNewCard
     {
         get; set;
     }
+
+    public string? Link
+    {
+        get; set;
+    }
 }
