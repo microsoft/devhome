@@ -11,8 +11,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <!-- Show `Undo` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
-            <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE7A7;" FalseValue="&#xE109;" />
+            <!-- Show `RevToggleKey` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
+            <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE845;" FalseValue="&#xE109;" />
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
             <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
 

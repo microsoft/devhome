@@ -5,10 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents.RepoToolEvents;
+using DevHome.Common.TelemetryEvents.RepoToolEvents.EditDialogEvents;
+using DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.TaskGroups;
@@ -58,6 +62,9 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Saving cloning information to task group");
         CloneTasks.Clear();
+
+        List<FinalRepoResult> allAddedRepos = new ();
+
         foreach (var cloningInformation in cloningInformations)
         {
             // if the repo was added via URL.
@@ -77,6 +84,19 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
             }
 
             CloneTasks.Add(task);
+
+            // Perform telemetry work.
+            var providerName = cloningInformation.ProviderName;
+            var addKind = cloningInformation.OwningAccount == null ? AddKind.URL : AddKind.Account;
+            var cloneLocationKind = CloneLocationKind.LocalPath;
+            if (cloningInformation.CloneToExistingDevDrive || cloningInformation.CloneToDevDrive)
+            {
+                cloneLocationKind = CloneLocationKind.DevDrive;
+            }
+
+            allAddedRepos.Add(new FinalRepoResult(providerName, addKind, cloneLocationKind));
         }
+
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AllReposAdded_Event", LogLevel.Measure, new RepoToolFinalReposToAddEvent(allAddedRepos));
     }
 }

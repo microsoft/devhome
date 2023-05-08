@@ -5,12 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.RepoToolEvents;
+using DevHome.Common.TelemetryEvents.RepoToolEvents.EditDialogEvents;
+using DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.SetupFlow.ViewModels;
