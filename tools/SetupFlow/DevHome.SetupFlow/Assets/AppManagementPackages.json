@@ -3,30 +3,92 @@
   {
     "NameResourceKey": "PopularAppsTitle",
     "DescriptionResourceKey": "PopularAppsDescription",
-    "WinGetPackageIds": [
-      "Microsoft.VisualStudio.2022.Community",
-      "Microsoft.VisualStudioCode",
-      "Microsoft.PowerShell",
-      "Git.Git",
-      "Notepad++.Notepad++",
-      "Microsoft.SQLServerManagementStudio",
-      "Microsoft.PowerToys",
-      "7zip.7zip",
-      "Google.AndroidStudio",
-      "JetBrains.IntelliJIDEA.Community",
-      "JetBrains.PyCharm.Community",
-      "Python.Python.3.11",
-      "Microsoft.DotNet.SDK.7",
-      "Docker.DockerDesktop",
-      "PuTTY.PuTTY",
-      "Unity.Unity.2022",
-      "Orwell.Dev-C++",
-      "Codeblocks.Codeblocks",
-      "SublimeHQ.SublimeText.4",
-      "vim.vim",
-      "Postman.Postman",
-      "GitHub.GitHubDesktop",
-      "OpenJS.NodeJS"
+    "WinGetPackages": [
+      {
+        "Id": "Microsoft.VisualStudio.2022.Community",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.VisualStudio.2022.Community.ico"
+      },
+      {
+        "Id": "Microsoft.VisualStudioCode",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.VisualStudioCode.ico"
+      },
+      {
+        "Id": "Microsoft.PowerShell",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.PowerShell.ico"
+      },
+      {
+        "Id": "Git.Git",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Git.Git.ico"
+      },
+      {
+        "Id": "Notepad++.Notepad++",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Notepad++.Notepad++.ico"
+      },
+      {
+        "Id": "Microsoft.SQLServerManagementStudio"
+      },
+      {
+        "Id": "Microsoft.PowerToys",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.PowerToys.ico"
+      },
+      {
+        "Id": "7zip.7zip",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/7zip.7zip.ico"
+      },
+      {
+        "Id": "Google.AndroidStudio",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Google.AndroidStudio.ico"
+      },
+      {
+        "Id": "JetBrains.IntelliJIDEA.Community",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/JetBrains.IntelliJIDEA.Community.ico"
+      },
+      {
+        "Id": "JetBrains.PyCharm.Community",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/JetBrains.PyCharm.Community.ico"
+      },
+      {
+        "Id": "Python.Python.3.11",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Python.Python.3.11.ico"
+      },
+      {
+        "Id": "Microsoft.DotNet.SDK.7",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.DotNet.SDK.7.ico"
+      },
+      {
+        "Id": "Docker.DockerDesktop",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Docker.DockerDesktop.ico"
+      },
+      {
+        "Id": "PuTTY.PuTTY"
+      },
+      {
+        "Id": "Unity.Unity.2022"
+      },
+      {
+        "Id": "Orwell.Dev-C++"
+      },
+      {
+        "Id": "Codeblocks.Codeblocks"
+      },
+      {
+        "Id": "SublimeHQ.SublimeText.4"
+      },
+      {
+        "Id": "vim.vim",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/vim.vim.ico"
+      },
+      {
+        "Id": "Postman.Postman"
+      },
+      {
+        "Id": "GitHub.GitHubDesktop",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/GitHub.GitHubDesktop.ico"
+      },
+      {
+        "Id": "OpenJS.NodeJS",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/OpenJS.NodeJS.ico"
+      }
     ]
   }
 ]
