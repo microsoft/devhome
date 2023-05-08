@@ -54,8 +54,9 @@ jobs:
         $Files | % { Move-Item -Verbose $_.Directory $_.Directory.Parent.Parent -EA:Ignore }
       pwsh: true
 
-  - task: CmdLine@2
+  - task: powershell@2
     inputs:
+      targetType: 'inline'
       script: |
         git add *.resw
         git add *.resx
