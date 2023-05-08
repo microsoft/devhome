@@ -9,15 +9,19 @@ internal class SystemData : IDisposable
 
     public NetworkStats NetStats { get; set; }
 
+    public CPUStats CpuStats { get; set; }
+
     public SystemData()
     {
         MemStats = new MemoryStats();
         NetStats = new NetworkStats();
+        CpuStats = new CPUStats();
     }
 
     public void Dispose()
     {
         MemStats.Dispose();
         NetStats.Dispose();
+        CpuStats.Dispose();
     }
 }

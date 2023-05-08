@@ -46,9 +46,12 @@
 
   <ItemGroup>
     <Content Include="Widgets\Templates\SystemMemoryTemplate.json">
-     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Widgets\Templates\SystemNetworkUsageTemplate.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Widgets\Templates\SystemCPUUsageTemplate.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
