@@ -137,11 +137,11 @@
     <comment>Dev Home abides by Microsoft Open Source guidance</comment>
   </data>
   <data name="Feedback_FeatureImprovement.Header" xml:space="preserve">
-    <value>Suggest a Feature</value>
+    <value>Suggest a feature</value>
     <comment>FeatureImprovement is to suggest a useful feature that the app does not currently have</comment>
   </data>
   <data name="Feedback_FeatureImprovement_Button.Content" xml:space="preserve">
-    <value>New Suggestion</value>
+    <value>New suggestion</value>
     <comment>Begin to fill out the feature request content dialog</comment>
   </data>
   <data name="Feedback_ReportBug_Internal.Description" xml:space="preserve">
@@ -157,7 +157,7 @@
     <comment>Tell us about an error that is happening</comment>
   </data>
   <data name="Feedback_ReportBug_Button.Content" xml:space="preserve">
-    <value>New Report</value>
+    <value>New report</value>
     <comment>Begin to fill out the report bug content dialog</comment>
   </data>
   <data name="Feedback_ReportBug_Dialog.CloseButtonText" xml:space="preserve">
@@ -169,7 +169,7 @@
     <comment>Navigate to the GitHub issue to see the issue form</comment>
   </data>
   <data name="Feedback_ReportBug_Dialog.Title" xml:space="preserve">
-    <value>Report a Bug</value>
+    <value>Report a bug</value>
     <comment>Tell us about an error</comment>
   </data>
   <data name="Feedback_ReportBug_ReproSteps.Header" xml:space="preserve">
@@ -233,7 +233,7 @@
     <comment>LocalizationTranslation means that there are words and language being translated that are incorrect</comment>
   </data>
   <data name="Feedback_LocalizationIssue_Button.Content" xml:space="preserve">
-    <value>New Report</value>
+    <value>New report</value>
     <comment>Begin to fill out the translation issue content dialog</comment>
   </data>
   <data name="Feedback_LocalizationIssue_Dialog.CloseButtonText" xml:space="preserve">
@@ -261,7 +261,7 @@
     <comment>Look at the guidance on security</comment>
   </data>
   <data name="Feedback_ReportSecurity.Header" xml:space="preserve">
-    <value>Report a Security Vulnerability</value>
+    <value>Report a security vulnerability</value>
     <comment>Tell us about potential security concerns</comment>
   </data>
   <data name="Feedback_ReportSecurity_Button.Content" xml:space="preserve">

@@ -63,7 +63,7 @@
     <comment>Navigation pane content</comment>
   </data>
   <data name="Settings_Preferences_Description" xml:space="preserve">
-    <value>Theme, on startup, get started content</value>
+    <value>Application theme</value>
     <comment>Body text description for a card than when clicked takes the user to the Preferences settings page</comment>
   </data>
   <data name="Settings_Preferences_Header" xml:space="preserve">
@@ -79,7 +79,7 @@
     <comment>Header for a card than when clicked takes the user to the Accounts settings page</comment>
   </data>
   <data name="Settings_Extensions_Description" xml:space="preserve">
-    <value>Add or remove, manage</value>
+    <value>Manage, add, or remove</value>
     <comment>Body text description for a card than when clicked takes the user to the Extensions settings page</comment>
   </data>
   <data name="Settings_Extensions_Header" xml:space="preserve">
@@ -87,7 +87,7 @@
     <comment>Header for a card than when clicked takes the user to the Extensions settings page</comment>
   </data>
   <data name="Settings_About_Description" xml:space="preserve">
-    <value>App info, Privacy statement, Terms of Use</value>
+    <value>App info, Privacy Policy, Terms of Use</value>
     <comment>Body text description for a card than when clicked takes the user to the About settings page</comment>
   </data>
   <data name="Settings_About_Header" xml:space="preserve">
@@ -113,7 +113,7 @@
     <value>TODO: Replace with your app description.</value>
   </data>
   <data name="SettingsPage_SourceCodeLink.Content" xml:space="preserve">
-    <value>Source Code</value>
+    <value>Source code</value>
   </data>
   <data name="SettingsPage_SourceCodeLink.NavigateUri" xml:space="preserve">
     <value>https://go.microsoft.com/fwlink/?linkid=2234396</value>
@@ -127,7 +127,7 @@
     <comment>URL</comment>
   </data>
   <data name="SettingsPage_ReleaseNotesLink.Content" xml:space="preserve">
-    <value>Release Notes</value>
+    <value>Release notes</value>
   </data>
   <data name="SettingsPage_ReleaseNotesLink.NavigateUri" xml:space="preserve">
     <value>https://go.microsoft.com/fwlink/?linkid=2234586</value>
@@ -141,10 +141,10 @@
     <comment>URL</comment>
   </data>
   <data name="Settings_Accounts_AddAccountButton.Content" xml:space="preserve">
-    <value>Add Account</value>
+    <value>Add account</value>
   </data>
   <data name="Settings_Accounts_AddAccount.Header" xml:space="preserve">
-    <value>Add Account</value>
+    <value>Add account</value>
   </data>
   <data name="Settings_Accounts_AfterLogoutContentDialog_Content" xml:space="preserve">
     <value>has successfully logged out of Dev Home.</value>
@@ -153,7 +153,7 @@
     <value>OK</value>
   </data>
   <data name="Settings_Accounts_AfterLogoutContentDialog_Title" xml:space="preserve">
-    <value>Logout Successful!</value>
+    <value>Logout successful!</value>
   </data>
   <data name="Settings_Accounts_ConfirmLogoutContentDialog_Content" xml:space="preserve">
     <value>Dev Home will no longer be able to access online resources that use this account.</value>
@@ -168,16 +168,16 @@
     <value>Are you sure?</value>
   </data>
   <data name="Settings_Accounts_LogoutButton.Content" xml:space="preserve">
-    <value>Sign Out</value>
+    <value>Sign out</value>
   </data>
   <data name="Settings_Accounts_NoProvidersContentDialog_Content" xml:space="preserve">
-    <value>Please install a Dev Home Plugin and restart Dev Home to add an account.</value>
+    <value>Please install a Dev Home extension and restart Dev Home to add an account.</value>
   </data>
   <data name="Settings_Accounts_NoProvidersContentDialog_PrimaryButtonText" xml:space="preserve">
     <value>OK</value>
   </data>
   <data name="Settings_Accounts_NoProvidersContentDialog_Title" xml:space="preserve">
-    <value>No Dev Home Plugins found!</value>
+    <value>No Dev Home extensions found!</value>
   </data>
   <data name="Settings_Header" xml:space="preserve">
     <value>Settings</value>
