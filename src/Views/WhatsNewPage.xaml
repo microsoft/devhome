@@ -23,9 +23,6 @@
                     <Color x:Key="ButtonAccentBackground">#6659CA</Color>
                     <Color x:Key="ButtonAccentForeground">#FFFFFF</Color>
                     <Color x:Key="LearnMoreForeground">#005FB8</Color>
-                    <DataTemplate x:Key="ItemImage" x:DataType="models:WhatsNewCard">
-                        <Image Source="{x:Bind LightThemeImage}"/>
-                    </DataTemplate>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <x:String x:Key="BackgroundFront">/Assets/WhatsNewPage/DarkTheme/BackgroundFront.png</x:String>
@@ -35,9 +32,6 @@
                     <Color x:Key="ButtonAccentBackground">#47E1DA</Color>
                     <Color x:Key="ButtonAccentForeground">#000000</Color>
                     <Color x:Key="LearnMoreForeground">#60CDFF</Color>
-                    <DataTemplate x:Key="ItemImage" x:DataType="models:WhatsNewCard">
-                        <Image Source="{x:Bind DarkThemeImage}"/>
-                    </DataTemplate>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
@@ -107,27 +101,26 @@
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDashCard"
                             x:Key="WhatsNewPage_DevDashCard"
-                            DarkThemeImage="/Assets/WhatsNewPage/DarkTheme/DashboardHero.png"
-                            LightThemeImage="/Assets/WhatsNewPage/LightTheme/DashboardHero.png"
+                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DashboardHero.png"
+                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DashboardHero.png"
                             PageKey="DevHome.Dashboard.ViewModels.DashboardViewModel"
                             Priority="0" />
 
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevIdCard"
                             x:Key="WhatsNewPage_DevIdCard"
-                            DarkThemeImage="/Assets/WhatsNewPage/DarkTheme/DevIdHero.png"
-                            LightThemeImage="/Assets/WhatsNewPage/LightTheme/DevIdHero.png"
+                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DevIdHero.png"
+                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevIdHero.png"
                             PageKey="DevHome.Settings.ViewModels.AccountsViewModel"
                             Priority="1" />
-                        
+
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDriveCard"
                             x:Key="WhatsNewPage_DevDriveCard"
-                            DarkThemeImage="/Assets/WhatsNewPage/DarkTheme/DevDriveHero.png"
-                            LightThemeImage="/Assets/WhatsNewPage/LightTheme/DevDriveHero.png"
+                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DevDriveHero.png"
+                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevDriveHero.png"
                             PageKey="ms-settings:disksandvolumes"
                             Priority="2" />
-                        
                     </muxc:ItemsRepeater.Resources>
 
                     <muxc:ItemsRepeater.Layout>
@@ -152,6 +145,18 @@
                                 Background="{ThemeResource CardBackground}"
                                 BorderBrush="{ThemeResource ControlElevationBorderBrush}"
                                 BorderThickness="{ThemeResource ExpanderBorderThickness}">
+                                <Grid.Resources>
+                                    <ResourceDictionary>
+                                        <ResourceDictionary.ThemeDictionaries>
+                                            <ResourceDictionary x:Key="Light">
+                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind LightThemeImage}" />
+                                            </ResourceDictionary>
+                                            <ResourceDictionary x:Key="Dark">
+                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind DarkThemeImage}" />
+                                            </ResourceDictionary>
+                                        </ResourceDictionary.ThemeDictionaries>
+                                    </ResourceDictionary>
+                                </Grid.Resources>
 
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -162,10 +167,10 @@
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
-                                <ContentControl
+                                <Image
                                     Grid.Row="0"
-                                    Content="{x:Bind}"
-                                    ContentTemplate="{ThemeResource ItemImage}"
+                                    Source="{ThemeResource ItemImage}"
+                                    HorizontalAlignment="Stretch"
                                     VerticalAlignment="Top"/>
 
                                 <StackPanel Grid.Row="1" Padding="15 0" >
