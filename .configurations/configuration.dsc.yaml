@@ -1,13 +1,12 @@
 # yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.1
 properties:
-  assertions:
+  resources:
     - resource: DeveloperMode
       directives:
         description: Enable Developer Mode
         module: Microsoft.Windows.DSC
       settings:
         Ensure: Present
-  resources:
     - resource: WinGetPackage
       id: vsPackage
       directives:
