@@ -50,19 +50,25 @@
 
         <!-- App installer update notification -->
         <InfoBar
+            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_AppInstallerUpdateInfoBar"
             Visibility="{x:Bind ViewModel.ShowAppInstallerUpdateNotification, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
             Severity="Warning"
             IsOpen="True"
-            Title="{x:Bind ViewModel.AppInstallerUpdateAvailableTitle}"
-            Message="{x:Bind ViewModel.AppInstallerUpdateAvailableMessage}"
             Margin="0,0,0,9"
             CloseButtonCommand="{x:Bind ViewModel.HideAppInstallerUpdateNotificationCommand}">
             <InfoBar.ActionButton>
                 <Button
-                    Content="{x:Bind ViewModel.AppInstallerUpdateAvailableUpdateButton}"
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_AppInstallerUpdateButton"
                     Click="UpdateAppInstallerButton_Click"
                     HorizontalAlignment="Right"/>
             </InfoBar.ActionButton>
+
+            <!-- Content dialog (visible when the InfoBar action button is clicked) -->
+            <ContentDialog
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_AppInstallerUpdateContentDialog"
+                Name="UpdateAppInstallerContentDialog"
+                PrimaryButtonCommand="{x:Bind ViewModel.UpdateAppInstallerCommand}"
+                DefaultButton="Primary"/>
         </InfoBar>
 
         <!-- Main content -->

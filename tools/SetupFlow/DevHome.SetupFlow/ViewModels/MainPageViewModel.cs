@@ -51,14 +51,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// </summary>
     public event EventHandler<(string, IList<ISetupTaskGroup>)> StartSetupFlow;
 
-    public string AppInstallerUpdateAvailableTitle => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableTitle);
-
-    public string AppInstallerUpdateAvailableMessage => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableMessage);
-
-    public string AppInstallerUpdateAvailableUpdateButton => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableUpdateButton);
-
-    public string AppInstallerUpdateAvailableCancelButton => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableCancelButton);
-
     public MainPageViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
@@ -216,16 +208,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task UpdateAppInstallerAsync()
     {
-        // Hide notification and attempt the update in the background.
-        // Update progress should be reflected in the store app (if successful)
         HideAppInstallerUpdateNotification();
-        if (await _wpm.StartAppInstallerUpdateAsync())
-        {
-            Log.Logger?.ReportInfo(Log.Component.MainPage, "AppInstaller update started");
-        }
-        else
-        {
-            Log.Logger?.ReportWarn(Log.Component.MainPage, "AppInstaller update did not start");
-        }
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Opening AppInstaller in the Store app");
+        await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?productid={WindowsPackageManager.AppInstallerProductId}"));
     }
 }
