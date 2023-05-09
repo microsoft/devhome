@@ -10,6 +10,10 @@ As the maintainer of this project, please make a few updates:
 - Understanding the security reporting process in SECURITY.MD
 - Remove this section from the README
 
+## Popular Apps
+
+This is currently a hard-coded list of applications that have been popular with developers on Windows. Popularity was determined by high levels of installation and usage. As this is a moment in time, we are not accepting submissions for this list. We’re looking to improve the experience with [Suggested Apps](https://github.com/microsoft/devhome/issues/375)so the list can be optimized for developers.
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
