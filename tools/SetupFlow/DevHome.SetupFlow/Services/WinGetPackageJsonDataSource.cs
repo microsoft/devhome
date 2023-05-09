@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
+using Windows.Storage;
+using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.Services;
 
@@ -18,6 +20,16 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 {
+    /// <summary>
+    /// Class for deserializing a JSON winget package
+    /// </summary>
+    private class JsonWinGetPackage
+    {
+        public string Id { get; set; }
+
+        public string Icon { get; set; }
+    }
+
     /// <summary>
     /// Class for deserializing a JSON package catalog with package ids from
     /// winget
@@ -28,7 +40,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 
         public string DescriptionResourceKey { get; set; }
 
-        public IList<string> WinGetPackageIds { get; set; }
+        public IList<JsonWinGetPackage> WinGetPackages { get; set; }
     }
 
     private readonly ISetupFlowStringResource _stringResource;
@@ -84,7 +96,16 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 
         try
         {
-            var packages = await GetPackagesAsync(jsonCatalog.WinGetPackageIds, id => id);
+            var packages = await GetPackagesAsync(
+                jsonCatalog.WinGetPackages,
+                package => package.Id,
+                async (package, appInfo) =>
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for JSON package {package.Id}");
+                var icon = await GetJsonApplicationIconAsync(appInfo);
+                package.LightThemeIcon = icon;
+                package.DarkThemeIcon = icon;
+            });
             if (packages.Any())
             {
                 return new PackageCatalog()
@@ -104,6 +125,32 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget catalog: {e.Message}");
         }
 
+        return null;
+    }
+
+    private async Task<IRandomAccessStream> GetJsonApplicationIconAsync(JsonWinGetPackage package)
+    {
+        try
+        {
+            if (!string.IsNullOrEmpty(package.Icon))
+            {
+                // Load icon from application assets
+                var iconFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(package.Icon));
+                var icon = await iconFile.OpenAsync(FileAccessMode.Read);
+
+                // Ensure stream is not empty to prevent rendering an empty image
+                if (icon.Size > 0)
+                {
+                    return icon;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get icon for JSON package {package.Id}", e);
+        }
+
+        Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No icon found for JSON package {package.Id}. A default one will be provided.");
         return null;
     }
 }
