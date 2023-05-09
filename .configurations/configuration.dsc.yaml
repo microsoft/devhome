@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.1
 properties:
   assertions:
-    - resource: OsVersion
+    - resource: DeveloperMode
       directives:
-        description: Verify min OS version requirement
+        description: Enable Developer Mode
         module: Microsoft.Windows.DSC
       settings:
-        MinVersion: 10.0.19041
+        Ensure: Present
   resources:
     - resource: WinGetPackage
       id: vsPackage
