@@ -447,6 +447,11 @@ public class SSHWalletWidget : WidgetImpl
             LoadContentData();
         }
 
+        if (!string.IsNullOrEmpty(ConfigFile) && FileWatcher == null)
+        {
+            SetupFileWatcher();
+        }
+
         LogCurrentState();
         UpdateWidget();
     }
