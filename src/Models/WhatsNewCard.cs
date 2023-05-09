@@ -21,7 +21,12 @@ public class WhatsNewCard
         get; set;
     }
 
-    public string? Image
+    public string? LightThemeImage
+    {
+        get; set;
+    }
+
+    public string? DarkThemeImage
     {
         get; set;
     }
