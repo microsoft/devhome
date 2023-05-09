@@ -365,7 +365,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <returns>Boolean where true will enable the save button and sale disables the button.</returns>
     private bool CanSave()
     {
-        return !FolderLocationError.HasValue && !DriveLetterError.HasValue && !FileNameAndSizeErrorList.Any();
+        return !(FolderLocationError.HasValue || DriveLetterError.HasValue || FileNameAndSizeErrorList.Any());
     }
 
     /// <summary>
@@ -414,7 +414,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// Shows the user all errors found after clicking the save button.
+    /// Shows the user all errors found after clicking the save button. The set of errors come from the
+    /// DevDriveManager, and this method matches the errors with the relevant UI element.
     /// </summary>
     public void ShowErrorInUI(ISet<DevDriveValidationResult> resultSet)
     {
@@ -481,7 +482,6 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     private void RefreshDriveLetterToSizeMapping()
     {
-        DriveLetterToSizeMapping.Clear();
         DriveLetterToSizeMapping = DriveInfo.GetDrives().ToDictionary(drive => drive.Name[0], drive => (ulong)drive.TotalFreeSpace);
     }
 
