@@ -67,13 +67,13 @@
     <comment>Shown in Widget, Tooltip text</comment>
   </data>
   <data name="SSH_Widget_Template.Name" xml:space="preserve">
-    <value>Microsoft SSH Wallet</value>
+    <value>SSH Wallet</value>
   </data>
   <data name="SSH_Widget_Template.Target" xml:space="preserve">
     <value>Local</value>
   </data>
   <data name="SSH_Widget_Template.ConfigFilePath" xml:space="preserve">
-    <value>Config File Path</value>
+    <value>Config file path</value>
   </data>
   <data name="SSH_Widget_Template.ConfigFileNotFound" xml:space="preserve">
     <value>File not found</value>
@@ -82,13 +82,13 @@
     <value>There are no hosts in this config file.</value>
   </data>
   <data name="SSH_Widget_Template.NumOfHosts" xml:space="preserve">
-    <value>Number Of Hosts Found</value>
+    <value>Number Of hosts found</value>
   </data>
   <data name="SSH_Widget_Template.Connect" xml:space="preserve">
     <value>Connect</value>
   </data>
   <data name="SSH_Widget_Template.ErrorProcessingConfigFile" xml:space="preserve">
-    <value>Processing Config File Failed</value>
+    <value>Processing config file failed</value>
   </data>
   <data name="Memory_Widget_Template.SystemMemory" xml:space="preserve">
     <value>System Memory</value>
