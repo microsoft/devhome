@@ -20,11 +20,25 @@
                     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
                     <converters:BoolToVisibilityConverter x:Key="BoolToInverseVisibilityConverter"  TrueValue="Collapsed" FalseValue="Visible" />
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
+                    <ControlTemplate x:Key="LinksTemplate">
+                        <StackPanel Orientation="Vertical" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
+                            <StackPanel.Resources>
+                                <Style TargetType="HyperlinkButton" BasedOn="{StaticResource TextBlockButtonStyle}"/>
+                            </StackPanel.Resources>
+                            <TextBlock
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_NextSteps"
+                                Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                Padding="0,20,0,25" />
+                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_SetUpAnotherProject" Command="{Binding ViewModel.GoToMainPageCommand}"/>
+                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDevHomeSettings" Command="{Binding ViewModel.GoToDevHomeSettingsCommand}"/>
+                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDeveloperSettingsInWindows" Command="{Binding ViewModel.GoToForDevelopersSettingsPageCommand}"/>
+                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_LearnMoreAboutDevHome" Command="{Binding ViewModel.LearnMoreCommand}"/>
+                        </StackPanel>
+                    </ControlTemplate>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-
 
     <Grid RowSpacing="5" >
         <Grid.RowDefinitions>
@@ -75,60 +89,65 @@
             </Button>
         </Grid>
 
-        <!-- Configuration unit results -->
-        <Grid
-            Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-            Grid.Row="2"
-            RowSpacing="20"
-            BorderBrush="{StaticResource DividerStrokeColorDefault}"
-            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" >
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <!-- Section header -->
-            <Grid Padding="0,20,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock
-                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Summary"
-                    Style="{ThemeResource BodyStrongTextBlockStyle}" />
-                <TextBlock
-                    Grid.Column="1"
-                    Text="{x:Bind ViewModel.ConfigurationUnitStats}"
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    Style="{ThemeResource CaptionTextBlockStyle}" />
+        <Grid Grid.Row="2" ColumnSpacing="25" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.77*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Configuration unit results -->
+            <Grid RowSpacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <!-- Section header -->
+                <Grid Padding="0,20,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Summary"
+                        Style="{ThemeResource BodyStrongTextBlockStyle}" />
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="{x:Bind ViewModel.ConfigurationUnitStats}"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        Style="{ThemeResource CaptionTextBlockStyle}" />
+                </Grid>
+                <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
+                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.ConfigurationUnitResults, Mode=OneWay}">
+                        <ItemsRepeater.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontFamily" Value="{StaticResource CascadiaMonoFontFamily}"/>
+                                <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <Setter Property="LineHeight" Value="20"/>
+                            </Style>
+                        </ItemsRepeater.Resources>
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
+                                <StackPanel>
+                                    <TextBlock Text="{x:Bind Title}"/>
+                                    <TextBlock Margin="20,0,0,0" Text="{x:Bind ApplyResult}">
+                                        <i:Interaction.Behaviors>
+                                            <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
+                                                <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}"/>
+                                            </ic:DataTriggerBehavior>
+                                            <ic:DataTriggerBehavior Binding="{x:Bind IsSkipped}" Value="True">
+                                                <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCautionBrush}"/>
+                                            </ic:DataTriggerBehavior>
+                                        </i:Interaction.Behaviors>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+                </ScrollViewer>
             </Grid>
-            <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.ConfigurationUnitResults, Mode=OneWay}">
-                    <ItemsRepeater.Resources>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="FontFamily" Value="{StaticResource CascadiaMonoFontFamily}"/>
-                            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}"/>
-                            <Setter Property="LineHeight" Value="20"/>
-                        </Style>
-                    </ItemsRepeater.Resources>
-                    <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
-                            <StackPanel>
-                                <TextBlock Text="{x:Bind Title}"/>
-                                <TextBlock Margin="20,0,0,0" Text="{x:Bind ApplyResult}">
-                                    <i:Interaction.Behaviors>
-                                        <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
-                                            <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}"/>
-                                        </ic:DataTriggerBehavior>
-                                        <ic:DataTriggerBehavior Binding="{x:Bind IsSkipped}" Value="True">
-                                            <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCautionBrush}"/>
-                                        </ic:DataTriggerBehavior>
-                                    </i:Interaction.Behaviors>
-                                </TextBlock>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsRepeater.ItemTemplate>
-                </ItemsRepeater>
-            </ScrollViewer>
+
+            <!-- Next steps section -->
+            <ContentControl Grid.Column="1" Template="{ThemeResource LinksTemplate}" />
         </Grid>
 
         <!-- Grid with information on tasks completed-->
@@ -145,10 +164,7 @@
             <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="30">
 
                 <!-- Number of apps and repos cloned.-->
-                <StackPanel Orientation="Horizontal" Spacing="20" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" HorizontalAlignment="Center" Padding="0, 15, 0, 0">
-                    <StackPanel.BorderBrush>
-                        <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
-                    </StackPanel.BorderBrush>
+                <StackPanel Orientation="Horizontal" Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" HorizontalAlignment="Center" Padding="0, 15, 0, 0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -169,25 +185,14 @@
                 <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" HorizontalAlignment="Center" Command="{x:Bind ViewModel.GoToDashboardCommand, Mode=OneWay}" />
 
                 <!-- Next steps section -->
-                <StackPanel Orientation="Vertical" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" Padding="0, 30, 0, 0">
-                    <StackPanel.BorderBrush>
-                        <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
-                    </StackPanel.BorderBrush>
-                    <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_SetUpAnotherProject" Command="{x:Bind ViewModel.GoToMainPageCommand}"/>
-                    <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDevHomeSettings" Command="{x:Bind ViewModel.GoToDevHomeSettingsCommand}"/>
-                    <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDeveloperSettingsInWindows" Command="{x:Bind ViewModel.GoToForDevelopersSettingsPageCommand}"/>
-                    <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_LearnMoreAboutDevHome" Command="{x:Bind ViewModel.LearnMoreCommand}"/>
-                </StackPanel>
+                <ContentControl Template="{ThemeResource LinksTemplate}" />
             </StackPanel>
 
             <!-- Displays the repos cloned and apps downloaded -->
             <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="30">
 
                 <!-- Repos cloned -->
-                <StackPanel Orientation="Vertical" Spacing="20" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" >
-                    <StackPanel.BorderBrush>
-                        <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
-                    </StackPanel.BorderBrush>
+                <StackPanel Orientation="Vertical" Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" >
                     <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
                     <ScrollViewer Grid.Column="1" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" Height="90">
                         <StackPanel>
@@ -217,10 +222,7 @@
                 </StackPanel>
 
                 <!-- Apps downloaded -->
-                <StackPanel Orientation="Vertical" Spacing="20" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
-                    <StackPanel.BorderBrush>
-                        <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource SystemChromeGrayColor}"/>
-                    </StackPanel.BorderBrush>
+                <StackPanel Orientation="Vertical" Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
                     <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
                     <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto"  Height="300">
                         <GridView
