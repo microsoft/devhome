@@ -1,0 +1,435 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>foobar</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>foobar</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>foobar</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>foobar</value>
+  </resheader>
+  <resheader name="version">
+    <value>foobar</value>
+  </resheader>
+  <resheader name="reader">
+    <value>foobar</value>
+  </resheader>
+  <resheader name="writer">
+    <value>foobar</value>
+  </resheader>
+  <data name="AppDisplayNameDev" xml:space="preserve">
+    <value>foobar</value>
+    <comment>The name of our application</comment>
+  </data>
+  <data name="AppDescription" xml:space="preserve">
+    <value>foobar</value>
+    <comment>The name of our application</comment>
+  </data>
+  <data name="AllFiles" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Text for a dropdown option in a file picker dialog to show all files in a directory</comment>
+  </data>
+  <data name="Feedback.Content" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="Feedback_OpenSource.Text" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Dev Home abides by Microsoft Open Source guidance</comment>
+  </data>
+  <data name="Feedback_FeatureImprovement.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>FeatureImprovement is to suggest a useful feature that the app does not currently have</comment>
+  </data>
+  <data name="Feedback_FeatureImprovement_Button.Content" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Begin to fill out the feature request content dialog</comment>
+  </data>
+  <data name="Feedback_ReportBug_Internal.Description" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Tell us about issues internally prior to May 1st</comment>
+  </data>
+  <data name="Feedback_ReportBug_Internal.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Tell us about an error that is happening using Feedback Hub</comment>
+  </data>
+  <data name="Feedback_ReportBug.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Tell us about an error that is happening</comment>
+  </data>
+  <data name="Feedback_ReportBug_Button.Content" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Begin to fill out the report bug content dialog</comment>
+  </data>
+  <data name="Feedback_ReportBug_Dialog.CloseButtonText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Close out of the content dialog</comment>
+  </data>
+  <data name="Feedback_ReportBug_Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Navigate to the GitHub issue to see the issue form</comment>
+  </data>
+  <data name="Feedback_ReportBug_Dialog.Title" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Tell us about an error</comment>
+  </data>
+  <data name="Feedback_ReportBug_ReproSteps.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>What to do to reproduce the error</comment>
+  </data>
+  <data name="Feedback_ReportBug_ReproSteps.PlaceholderText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Specific details on how to recreate the error</comment>
+  </data>
+  <data name="Feedback_ReportBug_ActualBehavior.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>What is currently happening</comment>
+  </data>
+  <data name="Feedback_ReportBug_ActualBehavior.PlaceholderText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>The incorrect behavior that was happening instead of the correct behavior</comment>
+  </data>
+  <data name="Feedback_ReportBug_ExpectedBehavior.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>The correct behavior that was supposed to have</comment>
+  </data>
+  <data name="Feedback_ReportBug_ExpectedBehavior.PlaceholderText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>What was supposed to happen</comment>
+  </data>
+  <data name="Feedback_ReportBug_IncludeExperimentInfo.Content" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Opt into including experimentation information into your issue template</comment>
+  </data>
+  <data name="Feedback_ReportBug_IncludePlugins.Content" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Opt into including information on plugins into your issue template</comment>
+  </data>
+  <data name="Feedback_ReportBug_IncludeSystemInfo.Content" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Opt into including the computer information into your issue template</comment>
+  </data>
+  <data name="Feedback_ReportBug_IssueTitle.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>SubjectTitle is the topic of the issue that the user wants to report</comment>
+  </data>
+  <data name="Feedback_ReportBug_IssueTitle.PlaceholderText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>The topic of the issue that the user wants to report</comment>
+  </data>
+  <data name="Feedback_BuildExtension.Description" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Documentation on how to create an extension</comment>
+  </data>
+  <data name="Feedback_BuildExtension.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Creating a new extension</comment>
+  </data>
+  <data name="Feedback_BuildExtension_Button.Content" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Description or instruction on building an extension</comment>
+  </data>
+  <data name="Feedback_LocalizationIssue.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>LocalizationTranslation means that there are words and language being translated that are incorrect</comment>
+  </data>
+  <data name="Feedback_LocalizationIssue_Button.Content" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Begin to fill out the translation issue content dialog</comment>
+  </data>
+  <data name="Feedback_LocalizationIssue_Dialog.CloseButtonText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Close out of the content dialog</comment>
+  </data>
+  <data name="Feedback_LocalizationIssue_Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Continue the report on the GitHub template</comment>
+  </data>
+  <data name="Feedback_LocalizationIssue_Dialog.Title" xml:space="preserve">
+    <value>foobar</value>
+    <comment>LocalizationTranslation means that there are words and language being translated that are incorrect</comment>
+  </data>
+  <data name="Feedback_LocalizationIssue_IssueTitle.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>SubjectTitle is the topic of the issue that the user wants to report.</comment>
+  </data>
+  <data name="Feedback_LocalizationIssue_IssueTitle.PlaceholderText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>The topic of the issue that the user wants to report</comment>
+  </data>
+  <data name="Feedback_ReportSecurity.Description" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Look at the guidance on security</comment>
+  </data>
+  <data name="Feedback_ReportSecurity.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Tell us about potential security concerns</comment>
+  </data>
+  <data name="Feedback_ReportSecurity_Button.Content" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Click on this link if you want to learn more and read the security policy. View is an action.</comment>
+  </data>
+  <data name="Feedback_LocalizationIssue_LanguageAffected.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>The language that is being incorrectly translated</comment>
+  </data>
+  <data name="Feedback_LocalizationIssue_LanguageAffected.PlaceholderText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Example of a language is German</comment>
+  </data>
+  <data name="Feedback_SuggestFeature_Description.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>More details on the feature that is suggested</comment>
+  </data>
+  <data name="Feedback_SuggestFeature_Description.PlaceholderText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>What is the feature supposed to do and how is it important</comment>
+  </data>
+  <data name="Feedback_SuggestFeature_Dialog.CloseButtonText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Exit out of the content dialog</comment>
+  </data>
+  <data name="Feedback_SuggestFeature_Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Go to the issue on the GitHub template</comment>
+  </data>
+  <data name="Feedback_SuggestFeature_Dialog.Title" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Tell us about a feature that you would like to see. FeatureImprovement is a feature that would be useful for the app to have that it doesn't currently have already.</comment>
+  </data>
+  <data name="Feedback_SuggestFeature_IssueTitle.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>SubjectTitle topic of the feature that the user wants to reccomend creating</comment>
+  </data>
+  <data name="Feedback_SuggestFeature_IssueTitle.PlaceholderText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>The topic of the feature that the user wants to reccomend creating</comment>
+  </data>
+  <data name="Feedback_SuggestFeature_Scenario.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>When you would apply the feature that you are suggesting</comment>
+  </data>
+  <data name="Feedback_SuggestFeature_Scenario.PlaceholderText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Explaining why we would need this feature</comment>
+  </data>
+  <data name="Feedback_SuggestFeature_SupportingInfo.Header" xml:space="preserve">
+    <value>foobar</value>
+    <comment>More information you can give on suggesting a feature</comment>
+  </data>
+  <data name="Feedback_SuggestFeature_SupportingInfo.PlaceholderText" xml:space="preserve">
+    <value>foobar</value>
+    <comment>What are some additional resoures about this feature</comment>
+  </data>
+  <data name="Feedback_DocumentationInfo_LinkText.Text" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Guidance on the project</comment>
+  </data>
+  <data name="Feedback_OpenSource_LinkText.Text" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Open source documentation guidance</comment>
+  </data>
+  <data name="Feedback_IssueGuidance.Text" xml:space="preserve">
+    <value>foobar</value>
+    <comment>View the guidance on reporting an issue</comment>
+  </data>
+  <data name="Feedback_Suggestion.Text" xml:space="preserve">
+    <value>foobar</value>
+    <comment>Prior to making a suggestion, look at our guidance</comment>
+  </data>
+  <data name="Feedback_Guidance_LinkText.Text" xml:space="preserve">
+    <value>foobar</value>
+    <comment>This is the link to the guidance we have</comment>
+  </data>
+  <data name="Feedback_Guidance_Link.NavigateUri" xml:space="preserve">
+    <value>foobar</value>
+    <comment>httpsyourissueguidancelinkgoeshere is a dummy issue guidance link that goes here. Will be replaced with an aka.ms link later.</comment>
+  </data>
+  <data name="Feedback_DocumentationInfo_Link.NavigateUri" xml:space="preserve">
+    <value>foobar</value>
+    <comment>httpsYourDocumentationGuidanceLinkGoesHere is is a dummy documentation link that goes here. Will be replaced with an aka.ms link later.</comment>
+  </data>
+  <data name="Feedback_BuildExtension_ButtonLink.NavigateUri" xml:space="preserve">
+    <value>foobar</value>
+    <comment>httpsYourBuildExtensionDocGoesHere is a dummy buliding extension documentation link that goes here. Will be replaced with an aka.ms link later.</comment>
+  </data>
+  <data name="Feedback_OpenSource_Link.NavigateUri" xml:space="preserve">
+    <value>foobar</value>
+    <comment>httpsYourOpenSourceLinkGoesHere is a dummy open source guidance link that goes here. Will be replaced with an aka.ms link later.</comment>
+  </data>
+  <data name="Feedback_ReportSecurity_ButtonLink.NavigateUri" xml:space="preserve">
+    <value>foobar</value>
+    <comment>httpsYourSecurityLinkGoesHere is a dummy security guidance link that goes here. Will be replaced with an aka.ms link later.</comment>
+  </data>
+  <data name="WhatsNewPage_DevIdCard_Description.Text" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNew.Content" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNewPage_ConfigMachineCard.Description" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNewPage_ConfigMachineCard.Title" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNewPage_Description.Text" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNewPage_DevDashCard.Description" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNewPage_DevDashCard.Title" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNewPage_DevIdCard_Title.Text" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNewPage_DevIdCard_Button.Content" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNewPage_DevPFeaturesCard.Description" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNewPage_DevPFeaturesCard.Title" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNewPage_NotifCard.Description" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNewPage_NotifCard.Title" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="InitializationPage_InfoDescription.Text" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="InitializationPage_InfoTitle.Text" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="InitializationPage_SettingsDescription.Text" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="InitializationPage_SettingsTitle.Text" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="InitializationPage_SetupDescription.Text" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="InitializationPage_SetupTitle.Text" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="InitializationPage_Title.Text" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="WhatsNewPage_Title.Text" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="Feedback_Title.Text" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="AppDisplayNameCanary" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+  <data name="AppDisplayNameStable" xml:space="preserve">
+    <value>foobar</value>
+  </data>
+</root>
