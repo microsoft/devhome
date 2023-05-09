@@ -4,14 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
-using DevHome.Common.TelemetryEvents.RepoToolEvents.EditDialogEvents;
-using DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
-using Windows.Security.Cryptography.Certificates;
 
-namespace DevHome.Common.TelemetryEvents.RepoToolEvents;
+namespace DevHome.Common.TelemetryEvents.SetupFlow;
 
 [EventData]
 public class FinalRepoResult

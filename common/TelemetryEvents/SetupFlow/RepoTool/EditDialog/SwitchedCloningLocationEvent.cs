@@ -7,7 +7,7 @@ using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents.RepoToolEvents.EditDialogEvents;
+namespace DevHome.Common.TelemetryEvents.SetupFlow;
 
 public enum CloneLocationKind
 {
