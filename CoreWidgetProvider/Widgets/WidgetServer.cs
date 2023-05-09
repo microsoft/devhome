@@ -12,12 +12,6 @@ namespace CoreWidgetProvider.Widgets;
 public sealed class WidgetServer : IDisposable
 {
     private readonly HashSet<int> registrationCookies = new ();
-    private readonly ManualResetEvent pluginDisposedEvent;
-
-    public WidgetServer(ManualResetEvent resetEvent)
-    {
-        pluginDisposedEvent = resetEvent;
-    }
 
     [UnconditionalSuppressMessage(
         "ReflectionAnalysis",
@@ -70,8 +64,6 @@ public sealed class WidgetServer : IDisposable
             var hr = Ole32.CoRevokeClassObject(cookie);
             Debug.Assert(hr >= 0, $"CoRevokeClassObject failed ({hr:x}). Cookie: {cookie}");
         }
-
-        pluginDisposedEvent.Set();
     }
 
     private class Ole32
