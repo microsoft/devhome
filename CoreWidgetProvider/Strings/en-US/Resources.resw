@@ -82,7 +82,7 @@
     <value>There are no hosts in this config file.</value>
   </data>
   <data name="SSH_Widget_Template.NumOfHosts" xml:space="preserve">
-    <value>Number Of hosts found</value>
+    <value>Number of hosts found</value>
   </data>
   <data name="SSH_Widget_Template.Connect" xml:space="preserve">
     <value>Connect</value>
