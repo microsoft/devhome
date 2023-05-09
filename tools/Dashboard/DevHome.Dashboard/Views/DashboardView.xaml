@@ -80,7 +80,7 @@
                 </GridView>
 
                 <StackPanel x:Name="NoWidgetsStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
-                    <TextBlock x:Uid="NoWidgetsPinned" HorizontalAlignment="Center" />
+                    <TextBlock x:Uid="NoWidgetsAdded" HorizontalAlignment="Center" />
                     <HyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" Click="AddWidgetButton_Click" HorizontalAlignment="Center" />
                 </StackPanel>
             </StackPanel>

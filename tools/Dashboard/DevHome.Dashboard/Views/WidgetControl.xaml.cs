@@ -82,10 +82,18 @@ public sealed partial class WidgetControl : UserControl
                 // Remove the widget from the list before deleting, otherwise the widget will
                 // have changed and the collection won't be able to find it to remove it.
                 var widgetIdToDelete = widgetViewModel.Widget.Id;
+                var widgetToDelete = widgetViewModel.Widget;
                 Log.Logger()?.ReportDebug("WidgetControl", $"User removed widget, delete widget {widgetIdToDelete}");
                 DashboardView.PinnedWidgets.Remove(widgetViewModel);
-                await widgetViewModel.Widget.DeleteAsync();
-                Log.Logger()?.ReportInfo("WidgetControl", $"Deleted Widget {widgetIdToDelete}");
+                try
+                {
+                    await widgetToDelete.DeleteAsync();
+                    Log.Logger()?.ReportInfo("WidgetControl", $"Deleted Widget {widgetIdToDelete}");
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger()?.ReportError("WidgetControl", $"Didn't delete Widget {widgetIdToDelete}", ex);
+                }
             }
         }
     }

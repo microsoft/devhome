@@ -90,7 +90,6 @@
                                                     <Setter Target="Image.Opacity" Value="0.4"/>
                                                     <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
                                                     <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
-                                                    <Setter Target="LearnMoreButton.IsEnabled" Value="False"/>
                                                 </VisualState.Setters>
                                             </VisualState>
                                         </VisualStateGroup>

@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.WinUI;
 using DevHome.Common;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
@@ -40,7 +41,6 @@ public partial class DashboardView : ToolPage
 
     private static SortedDictionary<string, BitmapImage> _widgetLightIconCache;
     private static SortedDictionary<string, BitmapImage> _widgetDarkIconCache;
-    private static SortedDictionary<string, BitmapImage> _providerIconCache;
 
     public DashboardView()
     {
@@ -161,12 +161,10 @@ public partial class DashboardView : ToolPage
     {
         _widgetLightIconCache = new SortedDictionary<string, BitmapImage>();
         _widgetDarkIconCache = new SortedDictionary<string, BitmapImage>();
-        _providerIconCache = new SortedDictionary<string, BitmapImage>();
 
         // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
         await CacheWidgetIcons();
         RestorePinnedWidgets(null, null);
-        await CacheProviderIcons();
     }
 
     private async Task CacheWidgetIcons()
@@ -214,49 +212,6 @@ public partial class DashboardView : ToolPage
         }
     }
 
-    private async Task CacheProviderIcons()
-    {
-        var providerDefs = _widgetCatalog.GetProviderDefinitions();
-        foreach (var providerDef in providerDefs)
-        {
-            await CacheProviderIcon(providerDef);
-        }
-    }
-
-    private async Task CacheProviderIcon(WidgetProviderDefinition providerDef)
-    {
-        // Only cache icons for providers that we're including.
-        if (WidgetHelpers.IsIncludedWidgetProvider(providerDef))
-        {
-            var providerDefId = providerDef.Id;
-            try
-            {
-                Log.Logger()?.ReportDebug("DashboardView", $"Cache widget provider icon for {providerDefId}");
-
-                // There is a widget bug where Definition update events are being raised as added events.
-                // If we already have an icon for this key, just remove and add again.
-                if (_providerIconCache.ContainsKey(providerDefId))
-                {
-                    _providerIconCache.Remove(providerDefId);
-                }
-
-                var itemImage = await WidgetIconToBitmapImage(providerDef.Icon);
-                _providerIconCache.Add(providerDefId, itemImage);
-            }
-            catch (Exception ex)
-            {
-                Log.Logger()?.ReportError("DashboardView", $"Exception in CacheProviderIcon:", ex);
-                _providerIconCache.Add(providerDefId, null);
-            }
-        }
-    }
-
-    public static BitmapImage GetProviderIcon(WidgetProviderDefinition widgetProviderDefinition)
-    {
-        _providerIconCache.TryGetValue(widgetProviderDefinition.Id, out var image);
-        return image;
-    }
-
     public static BitmapImage GetWidgetIconForTheme(WidgetDefinition widgetDefinition, ElementTheme theme)
     {
         BitmapImage image;
@@ -285,9 +240,14 @@ public partial class DashboardView : ToolPage
 
     public static async Task<BitmapImage> WidgetIconToBitmapImage(IRandomAccessStreamReference iconStreamRef)
     {
-        using var bitmapStream = await iconStreamRef.OpenReadAsync();
-        var itemImage = new BitmapImage();
-        await itemImage.SetSourceAsync(bitmapStream);
+        var itemImage = await _dispatcher.EnqueueAsync(async () =>
+        {
+            using var bitmapStream = await iconStreamRef.OpenReadAsync();
+            var itemImage = new BitmapImage();
+            await itemImage.SetSourceAsync(bitmapStream);
+            return itemImage;
+        });
+
         return itemImage;
     }
 
@@ -314,7 +274,7 @@ public partial class DashboardView : ToolPage
                         if (stateObj.Host == WidgetHelpers.DevHomeHostName)
                         {
                             var size = await widget.GetSizeAsync();
-                            AddWidgetToPinnedWidgets(widget, size);
+                            AddWidgetToPinnedWidgetsAsync(widget, size);
                         }
                     }
                 }
@@ -357,50 +317,67 @@ public partial class DashboardView : ToolPage
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
                 await newWidget.SetSizeAsync(size);
-                AddWidgetToPinnedWidgets(newWidget, size);
+                AddWidgetToPinnedWidgetsAsync(newWidget, size);
             }
         }
     }
 
-    private void AddWidgetToPinnedWidgets(Widget widget, WidgetSize size)
+    private async void AddWidgetToPinnedWidgetsAsync(Widget widget, WidgetSize size)
     {
         Log.Logger()?.ReportDebug("DashboardView", $"Add widget to pinned widgets, id = {widget.Id}");
-        InsertWidgetInPinnedWidgets(widget, size, PinnedWidgets.Count);
+        await InsertWidgetInPinnedWidgetsAsync(widget, size, PinnedWidgets.Count);
     }
 
-    private void InsertWidgetInPinnedWidgets(Widget widget, WidgetSize size, int index)
+    private async Task InsertWidgetInPinnedWidgetsAsync(Widget widget, WidgetSize size, int index)
     {
-        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widget.DefinitionId);
+        var widgetDefintionId = widget.DefinitionId;
+        var widgetId = widget.Id;
+        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetDefintionId);
+
         if (widgetDefinition != null)
         {
-            Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widget.Id}, index = {index}");
+            Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
             var wvm = new WidgetViewModel(widget, size, widgetDefinition, _renderer, _dispatcher);
             PinnedWidgets.Insert(index, wvm);
         }
         else
         {
-            Log.Logger()?.ReportWarn("DashboardView", $"WidgetPlatform did not clean up widgets with defintion '{widget.DefinitionId}'");
+            // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
+            Log.Logger()?.ReportInfo("DashboardView", $"No widget defintion '{widgetDefintionId}', delete widget {widgetId} with that definition");
+            try
+            {
+                await widget.SetCustomStateAsync(string.Empty);
+                await widget.DeleteAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Logger()?.ReportInfo("DashboardView", $"Error deleting widget", ex);
+            }
         }
     }
 
-    private async void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args)
+    private void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args)
     {
-        await CacheProviderIcon(args.ProviderDefinition);
+        Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetProviderDefinitionAdded {args.ProviderDefinition.Id}");
     }
 
     private void WidgetCatalog_WidgetProviderDefinitionDeleted(WidgetCatalog sender, WidgetProviderDefinitionDeletedEventArgs args)
     {
-        _providerIconCache.Remove(args.ProviderDefinitionId);
+        Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetProviderDefinitionDeleted {args.ProviderDefinitionId}");
     }
 
     private async void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args)
     {
+        Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetDefinitionAdded {args.Definition.Id}");
         await CacheWidgetIcon(args.Definition);
     }
 
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
     {
-        foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == args.Definition.Id).ToList())
+        var updatedDefinitionId = args.Definition.Id;
+        Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetDefinitionUpdated {updatedDefinitionId}");
+
+        foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
         {
             // Things in the definition that we need to update to if they have changed:
             // AllowMultiple, DisplayTitle, Capabilities (size), ThemeResource (icons)
@@ -447,13 +424,16 @@ public partial class DashboardView : ToolPage
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
         var definitionId = args.DefinitionId;
-        _dispatcher.TryEnqueue(() =>
+        _dispatcher.TryEnqueue(async () =>
         {
             Log.Logger()?.ReportInfo("DashboardView", $"WidgetDefinitionDeleted {definitionId}");
             foreach (var widgetToRemove in PinnedWidgets.Where(x => x.Widget.DefinitionId == definitionId).ToList())
             {
                 Log.Logger()?.ReportInfo("DashboardView", $"Remove widget {widgetToRemove.Widget.Id}");
                 PinnedWidgets.Remove(widgetToRemove);
+
+                // The widget definition is gone, so delete widgets with that definition.
+                await widgetToRemove.Widget.DeleteAsync();
             }
         });
 
@@ -529,7 +509,7 @@ public partial class DashboardView : ToolPage
 
             // Set the original size on the new widget and add it to the list.
             await newWidget.SetSizeAsync(originalSize);
-            InsertWidgetInPinnedWidgets(newWidget, originalSize, index);
+            await InsertWidgetInPinnedWidgetsAsync(newWidget, originalSize, index);
         }
 
         widgetViewModel.IsInEditMode = false;
