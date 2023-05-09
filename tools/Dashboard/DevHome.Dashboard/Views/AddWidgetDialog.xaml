@@ -26,7 +26,7 @@
     <StackPanel>
         <!-- Title and Close button -->
         <Grid>
-            <TextBlock x:Uid="PinWidgetsTitle" HorizontalAlignment="Left" Margin="16,10,0,0" />
+            <TextBlock x:Uid="AddWidgetsTitle" HorizontalAlignment="Left" Margin="16,10,0,0" />
             <Button HorizontalAlignment="Right" Click="CancelButton_Click"
                     BorderThickness="0" Background="Transparent" Padding="10">
                 <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}" 
