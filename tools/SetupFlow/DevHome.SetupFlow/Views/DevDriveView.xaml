@@ -191,8 +191,8 @@
                                 IsClosable="False"
                                 IsOpen="True"
                                 Severity="Error"
-                                Message="{x:Bind ViewModel.InvalidFolderLocationError, Mode=OneWay, Converter={StaticResource DevDriveEnumToLocalizedStringConverter}}"
-                                Visibility="{x:Bind ViewModel.InvalidFolderLocationError, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
+                                Message="{x:Bind ViewModel.FolderLocationError, Mode=OneWay, Converter={StaticResource DevDriveEnumToLocalizedStringConverter}}"
+                                Visibility="{x:Bind ViewModel.FolderLocationError, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
                                 />
                         </Grid>
                         <Grid

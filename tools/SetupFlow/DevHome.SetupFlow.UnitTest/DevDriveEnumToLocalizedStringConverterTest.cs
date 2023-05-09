@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Linq;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.Utilities;
@@ -16,59 +17,24 @@ public class DevDriveEnumToLocalizedStringConverterTest : BaseSetupFlowTest
 {
     public DevDriveEnumToLocalizedStringConverter Converter => new (StringResource.Object);
 
-    [TestMethod]
-    public void InvalidDriveSizeEnumToLocalizedString()
+    // These are results that are not localized and are just used in the code.
+    public List<DevDriveValidationResult> ResultsToIgnore => new ()
     {
-        var converterResultStringID = Converter.Convert(DevDriveValidationResult.InvalidDriveSize, null, null, string.Empty);
-        var expectedLocalizedStringID = StringResource.Object.GetLocalized(StringResourceKey.DevDriveInvalidDriveSize);
-        Assert.AreEqual(expectedLocalizedStringID, converterResultStringID);
-    }
+        DevDriveValidationResult.Successful,
+        DevDriveValidationResult.ObjectWasNull,
+    };
 
     [TestMethod]
-    public void InvalidDriveLabelEnumToLocalizedString()
+    public void DevDriveEnumsToLocalizedString()
     {
-        var converterResultStringID = Converter.Convert(DevDriveValidationResult.InvalidDriveLabel, null, null, string.Empty);
-        var expectedLocalizedStringID = StringResource.Object.GetLocalized(StringResourceKey.DevDriveInvalidDriveLabel);
-        Assert.AreEqual(expectedLocalizedStringID, converterResultStringID);
-    }
-
-    [TestMethod]
-    public void InvalidFolderLocationEnumToLocalizedString()
-    {
-        var converterResultStringID = Converter.Convert(DevDriveValidationResult.InvalidFolderLocation, null, null, string.Empty);
-        var expectedLocalizedStringID = StringResource.Object.GetLocalized(StringResourceKey.DevDriveInvalidFolderLocation);
-        Assert.AreEqual(expectedLocalizedStringID, converterResultStringID);
-    }
-
-    [TestMethod]
-    public void FileNameAlreadyExistsEnumToLocalizedString()
-    {
-        var converterResultStringID = Converter.Convert(DevDriveValidationResult.FileNameAlreadyExists, null, null, string.Empty);
-        var expectedLocalizedStringID = StringResource.Object.GetLocalized(StringResourceKey.DevDriveFileNameAlreadyExists);
-        Assert.AreEqual(expectedLocalizedStringID, converterResultStringID);
-    }
-
-    [TestMethod]
-    public void DriveLetterNotAvailableEnumToLocalizedString()
-    {
-        var converterResultStringID = Converter.Convert(DevDriveValidationResult.DriveLetterNotAvailable, null, null, string.Empty);
-        var expectedLocalizedStringID = StringResource.Object.GetLocalized(StringResourceKey.DevDriveDriveLetterNotAvailable);
-        Assert.AreEqual(expectedLocalizedStringID, converterResultStringID);
-    }
-
-    [TestMethod]
-    public void NoDriveLettersAvailableEnumToLocalizedString()
-    {
-        var converterResultStringID = Converter.Convert(DevDriveValidationResult.NoDriveLettersAvailable, null, null, string.Empty);
-        var expectedLocalizedStringID = StringResource.Object.GetLocalized(StringResourceKey.DevDriveNoDriveLettersAvailable);
-        Assert.AreEqual(expectedLocalizedStringID, converterResultStringID);
-    }
-
-    [TestMethod]
-    public void NotEnoughFreeSpaceEnumToLocalizedString()
-    {
-        var converterResultStringID = Converter.Convert(DevDriveValidationResult.NotEnoughFreeSpace, null, null, string.Empty);
-        var expectedLocalizedStringID = StringResource.Object.GetLocalized(StringResourceKey.DevDriveNotEnoughFreeSpace);
-        Assert.AreEqual(expectedLocalizedStringID, converterResultStringID);
+        foreach (DevDriveValidationResult validationResult in Enum.GetValues(typeof(DevDriveValidationResult)))
+        {
+            if (!ResultsToIgnore.Contains(validationResult))
+            {
+                var converterResultString = Converter.Convert(nameof(validationResult), null, null, string.Empty);
+                var expectedLocalizedString = StringResource.Object.GetLocalized("DevDrive" + nameof(validationResult));
+                Assert.AreEqual(expectedLocalizedString, converterResultString);
+            }
+        }
     }
 }
