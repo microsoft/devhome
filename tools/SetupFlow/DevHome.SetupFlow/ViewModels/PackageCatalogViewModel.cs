@@ -50,7 +50,11 @@ public partial class PackageCatalogViewModel : ObservableObject
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Adding all packages from catalog {Name} to selection");
         foreach (var package in Packages)
         {
-            package.IsSelected = true;
+            // Select all non-installed packages
+            if (!package.IsInstalled)
+            {
+                package.IsSelected = true;
+            }
         }
     }
 }

@@ -7,17 +7,13 @@ using System.Runtime.InteropServices;
 using COM;
 using CoreWidgetProvider.Helpers;
 using Microsoft.Windows.Widgets.Providers;
+using Windows.Win32;
+using Windows.Win32.System.Com;
 
 namespace CoreWidgetProvider.Widgets;
 public sealed class WidgetServer : IDisposable
 {
-    private readonly HashSet<int> registrationCookies = new ();
-    private readonly ManualResetEvent pluginDisposedEvent;
-
-    public WidgetServer(ManualResetEvent resetEvent)
-    {
-        pluginDisposedEvent = resetEvent;
-    }
+    private readonly HashSet<uint> registrationCookies = new ();
 
     [UnconditionalSuppressMessage(
         "ReflectionAnalysis",
@@ -30,12 +26,12 @@ public sealed class WidgetServer : IDisposable
         Log.Logger()?.ReportDebug($"CLSID: {typeof(T).GUID:B}");
         Log.Logger()?.ReportDebug($"Type: {typeof(T)}");
 
-        int cookie;
+        uint cookie;
         var clsid = typeof(T).GUID;
-        var hr = Ole32.CoRegisterClassObject(
-            ref clsid,
+        var hr = PInvoke.CoRegisterClassObject(
+            clsid,
             new WidgetProviderFactory<T>(createWidget),
-            Ole32.CLSCTX_LOCAL_SERVER,
+            CLSCTX.CLSCTX_LOCAL_SERVER,
             Ole32.REGCLS_MULTIPLEUSE | Ole32.REGCLS_SUSPENDED,
             out cookie);
 
@@ -46,7 +42,7 @@ public sealed class WidgetServer : IDisposable
 
         registrationCookies.Add(cookie);
         Log.Logger()?.ReportDebug($"Cookie: {cookie}");
-        hr = Ole32.CoResumeClassObjects();
+        hr = PInvoke.CoResumeClassObjects();
         if (hr < 0)
         {
             Marshal.ThrowExceptionForHR(hr);
@@ -67,34 +63,17 @@ public sealed class WidgetServer : IDisposable
         foreach (var cookie in registrationCookies)
         {
             Log.Logger()?.ReportDebug($"Cookie: {cookie}");
-            var hr = Ole32.CoRevokeClassObject(cookie);
+            var hr = PInvoke.CoRevokeClassObject(cookie);
             Debug.Assert(hr >= 0, $"CoRevokeClassObject failed ({hr:x}). Cookie: {cookie}");
         }
-
-        pluginDisposedEvent.Set();
     }
 
     private class Ole32
     {
 #pragma warning disable SA1310 // Field names should not contain underscore
-        // https://docs.microsoft.com/windows/win32/api/wtypesbase/ne-wtypesbase-clsctx
-        public const int CLSCTX_LOCAL_SERVER = 0x4;
-
         // https://docs.microsoft.com/windows/win32/api/combaseapi/ne-combaseapi-regcls
-        public const int REGCLS_MULTIPLEUSE = 1;
-        public const int REGCLS_SUSPENDED = 4;
+        public const REGCLS REGCLS_MULTIPLEUSE = (REGCLS)1;
+        public const REGCLS REGCLS_SUSPENDED = (REGCLS)4;
 #pragma warning restore SA1310 // Field names should not contain underscore
-
-        // https://docs.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-coregisterclassobject
-        [DllImport(nameof(Ole32))]
-        public static extern int CoRegisterClassObject(ref Guid guid, [MarshalAs(UnmanagedType.IUnknown)] object obj, int context, int flags, out int register);
-
-        // https://docs.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-coresumeclassobjects
-        [DllImport(nameof(Ole32))]
-        public static extern int CoResumeClassObjects();
-
-        // https://docs.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-corevokeclassobject
-        [DllImport(nameof(Ole32))]
-        public static extern int CoRevokeClassObject(int register);
     }
 }

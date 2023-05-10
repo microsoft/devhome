@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Management.Automation;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -22,9 +23,12 @@ using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.Windows;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Windows.Globalization.NumberFormatting;
 using Windows.Storage.Pickers;
 using Windows.System;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -34,8 +38,6 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IDevDriveManager _devDriveManager;
     private readonly string _localizedBrowseButtonText;
-    private readonly ObservableCollection<string> _fileNameAndSizeErrorList = new ();
-
     private readonly string _devHomeIconPath = "Assets/DevHome.ico";
     private readonly Dictionary<ByteUnit, string> _byteUnitList;
 
@@ -117,6 +119,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         _localizedBrowseButtonText = _stringResource.GetLocalized(StringResourceKey.BrowseTextBlock);
         _devDriveManager = devDriveManager;
         _devDriveManager.RequestToCloseViewModelWindow += CloseRequestedDevDriveWindow;
+        RefreshDriveLetterToSizeMapping();
+        PropertyChanged += (_, args) => ValidatePropertyByName(args.PropertyName);
     }
 
     /// <summary>
@@ -125,6 +129,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// This is limited to 32 characters (a Windows limitation).
     /// </summary>
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveButtonCommand))]
     private string _driveLabel;
 
     /// <summary>
@@ -132,6 +137,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// This is the location that we will save the virtual disk file to.
     /// </summary>
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveButtonCommand))]
     private string _location;
 
     /// <summary>
@@ -140,6 +146,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// their Dev Drive to have e.g if this value is 50 and the byteUnitList is GB, the user wants the drive to be 50 GB in size.
     /// </summary>
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveButtonCommand))]
     private double _size;
 
     /// <summary>
@@ -153,28 +160,27 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <summary>
     /// Gets or sets Drive letter in combo box.
     /// </summary>
-    public char ComboBoxDriveLetter
-    {
-        get; set;
-    }
+    [NotifyCanExecuteChangedFor(nameof(SaveButtonCommand))]
+    [ObservableProperty]
+    private char? _comboBoxDriveLetter;
 
     /// <summary>
-    /// Gets or sets a value indicating whether we should show the the localized error text for when the folder location the user wants to save the virtual disk to is not found.
+    /// Gets or sets a value indicating whether we should show the the localized error text for when there is an error in the folder location.
     /// </summary>
     [ObservableProperty]
-    private string _invalidFolderLocationError;
+    private DevDriveValidationResult? _folderLocationError;
 
     /// <summary>
-    /// Gets or sets a value indicating whether we should show the localized error text for when there are no drive letters to assign to a Dev Drive.
+    /// Gets or sets a value indicating whether we should show the localized error text for when there is an error retrieving a drive letter for the user.
     /// </summary>
     [ObservableProperty]
-    private string noDriveLettersAvailableError;
+    private DevDriveValidationResult? _driveLetterError;
 
     /// <summary>
-    /// Gets the drive letters available on the system and is not already in use by a Dev Drive
+    /// Gets or sets the drive letters available on the system and is not already in use by a Dev Drive
     /// that the Dev Drive manager is holding in memory.
     /// </summary>
-    public IList<char> DriveLetters => _devDriveManager.GetAvailableDriveLetters(AssociatedDrive.DriveLetter);
+    public List<char> DriveLetters { get; set; } = new ();
 
     /// <summary>
     /// Gets the maximum size allowed in the Number box based
@@ -217,14 +223,19 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// gets the localized Browse button text for the browse button.
+    /// Gets or sets a Dictionary where the keys are current drive letters in use by the system and the values are the free space in bytes the drives have available.
+    /// </summary>
+    public Dictionary<char, ulong> DriveLetterToSizeMapping { get; set; } = new ();
+
+    /// <summary>
+    /// Gets the localized Browse button text for the browse button.
     /// </summary>
     public string LocalizedBrowseButtonText => _localizedBrowseButtonText;
 
     /// <summary>
-    /// gets the list of localized error text for filename errors and sizing errors that will be shown in the UI.
+    /// Gets the list of DevDriveValidationResults that will be converted to localized text and shown in error info bars in the UI.
     /// </summary>
-    public ObservableCollection<string> FileNameAndSizeErrorList => _fileNameAndSizeErrorList;
+    public ObservableCollection<DevDriveValidationResult> FileNameAndSizeErrorList { get; } = new ();
 
     /// <summary>
     /// Opens folder picker and adds folder to the drive location, if the user does not cancel the dialog.
@@ -285,6 +296,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
 
         DriveLabel = devDrive.DriveLabel;
         Location = devDrive.DriveLocation;
+        DriveLetters.Clear();
+        DriveLetters.AddRange(_devDriveManager.GetAvailableDriveLetters(AssociatedDrive.DriveLetter));
         ComboBoxDriveLetter = devDrive.DriveLetter;
         _taskGroup.AddDevDriveTask(AssociatedDrive);
     }
@@ -315,16 +328,16 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <summary>
     /// Save button click command sends the <see cref="Models.DevDrive"/> associated with
     /// with the view model to the  <see cref="DevDriveManager"/> to have its contents validated
-    /// Obly when the validation is successful do we close the window when the save button is clicked.
+    /// only when the validation is successful do we close the window when the save button is clicked.
     /// </summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanSave))]
     private void SaveButton()
     {
         Log.Logger?.ReportInfo(Log.Component.DevDrive, "Saving changes to Dev Drive");
         ByteUnit driveUnitOfMeasure = (ByteUnit)_comboBoxByteUnit;
         var tempDrive = new Models.DevDrive()
         {
-            DriveLetter = ComboBoxDriveLetter,
+            DriveLetter = ComboBoxDriveLetter.Value,
             DriveSizeInBytes = DevDriveUtil.ConvertToBytes(Size, driveUnitOfMeasure),
             DriveUnitOfMeasure = driveUnitOfMeasure,
             DriveLocation = Location,
@@ -347,6 +360,15 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
+    /// We only allow users to save when there are no errors in the UI.
+    /// </summary>
+    /// <returns>Boolean where true will enable the save button and sale disables the button.</returns>
+    private bool CanSave()
+    {
+        return !(FolderLocationError.HasValue || DriveLetterError.HasValue || FileNameAndSizeErrorList.Any());
+    }
+
+    /// <summary>
     /// Allows the view model to remove the current tasks related to creating
     /// a Dev drive.
     /// </summary>
@@ -366,9 +388,14 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         DevDriveWindowContainer.Closed += ViewContainerClosed;
         DevDriveWindowContainer.Activate();
         IsDevDriveWindowOpen = true;
+        RefreshDriveLetterToSizeMapping();
+        DriveLetters.Clear();
+        DriveLetters.AddRange(_devDriveManager.GetAvailableDriveLetters(AssociatedDrive.DriveLetter));
 
         // If state is invalid then show errors in the UI as soon as we launch the window.
-        if (_concreteDevDrive.State != DevDriveState.New)
+        if (_concreteDevDrive.State != DevDriveState.New ||
+            !ComboBoxDriveLetter.HasValue ||
+            !DriveLetters.Contains(ComboBoxDriveLetter.Value))
         {
             ShowErrorInUI(_devDriveManager.GetDevDriveValidationResults(_concreteDevDrive));
         }
@@ -387,32 +414,31 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// Shows the user all errors found after clicking the save button.
+    /// Shows the user all errors found after clicking the save button. The set of errors come from the
+    /// DevDriveManager, and this method matches the errors with the relevant UI element.
     /// </summary>
     public void ShowErrorInUI(ISet<DevDriveValidationResult> resultSet)
     {
-        var prefix = "DevDrive";
-        var tempfileNameAndSizeErrorList = new List<string>();
-        NoDriveLettersAvailableError = string.Empty;
-        InvalidFolderLocationError = string.Empty;
+        var tempfileNameAndSizeErrorList = new List<DevDriveValidationResult>();
+        DriveLetterError = null;
+        FolderLocationError = null;
         foreach (DevDriveValidationResult result in resultSet)
         {
             Log.Logger?.ReportError(Log.Component.DevDrive, $"Input validation Error in Dev Drive window: {result.ToString()}");
-            var errorString = _stringResource.GetLocalized(prefix + result.ToString());
-
-            if (result == DevDriveValidationResult.NoDriveLettersAvailable)
+            switch (result)
             {
-                NoDriveLettersAvailableError = errorString;
-            }
-            else if (result == DevDriveValidationResult.InvalidFolderLocation)
-            {
-                InvalidFolderLocationError = errorString;
-            }
-            else if (result == DevDriveValidationResult.InvalidDriveLabel ||
-                result == DevDriveValidationResult.NotEnoughFreeSpace ||
-                result == DevDriveValidationResult.FileNameAlreadyExists)
-            {
-                tempfileNameAndSizeErrorList.Add(errorString);
+                case DevDriveValidationResult.NoDriveLettersAvailable:
+                case DevDriveValidationResult.DriveLetterNotAvailable:
+                    DriveLetterError ??= result;
+                    break;
+                case DevDriveValidationResult.InvalidFolderLocation:
+                    FolderLocationError = result;
+                    break;
+                case DevDriveValidationResult.InvalidDriveLabel:
+                case DevDriveValidationResult.NotEnoughFreeSpace:
+                case DevDriveValidationResult.FileNameAlreadyExists:
+                    tempfileNameAndSizeErrorList.Add(result);
+                    break;
             }
         }
 
@@ -445,8 +471,160 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     private void ResetErrors()
     {
-        NoDriveLettersAvailableError = string.Empty;
-        InvalidFolderLocationError = string.Empty;
+        DriveLetterError = null;
+        FolderLocationError = null;
         FileNameAndSizeErrorList.Clear();
+    }
+
+    /// <summary>
+    /// Refreshes the mapping between Drive letters currently in use on the users machines and the total free space
+    /// available on them.
+    /// </summary>
+    private void RefreshDriveLetterToSizeMapping()
+    {
+        DriveLetterToSizeMapping = DriveInfo.GetDrives().ToDictionary(drive => drive.Name[0], drive => (ulong)drive.TotalFreeSpace);
+    }
+
+    /// <summary>
+    /// Validates the text input in the Dev Drive name textbox when the text changes. We show an error infobar when the text is invalid.
+    /// </summary>
+    /// <remarks>
+    /// There are currently only 2 invalid states
+    /// 1.When the text has invalid characters. <see cref="DevDriveUtil.IsInvalidFileNameOrPath="/>
+    /// 2.When the file name already exists in the given location.
+    /// </remarks
+    private void ValidateDriveLabel()
+    {
+        FileNameAndSizeErrorList.Remove(DevDriveValidationResult.InvalidDriveLabel);
+        if (string.IsNullOrEmpty(DriveLabel) || DevDriveUtil.IsInvalidFileNameOrPath(InvalidCharactersKind.FileName, DriveLabel))
+        {
+            FileNameAndSizeErrorList.Add(DevDriveValidationResult.InvalidDriveLabel);
+        }
+
+        FileNameAndSizeErrorList.Remove(DevDriveValidationResult.FileNameAlreadyExists);
+        if (!string.IsNullOrEmpty(Location) && File.Exists(Path.Combine(Location, DriveLabel + ".vhdx")))
+        {
+            FileNameAndSizeErrorList.Add(DevDriveValidationResult.FileNameAlreadyExists);
+        }
+    }
+
+    /// <summary>
+    /// Validates the numeric input value in the size numberbox. We show an error infobar when the value is invalid.
+    /// </summary>
+    /// <remarks>
+    /// There is currently only 1 invalid state
+    /// 1.When numeric value given is greater than the total available free space on the Drive the user intends to create the virtual disk file on.
+    /// </remarks
+    private void ValidateDriveSize()
+    {
+        FileNameAndSizeErrorList.Remove(DevDriveValidationResult.NotEnoughFreeSpace);
+        var lengthAfterTrim = string.IsNullOrEmpty(Location) ? string.Empty : Location.Trim();
+
+        // If newValue is not a number, show the error infobar.
+        var shouldShowSizeError = !double.IsFinite(Size);
+        if (!shouldShowSizeError && lengthAfterTrim.Length > 0)
+        {
+            // We need to refresh the mapping because when the user frees up drive space, we need the updated totalAvailableSpace for the drive they plan
+            // on using.
+            RefreshDriveLetterToSizeMapping();
+            ulong totalAvailableSpace;
+            if (DriveLetterToSizeMapping.TryGetValue(char.ToUpperInvariant(lengthAfterTrim[0]), out totalAvailableSpace))
+            {
+                shouldShowSizeError = DevDriveUtil.ConvertToBytes(Size, (ByteUnit)_comboBoxByteUnit) > totalAvailableSpace;
+            }
+        }
+
+        if (shouldShowSizeError)
+        {
+            FileNameAndSizeErrorList.Add(DevDriveValidationResult.NotEnoughFreeSpace);
+        }
+    }
+
+    /// <summary>
+    /// Called when there is a TextChanged event from the Dev Drive location textbox. We show an error infobar when the text is invalid.
+    /// </summary>
+    /// <remarks>
+    /// There are currently 5 invalid states
+    /// 1. When the location length is less than 3. We expect the location to be in the form of drive letter, followed by a colon followed by a slash. E.g C:\
+    /// 2. Path is a network path.
+    /// 3. When the path root to the location does not exist. E.g user attempting to use a drive that does not exist.
+    /// 4. When the location is not fully qualified.
+    /// 5. When the location has invalid characters. <see cref="DevDriveUtil.IsInvalidFileNameOrPath="/>
+    /// </remarks>
+    /// <param name="location">The folder path the user will use to create virtual disk in</param>
+    private void ValidateDriveLocation()
+    {
+        FolderLocationError = null;
+
+        if (Location.Length < 3 ||
+            IsNetworkPath(Location) ||
+            !Directory.Exists(Path.GetPathRoot(Location)) ||
+            !Path.IsPathFullyQualified(Location) ||
+            DevDriveUtil.IsInvalidFileNameOrPath(InvalidCharactersKind.Path, Location))
+        {
+            FolderLocationError = DevDriveValidationResult.InvalidFolderLocation;
+        }
+        else
+        {
+            // Location changed, so the size may now be too large for this location or could now be the right size
+            // after being too small.
+            ValidateDriveSize();
+        }
+    }
+
+    /// <summary>
+    /// Checks whether the path is a network path.
+    /// </summary>
+    /// <param name="path">The path that could possibly be a network path</param>
+    /// <returns>Boolean where true means the path is a network path and false otherwise.</returns>
+    private bool IsNetworkPath(string path)
+    {
+        unsafe
+        {
+            fixed (char* tempPath = path)
+            {
+                return PInvoke.PathIsNetworkPath(tempPath).Equals(new BOOL(true));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Validates the current selected drive letter and shows an error info in the UI, if an error is found.
+    /// </summary>
+    private void ValidateDriveLetter()
+    {
+        DriveLetterError = null;
+
+        if (!DriveLetters.Any())
+        {
+            DriveLetterError = DevDriveValidationResult.NoDriveLettersAvailable;
+        }
+        else if (!ComboBoxDriveLetter.HasValue || !DriveLetters.Contains(ComboBoxDriveLetter.Value))
+        {
+            DriveLetterError = DevDriveValidationResult.DriveLetterNotAvailable;
+        }
+    }
+
+    /// <summary>
+    /// Validation event handler for when a property changes.
+    /// </summary>
+    /// <param name="propertyName">property name of the property that will be validated</param>
+    private void ValidatePropertyByName(string propertyName)
+    {
+        switch (propertyName)
+        {
+            case nameof(DriveLabel):
+                ValidateDriveLabel();
+                break;
+            case nameof(Location):
+                ValidateDriveLocation();
+                break;
+            case nameof(Size):
+                ValidateDriveSize();
+                break;
+            case nameof(ComboBoxDriveLetter):
+                ValidateDriveLetter();
+                break;
+        }
     }
 }

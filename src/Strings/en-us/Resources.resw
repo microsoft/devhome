@@ -137,15 +137,15 @@
     <comment>Dev Home abides by Microsoft Open Source guidance</comment>
   </data>
   <data name="Feedback_FeatureImprovement.Header" xml:space="preserve">
-    <value>Suggest a Feature</value>
+    <value>Suggest a feature</value>
     <comment>FeatureImprovement is to suggest a useful feature that the app does not currently have</comment>
   </data>
   <data name="Feedback_FeatureImprovement_Button.Content" xml:space="preserve">
-    <value>New Suggestion</value>
+    <value>New suggestion</value>
     <comment>Begin to fill out the feature request content dialog</comment>
   </data>
   <data name="Feedback_ReportBug_Internal.Description" xml:space="preserve">
-    <value>Report errors or unexpected behavior via Feedback Hub prior to May 1st, 2023</value>
+    <value>Report errors or unexpected behavior via Feedback Hub prior to May 17th, 2023</value>
     <comment>Tell us about issues internally prior to May 1st</comment>
   </data>
   <data name="Feedback_ReportBug_Internal.Header" xml:space="preserve">
@@ -157,7 +157,7 @@
     <comment>Tell us about an error that is happening</comment>
   </data>
   <data name="Feedback_ReportBug_Button.Content" xml:space="preserve">
-    <value>New Report</value>
+    <value>New report</value>
     <comment>Begin to fill out the report bug content dialog</comment>
   </data>
   <data name="Feedback_ReportBug_Dialog.CloseButtonText" xml:space="preserve">
@@ -169,7 +169,7 @@
     <comment>Navigate to the GitHub issue to see the issue form</comment>
   </data>
   <data name="Feedback_ReportBug_Dialog.Title" xml:space="preserve">
-    <value>Report a Bug</value>
+    <value>Report a bug</value>
     <comment>Tell us about an error</comment>
   </data>
   <data name="Feedback_ReportBug_ReproSteps.Header" xml:space="preserve">
@@ -233,7 +233,7 @@
     <comment>LocalizationTranslation means that there are words and language being translated that are incorrect</comment>
   </data>
   <data name="Feedback_LocalizationIssue_Button.Content" xml:space="preserve">
-    <value>New Report</value>
+    <value>New report</value>
     <comment>Begin to fill out the translation issue content dialog</comment>
   </data>
   <data name="Feedback_LocalizationIssue_Dialog.CloseButtonText" xml:space="preserve">
@@ -261,7 +261,7 @@
     <comment>Look at the guidance on security</comment>
   </data>
   <data name="Feedback_ReportSecurity.Header" xml:space="preserve">
-    <value>Report a Security Vulnerability</value>
+    <value>Report a security vulnerability</value>
     <comment>Tell us about potential security concerns</comment>
   </data>
   <data name="Feedback_ReportSecurity_Button.Content" xml:space="preserve">
@@ -360,20 +360,20 @@
     <value>https://YourSecurityLinkGoesHere/</value>
     <comment>httpsYourSecurityLinkGoesHere is a dummy security guidance link that goes here. Will be replaced with an aka.ms link later.</comment>
   </data>
-  <data name="WhatsNewPage_DevIdCard_Description.Text" xml:space="preserve">
+  <data name="WhatsNewPage_DevIdCard.Description" xml:space="preserve">
     <value>Sign in to your developer account to clone repositories and get notifications for them.</value>
   </data>
   <data name="WhatsNew.Content" xml:space="preserve">
     <value>Introducing Dev Home</value>
   </data>
-  <data name="WhatsNewPage_ConfigMachineCard.Description" xml:space="preserve">
-    <value>Use the streamlined end-to-end setup to clone multiple repositories and install all the applications you need at once.</value>
+  <data name="WhatsNewPage_DevDriveCard.Description" xml:space="preserve">
+    <value>Optimize performance with a Dev Drive—Dev Home sets it up for you.</value>
   </data>
-  <data name="WhatsNewPage_ConfigMachineCard.Title" xml:space="preserve">
-    <value>Set up your dev machine seamlessly</value>
+  <data name="WhatsNewPage_DevDriveCard.Title" xml:space="preserve">
+    <value>Create a Dev Drive</value>
   </data>
   <data name="WhatsNewPage_Description.Text" xml:space="preserve">
-    <value>Take a few minutes to learn how you can use Dev Home for development.</value>
+    <value>Use the streamlined end-to-end setup to clone multiple repositories and install all the applications you need.</value>
   </data>
   <data name="WhatsNewPage_DevDashCard.Description" xml:space="preserve">
     <value>Get the info you need in one place—add widgets to track issues, pull requests, and system performance.</value>
@@ -381,17 +381,8 @@
   <data name="WhatsNewPage_DevDashCard.Title" xml:space="preserve">
     <value>Monitor projects in your dashboard</value>
   </data>
-  <data name="WhatsNewPage_DevIdCard_Title.Text" xml:space="preserve">
-    <value>Connect your developer account</value>
-  </data>
-  <data name="WhatsNewPage_DevIdCard_Button.Content" xml:space="preserve">
-    <value>Connect accounts</value>
-  </data>
-  <data name="WhatsNewPage_DevPFeaturesCard.Description" xml:space="preserve">
-    <value>Optimize performance with a Dev Drive—Dev Home sets it up for you.</value>
-  </data>
-  <data name="WhatsNewPage_DevPFeaturesCard.Title" xml:space="preserve">
-    <value>Create a Dev Drive</value>
+  <data name="WhatsNewPage_DevIdCard.Title" xml:space="preserve">
+    <value>Connect your account</value>
   </data>
   <data name="WhatsNewPage_NotifCard.Description" xml:space="preserve">
     <value>Keep up with pull requests, checks, merges, and more.</value>
@@ -421,7 +412,7 @@
     <value>Dev Home is getting things ready for you...</value>
   </data>
   <data name="WhatsNewPage_Title.Text" xml:space="preserve">
-    <value>Introducing Dev Home</value>
+    <value>Setup your dev environment</value>
   </data>
   <data name="Feedback_Title.Text" xml:space="preserve">
     <value>Feedback</value>
@@ -431,5 +422,23 @@
   </data>
   <data name="AppDisplayNameStable" xml:space="preserve">
     <value>Dev Home (Preview)</value>
+  </data>
+  <data name="WhatsNewPage_DevDashCard.Button" xml:space="preserve">
+    <value>Pin widgets</value>
+  </data>
+  <data name="WhatsNewPage_DevDriveCard.Button" xml:space="preserve">
+    <value>Create Dev Drive</value>
+  </data>
+  <data name="WhatsNewPage_DevDriveCard.Link" xml:space="preserve">
+    <value>Learn more</value>
+  </data>
+  <data name="WhatsNewPage_DevIdCard.Button" xml:space="preserve">
+    <value>Connect accounts</value>
+  </data>
+  <data name="WhatsNewPage_GetStartedButton.Content" xml:space="preserve">
+    <value>Get started</value>
+  </data>
+  <data name="WhatsNewPage_Header.Text" xml:space="preserve">
+    <value>Introducing Dev Home</value>
   </data>
 </root>

@@ -16,6 +16,10 @@ namespace DevHome.SetupFlow.UnitTest.ViewModels;
 [TestClass]
 public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
 {
+    // Icon stream size
+    private const ulong EmptyIconStreamSize = 0;
+    private const ulong NonEmptyIconStreamSize = 1;
+
     [TestMethod]
     public void LoadCatalogs_EmptyPackages_ReturnsNoCatalogs()
     {
@@ -152,6 +156,28 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
         Assert.IsNull(expectedPackages[0].DarkThemeIcon);
     }
 
+    [TestMethod]
+    public void LoadCatalogs_GettingRestoreApplicationIconWithEmptyStream_ReturnsNullForIcon()
+    {
+        var expectedPackages = new List<IWinGetPackage>
+        {
+            PackageHelper.CreatePackage("mock").Object,
+        };
+        var restoreApplicationInfoList = expectedPackages.Select(p => CreateRestoreApplicationInfo(p.Id, EmptyIconStreamSize).Object).ToList();
+        ConfigureWinGetCatalogPackages(expectedPackages);
+        ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
+
+        // Act
+        var loadedPackages = LoadCatalogsFromRestoreDataSource();
+
+        // Assert
+        Assert.AreEqual(1, loadedPackages.Count);
+        Assert.AreEqual(expectedPackages.Count, loadedPackages[0].Packages.Count);
+        Assert.AreEqual(expectedPackages[0].Id, loadedPackages[0].Packages.ElementAt(0).Id);
+        Assert.IsNull(expectedPackages[0].LightThemeIcon);
+        Assert.IsNull(expectedPackages[0].DarkThemeIcon);
+    }
+
     /// <summary>
     /// Configure WinGet catalog packages
     /// </summary>
@@ -199,7 +225,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
     /// </summary>
     /// <param name="packageId">Id of the package corresponding to the application to restore</param>
     /// <returns>Restore application info</returns>
-    private Mock<IRestoreApplicationInfo> CreateRestoreApplicationInfo(string packageId)
+    private Mock<IRestoreApplicationInfo> CreateRestoreApplicationInfo(string packageId, ulong iconStreamSize = NonEmptyIconStreamSize)
     {
         var appInfo = new Mock<IRestoreApplicationInfo>();
 
@@ -207,9 +233,11 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
         appInfo.Setup(app => app.Id).Returns(packageId);
 
         // Mock icon
+        var mockIconStream = new Mock<IRandomAccessStream>();
+        mockIconStream.SetupGet(stream => stream.Size).Returns(iconStreamSize);
         appInfo
             .Setup(app => app.GetIconAsync(It.IsAny<RestoreApplicationIconTheme>()))
-            .Returns(Task.FromResult(new Mock<IRandomAccessStream>().Object).AsAsyncOperation());
+            .Returns(Task.FromResult(mockIconStream.Object).AsAsyncOperation());
 
         return appInfo;
     }
