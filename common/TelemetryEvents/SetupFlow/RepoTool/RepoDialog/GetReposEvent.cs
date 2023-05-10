@@ -10,7 +10,7 @@ using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
+namespace DevHome.Common.TelemetryEvents.SetupFlow;
 
 [EventData]
 public class GetReposEvent : EventBase
