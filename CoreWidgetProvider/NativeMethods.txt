@@ -1,0 +1,3 @@
+﻿CoRegisterClassObject
+CoRevokeClassObject
+CoResumeClassObjects
