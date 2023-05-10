@@ -11,6 +11,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <CsWinRTEnabled>false</CsWinRTEnabled>
+    <Platforms>x86;x64;arm64</Platforms>
+    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <PublishProfileFullPath Condition="'$(BuildingInsideVisualStudio)' != 'True'">$(SolutionDir)\src\Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfileFullPath>
+    <DevHomeSDKVersion Condition="$(DevHomeSDKVersion) == ''">0.100.*</DevHomeSDKVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +23,7 @@
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.206-beta">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.100.105" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="$(DevHomeSDKVersion)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +48,12 @@
     </Content>
     <Content Update="Widgets\Assets\arrow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="$(TargetDir)\Microsoft.Windows.DevHome.SDK.winmd">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
 </Project>
