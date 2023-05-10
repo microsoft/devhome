@@ -273,8 +273,8 @@ public partial class AddRepoViewModel : ObservableObject
                 return false;
             }
 
-            Uri myUri;
-            if (!Uri.TryCreate(Url, UriKind.RelativeOrAbsolute, out myUri))
+            Uri parsedUri;
+            if (!Uri.TryCreate(Url, UriKind.RelativeOrAbsolute, out parsedUri))
             {
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
                 ShouldShowUrlError = Visibility.Visible;
@@ -283,9 +283,9 @@ public partial class AddRepoViewModel : ObservableObject
 
             // If user entered a relative Uri put it into a UriBuilder to turn it into an
             // absolute Uri.  UriBuilder prepends the https scheme
-            if (!myUri.IsAbsoluteUri)
+            if (!parsedUri.IsAbsoluteUri)
             {
-                var uriBuilder = new UriBuilder(myUri.OriginalString);
+                var uriBuilder = new UriBuilder(parsedUri.OriginalString);
                 uriBuilder.Port = -1;
                 Url = uriBuilder.ToString();
             }
