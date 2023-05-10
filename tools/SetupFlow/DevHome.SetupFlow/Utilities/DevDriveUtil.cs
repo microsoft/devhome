@@ -65,6 +65,8 @@ public static class DevDriveUtil
     public static readonly List<char> InvalidCharactersNotInGetInvalidPathChars = new () { '*', '?', '\"', '<', '>', '|' };
 
     // Temporary build version values, to use while the API to check for the Dev Drive feature is being created.
+    // Note: The major number and minor number for Windows 11 is still 10 and 0 respectively. Windows 11 build
+    // numbers start at 22000.
     private const ushort DevDriveMajorVersion = 10;
     private const ushort DevDriveMinorVersion = 0;
     private const ushort DevDriveMinBuild = 23000;
