@@ -99,8 +99,4 @@
 		<DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
 		<DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
 	</PropertyGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Strings\es-ES\Resources.resw" />
-  </ItemGroup>
 </Project>
