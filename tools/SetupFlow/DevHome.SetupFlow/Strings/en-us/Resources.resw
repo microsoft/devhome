@@ -1079,14 +1079,6 @@
     <value>Enter the full path and folder name</value>
     <comment>Error message to tell the user to fully qualify their clone path</comment>
   </data>
-  <data name="UrlValidationBadUrl" xml:space="preserve">
-    <value>Enter a repository name beginning with https://</value>
-    <comment>Error string to show the user if the url is not an absolute URL</comment>
-  </data>
-  <data name="UrlValidationEmpty" xml:space="preserve">
-    <value>Enter a repository name beginning with https://</value>
-    <comment>Error string to show the user if the URL field is empty</comment>
-  </data>
   <data name="UrlValidationNotFound" xml:space="preserve">
     <value>The repository can't be found</value>
     <comment>Error string to show the user if the extension can't access the repo</comment>
@@ -1138,5 +1130,9 @@
   <data name="ClonePathForTextBlock.Text" xml:space="preserve">
     <value>Clone path</value>
     <comment>Text for choosing a clone path in a block of text</comment>
+  </data>
+  <data name="UrlValidationBadUrl" xml:space="preserve">
+    <value>Enter a repository name beginning with https://</value>
+    <comment>Error string to show the user if the url is not an absolute URL</comment>
   </data>
 </root>

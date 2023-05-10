@@ -270,16 +270,24 @@ public partial class AddRepoViewModel : ObservableObject
             // Check if Url field is empty
             if (string.IsNullOrEmpty(Url))
             {
-                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationEmpty);
-                ShouldShowUrlError = Visibility.Visible;
                 return false;
             }
 
-            if (!Uri.TryCreate(Url, UriKind.Absolute, out _))
+            Uri myUri;
+            if (!Uri.TryCreate(Url, UriKind.RelativeOrAbsolute, out myUri))
             {
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
                 ShouldShowUrlError = Visibility.Visible;
                 return false;
+            }
+
+            // If user entered a relative Uri put it into a UriBuilder to turn it into an
+            // absolute Uri.  UriBuilder prepends the https scheme
+            if (!myUri.IsAbsoluteUri)
+            {
+                var uriBuilder = new UriBuilder(myUri.OriginalString);
+                uriBuilder.Port = -1;
+                Url = uriBuilder.ToString();
             }
 
             ShouldShowUrlError = Visibility.Collapsed;
@@ -383,15 +391,6 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="cloneLocation">The location to clone the repo to</param>
     public void AddRepositoryViaUri(string url, string cloneLocation)
     {
-        // If the url isn't valid don't bother finding a provider.
-        Uri uriToParse;
-        if (!Uri.TryCreate(url, UriKind.Absolute, out uriToParse))
-        {
-            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
-            ShouldShowUrlError = Visibility.Visible;
-            return;
-        }
-
         var cloningInformation = new CloningInformation();
 
         // If the URL points to a private repo the URL tab has no way of knowing what account has access.
@@ -400,7 +399,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         try
         {
-            providerNameAndRepo = _providers.ParseRepositoryFromUri(uriToParse);
+            providerNameAndRepo = _providers.ParseRepositoryFromUri(new Uri(url));
         }
         catch (Exception e)
         {
@@ -431,7 +430,7 @@ public partial class AddRepoViewModel : ObservableObject
             // No providers can parse the Url.
             // Fall back to a git Url.
             cloningInformation.ProviderName = "git";
-            cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
+            cloningInformation.RepositoryToClone = new GenericRepository(new Uri(url));
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
         }
 
