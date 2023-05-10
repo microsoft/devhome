@@ -164,7 +164,7 @@ stages:
             resourceFilePath: |
               **\en-US\*.resw
             outputDirectoryRoot: LocOutput
-            localizationTarget: false
+            localizationTarget: eq(variables['UpdateLocalization'], 'true')
             appendRelativeDir: true
             pseudoSetting: Included
 
