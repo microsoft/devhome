@@ -98,7 +98,7 @@ public static class DevDriveUtil
                 return true;
             }
 
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Dev Drive feature is not available on this build of Windows: {osVersion.Major}.{osVersion.Minor}.{osVersion.Build}.{osVersion.Revision}");
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Dev Drive feature is not available on this build of Windows: {osVersion}");
             return false;
         }
     }
