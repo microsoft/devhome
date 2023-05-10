@@ -348,6 +348,24 @@ internal class SSHWalletWidget : CoreWidget
         };
     }
 
+    protected override void SetActive()
+    {
+        ActivityState = WidgetActivityState.Active;
+        Page = WidgetPageState.Content;
+        if (ContentData == EmptyJson)
+        {
+            LoadContentData();
+        }
+
+        if (!string.IsNullOrEmpty(ConfigFile) && FileWatcher == null)
+        {
+            SetupFileWatcher();
+        }
+
+        LogCurrentState();
+        UpdateWidget();
+    }
+
     private void SetConfigure()
     {
         FileWatcher?.Dispose();
