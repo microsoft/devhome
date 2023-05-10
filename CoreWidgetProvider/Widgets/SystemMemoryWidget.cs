@@ -58,7 +58,7 @@ internal class SystemMemoryWidget : CoreWidget, IDisposable
 
     public override void LoadContentData()
     {
-        Log.Logger()?.ReportDebug(Name, ShortId, "Getting Data for Pull Requests");
+        Log.Logger()?.ReportDebug(Name, ShortId, "Getting Memory usage data");
 
         try
         {
