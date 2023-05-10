@@ -170,7 +170,7 @@ stages:
               [
                 {
                   "keycode": "CP-230012",
-                  "operationSetCode": "SigntoolSign",
+                  "operationSetCode": "SigntoolvNextSign",
                   "parameters": [
                     {
                       "parameterName": "OpusName",
@@ -284,6 +284,55 @@ stages:
               targetPath: $(appxPackageDir)\${{ configuration }}
 
         - task: PowerShell@2
+          displayName: Create Stub Directory
+          condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
+          inputs:
+            targetType: 'inline'
+            script: New-Item -Path $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub -ItemType Directory ; Copy-Item -Path "stub\*" -Destination $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub\
+
+        - task: EsrpCodeSigning@2
+          condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
+          inputs:
+            ConnectedServiceName: 'Xlang Code Signing'
+            FolderPath: '$(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub'
+            Pattern: '*.msix'
+            signConfigType: 'inlineSignParams'
+            inlineOperation: |
+              [
+                {
+                  "keycode": "CP-230012",
+                  "operationSetCode": "SigntoolvNextSign",
+                  "parameters": [
+                    {
+                      "parameterName": "OpusName",
+                      "parameterValue": "Microsoft"
+                    },
+                    {
+                      "parameterName": "OpusInfo",
+                      "parameterValue": "http://www.microsoft.com"
+                    },
+                    {
+                      "parameterName": "PageHash",
+                      "parameterValue": "/NPH"
+                    },
+                    {
+                      "parameterName": "FileDigest",
+                      "parameterValue": "/fd sha256"
+                    },
+                    {
+                      "parameterName": "TimeStamp",
+                      "parameterValue": "/tr \"http://rfc3161.gtm.corp.microsoft.com/TSS/HttpTspServer\" /td sha256"
+                    }
+                  ],
+                  "toolName": "signtool.exe",
+                  "toolVersion": "6.2.9304.0"
+                }
+              ]
+            SessionTimeout: '60'
+            MaxConcurrency: '50'
+            MaxRetryAttempts: '5'
+
+        - task: PowerShell@2
           displayName: Build MsixBundle
           inputs:
             filePath: 'Build.ps1'
@@ -299,7 +348,7 @@ stages:
               [
                 {
                   "keycode": "CP-230012",
-                  "operationSetCode": "SigntoolSign",
+                  "operationSetCode": "SigntoolvNextSign",
                   "parameters": [
                     {
                       "parameterName": "OpusName",

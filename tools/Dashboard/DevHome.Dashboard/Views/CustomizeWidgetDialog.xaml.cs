@@ -27,6 +27,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
     public CustomizeWidgetDialog(WidgetHost host, WidgetCatalog catalog, AdaptiveCardRenderer renderer, DispatcherQueue dispatcher, WidgetDefinition widgetDefinition)
     {
         ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, renderer, dispatcher);
+        ViewModel.IsInEditMode = true;
         this.InitializeComponent();
 
         _widgetHost = host;
@@ -73,7 +74,10 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
 
     private void HideDialog()
     {
+        Application.Current.GetService<WindowEx>().Closed -= OnMainWindowClosed;
         _widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        ViewModel.IsInEditMode = false;
+
         this.Hide();
     }
 
