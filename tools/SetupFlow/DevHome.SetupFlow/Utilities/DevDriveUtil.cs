@@ -64,6 +64,12 @@ public static class DevDriveUtil
 
     public static readonly List<char> InvalidCharactersNotInGetInvalidPathChars = new () { '*', '?', '\"', '<', '>', '|' };
 
+    // Temporary build version values, to use while the API to check for the Dev Drive feature is being created.
+    private const ushort DevDriveMajorVersion = 10;
+    private const ushort DevDriveMinorVersion = 0;
+    private const ushort DevDriveMinBuild = 23000;
+    private const ushort DevDriveMaxBuild = 23999;
+
     /// <summary>
     /// Gets a value indicating whether the system has the ability to create Dev Drives
     /// and whether the ability is enabled. Win10 machines will not have this ability.
@@ -76,21 +82,21 @@ public static class DevDriveUtil
     {
         get
         {
+            // Windows Insiders dev channel now uses the 23000 series for its build numbers.
+            // The Dev Drive Feature is only be enabled there currently and will eventually go into a full retail
+            // release. We expect the API to be created before the full retail release of the Dev Drive feature
+            // in which case we will not be checking windows build numbers, but will be checking the results of the
+            // API call.
             var osVersion = ToolKitHelpers.SystemInformation.Instance.OperatingSystemVersion;
-            if (osVersion.Major == 10 && osVersion.Minor == 0 && osVersion.Build < 22000)
+            if (osVersion.Major == DevDriveMajorVersion &&
+                osVersion.Minor == DevDriveMinorVersion &&
+                osVersion.Build >= DevDriveMinBuild &&
+                osVersion.Build <= DevDriveMaxBuild)
             {
-                // Win 10
-                Log.Logger?.ReportInfo(Log.Component.DevDrive, "Dev Drive feature is not available on Win10");
-                return false;
-            }
-
-            if (osVersion.Major == 10 && osVersion.Minor == 0 && osVersion.Build >= 25309)
-            {
-                // Canary Insiders dev channel use the 25000 series numbering. Feature is enabled there.
                 return true;
             }
 
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Dev Drive feature is not available on older Win11 builds");
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Dev Drive feature is not available on this build of Windows: {osVersion.Major}.{osVersion.Minor}.{osVersion.Build}.{osVersion.Revision}");
             return false;
         }
     }
