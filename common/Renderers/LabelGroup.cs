@@ -88,7 +88,7 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
 {
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
-        var stackPanel = new stackPanel
+        var stackPanel = new StackPanel
         {
             Name = LabelGroup.CustomTypeString,
             Orientation = Orientation.Horizontal,
