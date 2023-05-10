@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using LibreHardwareMonitor.Hardware;
 using Windows.Win32;
+using Timer = System.Timers.Timer;
 
 namespace CoreWidgetProvider.Helpers;
 
@@ -45,16 +46,22 @@ internal class DataManager : IDisposable
     private readonly PerformanceCounter memPoolPaged = new ("Memory", "Pool Paged Bytes", string.Empty);
     private readonly PerformanceCounter memPoolNonPaged = new ("Memory", "Pool Nonpaged Bytes", string.Empty);
 
-    private Timer updateTimer;
+    private readonly Timer updateTimer;
 
     private const int MaxChartValues = 30;
+
+    private const int OneSecondInMilliseconds = 1000;
 
     public DataManager(Action updateWidget)
     {
         systemData = new SystemData();
 
         updateAction = updateWidget;
-        updateTimer = new Timer(TimeEllapsed, null, 1000, 1000);
+
+        updateTimer = new Timer(OneSecondInMilliseconds);
+        updateTimer.Elapsed += UpdateTimer_Elapsed;
+        updateTimer.AutoReset = true;
+        updateTimer.Enabled = true;
     }
 
     public void GetMemoryData()
@@ -78,22 +85,15 @@ internal class DataManager : IDisposable
         systemData.MemStats.MemNonPagedPool = (ulong)memPoolNonPaged.NextValue();
     }
 
-    private void TimeEllapsed(object? state)
+    private void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        updateTimer.Dispose();
         lock (systemData)
         {
             // memory
             GetMemoryData();
         }
 
-        CreateCharts();
-    }
-
-    private void CreateCharts()
-    {
         updateAction();
-        updateTimer = new Timer(TimeEllapsed, null, 1000, 1000);
     }
 
     private void AddNextChartValue(float value, List<float> chartValues)
