@@ -155,7 +155,9 @@ stages:
             targetPath: '$(Pipeline.Workspace)\sdkArtifacts\'
 
         - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
-          displayName: Download Localization Files
+          displayName: Send and Download Localization Files
+          condition: and(eq(variables['EnableLocalization'], 'true'), eq(variables['UpdateLocalization'], 'true'))
+          condition: 
           inputs:
             teamId: 71220
             authId: $(TouchdownAppId)
@@ -167,8 +169,24 @@ stages:
             appendRelativeDir: true
             pseudoSetting: Included
 
+        - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
+          displayName: Download Localization Files
+          condition: and(eq(variables['EnableLocalization'], 'true'), ne(variables['UpdateLocalization'], 'true'))
+          condition: 
+          inputs:
+            teamId: 71220
+            authId: $(TouchdownAppId)
+            authKey: $(TouchdownAppKey)
+            resourceFilePath: |
+              **\en-US\*.resw
+            outputDirectoryRoot: LocOutput
+            localizationTarget: false
+            appendRelativeDir: true
+            pseudoSetting: Included
+
         - task: PowerShell@2
           displayName: Move Loc files one level up
+          condition: eq(variables['EnableLocalization'], 'true')
           inputs:
             targetType: inline
             script: >-
@@ -180,9 +198,11 @@ stages:
         # Saving one of these makes it really easy to inspect the loc output...
         - powershell: 'tar czf LocOutput.tar.gz LocOutput'
           displayName: 'Archive Loc Output for Submission'
+          condition: eq(variables['EnableLocalization'], 'true')
 
         - task: PublishBuildArtifacts@1
           displayName: 'Publish Artifact: LocOutput'
+          condition: eq(variables['EnableLocalization'], 'true')
           inputs:
             PathtoPublish: LocOutput.tar.gz
             ArtifactName: LocOutput
