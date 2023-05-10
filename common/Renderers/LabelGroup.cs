@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
-using CommunityToolkit.WinUI.UI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
@@ -89,7 +88,7 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
 {
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
     {
-        var wrapPanel = new WrapPanel
+        var stackPanel = new stackPanel
         {
             Name = LabelGroup.CustomTypeString,
             Orientation = Orientation.Horizontal,
@@ -120,11 +119,11 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
                     FontSize = 12,
                 };
                 grid.Children.Add(tb);
-                wrapPanel.Children.Add(grid);
+                stackPanel.Children.Add(grid);
             }
         }
 
-        return wrapPanel;
+        return stackPanel;
     }
 
     /// <summary>
