@@ -12,7 +12,7 @@ using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace DevHome.TelemetryEvents;
+namespace DevHome.Common.TelemetryEvents;
 
 [EventData]
 public class DeveloperIdEvent : EventBase

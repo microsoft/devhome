@@ -3,12 +3,11 @@
 
 using System;
 using System.Diagnostics.Tracing;
-using DevHome.Common.TelemetryEvents.RepoToolEvents.EditDialogEvents;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
+namespace DevHome.Common.TelemetryEvents.SetupFlow;
 
 public enum AddKind
 {

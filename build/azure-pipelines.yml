@@ -23,7 +23,7 @@ parameters:
     - Release
 
 variables:
-  MSIXVersion: '0.100'
+  MSIXVersion: '0.101'
   SDKVersion: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -155,8 +155,9 @@ stages:
             targetPath: '$(Pipeline.Workspace)\sdkArtifacts\'
 
         - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
-          displayName: Download Localization Files
-          condition: eq(variables['EnableLocalization'], 'true')
+          displayName: Send and Download Localization Files
+          condition: and(eq(variables['EnableLocalization'], 'true'), eq(variables['UpdateLocalization'], 'true'))
+          condition: 
           inputs:
             teamId: 71220
             authId: $(TouchdownAppId)
@@ -164,7 +165,22 @@ stages:
             resourceFilePath: |
               **\en-US\*.resw
             outputDirectoryRoot: LocOutput
-            localizationTarget: eq(variables['UpdateLocalization'], 'true')
+            localizationTarget: true
+            appendRelativeDir: true
+            pseudoSetting: Included
+
+        - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
+          displayName: Download Localization Files
+          condition: and(eq(variables['EnableLocalization'], 'true'), ne(variables['UpdateLocalization'], 'true'))
+          condition: 
+          inputs:
+            teamId: 71220
+            authId: $(TouchdownAppId)
+            authKey: $(TouchdownAppKey)
+            resourceFilePath: |
+              **\en-US\*.resw
+            outputDirectoryRoot: LocOutput
+            localizationTarget: false
             appendRelativeDir: true
             pseudoSetting: Included
 
