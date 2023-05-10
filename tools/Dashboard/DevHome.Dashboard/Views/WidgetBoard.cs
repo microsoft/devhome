@@ -11,7 +11,7 @@ namespace DevHome.Dashboard.Views;
 public sealed class WidgetBoard : Panel
 {
     private double _columnWidth;
-    private const int _maxColumns = 3;
+    private const int _maxColumns = 4;
 
     // We need to control the HorizontalAlignment, so hide this property.
 #pragma warning disable SA1306 // Field names should begin with lower-case letter

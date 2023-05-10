@@ -40,9 +40,9 @@
     <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" MaxWidth="{ThemeResource MaxPageBackgroundWidth}">
         <RelativePanel>
             <Grid>
-                <Image Source="{ThemeResource BackgroundBack}" MinWidth="974" VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="UniformToFill" />
-                <Image Source="{ThemeResource BackgroundFront}" MinWidth="974" VerticalAlignment="Top" HorizontalAlignment="Right" Stretch="UniformToFill"/>
-                <Image Source="{ThemeResource BackgroundShadow}" MinWidth="974" Margin="0 100 0 0" VerticalAlignment="Top" Stretch="UniformToFill"/>
+                <Image Source="{ThemeResource BackgroundBack}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="UniformToFill" />
+                <Image Source="{ThemeResource BackgroundFront}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" VerticalAlignment="Top" HorizontalAlignment="Right" Stretch="UniformToFill"/>
+                <Image Source="{ThemeResource BackgroundShadow}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" Margin="0 100 0 0" VerticalAlignment="Top" Stretch="UniformToFill"/>
             </Grid>
             <Grid x:Name="ContentArea" Padding="35 0 35 30" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
