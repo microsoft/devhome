@@ -20,13 +20,10 @@ public enum DevDriveValidationResult
     InvalidDriveSize,
     InvalidDriveLabel,
     InvalidFolderLocation,
-    FolderLocationNotFound,
     FileNameAlreadyExists,
-    DefaultFolderNotAvailable,
     DriveLetterNotAvailable,
     NoDriveLettersAvailable,
     NotEnoughFreeSpace,
-    DevDriveNotFound,
 }
 
 /// <summary>

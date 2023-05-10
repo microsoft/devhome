@@ -320,9 +320,9 @@ public class DevDriveManager : IDevDriveManager
             returnSet.Add(DevDriveValidationResult.InvalidDriveLabel);
         }
 
-        // Only check if the drive letter isn't already being used by another Dev Drive object in memory
-        // if we're not in the process of creating it on the System.
-        if (_devDrives.FirstOrDefault(drive => drive.DriveLetter == devDrive.DriveLetter && drive.ID != devDrive.ID) != null)
+        // Check if the drive letter isn't already being used by another Dev Drive object in memory and if its an actual valid drive letter.
+        if (!DevDriveUtil.IsCharValidDriveLetter(devDrive.DriveLetter) ||
+            _devDrives.FirstOrDefault(drive => drive.DriveLetter == devDrive.DriveLetter && drive.ID != devDrive.ID) != null)
         {
             returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
         }
@@ -343,7 +343,7 @@ public class DevDriveManager : IDevDriveManager
             }
 
             // If drive location is invalid, we would have already captured this in the IsPathValid call above.
-            var potentialRoot = string.IsNullOrEmpty(devDrive.DriveLocation) ? '\0' : devDrive.DriveLocation[0];
+            var potentialRoot = string.IsNullOrEmpty(devDrive.DriveLocation) ? '\0' : char.ToUpperInvariant(devDrive.DriveLocation[0]);
             if (potentialRoot == curDriveOnSystem.Name[0] &&
                 (devDrive.DriveSizeInBytes > (ulong)curDriveOnSystem.TotalFreeSpace))
             {
