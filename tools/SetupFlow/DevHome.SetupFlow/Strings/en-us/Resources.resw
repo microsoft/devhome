@@ -290,8 +290,8 @@
     <comment>Header for the Dev Drive location text box. This location can be on the location system or on a network share</comment>
   </data>
   <data name="DevDriveWindowLocationTextBox.PlaceholderText" xml:space="preserve">
-    <value>C:\ProgramData\Microsoft\Windows\DevDrives</value>
-    <comment>Placeholder value within the Dev Drive location text box to show the user an example input of a folder location</comment>
+    <value>C:\Users\User\DevDrives</value>
+    <comment>{Locked="C:\"} Placeholder value within the Dev Drive location text box to show the user an example input of a folder location</comment>
   </data>
   <data name="DevDriveWindowNameTextBox.Header" xml:space="preserve">
     <value>Dev Drive name</value>
@@ -458,7 +458,7 @@
     <comment>Header for a card that when clicked takes the user to a page for cloning git repositories</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Description" xml:space="preserve">
-    <value>Set up you machine directly from one or multiple configuration files</value>
+    <value>Set up your machine directly from one or multiple configuration files</value>
     <comment>Body text description for a card that when clicked allows the user to select a configuration file and run it</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Header" xml:space="preserve">
@@ -646,7 +646,7 @@
     <comment>Button to re-run all failed tasks.</comment>
   </data>
   <data name="MainPage_RepoReviewDescription.Text" xml:space="preserve">
-    <value>Add private or public repositories to clone to your compuer</value>
+    <value>Add private or public repositories to clone to your computer</value>
     <comment>Description for the repo review page</comment>
   </data>
   <data name="MainPage_RepoReview_AddRepository.Content" xml:space="preserve">
@@ -658,7 +658,7 @@
     <comment>Clone Repo label for the stepper</comment>
   </data>
   <data name="ApplicationsPageTitle" xml:space="preserve">
-    <value>Install Apps</value>
+    <value>Install apps</value>
     <comment>Install Apps label for the stepper</comment>
   </data>
   <data name="ReviewPageTitle" xml:space="preserve">
@@ -758,7 +758,7 @@
     <comment>Top row of the header for the loading page</comment>
   </data>
   <data name="LoadingExecutingProgress" xml:space="preserve">
-    <value>Executing Task {0}/{1}</value>
+    <value>Executing task {0}/{1}</value>
     <comment>Shows ot the user how many tasks have been completed</comment>
   </data>
   <data name="Loading_StopButton.Content" xml:space="preserve">
@@ -770,7 +770,7 @@
     <comment>Action center display to see status of all tasks that have finished.</comment>
   </data>
   <data name="Loading_ActionCenter.Text" xml:space="preserve">
-    <value>Action Center</value>
+    <value>Action center</value>
     <comment>Header for action center</comment>
   </data>
   <data name="Loading_ExecutingTasks.Text" xml:space="preserve">
@@ -848,7 +848,7 @@
     <value>Size:</value>
     <comment>Text label for any item that will display a number size. Example could be a using this with a textblock to make a label that is on the same line as another textblock that displays the amount of free storage space on a computer.</comment>
   </data>
-  <data name="DevDriveFilenameAlreadyExists" xml:space="preserve">
+  <data name="DevDriveFileNameAlreadyExists" xml:space="preserve">
     <value>The filename already exists in the selected location. Enter a new file name and try again.</value>
     <comment>Text that advises the user that the file name of the virtual hard disk they were trying to create already exists in the location they selected and that they should enter a new name.</comment>
   </data>
@@ -889,7 +889,7 @@
     <comment>Message when the configuration task needs the computer to reboot</comment>
   </data>
   <data name="DevDriveCreated" xml:space="preserve">
-    <value>Created DevDrive</value>
+    <value>Created Dev Drive</value>
     <comment>Task message when a Dev Drive is finished</comment>
   </data>
   <data name="DevDriveCreating" xml:space="preserve">
@@ -929,7 +929,7 @@
     <comment>Number of tasks that failed. Param: number of failed tasks</comment>
   </data>
   <data name="LoadingPage_ActionCenter_GoToSummary.Content" xml:space="preserve">
-    <value>View Summary</value>
+    <value>View summary</value>
     <comment>Button content to let users go to the summary page</comment>
   </data>
   <data name="LoadingPage_ActionCenter_Retry.Content" xml:space="preserve">
@@ -969,7 +969,7 @@
     <comment>Header text for the summary page with certain unsuccessful tasks</comment>
   </data>
   <data name="SummaryPage_NextSteps.Text" xml:space="preserve">
-    <value>Next Steps</value>
+    <value>Next steps</value>
     <comment>Text for the "Next steps" section of the summary page</comment>
   </data>
   <data name="SummaryPage_OpenDashboard.Content" xml:space="preserve">
@@ -1013,7 +1013,7 @@
     <comment>Text that shows the title of a tab in the review page where users can see the details of the Dev Drive they are about to create.</comment>
   </data>
   <data name="NoRepositoriesToClone.Text" xml:space="preserve">
-    <value>No Repositories to clone</value>
+    <value>No repositories to clone</value>
   </data>
   <data name="EditClonePathDialogUncheckCheckMark.PrimaryButtonText" xml:space="preserve">
     <value>Yes, I'm sure</value>
