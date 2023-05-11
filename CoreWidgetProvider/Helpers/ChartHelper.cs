@@ -15,6 +15,8 @@ internal class ChartHelper
     private static readonly Brush Brush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 4, 157, 228), Color.FromArgb(65, 117, 125, 133));
     private static readonly Brush Brush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 4, 157, 228), Color.FromArgb(65, 117, 125, 133));
 
+    private const int MaxChartValues = 30;
+
     public static string CreateImageUrl(List<float> chartValues)
     {
         var bytes = CreateChart(chartValues);
@@ -80,5 +82,15 @@ internal class ChartHelper
         using var stream = new MemoryStream();
         img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
         return stream.ToArray();
+    }
+
+    public static void AddNextChartValue(float value, List<float> chartValues)
+    {
+        if (chartValues.Count >= MaxChartValues)
+        {
+            chartValues.RemoveAt(0);
+        }
+
+        chartValues.Add(value);
     }
 }

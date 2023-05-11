@@ -5,12 +5,17 @@ using System.Diagnostics;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal class SystemData
+internal class SystemData : IDisposable
 {
     public MemoryStats MemStats { get; set; }
 
     public SystemData()
     {
         MemStats = new MemoryStats();
+    }
+
+    public void Dispose()
+    {
+        MemStats.Dispose();
     }
 }

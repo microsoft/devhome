@@ -74,7 +74,7 @@ internal class SystemMemoryWidget : CoreWidget, IDisposable
             memoryData.Add("cachedMem", MemUlongToString(currentData.MemCached));
             memoryData.Add("pagedPoolMem", MemUlongToString(currentData.MemPagedPool));
             memoryData.Add("nonPagedPoolMem", MemUlongToString(currentData.MemNonPagedPool));
-            memoryData.Add("memGraphUrl", dataManager.CreateMemImageUrl());
+            memoryData.Add("memGraphUrl", currentData.CreateMemImageUrl());
 
             DataState = WidgetDataState.Okay;
             ContentData = memoryData.ToJsonString();
