@@ -85,7 +85,7 @@
                         <DataTemplate x:DataType="models:RepoViewListItem">
                             <StackPanel Orientation="Horizontal" Spacing="5">
                                 <FontIcon FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
-                                <TextBlock Text="{x:Bind RepoName}"/>
+                                <TextBlock Text="{x:Bind RepoDisplayName}"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>
