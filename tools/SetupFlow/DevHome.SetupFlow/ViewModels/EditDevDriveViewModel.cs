@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Utilities;
 using Microsoft.UI.Xaml;
 
@@ -169,7 +168,6 @@ public partial class EditDevDriveViewModel : ObservableObject
     {
         if (IsWindowOpen)
         {
-            await Task.CompletedTask;
             return;
         }
 
