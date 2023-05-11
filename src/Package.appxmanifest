@@ -77,7 +77,7 @@
 
                 <Definitions>
                   <Definition Id="SSH_Wallet"
-                      DisplayName="SSH Wallet"
+                      DisplayName="SSH keychain"
                       Description="Quickly connect into to your favorite servers from your SSH config file"
                       AllowMultiple="true">
                     <Capabilities>
@@ -93,13 +93,15 @@
                     </Capabilities>
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Assets\Preview\StoreLogo.png" />
+                        <Icon Path="Widgets\Assets\ssh_keychain_icon_light.png" />
                       </Icons>
                       <Screenshots>
                         <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
                       </Screenshots>
                       <DarkMode>
-                        <!-- DarkMode and LightMode are optional -->
+                        <Icons>
+                          <Icon Path="Widgets\Assets\ssh_keychain_icon_dark.png" />
+                        </Icons>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
