@@ -66,3 +66,10 @@ body:
     label: Included System Information
   validations:
     required: false
+
+- id: includedpluginsinfo
+  type: textarea
+  attributes:
+    label: Included Plugins Information
+  validations:
+    required: false
