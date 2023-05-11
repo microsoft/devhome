@@ -8,13 +8,12 @@ namespace CoreWidgetProvider.Helpers;
 
 internal class ChartHelper
 {
-    private static readonly Color DarkGrayColor = Color.FromArgb(255, 29, 32, 35);
-    private static readonly Color ChartColor = Color.FromArgb(255, 4, 157, 228);
+    private static readonly Color DarkGrayColor = Color.FromArgb(30, 213, 224, 247);
     private static readonly Pen ChartPen = new (Color.FromArgb(255, 4, 157, 228));
 
-    private static readonly Brush Brush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(255, 4, 157, 228), Color.FromArgb(255, 29, 32, 35));
-    private static readonly Brush Brush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(255, 4, 157, 228), Color.FromArgb(255, 29, 32, 35));
-    private static readonly Brush Brush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(255, 4, 157, 228), Color.FromArgb(255, 29, 32, 35));
+    private static readonly Brush Brush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 4, 157, 228), Color.FromArgb(65, 117, 125, 133));
+    private static readonly Brush Brush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 4, 157, 228), Color.FromArgb(65, 117, 125, 133));
+    private static readonly Brush Brush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 4, 157, 228), Color.FromArgb(65, 117, 125, 133));
 
     public static string CreateImageUrl(List<float> chartValues)
     {
