@@ -94,7 +94,6 @@ public class SSHWalletWidget : WidgetImpl
 
             hostsData.Add("hosts", hostsArray);
             hostsData.Add("selected_config_file", ConfigFile);
-            hostsData.Add("connect_icon", IconLoader.GetIconAsBase64("connect_icon.png"));
 
             DataState = WidgetDataState.Okay;
             ContentData = hostsData.ToJsonString();
