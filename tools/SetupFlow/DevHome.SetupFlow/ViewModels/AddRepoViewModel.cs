@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Management.Automation;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -20,6 +21,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using DevHome.TelemetryEvents;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.Windows.DevHome.SDK;
 using static DevHome.SetupFlow.Models.Common;
 
@@ -138,6 +140,7 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     private void FilterRepositories(string text)
     {
+        /*
         IEnumerable<RepoViewListItem> filteredRepositories;
         if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
         {
@@ -151,6 +154,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         Repositories = new ObservableCollection<RepoViewListItem>(filteredRepositories);
+        */
     }
 
     /// <summary>
@@ -463,8 +467,22 @@ public partial class AddRepoViewModel : ObservableObject
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
         _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
 
-        // TODO: What if the user comes back here with repos selected?
-        Repositories = new ObservableCollection<RepoViewListItem>(_repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => new RepoViewListItem(x)));
+        var organizationRepos = _repositoriesForAccount.Where(x => !x.OwningAccountName.Equals(loginId, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(x => x.LastUpdated)
+            .Select(x => new RepoViewListItem(x));
+
+        var userRepos = _repositoriesForAccount.Where(x => x.OwningAccountName.Equals(loginId, StringComparison.OrdinalIgnoreCase));
+        var userPublicRepos = userRepos.Where(x => !x.IsPrivate)
+            .OrderBy(x => x.LastUpdated)
+            .Select(x => new RepoViewListItem(x));
+
+        var userPrivateRepos = userRepos.Where(x => x.IsPrivate)
+            .OrderBy(x => x.LastUpdated)
+            .Select(x => new RepoViewListItem(x));
+
+        Repositories = new ObservableCollection<RepoViewListItem>(userPrivateRepos
+            .Concat(organizationRepos)
+            .Concat(userPublicRepos));
     }
 
     /// <summary>

@@ -3,6 +3,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -24,9 +25,14 @@ public partial class RepoViewListItem : ObservableObject
     /// </summary>
     public string RepoName { get; }
 
+    public string OwningAccountName { get; }
+
+    public string RepoDisplayName => System.IO.Path.Join(OwningAccountName, RepoName);
+
     public RepoViewListItem(IRepository repo)
     {
         IsPrivate = repo.IsPrivate;
         RepoName = repo.DisplayName;
+        OwningAccountName = repo.OwningAccountName;
     }
 }
