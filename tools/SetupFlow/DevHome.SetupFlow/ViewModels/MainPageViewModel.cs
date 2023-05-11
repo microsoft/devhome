@@ -39,7 +39,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private bool _showDevDriveItem;
 
     [ObservableProperty]
-    private bool _showPackageInstallerItem;
+    private bool _enablePackageInstallerItem;
 
     [ObservableProperty]
     private bool _showAppInstallerUpdateNotification;
@@ -71,8 +71,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         // If IsCOMServerAvailable is still being (lazily) evaluated form a
         // previous call, then await until the thread is unblocked and the
         // already computed value is returned.
-        ShowPackageInstallerItem = await Task.Run(() => _wpm.IsCOMServerAvailable());
-        if (ShowPackageInstallerItem)
+        EnablePackageInstallerItem = await Task.Run(() => _wpm.IsCOMServerAvailable());
+        if (EnablePackageInstallerItem)
         {
             Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");
             ShowAppInstallerUpdateNotification = await _wpm.IsAppInstallerUpdateAvailableAsync();
@@ -121,18 +121,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         var taskGroups = new List<ISetupTaskGroup>
         {
             _host.GetService<RepoConfigTaskGroup>(),
+            _host.GetService<AppManagementTaskGroup>(),
+            _host.GetService<DevDriveTaskGroup>(),
         };
-
-        if (ShowPackageInstallerItem)
-        {
-            taskGroups.Add(_host.GetService<AppManagementTaskGroup>());
-        }
-        else
-        {
-            Log.Logger?.ReportInfo(Log.Component.MainPage, $"Skipping {nameof(AppManagementTaskGroup)} because COM server is not available");
-        }
-
-        taskGroups.Add(_host.GetService<DevDriveTaskGroup>());
 
         StartSetupFlowForTaskGroups(flowTitle, taskGroups.ToArray());
     }

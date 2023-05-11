@@ -15,8 +15,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
-            <converters:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
-
+            <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
+            <converters:BoolToObjectConverter x:Key="BoolToOpacityConverter" TrueValue="1" FalseValue="0.4" />
             <x:Double x:Key="SettingsCardHeaderIconMaxSize">32</x:Double>
 
             <ResourceDictionary.MergedDictionaries>
@@ -87,16 +87,29 @@
 
                     <StackPanel Spacing="5">
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_EnvironmentSetup" />
-                        <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
-                                           Style="{StaticResource MainPageCardStyle}"
-                                           IsClickEnabled="True"
-                                           Command="{x:Bind ViewModel.StartSetupCommand}"
-                                           CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
-                                           ActionIcon="{x:Null}" >
-                            <labs:SettingsCard.HeaderIcon>
-                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_EndToEnd.png" />
-                            </labs:SettingsCard.HeaderIcon>
-                        </labs:SettingsCard>
+                        <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
+                        <Grid Background="Transparent">
+                            <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
+                                               Style="{StaticResource MainPageCardStyle}"
+                                               IsClickEnabled="True"
+                                               Command="{x:Bind ViewModel.StartSetupCommand}"
+                                               CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                                               IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}"
+                                               ActionIcon="{x:Null}" >
+                                <labs:SettingsCard.HeaderIcon>
+                                    <ImageIcon
+                                        Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}"
+                                        Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_EndToEnd.png" />
+                                </labs:SettingsCard.HeaderIcon>
+                            </labs:SettingsCard>
+
+                            <!-- Tooltip visible when the settings card is disabled -->
+                            <ToolTipService.ToolTip>
+                                <ToolTip
+                                    IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
+                                    Content="App Installer required for this function"/>
+                            </ToolTipService.ToolTip>
+                        </Grid>
                         <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile"
                                            Style="{StaticResource MainPageCardStyle}"
                                            IsClickEnabled="True"
@@ -121,17 +134,29 @@
                                 <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_RepoConfig.png" />
                             </labs:SettingsCard.HeaderIcon>
                         </labs:SettingsCard>
-                        <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
-                                           Style="{StaticResource MainPageCardStyle}"
-                                           IsClickEnabled="True"
-                                           Command="{x:Bind ViewModel.StartAppManagementCommand}"
-                                           CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
-                                           Visibility="{x:Bind ViewModel.ShowPackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                           ActionIcon="{x:Null}" >
-                            <labs:SettingsCard.HeaderIcon>
-                                <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_AppManagement.png" />
-                            </labs:SettingsCard.HeaderIcon>
-                        </labs:SettingsCard>
+                        <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
+                        <Grid Background="Transparent">
+                            <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
+                                               Style="{StaticResource MainPageCardStyle}"
+                                               IsClickEnabled="True"
+                                               Command="{x:Bind ViewModel.StartAppManagementCommand}"
+                                               CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                                               IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}"
+                                               ActionIcon="{x:Null}" >
+                                <labs:SettingsCard.HeaderIcon>
+                                    <ImageIcon
+                                        Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}"
+                                        Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_AppManagement.png" />
+                                </labs:SettingsCard.HeaderIcon>
+                            </labs:SettingsCard>
+
+                            <!-- Tooltip visible when the settings card is disabled -->
+                            <ToolTipService.ToolTip>
+                                <ToolTip
+                                    IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
+                                    Content="App Installer required for this function"/>
+                            </ToolTipService.ToolTip>
+                        </Grid>
                         <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevDrive"
                                            Style="{StaticResource MainPageCardStyle}"
                                            IsClickEnabled="True" Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}" 
