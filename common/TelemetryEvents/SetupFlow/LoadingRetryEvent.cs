@@ -7,25 +7,22 @@ using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents.RepoToolEvents;
+namespace DevHome.Common.TelemetryEvents.SetupFlow;
 
 [EventData]
-public class ProviderEvent : EventBase
+public class LoadingRetryEvent : EventBase
 {
+    public int NumberOfFailedTasks { get; }
+
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public int NumberOfProviders
+    public LoadingRetryEvent(int numberOfFailedTasks)
     {
-        get;
-    }
-
-    public ProviderEvent(int numberOfProviders)
-    {
-        NumberOfProviders = numberOfProviders;
+        NumberOfFailedTasks = numberOfFailedTasks;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // No sensitive strings to replace
+        // No sensitive data held
     }
 }

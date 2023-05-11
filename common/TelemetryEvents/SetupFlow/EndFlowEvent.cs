@@ -6,26 +6,22 @@ using System.Diagnostics.Tracing;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
-using Microsoft.UI.Xaml.Controls;
 
-namespace DevHome.Common.TelemetryEvents.RepoToolEvents;
+namespace DevHome.Common.TelemetryEvents.SetupFlow;
 
 [EventData]
-public class DialogEvent : EventBase
+public class EndFlowEvent : EventBase
 {
-    public string Action { get; }
-
-    public string DialogName { get; }
-
-    public ContentDialogResult DialogResult { get; }
+    public string CallerName
+    {
+        get;
+    }
 
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public DialogEvent(string action, string dialogName, ContentDialogResult dialogResult = ContentDialogResult.None)
+    public EndFlowEvent(string callerName)
     {
-        Action = action;
-        DialogName = dialogName;
-        DialogResult = dialogResult;
+        CallerName = callerName;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)

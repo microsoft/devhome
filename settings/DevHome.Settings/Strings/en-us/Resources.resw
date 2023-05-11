@@ -79,7 +79,7 @@
     <comment>Header for a card than when clicked takes the user to the Accounts settings page</comment>
   </data>
   <data name="Settings_Extensions_Description" xml:space="preserve">
-    <value>Manage, add, or remove</value>
+    <value>Manage</value>
     <comment>Body text description for a card than when clicked takes the user to the Extensions settings page</comment>
   </data>
   <data name="Settings_Extensions_Header" xml:space="preserve">
@@ -87,7 +87,7 @@
     <comment>Header for a card than when clicked takes the user to the Extensions settings page</comment>
   </data>
   <data name="Settings_About_Description" xml:space="preserve">
-    <value>App info, Privacy Policy, Terms of Use</value>
+    <value>App info, privacy policy</value>
     <comment>Body text description for a card than when clicked takes the user to the About settings page</comment>
   </data>
   <data name="Settings_About_Header" xml:space="preserve">
@@ -134,7 +134,7 @@
     <comment>URL</comment>
   </data>
   <data name="SettingsPage_PrivacyPolicyLink.Content" xml:space="preserve">
-    <value>Privacy Policy</value>
+    <value>Privacy policy</value>
   </data>
   <data name="SettingsPage_PrivacyPolicyLink.NavigateUri" xml:space="preserve">
     <value>https://go.microsoft.com/fwlink/?linkid=2234882</value>

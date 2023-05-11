@@ -7,21 +7,21 @@ using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.TelemetryEvents;
+namespace DevHome.Common.TelemetryEvents.SetupFlow;
 
 [EventData]
-public class StartFlowEvent : EventBase
+public class RepoToolEvent : EventBase
 {
-    public string FlowTitle
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+
+    public string Action
     {
         get;
     }
 
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
-
-    public StartFlowEvent(string flowTitle)
+    public RepoToolEvent(string action)
     {
-        FlowTitle = flowTitle;
+        Action = action;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
