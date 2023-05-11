@@ -131,7 +131,8 @@
                             MinItemHeight="358"
                             MinRowSpacing="12" 
                             MinColumnSpacing="12"
-                            ItemsStretch="Fill" />
+                            ItemsStretch="None"
+                            ItemsJustification="Center" />
                     </muxc:ItemsRepeater.Layout>
 
                     <muxc:ItemsRepeater.ItemTemplate>
