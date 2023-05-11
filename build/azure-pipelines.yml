@@ -157,7 +157,6 @@ stages:
         - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
           displayName: Send and Download Localization Files
           condition: and(eq(variables['EnableLocalization'], 'true'), eq(variables['UpdateLocalization'], 'true'))
-          condition: 
           inputs:
             teamId: 71220
             authId: $(TouchdownAppId)
@@ -172,7 +171,6 @@ stages:
         - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
           displayName: Download Localization Files
           condition: and(eq(variables['EnableLocalization'], 'true'), ne(variables['UpdateLocalization'], 'true'))
-          condition: 
           inputs:
             teamId: 71220
             authId: $(TouchdownAppId)
@@ -209,6 +207,7 @@ stages:
 
         - task: PowerShell@2
           displayName: Build Dev Home
+          retryCountOnTaskFailure: 2
           inputs:
             filePath: 'Build.ps1'
             arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -Version $(MSIXVersion) -SDKVersion $(SDKVersion) -SDKNugetSource $(Pipeline.Workspace)\sdkArtifacts\ -BuildStep "msix" -AzureBuildingBranch "$(BuildingBranch)" -IsAzurePipelineBuild
