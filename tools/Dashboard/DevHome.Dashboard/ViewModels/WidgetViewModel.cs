@@ -154,21 +154,33 @@ public partial class WidgetViewModel : ObservableObject
             return;
         }
 
+        if (_renderedCard != null)
+        {
+            _renderedCard.Action -= HandleAdaptiveAction;
+        }
+
+        if (card == null || card.AdaptiveCard == null)
+        {
+            Log.Logger()?.ReportError("WidgetViewModel", "Error in AdaptiveCardParseResult");
+            ShowErrorCard("WidgetErrorCardDisplayText");
+            return;
+        }
+
         // Render card on the UI thread.
         _dispatcher.TryEnqueue(() =>
         {
             try
             {
-                if (_renderedCard != null)
-                {
-                    _renderedCard.Action -= HandleAdaptiveAction;
-                }
-
                 _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
                 if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                 {
                     _renderedCard.Action += HandleAdaptiveAction;
                     WidgetFrameworkElement = _renderedCard.FrameworkElement;
+                }
+                else
+                {
+                    Log.Logger()?.ReportError("WidgetViewModel", "Error in RenderedAdaptiveCard");
+                    WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
                 }
             }
             catch (Exception ex)

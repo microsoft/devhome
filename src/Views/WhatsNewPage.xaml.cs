@@ -1,10 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Dashboard.ViewModels;
 using DevHome.Models;
 using DevHome.Services;
 using DevHome.Settings.ViewModels;
@@ -13,6 +15,7 @@ using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.System;
 
 namespace DevHome.Views;
 
@@ -49,9 +52,37 @@ public sealed partial class WhatsNewPage : Page
         }
     }
 
-    private void ConnectToAccountsButton_Click(object sender, RoutedEventArgs e)
+    private void MachineConfigButton_Click(object sender, RoutedEventArgs e)
     {
         var navigationService = Application.Current.GetService<INavigationService>();
-        navigationService.NavigateTo(typeof(AccountsViewModel).FullName!);
+        navigationService.NavigateTo(typeof(DevHome.SetupFlow.ViewModels.SetupFlowViewModel).FullName!);
+    }
+
+    private async void Button_ClickAsync(object sender, RoutedEventArgs e)
+    {
+        var btn = sender as Button;
+
+        if (btn?.DataContext is not string pageKey)
+        {
+            return;
+        }
+
+        if (pageKey.StartsWith("ms-settings", StringComparison.InvariantCultureIgnoreCase))
+        {
+            _ = await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
+        }
+        else
+        {
+            var navigationService = Application.Current.GetService<INavigationService>();
+            navigationService.NavigateTo(pageKey!);
+        }
+    }
+
+    public static class MyHelpers
+    {
+        public static Type GetType(object ele)
+        {
+            return ele.GetType();
+        }
     }
 }

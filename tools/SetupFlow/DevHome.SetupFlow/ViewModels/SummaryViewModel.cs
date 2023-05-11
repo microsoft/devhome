@@ -10,7 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Common.Helpers;
@@ -27,6 +27,7 @@ namespace DevHome.SetupFlow.ViewModels;
 public partial class SummaryViewModel : SetupPageViewModelBase
 {
     private readonly SetupFlowOrchestrator _orchestrator;
+    private readonly SetupFlowViewModel _setupFlowViewModel;
     private readonly IHost _host;
     private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
@@ -112,24 +113,11 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         await Launcher.LaunchUriAsync(new Uri("https://learn.microsoft.com/windows/"));
     }
 
-    private void CancelSetupFlow()
-    {
-        var setupFlowViewModel = _host.GetService<SetupFlowViewModel>();
-        setupFlowViewModel.Cancel();
-    }
-
-    [RelayCommand]
-    public void SetUpAnotherProject()
-    {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("MachineConfiguration"));
-        CancelSetupFlow();
-    }
-
     [RelayCommand]
     public void GoToMainPage()
     {
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("MachineConfiguration"));
-        CancelSetupFlow();
+        _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToMainPage");
     }
 
     [RelayCommand]
@@ -137,7 +125,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     {
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("Dashboard"));
         _host.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName);
-        CancelSetupFlow();
+        _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToDashboard");
     }
 
     [RelayCommand]
@@ -145,7 +133,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     {
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("DevHomeSettings"));
         _host.GetService<INavigationService>().NavigateTo(typeof(SettingsViewModel).FullName);
-        CancelSetupFlow();
+        _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToSettings");
     }
 
     [RelayCommand]
@@ -158,6 +146,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     public SummaryViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
+        SetupFlowViewModel setupFlowViewModel,
         IHost host,
         ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory,
         IWindowsPackageManager wpm,
@@ -166,6 +155,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         : base(stringResource, orchestrator)
     {
         _orchestrator = orchestrator;
+        _setupFlowViewModel = setupFlowViewModel;
         _host = host;
         _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
         _wpm = wpm;

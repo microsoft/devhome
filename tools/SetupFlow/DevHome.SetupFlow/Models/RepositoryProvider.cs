@@ -3,14 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
-using DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
-using DevHome.TelemetryEvents;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
