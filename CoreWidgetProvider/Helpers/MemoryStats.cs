@@ -15,32 +15,6 @@ internal class MemoryStats : IDisposable
     private readonly PerformanceCounter memPoolPaged = new ("Memory", "Pool Paged Bytes", string.Empty);
     private readonly PerformanceCounter memPoolNonPaged = new ("Memory", "Pool Nonpaged Bytes", string.Empty);
 
-    public void GetData()
-    {
-        Windows.Win32.System.SystemInformation.MEMORYSTATUSEX memStatus = new ();
-        memStatus.dwLength = (uint)Marshal.SizeOf(typeof(Windows.Win32.System.SystemInformation.MEMORYSTATUSEX));
-        if (PInvoke.GlobalMemoryStatusEx(out memStatus))
-        {
-            AllMem = memStatus.ullTotalPhys;
-            var availableMem = memStatus.ullAvailPhys;
-            UsedMem = AllMem - availableMem;
-
-            MemUsage = (float)UsedMem / AllMem;
-            ChartHelper.AddNextChartValue(MemUsage * 100, MemChartValues);
-        }
-
-        MemCached = (ulong)memCached.NextValue();
-        MemCommited = (ulong)memCommitted.NextValue();
-        MemCommitLimit = (ulong)memCommittedLimit.NextValue();
-        MemPagedPool = (ulong)memPoolPaged.NextValue();
-        MemNonPagedPool = (ulong)memPoolNonPaged.NextValue();
-    }
-
-    public string CreateMemImageUrl()
-    {
-        return ChartHelper.CreateImageUrl(MemChartValues);
-    }
-
     public float MemUsage
     {
         get; set;
@@ -82,6 +56,32 @@ internal class MemoryStats : IDisposable
     }
 
     public List<float> MemChartValues { get; set; } = new List<float>();
+
+    public void GetData()
+    {
+        Windows.Win32.System.SystemInformation.MEMORYSTATUSEX memStatus = new ();
+        memStatus.dwLength = (uint)Marshal.SizeOf(typeof(Windows.Win32.System.SystemInformation.MEMORYSTATUSEX));
+        if (PInvoke.GlobalMemoryStatusEx(out memStatus))
+        {
+            AllMem = memStatus.ullTotalPhys;
+            var availableMem = memStatus.ullAvailPhys;
+            UsedMem = AllMem - availableMem;
+
+            MemUsage = (float)UsedMem / AllMem;
+            ChartHelper.AddNextChartValue(MemUsage * 100, MemChartValues);
+        }
+
+        MemCached = (ulong)memCached.NextValue();
+        MemCommited = (ulong)memCommitted.NextValue();
+        MemCommitLimit = (ulong)memCommittedLimit.NextValue();
+        MemPagedPool = (ulong)memPoolPaged.NextValue();
+        MemNonPagedPool = (ulong)memPoolNonPaged.NextValue();
+    }
+
+    public string CreateMemImageUrl()
+    {
+        return ChartHelper.CreateImageUrl(MemChartValues);
+    }
 
     public void Dispose()
     {
