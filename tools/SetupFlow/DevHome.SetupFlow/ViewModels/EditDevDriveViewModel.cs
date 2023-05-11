@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
@@ -164,18 +165,32 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// Pops the dev drive customization window.
     /// Subscribe to an event that fires when the window is closed.
     /// </summary>
-    public async void PopDevDriveCustomizationAsync()
+    public async Task PopDevDriveCustomizationAsync()
     {
         if (IsWindowOpen)
         {
+            await Task.CompletedTask;
             return;
         }
 
         IsWindowOpen = await _devDriveManager.LaunchDevDriveWindow(DevDrive);
         if (IsWindowOpen)
         {
-            _devDriveManager.ViewModelWindowClosed += DevDriveCustomizationWindowClosed;
             IsDevDriveCheckboxEnabled = false;
+
+            // Convert the wait for closed event into an async task
+            TaskCompletionSource<IDevDrive> devDriveWindowTask = new ();
+            EventHandler<IDevDrive> eventHandler = (_, devDrive) => devDriveWindowTask.SetResult(devDrive);
+            _devDriveManager.ViewModelWindowClosed += eventHandler;
+            var devDriveFromWindow = await devDriveWindowTask.Task;
+            _devDriveManager.ViewModelWindowClosed -= eventHandler;
+
+            IsWindowOpen = false;
+            IsDevDriveCheckboxEnabled = true;
+            DevDriveDetailsChanged = DevDriveChanged(devDriveFromWindow);
+            DevDrive = devDriveFromWindow;
+            DevDriveValidationError = (DevDrive.State == DevDriveState.New) ? false : true;
+            ClonePathUpdated();
         }
     }
 
@@ -209,19 +224,6 @@ public partial class EditDevDriveViewModel : ObservableObject
         }
 
         _canShowDevDriveUI = true;
-    }
-
-    /// <summary>
-    /// Clean up when the customization window is closed.
-    /// </summary>
-    private void DevDriveCustomizationWindowClosed(object sender, IDevDrive devDrive)
-    {
-        IsWindowOpen = false;
-        IsDevDriveCheckboxEnabled = true;
-        DevDriveDetailsChanged = DevDriveChanged(devDrive);
-        DevDrive = devDrive;
-        DevDriveValidationError = (DevDrive.State == DevDriveState.New) ? false : true;
-        ClonePathUpdated();
     }
 
     public bool IsDevDriveValid()

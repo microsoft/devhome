@@ -50,7 +50,12 @@
             </labs:Segmented>
 
             <!-- Adding a repo via URL -->
-            <TextBox x:Name="RepoUrlTextBox" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoUrl" Visibility="{x:Bind AddRepoViewModel.ShowUrlPage, Mode=OneWay}" LostFocus="RepoUrlTextBox_LostFocus" Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}" Margin="0, 20, 0, 0"/>
+            <TextBox x:Name="RepoUrlTextBox"
+                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoUrl"
+                     Visibility="{x:Bind AddRepoViewModel.ShowUrlPage, Mode=OneWay}"
+                     TextChanged="RepoUrlTextBox_TextChanged"
+                     Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}"
+                     Margin="0, 20, 0, 0"/>
             <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.UrlParsingError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlError, Mode=OneWay}"/>
 
             <!-- Log into account -->
@@ -145,7 +150,7 @@
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CustomizeHyperLink"
                         Grid.Column="1" 
                         Visibility="{x:Bind EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" 
-                        Click="CustomizeDevDriveHyperlinkButton_Click"
+                        Click="CustomizeDevDriveHyperlinkButton_ClickAsync"
                         Grid.Row="0"
                         Margin="0 -3 0 0"
                         Padding="3" />
