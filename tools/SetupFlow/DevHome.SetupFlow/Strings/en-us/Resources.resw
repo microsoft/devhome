@@ -125,22 +125,6 @@
     <value>Select packages to restore from your backup, clone from repository, or search with Windows Package Manager.</value>
     <comment>Description for Add packages page</comment>
   </data>
-  <data name="AppInstallerUpdateAvailableCancelButton" xml:space="preserve">
-    <value>Cancel</value>
-    <comment>Text for a button to cancel a dialog window for updating 'App Installer' application</comment>
-  </data>
-  <data name="AppInstallerUpdateAvailableMessage" xml:space="preserve">
-    <value>Get the best experience and latest features when installing apps.</value>
-    <comment>Content of a notification panel for updating 'App Installer' application</comment>
-  </data>
-  <data name="AppInstallerUpdateAvailableTitle" xml:space="preserve">
-    <value>Update App Installer</value>
-    <comment>Title of a notification panel for updating 'App Installer' application</comment>
-  </data>
-  <data name="AppInstallerUpdateAvailableUpdateButton" xml:space="preserve">
-    <value>Update</value>
-    <comment>Text for a button to update 'App Installer' application</comment>
-  </data>
   <data name="AppListBackupBanner.Title" xml:space="preserve">
     <value>Transfer developer machine settings</value>
     <comment>Title text of an instruction banner section for transferring settings from a developer machine</comment>
@@ -453,6 +437,34 @@
     <value>Machine configuration</value>
     <comment>Title for the main page where users can configure their machines</comment>
   </data>
+  <data name="MainPage_AppInstallerUpdateInfoBar.Title" xml:space="preserve">
+    <value>Update App Installer</value>
+    <comment>Title of a notification panel for updating 'App Installer' application</comment>
+  </data>
+  <data name="MainPage_AppInstallerUpdateInfoBar.Message" xml:space="preserve">
+    <value>Get the best experience and latest features when installing apps.</value>
+    <comment>Content of a notification panel for updating 'App Installer' application</comment>
+  </data>
+  <data name="MainPage_AppInstallerUpdateButton.Content" xml:space="preserve">
+    <value>Update</value>
+    <comment>Text for a button to update 'App Installer' application</comment>
+  </data>
+  <data name="MainPage_AppInstallerUpdateContentDialog.Title" xml:space="preserve">
+    <value>Update App Installer</value>
+    <comment>Title of a content dialog for updating 'App Installer' application</comment>
+  </data>
+  <data name="MainPage_AppInstallerUpdateContentDialog.Content" xml:space="preserve">
+    <value>Update App Installer through the Microsoft Store, then restart Dev Home to continue.</value>
+    <comment>Message of a content dialog for updating 'App Installer' application from the Store.</comment>
+  </data>
+  <data name="MainPage_AppInstallerUpdateContentDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Open Microsoft Store</value>
+    <comment>Text for a button to open 'App Installer' application in the Store application</comment>
+  </data>
+  <data name="MainPage_AppInstallerUpdateContentDialog.CloseButtonText" xml:space="preserve">
+    <value>Close</value>
+    <comment>Text for a button to close a content dialog</comment>
+  </data>
   <data name="MainPage_CloneRepos.Header" xml:space="preserve">
     <value>Clone repositories</value>
     <comment>Header for a card that when clicked takes the user to a page for cloning git repositories</comment>
@@ -644,6 +656,10 @@
   <data name="LoadingScreenRetry.Content" xml:space="preserve">
     <value>Retry</value>
     <comment>Button to re-run all failed tasks.</comment>
+  </data>
+  <data name="MainPage_MainPage_AppInstallerRequiredTooltip.Content" xml:space="preserve">
+    <value>App Installer required for this function</value>
+    <comment>Tooltip message displayed on a disabled button if 'App installer' application is not available</comment>
   </data>
   <data name="MainPage_RepoReviewDescription.Text" xml:space="preserve">
     <value>Add private or public repositories to clone to your computer</value>

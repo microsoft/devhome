@@ -18,16 +18,6 @@ public sealed partial class MainPageView : UserControl
 
     private async void UpdateAppInstallerButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        var dialog = new ContentDialog()
-        {
-            XamlRoot = this.XamlRoot,
-            Title = ViewModel.AppInstallerUpdateAvailableTitle,
-            Content = ViewModel.AppInstallerUpdateAvailableMessage,
-            PrimaryButtonText = ViewModel.AppInstallerUpdateAvailableUpdateButton,
-            PrimaryButtonCommand = ViewModel.UpdateAppInstallerCommand,
-            CloseButtonText = ViewModel.AppInstallerUpdateAvailableCancelButton,
-            DefaultButton = ContentDialogButton.Primary,
-        };
-        await dialog.ShowAsync();
+        await UpdateAppInstallerContentDialog.ShowAsync();
     }
 }
