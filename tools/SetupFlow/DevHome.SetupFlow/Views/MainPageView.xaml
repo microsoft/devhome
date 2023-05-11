@@ -106,8 +106,8 @@
                             <!-- Tooltip visible when the settings card is disabled -->
                             <ToolTipService.ToolTip>
                                 <ToolTip
-                                    IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
-                                    Content="App Installer required for this function"/>
+                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_MainPage_AppInstallerRequiredTooltip"
+                                    IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" />
                             </ToolTipService.ToolTip>
                         </Grid>
                         <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile"
@@ -153,8 +153,8 @@
                             <!-- Tooltip visible when the settings card is disabled -->
                             <ToolTipService.ToolTip>
                                 <ToolTip
-                                    IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
-                                    Content="App Installer required for this function"/>
+                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_MainPage_AppInstallerRequiredTooltip"
+                                    IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" />
                             </ToolTipService.ToolTip>
                         </Grid>
                         <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevDrive"

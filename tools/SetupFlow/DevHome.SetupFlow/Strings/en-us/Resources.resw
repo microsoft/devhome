@@ -657,6 +657,10 @@
     <value>Retry</value>
     <comment>Button to re-run all failed tasks.</comment>
   </data>
+  <data name="MainPage_MainPage_AppInstallerRequiredTooltip.Content" xml:space="preserve">
+    <value>App Installer required for this function</value>
+    <comment>Tooltip message displayed on a disabled button if 'App installer' application is not available</comment>
+  </data>
   <data name="MainPage_RepoReviewDescription.Text" xml:space="preserve">
     <value>Add private or public repositories to clone to your compuer</value>
     <comment>Description for the repo review page</comment>
