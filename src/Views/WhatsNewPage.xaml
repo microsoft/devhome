@@ -53,7 +53,7 @@
                 <Grid Grid.Row="0" Padding="32 0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="100" />
-                        <RowDefinition Height="65" />
+                        <RowDefinition Height="55" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
@@ -127,7 +127,7 @@
                         <muxc:UniformGridLayout 
                             x:Name="CardGrid"
                             Orientation="Horizontal" 
-                            MinItemWidth="250"
+                            MinItemWidth="360"
                             MinItemHeight="358"
                             MinRowSpacing="12" 
                             MinColumnSpacing="12"
