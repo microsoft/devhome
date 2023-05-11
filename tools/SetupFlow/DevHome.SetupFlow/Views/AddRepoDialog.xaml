@@ -31,7 +31,8 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ContentDialog.Resources>
-    <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto">
+    <!-- ContentDialog has a padding of 24 on left/right. Extend the ScrollViewer there so that we can show the scroll bar at the edge of the dialog. -->
+    <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" Padding="24,0" Margin="-24,0">
         <StackPanel x:Name="AddRepoStackPanel" Orientation="Vertical" Spacing="5" MinWidth="450" MinHeight="550">
             <StackPanel.Resources>
                 <ResourceDictionary>
