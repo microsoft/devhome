@@ -73,6 +73,11 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     public string RepositoryId => $"{RepositoryToClone.DisplayName ?? string.Empty}";
 
     /// <summary>
+    /// Gets the repository in a [organization]\[reponame] style
+    /// </summary>
+    public string RepositoryOwnerAndName => Path.Join(RepositoryToClone.OwningAccountName ?? string.Empty, RepositoryToClone.DisplayName);
+
+    /// <summary>
     /// Gets the clone path the user wants to clone the repo to.
     /// </summary>
     public string ClonePath
@@ -108,6 +113,23 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     public string RemoveFromCloningAutomationName
     {
         get; set;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CloningInformation"/> class.
+    /// Public constructor for XAML view to construct a CLoningInformation
+    /// </summary>
+    public CloningInformation()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CloningInformation"/> class.
+    /// </summary>
+    /// <param name="repoToClone">The repo to clone</param>
+    public CloningInformation(IRepository repoToClone)
+    {
+        RepositoryToClone = repoToClone;
     }
 
     /// <summary>

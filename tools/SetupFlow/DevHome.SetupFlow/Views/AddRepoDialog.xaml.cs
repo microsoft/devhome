@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration.Provider;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using Windows.Security.Authentication.Identity.Provider;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.Views;
@@ -24,6 +26,8 @@ namespace DevHome.SetupFlow.Views;
 internal partial class AddRepoDialog
 {
     private readonly string _defaultClonePath;
+
+    private readonly List<CloningInformation> _previouslySelectedRepos = new ();
 
     /// <summary>
     /// Gets or sets the view model to handle selecting and de-selecting repositories.
@@ -57,6 +61,7 @@ internal partial class AddRepoDialog
     public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
     {
         this.InitializeComponent();
+        _previouslySelectedRepos = previouslySelectedRepos;
         AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
@@ -201,22 +206,24 @@ internal partial class AddRepoDialog
         // GetRepositories sets the repositories list view.
         if (e.AddedItems.Count > 0)
         {
-            // Specific provider has started.
             var loginId = (string)AccountsComboBox.SelectedValue;
             var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-            var reposToSelect = AddRepoViewModel.GetRepositories(providerName, loginId);
+            SelectRepositories(AddRepoViewModel.GetRepositories(providerName, loginId));
+        }
+    }
 
-            var onlyRepoNames = AddRepoViewModel.Repositories.Select(x => x.RepoName).ToList();
-            foreach (var repoToSelect in reposToSelect)
+    private void SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
+    {
+        var onlyRepoNames = AddRepoViewModel.Repositories.Select(x => x.RepoName).ToList();
+        foreach (var repoToSelect in reposToSelect)
+        {
+            var index = onlyRepoNames.IndexOf(repoToSelect.RepoName);
+            if (index != -1)
             {
-                var index = onlyRepoNames.IndexOf(repoToSelect.RepoName);
-                if (index != -1)
-                {
-                    // Seems like the "Correct" way to pre-select items in a list view is to call range.
-                    // SelectRange does not accept an index though.  Call it multiple times on each index
-                    // with a range of 1.
-                    RepositoriesListView.SelectRange(new ItemIndexRange(index, 1));
-                }
+                // Seems like the "Correct" way to pre-select items in a list view is to call range.
+                // SelectRange does not accept an index though.  Call it multiple times on each index
+                // with a range of 1.
+                RepositoriesListView.SelectRange(new ItemIndexRange(index, 1));
             }
         }
     }
@@ -226,6 +233,11 @@ internal partial class AddRepoDialog
     /// </summary>
     private void RepositoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (!string.IsNullOrEmpty(FilterTextBox.Text))
+        {
+            return;
+        }
+
         var loginId = (string)AccountsComboBox.SelectedValue;
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
 

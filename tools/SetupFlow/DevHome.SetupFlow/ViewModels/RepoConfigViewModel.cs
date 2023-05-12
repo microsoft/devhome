@@ -66,8 +66,6 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         // AddRepoViewModel checks if a repo is already added in the URL tab.
         // Changed the equality to owningAccountName now two forks are different repos.
         // It is up to the user to clone the forks in different locations though.
-        List<CloningInformation> repoReviewItems = new (RepoReviewItems);
-
         // Some things we need to worry about
         // 1. THe user can be adding repos from a different provider and account
         // 2. The user can be adding repos from the same provider but different accounts
@@ -82,7 +80,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
         // Handle the case where a user re-opens the repo tool with repos that are already selected
         // Remove them from cloninginformations so they aren't added again.
-        var alreadyAddedRepos = repoReviewItems.Intersect(cloningInformations).ToList();
+        var alreadyAddedRepos = RepoReviewItems.Intersect(cloningInformations).ToList();
 
         var localCloningInfos = new List<CloningInformation>(cloningInformations);
         foreach (var alreadyAddedRepo in alreadyAddedRepos)
@@ -90,7 +88,10 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
             localCloningInfos.Remove(alreadyAddedRepo);
         }
 
-        repoReviewItems.AddRange(localCloningInfos);
+        foreach (var cloningInformation in localCloningInfos)
+        {
+            RepoReviewItems.Add(cloningInformation);
+        }
 
         // Handle the case that a user de-selected a repo from re-opening the repo tool.
         // This is the case where RepoReviewItems does not contain a repo in cloningInformations.
@@ -105,7 +106,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         // should call save.
         var shouldCallSave = true;
 
-        var deSelectedRepos = repoReviewItems.Except(cloningInformations).ToList();
+        var deSelectedRepos = RepoReviewItems.Except(cloningInformations).ToList();
         foreach (var deSelectedRepo in deSelectedRepos)
         {
             RemoveCloningInformation(deSelectedRepo);
@@ -114,8 +115,8 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
         if (shouldCallSave)
         {
-            RepoReviewItems = new ObservableCollection<CloningInformation>(repoReviewItems);
-            _taskGroup.SaveSetupTaskInformation(repoReviewItems);
+            RepoReviewItems = new ObservableCollection<CloningInformation>(RepoReviewItems);
+            _taskGroup.SaveSetupTaskInformation(RepoReviewItems.ToList());
         }
     }
 

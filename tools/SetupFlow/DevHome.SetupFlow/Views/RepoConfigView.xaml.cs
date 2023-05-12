@@ -77,6 +77,13 @@ public sealed partial class RepoConfigView : UserControl
         // save cloneLocationKind for telemetry
         CloneLocationKind cloneLocationKind = CloneLocationKind.LocalPath;
         var everythingToClone = addRepoDialog.AddRepoViewModel.EverythingToClone;
+
+        // Handle the case the user de-selected all repos.
+        if (result == ContentDialogResult.Primary && !everythingToClone.Any())
+        {
+            ViewModel.SaveSetupTaskInformation(everythingToClone);
+        }
+
         if (result == ContentDialogResult.Primary && everythingToClone.Any())
         {
             // We currently only support adding either a local path or a new Dev Drive as the cloning location. Only one can be selected

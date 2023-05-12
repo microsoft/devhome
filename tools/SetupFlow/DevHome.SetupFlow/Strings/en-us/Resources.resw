@@ -1155,4 +1155,16 @@
     <value>Clone path</value>
     <comment>Text for choosing a clone path in a block of text</comment>
   </data>
+  <data name="RepositoryClonePathHeader.Text" xml:space="preserve">
+    <value>Clone path</value>
+    <comment>Header for the repo grid</comment>
+  </data>
+  <data name="RepositoryNameHeader.Text" xml:space="preserve">
+    <value>Repository name</value>
+    <comment>Header for the repo grid</comment>
+  </data>
+  <data name="RepositoryTypeHeader.Text" xml:space="preserve">
+    <value>Repository type</value>
+    <comment>Header for the repo  grid</comment>
+  </data>
 </root>

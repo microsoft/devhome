@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -124,9 +125,6 @@ public partial class AddRepoViewModel : ObservableObject
     private bool _shouldPrimaryButtonBeEnabled;
 
     [ObservableProperty]
-    private string _textToFilterBy;
-
-    [ObservableProperty]
     private string _primaryButtonText;
 
     [ObservableProperty]
@@ -138,7 +136,7 @@ public partial class AddRepoViewModel : ObservableObject
     private Visibility _shouldShowUrlError;
 
     [RelayCommand]
-    private void FilterRepositories(string text)
+    public void FilterRepositories(string text)
     {
         IEnumerable<IRepository> filteredRepositories;
         if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
@@ -228,6 +226,9 @@ public partial class AddRepoViewModel : ObservableObject
 
         _providers = new RepositoryProviders(plugins);
 
+        // Start all plugins to get the DisplayName of each provider.
+        _providers.StartAllPlugins();
+
         ProviderNames = new ObservableCollection<string>(_providers.GetAllProviderNames());
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForProviders_Event", LogLevel.Measure, new ProviderEvent(ProviderNames.Count));
     }
@@ -308,8 +309,17 @@ public partial class AddRepoViewModel : ObservableObject
         }
         else if (CurrentPage == PageKind.AddViaAccount || CurrentPage == PageKind.Repositories)
         {
-            // make sure the user has selected some repositories.
-            return EverythingToClone.Count > 0;
+            // Handle the case where the user de-selects all previously selected repos.
+            // return true to allow users to remove all repos from the dialog and not have to
+            // manually click "x" on all repos.
+            if (_previouslySelectedRepos.Any())
+            {
+                return true;
+            }
+            else
+            {
+                return EverythingToClone.Count > 0;
+            }
         }
         else
         {
@@ -370,10 +380,16 @@ public partial class AddRepoViewModel : ObservableObject
         foreach (RepoViewListItem repositoryToRemove in repositoriesToRemove)
         {
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {repositoryToRemove}");
-            var cloningInformation = new CloningInformation();
+
+            var repoToRemove = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToRemove.RepoName, StringComparison.OrdinalIgnoreCase));
+            if (repoToRemove == null)
+            {
+                continue;
+            }
+
+            var cloningInformation = new CloningInformation(repoToRemove);
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToRemove.RepoName, StringComparison.OrdinalIgnoreCase));
 
             EverythingToClone.Remove(cloningInformation);
         }
@@ -381,10 +397,15 @@ public partial class AddRepoViewModel : ObservableObject
         foreach (RepoViewListItem repositoryToAdd in repositoriesToAdd)
         {
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository {repositoryToAdd}");
-            var cloningInformation = new CloningInformation();
+            var repoToAdd = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToAdd.RepoName, StringComparison.OrdinalIgnoreCase));
+            if (repoToAdd == null)
+            {
+                continue;
+            }
+
+            var cloningInformation = new CloningInformation(repoToAdd);
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
-            cloningInformation.RepositoryToClone = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToAdd.RepoName, StringComparison.OrdinalIgnoreCase));
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
 
@@ -413,8 +434,6 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        var cloningInformation = new CloningInformation();
-
         // If the URL points to a private repo the URL tab has no way of knowing what account has access.
         // Keep owning account null to make github extension try all logged in accounts.
         (string, IRepository) providerNameAndRepo;
@@ -437,12 +456,13 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
+        CloningInformation cloningInformation;
         if (providerNameAndRepo.Item2 != null)
         {
             // A provider parsed the URL and at least 1 logged in account has access to the repo.
             var repository = providerNameAndRepo.Item2;
+            cloningInformation = new CloningInformation(repository);
             cloningInformation.ProviderName = providerNameAndRepo.Item1;
-            cloningInformation.RepositoryToClone = repository;
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
         }
         else
@@ -451,8 +471,8 @@ public partial class AddRepoViewModel : ObservableObject
 
             // No providers can parse the Url.
             // Fall back to a git Url.
+            cloningInformation = new CloningInformation(new GenericRepository(uriToParse));
             cloningInformation.ProviderName = "git";
-            cloningInformation.RepositoryToClone = new GenericRepository(uriToParse);
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
         }
 
@@ -486,7 +506,7 @@ public partial class AddRepoViewModel : ObservableObject
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
         _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
 
-        Repositories = new ObservableCollection<RepoViewListItem>(_repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => new RepoViewListItem(x)));
+        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
             .Where(x => x.ProviderName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
