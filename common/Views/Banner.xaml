@@ -17,6 +17,7 @@
         <!-- Hide Banner Button -->
         <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
                 BorderThickness="0" Background="Transparent" Padding="5"
+                x:Uid="BannerHideButton"
                 Command="{x:Bind HideButtonCommand}"
                 Visibility="{x:Bind HideButtonVisibility}">
             <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}"
