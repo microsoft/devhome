@@ -39,7 +39,7 @@
       "spacing": "Medium",
       "style": "Url",
       "placeholder": "${$root.configuration.defaultConfigFile}",
-      "value": "${$root.configuration.configFile}"
+      "value": "${$root.configuration.defaultConfigFile}"
     },
     {
       "type": "Container",

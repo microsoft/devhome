@@ -22,12 +22,6 @@ internal class SystemMemoryWidget : CoreWidget, IDisposable
         dataManager = new DataManager(UpdateWidget);
     }
 
-    public override void DeleteWidget(string widgetId, string customState)
-    {
-        // Remove event handler
-        base.DeleteWidget(widgetId, customState);
-    }
-
     private string FloatToPercentString(float value)
     {
         return ((int)(value * 100)).ToString(CultureInfo.InvariantCulture) + "%";

@@ -114,4 +114,25 @@
   <data name="Memory_Widget_Template.PagedPool" xml:space="preserve">
     <value>Paged pool</value>
   </data>
+  <data name="NetworkUsage_Widget_Template.Network_Usage" xml:space="preserve">
+    <value>Network usage</value>
+  </data>
+  <data name="NetworkUsage_Widget_Template.Sent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="NetworkUsage_Widget_Template.Received" xml:space="preserve">
+    <value>Received</value>
+  </data>
+  <data name="NetworkUsage_Widget_Template.Network_Name" xml:space="preserve">
+    <value>Network name</value>
+  </data>
+  <data name="NetworkUsage_Widget_Template.Previous_Network" xml:space="preserve">
+    <value>Previous network</value>
+  </data>
+  <data name="NetworkUsage_Widget_Template.Next_Network" xml:space="preserve">
+    <value>Next network</value>
+  </data>
+  <data name="NetworkUsage_Widget_Template.Ethernet_Heading" xml:space="preserve">
+    <value>Ethernet</value>
+  </data>
 </root>

@@ -10,6 +10,10 @@ As the maintainer of this project, please make a few updates:
 - Understanding the security reporting process in SECURITY.MD
 - Remove this section from the README
 
+## Popular Apps
+
+This is currently a hard-coded list of applications that have been popular with developers on Windows. Popularity was determined by high levels of installation and usage. As this is a moment in time, we are not accepting submissions for this list. We’re looking to improve the experience with [Suggested Apps](https://github.com/microsoft/devhome/issues/375)so the list can be optimized for developers.
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
@@ -23,6 +27,13 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## Getting your machine setup to build
+- clone the repository
+- Configure your system, please use the [configuration file](.configurations/configuration.dsc.yaml).  This can be applied either:
+   1. Using Dev home.
+   2. WinGet configuration. If you have the experimental feature enabled, run `winget configure .configurations/configuration.dsc.yaml` from the project root so relative paths resolve correctly.
+
 
 ## Trademarks
 
