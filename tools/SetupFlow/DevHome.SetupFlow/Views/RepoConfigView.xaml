@@ -80,7 +80,7 @@
                     <DataTemplate x:DataType="models:CloningInformation">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="45"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition MaxWidth="179" />
