@@ -74,10 +74,7 @@
                   <TrustedPackageFamilyName>Microsoft.MicrosoftEdge.Stable_8wekyb3d8bbwe</TrustedPackageFamilyName>
                 </TrustedPackageFamilyNames>
                 <Definitions>
-                  <Definition Id="SSH_Wallet"
-                      DisplayName="SSH keychain"
-                      Description="Quickly connect into to your favorite servers from your SSH config file"
-                      AllowMultiple="true">
+                  <Definition Id="SSH_Wallet" DisplayName="SSH keychain" Description="Quickly connect into to your favorite servers from your SSH config file" AllowMultiple="true">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -104,10 +101,7 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_Memory"
-                      DisplayName="System Memory"
-                      Description="Microsoft System Memory Widget Description"
-                      AllowMultiple="true">
+                  <Definition Id="System_Memory" DisplayName="System Memory" Description="Microsoft System Memory Widget Description" AllowMultiple="true">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />

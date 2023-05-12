@@ -153,6 +153,12 @@ public class PluginService : IPluginService
             var extensions = await GetInstalledAppExtensionsAsync();
             foreach (var extension in extensions)
             {
+                // Don't show self as an extension
+                if (Package.Current.Id.FullName == extension.Package.Id.FullName)
+                {
+                    continue;
+                }
+
                 var (devHomeProvider, classId) = await GetDevHomeExtensionPropertiesAsync(extension);
                 if (devHomeProvider == null || classId == null)
                 {
