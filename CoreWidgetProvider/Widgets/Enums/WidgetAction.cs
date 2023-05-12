@@ -18,4 +18,14 @@ public enum WidgetAction
     /// Action to connect to host.
     /// </summary>
     Connect,
+
+    /// <summary>
+    /// Action to show previous widget item.
+    /// </summary>
+    PrevItem,
+
+    /// <summary>
+    /// Action to show next widget item.
+    /// </summary>
+    NextItem,
 }

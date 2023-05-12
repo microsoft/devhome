@@ -71,6 +71,13 @@ public static class Resources
             "Memory_Widget_Template/Cached",
             "Memory_Widget_Template/NonPagedPool",
             "Memory_Widget_Template/PagedPool",
+            "NetworkUsage_Widget_Template/Network_Usage",
+            "NetworkUsage_Widget_Template/Sent",
+            "NetworkUsage_Widget_Template/Received",
+            "NetworkUsage_Widget_Template/Network_Name",
+            "NetworkUsage_Widget_Template/Previous_Network",
+            "NetworkUsage_Widget_Template/Next_Network",
+            "NetworkUsage_Widget_Template/Ethernet_Heading",
         };
     }
 }
