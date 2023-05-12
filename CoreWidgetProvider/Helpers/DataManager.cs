@@ -23,7 +23,7 @@ internal class DataManager : IDisposable
         updateTimer = new Timer(OneSecondInMilliseconds);
         updateTimer.Elapsed += UpdateTimer_Elapsed;
         updateTimer.AutoReset = true;
-        updateTimer.Enabled = true;
+        updateTimer.Enabled = false;
     }
 
     public void GetMemoryData()
@@ -45,6 +45,16 @@ internal class DataManager : IDisposable
     internal MemoryStats GetMemoryStats()
     {
         return systemData.MemStats;
+    }
+
+    public void Start()
+    {
+        updateTimer.Start();
+    }
+
+    public void Stop()
+    {
+        updateTimer.Stop();
     }
 
     public void Dispose()

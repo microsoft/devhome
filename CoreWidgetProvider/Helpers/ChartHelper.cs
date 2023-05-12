@@ -17,6 +17,8 @@ internal class ChartHelper
 
     private const int MaxChartValues = 30;
 
+    private static readonly object _lock = new ();
+
     public static string CreateImageUrl(List<float> chartValues)
     {
         var bytes = CreateChart(chartValues);
@@ -40,32 +42,35 @@ internal class ChartHelper
                 minHeight = Math.Min(minHeight, 95 - (chartValues[pointIndex] / 100 * 90));
             }
 
-            using var darkGreyBrush = new SolidBrush(DarkGrayColor);
-            g.FillRectangle(darkGreyBrush, 0, 0, width - 1, height - 1);
-            g.DrawRectangle(Pens.LightGray, 0, 0, width - 1, height - 1);
-
-            if (chartValues.Count >= 2)
+            lock (_lock)
             {
-                points.Add(new PointF(startChartX, 95));
-                points.Add(new PointF(295, 95));
-                points.Add(new PointF(295, 95 - (chartValues.Last() / 100 * 90)));
+                using var darkGreyBrush = new SolidBrush(DarkGrayColor);
+                g.FillRectangle(darkGreyBrush, 0, 0, width - 1, height - 1);
+                g.DrawRectangle(Pens.LightGray, 0, 0, width - 1, height - 1);
 
-                if (minHeight >= 77)
+                if (chartValues.Count >= 2)
                 {
-                    g.FillPolygon(Brush20, points.ToArray());
-                }
-                else if (minHeight >= 50)
-                {
-                    g.FillPolygon(Brush50, points.ToArray());
-                }
-                else
-                {
-                    g.FillPolygon(Brush100, points.ToArray());
-                }
+                    points.Add(new PointF(startChartX, 95));
+                    points.Add(new PointF(295, 95));
+                    points.Add(new PointF(295, 95 - (chartValues.Last() / 100 * 90)));
 
-                for (var pointIndex = 0; pointIndex < points.Count - 4; pointIndex++)
-                {
-                    g.DrawLine(ChartPen, points[pointIndex].X, points[pointIndex].Y, points[pointIndex + 1].X, points[pointIndex + 1].Y);
+                    if (minHeight >= 77)
+                    {
+                        g.FillPolygon(Brush20, points.ToArray());
+                    }
+                    else if (minHeight >= 50)
+                    {
+                        g.FillPolygon(Brush50, points.ToArray());
+                    }
+                    else
+                    {
+                        g.FillPolygon(Brush100, points.ToArray());
+                    }
+
+                    for (var pointIndex = 0; pointIndex < points.Count - 4; pointIndex++)
+                    {
+                        g.DrawLine(ChartPen, points[pointIndex].X, points[pointIndex].Y, points[pointIndex + 1].X, points[pointIndex + 1].Y);
+                    }
                 }
             }
         }

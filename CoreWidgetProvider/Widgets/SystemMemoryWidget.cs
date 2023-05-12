@@ -111,6 +111,39 @@ internal class SystemMemoryWidget : CoreWidget, IDisposable
         };
     }
 
+    protected override void SetActive()
+    {
+        ActivityState = WidgetActivityState.Active;
+        Page = WidgetPageState.Content;
+        if (ContentData == EmptyJson)
+        {
+            LoadContentData();
+        }
+
+        dataManager.Start();
+
+        LogCurrentState();
+        UpdateWidget();
+    }
+
+    protected override void SetInactive()
+    {
+        dataManager.Stop();
+
+        ActivityState = WidgetActivityState.Inactive;
+
+        LogCurrentState();
+    }
+
+    protected override void SetDeleted()
+    {
+        dataManager.Stop();
+
+        SetState(string.Empty);
+        ActivityState = WidgetActivityState.Unknown;
+        LogCurrentState();
+    }
+
     public void Dispose()
     {
         dataManager.Dispose();

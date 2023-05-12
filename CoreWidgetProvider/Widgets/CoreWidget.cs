@@ -170,13 +170,11 @@ internal class CoreWidget : WidgetImpl
     {
         ActivityState = WidgetActivityState.Inactive;
 
-        // No need to update when we are inactive.
         LogCurrentState();
     }
 
     protected virtual void SetDeleted()
     {
-        // If this widget is deleted, disable the data updater, clear the state, set to Unknown.
         SetState(string.Empty);
         ActivityState = WidgetActivityState.Unknown;
         LogCurrentState();
