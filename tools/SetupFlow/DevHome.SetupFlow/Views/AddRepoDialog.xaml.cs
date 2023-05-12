@@ -307,9 +307,10 @@ internal partial class AddRepoDialog
     /// <summary>
     /// User wants to customize the default dev drive.
     /// </summary>
-    private void CustomizeDevDriveHyperlinkButton_Click(object sender, RoutedEventArgs e)
+    private async void CustomizeDevDriveHyperlinkButton_ClickAsync(object sender, RoutedEventArgs e)
     {
-        EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        await EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        ToggleCloneButton();
     }
 
     /// <summary>
@@ -339,13 +340,7 @@ internal partial class AddRepoDialog
         }
     }
 
-    /// <summary>
-    /// User navigated away from the URL text box.  Validate it.
-    /// </summary>
-    /// <remarks>
-    /// LostFocus event fires before data binding.  Set URL here.
-    /// </remarks>
-    private void RepoUrlTextBox_LostFocus(object sender, RoutedEventArgs e)
+    private void RepoUrlTextBox_TextChanged(object sender, RoutedEventArgs e)
     {
         // just in case something other than a text box calls this.
         if (sender is TextBox)

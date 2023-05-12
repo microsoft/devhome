@@ -46,10 +46,15 @@
                                     </StackPanel>
                                 </Expander.Content>
                             </Expander>
-                            <Expander x:Name="ReportBugPluginsExpander" Width="{StaticResource FeedbackExpanderWidth}">
+                            <Expander x:Name="ReportBugPluginsExpander" Expanding="ShowPluginsInfoExpander_Expanding" Width="{StaticResource FeedbackExpanderWidth}">
                                 <Expander.Header>
                                     <CheckBox x:Name="ReportBugIncludePlugins" x:Uid="Feedback_ReportBug_IncludePlugins" IsChecked="True"/>
                                 </Expander.Header>
+                                <Expander.Content>
+                                    <StackPanel>
+                                        <TextBlock x:Name="ReportBugIncludePluginsList" />
+                                    </StackPanel>
+                                </Expander.Content>
                             </Expander>
                             <Expander x:Name="ReportBugExperimentInfoExpander" Width="{StaticResource FeedbackExpanderWidth}">
                                 <Expander.Header>

@@ -3,8 +3,6 @@
 
 using System.Diagnostics;
 using System.Globalization;
-using System.Resources;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -15,31 +13,15 @@ using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
 
-public class SSHWalletWidget : WidgetImpl
+internal class SSHWalletWidget : CoreWidget
 {
-    protected static readonly string EmptyJson = new JsonObject().ToJsonString();
     protected static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
 
     private static readonly Regex HostRegex = new (@"^Host\s+(\S*)\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
     private FileSystemWatcher? FileWatcher { get; set; }
 
-    protected string ContentData { get; set; } = EmptyJson;
-
-    protected static readonly string Name = nameof(SSHWalletWidget);
-
-    protected WidgetActivityState ActivityState { get; set; } = WidgetActivityState.Unknown;
-
-    protected WidgetDataState DataState { get; set; } = WidgetDataState.Unknown;
-
-    protected WidgetPageState Page { get; set; } = WidgetPageState.Unknown;
-
-    protected bool Enabled
-    {
-        get; set;
-    }
-
-    protected Dictionary<WidgetPageState, string> Template { get; set; } = new ();
+    protected static readonly new string Name = nameof(SSHWalletWidget);
 
     protected string ConfigFile
     {
@@ -57,7 +39,7 @@ public class SSHWalletWidget : WidgetImpl
         FileWatcher?.Dispose();
     }
 
-    public virtual void LoadContentData()
+    public override void LoadContentData()
     {
         // If ConfigFile is not set, do nothing.
         // Widget will remain in configuring state, waiting for config file path input.
@@ -86,12 +68,12 @@ public class SSHWalletWidget : WidgetImpl
                     var hostJson = new JsonObject
                         {
                             { "host", host },
+                            { "icon", IconLoader.GetIconAsBase64("connect_icon.png") },
                         };
                     ((IList<JsonNode?>)hostsArray).Add(hostJson);
                 });
             }
 
-            hostsData.Add("icon_data", IconLoader.GetIconAsBase64("ssh_wallet_icon.png"));
             hostsData.Add("hosts", hostsArray);
             hostsData.Add("selected_config_file", ConfigFile);
 
@@ -111,30 +93,6 @@ public class SSHWalletWidget : WidgetImpl
         Id = widgetContext.Id;
         Enabled = widgetContext.IsActive;
         ConfigFile = state;
-        UpdateActivityState();
-    }
-
-    public override void Activate(WidgetContext widgetContext)
-    {
-        Enabled = true;
-        UpdateActivityState();
-    }
-
-    public override void Deactivate(string widgetId)
-    {
-        Enabled = false;
-        UpdateActivityState();
-    }
-
-    public override void DeleteWidget(string widgetId, string customState)
-    {
-        Enabled = false;
-        SetDeleted();
-    }
-
-    public override void OnWidgetContextChanged(WidgetContextChangedArgs contextChangedArgs)
-    {
-        Enabled = contextChangedArgs.WidgetContext.IsActive;
         UpdateActivityState();
     }
 
@@ -198,20 +156,6 @@ public class SSHWalletWidget : WidgetImpl
             };
 
             WidgetManager.GetDefault().UpdateWidget(updateRequestOptions);
-        }
-    }
-
-    private WidgetAction GetWidgetActionForVerb(string verb)
-    {
-        try
-        {
-            return Enum.Parse<WidgetAction>(verb);
-        }
-        catch (Exception)
-        {
-            // Invalid verb.
-            Log.Logger()?.ReportError($"Unknown WidgetAction verb: {verb}");
-            return WidgetAction.Unknown;
         }
     }
 
@@ -311,7 +255,7 @@ public class SSHWalletWidget : WidgetImpl
         return configurationData;
     }
 
-    public string GetConfiguration(string data)
+    public override string GetConfiguration(string data)
     {
         JsonObject? configurationData;
 
@@ -350,7 +294,7 @@ public class SSHWalletWidget : WidgetImpl
         return configurationData.ToString();
     }
 
-    public void UpdateActivityState()
+    public override void UpdateActivityState()
     {
         if (string.IsNullOrEmpty(ConfigFile))
         {
@@ -367,7 +311,7 @@ public class SSHWalletWidget : WidgetImpl
         SetInactive();
     }
 
-    public void UpdateWidget()
+    public override void UpdateWidget()
     {
         WidgetUpdateRequestOptions updateOptions = new (Id)
         {
@@ -380,7 +324,7 @@ public class SSHWalletWidget : WidgetImpl
         WidgetManager.GetDefault().UpdateWidget(updateOptions);
     }
 
-    public virtual string GetTemplatePath(WidgetPageState page)
+    public override string GetTemplatePath(WidgetPageState page)
     {
         return page switch
         {
@@ -391,7 +335,7 @@ public class SSHWalletWidget : WidgetImpl
         };
     }
 
-    public virtual string GetData(WidgetPageState page)
+    public override string GetData(WidgetPageState page)
     {
         return page switch
         {
@@ -404,41 +348,7 @@ public class SSHWalletWidget : WidgetImpl
         };
     }
 
-    protected string GetTemplateForPage(WidgetPageState page)
-    {
-        if (Template.ContainsKey(page))
-        {
-            Log.Logger()?.ReportDebug(Name, ShortId, $"Using cached template for {page}");
-            return Template[page];
-        }
-
-        try
-        {
-            var path = Path.Combine(AppContext.BaseDirectory, GetTemplatePath(page));
-            var template = File.ReadAllText(path, Encoding.Default) ?? throw new FileNotFoundException(path);
-            template = Resources.ReplaceIdentifers(template, Resources.GetWidgetResourceIdentifiers(), Log.Logger());
-            Log.Logger()?.ReportDebug(Name, ShortId, $"Caching template for {page}");
-            Template[page] = template;
-            return template;
-        }
-        catch (Exception e)
-        {
-            Log.Logger()?.ReportError(Name, ShortId, "Error getting template.", e);
-            return string.Empty;
-        }
-    }
-
-    protected string GetCurrentState()
-    {
-        return $"State: {ActivityState}  Page: {Page}  Data: {DataState}  Config file: {ConfigFile}";
-    }
-
-    protected void LogCurrentState()
-    {
-        Log.Logger()?.ReportDebug(Name, ShortId, GetCurrentState());
-    }
-
-    private void SetActive()
+    protected override void SetActive()
     {
         ActivityState = WidgetActivityState.Active;
         Page = WidgetPageState.Content;
@@ -456,14 +366,6 @@ public class SSHWalletWidget : WidgetImpl
         UpdateWidget();
     }
 
-    private void SetInactive()
-    {
-        ActivityState = WidgetActivityState.Inactive;
-
-        // No need to update when we are inactive.
-        LogCurrentState();
-    }
-
     private void SetConfigure()
     {
         FileWatcher?.Dispose();
@@ -472,13 +374,6 @@ public class SSHWalletWidget : WidgetImpl
         Page = WidgetPageState.Configure;
         LogCurrentState();
         UpdateWidget();
-    }
-
-    private void SetDeleted()
-    {
-        SetState(string.Empty);
-        ActivityState = WidgetActivityState.Unknown;
-        LogCurrentState();
     }
 }
 

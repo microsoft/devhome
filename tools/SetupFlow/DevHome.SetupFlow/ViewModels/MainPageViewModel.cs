@@ -38,7 +38,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private bool _showDevDriveItem;
 
     [ObservableProperty]
-    private bool _showPackageInstallerItem;
+    private bool _enablePackageInstallerItem;
 
     [ObservableProperty]
     private bool _showAppInstallerUpdateNotification;
@@ -49,14 +49,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// all the work needed at that point.
     /// </summary>
     public event EventHandler<(string, IList<ISetupTaskGroup>)> StartSetupFlow;
-
-    public string AppInstallerUpdateAvailableTitle => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableTitle);
-
-    public string AppInstallerUpdateAvailableMessage => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableMessage);
-
-    public string AppInstallerUpdateAvailableUpdateButton => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableUpdateButton);
-
-    public string AppInstallerUpdateAvailableCancelButton => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableCancelButton);
 
     public MainPageViewModel(
         ISetupFlowStringResource stringResource,
@@ -78,8 +70,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         // If IsCOMServerAvailable is still being (lazily) evaluated form a
         // previous call, then await until the thread is unblocked and the
         // already computed value is returned.
-        ShowPackageInstallerItem = await Task.Run(() => _wpm.IsCOMServerAvailable());
-        if (ShowPackageInstallerItem)
+        EnablePackageInstallerItem = await Task.Run(() => _wpm.IsCOMServerAvailable());
+        if (EnablePackageInstallerItem)
         {
             Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");
             ShowAppInstallerUpdateNotification = await _wpm.IsAppInstallerUpdateAvailableAsync();
@@ -127,24 +119,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private void StartSetup(string flowTitle)
     {
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting end-to-end setup");
-
-        var taskGroups = new List<ISetupTaskGroup>
-        {
+        StartSetupFlowForTaskGroups(
+            flowTitle,
+            "EndToEnd",
             _host.GetService<RepoConfigTaskGroup>(),
-        };
-
-        if (ShowPackageInstallerItem)
-        {
-            taskGroups.Add(_host.GetService<AppManagementTaskGroup>());
-        }
-        else
-        {
-            Log.Logger?.ReportInfo(Log.Component.MainPage, $"Skipping {nameof(AppManagementTaskGroup)} because COM server is not available");
-        }
-
-        taskGroups.Add(_host.GetService<DevDriveTaskGroup>());
-
-        StartSetupFlowForTaskGroups(flowTitle, "EndToEnd", taskGroups.ToArray());
+            _host.GetService<AppManagementTaskGroup>(),
+            _host.GetService<DevDriveTaskGroup>());
     }
 
     /// <summary>
@@ -216,16 +196,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task UpdateAppInstallerAsync()
     {
-        // Hide notification and attempt the update in the background.
-        // Update progress should be reflected in the store app (if successful)
         HideAppInstallerUpdateNotification();
-        if (await _wpm.StartAppInstallerUpdateAsync())
-        {
-            Log.Logger?.ReportInfo(Log.Component.MainPage, "AppInstaller update started");
-        }
-        else
-        {
-            Log.Logger?.ReportWarn(Log.Component.MainPage, "AppInstaller update did not start");
-        }
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Opening AppInstaller in the Store app");
+        await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?productid={WindowsPackageManager.AppInstallerProductId}"));
     }
 }
