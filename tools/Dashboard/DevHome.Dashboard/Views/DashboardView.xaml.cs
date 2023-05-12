@@ -15,6 +15,7 @@ using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -525,6 +526,7 @@ public partial class DashboardView : ToolPage
             FontSize = 4,
         };
         resetButton.Click += ResetButton_Click;
+        AutomationProperties.SetName(resetButton, "ResetBannerButton");
         var parent = AddWidgetButton.Parent as StackPanel;
         var index = parent.Children.IndexOf(AddWidgetButton);
         parent.Children.Insert(index + 1, resetButton);

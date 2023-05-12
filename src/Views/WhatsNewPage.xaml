@@ -40,9 +40,9 @@
     <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" MaxWidth="{ThemeResource MaxPageBackgroundWidth}">
         <RelativePanel>
             <Grid>
-                <Image Source="{ThemeResource BackgroundBack}" MinWidth="974" VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="UniformToFill" />
-                <Image Source="{ThemeResource BackgroundFront}" MinWidth="974" VerticalAlignment="Top" HorizontalAlignment="Right" Stretch="UniformToFill"/>
-                <Image Source="{ThemeResource BackgroundShadow}" MinWidth="974" Margin="0 100 0 0" VerticalAlignment="Top" Stretch="UniformToFill"/>
+                <Image Source="{ThemeResource BackgroundBack}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="UniformToFill" />
+                <Image Source="{ThemeResource BackgroundFront}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" VerticalAlignment="Top" HorizontalAlignment="Right" Stretch="UniformToFill"/>
+                <Image Source="{ThemeResource BackgroundShadow}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" Margin="0 100 0 0" VerticalAlignment="Top" Stretch="UniformToFill"/>
             </Grid>
             <Grid x:Name="ContentArea" Padding="35 0 35 30" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
@@ -53,7 +53,7 @@
                 <Grid Grid.Row="0" Padding="32 0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="100" />
-                        <RowDefinition Height="65" />
+                        <RowDefinition Height="55" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
@@ -93,6 +93,7 @@
                 <muxc:ItemsRepeater
                     Name="FeaturesContainer"
                     Grid.Row="1"
+                    Margin="45"
                     animations:Connected.ListItemElementName="itemThumbnail"
                     animations:Connected.ListItemKey="animationKeyContentGrid"
                     ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}">
@@ -127,11 +128,13 @@
                         <muxc:UniformGridLayout 
                             x:Name="CardGrid"
                             Orientation="Horizontal" 
-                            MinItemWidth="250"
+                            MinItemWidth="200"
                             MinItemHeight="358"
                             MinRowSpacing="12" 
                             MinColumnSpacing="12"
-                            ItemsStretch="Fill" />
+                            ItemsStretch="Fill"
+                            MaximumRowsOrColumns="3"
+                            ItemsJustification="Center" />
                     </muxc:ItemsRepeater.Layout>
 
                     <muxc:ItemsRepeater.ItemTemplate>
@@ -163,7 +166,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="120" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
@@ -173,7 +176,7 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Top"/>
 
-                                <StackPanel Grid.Row="1" Padding="15 0" >
+                                <StackPanel Grid.Row="1" Padding="15 10 15 0" >
                                     <TextBlock
                                         HorizontalAlignment="Left"
                                         Style="{ThemeResource BodyTextStyle}"

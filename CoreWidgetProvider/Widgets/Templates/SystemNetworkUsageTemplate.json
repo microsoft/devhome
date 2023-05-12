@@ -1,0 +1,80 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "%NetworkUsage_Widget_Template/Ethernet_Heading%",
+      "size": "small",
+      "style": "Heading",
+      "weight": "Lighter",
+      "wrap": true
+    },
+    {
+      "type": "Image",
+      "url": "${netGraphUrl}",
+      "height": "100px",
+      "width": "268px"
+    },
+    {
+      "text": "%NetworkUsage_Widget_Template/Network_Usage%: ${networkUsage}",
+      "type": "TextBlock"
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "text": "%NetworkUsage_Widget_Template/Sent%",
+              "type": "TextBlock",
+              "spacing": "none",
+              "size": "small",
+              "isSubtle": true
+            },
+            {
+              "text": "${netSent}",
+              "type": "TextBlock",
+              "size": "large"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "type": "TextBlock",
+              "text": "%NetworkUsage_Widget_Template/Received%",
+              "size": "small",
+              "spacing": "none",
+              "isSubtle": true
+            },
+            {
+              "text": "${netReceived}",
+              "type": "TextBlock",
+              "size": "large"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "%NetworkUsage_Widget_Template/Network_Name%: ${networkName}",
+      "type": "TextBlock"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "%NetworkUsage_Widget_Template/Previous_Network%",
+      "verb": "PrevItem"
+    },
+    {
+      "type": "Action.Execute",
+      "title": "%NetworkUsage_Widget_Template/Next_Network%",
+      "verb": "NextItem"
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5"
+}

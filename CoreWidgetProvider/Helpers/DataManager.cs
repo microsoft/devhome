@@ -26,9 +26,14 @@ internal class DataManager : IDisposable
         updateTimer.Enabled = false;
     }
 
-    public void GetMemoryData()
+    private void GetMemoryData()
     {
         systemData.MemStats.GetData();
+    }
+
+    private void GetNetworkData()
+    {
+        systemData.NetStats.GetData();
     }
 
     private void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
@@ -37,6 +42,9 @@ internal class DataManager : IDisposable
         {
             // memory
             GetMemoryData();
+
+            // network
+            GetNetworkData();
         }
 
         updateAction();
@@ -45,6 +53,11 @@ internal class DataManager : IDisposable
     internal MemoryStats GetMemoryStats()
     {
         return systemData.MemStats;
+    }
+
+    internal NetworkStats GetNetworkStats()
+    {
+        return systemData.NetStats;
     }
 
     public void Start()
