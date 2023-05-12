@@ -86,12 +86,12 @@ public class SSHWalletWidget : WidgetImpl
                     var hostJson = new JsonObject
                         {
                             { "host", host },
+                            { "icon", IconLoader.GetIconAsBase64("connect_icon.png") },
                         };
                     ((IList<JsonNode?>)hostsArray).Add(hostJson);
                 });
             }
 
-            hostsData.Add("icon_data", IconLoader.GetIconAsBase64("ssh_wallet_icon.png"));
             hostsData.Add("hosts", hostsArray);
             hostsData.Add("selected_config_file", ConfigFile);
 

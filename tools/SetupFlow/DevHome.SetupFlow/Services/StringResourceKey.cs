@@ -11,10 +11,6 @@ namespace DevHome.SetupFlow.Services;
 public static class StringResourceKey
 {
     // Keys in this file should be a subset of the ones found in the .resw file.
-    public static readonly string AppInstallerUpdateAvailableCancelButton = nameof(AppInstallerUpdateAvailableCancelButton);
-    public static readonly string AppInstallerUpdateAvailableMessage = nameof(AppInstallerUpdateAvailableMessage);
-    public static readonly string AppInstallerUpdateAvailableTitle = nameof(AppInstallerUpdateAvailableTitle);
-    public static readonly string AppInstallerUpdateAvailableUpdateButton = nameof(AppInstallerUpdateAvailableUpdateButton);
     public static readonly string ApplicationsAddedPlural = nameof(ApplicationsAddedPlural);
     public static readonly string ApplicationsAddedSingular = nameof(ApplicationsAddedSingular);
     public static readonly string Applications = nameof(Applications);
