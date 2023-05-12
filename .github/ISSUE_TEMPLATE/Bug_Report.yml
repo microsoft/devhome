@@ -67,9 +67,9 @@ body:
   validations:
     required: false
 
-- id: includedpluginsinfo
+- id: includedextensionsinfo
   type: textarea
   attributes:
-    label: Included Plugins Information
+    label: Included Extensions Information
   validations:
     required: false

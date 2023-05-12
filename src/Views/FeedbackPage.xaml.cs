@@ -121,7 +121,7 @@ public sealed partial class FeedbackPage : Page
             var otherSoftwareText = "OS Build Version: " + GetOSVersion() + "\n.NET Version: " + GetDotNetVersion();
             var otherSoftware = HttpUtility.UrlEncode(otherSoftwareText);
 
-            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle + "&labels=Issue-Bug&template=Bug_Report.yml&version=" + version + "&windowsversion=" + windowsversion + "&repro=" + reproSteps + "&expectedbehavior=" + expectedBehavior + "&actualbehavior=" + actualBehavior + "&includedsysinfo=" + sysInfo + "&includedpluginsinfo=" + pluginsInfo + "&othersoftware=" + otherSoftware;
+            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle + "&labels=Issue-Bug&template=Bug_Report.yml&version=" + version + "&windowsversion=" + windowsversion + "&repro=" + reproSteps + "&expectedbehavior=" + expectedBehavior + "&actualbehavior=" + actualBehavior + "&includedsysinfo=" + sysInfo + "&includedextensionsinfo=" + pluginsInfo + "&othersoftware=" + otherSoftware;
 
             // Make sure any changes are consistent with the report bug issue template on GitHub
             await Windows.System.Launcher.LaunchUriAsync(new Uri(gitHubURL));
@@ -265,7 +265,7 @@ public sealed partial class FeedbackPage : Page
     {
         var pluginService = Application.Current.GetService<IPluginService>();
         var plugins = pluginService.GetInstalledPluginsAsync(true).Result;
-        var pluginsStr = "Plugins: \n";
+        var pluginsStr = "Extensions: \n";
         foreach (var plugin in plugins)
         {
             pluginsStr += plugin.PackageFullName + "\n";
