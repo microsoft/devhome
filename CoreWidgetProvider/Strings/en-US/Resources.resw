@@ -90,4 +90,28 @@
   <data name="SSH_Widget_Template.ErrorProcessingConfigFile" xml:space="preserve">
     <value>Processing config file failed</value>
   </data>
+  <data name="Memory_Widget_Template.SystemMemory" xml:space="preserve">
+    <value>System memory</value>
+  </data>
+  <data name="Memory_Widget_Template.MemoryUsage" xml:space="preserve">
+    <value>Memory usage</value>
+  </data>
+  <data name="Memory_Widget_Template.AllMemory" xml:space="preserve">
+    <value>All memory</value>
+  </data>
+  <data name="Memory_Widget_Template.UsedMemory" xml:space="preserve">
+    <value>Used memory</value>
+  </data>
+  <data name="Memory_Widget_Template.Commited" xml:space="preserve">
+    <value>Commited</value>
+  </data>
+  <data name="Memory_Widget_Template.Cached" xml:space="preserve">
+    <value>Cached</value>
+  </data>
+  <data name="Memory_Widget_Template.NonPagedPool" xml:space="preserve">
+    <value>Non paged pool</value>
+  </data>
+  <data name="Memory_Widget_Template.PagedPool" xml:space="preserve">
+    <value>Paged pool</value>
+  </data>
 </root>

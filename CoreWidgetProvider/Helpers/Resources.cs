@@ -63,6 +63,14 @@ public static class Resources
             "SSH_Widget_Template/EmptyHosts",
             "SSH_Widget_Template/Connect",
             "SSH_Widget_Template/ErrorProcessingConfigFile",
+            "Memory_Widget_Template/SystemMemory",
+            "Memory_Widget_Template/MemoryUsage",
+            "Memory_Widget_Template/AllMemory",
+            "Memory_Widget_Template/UsedMemory",
+            "Memory_Widget_Template/Commited",
+            "Memory_Widget_Template/Cached",
+            "Memory_Widget_Template/NonPagedPool",
+            "Memory_Widget_Template/PagedPool",
         };
     }
 }
