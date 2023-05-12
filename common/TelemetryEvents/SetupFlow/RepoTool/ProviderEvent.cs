@@ -7,31 +7,25 @@ using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
+namespace DevHome.Common.TelemetryEvents.SetupFlow;
 
 [EventData]
-public class RepoDialogGetAccountEvent : EventBase
+public class ProviderEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public string ProviderName
+    public int NumberOfProviders
     {
         get;
     }
 
-    public bool AlreadyLoggedIn
+    public ProviderEvent(int numberOfProviders)
     {
-        get;
-    }
-
-    public RepoDialogGetAccountEvent(string providerName, bool alreadyLoggedIn)
-    {
-        ProviderName = providerName;
-        AlreadyLoggedIn = alreadyLoggedIn;
+        NumberOfProviders = numberOfProviders;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // No sensitive data held
+        // No sensitive strings to replace
     }
 }

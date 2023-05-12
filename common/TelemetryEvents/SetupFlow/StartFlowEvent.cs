@@ -7,21 +7,21 @@ using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.TelemetryEvents;
+namespace DevHome.Common.TelemetryEvents.SetupFlow;
 
 [EventData]
-public class AppInstallEvent : EventBase
+public class StartFlowEvent : EventBase
 {
-    public string PackageId { get; }
-
-    public string SourceId { get; }
+    public string FlowTitle
+    {
+        get;
+    }
 
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public AppInstallEvent(string packageId, string sourceId)
+    public StartFlowEvent(string flowTitle)
     {
-        PackageId = packageId;
-        SourceId = sourceId;
+        FlowTitle = flowTitle;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)

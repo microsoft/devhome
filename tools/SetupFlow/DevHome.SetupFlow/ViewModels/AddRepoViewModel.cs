@@ -11,14 +11,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
-using DevHome.Common.TelemetryEvents.RepoToolEvents;
-using DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
-using DevHome.TelemetryEvents;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using static DevHome.SetupFlow.Models.Common;
@@ -72,6 +69,11 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsAccountComboBoxEnabled))]
     private ObservableCollection<string> _accounts = new ();
+
+    /// <summary>
+    /// The currently selected account.
+    /// </summary>
+    private string _selectedAccount;
 
     /// <summary>
     /// All the repositories for a specific account and the symbol to show
@@ -138,19 +140,38 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     private void FilterRepositories(string text)
     {
-        IEnumerable<RepoViewListItem> filteredRepositories;
+        IEnumerable<IRepository> filteredRepositories;
         if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
         {
-            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => new RepoViewListItem(x));
+            filteredRepositories = _repositoriesForAccount;
         }
         else
         {
-            filteredRepositories = _repositoriesForAccount.OrderBy(x => x.IsPrivate)
-                .Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase))
-                .Select(x => new RepoViewListItem(x));
+            filteredRepositories = _repositoriesForAccount
+                .Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase));
         }
 
-        Repositories = new ObservableCollection<RepoViewListItem>(filteredRepositories);
+        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(filteredRepositories));
+    }
+
+    private IEnumerable<RepoViewListItem> OrderRepos(IEnumerable<IRepository> repos)
+    {
+        var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(x => x.LastUpdated)
+            .Select(x => new RepoViewListItem(x));
+
+        var userRepos = repos.Where(x => x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase));
+        var userPublicRepos = userRepos.Where(x => !x.IsPrivate)
+            .OrderBy(x => x.LastUpdated)
+            .Select(x => new RepoViewListItem(x));
+
+        var userPrivateRepos = userRepos.Where(x => x.IsPrivate)
+            .OrderBy(x => x.LastUpdated)
+            .Select(x => new RepoViewListItem(x));
+
+        return userPrivateRepos
+            .Concat(organizationRepos)
+            .Concat(userPublicRepos);
     }
 
     /// <summary>
@@ -457,14 +478,15 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="loginId">The login Id to get the repositories for</param>
     public void GetRepositories(string repositoryProvider, string loginId)
     {
+        _selectedAccount = loginId;
+
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
         var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
 
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
         _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
 
-        // TODO: What if the user comes back here with repos selected?
-        Repositories = new ObservableCollection<RepoViewListItem>(_repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => new RepoViewListItem(x)));
+        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
     }
 
     /// <summary>

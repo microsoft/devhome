@@ -8,12 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents.RepoToolEvents;
-using DevHome.Common.TelemetryEvents.RepoToolEvents.RepoDialog;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
-using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using static DevHome.SetupFlow.Models.Common;
@@ -296,9 +293,10 @@ internal partial class AddRepoDialog
     /// <summary>
     /// User wants to customize the default dev drive.
     /// </summary>
-    private void CustomizeDevDriveHyperlinkButton_Click(object sender, RoutedEventArgs e)
+    private async void CustomizeDevDriveHyperlinkButton_ClickAsync(object sender, RoutedEventArgs e)
     {
-        EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        await EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        ToggleCloneButton();
     }
 
     /// <summary>
@@ -328,13 +326,7 @@ internal partial class AddRepoDialog
         }
     }
 
-    /// <summary>
-    /// User navigated away from the URL text box.  Validate it.
-    /// </summary>
-    /// <remarks>
-    /// LostFocus event fires before data binding.  Set URL here.
-    /// </remarks>
-    private void RepoUrlTextBox_LostFocus(object sender, RoutedEventArgs e)
+    private void RepoUrlTextBox_TextChanged(object sender, RoutedEventArgs e)
     {
         // just in case something other than a text box calls this.
         if (sender is TextBox)

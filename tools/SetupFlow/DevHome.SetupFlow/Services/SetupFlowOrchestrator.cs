@@ -51,6 +51,15 @@ public partial class SetupFlowOrchestrator
     private string _flowTitle;
 
     /// <summary>
+    /// Gets a GUID that can be used to identify events related to the current setup flow in telemetry.
+    /// This GUID is re-set each time we modify the pages in the flow.
+    /// </summary>
+    public Guid ActivityId
+    {
+        get; private set;
+    }
+
+    /// <summary>
     /// Occurrs right before a page changes
     /// </summary>
     public event EventHandler PageChanging;
@@ -86,6 +95,7 @@ public partial class SetupFlowOrchestrator
             _flowPages.Clear();
             _flowPages.AddRange(value);
             _ = SetCurrentPageIndex(0);
+            ActivityId = Guid.NewGuid();
         }
     }
 

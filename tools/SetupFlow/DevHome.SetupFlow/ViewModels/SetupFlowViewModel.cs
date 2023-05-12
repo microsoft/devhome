@@ -8,9 +8,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -87,12 +89,22 @@ public partial class SetupFlowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void Cancel()
+    private void Cancel()
     {
-        Log.Logger?.ReportInfo(Log.Component.Orchestrator, "Cancelling flow");
+        var currentPage = Orchestrator.CurrentPageViewModel.GetType().Name;
+        TerminateCurrentFlow($"CancelButton_{currentPage}");
+    }
+
+    public void TerminateCurrentFlow(string callerNameForTelemetry)
+    {
+        // Report this before touching the pages so we get the current Activity ID
+        Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Terminating Setup flow by caller [{callerNameForTelemetry}]. ActivityId={Orchestrator.ActivityId}");
+        TelemetryFactory.Get<ITelemetry>().Log("SetupFlow_Termination", LogLevel.Measure, new EndFlowEvent(callerNameForTelemetry), relatedActivityId: Orchestrator.ActivityId);
+
         Orchestrator.ReleaseRemoteFactory();
         _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
         _packageProvider.Clear();
+
         Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };
     }
 }

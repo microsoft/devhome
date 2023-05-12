@@ -67,7 +67,7 @@
     <comment>Shown in Widget, Tooltip text</comment>
   </data>
   <data name="SSH_Widget_Template.Name" xml:space="preserve">
-    <value>SSH Wallet</value>
+    <value>SSH keychain</value>
   </data>
   <data name="SSH_Widget_Template.Target" xml:space="preserve">
     <value>Local</value>
