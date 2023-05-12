@@ -113,13 +113,13 @@ Try {
     }
     if (-not ([string]::IsNullOrEmpty($newAppDisplayNameResource))) {
       $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($uapVisualElements).Attribute("DisplayName").Value = $newAppDisplayNameResource
-    }
-    $extensions = $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($xExtensions).Elements($uapExtension)
-    foreach ($extension in $extensions) {
-      if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
-        $appExtension = $extension.Element($uapAppExtension)
-        if ($appExtension.Attribute("Name").Value -eq "com.microsoft.devhome") {
-          $appExtension.Attribute("DisplayName").Value = $newAppDisplayNameResource
+      $extensions = $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($xExtensions).Elements($uapExtension)
+      foreach ($extension in $extensions) {
+        if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
+          $appExtension = $extension.Element($uapAppExtension)
+          if ($appExtension.Attribute("Name").Value -eq "com.microsoft.devhome") {
+            $appExtension.Attribute("DisplayName").Value = $newAppDisplayNameResource
+          }
         }
       }
     }
