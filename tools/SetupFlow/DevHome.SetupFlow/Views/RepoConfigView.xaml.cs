@@ -107,6 +107,9 @@ public sealed partial class RepoConfigView : UserControl
                 }
             }
 
+            // Two states to worry about
+            // 1. Adding repos that haven't been selected, and
+            // 2. Removing repos from the pre selected list.
             ViewModel.SaveSetupTaskInformation(everythingToClone);
         }
         else

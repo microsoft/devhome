@@ -13,6 +13,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.Views;
@@ -203,7 +204,20 @@ internal partial class AddRepoDialog
             // Specific provider has started.
             var loginId = (string)AccountsComboBox.SelectedValue;
             var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-            AddRepoViewModel.GetRepositories(providerName, loginId);
+            var reposToSelect = AddRepoViewModel.GetRepositories(providerName, loginId);
+
+            var onlyRepoNames = AddRepoViewModel.Repositories.Select(x => x.RepoName).ToList();
+            foreach (var repoToSelect in reposToSelect)
+            {
+                var index = onlyRepoNames.IndexOf(repoToSelect.RepoName);
+                if (index != -1)
+                {
+                    // Seems like the "Correct" way to pre-select items in a list view is to call range.
+                    // SelectRange does not accept an index though.  Call it multiple times on each index
+                    // with a range of 1.
+                    RepositoriesListView.SelectRange(new ItemIndexRange(index, 1));
+                }
+            }
         }
     }
 

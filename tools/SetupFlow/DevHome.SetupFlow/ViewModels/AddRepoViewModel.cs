@@ -452,7 +452,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     /// <param name="repositoryProvider">The provider.  This should match IRepositoryProvider.LoginId</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
-    public void GetRepositories(string repositoryProvider, string loginId)
+    public IEnumerable<RepoViewListItem> GetRepositories(string repositoryProvider, string loginId)
     {
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
         var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
@@ -462,6 +462,11 @@ public partial class AddRepoViewModel : ObservableObject
 
         // TODO: What if the user comes back here with repos selected?
         Repositories = new ObservableCollection<RepoViewListItem>(_repositoriesForAccount.OrderBy(x => x.IsPrivate).Select(x => new RepoViewListItem(x)));
+
+        return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
+            .Where(x => x.ProviderName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
+            && x.OwningAccount.LoginId().Equals(loginId, StringComparison.OrdinalIgnoreCase))
+            .Select(x => new RepoViewListItem(x.RepositoryToClone));
     }
 
     /// <summary>

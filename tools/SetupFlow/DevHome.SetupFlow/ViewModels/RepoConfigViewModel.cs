@@ -60,11 +60,63 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// </remarks>
     public void SaveSetupTaskInformation(List<CloningInformation> cloningInformations)
     {
+        // Need to worry about items being added via URL.
+        // Because cloningInformation does not look at owning account repos that are added
+        // with a different provider are not checked in euqality...is that bad though?
+        // AddRepoViewModel checks if a repo is already added in the URL tab.
+        // Changed the equality to owningAccountName now two forks are different repos.
+        // It is up to the user to clone the forks in different locations though.
         List<CloningInformation> repoReviewItems = new (RepoReviewItems);
-        repoReviewItems.AddRange(cloningInformations);
 
-        RepoReviewItems = new ObservableCollection<CloningInformation>(repoReviewItems);
-        _taskGroup.SaveSetupTaskInformation(repoReviewItems);
+        // Some things we need to worry about
+        // 1. THe user can be adding repos from a different provider and account
+        // 2. The user can be adding repos from the same provider but different accounts
+        // 3. The user can be removing repos from a specific provider and account.
+        // Now that the repos can be de-selected we need to find those deselected repos
+        // and remove them from RepoReviewItems.
+        // But.  If the user unselects a repo it won't be in cloninInformations.
+        // A CloningInformation has the provider name, account name, and repo name.
+        // If a user leavs the repo selected we don't want to re-add it.  So, check against that.
+        // If a user had something selected then de selects it it won't be in cloningInformations but will
+        // be in RepoReview items.  Is that good enough to say "You don't want to clone this anymore?
+
+        // Handle the case where a user re-opens the repo tool with repos that are already selected
+        // Remove them from cloninginformations so they aren't added again.
+        var alreadyAddedRepos = repoReviewItems.Intersect(cloningInformations).ToList();
+
+        var localCloningInfos = new List<CloningInformation>(cloningInformations);
+        foreach (var alreadyAddedRepo in alreadyAddedRepos)
+        {
+            localCloningInfos.Remove(alreadyAddedRepo);
+        }
+
+        repoReviewItems.AddRange(localCloningInfos);
+
+        // Handle the case that a user de-selected a repo from re-opening the repo tool.
+        // This is the case where RepoReviewItems does not contain a repo in cloningInformations.
+        // What about the case where repo sare added and nothing is deselected either because a different provider
+        // or account is being used?
+        // cloningInformation.equals uses the provider name and repo name for equality.
+        // owningaccount is not used for equality because the owner is null when adding via URL.
+        // everythingtoclone has all pre-selected repos when the repo tool is opened again.
+        // so yeah, if RepoReviewItems has the repo and cloningInformation does not
+        // they de-selected it.
+        // RemoveCloningInformation calls save.  If we don't call RemoveCloningInformation repo tool
+        // should call save.
+        var shouldCallSave = true;
+
+        var deSelectedRepos = repoReviewItems.Except(cloningInformations).ToList();
+        foreach (var deSelectedRepo in deSelectedRepos)
+        {
+            RemoveCloningInformation(deSelectedRepo);
+            shouldCallSave = false;
+        }
+
+        if (shouldCallSave)
+        {
+            RepoReviewItems = new ObservableCollection<CloningInformation>(repoReviewItems);
+            _taskGroup.SaveSetupTaskInformation(repoReviewItems);
+        }
     }
 
     /// <summary>

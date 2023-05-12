@@ -126,6 +126,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         }
 
         return ProviderName.Equals(other.ProviderName, StringComparison.OrdinalIgnoreCase) &&
+            RepositoryToClone.OwningAccountName.Equals(other.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase) &&
             RepositoryToClone.DisplayName.Equals(other.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase);
     }
 
