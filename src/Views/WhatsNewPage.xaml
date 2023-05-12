@@ -93,6 +93,7 @@
                 <muxc:ItemsRepeater
                     Name="FeaturesContainer"
                     Grid.Row="1"
+                    Margin="45"
                     animations:Connected.ListItemElementName="itemThumbnail"
                     animations:Connected.ListItemKey="animationKeyContentGrid"
                     ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}">
@@ -127,11 +128,12 @@
                         <muxc:UniformGridLayout 
                             x:Name="CardGrid"
                             Orientation="Horizontal" 
-                            MinItemWidth="360"
+                            MinItemWidth="200"
                             MinItemHeight="358"
                             MinRowSpacing="12" 
                             MinColumnSpacing="12"
-                            ItemsStretch="None"
+                            ItemsStretch="Fill"
+                            MaximumRowsOrColumns="3"
                             ItemsJustification="Center" />
                     </muxc:ItemsRepeater.Layout>
 
@@ -164,7 +166,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="120" />
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
@@ -174,7 +176,7 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Top"/>
 
-                                <StackPanel Grid.Row="1" Padding="15 0" >
+                                <StackPanel Grid.Row="1" Padding="15 10 15 0" >
                                     <TextBlock
                                         HorizontalAlignment="Left"
                                         Style="{ThemeResource BodyTextStyle}"
