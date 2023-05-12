@@ -51,7 +51,7 @@
                 Name="Scroller"
                 Margin="10 30 10 20"
                 Canvas.ZIndex="1"
-                MaxWidth="924"
+                MaxWidth="{ThemeResource MaxPageContentWidth}"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 TabNavigation="Cycle">
