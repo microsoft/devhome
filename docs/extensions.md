@@ -1,44 +1,119 @@
-# ExtensionHost definition
+# Extensions
 
-DevHome is an app extension host with four possible extensions.  Plugins (app extensions) may connect
-to any subset of extensions as needed.  Below is the appxmanifest code and description of each extension point. 
+Dev Home is an app extension host which utilizes [out-of-process COM](https://learn.microsoft.com/en-us/samples/dotnet/samples/out-of-process-com-server/) to talk to external COM Server processes that declare themselves to be an extension of Dev Home.
+
+Dev Home currently supports extending 2 interfaces though the Extension SDK. In addition, the extension can also provide widgets to Dev Home using [Widget providers](https://learn.microsoft.com/en-us/windows/apps/develop/widgets/widget-providers).
+
+## Extension basics
+
+Each extension lives as a separate, packaged windows application and manages it's own lifecycle. The extension applications declare themselves to be an extension of Dev Home through the [manifest file](#extension-manifest).
+
+An extension can provide functionality for one or more extensibility point. Currently, Dev Home supports two extensibility points:
+
+- Developer Id related scenarios: Allowing developers to sign in and sign out of a service. Extensions can implement this functionality by implementing the [IDeveloperIdProvider interface](#ideveloperidprovider)
+  
+- Repository related scenarios: Allowing developers to get available repositories in their account or parse repositories from urls and clone them. Extensions can implement this functionality by implementing the [IRepositoryProvider interface](#irepositoryprovider)
+
+Extensions can define these extensibility points by implementing [Provider interfaces]()
+
+## Extension manifest
+
+The package.appxmanifest file must define a Com Server (which includes the class Id of the Plugin class) and AppExtension properties declaring extension information.
 
 ```xml
-<uap3:Extension Category="windows.appExtensionHost">
-  <uap3:AppExtensionHost>
-    <uap3:Name>com.microsoft.DevHome.devdoctor</uap3:Name>
-    <uap3:Name>com.microsoft.DevHome.settings</uap3:Name>
-    <uap3:Name>com.microsoft.DevHome.setup</uap3:Name>
-    <uap3:Name>com.microsoft.DevHome.widget</uap3:Name>
-  </uap3:AppExtensionHost>
-</uap3:Extension>
+<Extensions>
+  ...
+  <com:Extension Category="windows.comServer">
+    <com:ComServer>
+      <com:ExeServer Executable="ExtensionName.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Sample Extension">
+        <com:Class Id="<Plugin Class GUID>" DisplayName="Sample Plugin" />
+      </com:ExeServer>
+    </com:ComServer>
+  </com:Extension>
+
+  <uap3:AppExtension Name="com.microsoft.devhome" Id="YourApplicationUniqueId" PublicFolder="Public" DisplayName="Sample Extension" Description="This is a sample description.">
+    <uap3:Properties>
+      <DevHomeProvider>
+        <Activation>
+          <CreateInstance ClassId="<Plugin Class GUID>" />
+        </Activation>
+        <SupportedInterfaces>
+          <DeveloperId />
+          <Repository />
+        </SupportedInterfaces>
+      </DevHomeProvider>
+    </uap3:Properties>
+  </uap3:AppExtension>
+</Extensions>
 ```
 
-## devdoctor
+## Provider Interfaces
 
-Not Yet Implemented
+### IDeveloperIdProvider
 
-Will enable a plugin to add rules and UI (via Adaptive Cards) to dev doctor.
+Developer Id related scenarios can be extended by:
+- Implementing the IDeveloperIdProviderInterface
+- In the manifest, declaring DeveloperId as one of the supported interfaces
 
-## settings
+```cs
+public interface IDeveloperIdProvider : global::System.IDisposable
+{
+  string GetName();
+  global::System.Collections.Generic.IEnumerable<IDeveloperId> GetLoggedInDeveloperIds();
+  global::Windows.Foundation.IAsyncOperation<IDeveloperId> LoginNewDeveloperIdAsync();
+  void LogoutDeveloperId(IDeveloperId developerId);
+  IExtensionAdaptiveCardSession GetLoginAdaptiveCardSession();
+  event global::System.EventHandler<IDeveloperId> LoggedIn;
+  event global::System.EventHandler<IDeveloperId> LoggedOut;
+  event global::System.EventHandler<IDeveloperId> Updated;
+}
+```
 
-Not Yet Implemented
+```cs
+public interface IDeveloperId
+{
+  string LoginId();
+  string Url();
+}
+```
+### IRepositoryProvider
 
-Will enable a plugin to add UI through Adaptive Cards to the Dev Home settings page.
+Repository related scenarios can be extended by:
+- Implementing the IRepositoryProvider interface
+- In the manifest, declaring DeveloperId as one of the supported interfaces
 
-## setup
+```cs
+public interface IRepositoryProvider : global::System.IDisposable
+{
+  global::Windows.Foundation.IAsyncOperation<global::System.Collections.Generic.IEnumerable<IRepository>> GetRepositoriesAsync(IDeveloperId developerId);
+  
+  global::Windows.Foundation.IAsyncOperation<IRepository> ParseRepositoryFromUrlAsync(global::System.Uri uri);
+  
+  string DisplayName { get; }
+}
+```
 
-Not Yet Implemented
+```cs
+public interface IRepository
+{
+  [global::Windows.Foundation.Metadata.Overload(@"CloneRepositoryAsync")]
+  global::Windows.Foundation.IAsyncAction CloneRepositoryAsync(string cloneDestination, IDeveloperId developerId);
 
-Will enable a plugin to add UI through Adaptive Cards to the Dev Home setup flow.
+  [global::Windows.Foundation.Metadata.Overload(@"CloneRepositoryAsync2")]
+  global::Windows.Foundation.IAsyncAction CloneRepositoryAsync(string cloneDestination);
+  
+  string DisplayName { get; }
+  
+  bool IsPrivate { get; }
+  
+  global::System.DateTimeOffset LastUpdated { get; }
+  
+  string OwningAccountName { get; }
+}
+```
 
-## widget
 
-Not Yet Implemented
-
-Will enable a plugin to add Widgets that can be added to the Dashboard.
-
-# Runtime logic
+## Runtime logic
 
 At startup, Dev Home iterates the app catalog for any extensions and adds them to a dictionary.
 ```cs
@@ -50,23 +125,3 @@ Any internal tools can retrieve a readonly list of extensions for a given extens
 var extensionService = App.GetService<IExtensionService>();
 var extensions = extensionService.GetExtensions("widget");
 ```
-
-# Extensions definition
-
-Here's an example of how a plugin can register to be a Dev Home extension:
-```xml
-<uap3:Extension Category="windows.appExtension">
-  <uap3:AppExtension Name="com.microsoft.DevHome.widget"
-    Id="ExampleId"
-    PublicFolder="Public"
-    DisplayName="ExampleName"
-    Description="Example Description">
-  </uap3:AppExtension>
-</uap3:Extension>
-```
-
-# Extension Interface definions
-
-Not Yet Implemented
-
-These are being designed right now and will evolve over time before shipping.
