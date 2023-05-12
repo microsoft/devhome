@@ -20,6 +20,7 @@ internal class WidgetProvider : IWidgetProvider
         Log.Logger()?.ReportDebug("Provider Constructed");
         widgetDefinitionRegistry.Add("SSH_Wallet", new WidgetImplFactory<SSHWalletWidget>());
         widgetDefinitionRegistry.Add("System_Memory", new WidgetImplFactory<SystemMemoryWidget>());
+        widgetDefinitionRegistry.Add("System_NetworkUsage", new WidgetImplFactory<SystemNetworkUsageWidget>());
         RecoverRunningWidgets();
     }
 
