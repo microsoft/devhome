@@ -142,4 +142,16 @@
     <value>There are no widgets available to add</value>
     <comment>Message shown when the user tries to create a widet but there are no installed widgets.</comment>
   </data>
+  <data name="UpdateWebExpContent" xml:space="preserve">
+    <value>Please ensure you have the latest version of the Windows Web Experience Pack installed.</value>
+    <comment>Message asking the user to udpate an app from the store.</comment>
+  </data>
+  <data name="UpdateWebExpCancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Button text to dismiss dialog</comment>
+  </data>
+  <data name="UpdateWebExpUpdate" xml:space="preserve">
+    <value>Get in Store app</value>
+    <comment>Button text to go to store listing</comment>
+  </data>
 </root>
