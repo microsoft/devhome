@@ -14,7 +14,7 @@ An extension can provide functionality for one or more extensibility point. Curr
   
 - Repository related scenarios: Allowing developers to get available repositories in their account or parse repositories from urls and clone them. Extensions can implement this functionality by implementing the [IRepositoryProvider interface](#irepositoryprovider)
 
-Extensions can define these extensibility points by implementing [Provider interfaces]()
+Read more about [Provider interfaces here](#provider-interfaces). Each extension also must have a class that implements IPlugin. DevHome would try to create an instance of this class. The GUID of this class must be reflected in the manifest. See [sample plugin](../SamplePlugin/SamplePlugin.cs)
 
 ![Extension Flow](./images/extension-flow.png)
 
@@ -114,7 +114,10 @@ public interface IRepository
 }
 ```
 
-![]
+
+## Sequence diagram
+
+![Extension Sequence](./images/extension-sequence.png)
 
 ## Runtime logic
 
