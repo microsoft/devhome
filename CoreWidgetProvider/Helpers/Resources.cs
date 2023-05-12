@@ -78,6 +78,10 @@ public static class Resources
             "NetworkUsage_Widget_Template/Previous_Network",
             "NetworkUsage_Widget_Template/Next_Network",
             "NetworkUsage_Widget_Template/Ethernet_Heading",
+            "CPUUsage_Widget_Template/CPU_Usage",
+            "CPUUsage_Widget_Template/CPU_Speed",
+            "CPUUsage_Widget_Template/Processes",
+            "CPUUsage_Widget_Template/End_Process",
         };
     }
 }
