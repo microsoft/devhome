@@ -13,6 +13,7 @@ using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace DevHome.SetupFlow.Views;
 
@@ -133,7 +134,7 @@ public sealed partial class EditClonePathDialog
     /// </summary>
     private void CustomizeDevDriveHyperlinkButton_Click(object sender, RoutedEventArgs e)
     {
-        EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        _ = EditDevDriveViewModel.PopDevDriveCustomizationAsync();
     }
 
     /// <summary>

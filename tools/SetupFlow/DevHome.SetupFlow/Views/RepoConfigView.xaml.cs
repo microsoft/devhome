@@ -189,7 +189,7 @@ public sealed partial class RepoConfigView : UserControl
             // so decrease the Dev Managers count.
             if (wasCloningToDevDrive && !cloningInformation.CloneToDevDrive)
             {
-                telemetryLogger.Log(EventName, LogLevel.Measure, new SwitchedCloningLocationEvent(CloneLocationKind.LocalPath, devDrive.State == DevDriveState.New, devDrive.State == DevDriveState.ExistsOnSystem), relatedActivityId);
+                telemetryLogger.Log(EventName, LogLevel.Measure, new SwitchedCloningLocationEvent(CloneLocationKind.LocalPath, devDrive?.State == DevDriveState.New, devDrive?.State == DevDriveState.ExistsOnSystem), relatedActivityId);
                 ViewModel.DevDriveManager.DecreaseRepositoriesCount();
                 ViewModel.DevDriveManager.CancelChangesToDevDrive();
             }

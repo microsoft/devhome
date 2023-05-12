@@ -23,7 +23,7 @@ namespace DevHome.SetupFlow.Services;
 public class WindowsPackageManager : IWindowsPackageManager
 {
     public const int AppInstallerErrorFacility = 0xA15;
-    private const string AppInstallerProductId = "9NBLGGH4NNS1";
+    public const string AppInstallerProductId = "9NBLGGH4NNS1";
 
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;
