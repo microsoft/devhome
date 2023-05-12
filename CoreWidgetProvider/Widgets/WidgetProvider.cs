@@ -22,6 +22,7 @@ internal class WidgetProvider : IWidgetProvider
         widgetDefinitionRegistry.Add("System_Memory", new WidgetImplFactory<SystemMemoryWidget>());
         widgetDefinitionRegistry.Add("System_NetworkUsage", new WidgetImplFactory<SystemNetworkUsageWidget>());
         widgetDefinitionRegistry.Add("System_GPUUsage", new WidgetImplFactory<SystemGPUUsageWidget>());
+        widgetDefinitionRegistry.Add("System_CPUUsage", new WidgetImplFactory<SystemCPUUsageWidget>());
         RecoverRunningWidgets();
     }
 

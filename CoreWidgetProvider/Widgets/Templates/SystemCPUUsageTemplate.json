@@ -1,0 +1,132 @@
+{
+  "type": "AdaptiveCard",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "CPU",
+      "size": "small",
+      "style": "Heading",
+      "weight": "Lighter",
+      "wrap": true
+    },
+    {
+      "type": "Image",
+      "url": "${cpuGraphUrl}",
+      "height": "100px",
+      "width": "268px"
+    },
+    {
+      "text": "%CPUUsage_Widget_Template/CPU_Usage%: ${cpuUsage}",
+      "type": "TextBlock"
+    },
+    {
+      "text": "%CPUUsage_Widget_Template/CPU_Speed%: ${cpuSpeed}",
+      "type": "TextBlock"
+    },
+    {
+      "type": "TextBlock",
+      "text": "%CPUUsage_Widget_Template/Processes%",
+      "size": "Medium",
+      "style": "heading",
+      "wrap": true
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "text": "${cpuProc1}",
+              "type": "TextBlock"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "verticalContentAlignment": "center",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "ActionSet",
+              "actions": [
+                {
+                  "type": "Action.Execute",
+                  "title": "%CPUUsage_Widget_Template/End_Process%",
+                  "verb": "CpuKill1"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "text": "${cpuProc2}",
+              "type": "TextBlock"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "verticalContentAlignment": "center",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "ActionSet",
+              "actions": [
+                {
+                  "type": "Action.Execute",
+                  "title": "%CPUUsage_Widget_Template/End_Process%",
+                  "verb": "CpuKill2"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "text": "${cpuProc3}",
+              "type": "TextBlock"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "verticalContentAlignment": "center",
+          "width": "stretch",
+          "items": [
+            {
+              "type": "ActionSet",
+              "actions": [
+                {
+                  "type": "Action.Execute",
+                  "title": "%CPUUsage_Widget_Template/End_Process%",
+                  "verb": "CpuKill3"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.5"
+}

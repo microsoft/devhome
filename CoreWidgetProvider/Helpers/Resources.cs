@@ -83,6 +83,10 @@ public static class Resources
             "GPUUsage_Widget_Template/GPU_Temperature",
             "GPUUsage_Widget_Template/Previous_GPU",
             "GPUUsage_Widget_Template/Next_GPU",
+            "CPUUsage_Widget_Template/CPU_Usage",
+            "CPUUsage_Widget_Template/CPU_Speed",
+            "CPUUsage_Widget_Template/Processes",
+            "CPUUsage_Widget_Template/End_Process",
         };
     }
 }
