@@ -11,7 +11,9 @@
         },
         {
             "type": "Image",
-            "url": "${memGraphUrl}"
+            "url": "${memGraphUrl}",
+            "height": "100px",
+            "width": "268px"
         },
         {
             "text": "%Memory_Widget_Template/MemoryUsage%: ${memUsage}",

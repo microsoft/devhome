@@ -26,11 +26,11 @@ internal class ChartHelper
 
     public static byte[] CreateChart(List<float> chartValues)
     {
-        var width = 300;
+        var width = 268;
         var height = 100;
-        Bitmap bitmap = new Bitmap(width, height);
-        List<PointF> points = new List<PointF>();
-        using (Graphics g = Graphics.FromImage(bitmap))
+        var bitmap = new Bitmap(width, height);
+        var points = new List<PointF>();
+        using (var g = Graphics.FromImage(bitmap))
         {
             float minHeight = 95;
             var startChartX = 5 + ((30 - chartValues.Count) * 10);
@@ -40,7 +40,7 @@ internal class ChartHelper
                 minHeight = Math.Min(minHeight, 95 - (chartValues[pointIndex] / 100 * 90));
             }
 
-            using SolidBrush darkGreyBrush = new SolidBrush(DarkGrayColor);
+            using var darkGreyBrush = new SolidBrush(DarkGrayColor);
             g.FillRectangle(darkGreyBrush, 0, 0, width - 1, height - 1);
             g.DrawRectangle(Pens.LightGray, 0, 0, width - 1, height - 1);
 
