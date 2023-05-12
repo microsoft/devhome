@@ -39,6 +39,8 @@ internal class DataManager : IDisposable
     private void GetGPUData()
     {
         systemData.GPUStats.GetData();
+    }
+
     private void GetCPUData()
     {
         systemData.CpuStats.GetData();
@@ -56,6 +58,7 @@ internal class DataManager : IDisposable
 
             // gpu
             GetGPUData();
+
             // CPU
             GetCPUData();
         }
@@ -77,7 +80,7 @@ internal class DataManager : IDisposable
     {
         return systemData.GPUStats;
     }
-    
+
     internal CPUStats GetCPUStats()
     {
         return systemData.CpuStats;

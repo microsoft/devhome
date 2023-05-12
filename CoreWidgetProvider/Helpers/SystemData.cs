@@ -10,7 +10,7 @@ internal class SystemData : IDisposable
     public NetworkStats NetStats { get; set; }
 
     public GPUStats GPUStats { get; set; }
-    
+
     public CPUStats CpuStats { get; set; }
 
     public SystemData()
