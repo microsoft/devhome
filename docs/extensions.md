@@ -16,6 +16,8 @@ An extension can provide functionality for one or more extensibility point. Curr
 
 Extensions can define these extensibility points by implementing [Provider interfaces]()
 
+![Extension Flow](./images/extension-flow.png)
+
 ## Extension manifest
 
 The package.appxmanifest file must define a Com Server (which includes the class Id of the Plugin class) and AppExtension properties declaring extension information.
@@ -112,6 +114,7 @@ public interface IRepository
 }
 ```
 
+![]
 
 ## Runtime logic
 
