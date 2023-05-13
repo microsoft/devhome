@@ -28,4 +28,19 @@ public enum WidgetAction
     /// Action to show next widget item.
     /// </summary>
     NextItem,
+
+    /// <summary>
+    /// Kill process #1.
+    /// </summary>
+    CpuKill1,
+
+    /// <summary>
+    /// Kill process #2.
+    /// </summary>
+    CpuKill2,
+
+    /// <summary>
+    /// Kill process #3.
+    /// </summary>
+    CpuKill3,
 }

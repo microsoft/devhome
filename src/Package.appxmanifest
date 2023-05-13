@@ -16,7 +16,12 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
-      <uap:VisualElements DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Preview\MedTile.png" Square44x44Logo="Assets\Preview\AppList.png">
+      <uap:VisualElements
+          DisplayName="ms-resource:AppDisplayNameDev"
+          Description="ms-resource:AppDescription"
+          BackgroundColor="transparent"
+          Square150x150Logo="Assets\Preview\MedTile.png"
+          Square44x44Logo="Assets\Preview\AppList.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Preview\WideTile.png" />
         <uap:SplashScreen Image="Assets\Preview\SplashScreen.png" />
       </uap:VisualElements>
@@ -129,6 +134,62 @@
                   <Definition Id="System_NetworkUsage"
                       DisplayName="System Network Usage"
                       Description="Microsoft System Network Usage Widget Description"
+                      AllowMultiple="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Assets\Preview\StoreLogo.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                      </Screenshots>
+                      <DarkMode>
+                        <!-- DarkMode and LightMode are optional -->
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="System_GPUUsage"
+                      DisplayName="System GPU Usage"
+                      Description="Microsoft System GPU Usage Widget Description"
+                      AllowMultiple="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Assets\Preview\StoreLogo.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                      </Screenshots>
+                      <DarkMode>
+                        <!-- DarkMode and LightMode are optional -->
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="System_CPUUsage"
+                      DisplayName="System CPU Usage"
+                      Description="Microsoft System CPU Usage Widget Description"
                       AllowMultiple="true">
                     <Capabilities>
                       <Capability>
