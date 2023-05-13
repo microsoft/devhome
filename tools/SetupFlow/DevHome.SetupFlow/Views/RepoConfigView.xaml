@@ -92,7 +92,7 @@
                                 <TextBlock Text="{x:Bind ProviderName}" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="WordEllipsis"/>
                             </Border>
                             <Border Style="{StaticResource DevHomeBorderStyle}" Grid.Column="1" BorderThickness="0, 1, 1, 0">
-                                <TextBlock Text="{x:Bind RepositoryId}" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="WordEllipsis"/>
+                                <TextBlock Text="{x:Bind RepositoryOwnerAndName}" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="WordEllipsis"/>
                             </Border>
                             <Border Style="{StaticResource DevHomeBorderStyle}" Grid.Column="2" BorderThickness="0, 1, 0, 0">
                                 <StackPanel Orientation="Horizontal" Spacing="5">

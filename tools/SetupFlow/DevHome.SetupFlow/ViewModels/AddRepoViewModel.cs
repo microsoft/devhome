@@ -307,17 +307,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
         else if (CurrentPage == PageKind.AddViaAccount || CurrentPage == PageKind.Repositories)
         {
-            // Handle the case where the user de-selects all previously selected repos.
-            // return true to allow users to remove all repos from the dialog and not have to
-            // manually click "x" on all repos.
-            if (_previouslySelectedRepos.Any())
-            {
-                return true;
-            }
-            else
-            {
-                return EverythingToClone.Count > 0;
-            }
+             return EverythingToClone.Count > 0;
         }
         else
         {
