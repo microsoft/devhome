@@ -195,11 +195,11 @@ stages:
         # Saving one of these makes it really easy to inspect the loc output...
         - powershell: 'tar czf LocOutput.tar.gz LocOutput'
           displayName: 'Archive Loc Output for Submission'
-          condition: eq(variables['EnableLocalization'], 'true')
+          condition: and(eq(variables['EnableLocalization'], 'true'), eq(variables['UpdateLocalization'], 'true'))
 
         - task: PublishBuildArtifacts@1
           displayName: 'Publish Artifact: LocOutput'
-          condition: eq(variables['EnableLocalization'], 'true')
+          condition: and(eq(variables['EnableLocalization'], 'true'), eq(variables['UpdateLocalization'], 'true'))
           inputs:
             PathtoPublish: LocOutput.tar.gz
             ArtifactName: LocOutput
