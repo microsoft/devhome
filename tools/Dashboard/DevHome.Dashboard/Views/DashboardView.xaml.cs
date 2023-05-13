@@ -15,13 +15,16 @@ using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
+using Windows.Management.Deployment;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.System;
 
 namespace DevHome.Dashboard.Views;
 public partial class DashboardView : ToolPage
@@ -37,6 +40,8 @@ public partial class DashboardView : ToolPage
     private static AdaptiveCardRenderer _renderer;
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
+    private bool _validatedWebExpPack;
+
     private static bool _widgetHostInitialized;
 
     private static SortedDictionary<string, BitmapImage> _widgetLightIconCache;
@@ -47,30 +52,36 @@ public partial class DashboardView : ToolPage
         ViewModel = new DashboardViewModel();
         this.InitializeComponent();
 
-        // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
-        if (!_widgetHostInitialized)
-        {
-            _widgetHostInitialized = InitializeWidgetHost();
-        }
-        else
+        if (PinnedWidgets != null)
         {
             PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChanged;
         }
 
+        PinnedWidgets = new ObservableCollection<WidgetViewModel>();
+        PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
+
+        _widgetLightIconCache = new SortedDictionary<string, BitmapImage>();
+        _widgetDarkIconCache = new SortedDictionary<string, BitmapImage>();
+
+        ActualThemeChanged += OnActualThemeChanged;
+
+        // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
+        if (!_widgetHostInitialized)
+        {
+            if (EnsureWebExperiencePack())
+            {
+                _widgetHostInitialized = InitializeWidgetHost();
+            }
+        }
+
         if (_widgetHostInitialized)
         {
-            PinnedWidgets = new ObservableCollection<WidgetViewModel>();
-            PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
-
-            ActualThemeChanged += OnActualThemeChanged;
-
             Loaded += OnLoaded;
         }
         else
         {
-            // TODO: show error
-            AddWidgetButton.IsEnabled = false;
-            AddFirstWidgetLink.IsEnabled = false;
+            // If above initialization failed, we don't have any widgets, so show the message.
+            NoWidgetsStackPanel.Visibility = Visibility.Visible;
         }
 
 #if DEBUG
@@ -103,6 +114,49 @@ public partial class DashboardView : ToolPage
         }
 
         return true;
+    }
+
+    private bool EnsureWebExperiencePack()
+    {
+        // If we've already validated there's a good version, don't check again.
+        if (_validatedWebExpPack)
+        {
+            return true;
+        }
+
+        // Ensure that the application is installed, and that the version is high enough.
+        const string packageName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
+        const int stableVer = 423;
+        const int stableMin = 3800; // 423.3800.0.0
+        const int stageVer = 523;
+        const int stageMin = 3300; // 523.3300.0.0
+
+        var packageManager = new PackageManager();
+        var packages = packageManager.FindPackagesForUser(string.Empty, packageName);
+        if (packages.Any())
+        {
+            // A user cannot actually have more than one version installed.
+            var package = packages.First();
+
+            var version = package.Id.Version;
+            var major = version.Major;
+            var minor = version.Minor;
+
+            Log.Logger()?.ReportInfo("DashboardView", $"{package.Id.FullName} Version: {major}.{minor}");
+
+            if ((major < stableVer) || (major == stableVer && minor < stableMin) || (major == stageVer && minor < stageMin))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            // If there is no version installed at all.
+            return false;
+        }
+
+        _validatedWebExpPack = true;
+        return _validatedWebExpPack;
     }
 
     private async Task<AdaptiveCardRenderer> GetConfigurationRendererAsync()
@@ -159,9 +213,6 @@ public partial class DashboardView : ToolPage
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        _widgetLightIconCache = new SortedDictionary<string, BitmapImage>();
-        _widgetDarkIconCache = new SortedDictionary<string, BitmapImage>();
-
         // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
         await CacheWidgetIcons();
         RestorePinnedWidgets(null, null);
@@ -291,8 +342,39 @@ public partial class DashboardView : ToolPage
         }
     }
 
-    private async void AddWidgetButton_Click(object sender, RoutedEventArgs e)
+    private async void AddWidget_Click(object sender, RoutedEventArgs e)
     {
+        // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
+        if (!_widgetHostInitialized)
+        {
+            if (EnsureWebExperiencePack())
+            {
+                _widgetHostInitialized = InitializeWidgetHost();
+                await CacheWidgetIcons();
+            }
+            else
+            {
+                var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+
+                var errorDialog = new ContentDialog()
+                {
+                    XamlRoot = this.XamlRoot,
+                    RequestedTheme = this.ActualTheme,
+                    Content = resourceLoader.GetString("UpdateWebExpContent"),
+                    CloseButtonText = resourceLoader.GetString("UpdateWebExpCancel"),
+                    PrimaryButtonText = resourceLoader.GetString("UpdateWebExpUpdate"),
+                    PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
+                };
+                errorDialog.PrimaryButtonClick += async (ContentDialog sender, ContentDialogButtonClickEventArgs args) =>
+                {
+                    await Launcher.LaunchUriAsync(new ("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
+                    sender.Hide();
+                };
+                _ = await errorDialog.ShowAsync();
+                return;
+            }
+        }
+
         var configurationRenderer = await GetConfigurationRendererAsync();
         var dialog = new AddWidgetDialog(_widgetHost, _widgetCatalog, configurationRenderer, _dispatcher, ActualTheme)
         {
@@ -525,6 +607,7 @@ public partial class DashboardView : ToolPage
             FontSize = 4,
         };
         resetButton.Click += ResetButton_Click;
+        AutomationProperties.SetName(resetButton, "ResetBannerButton");
         var parent = AddWidgetButton.Parent as StackPanel;
         var index = parent.Children.IndexOf(AddWidgetButton);
         parent.Children.Insert(index + 1, resetButton);

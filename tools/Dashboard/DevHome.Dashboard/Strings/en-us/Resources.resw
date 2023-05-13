@@ -94,6 +94,10 @@
     <value>Remove widget</value>
     <comment>Menu item that will remove the Widget from being displayed on the dashboard if it is selected</comment>
   </data>
+  <data name="WidgetMoreOptionsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>More options</value>
+    <comment>Name of the button that brings up the "More options" menu</comment>
+  </data>
   <data name="LargeWidgetMenuText" xml:space="preserve">
     <value>Large</value>
     <comment>The size of a large widget</comment>
@@ -137,5 +141,17 @@
   <data name="WidgetErrorCardNoWidgetsText" xml:space="preserve">
     <value>There are no widgets available to add</value>
     <comment>Message shown when the user tries to create a widet but there are no installed widgets.</comment>
+  </data>
+  <data name="UpdateWebExpContent" xml:space="preserve">
+    <value>Please ensure you have the latest version of the Windows Web Experience Pack installed.</value>
+    <comment>Message asking the user to udpate an app from the store.</comment>
+  </data>
+  <data name="UpdateWebExpCancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Button text to dismiss dialog</comment>
+  </data>
+  <data name="UpdateWebExpUpdate" xml:space="preserve">
+    <value>Get in Store app</value>
+    <comment>Button text to go to store listing</comment>
   </data>
 </root>

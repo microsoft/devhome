@@ -25,7 +25,6 @@ public partial class DashboardViewModel : ObservableObject
     [RelayCommand]
     private async Task DashboardBannerButtonAsync()
     {
-        // TODO Update code with the "Learn more" button behavior
         await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2234395"));
     }
 
