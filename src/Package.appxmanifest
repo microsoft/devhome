@@ -16,7 +16,12 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
-      <uap:VisualElements DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription" BackgroundColor="transparent" Square150x150Logo="Assets\Preview\MedTile.png" Square44x44Logo="Assets\Preview\AppList.png">
+      <uap:VisualElements
+          DisplayName="ms-resource:AppDisplayNameDev"
+          Description="ms-resource:AppDescription"
+          BackgroundColor="transparent"
+          Square150x150Logo="Assets\Preview\MedTile.png"
+          Square44x44Logo="Assets\Preview\AppList.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Preview\WideTile.png" />
         <uap:SplashScreen Image="Assets\Preview\SplashScreen.png" />
       </uap:VisualElements>
@@ -74,10 +79,7 @@
                   <TrustedPackageFamilyName>Microsoft.MicrosoftEdge.Stable_8wekyb3d8bbwe</TrustedPackageFamilyName>
                 </TrustedPackageFamilyNames>
                 <Definitions>
-                  <Definition Id="SSH_Wallet"
-                      DisplayName="SSH keychain"
-                      Description="Quickly connect into to your favorite servers from your SSH config file"
-                      AllowMultiple="true">
+                  <Definition Id="SSH_Wallet" DisplayName="SSH keychain" Description="Quickly connect into to your favorite servers from your SSH config file" AllowMultiple="true">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -100,6 +102,115 @@
                         <Icons>
                           <Icon Path="Widgets\Assets\ssh_keychain_icon_dark.png" />
                         </Icons>
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="System_Memory" DisplayName="System Memory" Description="Microsoft System Memory Widget Description" AllowMultiple="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Assets\Preview\StoreLogo.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                      </Screenshots>
+                      <DarkMode>
+                        <!-- DarkMode and LightMode are optional -->
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="System_NetworkUsage"
+                      DisplayName="System Network Usage"
+                      Description="Microsoft System Network Usage Widget Description"
+                      AllowMultiple="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Assets\Preview\StoreLogo.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                      </Screenshots>
+                      <DarkMode>
+                        <!-- DarkMode and LightMode are optional -->
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="System_GPUUsage"
+                      DisplayName="System GPU Usage"
+                      Description="Microsoft System GPU Usage Widget Description"
+                      AllowMultiple="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Assets\Preview\StoreLogo.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                      </Screenshots>
+                      <DarkMode>
+                        <!-- DarkMode and LightMode are optional -->
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="System_CPUUsage"
+                      DisplayName="System CPU Usage"
+                      Description="Microsoft System CPU Usage Widget Description"
+                      AllowMultiple="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Assets\Preview\StoreLogo.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                      </Screenshots>
+                      <DarkMode>
+                        <!-- DarkMode and LightMode are optional -->
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>

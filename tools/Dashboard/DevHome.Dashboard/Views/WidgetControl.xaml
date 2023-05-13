@@ -38,7 +38,8 @@
                            Fill="{x:Bind views:DashboardView.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme),Mode=OneWay}"/>
                 <TextBlock Text="{x:Bind WidgetSource.WidgetDisplayTitle, Mode=OneWay}" VerticalAlignment="Center" FontSize="{ThemeResource CaptionTextBlockFontSize}" />
             </StackPanel>
-            <Button Tag="{x:Bind}" Content="&#xE712;" 
+            <Button Tag="{x:Bind}" Content="&#xE712;"
+                    x:Uid="WidgetMoreOptionsButton"
                     FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{ThemeResource CaptionTextBlockFontSize}"
                     VerticalAlignment="Top" HorizontalAlignment="Right" Margin="15,10,15,5" BorderThickness="0" Padding="5"
                     Background="Transparent"

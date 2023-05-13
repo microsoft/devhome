@@ -1,0 +1,49 @@
+{
+    "type": "AdaptiveCard",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "%Memory_Widget_Template/SystemMemory%",
+            "size": "small",
+            "style": "Heading",
+            "weight": "Lighter",
+            "wrap": true
+        },
+        {
+            "type": "Image",
+            "url": "${memGraphUrl}",
+            "height": "100px",
+            "width": "268px"
+        },
+        {
+            "text": "%Memory_Widget_Template/MemoryUsage%: ${memUsage}",
+            "type": "TextBlock"
+        },
+        {
+            "text": "%Memory_Widget_Template/AllMemory%: ${allMem}",
+            "type": "TextBlock"
+        },
+        {
+            "text": "%Memory_Widget_Template/UsedMemory%: ${usedMem}",
+            "type": "TextBlock"
+        },
+        {
+            "text": "%Memory_Widget_Template/Commited%: ${commitedMem}/${commitedLimitMem}",
+            "type": "TextBlock"
+        },
+        {
+            "text": "%Memory_Widget_Template/Cached%: ${cachedMem}",
+            "type": "TextBlock"
+        },
+        {
+            "text": "%Memory_Widget_Template/PagedPool%: ${pagedPoolMem}",
+            "type": "TextBlock"
+        },
+        {
+            "text": "%Memory_Widget_Template/NonPagedPool%: ${nonPagedPoolMem}",
+            "type": "TextBlock"
+        }
+    ],
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.5"
+}

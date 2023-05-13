@@ -155,7 +155,7 @@ stages:
             targetPath: '$(Pipeline.Workspace)\sdkArtifacts\'
 
         - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
-          displayName: Send and Download Localization Files
+          displayName: Send and Download Localization Files for Artifacts
           condition: and(eq(variables['EnableLocalization'], 'true'), eq(variables['UpdateLocalization'], 'true'))
           inputs:
             teamId: 71220
@@ -169,15 +169,14 @@ stages:
             pseudoSetting: Included
 
         - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
-          displayName: Download Localization Files
-          condition: and(eq(variables['EnableLocalization'], 'true'), ne(variables['UpdateLocalization'], 'true'))
+          displayName: Download and Use Localization Files
+          condition: eq(variables['EnableLocalization'], 'true')
           inputs:
             teamId: 71220
             authId: $(TouchdownAppId)
             authKey: $(TouchdownAppKey)
             resourceFilePath: |
               **\en-US\*.resw
-            outputDirectoryRoot: LocOutput
             localizationTarget: false
             appendRelativeDir: true
             pseudoSetting: Included
