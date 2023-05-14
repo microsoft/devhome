@@ -161,29 +161,39 @@
             <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="30">
 
                 <!-- Number of apps and repos cloned.-->
-                <StackPanel Orientation="Horizontal" Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" HorizontalAlignment="Center" Padding="0, 15, 0, 0">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.AppsDownloaded.Count}" FontSize="{StaticResource TitleLargeTextBlockFontSize}" FontWeight="{StaticResource InfoBarTitleFontWeight}" HorizontalAlignment="center"/>
-                        <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownloadedCount" />
-                    </Grid>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.RepositoriesCloned.Count}" FontSize="{StaticResource TitleLargeTextBlockFontSize}" FontWeight="{StaticResource InfoBarTitleFontWeight}" HorizontalAlignment="center"/>
-                        <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedCount" />
+                <StackPanel BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" HorizontalAlignment="Center" Padding="0, 15, 0, 0" MinWidth="250">
+                    <Grid
+                        ColumnDefinitions="Auto, Auto"
+                        HorizontalAlignment="Center">
+                        <Grid
+                            Grid.Column="0"
+                            Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}"
+                            Margin="0 0 10 0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.AppsDownloaded.Count}" FontSize="{StaticResource TitleLargeTextBlockFontSize}" FontWeight="{StaticResource InfoBarTitleFontWeight}" HorizontalAlignment="center"/>
+                            <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownloadedCount" />
+                        </Grid>
+                        <Grid
+                            Grid.Column="1"
+                            Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}" HorizontalAlignment="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.RepositoriesCloned.Count}" FontSize="{StaticResource TitleLargeTextBlockFontSize}" FontWeight="{StaticResource InfoBarTitleFontWeight}" HorizontalAlignment="center"/>
+                            <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedCount"/>
+                        </Grid>
                     </Grid>
                 </StackPanel>
                 <Button 
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" 
                     HorizontalAlignment="Center" 
                     Command="{x:Bind ViewModel.GoToDashboardCommand, Mode=OneWay}" 
-                    Style="{StaticResource AccentButtonStyle}" />
+                    Style="{StaticResource AccentButtonStyle}"
+                    Margin="-15 0 0 0"/>
 
                 <!-- Next steps section -->
                 <ContentControl Template="{ThemeResource LinksTemplate}" />
@@ -194,7 +204,7 @@
                 VerticalScrollBarVisibility="Auto"
                 Grid.Column="1" >
                 <!-- Displays the repos cloned and apps downloaded -->
-                <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="30">
+                <StackPanel Grid.Column="1" Orientation="Vertical">
                     <!-- Repos cloned -->
                     <StackPanel 
                         Orientation="Vertical" 
