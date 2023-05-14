@@ -1155,4 +1155,8 @@
     <value>Clone path</value>
     <comment>Text for choosing a clone path in a block of text</comment>
   </data>
+  <data name="DoneButton.Content" xml:space="preserve">
+    <value>Done</value>
+    <comment>Button label that when clicked will end the machine configuration wizard.</comment>
+  </data>
 </root>

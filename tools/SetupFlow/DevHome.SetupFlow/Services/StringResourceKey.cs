@@ -47,6 +47,7 @@ public static class StringResourceKey
     public static readonly string DevDriveUnableToCreateError = nameof(DevDriveUnableToCreateError);
     public static readonly string DevDriveWindowByteUnitComboBoxGB = nameof(DevDriveWindowByteUnitComboBoxGB);
     public static readonly string DevDriveWindowByteUnitComboBoxTB = nameof(DevDriveWindowByteUnitComboBoxTB);
+    public static readonly string DoneButton = nameof(DoneButton);
     public static readonly string EditClonePathDialog = nameof(EditClonePathDialog);
     public static readonly string EditClonePathDialogUncheckCheckMark = nameof(EditClonePathDialogUncheckCheckMark);
     public static readonly string FileTypeNotSupported = nameof(FileTypeNotSupported);

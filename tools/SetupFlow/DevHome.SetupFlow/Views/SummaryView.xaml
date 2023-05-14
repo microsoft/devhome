@@ -10,13 +10,16 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:models="using:DevHome.SetupFlow.Models"
+    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
+    setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
+    setupFlowBehaviors:SetupFlowNavigationBehavior.NextVisibility="Collapsed"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml"/>
                 <ResourceDictionary>
-                    <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
+                    <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
                     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
                     <converters:BoolToVisibilityConverter x:Key="BoolToInverseVisibilityConverter"  TrueValue="Collapsed" FalseValue="Visible" />
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
@@ -39,7 +42,6 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-
     <Grid RowSpacing="5" >
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -82,11 +84,6 @@
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_HeaderWithErrors"/>
-            <Button x:Name="ReturnToMainPageButton" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_CloseButton_Description" Grid.Column="1" HorizontalAlignment="Right" Command="{x:Bind ViewModel.GoToMainPageCommand}" Style="{ThemeResource AlternateCloseButtonStyle}" VerticalAlignment="Center">
-                <Button.Content>
-                    <SymbolIcon Symbol="Cancel"/>
-                </Button.Content>
-            </Button>
         </Grid>
 
         <Grid Grid.Row="2" ColumnSpacing="25" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
@@ -182,19 +179,29 @@
                         <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedCount" />
                     </Grid>
                 </StackPanel>
-                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" HorizontalAlignment="Center" Command="{x:Bind ViewModel.GoToDashboardCommand, Mode=OneWay}" />
+                <Button 
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" 
+                    HorizontalAlignment="Center" 
+                    Command="{x:Bind ViewModel.GoToDashboardCommand, Mode=OneWay}" 
+                    Style="{StaticResource AccentButtonStyle}" />
 
                 <!-- Next steps section -->
                 <ContentControl Template="{ThemeResource LinksTemplate}" />
             </StackPanel>
 
-            <!-- Displays the repos cloned and apps downloaded -->
-            <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="30">
-
-                <!-- Repos cloned -->
-                <StackPanel Orientation="Vertical" Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" >
-                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
-                    <ScrollViewer Grid.Column="1" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" Height="90">
+            <ScrollViewer 
+                VerticalScrollMode="Enabled" 
+                VerticalScrollBarVisibility="Auto"
+                Grid.Column="1" >
+                <!-- Displays the repos cloned and apps downloaded -->
+                <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="30">
+                    <!-- Repos cloned -->
+                    <StackPanel 
+                        Orientation="Vertical" 
+                        Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
+                        Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}">
+                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
                         <StackPanel>
                             <StackPanel.Resources>
                                 <StackLayout x:Name="LayoutForRepos" Orientation="Vertical" Spacing="10"/>
@@ -218,17 +225,16 @@
                            ItemTemplate="{StaticResource repoTemplate}">
                             </ItemsRepeater>
                         </StackPanel>
-                    </ScrollViewer>
-                </StackPanel>
+                    </StackPanel>
 
-                <!-- Apps downloaded -->
-                <StackPanel Orientation="Vertical" Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
-                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
-                    <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto"  Height="300">
+                    <!-- Apps downloaded -->
+                    <StackPanel 
+                        Orientation="Vertical" 
+                        Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
+                        Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}">
+                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
                         <GridView
-                            ScrollViewer.VerticalScrollMode="Auto"
-                            ScrollViewer.HorizontalScrollMode="Auto"
-                            ScrollViewer.HorizontalScrollBarVisibility="Auto"
                             ItemsSource="{x:Bind ViewModel.AppsDownloaded, Mode=OneWay}"
                             SelectionMode="None">
                             <GridView.ItemsPanel>
@@ -238,7 +244,7 @@
                             </GridView.ItemsPanel>
                             <GridView.ItemTemplate>
                                 <DataTemplate x:DataType="viewModels:PackageViewModel">
-                                    <ctControls:SettingsCard Width="320" Padding="5" Background="Transparent">
+                                    <ctControls:SettingsCard Width="250" Padding="5" Background="Transparent">
                                         <ctControls:SettingsCard.Resources>
                                             <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
                                             <Thickness x:Key="SettingsCardPadding">0</Thickness>
@@ -261,9 +267,9 @@
                                 </DataTemplate>
                             </GridView.ItemTemplate>
                         </GridView>
-                    </ScrollViewer>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
+            </ScrollViewer>
         </Grid>
     </Grid>
 </UserControl>
