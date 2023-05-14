@@ -108,7 +108,7 @@ public partial class SetupFlowOrchestrator
     public bool HasPreviousPage => _currentPageIndex > 0;
 
     /// <summary>
-    /// Gets or sets a value indicating whether we should show the done button or not. When false, the cancel
+    /// Gets or sets a value indicating whether we should show the done button. When false, the cancel
     /// hyperlink button will be shown in the UI.
     /// </summary>
     [ObservableProperty]
