@@ -40,7 +40,7 @@
         <Grid Grid.Row="0" Margin="0,0,0,22">
             <TextBlock x:Uid="DashboardPage_Title" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Left"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="AddWidgetButton" x:Uid="AddWidget" HorizontalAlignment="Right" Click="AddWidgetButton_Click"/>
+                <Button x:Name="AddWidgetButton" x:Uid="AddWidget" HorizontalAlignment="Right" Click="AddWidget_Click"/>
             </StackPanel>
         </Grid>
 
@@ -81,7 +81,7 @@
 
                 <StackPanel x:Name="NoWidgetsStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
                     <TextBlock x:Uid="NoWidgetsAdded" HorizontalAlignment="Center" />
-                    <HyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" Click="AddWidgetButton_Click" HorizontalAlignment="Center" />
+                    <HyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" Click="AddWidget_Click" HorizontalAlignment="Center" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

@@ -66,11 +66,22 @@ public static class DevDriveUtil
 
     public static readonly List<char> InvalidCharactersNotInGetInvalidPathChars = new () { '*', '?', '\"', '<', '>', '|' };
 
+    // Temporary build version values, to use while the API to check for the Dev Drive feature is being created.
+    // Note: The major number and minor number for Windows 11 is still 10 and 0 respectively. Windows 11 build
+    // numbers start at 22000.
+    private const ushort DevDriveMajorVersion = 10;
+    private const ushort DevDriveMinorVersion = 0;
+    private const ushort DevDriveMinBuildForDevChannel = 23451;
+    private const ushort DevDriveMaxBuildForDevChannel = 23999;
+    private const ushort DevDriveMinBuildForCanaryChannel = 25846;
+
     /// <summary>
     /// Gets a value indicating whether the system has the ability to create Dev Drives
-    /// and whether the ability is enabled. Win10 machines will not have this ability.
-    /// This is temporary and will be replaced by an API call once it is created.
+    /// and whether the ability is enabled. Windows 10 or below machines will not have this ability.
     /// </summary>
+    /// <remarks>
+    /// The body of this function is temporary and will be replaced by an API call once it is created.
+    /// </remarks>
     /// <returns>
     /// Returns true if Dev Drive creation functionality is present on the machine
     /// </returns>
@@ -78,21 +89,29 @@ public static class DevDriveUtil
     {
         get
         {
+            // Windows Insiders dev channel now uses the 23000 series for its build numbers. The Canary channel
+            // where the feature is enabled start on build number 25846.
+            // The Dev Drive Feature is only be enabled on these builds currently and will eventually go into a full retail
+            // release. We expect the API to be created before the full retail release of the Dev Drive feature
+            // in which case we will not be checking windows build numbers, but will be checking the results of the
+            // API call.
             var osVersion = ToolKitHelpers.SystemInformation.Instance.OperatingSystemVersion;
-            if (osVersion.Major == 10 && osVersion.Minor == 0 && osVersion.Build < 22000)
+            if (osVersion.Major == DevDriveMajorVersion && osVersion.Minor == DevDriveMinorVersion)
             {
-                // Win 10
-                Log.Logger?.ReportInfo(Log.Component.DevDrive, "Dev Drive feature is not available on Win10");
-                return false;
+                // Check if on an acceptable Windows 11 Dev insider channel
+                if (osVersion.Build >= DevDriveMinBuildForDevChannel && osVersion.Build <= DevDriveMaxBuildForDevChannel)
+                {
+                    return true;
+                }
+
+                // Check if on an acceptable Windows 11 Canary insider channel that supports Dev Drive.
+                if (osVersion.Build >= DevDriveMinBuildForCanaryChannel)
+                {
+                    return true;
+                }
             }
 
-            if (osVersion.Major == 10 && osVersion.Minor == 0 && osVersion.Build >= 25309)
-            {
-                // Canary Insiders dev channel use the 25000 series numbering. Feature is enabled there.
-                return true;
-            }
-
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Dev Drive feature is not available on older Win11 builds");
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Dev Drive feature is not available on this build of Windows: {osVersion}");
             return false;
         }
     }
