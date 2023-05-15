@@ -348,4 +348,15 @@ internal partial class AddRepoDialog
             ChangeToUrlPage();
         }
     }
+
+    private void FilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        // just in case something other than a text box calls this.
+        if (sender is TextBox)
+        {
+            AddRepoViewModel.FilterRepositories((sender as TextBox).Text);
+        }
+
+        ToggleCloneButton();
+    }
 }
