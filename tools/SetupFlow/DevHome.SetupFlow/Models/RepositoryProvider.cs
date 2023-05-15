@@ -47,6 +47,8 @@ internal class RepositoryProvider
         _pluginWrapper = pluginWrapper;
     }
 
+    public string DisplayName => _repositoryProvider.DisplayName;
+
     /// <summary>
     /// Starts the plugin if it isn't running.
     /// </summary>
