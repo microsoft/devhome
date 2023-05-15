@@ -302,7 +302,7 @@
     <comment>Title for the Dev Drive window that opens up</comment>
   </data>
   <data name="FilePickerFileTypeOption" xml:space="preserve">
-    <value>{0} Files</value>
+    <value>{0} files</value>
     <comment>Dropdown option for a file picker. {0} is replaced by a file type (e.g. JSON, YAML, etc ...)</comment>
   </data>
   <data name="FileTypeNotSupported" xml:space="preserve">
