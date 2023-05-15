@@ -1,18 +1,64 @@
-# Project
+# Welcome to the Dev Home repo
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+This repository contains the source code for:
 
-As the maintainer of this project, please make a few updates:
+* [Dev Home](https://aka.ms/devhome)
+* Dev Home core widgets
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+Related repositories include:
 
-## Popular Apps
+* [Dev Home GitHub Extension](https://github.com/microsoft/devhomegithubextension)
 
-This is currently a hard-coded list of applications that have been popular with developers on Windows. Popularity was determined by high levels of installation and usage. As this is a moment in time, we are not accepting submissions for this list. We’re looking to improve the experience with [Suggested Apps](https://github.com/microsoft/devhome/issues/375)so the list can be optimized for developers.
+## Installing and running Dev Home
+
+> **Note**: Dev Home requires Windows 10 21H2 (build 22000) or later.
+
+### Microsoft Store [Recommended]
+
+Install [Dev Home from the Microsoft Store](https://aka.ms/devhome).
+This allows you to always be on the latest version when we release new builds with automatic upgrades.
+
+This is our preferred method.
+
+### Other install methods
+
+#### Via GitHub
+
+For users who are unable to install Dev Home from the Microsoft Store, released builds can be manually downloaded from this repository's [Releases page](https://github.com/microsoft/devhome/releases).
+
+#### Via Windows Package Manager CLI (aka winget)
+
+[winget](https://github.com/microsoft/winget-cli) users can download and install the latest Dev Home release by installing the `Microsoft.DevHome` package:
+
+```powershell
+winget install --id Microsoft.DevHome -e
+```
+
+---
+
+## Dev Home roadmap
+
+The plan for Dev Home will be posted shortly and will be updated as the project proceeds.
+
+---
+
+## Dev Home overview
+
+Please take a few minutes to review the overview below before diving into the code:
+
+### Dashboard
+
+The Dev Home dashboard is built as a Windows widget renderer. These widgets are built using the Windows widget platform, which relies on Adaptive Cards.
+
+### Machine configuration
+
+The machine configuration tool utilizes the Dev Home GitHub extension, but isn't required to clone and install apps. The app installation tool is powered by winget.
+
+#### Popular apps
+
+Within the machine configuration tool is a popular apps list that appears when choosing applications to install. This is currently a hard-coded list of applications that have been popular with developers on Windows. Popularity was determined by high levels of installation and usage. As this is a moment in time, we are not accepting submissions for this list. We're looking to improve the experience with [Suggested Apps](https://github.com/microsoft/devhome/issues/375) so the list can be optimized for developers.
+
+---
 
 ## Contributing
 
