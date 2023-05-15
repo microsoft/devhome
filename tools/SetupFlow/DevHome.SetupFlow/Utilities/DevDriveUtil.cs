@@ -57,8 +57,6 @@ public static class DevDriveUtil
 
     public static ulong MinDevDriveSizeInBytes => 50ul << 30;
 
-    public static ulong MaxDevDriveSizeInBytes => 64ul << 40;
-
     /// <summary>
     /// Gets the list of the latin alphabet. Windows uses the latin letters as its drive letters.
     /// </summary>

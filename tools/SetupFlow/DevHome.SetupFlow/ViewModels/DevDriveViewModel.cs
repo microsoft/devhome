@@ -482,7 +482,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     private void RefreshDriveLetterToSizeMapping()
     {
-        DriveLetterToSizeMapping = DriveInfo.GetDrives().ToDictionary(drive => drive.Name[0], drive => drive.IsReady ? (ulong)drive.TotalFreeSpace : DevDriveUtil.MaxDevDriveSizeInBytes);
+        DriveLetterToSizeMapping = DriveInfo.GetDrives().ToDictionary(drive => drive.Name[0], drive => (ulong)drive.TotalFreeSpace);
     }
 
     /// <summary>
