@@ -382,7 +382,7 @@
     <value>Monitor projects in your dashboard</value>
   </data>
   <data name="WhatsNewPage_DevIdCard.Title" xml:space="preserve">
-    <value>Connect your account</value>
+    <value>Connect to GitHub</value>
   </data>
   <data name="WhatsNewPage_NotifCard.Description" xml:space="preserve">
     <value>Keep up with pull requests, checks, merges, and more.</value>
