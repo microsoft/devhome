@@ -230,16 +230,16 @@
                 <StackPanel Grid.Column="1" Orientation="Vertical">
                     <!-- Repos cloned -->
                     <StackPanel 
-                            Orientation="Vertical" 
-                            Spacing="20" 
-                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
-                            Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}"
-                            Margin="0,0,0,30">
+                        Orientation="Vertical" 
+                        Spacing="20" 
+                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
+                        Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}"
+                        Margin="0,0,0,30">
                         <TextBlock 
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" 
-                                Style="{ThemeResource BodyStrongTextBlockStyle}" 
-                                Padding="0, 20, 0, 0"/>
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" 
+                            Style="{ThemeResource BodyStrongTextBlockStyle}" 
+                            Padding="0, 20, 0, 0"/>
                         <StackPanel>
                             <StackPanel.Resources>
                                 <StackLayout x:Name="LayoutForRepos" Orientation="Vertical" Spacing="10"/>
@@ -251,10 +251,10 @@
                                         </Grid.ColumnDefinitions>
                                         <FontIcon Grid.Column="0"  Margin="3 0 5 0" FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
                                         <TextBlock 
-                                                Grid.Column="1"
-                                                Text="{x:Bind RepoName}"
-                                                Margin="5 0 0 0"
-                                                TextWrapping="Wrap"/>
+                                            Grid.Column="1"
+                                            Text="{x:Bind RepoName}"
+                                            Margin="5 0 0 0"
+                                            TextWrapping="Wrap"/>
                                     </Grid>
                                 </DataTemplate>
                             </StackPanel.Resources>
@@ -267,15 +267,15 @@
 
                     <!-- Apps downloaded -->
                     <StackPanel 
-                            Orientation="Vertical" 
-                            Spacing="20" 
-                            BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                            BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
-                            Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}">
+                        Orientation="Vertical" 
+                        Spacing="20" 
+                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
+                        Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}">
                         <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
                         <GridView
-                                ItemsSource="{x:Bind ViewModel.AppsDownloaded, Mode=OneWay}"
-                                SelectionMode="None">
+                            ItemsSource="{x:Bind ViewModel.AppsDownloaded, Mode=OneWay}"
+                            SelectionMode="None">
                             <GridView.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
