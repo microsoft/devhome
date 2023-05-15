@@ -4,6 +4,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Management;
+using LibreHardwareMonitor.Hardware;
 
 namespace CoreWidgetProvider.Helpers;
 
@@ -86,17 +87,53 @@ internal class GPUStats : IDisposable
 
     public void GetData()
     {
-        foreach (var gpu in stats)
+        try
         {
-            List<PerformanceCounter>? counters;
-            var success = gpuCounters.TryGetValue(gpu.PhysId, out counters);
-
-            if (success)
+            foreach (var gpu in stats)
             {
-                var sum = counters?.Sum(x => x.NextValue());
-                gpu.Usage = sum.GetValueOrDefault(0) / 100;
-                ChartHelper.AddNextChartValue(sum.GetValueOrDefault(0), gpu.GpuChartValues);
+                List<PerformanceCounter>? counters;
+                var success = gpuCounters.TryGetValue(gpu.PhysId, out counters);
+
+                if (success)
+                {
+                    var sum = counters?.Sum(x => x.NextValue());
+                    gpu.Usage = sum.GetValueOrDefault(0) / 100;
+                    ChartHelper.AddNextChartValue(sum.GetValueOrDefault(0), gpu.GpuChartValues);
+                }
             }
+
+            Computer computer = new Computer
+            {
+                IsCpuEnabled = false,
+                IsGpuEnabled = true,
+                IsMemoryEnabled = false,
+                IsMotherboardEnabled = false,
+                IsControllerEnabled = false,
+                IsNetworkEnabled = false,
+                IsStorageEnabled = false,
+            };
+
+            computer.Open();
+            computer.Accept(new UpdateVisitor());
+
+            // Put in a separate for loop as computer.Open() can throw so this way at least gpu.Usage is obtained.
+            // Number of GPUs is usually not big, so performance wise is not that consuming.
+            foreach (var gpu in stats)
+            {
+                IHardware? hardware = computer.Hardware.Where(x => x.Name.Equals(gpu.Name, StringComparison.Ordinal)).FirstOrDefault();
+
+                if (hardware != null)
+                {
+                    var sensorValue = hardware.Sensors[0].Value.GetValueOrDefault();
+                    gpu.Temperature = sensorValue;
+                }
+            }
+
+            computer.Close();
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError($"Getting GPU data failed: {ex}");
         }
     }
 
