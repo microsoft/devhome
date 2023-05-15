@@ -1,3 +1,5 @@
+![dev-home-readme-header](https://github.com/microsoft/devhome/assets/48369326/b2e16e96-b26c-45d2-9872-251ec707becd)
+
 # Welcome to the Dev Home repo
 
 This repository contains the source code for:
