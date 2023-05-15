@@ -442,7 +442,7 @@
     <comment>Title of a notification panel for updating 'App Installer' application</comment>
   </data>
   <data name="MainPage_AppInstallerUpdateInfoBar.Message" xml:space="preserve">
-    <value>Get the best experience and latest features when installing apps.</value>
+    <value>Update App Installer to get the latest WinGet features and best experience when installing apps.</value>
     <comment>Content of a notification panel for updating 'App Installer' application</comment>
   </data>
   <data name="MainPage_AppInstallerUpdateButton.Content" xml:space="preserve">
