@@ -161,20 +161,34 @@
             <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="30">
 
                 <!-- Number of apps and repos cloned.-->
-                <StackPanel BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" HorizontalAlignment="Center" Padding="0, 15, 0, 0" MinWidth="250">
+                <StackPanel 
+                    BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                    BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" 
+                    HorizontalAlignment="Center" 
+                    Padding="0, 15, 0, 0" 
+                    MinWidth="300">
                     <Grid
                         ColumnDefinitions="Auto, Auto"
                         HorizontalAlignment="Center">
                         <Grid
                             Grid.Column="0"
                             Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}"
-                            Margin="0 0 10 0">
+                            Margin="0,0,20,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.AppsDownloaded.Count}" FontSize="{StaticResource TitleLargeTextBlockFontSize}" FontWeight="{StaticResource InfoBarTitleFontWeight}" HorizontalAlignment="center"/>
-                            <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownloadedCount" />
+                            <TextBlock 
+                                Grid.Row="0" Text="{x:Bind ViewModel.AppsDownloaded.Count}" 
+                                FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
+                                FontWeight="{StaticResource InfoBarTitleFontWeight}" 
+                                HorizontalAlignment="center"
+                                Margin="15,0,0,0"/>
+                            <TextBlock 
+                                Grid.Row="1" 
+                                Text="{x:Bind ViewModel.ApplicationsClonedText}"
+                                HorizontalAlignment="center"
+                                Margin="20,0,0,0"/>
                         </Grid>
                         <Grid
                             Grid.Column="1"
@@ -183,8 +197,16 @@
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.RepositoriesCloned.Count}" FontSize="{StaticResource TitleLargeTextBlockFontSize}" FontWeight="{StaticResource InfoBarTitleFontWeight}" HorizontalAlignment="center"/>
-                            <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedCount"/>
+                            <TextBlock 
+                                Grid.Row="0" 
+                                Text="{x:Bind ViewModel.RepositoriesCloned.Count}" 
+                                FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
+                                FontWeight="{StaticResource InfoBarTitleFontWeight}" 
+                                HorizontalAlignment="center"/>
+                            <TextBlock 
+                                Grid.Row="1" 
+                                Text="{x:Bind ViewModel.RepositoriesClonedText}"
+                                HorizontalAlignment="center"/>
                         </Grid>
                     </Grid>
                 </StackPanel>
@@ -193,7 +215,7 @@
                     HorizontalAlignment="Center" 
                     Command="{x:Bind ViewModel.GoToDashboardCommand, Mode=OneWay}" 
                     Style="{StaticResource AccentButtonStyle}"
-                    Margin="-15 0 0 0"/>
+                    Margin="0"/>
 
                 <!-- Next steps section -->
                 <ContentControl Template="{ThemeResource LinksTemplate}" />
@@ -208,10 +230,15 @@
                     <!-- Repos cloned -->
                     <StackPanel 
                         Orientation="Vertical" 
-                        Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                        Spacing="20" 
+                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
                         BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
-                        Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}">
-                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
+                        Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}"
+                        Margin="0,0,0,30">
+                        <TextBlock 
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" 
+                            Style="{ThemeResource BodyStrongTextBlockStyle}" 
+                            Padding="0, 20, 0, 0"/>
                         <StackPanel>
                             <StackPanel.Resources>
                                 <StackLayout x:Name="LayoutForRepos" Orientation="Vertical" Spacing="10"/>
@@ -240,7 +267,8 @@
                     <!-- Apps downloaded -->
                     <StackPanel 
                         Orientation="Vertical" 
-                        Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                        Spacing="20" 
+                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
                         BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
                         Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}">
                         <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
