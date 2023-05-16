@@ -286,7 +286,7 @@
     <comment>Placeholder drive label value that will be used as the file name within the Dev Drive name text box. VHD stands for virtual hard disk, which is what will be created when the user goes to create a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowOnlyOneDevDriveAllowedHeader.Text" xml:space="preserve">
-    <value>A Dev Drive optimizes performance for development. You can only create one in Dev Home.</value>
+    <value>A Dev Drive optimizes performance for development. You can create only one in Dev Home.</value>
     <comment>Text to advise users that they are only allowed the create one Dev Drive at a time.</comment>
   </data>
   <data name="DevDriveWindowSaveButton.Content" xml:space="preserve">
@@ -300,6 +300,10 @@
   <data name="DevDriveWindowTitle.Text" xml:space="preserve">
     <value>Create Dev Drive</value>
     <comment>Title for the Dev Drive window that opens up</comment>
+  </data>
+  <data name="FilePickerFileTypeOption" xml:space="preserve">
+    <value>{0} files</value>
+    <comment>Dropdown option for a file picker. {0} is replaced by a file type (e.g. JSON, YAML, etc ...)</comment>
   </data>
   <data name="FileTypeNotSupported" xml:space="preserve">
     <value>File type not supported</value>
@@ -442,7 +446,7 @@
     <comment>Title of a notification panel for updating 'App Installer' application</comment>
   </data>
   <data name="MainPage_AppInstallerUpdateInfoBar.Message" xml:space="preserve">
-    <value>Get the best experience and latest features when installing apps.</value>
+    <value>Update App Installer to get the latest WinGet features and best experience when installing apps.</value>
     <comment>Content of a notification panel for updating 'App Installer' application</comment>
   </data>
   <data name="MainPage_AppInstallerUpdateButton.Content" xml:space="preserve">
@@ -470,11 +474,11 @@
     <comment>Header for a card that when clicked takes the user to a page for cloning git repositories</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Description" xml:space="preserve">
-    <value>Set up your machine directly from one or multiple configuration files</value>
+    <value>Use a configuration file (YAML) for setup</value>
     <comment>Body text description for a card that when clicked allows the user to select a configuration file and run it</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Header" xml:space="preserve">
-    <value>Run a configuration file for an existing setup</value>
+    <value>Configuration file</value>
     <comment>Header for a card that when clicked allows the user to select a configuration file and run it</comment>
   </data>
   <data name="MainPage_DevDrive.Header" xml:space="preserve">
@@ -634,8 +638,8 @@
     <comment>Description for the application management page</comment>
   </data>
   <data name="SetupShell_RepoConfig.Description" xml:space="preserve">
-    <value>Add private or public repositories to clone to you computer.</value>
-    <comment>Description for the application management page</comment>
+    <value>Add private or public repositories to clone to your machine.</value>
+    <comment>Description for the repo config page</comment>
   </data>
   <data name="SetupShell_Review.Description" xml:space="preserve">
     <value>Review the terms and setup details below before applying these changes to your computer.</value>
@@ -662,7 +666,7 @@
     <comment>Tooltip message displayed on a disabled button if 'App installer' application is not available</comment>
   </data>
   <data name="MainPage_RepoReviewDescription.Text" xml:space="preserve">
-    <value>Add private or public repositories to clone to your computer</value>
+    <value>Add private or public repositories to clone to your machine.</value>
     <comment>Description for the repo review page</comment>
   </data>
   <data name="MainPage_RepoReview_AddRepository.Content" xml:space="preserve">
@@ -670,15 +674,15 @@
     <comment>Add repository button text</comment>
   </data>
   <data name="ReposConfigPageTitle" xml:space="preserve">
-    <value>Clone repos</value>
+    <value>Clone repositories</value>
     <comment>Clone Repo label for the stepper</comment>
   </data>
   <data name="ApplicationsPageTitle" xml:space="preserve">
-    <value>Install apps</value>
+    <value>Install applications</value>
     <comment>Install Apps label for the stepper</comment>
   </data>
   <data name="ReviewPageTitle" xml:space="preserve">
-    <value>Review &amp; setup</value>
+    <value>Review &amp; finish</value>
     <comment>Review and Setup label for the stepper</comment>
   </data>
   <data name="AddDevDriveLabel.Text" xml:space="preserve">
@@ -686,7 +690,7 @@
     <comment>Text for the use to choose to make a dev drive</comment>
   </data>
   <data name="ClonePath.Header" xml:space="preserve">
-    <value>Clone path</value>
+    <value>Path</value>
     <comment>Header for choosing a clone path</comment>
   </data>
   <data name="ClonePath.PlaceholderText" xml:space="preserve">
@@ -726,7 +730,7 @@
     <comment>Content for URL button</comment>
   </data>
   <data name="RepoTool_FilterTextBox.PlaceholderText" xml:space="preserve">
-    <value>Filter your repositories</value>
+    <value>Filter repositories</value>
     <comment>Prompt user to filter</comment>
   </data>
   <data name="Repo_ToolClonePathError.Text" xml:space="preserve">
@@ -746,7 +750,7 @@
     <comment>Header for the edit clone path dialog</comment>
   </data>
   <data name="RepositoriesList.Text" xml:space="preserve">
-    <value>Your repositories</value>
+    <value>Recent repositories</value>
     <comment>Shown above the list of user repositories</comment>
   </data>
   <data name="CloneRepoDialog.CloseButtonText" xml:space="preserve">
@@ -977,7 +981,7 @@
     <comment>Header for the section that shows all the downloaded apps</comment>
   </data>
   <data name="SummaryPage_Header.Text" xml:space="preserve">
-    <value>We set up the following for you...</value>
+    <value>Here's what we set up for you</value>
     <comment>Header text for the summary page</comment>
   </data>
   <data name="SummaryPage_HeaderWithErrors.Text" xml:space="preserve">
@@ -1148,7 +1152,7 @@
     <comment>{Locked="{0}","{1}"}Action center message to give the hresult as to why the repo could not be cloned {0}: name of repo {1}:Hresult as a hex</comment>
   </data>
   <data name="ClonePathForTextBlock.Text" xml:space="preserve">
-    <value>Clone path</value>
+    <value>Path</value>
     <comment>Text for choosing a clone path in a block of text</comment>
   </data>
   <data name="DoneButton.Content" xml:space="preserve">
@@ -1166,5 +1170,16 @@
   <data name="SummaryPageReposClonedCount" xml:space="preserve">
     <value>Repositories cloned</value>
     <comment>Bottom header of the count of all repos cloned</comment>
+  <data name="RepositoryClonePathHeader.Text" xml:space="preserve">
+    <value>Clone path</value>
+    <comment>Header for the repo grid in the repo tool</comment>
+  </data>
+  <data name="RepositoryNameHeader.Text" xml:space="preserve">
+    <value>Repository name</value>
+    <comment>Header for the repo grid</comment>
+  </data>
+  <data name="RepositoryTypeHeader.Text" xml:space="preserve">
+    <value>Repository type</value>
+    <comment>Header for the repo  grid</comment>
   </data>
 </root>

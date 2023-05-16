@@ -50,6 +50,7 @@ public static class StringResourceKey
     public static readonly string DoneButton = nameof(DoneButton);
     public static readonly string EditClonePathDialog = nameof(EditClonePathDialog);
     public static readonly string EditClonePathDialogUncheckCheckMark = nameof(EditClonePathDialogUncheckCheckMark);
+    public static readonly string FilePickerFileTypeOption = nameof(FilePickerFileTypeOption);
     public static readonly string FileTypeNotSupported = nameof(FileTypeNotSupported);
     public static readonly string InstalledPackage = nameof(InstalledPackage);
     public static readonly string InstalledPackageReboot = nameof(InstalledPackageReboot);
@@ -125,7 +126,6 @@ public static class StringResourceKey
     public static readonly string ClonePathDriveDoesNotExist = nameof(ClonePathDriveDoesNotExist);
 
     // Url Validation
-    public static readonly string UrlValidationEmpty = nameof(UrlValidationEmpty);
     public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);
     public static readonly string UrlValidationNotFound = nameof(UrlValidationNotFound);
     public static readonly string UrlValidationRepoAlreadyAdded = nameof(UrlValidationRepoAlreadyAdded);

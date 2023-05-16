@@ -28,6 +28,14 @@ internal class RepositoryProviders
         _providers = pluginWrappers.ToDictionary(pluginWrapper => pluginWrapper.Name, pluginWrapper => new RepositoryProvider(pluginWrapper));
     }
 
+    public void StartAllPlugins()
+    {
+        foreach (var pluginWrapper in _providers.Values)
+        {
+            pluginWrapper.StartIfNotRunning();
+        }
+    }
+
     /// <summary>
     /// Starts a provider if it isn't running.
     /// </summary>
@@ -81,7 +89,7 @@ internal class RepositoryProviders
     /// <returns>A collection of display names.</returns>
     public IEnumerable<string> GetAllProviderNames()
     {
-        return _providers.Keys.ToList();
+        return _providers.Values.Select(x => x.DisplayName);
     }
 
     /// <summary>
