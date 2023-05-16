@@ -129,16 +129,17 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private string _urlParsingError;
 
-    private bool _isFiltering;
-
     public bool IsAccountComboBoxEnabled => Accounts.Count > 1;
 
     [ObservableProperty]
     private Visibility _shouldShowUrlError;
 
+    private bool _isFiltering;
+
+    public bool IsCallingSelectRange { get; set; }
+
     public void FilterRepositories(string text)
     {
-        _isFiltering = true;
         IEnumerable<IRepository> filteredRepositories;
         if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
         {
@@ -150,6 +151,7 @@ public partial class AddRepoViewModel : ObservableObject
                 .Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase));
         }
 
+        _isFiltering = true;
         Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(filteredRepositories));
         _isFiltering = false;
     }
@@ -209,6 +211,7 @@ public partial class AddRepoViewModel : ObservableObject
         EverythingToClone = new ();
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
+        EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
     }
 
     /// <summary>
@@ -381,9 +384,12 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
 
-            if (!_isFiltering)
+            /*EverythingToClone.Remove(cloningInformation);*/
+
+            if (!_isFiltering && !IsCallingSelectRange)
             {
                 EverythingToClone.Remove(cloningInformation);
+                /*AllSelectedRepositories.Remove(cloningInformation);*/
             }
         }
 
@@ -402,9 +408,12 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
 
-            if (!_isFiltering)
+            /*EverythingToClone.Add(cloningInformation);*/
+
+            if (!_isFiltering && !IsCallingSelectRange)
             {
                 EverythingToClone.Add(cloningInformation);
+                /*AllSelectedRepositories.Add(cloningInformation);*/
             }
         }
     }

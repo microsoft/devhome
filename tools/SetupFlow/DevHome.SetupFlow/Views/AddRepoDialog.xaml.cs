@@ -212,8 +212,13 @@ internal partial class AddRepoDialog
         }
     }
 
+    /// <summary>
+    /// If any items in reposToSelect exist in the UI, select them.
+    /// </summary>
+    /// <param name="reposToSelect">The repos to select in the UI.</param>
     private void SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
     {
+        AddRepoViewModel.IsCallingSelectRange = true;
         var onlyRepoNames = AddRepoViewModel.Repositories.Select(x => x.RepoName).ToList();
         foreach (var repoToSelect in reposToSelect)
         {
@@ -226,6 +231,13 @@ internal partial class AddRepoDialog
                 RepositoriesListView.SelectRange(new ItemIndexRange(index, 1));
             }
         }
+
+        AddRepoViewModel.IsCallingSelectRange = false;
+    }
+
+    private void SelectRepositories(IEnumerable<CloningInformation> reposToSelect)
+    {
+        SelectRepositories(reposToSelect.Select(x => new RepoViewListItem(x.RepositoryToClone)));
     }
 
     /// <summary>
@@ -233,11 +245,6 @@ internal partial class AddRepoDialog
     /// </summary>
     private void RepositoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (!string.IsNullOrEmpty(FilterTextBox.Text))
-        {
-            return;
-        }
-
         var loginId = (string)AccountsComboBox.SelectedValue;
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
 
@@ -380,9 +387,8 @@ internal partial class AddRepoDialog
         // just in case something other than a text box calls this.
         if (sender is TextBox)
         {
-            AddRepoViewModel.FilterRepositories((sender as TextBox).Text);
+            AddRepoViewModel.FilterRepositories(FilterTextBox.Text);
+            SelectRepositories(AddRepoViewModel.EverythingToClone);
         }
-
-        ToggleCloneButton();
     }
 }
