@@ -33,7 +33,7 @@ internal class WidgetIconCache
     /// <summary>
     /// Caches icons for all widgets in the WidgetCatalog that are included in Dev Home.
     /// </summary>
-    public async Task CacheAllWidgetIcons(WidgetCatalog widgetCatalog, DispatcherQueue dispatcher)
+    public static async Task CacheAllWidgetIcons(WidgetCatalog widgetCatalog, DispatcherQueue dispatcher)
     {
         var widgetDefs = widgetCatalog.GetWidgetDefinitions();
         foreach (var widgetDef in widgetDefs ?? Array.Empty<WidgetDefinition>())
@@ -45,7 +45,7 @@ internal class WidgetIconCache
     /// <summary>
     /// Caches two icons for each widget, one for light theme and one for dark theme.
     /// </summary>
-    public async Task AddIconsToCache(WidgetDefinition widgetDef, DispatcherQueue dispatcher)
+    public static async Task AddIconsToCache(WidgetDefinition widgetDef, DispatcherQueue dispatcher)
     {
         // Only cache icons for providers that we're including.
         if (WidgetHelpers.IsIncludedWidgetProvider(widgetDef.ProviderDefinition))
@@ -81,7 +81,7 @@ internal class WidgetIconCache
         }
     }
 
-    public void RemoveIconsFromCache(string definitionId)
+    public static void RemoveIconsFromCache(string definitionId)
     {
         _widgetLightIconCache.Remove(definitionId);
         _widgetDarkIconCache.Remove(definitionId);

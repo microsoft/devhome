@@ -22,6 +22,7 @@ public partial class WidgetViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly AdaptiveCardRenderer _renderer;
+    private readonly WidgetHandler _widgetHandler;
 
     private RenderedAdaptiveCard _renderedCard;
 
@@ -55,7 +56,7 @@ public partial class WidgetViewModel : ObservableObject
     {
         if (Widget != null)
         {
-            Widget.WidgetUpdated -= HandleWidgetUpdated;
+            Widget.WidgetUpdated -= _widgetHandler.HandleWidgetUpdated;
         }
     }
 
@@ -63,7 +64,7 @@ public partial class WidgetViewModel : ObservableObject
     {
         if (Widget != null)
         {
-            Widget.WidgetUpdated += HandleWidgetUpdated;
+            Widget.WidgetUpdated += _widgetHandler.HandleWidgetUpdated;
             RenderWidgetFrameworkElement();
         }
     }
@@ -97,6 +98,7 @@ public partial class WidgetViewModel : ObservableObject
         Widget = widget;
         WidgetSize = widgetSize;
         WidgetDefinition = widgetDefintion;
+        _widgetHandler = new WidgetHandler(this);
     }
 
     public void Render()
@@ -160,7 +162,7 @@ public partial class WidgetViewModel : ObservableObject
 
         if (_renderedCard != null)
         {
-            _renderedCard.Action -= HandleAdaptiveAction;
+            _renderedCard.Action -= _widgetHandler.HandleAdaptiveAction;
         }
 
         if (card == null || card.AdaptiveCard == null)
@@ -178,7 +180,7 @@ public partial class WidgetViewModel : ObservableObject
                 _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
                 if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                 {
-                    _renderedCard.Action += HandleAdaptiveAction;
+                    _renderedCard.Action += _widgetHandler.HandleAdaptiveAction;
                     WidgetFrameworkElement = _renderedCard.FrameworkElement;
                 }
                 else
@@ -296,5 +298,59 @@ public partial class WidgetViewModel : ObservableObject
     {
         Log.Logger()?.ReportDebug("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
         RenderWidgetFrameworkElement();
+    }
+
+    private class WidgetHandler
+    {
+        private readonly WeakReference<WidgetViewModel> _wvm;
+
+        public WidgetHandler(WidgetViewModel widgetViewModel)
+        {
+            _wvm = new WeakReference<WidgetViewModel>(widgetViewModel);
+        }
+
+        public void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
+        {
+            Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
+            if (_wvm.TryGetTarget(out var widgetViewModel))
+            {
+                widgetViewModel.RenderWidgetFrameworkElement();
+            }
+        }
+
+        public async void HandleAdaptiveAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
+        {
+            if (_wvm.TryGetTarget(out var widgetViewModel))
+            {
+                Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction {nameof(args.Action)} for widget {widgetViewModel.Widget.Id}");
+                if (args.Action is AdaptiveOpenUrlAction openUrlAction)
+                {
+                    Log.Logger()?.ReportInfo("WidgetViewModel", $"Url = {openUrlAction.Url}");
+                    await Launcher.LaunchUriAsync(openUrlAction.Url);
+                }
+                else if (args.Action is AdaptiveExecuteAction executeAction)
+                {
+                    var dataToSend = string.Empty;
+                    var dataType = executeAction.DataJson.ValueType;
+                    if (dataType != Windows.Data.Json.JsonValueType.Null)
+                    {
+                        dataToSend = executeAction.DataJson.Stringify();
+                    }
+                    else
+                    {
+                        var inputType = args.Inputs.AsJson().ValueType;
+                        if (inputType != Windows.Data.Json.JsonValueType.Null)
+                        {
+                            dataToSend = args.Inputs.AsJson().Stringify();
+                        }
+                    }
+
+                    Log.Logger()?.ReportInfo("WidgetViewModel", $"Verb = {executeAction.Verb}, Data = {dataToSend}");
+                    await widgetViewModel.Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
+                }
+
+                // TODO: Handle other ActionTypes
+            }
+        }
     }
 }
