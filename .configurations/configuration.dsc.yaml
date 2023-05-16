@@ -28,7 +28,8 @@ properties:
         description: Install required VS workloads for DevHome
         allowPrerelease: true
       settings:
-        productId: Microsoft.VisualStudio.Product.Community
-        channelId: VisualStudio.17.Release
-        vsConfigFile: '${WinGetConfigRoot}\..\.vsconfig'
+        ProductId: Microsoft.VisualStudio.Product.Community
+        ChannelId: VisualStudio.17.Release
+        VsConfigFile: '${WinGetConfigRoot}\..\.vsconfig'
+        IncludeRecommended: true
   configurationVersion: 0.2.0
