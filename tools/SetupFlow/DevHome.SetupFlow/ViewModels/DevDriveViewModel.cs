@@ -482,7 +482,17 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     private void RefreshDriveLetterToSizeMapping()
     {
-        DriveLetterToSizeMapping = DriveInfo.GetDrives().ToDictionary(drive => drive.Name[0], drive => (ulong)drive.TotalFreeSpace);
+        try
+        {
+            DriveLetterToSizeMapping = DriveInfo.GetDrives().ToDictionary(drive => drive.Name[0], drive => drive.IsReady ? (ulong)drive.TotalFreeSpace : 0);
+        }
+        catch (Exception ex)
+        {
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to refresh the drive letter to size mapping. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+
+            // Clear the mapping since we can't refresh it.
+            DriveLetterToSizeMapping.Clear();
+        }
     }
 
     /// <summary>
