@@ -102,7 +102,7 @@ internal class GPUStats : IDisposable
 
     internal string CreateGPUImageUrl(int gpuChartIndex)
     {
-        return ChartHelper.CreateImageUrl(stats.ElementAt(gpuChartIndex).GpuChartValues);
+        return ChartHelper.CreateImageUrl(stats.ElementAt(gpuChartIndex).GpuChartValues, "gpu");
     }
 
     internal string GetGPUName(int gpuActiveIndex)

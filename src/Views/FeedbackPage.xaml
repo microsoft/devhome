@@ -118,13 +118,6 @@
                 </Hyperlink>
                 </TextBlock>
                 <StackPanel>
-                    <labs:SettingsCard x:Uid="Feedback_ReportBug_Internal">
-                        <labs:SettingsCard.HeaderIcon>
-                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
-                                  Glyph="&#xebe8;"/>
-                        </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Feedback_ReportBug_Button" Click="OpenFeedbackHub"/>
-                    </labs:SettingsCard>
                     <labs:SettingsCard x:Uid="Feedback_ReportBug">
                         <labs:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 

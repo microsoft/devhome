@@ -3,15 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using CommunityToolkit.WinUI;
 using DevHome.Common.Helpers;
-using DevHome.Common.Services;
+using DevHome.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.ApplicationModel.Resources;
 using Windows.Storage;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -27,6 +24,8 @@ namespace DevHome.Common.Extensions;
 /// </summary>
 public static class WindowExExtensions
 {
+    public const int FilePickerCanceledErrorCode = unchecked((int)0x800704C7);
+
     /// <summary>
     /// Show an error message on the window.
     /// </summary>
@@ -86,10 +85,15 @@ public static class WindowExExtensions
     /// <param name="window">Target window</param>
     /// <param name="filters">List of type filters (e.g. *.yaml, *.txt), or empty/<c>null</c> to allow all file types</param>
     /// <returns>Storage file or <c>null</c> if no file was selected</returns>
-    public static async Task<StorageFile?> OpenFilePickerAsync(this WindowEx window, List<string>? filters = null)
+    public static async Task<StorageFile?> OpenFilePickerAsync(this WindowEx window, Logger? logger, params (string Type, string Name)[] filters)
     {
         try
         {
+            if (filters.Length == 0)
+            {
+                throw new ArgumentException("Input filters cannot be empty");
+            }
+
             string fileName;
 
             // File picker fails when running the application as admin.
@@ -117,22 +121,13 @@ public static class WindowExExtensions
 
                 // Set filters (e.g. "*.yaml", "*.yml", etc...)
                 var extensions = new List<COMDLG_FILTERSPEC>();
-                filters ??= new ();
                 foreach (var filter in filters)
                 {
                     COMDLG_FILTERSPEC extension;
-                    extension.pszName = (char*)Marshal.StringToHGlobalUni(string.Empty);
-                    extension.pszSpec = (char*)Marshal.StringToHGlobalUni(filter);
+                    extension.pszName = (char*)Marshal.StringToHGlobalUni(filter.Name);
+                    extension.pszSpec = (char*)Marshal.StringToHGlobalUni(filter.Type);
                     extensions.Add(extension);
                 }
-
-                // Generate last filter entry
-                var allFilestString = Application.Current.GetService<IStringResource>().GetLocalized("AllFiles");
-                var allTypes = filters.Any() ? string.Join(";", filters) : "*.*";
-                COMDLG_FILTERSPEC allExtension;
-                allExtension.pszName = (char*)Marshal.StringToHGlobalUni(allFilestString);
-                allExtension.pszSpec = (char*)Marshal.StringToHGlobalUni(allTypes);
-                extensions.Add(allExtension);
 
                 fsd.SetFileTypes(extensions.ToArray());
 
@@ -146,9 +141,14 @@ public static class WindowExExtensions
 
             return await StorageFile.GetFileFromPathAsync(fileName);
         }
-        catch
+        catch (COMException e) when (e.ErrorCode == FilePickerCanceledErrorCode)
         {
-            // Return null if canceled or an error occurred
+            // No-op: Operation was canceled by the user
+            return null;
+        }
+        catch (Exception e)
+        {
+            logger?.ReportError("File picker failed. Returning null.", e);
             return null;
         }
     }

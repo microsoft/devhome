@@ -20,7 +20,7 @@
         <StackPanel Grid.Column="1" Orientation="Horizontal" >
             <ContentControl Visibility="{x:Bind CancelVisibility, Mode=OneWay}" Content="{x:Bind CancelTemplate, Mode=OneWay}" />
             <ContentControl Visibility="{x:Bind PreviousVisibility, Mode=OneWay}" Content="{x:Bind PreviousTemplate, Mode=OneWay}" />
-            <ContentControl Content="{x:Bind NextTemplate, Mode=OneWay}" />
+            <ContentControl Visibility="{x:Bind NextVisibility, Mode=OneWay}" Content="{x:Bind NextTemplate, Mode=OneWay}" />
         </StackPanel>
     </Grid>
 </UserControl>

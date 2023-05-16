@@ -60,11 +60,43 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// </remarks>
     public void SaveSetupTaskInformation(List<CloningInformation> cloningInformations)
     {
-        List<CloningInformation> repoReviewItems = new (RepoReviewItems);
-        repoReviewItems.AddRange(cloningInformations);
+        // Handle the case where a user re-opens the repo tool with repos that are already selected
+        // Remove them from cloninginformations so they aren't added again.
+        var alreadyAddedRepos = RepoReviewItems.Intersect(cloningInformations).ToList();
 
-        RepoReviewItems = new ObservableCollection<CloningInformation>(repoReviewItems);
-        _taskGroup.SaveSetupTaskInformation(repoReviewItems);
+        var localCloningInfos = new List<CloningInformation>(cloningInformations);
+        foreach (var alreadyAddedRepo in alreadyAddedRepos)
+        {
+            localCloningInfos.Remove(alreadyAddedRepo);
+        }
+
+        foreach (var cloningInformation in localCloningInfos)
+        {
+            RepoReviewItems.Add(cloningInformation);
+        }
+
+        // RemoveCloningInformation calls save.  If we don't call RemoveCloningInformation repo tool
+        // should call save.
+        var shouldCallSave = true;
+
+        // Handle the case that a user de-selected a repo from re-opening the repo tool.
+        // This is the case where RepoReviewItems does not contain a repo in cloningInformations.
+        var deSelectedRepos = RepoReviewItems.Except(cloningInformations).ToList();
+        foreach (var deSelectedRepo in deSelectedRepos)
+        {
+            // Ignore repos added via URL.  They would get removed here.
+            if (deSelectedRepo.OwningAccount != null)
+            {
+                RemoveCloningInformation(deSelectedRepo);
+                shouldCallSave = false;
+            }
+        }
+
+        if (shouldCallSave)
+        {
+            RepoReviewItems = new ObservableCollection<CloningInformation>(RepoReviewItems);
+            _taskGroup.SaveSetupTaskInformation(RepoReviewItems.ToList());
+        }
     }
 
     /// <summary>
