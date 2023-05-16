@@ -8,28 +8,28 @@ namespace CoreWidgetProvider.Helpers;
 
 internal class ChartHelper
 {
-    private static readonly Color DarkGrayColor = Color.FromArgb(30, 213, 224, 247);
+    private static readonly Color DarkGrayColor = Color.FromArgb(0, 213, 224, 247);
 
-    private static readonly Pen CPUChartPen = new (Color.FromArgb(255, 0, 111, 145));
-    private static readonly Pen GPUChartPen = new (Color.FromArgb(255, 126, 19, 240));
-    private static readonly Pen MemChartPen = new (Color.FromArgb(255, 9, 91, 222));
-    private static readonly Pen NetChartPen = new (Color.FromArgb(255, 191, 23, 79));
+    private static readonly Pen CPUChartPen = new (Color.FromArgb(255, 57, 184, 227));
+    private static readonly Pen GPUChartPen = new (Color.FromArgb(255, 222, 104, 242));
+    private static readonly Pen MemChartPen = new (Color.FromArgb(255, 92, 158, 250));
+    private static readonly Pen NetChartPen = new (Color.FromArgb(255, 245, 98, 142));
 
-    private static readonly Brush CPUBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 0, 111, 145), Color.FromArgb(65, 0, 86, 110));
-    private static readonly Brush CPUBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 0, 111, 145), Color.FromArgb(65, 0, 86, 110));
-    private static readonly Brush CPUBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 0, 111, 145), Color.FromArgb(65, 0, 86, 110));
+    private static readonly Brush CPUBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 57, 184, 227), Color.FromArgb(65, 0, 86, 110));
+    private static readonly Brush CPUBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 57, 184, 227), Color.FromArgb(65, 0, 86, 110));
+    private static readonly Brush CPUBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 57, 184, 227), Color.FromArgb(65, 0, 86, 110));
 
-    private static readonly Brush GPUBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 126, 19, 240), Color.FromArgb(65, 125, 0, 138));
-    private static readonly Brush GPUBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 126, 19, 240), Color.FromArgb(65, 125, 0, 138));
-    private static readonly Brush GPUBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 126, 19, 240), Color.FromArgb(65, 125, 0, 138));
+    private static readonly Brush GPUBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 222, 104, 242), Color.FromArgb(65, 125, 0, 138));
+    private static readonly Brush GPUBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 222, 104, 242), Color.FromArgb(65, 125, 0, 138));
+    private static readonly Brush GPUBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 222, 104, 242), Color.FromArgb(65, 125, 0, 138));
 
-    private static readonly Brush MemBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 9, 91, 222), Color.FromArgb(65, 0, 34, 92));
-    private static readonly Brush MemBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 9, 91, 222), Color.FromArgb(65, 0, 34, 92));
-    private static readonly Brush MemBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 9, 91, 222), Color.FromArgb(65, 0, 34, 92));
+    private static readonly Brush MemBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 92, 158, 250), Color.FromArgb(65, 0, 34, 92));
+    private static readonly Brush MemBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 92, 158, 250), Color.FromArgb(65, 0, 34, 92));
+    private static readonly Brush MemBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 92, 158, 250), Color.FromArgb(65, 0, 34, 92));
 
-    private static readonly Brush NetBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 191, 23, 79), Color.FromArgb(65, 130, 0, 47));
-    private static readonly Brush NetBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 191, 23, 79), Color.FromArgb(65, 130, 0, 47));
-    private static readonly Brush NetBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 191, 23, 79), Color.FromArgb(65, 130, 0, 47));
+    private static readonly Brush NetBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 245, 98, 142), Color.FromArgb(65, 130, 0, 47));
+    private static readonly Brush NetBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 245, 98, 142), Color.FromArgb(65, 130, 0, 47));
+    private static readonly Brush NetBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 245, 98, 142), Color.FromArgb(65, 130, 0, 47));
 
     private const int MaxChartValues = 30;
 

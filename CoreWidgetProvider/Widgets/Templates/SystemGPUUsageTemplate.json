@@ -2,39 +2,62 @@
   "type": "AdaptiveCard",
   "body": [
     {
-      "type": "TextBlock",
-      "text": "GPU",
-      "size": "small",
-      "style": "Heading",
-      "weight": "Lighter",
-      "wrap": true
-    },
-    {
       "type": "Image",
       "url": "${gpuGraphUrl}",
       "height": "100px",
       "width": "268px"
     },
     {
-      "text": "%GPUUsage_Widget_Template/GPU_Usage%: ${gpuUsage}",
+      "type": "ColumnSet",
+      "columns": [
+        {
+          "type": "Column",
+          "items": [
+            {
+              "text": "%GPUUsage_Widget_Template/GPU_Usage%",
+              "type": "TextBlock",
+              "size": "small",
+              "isSubtle": true
+            },
+            {
+              "text": "${gpuUsage}",
+              "type": "TextBlock",
+              "size": "large"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "items": [
+            {
+              "text": "%GPUUsage_Widget_Template/GPU_Temperature%",
+              "type": "TextBlock",
+              "size": "small",
+              "isSubtle": true,
+              "horizontalAlignment": "right"
+            },
+            {
+              "text": "${gpuTemp}",
+              "type": "TextBlock",
+              "size": "large",
+              "horizontalAlignment": "right"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "%GPUUsage_Widget_Template/GPU_Name%",
       "type": "TextBlock",
-      "size": "large"
+      "size": "small",
+      "isSubtle": true
     },
     {
-      "text": "%GPUUsage_Widget_Template/GPU_Name%: ${gpuName}",
-      "type": "TextBlock"
-    },
-    {
-      "text": "%GPUUsage_Widget_Template/GPU_Temperature%: ${gpuTemp}",
+      "text": "${gpuName}",
       "type": "TextBlock"
     }
   ],
   "actions": [
-    {
-      "type": "Action.Execute",
-      "title": "%GPUUsage_Widget_Template/Previous_GPU%",
-      "verb": "PrevItem"
-    },
     {
       "type": "Action.Execute",
       "title": "%GPUUsage_Widget_Template/Next_GPU%",
