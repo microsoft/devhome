@@ -1,21 +1,12 @@
 # Tools
 
-Dev Home adds functionality through a set of tools. Each tool takes a page in the Dev Home navigation view. Currently, all tools come from in app assemblies. Third party or out of process tools are not supported at this time.
+Dev Home adds functionality through a set of tools. Each tool provides a page in the Dev Home navigation view. Currently, all tools come from in-app assemblies. Third party or out-of-process tools are not supported at this time.
 
 Tools utilize data and functionality from out-of-process [extensions](./extensions.md). This is done through the Extension SDK API. 
 
 ## Writing a Tool
 
-Each tool must be define a custom page view extending from the following abstract class.
-
-```cs
-public abstract class ToolPage : Page
-{
-    public abstract string ShortName { get; }
-}
-```
-
-And implement it like following
+Each tool must define a custom page view extending from the [`ToolPage`](../common/ToolPage.cs) abstract class, and implement it like in this example:
 
 ```cs
 public class SampleToolPage : ToolPage
@@ -30,10 +21,10 @@ public class SampleToolPage : ToolPage
 }
 ```
 
-The Dev Home framework will look at all types in its assembly for any inheriting from ToolPage:
+The Dev Home framework will look at all types in its assembly for any inheriting from `ToolPage`:
 
 On a found type, the framework will use:
-  - [`ShortName`](#ShortName) method to get the name of the tool,
+  - [`ShortName`](#ShortName) property to get the name of the tool
 
 ### Method definition
 
@@ -45,11 +36,11 @@ ShortName
 public abstract string ShortName { get; }
 ```
 
-Returns the name of the tool.  This is used for the navigation menu text.
+Returns the name of the tool. This is used for the navigation menu text.
 
 ### Code organization
 
-[`toolpage.cs`](/Common/ToolPage.cs)
+[`toolpage.cs`](../common/ToolPage.cs)
 Contains the interface definition for Dev Home tools.
 
 ## Dashboard Tool
