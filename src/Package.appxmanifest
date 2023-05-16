@@ -106,7 +106,7 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_Memory" DisplayName="System Memory" Description="Microsoft System Memory Widget Description" AllowMultiple="true">
+                  <Definition Id="System_Memory" DisplayName="Memory" Description="Microsoft System Memory Widget Description" AllowMultiple="true">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -120,19 +120,21 @@
                     </Capabilities>
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Assets\Preview\StoreLogo.png" />
+                        <Icon Path="Widgets\Assets\mem_icon_light.png" />
                       </Icons>
                       <Screenshots>
                         <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
                       </Screenshots>
                       <DarkMode>
-                        <!-- DarkMode and LightMode are optional -->
+                        <Icons>
+                          <Icon Path="Widgets\Assets\mem_icon_dark.png" />
+                        </Icons>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
                   </Definition>
                   <Definition Id="System_NetworkUsage"
-                      DisplayName="System Network Usage"
+                      DisplayName="Network"
                       Description="Microsoft System Network Usage Widget Description"
                       AllowMultiple="true">
                     <Capabilities>
@@ -148,19 +150,21 @@
                     </Capabilities>
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Assets\Preview\StoreLogo.png" />
+                        <Icon Path="Widgets\Assets\net_icon_light.png" />
                       </Icons>
                       <Screenshots>
                         <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
                       </Screenshots>
                       <DarkMode>
-                        <!-- DarkMode and LightMode are optional -->
+                        <Icons>
+                          <Icon Path="Widgets\Assets\net_icon_dark.png" />
+                        </Icons>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
                   </Definition>
                   <Definition Id="System_GPUUsage"
-                      DisplayName="System GPU Usage"
+                      DisplayName="GPU"
                       Description="Microsoft System GPU Usage Widget Description"
                       AllowMultiple="true">
                     <Capabilities>
@@ -176,19 +180,21 @@
                     </Capabilities>
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Assets\Preview\StoreLogo.png" />
+                        <Icon Path="Widgets\Assets\gpu_icon_light.png" />
                       </Icons>
                       <Screenshots>
                         <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
                       </Screenshots>
                       <DarkMode>
-                        <!-- DarkMode and LightMode are optional -->
+                        <Icons>
+                          <Icon Path="Widgets\Assets\gpu_icon_dark.png" />
+                        </Icons>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
                   </Definition>
                   <Definition Id="System_CPUUsage"
-                      DisplayName="System CPU Usage"
+                      DisplayName="CPU"
                       Description="Microsoft System CPU Usage Widget Description"
                       AllowMultiple="true">
                     <Capabilities>
@@ -204,13 +210,15 @@
                     </Capabilities>
                     <ThemeResources>
                       <Icons>
-                        <Icon Path="Assets\Preview\StoreLogo.png" />
+                        <Icon Path="Widgets\Assets\cpu_icon_light.png" />
                       </Icons>
                       <Screenshots>
                         <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
                       </Screenshots>
                       <DarkMode>
-                        <!-- DarkMode and LightMode are optional -->
+                        <Icons>
+                          <Icon Path="Widgets\Assets\cpu_icon_dark.png" />
+                        </Icons>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
