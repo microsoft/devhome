@@ -81,10 +81,18 @@
             <i:Interaction.Behaviors>
                 <setupFlowBehaviors:SetupFlowNavigationBehavior>
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultCancelTemplate>
-                        <HyperlinkButton
-                            Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
-                            MinWidth="120" Margin="4,0"
-                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel" />
+                        <Grid>
+                            <HyperlinkButton
+                                Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
+                                MinWidth="120" Margin="4,0"
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel"
+                                Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowDoneButton, Mode=OneWay, Converter={StaticResource NegateBoolToVisibility}}"/>
+                            <Button
+                                Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
+                                MinWidth="120" Margin="4,0"
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DoneButton"
+                                Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowDoneButton, Mode=OneWay}"/>
+                        </Grid>
                     </setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultCancelTemplate>
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultPreviousTemplate>
                         <Button
