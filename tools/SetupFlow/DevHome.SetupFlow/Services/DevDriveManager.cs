@@ -260,7 +260,7 @@ public class DevDriveManager : IDevDriveManager
         var root = Path.GetPathRoot(Environment.SystemDirectory);
         var validationSuccessful = true;
         var drive = new DriveInfo(root);
-        if (DevDriveUtil.MinDevDriveSizeInBytes > (ulong)drive.AvailableFreeSpace)
+        if (!drive.IsReady || DevDriveUtil.MinDevDriveSizeInBytes > (ulong)drive.AvailableFreeSpace)
         {
             Log.Logger?.ReportError(Log.Component.DevDrive, "Not enough space available to create a Dev Drive");
             validationSuccessful = false;
@@ -296,64 +296,70 @@ public class DevDriveManager : IDevDriveManager
         var returnSet = new HashSet<DevDriveValidationResult>();
         var minValue = DevDriveUtil.ConvertToBytes(DevDriveUtil.MinSizeForGbComboBox, ByteUnit.GB);
         var maxValue = DevDriveUtil.ConvertToBytes(DevDriveUtil.MaxSizeForTbComboBox, ByteUnit.TB);
-
-        if (devDrive == null)
+        try
         {
-            returnSet.Add(DevDriveValidationResult.ObjectWasNull);
-            return returnSet;
-        }
+            if (devDrive == null)
+            {
+                returnSet.Add(DevDriveValidationResult.ObjectWasNull);
+                return returnSet;
+            }
 
-        if (GetAvailableDriveLetters().Count == 0)
-        {
-            returnSet.Add(DevDriveValidationResult.NoDriveLettersAvailable);
-        }
+            if (GetAvailableDriveLetters().Count == 0)
+            {
+                returnSet.Add(DevDriveValidationResult.NoDriveLettersAvailable);
+            }
 
-        if (minValue > devDrive.DriveSizeInBytes || devDrive.DriveSizeInBytes > maxValue)
-        {
-            returnSet.Add(DevDriveValidationResult.InvalidDriveSize);
-        }
+            if (minValue > devDrive.DriveSizeInBytes || devDrive.DriveSizeInBytes > maxValue)
+            {
+                returnSet.Add(DevDriveValidationResult.InvalidDriveSize);
+            }
 
-        if (string.IsNullOrEmpty(devDrive.DriveLabel) ||
-            devDrive.DriveLabel.Length > DevDriveUtil.MaxDriveLabelSize ||
-            DevDriveUtil.IsInvalidFileNameOrPath(InvalidCharactersKind.FileName, devDrive.DriveLabel))
-        {
-            returnSet.Add(DevDriveValidationResult.InvalidDriveLabel);
-        }
+            if (string.IsNullOrEmpty(devDrive.DriveLabel) ||
+                devDrive.DriveLabel.Length > DevDriveUtil.MaxDriveLabelSize ||
+                DevDriveUtil.IsInvalidFileNameOrPath(InvalidCharactersKind.FileName, devDrive.DriveLabel))
+            {
+                returnSet.Add(DevDriveValidationResult.InvalidDriveLabel);
+            }
 
-        // Check if the drive letter isn't already being used by another Dev Drive object in memory and if its an actual valid drive letter.
-        if (!DevDriveUtil.IsCharValidDriveLetter(devDrive.DriveLetter) ||
-            _devDrives.FirstOrDefault(drive => drive.DriveLetter == devDrive.DriveLetter && drive.ID != devDrive.ID) != null)
-        {
-            returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
-        }
-
-        var result = IsPathValid(devDrive);
-        if (result != DevDriveValidationResult.Successful)
-        {
-            returnSet.Add(result);
-        }
-
-        var driveLetterSet = new HashSet<char>();
-        foreach (var curDriveOnSystem in DriveInfo.GetDrives())
-        {
-            driveLetterSet.Add(curDriveOnSystem.Name[0]);
-            if (driveLetterSet.Contains(devDrive.DriveLetter))
+            // Check if the drive letter isn't already being used by another Dev Drive object in memory and if its an actual valid drive letter.
+            if (!DevDriveUtil.IsCharValidDriveLetter(devDrive.DriveLetter) ||
+                _devDrives.FirstOrDefault(drive => drive.DriveLetter == devDrive.DriveLetter && drive.ID != devDrive.ID) != null)
             {
                 returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
             }
 
-            // If drive location is invalid, we would have already captured this in the IsPathValid call above.
-            var potentialRoot = string.IsNullOrEmpty(devDrive.DriveLocation) ? '\0' : char.ToUpperInvariant(devDrive.DriveLocation[0]);
-            if (potentialRoot == curDriveOnSystem.Name[0] &&
-                (devDrive.DriveSizeInBytes > (ulong)curDriveOnSystem.TotalFreeSpace))
+            var result = IsPathValid(devDrive);
+            if (result != DevDriveValidationResult.Successful)
             {
-                returnSet.Add(DevDriveValidationResult.NotEnoughFreeSpace);
+                returnSet.Add(result);
+            }
+
+            var driveLetterSet = new HashSet<char>();
+            foreach (var curDriveOnSystem in DriveInfo.GetDrives())
+            {
+                driveLetterSet.Add(curDriveOnSystem.Name[0]);
+                if (driveLetterSet.Contains(devDrive.DriveLetter))
+                {
+                    returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
+                }
+
+                // If drive location is invalid, we would have already captured this in the IsPathValid call above.
+                var potentialRoot = string.IsNullOrEmpty(devDrive.DriveLocation) ? '\0' : char.ToUpperInvariant(devDrive.DriveLocation[0]);
+                if (potentialRoot == curDriveOnSystem.Name[0] &&
+                    (devDrive.DriveSizeInBytes > (ulong)curDriveOnSystem.TotalFreeSpace))
+                {
+                    returnSet.Add(DevDriveValidationResult.NotEnoughFreeSpace);
+                }
+            }
+
+            if (returnSet.Count == 0)
+            {
+                returnSet.Add(DevDriveValidationResult.Successful);
             }
         }
-
-        if (returnSet.Count == 0)
+        catch (Exception ex)
         {
-            returnSet.Add(DevDriveValidationResult.Successful);
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get set of DevDrive validation results. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
         }
 
         return returnSet;
@@ -363,17 +369,24 @@ public class DevDriveManager : IDevDriveManager
     public IList<char> GetAvailableDriveLetters(char? usedLetterToKeepInList = null)
     {
         var driveLetterSet = new SortedSet<char>(DevDriveUtil.DriveLetterCharArray);
-        foreach (var drive in DriveInfo.GetDrives())
+        try
         {
-            driveLetterSet.Remove(drive.Name[0]);
-        }
-
-        foreach (var devDrive in _devDrives)
-        {
-            if (usedLetterToKeepInList == null || usedLetterToKeepInList != devDrive.DriveLetter)
+            foreach (var drive in DriveInfo.GetDrives())
             {
-                driveLetterSet.Remove(devDrive.DriveLetter);
+                driveLetterSet.Remove(drive.Name[0]);
             }
+
+            foreach (var devDrive in _devDrives)
+            {
+                if (usedLetterToKeepInList == null || usedLetterToKeepInList != devDrive.DriveLetter)
+                {
+                    driveLetterSet.Remove(devDrive.DriveLetter);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get Available Drive letters. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
         }
 
         return driveLetterSet.ToList();
