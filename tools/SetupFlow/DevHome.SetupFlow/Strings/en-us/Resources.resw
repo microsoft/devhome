@@ -1170,6 +1170,7 @@
   <data name="SummaryPageReposClonedCount" xml:space="preserve">
     <value>Repositories cloned</value>
     <comment>Bottom header of the count of all repos cloned</comment>
+  </data>
   <data name="RepositoryClonePathHeader.Text" xml:space="preserve">
     <value>Clone path</value>
     <comment>Header for the repo grid in the repo tool</comment>
