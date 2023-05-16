@@ -286,7 +286,7 @@
     <comment>Placeholder drive label value that will be used as the file name within the Dev Drive name text box. VHD stands for virtual hard disk, which is what will be created when the user goes to create a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowOnlyOneDevDriveAllowedHeader.Text" xml:space="preserve">
-    <value>A Dev Drive optimizes performance for development. You can only create one in Dev Home.</value>
+    <value>A Dev Drive optimizes performance for development. You can create only one in Dev Home.</value>
     <comment>Text to advise users that they are only allowed the create one Dev Drive at a time.</comment>
   </data>
   <data name="DevDriveWindowSaveButton.Content" xml:space="preserve">
