@@ -94,11 +94,11 @@ public partial class WidgetViewModel : ObservableObject
     {
         _renderer = renderer;
         _dispatcher = dispatcher;
+        _widgetHandler = new WidgetHandler(this);
 
         Widget = widget;
         WidgetSize = widgetSize;
         WidgetDefinition = widgetDefintion;
-        _widgetHandler = new WidgetHandler(this);
     }
 
     public void Render()
