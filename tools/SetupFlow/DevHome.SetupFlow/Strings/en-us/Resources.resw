@@ -972,7 +972,7 @@
     <value>Set up as non-admin</value>
     <comment>Text shown on a split button for setting up configuration as non-admin</comment>
   </data>
-  <data name="SummaryPage_AppsDownloadedCount.Text" xml:space="preserve">
+  <data name="SummaryPageAppsDownloadedCount" xml:space="preserve">
     <value>Applications installed</value>
     <comment>Bottom footer of the number of apps downloaded</comment>
   </data>
@@ -999,10 +999,6 @@
   <data name="SummaryPage_ReposClonedDisplay.Text" xml:space="preserve">
     <value>Cloned repositories</value>
     <comment>Header of the section that shows all cloned repositories</comment>
-  </data>
-  <data name="SummaryPage_ReposClonedCount.Text" xml:space="preserve">
-    <value>Repositories cloned</value>
-    <comment>Bottom header of the count of all repos cloned</comment>
   </data>
   <data name="SummaryPage_RestartRequiredButton.Content" xml:space="preserve">
     <value>Restart Now</value>
@@ -1158,6 +1154,22 @@
   <data name="ClonePathForTextBlock.Text" xml:space="preserve">
     <value>Path</value>
     <comment>Text for choosing a clone path in a block of text</comment>
+  </data>
+  <data name="DoneButton.Content" xml:space="preserve">
+    <value>Done</value>
+    <comment>Button label that when clicked will end the machine configuration wizard.</comment>
+  </data>
+  <data name="SummaryPageOneApplicationInstalled" xml:space="preserve">
+    <value>Application installed</value>
+    <comment>Bottom text to show when only one application is installed.</comment>
+  </data>
+  <data name="SummaryPageOneRepositoryCloned" xml:space="preserve">
+    <value>Repository cloned</value>
+    <comment>Bottom text to show when only one repository is cloned</comment>
+  </data>
+  <data name="SummaryPageReposClonedCount" xml:space="preserve">
+    <value>Repositories cloned</value>
+    <comment>Bottom header of the count of all repos cloned</comment>
   </data>
   <data name="RepositoryClonePathHeader.Text" xml:space="preserve">
     <value>Clone path</value>

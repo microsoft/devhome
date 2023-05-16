@@ -38,8 +38,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private Visibility _showRestartNeeded;
 
-    // TODO: refactor setup flow so CloneRepoTask can be used without having to
-    // add the app management project.
     public ObservableCollection<RepoViewListItem> RepositoriesCloned
     {
         get
@@ -58,12 +56,12 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 }
             }
 
+            var localizedHeader = (repositoriesCloned.Count == 1) ? StringResourceKey.SummaryPageOneRepositoryCloned : StringResourceKey.SummaryPageReposClonedCount;
+            RepositoriesClonedText = StringResource.GetLocalized(localizedHeader);
             return repositoriesCloned;
         }
     }
 
-    // TODO: refactor setup flow so PackageViewModel and PackageProvider can be used without having to
-    // add the app management project.
     public ObservableCollection<PackageViewModel> AppsDownloaded
     {
         get
@@ -75,6 +73,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 packagesInstalled.Add(package);
             }
 
+            var localizedHeader = (packagesInstalled.Count == 1) ? StringResourceKey.SummaryPageOneApplicationInstalled : StringResourceKey.SummaryPageAppsDownloadedCount;
+            ApplicationsClonedText = StringResource.GetLocalized(localizedHeader);
             return packagesInstalled;
         }
     }
@@ -96,6 +96,12 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         ConfigurationUnitSucceededCount,
         ConfigurationUnitFailedCount,
         ConfigurationUnitSkippedCount);
+
+    [ObservableProperty]
+    private string _repositoriesClonedText;
+
+    [ObservableProperty]
+    private string _applicationsClonedText;
 
     [RelayCommand]
     public void RemoveRestartGrid()
@@ -161,11 +167,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _wpm = wpm;
         _packageProvider = packageProvider;
         _catalogDataSourceLoacder = catalogDataSourceLoader;
-
-        IsNavigationBarVisible = false;
-        IsStepPage = false;
+        IsNavigationBarVisible = true;
         _configurationUnitResults = new (GetConfigurationUnitResults);
-
         _showRestartNeeded = Visibility.Collapsed;
     }
 
