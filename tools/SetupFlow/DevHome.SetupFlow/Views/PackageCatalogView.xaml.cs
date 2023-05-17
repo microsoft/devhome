@@ -57,11 +57,13 @@ public sealed partial class PackageCatalogView : UserControl
     /// <summary>
     /// Re-compute the FlipView height.
     /// </summary>
-    private void UpdateFlipViewSize()
+    private void UpdateFlipViewHeight()
     {
+        // Get index of the current FlipViewItem
         var selectedIndex = PackagesFlipView.SelectedIndex;
         if (selectedIndex >= 0)
         {
+            // Get the current FlipViewItem
             var flipViewItem = PackagesFlipView.ContainerFromIndex(selectedIndex) as FlipViewItem;
             if (flipViewItem != null)
             {
@@ -94,14 +96,14 @@ public sealed partial class PackageCatalogView : UserControl
     private void UpdateAll()
     {
         UpdatePackageGroups();
-        UpdateFlipViewSize();
+        UpdateFlipViewHeight();
     }
+
+    /// <summary>
+    /// Handler for <see cref="FrameworkElement.LayoutUpdated"/>.
+    /// </summary>
+    private void OnLayoutUpdated(object sender, object e) => UpdateFlipViewHeight();
 
     public static readonly DependencyProperty CatalogProperty = DependencyProperty.Register(nameof(Catalog), typeof(PackageCatalogViewModel), typeof(PackageCatalogView), new PropertyMetadata(null, (c, _) => ((PackageCatalogView)c).UpdateAll()));
     public static readonly DependencyProperty GroupSizeProperty = DependencyProperty.Register(nameof(GroupSize), typeof(int), typeof(PackageCatalogView), new PropertyMetadata(4, (c, _) => ((PackageCatalogView)c).UpdateAll()));
-
-    private void OnLayoutUpdated(object sender, object e)
-    {
-        UpdateFlipViewSize();
-    }
 }
