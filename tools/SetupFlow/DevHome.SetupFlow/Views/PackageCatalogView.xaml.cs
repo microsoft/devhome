@@ -1,9 +1,12 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -30,11 +33,6 @@ public sealed partial class PackageCatalogView : UserControl
     public Visibility PagerVisibility => PackageGroups.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
 
     /// <summary>
-    /// Store the set of flip view panels
-    /// </summary>
-    private readonly HashSet<ItemsWrapGrid> _panels = new ();
-
-    /// <summary>
     /// Gets or sets the package catalog to display
     /// </summary>
     public PackageCatalogViewModel Catalog
@@ -59,37 +57,38 @@ public sealed partial class PackageCatalogView : UserControl
         this.InitializeComponent();
     }
 
-    private void OnSizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        UpdateFlipViewSize();
-    }
-
-    private void OnItemsWrapGridLoaded(object sender, RoutedEventArgs e)
-    {
-        var panel = (ItemsWrapGrid)sender;
-        _panels.Add(panel);
-        UpdateFlipViewSize();
-    }
-
-    private void OnItemsWrapGridUnloaded(object sender, RoutedEventArgs e)
-    {
-        var panel = (ItemsWrapGrid)sender;
-        _panels.Remove(panel);
-        UpdateFlipViewSize();
-    }
-
     /// <summary>
-    /// Update the flip view size to match the max content height at all time.
-    /// This method covers the following scenarios:
-    /// - Maintain a consistent (max) height throughout the flip view rotation
-    /// - When the window width changes and the grid content wraps to a new
-    ///   row, update the flip view height accordingly to fit content
+    /// Re-compute the FlipView height.
     /// </summary>
-    private void UpdateFlipViewSize()
+    private void UpdateFlipViewHeight()
     {
-        if (_panels.Count > 0)
+        try
         {
-            PackagesFlipView.Height = _panels.Max(p => p.ActualHeight);
+            // Get index of the current FlipViewItem
+            var selectedIndex = PackagesFlipView.SelectedIndex;
+            if (selectedIndex >= 0)
+            {
+                // Get the current FlipViewItem
+                var flipViewItem = PackagesFlipView.ContainerFromIndex(selectedIndex) as FlipViewItem;
+                if (flipViewItem != null)
+                {
+                    var grid = flipViewItem.ContentTemplateRoot as Grid;
+                    if (grid != null)
+                    {
+                        // Get grid content child
+                        var itemsRepeater = grid.Children.FirstOrDefault() as ItemsRepeater;
+                        if (itemsRepeater != null)
+                        {
+                            // Set the FlipView height to the items repeater height
+                            PackagesFlipView.Height = itemsRepeater.ActualHeight;
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to update {nameof(FlipView)} height", e);
         }
     }
 
@@ -112,8 +111,13 @@ public sealed partial class PackageCatalogView : UserControl
     private void UpdateAll()
     {
         UpdatePackageGroups();
-        UpdateFlipViewSize();
+        UpdateFlipViewHeight();
     }
+
+    /// <summary>
+    /// Handler for <see cref="FrameworkElement.LayoutUpdated"/>.
+    /// </summary>
+    private void OnLayoutUpdated(object sender, object e) => UpdateFlipViewHeight();
 
     public static readonly DependencyProperty CatalogProperty = DependencyProperty.Register(nameof(Catalog), typeof(PackageCatalogViewModel), typeof(PackageCatalogView), new PropertyMetadata(null, (c, _) => ((PackageCatalogView)c).UpdateAll()));
     public static readonly DependencyProperty GroupSizeProperty = DependencyProperty.Register(nameof(GroupSize), typeof(int), typeof(PackageCatalogView), new PropertyMetadata(4, (c, _) => ((PackageCatalogView)c).UpdateAll()));
