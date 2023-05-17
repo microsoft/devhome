@@ -16,18 +16,14 @@
         <ResourceDictionary>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
-                    <x:String x:Key="BackgroundFront">/Assets/WhatsNewPage/LightTheme/BackgroundFront.png</x:String>
-                    <x:String x:Key="BackgroundBack">/Assets/WhatsNewPage/LightTheme/BackgroundBack.png</x:String>
-                    <x:String x:Key="BackgroundShadow">/Assets/WhatsNewPage/LightTheme/BackgroundShadow.png</x:String>
+                    <x:String x:Key="Background">/Assets/WhatsNewPage/LightTheme/Background.png</x:String>
                     <Color x:Key="CardBackground">#fdfdfd</Color>
                     <Color x:Key="ButtonAccentBackground">#6659CA</Color>
                     <Color x:Key="ButtonAccentForeground">#FFFFFF</Color>
                     <Color x:Key="LearnMoreForeground">#005FB8</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
-                    <x:String x:Key="BackgroundFront">/Assets/WhatsNewPage/DarkTheme/BackgroundFront.png</x:String>
-                    <x:String x:Key="BackgroundBack">/Assets/WhatsNewPage/DarkTheme/BackgroundBack.png</x:String>
-                    <x:String x:Key="BackgroundShadow">/Assets/WhatsNewPage/DarkTheme/BackgroundShadow.png</x:String>
+                    <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
                     <Color x:Key="CardBackground">#323232</Color>
                     <Color x:Key="ButtonAccentBackground">#47E1DA</Color>
                     <Color x:Key="ButtonAccentForeground">#000000</Color>
@@ -40,9 +36,7 @@
     <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" MaxWidth="{ThemeResource MaxPageBackgroundWidth}">
         <RelativePanel>
             <Grid>
-                <Image Source="{ThemeResource BackgroundBack}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="UniformToFill" />
-                <Image Source="{ThemeResource BackgroundFront}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" VerticalAlignment="Top" HorizontalAlignment="Right" Stretch="UniformToFill"/>
-                <Image Source="{ThemeResource BackgroundShadow}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" Margin="0 100 0 0" VerticalAlignment="Top" Stretch="UniformToFill"/>
+                <Image Source="{ThemeResource Background}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="UniformToFill" />
             </Grid>
             <Grid x:Name="ContentArea" Padding="35 0 35 30" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
