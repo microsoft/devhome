@@ -47,7 +47,7 @@
             ItemsSource="{x:Bind PackageGroups, Mode=OneWay}">
             <FlipView.ItemTemplate>
                 <DataTemplate>
-                    <!-- ScrollViewer added here to help update the FlipView
+                    <!-- Grid added here to help update the FlipView
                     height (in code-behind) to fit its content for various
                     control width -->
                     <Grid VerticalAlignment="Top">
