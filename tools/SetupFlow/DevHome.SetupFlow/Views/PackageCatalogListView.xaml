@@ -9,7 +9,7 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
-            <!-- Number if items to display per panel -->
+            <!-- Number of items to display per panel -->
             <x:Int32 x:Key="GroupSize">12</x:Int32>
         </ResourceDictionary>
     </UserControl.Resources>

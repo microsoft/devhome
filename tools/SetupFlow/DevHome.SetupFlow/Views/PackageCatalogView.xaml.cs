@@ -1,9 +1,12 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -78,9 +81,9 @@ public sealed partial class PackageCatalogView : UserControl
                 }
             }
         }
-        catch
+        catch (Exception e)
         {
-            // Skip update if exception occurred
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to update {nameof(FlipView)} height", e);
         }
     }
 
