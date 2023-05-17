@@ -38,7 +38,7 @@ resources:
 
 stages:
 - stage: SourceAnalysis
-  # This stage is expected to run in parallel with BuildWindowsAppSDK-Stages.
+  # This stage is expected to run in parallel with Build_* stages
   dependsOn: []
   jobs:
   - job: SDLSourcesScanning
@@ -64,10 +64,10 @@ stages:
         globalsdl:
           tsa:
             # Not filing bugs for issues found by the scans just yet.
-            #enabled: true    
+            #enabled: true
             enabled: false
           codeql:
-            # We currently don't disable other scans that are enabled by default. Just ensure that 
+            # We currently don't disable other scans that are enabled by default. Just ensure that
             # scans that we are interested in are enabled.
             psscriptanalyzer:
               enable: true
@@ -163,6 +163,7 @@ stages:
             authKey: $(TouchdownAppKey)
             resourceFilePath: |
               **\en-US\*.resw
+              **\en-US\PDP.xml
             outputDirectoryRoot: LocOutput
             localizationTarget: true
             appendRelativeDir: true
@@ -291,7 +292,7 @@ stages:
           condition: and(always(), ne('${{ platform}}', 'arm64'))
           inputs:
             OperationType: 'Stop'
-            
+
         - task: PublishBuildArtifacts@1
           displayName: 'Publish Test Results'
           condition: and(always(), ne('${{ platform}}', 'arm64'))
@@ -307,7 +308,7 @@ stages:
             testResultsFiles: '*.trx'
             searchFolder: '$(testOutputArtifactDir)'
             mergeTestResults: true
-            failTaskOnFailedTests: true 
+            failTaskOnFailedTests: true
             testRunTitle: '$(Agent.JobName)'
             buildPlatform: '${{ platform }}'
             buildConfiguration: '${{ configuration }}'
@@ -457,22 +458,92 @@ stages:
         artifactName: MsixBundle_Release
         targetPath: StorePublish
 
+    # Automated localization coming soon
+    # - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
+    #   displayName: Download and Use Localization Files
+    #   condition: eq(variables['EnableLocalization'], 'true')
+    #   inputs:
+    #     teamId: 71220
+    #     authId: $(TouchdownAppId)
+    #     authKey: $(TouchdownAppKey)
+    #     resourceFilePath: |
+    #       **\en-US\PDP.xml
+    #     localizationTarget: false
+    #     appendRelativeDir: true
+
+    - task: PowerShell@2
+      displayName: Move Loc files one level up
+      condition: eq(variables['EnableLocalization'], 'true')
+      inputs:
+        targetType: inline
+        script: >-
+          $Files = Get-ChildItem . -R -Filter 'Resources.resw' | ? FullName -Like '*en-US\*\Resources.resw'
+
+          $Files | % { Move-Item -Verbose $_.Directory $_.Directory.Parent.Parent -EA:Ignore }
+        pwsh: true
+
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Staging build to store'
-      condition: eq(variables['BuildingBranch'], 'staging')
+      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'false'))
       inputs:
         serviceEndpoint: 'DevHomeCanary StoreBroker'
         appId: 9MX22N5S7HRD
         sourceFolder: 'StorePublish'
         contents: '*.msixbundle'
         force: true
+        deletePackages: true
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Release build to store'
-      condition: eq(variables['BuildingBranch'], 'release')
+      condition: and(eq(variables['BuildingBranch'], 'release'), eq(variables['TestLocPublish'], 'false'))
       inputs:
         serviceEndpoint: 'DevHome StoreBroker'
         appId: 9N8MHTPHNGVV
         sourceFolder: 'StorePublish'
         contents: '*.msixbundle'
         force: true
+        deletePackages: true
+
+    - task: MS-RDX-MRO.windows-store-publish-dev.package-task.store-package@2
+      displayName: 'Create Staging StoreBroker Package'
+      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
+      inputs:
+        serviceEndpoint: 'DevHomeCanary StoreBroker'
+        sbConfigPath: '$(System.DefaultWorkingDirectory)\build\store\canary\SBConfig.json'
+        sourceFolder: 'StorePublish'
+        contents: '*.msixbundle'
+        pdpPath: '$(System.DefaultWorkingDirectory)\build\store\canary\PDPs'
+        # pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\canary\PDPs\Media'
+        outSBName: DevHomeStoreSubmissionPackage
+
+    - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
+      displayName: 'Publish Staging StoreBroker Package'
+      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
+      inputs:
+        serviceEndpoint: 'DevHomeCanary StoreBroker'
+        appId: 9MX22N5S7HRD
+        inputMethod: JsonAndZip
+        jsonPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.json'
+        zipPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.zip'
+
+    - task: MS-RDX-MRO.windows-store-publish-dev.package-task.store-package@2
+      displayName: 'Create Release StoreBroker Package'
+      condition: and(eq(variables['BuildingBranch'], 'release'), eq(variables['TestLocPublish'], 'true'))
+      inputs:
+        serviceEndpoint: 'DevHome StoreBroker'
+        sbConfigPath: '$(System.DefaultWorkingDirectory)\build\store\preview\SBConfig.json'
+        sourceFolder: 'StorePublish'
+        contents: '*.msixbundle'
+        pdpPath: '$(System.DefaultWorkingDirectory)\build\store\preview\PDPs'
+        # pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\preview\PDPs\Media'
+        outSBName: DevHomeStoreSubmissionPackage
+
+    - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
+      displayName: 'Publish Release StoreBroker Package'
+      condition: and(eq(variables['BuildingBranch'], 'release'), eq(variables['TestLocPublish'], 'true'))
+      inputs:
+        serviceEndpoint: 'DevHome StoreBroker'
+        appId: 9N8MHTPHNGVV
+        inputMethod: JsonAndZip
+        jsonPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.json'
+        zipPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.zip'
