@@ -52,16 +52,16 @@
   </DevStudio>
   <ReleaseNotes _locID="App_ReleaseNotes">
     <!-- _locComment_text="{MaxLength=1500} {Locked=__VERSION_NUMBER__} App Release Note" -->詳細については、GitHub リリースのページを参照してください。</ReleaseNotes>
-  <ScreenshotCaptions>
+   <ScreenshotCaptions>
     <!-- Valid length: 200 character limit, up to 9 elements per platform -->
     <!-- Valid attributes: any of DesktopImage, MobileImage, XboxImage, SurfaceHubImage, and HoloLensImage -->
-    <Caption DesktopImage="acrylic-emoji.png" _locID="App_caption1">
+    <Caption DesktopImage="DevHomeScreenshot.png" _locID="App_caption1">
       <!-- _locComment_text="{MaxLength=200} Screenshot caption 1" -->
     </Caption>
-    <Caption DesktopImage="panes.png" _locID="App_caption2">
+    <Caption DesktopImage="" _locID="App_caption2">
       <!-- _locComment_text="{MaxLength=200} Screenshot caption 2" -->
     </Caption>
-    <Caption DesktopImage="htop.png" _locID="App_caption3">
+    <Caption DesktopImage="" _locID="App_caption3">
       <!-- _locComment_text="{MaxLength=200} Screenshot caption 3" -->
     </Caption>
   </ScreenshotCaptions>
@@ -74,23 +74,8 @@
     <!--   ChallengePromoIcon, RewardDisplayIcon, Icon150X150, Icon71X71,-->
     <!--   BoxArt, BrandedKeyArt, PosterArt, FeaturedPromotionalArt, PromotionalArt16x9, TitledHeroArt-->
     <!-- There is no content for any of these elements, just a single attribute called FileName. -->
-    <PosterArt FileName="Store Poster Art.png" />
-    <BoxArt FileName="Store Box Art.png" />
-    <PromotionalArt16x9 FileName="Store Thumbnail.png" />
   </AdditionalAssets>
   <Trailers>
-    <!-- Maximum number of trailers permitted: 15 -->
-    <Trailer FileName="CC0605_CommandLine_Teaser_WEB_MASTER_H264_1080p_23.976_-16LKFS_-3dbTP_ST.mp4">
-      <Title _locID="App_trailerTitle1">
-        <!-- _locComment_text="{MaxLength=255} Trailer title 1" -->
-      </Title>
-      <Images>
-        <!-- Current maximum of 1 image per trailer permitted. -->
-        <Image FileName="Store Thumbnail.png">
-          <!-- _locComment_text="{Locked} Trailer screenshot 1 description" -->
-        </Image>
-      </Images>
-    </Trailer>
   </Trailers>
   <AppFeatures>
     <!-- Valid length: 200 character limit, up to 20 elements -->
