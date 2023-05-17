@@ -214,6 +214,8 @@ internal partial class AddRepoDialog
 
     /// <summary>
     /// If any items in reposToSelect exist in the UI, select them.
+    /// An side-effect of SelectRange is SelectionChanged is fired for each item SelectRange is called on.
+    /// IsCallingSelectRange is used to prevent modifying EverythingToClone when repos are being re-selected after filtering.
     /// </summary>
     /// <param name="reposToSelect">The repos to select in the UI.</param>
     private void SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
@@ -235,6 +237,12 @@ internal partial class AddRepoDialog
         AddRepoViewModel.IsCallingSelectRange = false;
     }
 
+    /// <summary>
+    /// If any items in reposToSelect exist in the UI, select them.
+    /// An side-effect of SelectRange is SelectionChanged is fired for each item SelectRange is called on.
+    /// IsCallingSelectRange is used to prevent modifying EverythingToClone when repos are being re-selected after filtering.
+    /// </summary>
+    /// <param name="reposToSelect">The repos to select in the UI.</param>
     private void SelectRepositories(IEnumerable<CloningInformation> reposToSelect)
     {
         SelectRepositories(reposToSelect.Select(x => new RepoViewListItem(x.RepositoryToClone)));
@@ -382,9 +390,15 @@ internal partial class AddRepoDialog
         }
     }
 
+    /// <summary>
+    /// Putting the event in the view so SelectRange can be called.
+    /// SelectRange needs a reference to the ListView.
+    /// </summary>
+    /// <param name="sender">Who fired the event</param>
+    /// <param name="e">Any args</param>
     private void FilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
     {
-        // just in case something other than a text box calls this.
+        // Just in case something other than a text box calls this.
         if (sender is TextBox)
         {
             AddRepoViewModel.FilterRepositories(FilterTextBox.Text);
