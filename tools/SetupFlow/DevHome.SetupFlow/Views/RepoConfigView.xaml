@@ -52,9 +52,9 @@
                             <RowDefinition Height="40"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition MaxWidth="180" />
-                            <ColumnDefinition MaxWidth="250" />
-                            <ColumnDefinition MaxWidth="380" />
+                            <ColumnDefinition MinWidth="180" MaxWidth="180" />
+                            <ColumnDefinition MinWidth="250" MaxWidth="250" />
+                            <ColumnDefinition MinWidth="380" MaxWidth="380" />
                         </Grid.ColumnDefinitions>
                         <Border Grid.Column="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 1, 1" HorizontalAlignment="Stretch" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}">
                             <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryTypeHeader" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
@@ -83,10 +83,10 @@
                                 <RowDefinition Height="45"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition MaxWidth="179" />
-                                <ColumnDefinition MaxWidth="250" />
-                                <ColumnDefinition MaxWidth="380" />
-                                <ColumnDefinition MaxWidth="40" />
+                                <ColumnDefinition MinWidth="179" MaxWidth="179" />
+                                <ColumnDefinition MinWidth="250" MaxWidth="250" />
+                                <ColumnDefinition MinWidth="380" MaxWidth="380" />
+                                <ColumnDefinition MinWidth="40" MaxWidth="40" />
                             </Grid.ColumnDefinitions>
                             <Border Style="{StaticResource DevHomeBorderStyle}" Grid.Column="0" BorderThickness="0, 1, 1, 0">
                                 <TextBlock Text="{x:Bind ProviderName}" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="WordEllipsis"/>
@@ -107,7 +107,7 @@
                                             Text="{x:Bind ClonePath}" 
                                             IsEnabled="False"
                                             Visibility="{x:Bind CloneToDevDrive, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
-                                            Width="300"
+                                            MinWidth="300"
                                             MaxWidth="300"
                                             Margin="10, 5, 0, 5" />
                                     <!-- Need to use view methods here because DataType is CloningInformation-->
