@@ -127,13 +127,13 @@ Specs will be managed in a very similar manner as code contributions so please f
 
 To write/contribute to a spec: fork, branch and commit via PRs, as you would with any code changes.
 
-Specs are written in markdown, stored under the [`\doc\specs`](./doc/specs) folder and named `[issue id] - [spec description].md`.
+Specs are written in markdown, stored under the [`\docs\specs`](./docs/specs) folder and named `[issue id] - [spec description].md`.
 
 👉 **It is important to follow the spec templates and complete the requested information**. The available spec templates will help ensure that specs contain the minimum information & decisions necessary to permit development to begin. In particular, specs require you to confirm that you've already discussed the issue/idea with the team in an issue and that you provide the issue ID for reference.
 
 Team members will be happy to help review specs and guide them to completion.
 
-### Help Wanted
+### Help wanted
 
 Once the team has approved an issue/spec, development can proceed. If no developers are immediately available, the spec can be parked ready for a developer to get started. Parked specs' issues will be labeled "Help Wanted". To find a list of development opportunities waiting for developer involvement, visit the Issues and filter on [the Help-Wanted label](https://github.com/microsoft/devhome/labels/Help%20Wanted).
 

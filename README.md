@@ -54,7 +54,7 @@ The Dev Home dashboard is built as a Windows widget renderer. These widgets are 
 
 ### Machine configuration
 
-The machine configuration tool utilizes the Dev Home GitHub extension, but isn't required to clone and install apps. The app installation tool is powered by winget.
+The machine configuration tool utilizes the Dev Home GitHub Extension, but isn't required to clone and install apps. The app installation tool is powered by winget.
 
 #### Popular apps
 
@@ -63,6 +63,8 @@ Within the machine configuration tool is a popular apps list that appears when c
 ---
 
 ## Documentation
+
+Documentation for Dev Home can be found at https://aka.ms/devhomedocs.
 
 ---
 
@@ -104,7 +106,7 @@ In VS, you should be able to build and debug Dev Home by hitting <kbd>F5</kbd>. 
 
 ## Code of conduct
 
-We welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+We welcome contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
 When you submit a pull request, a CLA bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
 
