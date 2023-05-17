@@ -47,6 +47,9 @@
             ItemsSource="{x:Bind PackageGroups, Mode=OneWay}">
             <FlipView.ItemTemplate>
                 <DataTemplate>
+                    <!-- ScrollViewer added here to help update the FlipView
+                    height (in code-behind) to fit its content for various
+                    control width -->
                     <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Disabled">
                         <ItemsRepeater ItemsSource="{Binding}">
                             <ItemsRepeater.Layout>
