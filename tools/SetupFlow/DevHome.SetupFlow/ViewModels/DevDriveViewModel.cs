@@ -490,7 +490,10 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         {
             Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to refresh the drive letter to size mapping. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
 
-            // Clear the mapping since we can't refresh it.
+            // Clear the mapping since we can't refresh it. This should happen rarely unless DriveInfo.GetDrives() fails. In that case we won't know which drive
+            // in the list is causing GetDrives()'s to throw. If there are values inside the dictionary at this point, they could be stale. Clearing the list
+            // allows users to at least attempt to use the location they want to create the virtual disk in. Ultimately if the location is really unavailable the virtual disk
+            // won't be created and we will send an error to the UI in the loading page.
             DriveLetterToSizeMapping.Clear();
         }
     }

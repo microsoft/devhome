@@ -305,6 +305,7 @@ public class DevDriveManager : IDevDriveManager
         var returnSet = new HashSet<DevDriveValidationResult>();
         var minValue = DevDriveUtil.ConvertToBytes(DevDriveUtil.MinSizeForGbComboBox, ByteUnit.GB);
         var maxValue = DevDriveUtil.ConvertToBytes(DevDriveUtil.MaxSizeForTbComboBox, ByteUnit.TB);
+
         if (devDrive == null)
         {
             returnSet.Add(DevDriveValidationResult.ObjectWasNull);
@@ -364,7 +365,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to validate selected Drive letter. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to validate selected Drive letter ({devDrive.DriveLocation[0]}). ErrorCode: {ex.HResult}, Msg: {ex.Message}");
             returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
         }
 
