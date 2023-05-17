@@ -14,10 +14,13 @@ public class UpdateVisitor : IVisitor
 
     public void VisitHardware(IHardware hardware)
     {
-        hardware.Update();
-        foreach (IHardware subHardware in hardware.SubHardware)
+        if (hardware != null)
         {
-            subHardware.Accept(this);
+            hardware.Update();
+            foreach (IHardware subHardware in hardware.SubHardware)
+            {
+                subHardware.Accept(this);
+            }
         }
     }
 
