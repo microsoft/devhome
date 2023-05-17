@@ -37,6 +37,38 @@ resources:
     ref: refs/heads/main
 
 stages:
+- stage: Build_SDK
+  dependsOn: []
+  jobs:
+  - job: Build_SDK
+    steps:
+    - task: NuGetToolInstaller@1
+
+    - task: NuGetAuthenticate@0
+      inputs:
+        nuGetServiceConnections: 'DevHomeInternal'
+
+    - task: PowerShell@2
+      displayName: Build SDK
+      name: BuildSDKCommand
+      inputs:
+        filePath: 'Build.ps1'
+        arguments: -Configuration "Release" -SDKVersion $(SDKVersion) -BuildStep "sdk" -IsAzurePipelineBuild
+
+    - task: PublishPipelineArtifact@0
+      displayName: Publish Artifacts
+      inputs:
+        artifactName: SdkNugetPackage
+        targetPath: pluginsdk\_build
+
+    - task: PublishSymbols@2
+      displayName: Publish Symbols
+      inputs:
+        SearchPattern: '**/bin/**/*.pdb'
+        IndexSources: false
+        SymbolServerType: TeamServices
+        SymbolsProduct: DevHomeSDK
+
 - stage: SourceAnalysis
   # This stage is expected to run in parallel with Build_* stages
   dependsOn: []
@@ -94,38 +126,6 @@ stages:
         targetFlawfinderPattern: '$(Build.SourcesDirectory)'
         minRiskLevel: 2
         onlyInputs: false
-
-- stage: Build_SDK
-  dependsOn: []
-  jobs:
-  - job: Build_SDK
-    steps:
-    - task: NuGetToolInstaller@1
-
-    - task: NuGetAuthenticate@0
-      inputs:
-        nuGetServiceConnections: 'DevHomeInternal'
-
-    - task: PowerShell@2
-      displayName: Build SDK
-      name: BuildSDKCommand
-      inputs:
-        filePath: 'Build.ps1'
-        arguments: -Configuration "Release" -SDKVersion $(SDKVersion) -BuildStep "sdk" -IsAzurePipelineBuild
-
-    - task: PublishPipelineArtifact@0
-      displayName: Publish Artifacts
-      inputs:
-        artifactName: SdkNugetPackage
-        targetPath: pluginsdk\_build
-
-    - task: PublishSymbols@2
-      displayName: Publish Symbols
-      inputs:
-        SearchPattern: '**/bin/**/*.pdb'
-        IndexSources: false
-        SymbolServerType: TeamServices
-        SymbolsProduct: DevHomeSDK
 
 - stage: Build_DevHome
   dependsOn: Build_SDK
@@ -513,7 +513,7 @@ stages:
         sourceFolder: 'StorePublish'
         contents: '*.msixbundle'
         pdpPath: '$(System.DefaultWorkingDirectory)\build\store\canary\PDPs'
-        # pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\canary\PDPs\Media'
+        pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\canary\PDPs\Media'
         outSBName: DevHomeStoreSubmissionPackage
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
@@ -535,7 +535,7 @@ stages:
         sourceFolder: 'StorePublish'
         contents: '*.msixbundle'
         pdpPath: '$(System.DefaultWorkingDirectory)\build\store\preview\PDPs'
-        # pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\preview\PDPs\Media'
+        pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\preview\PDPs\Media'
         outSBName: DevHomeStoreSubmissionPackage
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
