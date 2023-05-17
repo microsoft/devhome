@@ -365,7 +365,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to validate selected Drive letter ({devDrive.DriveLocation[0]}). ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to validate selected Drive letter ({devDrive.DriveLocation.FirstOrDefault()}). ErrorCode: {ex.HResult}, Msg: {ex.Message}");
             returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
         }
 
