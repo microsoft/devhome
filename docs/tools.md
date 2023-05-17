@@ -44,5 +44,17 @@ Returns the name of the tool. This is used for the navigation menu text.
 Contains the interface definition for Dev Home tools.
 
 ## Dashboard Tool
+The Dashboard page hosts and displays Windows Widgets. Widgets are small UI containers that display text and graphics, associated with an app installed on the device. For information on creating widgets, see [Widgets Overview](https://learn.microsoft.com/en-us/windows/apps/design/widgets/) and [Widget providers](https://learn.microsoft.com/en-us/windows/apps/develop/widgets/widget-providers).
+
+Each widget is represented by a [`WidgetViewModel`](../tools/Dashboard/DevHome.Dashboard/ViewModels/WidgetViewModel.cs). The WidgetViewModel displays itself inside a [`WidgetControl`](../tools/Dashboard/DevHome.Dashboard/Views/WidgetControl.xaml), and the WidgetControls are grouped into a [`WidgetBoard`](../tools/Dashboard/DevHome.Dashboard/Views/WidgetBoard.cs).
+
+### Widget UI
+
+The Widget UI consists of two main parts. At the top, there is a context menu and an attribution area. For more information on these components, please read [Built-in widget UI components](https://learn.microsoft.com/en-us/windows/apps/design/widgets/widgets-states-and-ui#built-in-widget-ui-components). The rest of the widget content is an [Adaptive Card](https://learn.microsoft.com/en-us/windows/apps/design/widgets/widgets-create-a-template) provided by the [Widget Provider](https://learn.microsoft.com/en-us/windows/apps/develop/widgets/widget-providers).
+
+Widgets are rendered by Adaptive Cards, and there are a few ways Dev Home customizes the look and feel of the cards. Please note all of these are subject to change while Dev Home is in Preview.
+* There are [HostConfig](https://learn.microsoft.com/en-us/adaptive-cards/sdk/rendering-cards/uwp/host-config) files that define common styles (e.g., font family, font sizes, default spacing) and behaviors (e.g., max number of actions) for all the widgets. There is one for [light mode](../tools/Dashboard/DevHome.Dashboard/Assets/HostConfigLight.json) and one for [dark mode](../tools/Dashboard/DevHome.Dashboard/Assets/HostConfigDark.json).
+* Dev Home supports a custom AdaptiveElement type called [`LabelGroup`](../common/Renderers/LabelGroup.cs). This allows a card author to render a set of labels, each with a specified background color. For an example of how to use this type, please see the [GitHub Issues widget](https://github.com/microsoft/devhomegithubextension/blob/main/src/GithubPlugin/Widgets/Templates/GithubIssuesTemplate.json).
+* When a widget is added or customized, Dev Home will show the widget in a ContentDialog, allowing for more space in which to put configuration UI. To signify that your widget is in this "configuration" mode, Dev Home supports the JSON field `"configuring" = true`. For an example of this, see [GitHubWidget](https://github.com/microsoft/devhomegithubextension/blob/main/src/GithubPlugin/Widgets/GithubWidget.cs).
 
 ## Setup Flow Tool
