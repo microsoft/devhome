@@ -515,7 +515,7 @@ stages:
         sourceFolder: 'StorePublish'
         contents: '*.msixbundle'
         pdpPath: '$(System.DefaultWorkingDirectory)\build\store\canary\PDPs'
-        pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\canary\PDPs\Media'
+        pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\canary\media'
         outSBName: DevHomeStoreSubmissionPackage
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
@@ -537,7 +537,7 @@ stages:
         sourceFolder: 'StorePublish'
         contents: '*.msixbundle'
         pdpPath: '$(System.DefaultWorkingDirectory)\build\store\preview\PDPs'
-        pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\preview\PDPs\Media'
+        pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\preview\media'
         outSBName: DevHomeStoreSubmissionPackage
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
