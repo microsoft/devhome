@@ -55,7 +55,7 @@ This is an open source project and we welcome community participation. To partic
   <ScreenshotCaptions>
     <!-- Valid length: 200 character limit, up to 9 elements per platform -->
     <!-- Valid attributes: any of DesktopImage, MobileImage, XboxImage, SurfaceHubImage, and HoloLensImage -->
-    <Caption DesktopImage="" _locID="App_caption1">
+    <Caption DesktopImage="DevHomeScreenshot.png" _locID="App_caption1">
       <!-- _locComment_text="{MaxLength=200} Screenshot caption 1" -->
     </Caption>
     <Caption DesktopImage="" _locID="App_caption2">
