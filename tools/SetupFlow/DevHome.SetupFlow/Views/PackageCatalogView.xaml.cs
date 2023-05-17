@@ -30,11 +30,6 @@ public sealed partial class PackageCatalogView : UserControl
     public Visibility PagerVisibility => PackageGroups.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
 
     /// <summary>
-    /// Store the set of flip view panels
-    /// </summary>
-    private readonly HashSet<ItemsWrapGrid> _panels = new ();
-
-    /// <summary>
     /// Gets or sets the package catalog to display
     /// </summary>
     public PackageCatalogViewModel Catalog
@@ -59,37 +54,24 @@ public sealed partial class PackageCatalogView : UserControl
         this.InitializeComponent();
     }
 
-    private void OnSizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        UpdateFlipViewSize();
-    }
-
-    private void OnItemsWrapGridLoaded(object sender, RoutedEventArgs e)
-    {
-        var panel = (ItemsWrapGrid)sender;
-        _panels.Add(panel);
-        UpdateFlipViewSize();
-    }
-
-    private void OnItemsWrapGridUnloaded(object sender, RoutedEventArgs e)
-    {
-        var panel = (ItemsWrapGrid)sender;
-        _panels.Remove(panel);
-        UpdateFlipViewSize();
-    }
-
     /// <summary>
-    /// Update the flip view size to match the max content height at all time.
-    /// This method covers the following scenarios:
-    /// - Maintain a consistent (max) height throughout the flip view rotation
-    /// - When the window width changes and the grid content wraps to a new
-    ///   row, update the flip view height accordingly to fit content
+    /// Re-compute the FlipView height.
     /// </summary>
     private void UpdateFlipViewSize()
     {
-        if (_panels.Count > 0)
+        var selectedIndex = PackagesFlipView.SelectedIndex;
+        if (selectedIndex >= 0)
         {
-            PackagesFlipView.Height = _panels.Max(p => p.ActualHeight);
+            var flipViewItem = PackagesFlipView.ContainerFromIndex(selectedIndex) as FlipViewItem;
+            if (flipViewItem != null)
+            {
+                var scrollViewer = flipViewItem.ContentTemplateRoot as ScrollViewer;
+                if (scrollViewer != null)
+                {
+                    // Set the FlipView height to the ScrollViewer content height
+                    PackagesFlipView.Height = scrollViewer.ExtentHeight;
+                }
+            }
         }
     }
 
@@ -117,4 +99,9 @@ public sealed partial class PackageCatalogView : UserControl
 
     public static readonly DependencyProperty CatalogProperty = DependencyProperty.Register(nameof(Catalog), typeof(PackageCatalogViewModel), typeof(PackageCatalogView), new PropertyMetadata(null, (c, _) => ((PackageCatalogView)c).UpdateAll()));
     public static readonly DependencyProperty GroupSizeProperty = DependencyProperty.Register(nameof(GroupSize), typeof(int), typeof(PackageCatalogView), new PropertyMetadata(4, (c, _) => ((PackageCatalogView)c).UpdateAll()));
+
+    private void OnLayoutUpdated(object sender, object e)
+    {
+        UpdateFlipViewSize();
+    }
 }
