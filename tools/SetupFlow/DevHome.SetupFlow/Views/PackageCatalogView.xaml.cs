@@ -59,21 +59,28 @@ public sealed partial class PackageCatalogView : UserControl
     /// </summary>
     private void UpdateFlipViewHeight()
     {
-        // Get index of the current FlipViewItem
-        var selectedIndex = PackagesFlipView.SelectedIndex;
-        if (selectedIndex >= 0)
+        try
         {
-            // Get the current FlipViewItem
-            var flipViewItem = PackagesFlipView.ContainerFromIndex(selectedIndex) as FlipViewItem;
-            if (flipViewItem != null)
+            // Get index of the current FlipViewItem
+            var selectedIndex = PackagesFlipView.SelectedIndex;
+            if (selectedIndex >= 0)
             {
-                var scrollViewer = flipViewItem.ContentTemplateRoot as ScrollViewer;
-                if (scrollViewer != null)
+                // Get the current FlipViewItem
+                var flipViewItem = PackagesFlipView.ContainerFromIndex(selectedIndex) as FlipViewItem;
+                if (flipViewItem != null)
                 {
-                    // Set the FlipView height to the ScrollViewer content height
-                    PackagesFlipView.Height = scrollViewer.ExtentHeight;
+                    var scrollViewer = flipViewItem.ContentTemplateRoot as ScrollViewer;
+                    if (scrollViewer != null)
+                    {
+                        // Set the FlipView height to the ScrollViewer content height
+                        PackagesFlipView.Height = scrollViewer.ExtentHeight;
+                    }
                 }
             }
+        }
+        catch
+        {
+            // Skip update if exception occurred
         }
     }
 
