@@ -172,6 +172,7 @@ stages:
         - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
           displayName: Download and Use Localization Files
           condition: eq(variables['EnableLocalization'], 'true')
+          retryCountOnTaskFailure: 2
           inputs:
             teamId: 71220
             authId: $(TouchdownAppId)
@@ -462,6 +463,7 @@ stages:
     # - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
     #   displayName: Download and Use Localization Files
     #   condition: eq(variables['EnableLocalization'], 'true')
+    #   retryCountOnTaskFailure: 2
     #   inputs:
     #     teamId: 71220
     #     authId: $(TouchdownAppId)
