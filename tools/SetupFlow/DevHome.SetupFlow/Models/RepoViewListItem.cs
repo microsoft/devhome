@@ -14,26 +14,22 @@ namespace DevHome.SetupFlow.Models;
 public partial class RepoViewListItem : ObservableObject
 {
     /// <summary>
-    /// Gets or sets a value indicating whether the repo is a private repo.  If changed to "IsPublic" the
+    /// Gets a value indicating whether the repo is a private repo.  If changed to "IsPublic" the
     /// values of the converters in the views need to change order.
     /// </summary>
-    public bool IsPrivate { get; set; }
+    public bool IsPrivate { get; }
 
     /// <summary>
-    /// Gets or sets the name of the repository
+    /// Gets the name of the repository
     /// </summary>
-    public string RepoName { get; set; }
+    public string RepoName { get; }
 
-    public string OwningAccountName { get; set; }
+    /// <summary>
+    /// Gets the name of the organization that owns this repo.
+    /// </summary>
+    public string OwningAccountName { get; }
 
     public string RepoDisplayName => Path.Join(OwningAccountName, RepoName);
-
-    [ObservableProperty]
-    private bool _isSelected;
-
-    public RepoViewListItem()
-    {
-    }
 
     public RepoViewListItem(IRepository repo)
     {

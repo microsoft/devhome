@@ -76,7 +76,7 @@ public partial class AddRepoViewModel : ObservableObject
     private string _selectedAccount;
 
     /// <summary>
-    /// All repositoires currently shown on the screen.
+    /// All repositories currently shown on the screen.
     /// </summary>
     [ObservableProperty]
     private ObservableCollection<RepoViewListItem> _repositories = new ();
