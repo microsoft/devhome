@@ -17,7 +17,7 @@
                 <UniformGridLayout
                     Orientation="Horizontal"
                     MinItemWidth="190"
-                    MaximumRowsOrColumns="4"
+                    MaximumRowsOrColumns="3"
                     MinRowSpacing="4"
                     MinColumnSpacing="4"
                     MinItemHeight="140"

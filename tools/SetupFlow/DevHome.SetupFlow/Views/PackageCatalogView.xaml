@@ -50,13 +50,13 @@
                     <!-- ScrollViewer added here to help update the FlipView
                     height (in code-behind) to fit its content for various
                     control width -->
-                    <ScrollViewer VerticalAlignment="Top" VerticalScrollBarVisibility="Hidden" VerticalScrollMode="Disabled">
+                    <Grid VerticalAlignment="Top">
                         <ItemsRepeater ItemsSource="{Binding}">
                             <ItemsRepeater.Layout>
                                 <UniformGridLayout
                                     Orientation="Horizontal"
                                     MinItemWidth="190"
-                                    MaximumRowsOrColumns="4"
+                                    MaximumRowsOrColumns="3"
                                     MinRowSpacing="4"
                                     MinColumnSpacing="4"
                                     MinItemHeight="140"
@@ -68,7 +68,7 @@
                                 </DataTemplate>
                             </ItemsRepeater.ItemTemplate>
                         </ItemsRepeater>
-                    </ScrollViewer>
+                    </Grid>
                 </DataTemplate>
             </FlipView.ItemTemplate>
         </FlipView>

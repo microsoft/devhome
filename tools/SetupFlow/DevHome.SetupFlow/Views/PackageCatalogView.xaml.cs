@@ -72,11 +72,16 @@ public sealed partial class PackageCatalogView : UserControl
                 var flipViewItem = PackagesFlipView.ContainerFromIndex(selectedIndex) as FlipViewItem;
                 if (flipViewItem != null)
                 {
-                    var scrollViewer = flipViewItem.ContentTemplateRoot as ScrollViewer;
-                    if (scrollViewer != null)
+                    var grid = flipViewItem.ContentTemplateRoot as Grid;
+                    if (grid != null)
                     {
-                        // Set the FlipView height to the ScrollViewer content height
-                        PackagesFlipView.Height = scrollViewer.ExtentHeight;
+                        // Get grid content child
+                        var itemsRepeater = grid.Children.FirstOrDefault() as ItemsRepeater;
+                        if (itemsRepeater != null)
+                        {
+                            // Set the FlipView height to the items repeater height
+                            PackagesFlipView.Height = itemsRepeater.ActualHeight;
+                        }
                     }
                 }
             }

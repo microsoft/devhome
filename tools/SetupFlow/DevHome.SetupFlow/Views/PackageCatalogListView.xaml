@@ -10,7 +10,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <!-- Number of items to display per panel -->
-            <x:Int32 x:Key="GroupSize">12</x:Int32>
+            <x:Int32 x:Key="ItemsPerPanel">6</x:Int32>
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel>
@@ -22,7 +22,7 @@
                 <DataTemplate x:DataType="viewmodels:PackageCatalogViewModel">
                     <!-- Border configuration is applied in code-behind -->
                     <Border>
-                        <views:PackageCatalogView Catalog="{x:Bind Mode=OneWay}" GroupSize="{StaticResource GroupSize}"/>
+                        <views:PackageCatalogView Catalog="{x:Bind Mode=OneWay}" GroupSize="{StaticResource ItemsPerPanel}"/>
                     </Border>
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
@@ -35,7 +35,7 @@
         <ItemsRepeater ItemsSource="{x:Bind ViewModel.PackageCatalogShimmers, Mode=OneWay}">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate>
-                    <views:ShimmerPackageCatalogView PackageCount="{StaticResource GroupSize}" />
+                    <views:ShimmerPackageCatalogView PackageCount="{StaticResource ItemsPerPanel}" />
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
         </ItemsRepeater>
