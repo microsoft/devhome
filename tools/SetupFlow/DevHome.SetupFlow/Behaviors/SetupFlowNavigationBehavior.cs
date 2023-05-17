@@ -108,6 +108,20 @@ public class SetupFlowNavigationBehavior : Behavior<SetupFlowNavigation>
     public static void SetNextTemplate(UserControl control, object template) => control.SetValue(NextTemplateProperty, template);
 
     /// <summary>
+    /// Getter for the attached property <see cref="NextVisibilityProperty"/>
+    /// </summary>
+    /// <param name="control">Target user control</param>
+    /// <returns>Next visibility</returns>
+    public static Visibility GetNextVisibility(UserControl control) => (Visibility)control.GetValue(NextVisibilityProperty);
+
+    /// <summary>
+    /// Setter for the attached property <see cref="NextVisibilityProperty"/>
+    /// </summary>
+    /// <param name="control">Target user control</param>
+    /// <param name="visibility">Next visibility</param>
+    public static void SetNextVisibility(UserControl control, Visibility visibility) => control.SetValue(NextVisibilityProperty, visibility);
+
+    /// <summary>
     /// Gets or sets the default template for the content control
     /// </summary>
     public object DefaultContentTemplate { get; set; }
@@ -133,6 +147,7 @@ public class SetupFlowNavigationBehavior : Behavior<SetupFlowNavigation>
     public static readonly DependencyProperty PreviousTemplateProperty = DependencyProperty.RegisterAttached("PreviousTemplate", typeof(object), typeof(SetupFlowNavigationBehavior), new PropertyMetadata(null, (_, e) => UpdatePreviousTemplate(e.NewValue)));
     public static readonly DependencyProperty PreviousVisibilityProperty = DependencyProperty.RegisterAttached("PreviousVisibility", typeof(Visibility), typeof(SetupFlowNavigationBehavior), new PropertyMetadata(Visibility.Visible, (_, e) => UpdatePreviousVisibility(e.NewValue)));
     public static readonly DependencyProperty NextTemplateProperty = DependencyProperty.RegisterAttached("NextTemplate", typeof(object), typeof(SetupFlowNavigationBehavior), new PropertyMetadata(null, (_, e) => UpdateNextTemplate(e.NewValue)));
+    public static readonly DependencyProperty NextVisibilityProperty = DependencyProperty.RegisterAttached("NextVisibilityProperty", typeof(Visibility), typeof(SetupFlowNavigationBehavior), new PropertyMetadata(Visibility.Visible, (_, e) => UpdateNextVisibility(e.NewValue)));
 
     protected override void OnAttached()
     {
@@ -236,6 +251,19 @@ public class SetupFlowNavigationBehavior : Behavior<SetupFlowNavigation>
     }
 
     /// <summary>
+    /// Sets the visibility of the associated <see cref="SetupFlowNavigation.NextVisibility"/>
+    /// in the setup flow navigation
+    /// </summary>
+    /// <param name="visibilityObject">Template value</param>
+    private static void UpdateNextVisibility(object visibilityObject)
+    {
+        if (_instance != null && visibilityObject is Visibility visibility)
+        {
+            _instance.AssociatedObject.NextVisibility = visibility;
+        }
+    }
+
+    /// <summary>
     /// Resets all the navigation component templates to their default values
     /// </summary>
     private void ResetToDefault()
@@ -247,5 +275,6 @@ public class SetupFlowNavigationBehavior : Behavior<SetupFlowNavigation>
         UpdatePreviousTemplate(_instance.DefaultPreviousTemplate);
         UpdatePreviousVisibility(Visibility.Visible);
         UpdateNextTemplate(_instance.DefaultNextTemplate);
+        UpdateNextVisibility(Visibility.Visible);
     }
 }
