@@ -344,11 +344,9 @@ public class DevDriveManager : IDevDriveManager
 
         try
         {
-            var driveLetterSet = new HashSet<char>();
             foreach (var curDriveOnSystem in DriveInfo.GetDrives())
             {
-                driveLetterSet.Add(curDriveOnSystem.Name[0]);
-                if (driveLetterSet.Contains(devDrive.DriveLetter))
+                if (curDriveOnSystem.Name[0] == devDrive.DriveLetter)
                 {
                     returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
                 }
