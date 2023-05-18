@@ -23,7 +23,7 @@ parameters:
     - Release
 
 variables:
-  MSIXVersion: '0.103'
+  MSIXVersion: '0.104'
   SDKVersion: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -527,6 +527,9 @@ stages:
         inputMethod: JsonAndZip
         jsonPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.json'
         zipPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.zip'
+        force: true
+        deletePackages: true
+        numberOfPackagesToKeep: 3
 
     - task: MS-RDX-MRO.windows-store-publish-dev.package-task.store-package@2
       displayName: 'Create Release StoreBroker Package'
@@ -549,3 +552,6 @@ stages:
         inputMethod: JsonAndZip
         jsonPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.json'
         zipPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.zip'
+        force: true
+        deletePackages: true
+        numberOfPackagesToKeep: 3
