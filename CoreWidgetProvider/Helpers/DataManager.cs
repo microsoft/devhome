@@ -28,22 +28,34 @@ internal class DataManager : IDisposable
 
     private void GetMemoryData()
     {
-        SystemData.MemStats.GetData();
+        lock (SystemData.MemStats)
+        {
+            SystemData.MemStats.GetData();
+        }
     }
 
     private void GetNetworkData()
     {
-        SystemData.NetStats.GetData();
+        lock (SystemData.NetStats)
+        {
+            SystemData.NetStats.GetData();
+        }
     }
 
     private void GetGPUData()
     {
-        SystemData.GPUStats.GetData();
+        lock (SystemData.GPUStats)
+        {
+            SystemData.GPUStats.GetData();
+        }
     }
 
     private void GetCPUData()
     {
-        SystemData.CpuStats.GetData();
+        lock (SystemData.CpuStats)
+        {
+            SystemData.CpuStats.GetData();
+        }
     }
 
     private void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
@@ -87,22 +99,34 @@ internal class DataManager : IDisposable
 
     internal MemoryStats GetMemoryStats()
     {
-        return SystemData.MemStats;
+        lock (SystemData.MemStats)
+        {
+            return SystemData.MemStats;
+        }
     }
 
     internal NetworkStats GetNetworkStats()
     {
-        return SystemData.NetStats;
+        lock (SystemData.NetStats)
+        {
+            return SystemData.NetStats;
+        }
     }
 
     internal GPUStats GetGPUStats()
     {
-        return SystemData.GPUStats;
+        lock (SystemData.GPUStats)
+        {
+            return SystemData.GPUStats;
+        }
     }
 
     internal CPUStats GetCPUStats()
     {
-        return SystemData.CpuStats;
+        lock (SystemData.CpuStats)
+        {
+            return SystemData.CpuStats;
+        }
     }
 
     public void Start()
