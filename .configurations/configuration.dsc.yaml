@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
 properties:
   assertions:
     - resource: Microsoft.Windows.Developer/OsVersion
