@@ -23,6 +23,11 @@ internal class RepositoryProviders
     /// </summary>
     private readonly Dictionary<string, RepositoryProvider> _providers = new ();
 
+    public string DisplayName(string providerName)
+    {
+        return _providers.GetValueOrDefault(providerName)?.DisplayName ?? string.Empty;
+    }
+
     public RepositoryProviders(IEnumerable<IPluginWrapper> pluginWrappers)
     {
         _providers = pluginWrappers.ToDictionary(pluginWrapper => pluginWrapper.Name, pluginWrapper => new RepositoryProvider(pluginWrapper));
@@ -66,7 +71,7 @@ internal class RepositoryProviders
             if (repository != null)
             {
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Repository parsed to {repository.DisplayName} owned by {repository.OwningAccountName}");
-                return (provider.Key, repository);
+                return (provider.Value.DisplayName, repository);
             }
         }
 
@@ -89,7 +94,7 @@ internal class RepositoryProviders
     /// <returns>A collection of display names.</returns>
     public IEnumerable<string> GetAllProviderNames()
     {
-        return _providers.Values.Select(x => x.DisplayName);
+        return _providers.Keys;
     }
 
     /// <summary>
