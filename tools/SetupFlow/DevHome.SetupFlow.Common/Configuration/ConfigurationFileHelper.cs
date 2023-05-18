@@ -54,10 +54,11 @@ public class ConfigurationFileHelper
     {
         try
         {
-            var modulesPath = Path.Combine(AppContext.BaseDirectory, "ExternalModules");
+            var modulesPath = Path.Combine(AppContext.BaseDirectory, @"runtimes\win\lib\net6.0\Modules");
+            var externalModulesPath = Path.Combine(AppContext.BaseDirectory, "ExternalModules");
             var properties = new ConfigurationProcessorFactoryProperties();
             properties.Policy = ConfigurationProcessorPolicy.Unrestricted;
-            properties.AdditionalModulePaths = new List<string>() { modulesPath };
+            properties.AdditionalModulePaths = new List<string>() { modulesPath, externalModulesPath };
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Additional module paths: {string.Join(", ", properties.AdditionalModulePaths)}");
             var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
 
