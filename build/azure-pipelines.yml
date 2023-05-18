@@ -526,13 +526,6 @@ stages:
         artifactName: StoreBrokerPackage
         targetPath: '$(System.DefaultWorkingDirectory)\SBOutDir'
 
-    - task: PublishPipelineArtifact@0
-      displayName: Publish StoreBroker Artifacts
-      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
-      inputs:
-        artifactName: StoreBrokerLog
-        targetPath: '$(System.DefaultWorkingDirectory)\SBLog.txt'
-
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Staging StoreBroker Package'
       condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
@@ -545,6 +538,13 @@ stages:
         force: true
         deletePackages: true
         numberOfPackagesToKeep: 3
+
+    - task: PublishPipelineArtifact@0
+      displayName: Publish StoreBroker Log
+      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
+      inputs:
+        artifactName: StoreBrokerLog
+        targetPath: '$(System.DefaultWorkingDirectory)\SBLog.txt'
 
     - task: MS-RDX-MRO.windows-store-publish-dev.package-task.store-package@2
       displayName: 'Create Release StoreBroker Package'
