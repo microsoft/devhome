@@ -538,6 +538,8 @@ stages:
         force: true
         deletePackages: true
         numberOfPackagesToKeep: 3
+        jsonZipUpdateMetadata: true
+        updateImages: true
 
     - task: PublishPipelineArtifact@0
       displayName: Publish StoreBroker Log
