@@ -518,6 +518,13 @@ stages:
         pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\canary\media'
         outSBName: DevHomeStoreSubmissionPackage
 
+    - task: PublishPipelineArtifact@0
+      displayName: Publish StoreBroker Artifacts
+      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
+      inputs:
+        artifactName: StoreBrokerPackage
+        targetPath: '$(System.DefaultWorkingDirectory)\SBOutDir'
+
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Staging StoreBroker Package'
       condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
