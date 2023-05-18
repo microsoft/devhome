@@ -23,7 +23,7 @@ parameters:
     - Release
 
 variables:
-  MSIXVersion: '0.104'
+  MSIXVersion: '0.105'
   SDKVersion: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -517,6 +517,7 @@ stages:
         pdpPath: '$(System.DefaultWorkingDirectory)\build\store\canary\PDPs'
         pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\canary\media'
         outSBName: DevHomeStoreSubmissionPackage
+        pdpInclude: 'PDP.xml'
 
     - task: PublishPipelineArtifact@0
       displayName: Publish StoreBroker Artifacts
@@ -549,6 +550,7 @@ stages:
         pdpPath: '$(System.DefaultWorkingDirectory)\build\store\preview\PDPs'
         pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\preview\media'
         outSBName: DevHomeStoreSubmissionPackage
+        pdpInclude: 'PDP.xml'
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Release StoreBroker Package'
