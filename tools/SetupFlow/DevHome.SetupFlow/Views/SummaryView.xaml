@@ -32,10 +32,10 @@
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_NextSteps"
                                 Style="{ThemeResource BodyStrongTextBlockStyle}"
                                 Padding="0,20,0,25" />
-                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_SetUpAnotherProject" Command="{Binding ViewModel.GoToMainPageCommand}"/>
-                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDevHomeSettings" Command="{Binding ViewModel.GoToDevHomeSettingsCommand}"/>
-                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDeveloperSettingsInWindows" Command="{Binding ViewModel.GoToForDevelopersSettingsPageCommand}"/>
-                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_LearnMoreAboutDevHome" Command="{Binding ViewModel.LearnMoreCommand}"/>
+                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_SetUpAnotherProject" Command="{Binding GoToMainPageCommand}"/>
+                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDevHomeSettings" Command="{Binding GoToDevHomeSettingsCommand}"/>
+                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDeveloperSettingsInWindows" Command="{Binding GoToForDevelopersSettingsPageCommand}"/>
+                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_LearnMoreAboutDevHome" Command="{Binding LearnMoreCommand}"/>
                         </StackPanel>
                     </ControlTemplate>
                 </ResourceDictionary>

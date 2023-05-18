@@ -482,7 +482,23 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     private void RefreshDriveLetterToSizeMapping()
     {
-        DriveLetterToSizeMapping = DriveInfo.GetDrives().ToDictionary(drive => drive.Name[0], drive => (ulong)drive.TotalFreeSpace);
+        try
+        {
+            // Calling the TotalFreeSpace property when the drive isn't ready will throw an exception, so we make its total available space set to 0.
+            // This way it cannot be used to create a Dev Drive. The GetDrives method only returns drives that have drive letters. The name property returns the
+            // drive letter in the form of "DriveLetter:\". E.g C:\
+            DriveLetterToSizeMapping = DriveInfo.GetDrives().ToDictionary(drive => drive.Name.FirstOrDefault(), drive => drive.IsReady ? (ulong)drive.TotalFreeSpace : 0);
+        }
+        catch (Exception ex)
+        {
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to refresh the drive letter to size mapping. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+
+            // Clear the mapping since we can't refresh it. This shouldn't happen unless DriveInfo.GetDrives() fails. In that case we won't know which drive
+            // in the list is causing GetDrives()'s to throw. If there are values inside the dictionary at this point, they could be stale. Clearing the list
+            // allows users to at least attempt to use the location they want to create the virtual disk in. Ultimately if the location is really unavailable the virtual disk
+            // won't be created and we will send an error to the UI in the loading page.
+            DriveLetterToSizeMapping.Clear();
+        }
     }
 
     /// <summary>

@@ -42,37 +42,33 @@
         <!-- Packages flip view -->
         <FlipView
             x:Name="PackagesFlipView"
-            SizeChanged="OnSizeChanged"
             Background="Transparent"
+            LayoutUpdated="OnLayoutUpdated"
             ItemsSource="{x:Bind PackageGroups, Mode=OneWay}">
             <FlipView.ItemTemplate>
                 <DataTemplate>
-                    <!-- Package group grid view -->
-                    <GridView
-                        ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                        VerticalAlignment="Top"
-                        ItemsSource="{Binding}"
-                        SelectionMode="None">
-                        <GridView.ItemContainerStyle>
-                            <Style TargetType="GridViewItem">
-                                <Setter Property="Margin" Value="0 0 4 4"/>
-                            </Style>
-                        </GridView.ItemContainerStyle>
-                        <GridView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <ItemsWrapGrid
-                                    Loaded="OnItemsWrapGridLoaded"
-                                    Unloaded="OnItemsWrapGridUnloaded"
+                    <!-- Grid added here to help update the FlipView
+                    height (in code-behind) to fit its content for various
+                    control width -->
+                    <Grid VerticalAlignment="Top">
+                        <ItemsRepeater ItemsSource="{Binding}">
+                            <ItemsRepeater.Layout>
+                                <UniformGridLayout
+                                    Orientation="Horizontal"
+                                    MinItemWidth="190"
                                     MaximumRowsOrColumns="3"
-                                    Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </GridView.ItemsPanel>
-                        <GridView.ItemTemplate>
-                            <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                                <views:PackageView Width="190" Height="138" Package="{x:Bind Mode=OneWay}"/>
-                            </DataTemplate>
-                        </GridView.ItemTemplate>
-                    </GridView>
+                                    MinRowSpacing="4"
+                                    MinColumnSpacing="4"
+                                    MinItemHeight="140"
+                                    ItemsStretch="Fill" />
+                            </ItemsRepeater.Layout>
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="viewmodels:PackageViewModel">
+                                    <views:PackageView Height="140" />
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                    </Grid>
                 </DataTemplate>
             </FlipView.ItemTemplate>
         </FlipView>
