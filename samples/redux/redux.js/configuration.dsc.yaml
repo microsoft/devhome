@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema
+# Reference: https://github.com/reduxjs/redux/blob/master/CONTRIBUTING.md#building-redux
+properties:
+  resources:
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: npm
+      directives:
+        description: Install Node >=v18.10
+        allowPrerelease: true
+      settings:
+        id: OpenJS.NodeJS
+        source: winget
+    - resource: NpmDsc/NpmPackage
+      id: yarn
+      dependsOn:
+        - npm
+      directives:
+        description: Install Yarn
+        allowPrerelease: true
+      settings:
+        Name: 'yarn'
+        Global: true
+    - resource: YarnDsc/YarnInstall
+      dependsOn:
+        - yarn
+      directives:
+        description: Install project dependencies
+        allowPrerelease: true
+  configurationVersion: 0.2.0

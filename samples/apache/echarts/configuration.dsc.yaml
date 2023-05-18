@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema
+# Reference: https://github.com/apache/echarts#build
+properties:
+  resources:
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: npm
+      directives:
+        description: Install Node.js
+        allowPrerelease: true
+      settings:
+        id: OpenJS.NodeJS.LTS
+        source: winget
+    - resource: NpmDsc/NpmInstall
+      dependsOn:
+        - npm
+      directives:
+        module: NpmDsc
+        description: Run 'npm install'
+        allowPrerelease: true
+  configurationVersion: 0.2.0
