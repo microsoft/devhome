@@ -23,7 +23,7 @@ parameters:
     - Release
 
 variables:
-  MSIXVersion: '0.105'
+  MSIXVersion: '0.102'
   SDKVersion: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -37,6 +37,64 @@ resources:
     ref: refs/heads/main
 
 stages:
+- stage: SourceAnalysis
+  # This stage is expected to run in parallel with BuildWindowsAppSDK-Stages.
+  dependsOn: []
+  jobs:
+  - job: SDLSourcesScanning
+    steps:
+    # Required by the Packaged ES SDL Templates.
+    - checkout: self
+
+    # Typically this has been done.
+    - task: NodeTool@0
+      displayName: 'Use Node >=8.6.0'
+      inputs:
+        versionSpec: '>=8.6.0'
+
+    - task: powershell@2
+      displayName: BuildingBranch
+      inputs:
+        targetType: 'inline'
+        script: |
+          Write-Host "$(BuildingBranch)"
+
+    - template: v2/Steps/PackageES/Windows.SDL.Sources.Analysis.OS.Undocked.yml@templates_onebranch
+      parameters:
+        globalsdl:
+          tsa:
+            # Not filing bugs for issues found by the scans just yet.
+            #enabled: true    
+            enabled: false
+          codeql:
+            # We currently don't disable other scans that are enabled by default. Just ensure that 
+            # scans that we are interested in are enabled.
+            psscriptanalyzer:
+              enable: true
+              break: true
+            credscan:
+              enable: true
+              break: true
+            policheck:
+              enable: true
+              break: true
+            antimalwarescan:
+              enable: true
+              break: true
+            armory:
+              enable: true
+              break: true
+            eslint:
+              enable: true
+              break: true
+
+    - task: Flawfinder@2
+      displayName: 'Run Flawfinder'
+      inputs:
+        targetFlawfinderPattern: '$(Build.SourcesDirectory)'
+        minRiskLevel: 2
+        onlyInputs: false
+
 - stage: Build_SDK
   dependsOn: []
   jobs:
@@ -69,63 +127,30 @@ stages:
         SymbolServerType: TeamServices
         SymbolsProduct: DevHomeSDK
 
-- stage: SourceAnalysis
-  # This stage is expected to run in parallel with Build_* stages
+- stage: Build_StubPackages
   dependsOn: []
   jobs:
-  - job: SDLSourcesScanning
+  - job: Build_StubPackages
     steps:
-    # Required by the Packaged ES SDL Templates.
-    - checkout: self
+      - checkout: self
+        path: s
+      - checkout: git://Dart/DevHomeStub
 
-    # Typically this has been done.
-    - task: NodeTool@0
-      displayName: 'Use Node >=8.6.0'
-      inputs:
-        versionSpec: '>=8.6.0'
-
-    - task: powershell@2
-      displayName: BuildingBranch
-      inputs:
-        targetType: 'inline'
-        script: |
-          Write-Host "$(BuildingBranch)"
-
-    - template: v2/Steps/PackageES/Windows.SDL.Sources.Analysis.OS.Undocked.yml@templates_onebranch
-      parameters:
-        globalsdl:
-          tsa:
-            # Not filing bugs for issues found by the scans just yet.
-            #enabled: true
-            enabled: false
-          codeql:
-            # We currently don't disable other scans that are enabled by default. Just ensure that
-            # scans that we are interested in are enabled.
-            psscriptanalyzer:
-              enable: true
-              break: true
-            credscan:
-              enable: true
-              break: true
-            policheck:
-              enable: true
-              break: true
-            antimalwarescan:
-              enable: true
-              break: true
-            armory:
-              enable: true
-              break: true
-            eslint:
-              enable: true
-              break: true
-
-    - task: Flawfinder@2
-      displayName: 'Run Flawfinder'
-      inputs:
-        targetFlawfinderPattern: '$(Build.SourcesDirectory)'
-        minRiskLevel: 2
-        onlyInputs: false
+      - task: NuGetToolInstaller@1
+      
+      - task: NuGetAuthenticate@1
+        inputs:
+          nuGetServiceConnections: 'DevHomeInternal'
+      - task: PowerShell@2
+        displayName: Build Stub Packages
+        inputs:
+          filePath: 'Build.ps1'
+          arguments: -Configuration "Release" -Version $(MSIXVersion) -BuildStep "stubpackages"
+      - task: PublishPipelineArtifact@0
+        displayName: Publish MSIX Bundle Artifacts
+        inputs:
+          artifactName: MsixBundle_Stub
+          targetPath: DevHomeStub\DevHomeStubPackage\AppxPackages
 
 - stage: Build_DevHome
   dependsOn: Build_SDK
@@ -163,7 +188,6 @@ stages:
             authKey: $(TouchdownAppKey)
             resourceFilePath: |
               **\en-US\*.resw
-              **\en-US\PDP.xml
             outputDirectoryRoot: LocOutput
             localizationTarget: true
             appendRelativeDir: true
@@ -172,7 +196,6 @@ stages:
         - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
           displayName: Download and Use Localization Files
           condition: eq(variables['EnableLocalization'], 'true')
-          retryCountOnTaskFailure: 2
           inputs:
             teamId: 71220
             authId: $(TouchdownAppId)
@@ -197,11 +220,11 @@ stages:
         # Saving one of these makes it really easy to inspect the loc output...
         - powershell: 'tar czf LocOutput.tar.gz LocOutput'
           displayName: 'Archive Loc Output for Submission'
-          condition: and(eq(variables['EnableLocalization'], 'true'), eq(variables['UpdateLocalization'], 'true'))
+          condition: eq(variables['EnableLocalization'], 'true')
 
         - task: PublishBuildArtifacts@1
           displayName: 'Publish Artifact: LocOutput'
-          condition: and(eq(variables['EnableLocalization'], 'true'), eq(variables['UpdateLocalization'], 'true'))
+          condition: eq(variables['EnableLocalization'], 'true')
           inputs:
             PathtoPublish: LocOutput.tar.gz
             ArtifactName: LocOutput
@@ -293,7 +316,7 @@ stages:
           condition: and(always(), ne('${{ platform}}', 'arm64'))
           inputs:
             OperationType: 'Stop'
-
+            
         - task: PublishBuildArtifacts@1
           displayName: 'Publish Test Results'
           condition: and(always(), ne('${{ platform}}', 'arm64'))
@@ -309,7 +332,7 @@ stages:
             testResultsFiles: '*.trx'
             searchFolder: '$(testOutputArtifactDir)'
             mergeTestResults: true
-            failTaskOnFailedTests: true
+            failTaskOnFailedTests: true 
             testRunTitle: '$(Agent.JobName)'
             buildPlatform: '${{ platform }}'
             buildConfiguration: '${{ configuration }}'
@@ -323,7 +346,7 @@ stages:
             SymbolsProduct: DevHome
 
 - stage: Build_MsixBundle
-  dependsOn: Build_DevHome
+  dependsOn: [Build_DevHome, Build_StubPackages]
   condition: in(dependencies.Build_DevHome.result, 'Succeeded')
   jobs:
   - job: Build_MsixBundles
@@ -341,7 +364,21 @@ stages:
           condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
           inputs:
             targetType: 'inline'
-            script: New-Item -Path $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub -ItemType Directory ; Copy-Item -Path "stub\*" -Destination $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub\
+            script: New-Item -Path $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub -ItemType Directory
+
+        - task: DownloadPipelineArtifact@2
+          condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
+          inputs:
+            buildType: 'current'
+            artifactName: MsixBundle_Stub
+            targetPath: $(appxPackageDir)\Staging
+
+        - task: PowerShell@2
+          displayName: Unbundle Stub Packages
+          condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
+          inputs:
+            filePath: 'build/scripts/UnbundleStubPackage.ps1'
+            arguments: -InputPath $(appxPackageDir)\Staging -OutputLocation $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub
 
         - task: EsrpCodeSigning@2
           condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
@@ -459,108 +496,22 @@ stages:
         artifactName: MsixBundle_Release
         targetPath: StorePublish
 
-    # Automated localization coming soon
-    # - task: MicrosoftTDBuild.tdbuild-task.tdbuild-task.TouchdownBuildTask@1
-    #   displayName: Download and Use Localization Files
-    #   condition: eq(variables['EnableLocalization'], 'true')
-    #   retryCountOnTaskFailure: 2
-    #   inputs:
-    #     teamId: 71220
-    #     authId: $(TouchdownAppId)
-    #     authKey: $(TouchdownAppKey)
-    #     resourceFilePath: |
-    #       **\en-US\PDP.xml
-    #     localizationTarget: false
-    #     appendRelativeDir: true
-
-    - task: PowerShell@2
-      displayName: Move Loc files one level up
-      condition: eq(variables['EnableLocalization'], 'true')
-      inputs:
-        targetType: inline
-        script: >-
-          $Files = Get-ChildItem . -R -Filter 'Resources.resw' | ? FullName -Like '*en-US\*\Resources.resw'
-
-          $Files | % { Move-Item -Verbose $_.Directory $_.Directory.Parent.Parent -EA:Ignore }
-        pwsh: true
-
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Staging build to store'
-      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'false'))
+      condition: eq(variables['BuildingBranch'], 'staging')
       inputs:
         serviceEndpoint: 'DevHomeCanary StoreBroker'
         appId: 9MX22N5S7HRD
         sourceFolder: 'StorePublish'
         contents: '*.msixbundle'
         force: true
-        deletePackages: true
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Release build to store'
-      condition: and(eq(variables['BuildingBranch'], 'release'), eq(variables['TestLocPublish'], 'false'))
+      condition: eq(variables['BuildingBranch'], 'release')
       inputs:
         serviceEndpoint: 'DevHome StoreBroker'
         appId: 9N8MHTPHNGVV
         sourceFolder: 'StorePublish'
         contents: '*.msixbundle'
         force: true
-        deletePackages: true
-
-    - task: MS-RDX-MRO.windows-store-publish-dev.package-task.store-package@2
-      displayName: 'Create Staging StoreBroker Package'
-      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
-      inputs:
-        serviceEndpoint: 'DevHomeCanary StoreBroker'
-        sbConfigPath: '$(System.DefaultWorkingDirectory)\build\store\canary\SBConfig.json'
-        sourceFolder: 'StorePublish'
-        contents: '*.msixbundle'
-        pdpPath: '$(System.DefaultWorkingDirectory)\build\store\canary\PDPs'
-        pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\canary\media'
-        outSBName: DevHomeStoreSubmissionPackage
-        pdpInclude: 'PDP.xml'
-
-    - task: PublishPipelineArtifact@0
-      displayName: Publish StoreBroker Artifacts
-      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
-      inputs:
-        artifactName: StoreBrokerPackage
-        targetPath: '$(System.DefaultWorkingDirectory)\SBOutDir'
-
-    - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
-      displayName: 'Publish Staging StoreBroker Package'
-      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
-      inputs:
-        serviceEndpoint: 'DevHomeCanary StoreBroker'
-        appId: 9MX22N5S7HRD
-        inputMethod: JsonAndZip
-        jsonPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.json'
-        zipPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.zip'
-        force: true
-        deletePackages: true
-        numberOfPackagesToKeep: 3
-
-    - task: MS-RDX-MRO.windows-store-publish-dev.package-task.store-package@2
-      displayName: 'Create Release StoreBroker Package'
-      condition: and(eq(variables['BuildingBranch'], 'release'), eq(variables['TestLocPublish'], 'true'))
-      inputs:
-        serviceEndpoint: 'DevHome StoreBroker'
-        sbConfigPath: '$(System.DefaultWorkingDirectory)\build\store\preview\SBConfig.json'
-        sourceFolder: 'StorePublish'
-        contents: '*.msixbundle'
-        pdpPath: '$(System.DefaultWorkingDirectory)\build\store\preview\PDPs'
-        pdpMediaPath: '$(System.DefaultWorkingDirectory)\build\store\preview\media'
-        outSBName: DevHomeStoreSubmissionPackage
-        pdpInclude: 'PDP.xml'
-
-    - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
-      displayName: 'Publish Release StoreBroker Package'
-      condition: and(eq(variables['BuildingBranch'], 'release'), eq(variables['TestLocPublish'], 'true'))
-      inputs:
-        serviceEndpoint: 'DevHome StoreBroker'
-        appId: 9N8MHTPHNGVV
-        inputMethod: JsonAndZip
-        jsonPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.json'
-        zipPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.zip'
-        force: true
-        deletePackages: true
-        numberOfPackagesToKeep: 3

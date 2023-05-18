@@ -94,17 +94,15 @@ Try {
     $xIdentity = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
     $xProperties = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Properties");
     $xDisplayName = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}DisplayName");
+
     $xApplications = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Applications");
     $xApplication = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Application");
     $uapVisualElements = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10}VisualElements");
-    $xExtensions = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Extensions");
-    $uapExtension = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10/3}Extension");
-    $uapAppExtension = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10/3}AppExtension");
 
     # Update the appxmanifest
     $appxmanifestPath = (Join-Path $env:Build_RootDirectory "src\Package.appxmanifest")
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
-    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = $env:msix_version
+    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = (($env:msix_version).Substring(0, $env:msix_version.LastIndexOf('.')) + ".1")
     if (-not ([string]::IsNullOrEmpty($newPackageName))) {
       $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = $newPackageName
     } 
@@ -113,15 +111,6 @@ Try {
     }
     if (-not ([string]::IsNullOrEmpty($newAppDisplayNameResource))) {
       $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($uapVisualElements).Attribute("DisplayName").Value = $newAppDisplayNameResource
-      $extensions = $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($xExtensions).Elements($uapExtension)
-      foreach ($extension in $extensions) {
-        if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
-          $appExtension = $extension.Element($uapAppExtension)
-          if ($appExtension.Attribute("Name").Value -eq "com.microsoft.devhome") {
-            $appExtension.Attribute("DisplayName").Value = $newAppDisplayNameResource
-          }
-        }
-      }
     }
     $appxmanifest.Save($appxmanifestPath)
 
@@ -154,15 +143,29 @@ Try {
     $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = "Microsoft.Windows.DevHome.Dev"
     $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = "Dev Home (Dev)"
     $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($uapVisualElements).Attribute("DisplayName").Value = "ms-resource:AppDisplayNameDev"
-    $extensions = $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($xExtensions).Elements($uapExtension)
-    foreach ($extension in $extensions) {
-      if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
-        $appExtension = $extension.Element($uapAppExtension)
-        if ($appExtension.Attribute("Name").Value -eq "com.microsoft.devhome") {
-          $appExtension.Attribute("DisplayName").Value = "ms-resource:AppDisplayNameDev"
-        }
-      }
-    }
+    $appxmanifest.Save($appxmanifestPath)
+  }
+
+  if (($BuildStep -ieq "stubpackages")) {
+    [Reflection.Assembly]::LoadWithPartialName("System.Xml.Linq")
+    $msbuildArgs = @(
+      ("DevHomeStub\DevHomeStub.sln"),
+      ("/p:Configuration=Release"),
+      ("/restore"),
+      ("/p:AppxPackageSigningEnabled=false")
+      )
+
+    $env:msix_version
+
+    # Update the appxmanifest
+    $xIdentity = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
+    $appxmanifestPath = (Join-Path $env:Build_RootDirectory "DevHomeStub\DevHomeStubPackage\Package.appxmanifest")
+    $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
+    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = $env:msix_version
+    $appxmanifest.Save($appxmanifestPath)
+
+    & $msbuildPath  $msbuildArgs
+    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = "0.0.0.0"
     $appxmanifest.Save($appxmanifestPath)
   }
 
