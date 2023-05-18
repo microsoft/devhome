@@ -8,13 +8,14 @@ properties:
         description: Install Node.js
         allowPrerelease: true
       settings:
-        id: OpenJS.NodeJS.LTS
+        id: OpenJS.NodeJS
         source: winget
     - resource: NpmDsc/NpmInstall
       dependsOn:
         - npm
       directives:
-        module: NpmDsc
         description: Run 'npm install'
         allowPrerelease: true
+      settings:
+        PackageDirectory: '${WinGetConfigRoot}\..\' 
   configurationVersion: 0.2.0

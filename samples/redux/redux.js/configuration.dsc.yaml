@@ -20,10 +20,13 @@ properties:
       settings:
         Name: 'yarn'
         Global: true
+        PackageDirectory: '${WinGetConfigRoot}\..\'
     - resource: YarnDsc/YarnInstall
       dependsOn:
         - yarn
       directives:
         description: Install project dependencies
         allowPrerelease: true
+      settings:
+        PackageDirectory: '${WinGetConfigRoot}\..\'
   configurationVersion: 0.2.0

@@ -16,6 +16,7 @@ properties:
         allowPrerelease: true
       settings:
         Ensure: 'Present'
+        PackageDirectory: '${WinGetConfigRoot}\..\'
     - resource: NpmDsc/NpmPackage
       directives:
         description: Install grunt-cli globally
@@ -24,4 +25,5 @@ properties:
         Name: 'grunt-cli'
         Global: true
         Ensure: 'Present'
+        PackageDirectory: '${WinGetConfigRoot}\..\'
   configurationVersion: 0.2.0

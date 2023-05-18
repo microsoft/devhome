@@ -16,4 +16,6 @@ properties:
       directives:
         description: Run 'npm install'
         allowPrerelease: true
+      settings:
+        PackageDirectory: '${WinGetConfigRoot}\..\'
   configurationVersion: 0.2.0

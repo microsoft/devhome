@@ -16,7 +16,7 @@ properties:
       settings:
         id: Microsoft.VisualStudio.2022.Community
         source: winget
-    - resource: Microsoft.VisualStudio.DSC/AddVSComponents
+    - resource: Microsoft.VisualStudio.DSC/VSComponents
       dependsOn:
         - vsPackage
       directives:

@@ -18,4 +18,5 @@ properties:
         allowPrerelease: true
       settings:
         Ensure: 'Present'
+        PackageDirectory: '${WinGetConfigRoot}\..\'
   configurationVersion: 0.2.0

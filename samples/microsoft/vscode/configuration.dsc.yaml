@@ -21,6 +21,7 @@ properties:
       settings:
         Name: 'yarn'
         Global: true
+        PackageDirectory: '${WinGetConfigRoot}\..\'         
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Install Python 3.10
@@ -37,10 +38,13 @@ properties:
       settings:
         Name: 'node-gyp'
         Global: true
+        PackageDirectory: '${WinGetConfigRoot}\..\' 
     - resource: YarnDsc/YarnInstall
       dependsOn:
         - npm
       directives:
         description: Install dependencies
         allowPrerelease: true
+      settings:
+        PackageDirectory: '${WinGetConfigRoot}\..\' 
   configurationVersion: 0.2.0
