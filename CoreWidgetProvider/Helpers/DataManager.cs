@@ -8,17 +8,17 @@ namespace CoreWidgetProvider.Helpers;
 internal class DataManager : IDisposable
 {
     private readonly SystemData systemData;
-    private readonly Action updateAction;
-
+    private readonly DataType dataType;
     private readonly Timer updateTimer;
+    private readonly Action updateAction;
 
     private const int OneSecondInMilliseconds = 1000;
 
-    public DataManager(Action updateWidget)
+    public DataManager(DataType type, Action updateWidget)
     {
         systemData = new SystemData();
-
         updateAction = updateWidget;
+        dataType = type;
 
         updateTimer = new Timer(OneSecondInMilliseconds);
         updateTimer.Elapsed += UpdateTimer_Elapsed;
@@ -28,62 +28,81 @@ internal class DataManager : IDisposable
 
     private void GetMemoryData()
     {
-        systemData.MemStats.GetData();
+        SystemData.MemStats.GetData();
     }
 
     private void GetNetworkData()
     {
-        systemData.NetStats.GetData();
+        SystemData.NetStats.GetData();
     }
 
     private void GetGPUData()
     {
-        systemData.GPUStats.GetData();
+        SystemData.GPUStats.GetData();
     }
 
     private void GetCPUData()
     {
-        systemData.CpuStats.GetData();
+        SystemData.CpuStats.GetData();
     }
 
     private void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        lock (systemData)
+        switch (dataType)
         {
-            // memory
-            GetMemoryData();
+            case DataType.CPU:
+                {
+                    // CPU
+                    GetCPUData();
+                    break;
+                }
 
-            // network
-            GetNetworkData();
+            case DataType.GPU:
+                {
+                    // gpu
+                    GetGPUData();
+                    break;
+                }
 
-            // gpu
-            GetGPUData();
+            case DataType.Memory:
+                {
+                    // memory
+                    GetMemoryData();
+                    break;
+                }
 
-            // CPU
-            GetCPUData();
+            case DataType.Network:
+                {
+                    // network
+                    GetNetworkData();
+                    break;
+                }
         }
 
-        updateAction();
+        if (updateAction != null)
+        {
+            updateAction();
+        }
     }
 
     internal MemoryStats GetMemoryStats()
     {
-        return systemData.MemStats;
+        return SystemData.MemStats;
     }
 
     internal NetworkStats GetNetworkStats()
     {
-        return systemData.NetStats;
+        return SystemData.NetStats;
     }
 
     internal GPUStats GetGPUStats()
     {
-        return systemData.GPUStats;
+        return SystemData.GPUStats;
     }
 
     internal CPUStats GetCPUStats()
     {
-        return systemData.CpuStats;
+        return SystemData.CpuStats;
     }
 
     public void Start()
