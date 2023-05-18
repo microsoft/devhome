@@ -156,7 +156,7 @@ stages:
   dependsOn: Build_SDK
   condition: in(dependencies.Build_SDK.result, 'Succeeded')
   variables:
-    VersionOfSDK: $[stageDependencies.Build_SDK.Build_SDK.outputs['BuildSDKCommand.SDKVersion']]
+    VersionOfSDK: $[stageDependencies.Build_SDK.Build_SDK.outputs['BuildSDKCommand.VersionOfSDK']]
   jobs:
   - ${{ each configuration in parameters.Configurations }}:
     - ${{ each platform in parameters.Platforms }}:
