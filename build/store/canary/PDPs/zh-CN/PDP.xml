@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ProductDescription language="en-us" xmlns="http://schemas.microsoft.com/appx/2012/ProductDescription" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xml:lang="en-us" Release="">
+<ProductDescription language="zh-CN" xmlns="http://schemas.microsoft.com/appx/2012/ProductDescription" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xml:lang="en-us" Release="">
   <AppStoreName _locID="App_AppStoreName">
     <!-- This is optional.  AppStoreName is typically extracted from your package's AppxManifest DisplayName property. -->
     <!-- Uncomment (and localize) this Store name if your application package does not contain a localization for the DisplayName in this language. -->
