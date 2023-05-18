@@ -36,12 +36,12 @@ The tools are a set of functionalities that are integrated within the app's code
 
 These tools can use the APIs in the extension SDK to get data or functionality from the extensions.
 
-Learn more about [writing a tool]().
+Learn more about [writing a tool](./tools.md).
 
 Dev Home currently has the following tools:
 
-- [Dashboard]()
-- [Setup flow]()
+- [Dashboard](./tools.md#dashboard-tool)
+- [Setup flow](./tools.md#setup-flow-tool)
 
 ## Extensions
 
@@ -49,7 +49,7 @@ Extensions are separate packages living as out-of-process components that provid
 
 Extensions can be developed by third-party developers or by the app's core development team. These extensions allow the app to be extended without modifying its core codebase.
 
-Learn more about [writing an extension]().
+Learn more about [writing an extension](./extensions.md).
 
 Currently, we officially support the following extensions:
 

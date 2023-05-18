@@ -6,6 +6,19 @@ Tools utilize data and functionality from out-of-process [extensions](./extensio
 
 ## Writing a Tool
 
+1. Create a new directory with your tool's name under `tools` with three subdirectories `src`, `test`, and `uitest`
+1. Create a new `WinUI 3 Class Library` project in your `src` directory
+1. Create the `Strings\en-us` directories under `src`.  Add `Resources.resw` and include the following code:
+    ```xml
+    <data name="NavigationPane.Content" xml:space="preserve">
+      <value>[Name of your tool that will appear in navigation menu]</value>
+    </data>
+    ```
+1. Add a project reference from `DevHome` to your project
+1. Add a project reference from your project to `DevHome.Common` project under [common](\common)
+1. Create your XAML view and viewmodel.  Your view class must inherit from `ToolPage` and implement requirements.  Specifications for the [Dev Home tools API](interface.md).
+1. Update [NavConfig.json](\src\NavConfig.json) with your tool.  Specifications for the [NavConfig.json schema](navconfig.md).
+
 Each tool must define a custom page view extending from the [`ToolPage`](../common/ToolPage.cs) abstract class, and implement it like in this example:
 
 ```cs
