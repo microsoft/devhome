@@ -320,37 +320,9 @@
     <value>View policy</value>
     <comment>Open source documentation guidance</comment>
   </data>
-  <data name="Feedback_IssueGuidance.Text" xml:space="preserve">
-    <value>Before you report a problem, you may want to review</value>
-    <comment>View the guidance on reporting an issue</comment>
-  </data>
-  <data name="Feedback_Suggestion.Text" xml:space="preserve">
-    <value>Before you make a suggestion, you may want to review</value>
-    <comment>Prior to making a suggestion, look at our guidance</comment>
-  </data>
-  <data name="Feedback_Guidance_LinkText.Text" xml:space="preserve">
-    <value>the guidance we provide.</value>
-    <comment>This is the link to the guidance we have</comment>
-  </data>
-  <data name="Feedback_Guidance_Link.NavigateUri" xml:space="preserve">
-    <value>https://yourissueguidancelinkgoeshere/</value>
-    <comment>httpsyourissueguidancelinkgoeshere is a dummy issue guidance link that goes here. Will be replaced with an aka.ms link later.</comment>
-  </data>
-  <data name="Feedback_DocumentationInfo_Link.NavigateUri" xml:space="preserve">
-    <value>https://YourDocumentationGuidanceLinkGoesHere/</value>
-    <comment>httpsYourDocumentationGuidanceLinkGoesHere is is a dummy documentation link that goes here. Will be replaced with an aka.ms link later.</comment>
-  </data>
-  <data name="Feedback_BuildExtension_ButtonLink.NavigateUri" xml:space="preserve">
-    <value>https://YourBuildExtensionDocGoesHere/</value>
-    <comment>httpsYourBuildExtensionDocGoesHere is a dummy buliding extension documentation link that goes here. Will be replaced with an aka.ms link later.</comment>
-  </data>
   <data name="Feedback_OpenSource_Link.NavigateUri" xml:space="preserve">
-    <value>https://YourOpenSourceLinkGoesHere/</value>
-    <comment>httpsYourOpenSourceLinkGoesHere is a dummy open source guidance link that goes here. Will be replaced with an aka.ms link later.</comment>
-  </data>
-  <data name="Feedback_ReportSecurity_ButtonLink.NavigateUri" xml:space="preserve">
-    <value>https://YourSecurityLinkGoesHere/</value>
-    <comment>httpsYourSecurityLinkGoesHere is a dummy security guidance link that goes here. Will be replaced with an aka.ms link later.</comment>
+    <value>https://go.microsoft.com/fwlink/?linkid=2236981</value>
+    <comment>This is the microsoft code of conduct link.</comment>
   </data>
   <data name="WhatsNewPage_DevIdCard.Description" xml:space="preserve">
     <value>Sign in to your developer account to clone repositories and get notifications for them.</value>

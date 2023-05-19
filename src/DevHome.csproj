@@ -4,8 +4,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
-        <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+        <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
+        <TargetPlatformMinVersion>10.0.22000.0</TargetPlatformMinVersion>
+        <SupportedOSPlatformVersion>10.0.22000.0</SupportedOSPlatformVersion>
         <RootNamespace>DevHome</RootNamespace>
         <ApplicationIcon>Assets/DevHome.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
