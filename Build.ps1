@@ -102,7 +102,7 @@ Try {
     # Update the appxmanifest
     $appxmanifestPath = (Join-Path $env:Build_RootDirectory "src\Package.appxmanifest")
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
-    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = (($env:msix_version).Substring(0, $env:msix_version.LastIndexOf('.')) + ".1")
+    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = $env:msix_version
     if (-not ([string]::IsNullOrEmpty($newPackageName))) {
       $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = $newPackageName
     } 
@@ -159,7 +159,7 @@ Try {
     $xIdentity = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
     $appxmanifestPath = (Join-Path $env:Build_RootDirectory "DevHomeStub\DevHomeStubPackage\Package.appxmanifest")
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
-    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = $env:msix_version
+    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = (($env:msix_version).Substring(0, $env:msix_version.LastIndexOf('.')) + ".0")
     $appxmanifest.Save($appxmanifestPath)
 
     & $msbuildPath  $msbuildArgs
