@@ -6,6 +6,7 @@
     <Platforms>x86;x64;arm64</Platforms>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <UseWinUI>true</UseWinUI>
+    <CsWinRTIncludes>Microsoft.Windows.Widgets.Hosts</CsWinRTIncludes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +21,6 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Windows.Widgets" Version="0.3.3" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
   </ItemGroup>
 
@@ -29,6 +29,13 @@
     <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
     <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Internal.winmd" Link="Microsoft.Windows.Widgets.Internal.winmd" CopyToOutputDirectory="PreserveNewest" />
     <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Hosts.winmd" Link="Microsoft.Windows.Widgets.Hosts.winmd" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Windows.Widgets.Hosts">
+      <HintPath>BuildAssets\Microsoft.Windows.Widgets.Hosts.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

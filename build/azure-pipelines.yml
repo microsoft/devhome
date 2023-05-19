@@ -23,7 +23,7 @@ parameters:
     - Release
 
 variables:
-  MSIXVersion: '0.105'
+  MSIXVersion: '0.106'
   SDKVersion: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -473,42 +473,20 @@ stages:
     #     localizationTarget: false
     #     appendRelativeDir: true
 
-    - task: PowerShell@2
-      displayName: Move Loc files one level up
-      condition: eq(variables['EnableLocalization'], 'true')
-      inputs:
-        targetType: inline
-        script: >-
-          $Files = Get-ChildItem . -R -Filter 'Resources.resw' | ? FullName -Like '*en-US\*\Resources.resw'
+    # - task: PowerShell@2
+    #   displayName: Move Loc files one level up
+    #   condition: eq(variables['EnableLocalization'], 'true')
+    #   inputs:
+    #     targetType: inline
+    #     script: >-
+    #       $Files = Get-ChildItem . -R -Filter 'Resources.resw' | ? FullName -Like '*en-US\*\Resources.resw'
 
-          $Files | % { Move-Item -Verbose $_.Directory $_.Directory.Parent.Parent -EA:Ignore }
-        pwsh: true
-
-    - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
-      displayName: 'Publish Staging build to store'
-      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'false'))
-      inputs:
-        serviceEndpoint: 'DevHomeCanary StoreBroker'
-        appId: 9MX22N5S7HRD
-        sourceFolder: 'StorePublish'
-        contents: '*.msixbundle'
-        force: true
-        deletePackages: true
-
-    - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
-      displayName: 'Publish Release build to store'
-      condition: and(eq(variables['BuildingBranch'], 'release'), eq(variables['TestLocPublish'], 'false'))
-      inputs:
-        serviceEndpoint: 'DevHome StoreBroker'
-        appId: 9N8MHTPHNGVV
-        sourceFolder: 'StorePublish'
-        contents: '*.msixbundle'
-        force: true
-        deletePackages: true
+    #       $Files | % { Move-Item -Verbose $_.Directory $_.Directory.Parent.Parent -EA:Ignore }
+    #     pwsh: true
 
     - task: MS-RDX-MRO.windows-store-publish-dev.package-task.store-package@2
       displayName: 'Create Staging StoreBroker Package'
-      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
+      condition: eq(variables['BuildingBranch'], 'staging')
       inputs:
         serviceEndpoint: 'DevHomeCanary StoreBroker'
         sbConfigPath: '$(System.DefaultWorkingDirectory)\build\store\canary\SBConfig.json'
@@ -519,16 +497,9 @@ stages:
         outSBName: DevHomeStoreSubmissionPackage
         pdpInclude: 'PDP.xml'
 
-    - task: PublishPipelineArtifact@0
-      displayName: Publish StoreBroker Artifacts
-      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
-      inputs:
-        artifactName: StoreBrokerPackage
-        targetPath: '$(System.DefaultWorkingDirectory)\SBOutDir'
-
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Staging StoreBroker Package'
-      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'true'))
+      condition: eq(variables['BuildingBranch'], 'staging')
       inputs:
         serviceEndpoint: 'DevHomeCanary StoreBroker'
         appId: 9MX22N5S7HRD
@@ -538,10 +509,12 @@ stages:
         force: true
         deletePackages: true
         numberOfPackagesToKeep: 3
+        jsonZipUpdateMetadata: true
+        updateImages: true
 
     - task: MS-RDX-MRO.windows-store-publish-dev.package-task.store-package@2
       displayName: 'Create Release StoreBroker Package'
-      condition: and(eq(variables['BuildingBranch'], 'release'), eq(variables['TestLocPublish'], 'true'))
+      condition: eq(variables['BuildingBranch'], 'release')
       inputs:
         serviceEndpoint: 'DevHome StoreBroker'
         sbConfigPath: '$(System.DefaultWorkingDirectory)\build\store\preview\SBConfig.json'
@@ -554,7 +527,7 @@ stages:
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Release StoreBroker Package'
-      condition: and(eq(variables['BuildingBranch'], 'release'), eq(variables['TestLocPublish'], 'true'))
+      condition: eq(variables['BuildingBranch'], 'release')
       inputs:
         serviceEndpoint: 'DevHome StoreBroker'
         appId: 9N8MHTPHNGVV
@@ -564,3 +537,13 @@ stages:
         force: true
         deletePackages: true
         numberOfPackagesToKeep: 3
+        jsonZipUpdateMetadata: true
+        updateImages: true
+
+    - task: PublishPipelineArtifact@0
+      displayName: Publish StoreBroker Artifacts
+      condition: or(eq(variables['BuildingBranch'], 'staging'), eq(variables['BuildingBranch'], 'release'))
+      inputs:
+        artifactName: StoreBrokerPackage
+        targetPath: '$(System.DefaultWorkingDirectory)\SBOutDir'
+
