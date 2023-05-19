@@ -50,7 +50,7 @@ Please take a few minutes to review the overview below before diving into the co
 
 ### Dashboard
 
-The Dev Home dashboard is built as a Windows widget renderer. These widgets are built using the Windows widget platform, which relies on Adaptive Cards.
+The Dev Home dashboard displays Windows widgets. These widgets are built using the Windows widget platform, which relies on Adaptive Cards.
 
 ### Machine configuration
 
@@ -58,7 +58,7 @@ The machine configuration tool utilizes the Dev Home GitHub Extension, but isn't
 
 #### Popular apps
 
-Within the machine configuration tool is a popular apps list that appears when choosing applications to install. This is currently a hard-coded list of applications that have been popular with developers on Windows. Popularity was determined by high levels of installation and usage. As this is a moment in time, we are not accepting submissions for this list. We're looking to improve the experience with [Suggested Apps](https://github.com/microsoft/devhome/issues/375) so the list can be optimized for developers.
+The machine configuration tool provides a list of popular apps when selecting applications to install. This is currently a hard-coded list of applications that have been popular with developers on Windows. Popularity was determined by high levels of installation and usage. As this is a moment in time, we are not accepting submissions for this list. We're looking to improve the experience with [Suggested Apps](https://github.com/microsoft/devhome/issues/375) so the list can be optimized for developers.
 
 ---
 
@@ -72,13 +72,13 @@ Documentation for Dev Home can be found at https://aka.ms/devhomedocs.
 
 We are excited to work alongside you, our amazing community, to build and enhance Dev Home!
 
-***BEFORE you start work on a feature/fix***, please read & follow our [Contributor's Guide](https://github.com/microsoft/devhome/blob/main/CONTRIBUTING.md) to help avoid any wasted or duplicate effort.
+***BEFORE you start work on a feature/fix,*** please read & follow our [Contributor's Guide](CONTRIBUTING.md) to help avoid any wasted or duplicate effort.
 
 ## Communicating with the team
 
 The easiest way to communicate with the team is via GitHub issues.
 
-Please file new issues, feature requests and suggestions, but **DO search for similar open/closed preexisting issues before creating a new issue.**
+Please file new issues, feature requests, and suggestions but **DO search for similar open/closed preexisting issues before creating a new issue.**
 
 If you would like to ask a question that you feel doesn't warrant an issue (yet), please reach out to us via Twitter:
 
@@ -93,14 +93,14 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
 
 ## Building the code
 
-* Clone the repository
-* Configure your system, please use the [configuration file](.configurations/configuration.dsc.yaml). This can be applied by either:
-   1. Using Dev home
-   2. WinGet configuration. If you have the experimental feature enabled, run `winget configure .configurations/configuration.dsc.yaml` from the project root so relative paths resolve correctly
+1. Clone the repository
+2. Configure your system, please use the [configuration file](.configurations/configuration.dsc.yaml). This can be applied by either:
+   * Dev Home's machine configuration tool
+   * WinGet configuration. If you have the experimental feature enabled, run `winget configure .configurations/configuration.dsc.yaml` from the project root so relative paths resolve correctly
 
 ## Running & debugging
 
-In VS, you should be able to build and debug Dev Home by hitting <kbd>F5</kbd>. Make sure to select either the "x64" or the "x86" platform and you have DevHome as the selected startup project.
+In Visual Studio, you should be able to build and debug Dev Home by hitting <kbd>F5</kbd>. Make sure to select either the "x64" or the "x86" platform and set DevHome as the selected startup project.
 
 ---
 
