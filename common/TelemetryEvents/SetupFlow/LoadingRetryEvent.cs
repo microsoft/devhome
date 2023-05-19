@@ -23,6 +23,6 @@ public class LoadingRetryEvent : EventBase
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // No sensitive data held
+        // No sensitive strings to replace.
     }
 }

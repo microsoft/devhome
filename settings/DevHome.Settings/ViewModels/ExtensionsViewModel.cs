@@ -90,5 +90,6 @@ public partial class ExtensionsViewModel : ObservableRecipient
     public void Navigate(string path)
     {
         // TODO: Navigate to Plugin's settings Adaptive Card
+        // https://github.com/microsoft/devhome/issues/608
     }
 }

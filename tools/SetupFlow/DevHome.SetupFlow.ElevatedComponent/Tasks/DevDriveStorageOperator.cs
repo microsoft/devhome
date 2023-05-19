@@ -41,8 +41,8 @@ public sealed class DevDriveStorageOperator
     /// The IOCTL_DISK_ARE_VOLUMES_READY when used with ioDeviceControl, is used so that we
     /// wait until all volumes have completed any work assigned to them before using them.
     /// e.g creating the partition, before trying to use it again.
-    /// see https://learn.microsoft.com/en-us/windows/win32/fileio/ioctl-disk-are-volumes-ready
-    /// https://learn.microsoft.com/en-us/windows/win32/fileio/disk-management-control-codes
+    /// see https://learn.microsoft.com/windows/win32/fileio/ioctl-disk-are-volumes-ready
+    /// https://learn.microsoft.com/windows/win32/fileio/disk-management-control-codes
     /// </summary>
     private readonly struct IOCTL_DISK_ARE_VOLUMES_READY
     {
@@ -55,7 +55,7 @@ public sealed class DevDriveStorageOperator
 
     // Signals to the system to reattach the virtual disk at boot time. This flag will be present in the public
     // virtdisk.h file in the Windows SDK on systems that have it. For now since CsWin32 will not find this, we have to manually add it.
-    // This will be documented here: https://learn.microsoft.com/en-us/windows/win32/api/virtdisk/ne-virtdisk-attach_virtual_disk_flag
+    // This will be documented here: https://learn.microsoft.com/windows/win32/api/virtdisk/ne-virtdisk-attach_virtual_disk_flag
     // This is only temporary, and will be removed once we can use it with CSWin32 out of the box.
     private const uint AttachVirtualDiskFlagAtBoot = 0x00000400;
 

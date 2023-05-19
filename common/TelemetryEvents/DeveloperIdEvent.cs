@@ -38,12 +38,13 @@ public class DeveloperIdEvent : EventBase
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // The only sensitive strings are the dev IDs, but we already hashed them
+        // The only sensitive strings is the developerIDd.  GetHashedDeveloperId is used to hash the developerId.
     }
 
     private static string GetHashedDeveloperId(string providerName, IDeveloperId devId)
     {
         // TODO: Instead of LoginId, hash a globally unique id of DeveloperId (like url)
+        // https://github.com/microsoft/devhome/issues/611
         using var hasher = SHA256.Create();
         var loginIdBytes = Encoding.ASCII.GetBytes(devId.LoginId());
         var hashedLoginId = hasher.ComputeHash(loginIdBytes);

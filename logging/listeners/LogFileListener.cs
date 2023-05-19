@@ -20,7 +20,7 @@ public class LogFileListener : ListenerBase, IDisposable
         }
         catch (IOException)
         {
-            // Do nothing, we don't want to crash the program because
+            // Do nothing, program should not crash because
             // the log file couldn't be written, carry on without it.
         }
     }

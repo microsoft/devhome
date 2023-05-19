@@ -77,7 +77,7 @@ public class DevDriveFormatter
 
             // If we got here that means the returnValue was not successful. We give this a specific error but this will need need
             // to be changed. WMI can return different status and error codes based on the function. The actual returnValue will need
-            // to be converted. https://learn.microsoft.com/en-us/windows/win32/wmisdk/wmi-return-codes
+            // to be converted. https://learn.microsoft.com/windows/win32/wmisdk/wmi-return-codes
             var defaultError = (int)PInvoke.HRESULT_FROM_WIN32(WIN32_ERROR.ERROR_FUNCTION_FAILED);
             Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Attempt to format drive as a Dev Drive failed default error: 0x{defaultError:X}");
             return defaultError;

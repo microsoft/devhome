@@ -143,7 +143,7 @@ public static class DevDriveUtil
         // Deal with decimal portion by getting the floor of the value in KB + half. This is to allow us to round up.
         // should the decimal portion be greater than 0.5. Also helps keep the value a multiple of 512 when we multiply
         // by either 1 MB or 1 GB further down. This is crucial for the Version2.MaximumSize parameter in CREATE_VIRTUAL_DISK_PARAMETERS that we use to
-        // create the virtual disk. https://learn.microsoft.com/en-us/windows/win32/api/virtdisk/ns-virtdisk-create_virtual_disk_parameters
+        // create the virtual disk. https://learn.microsoft.com/windows/win32/api/virtdisk/ns-virtdisk-create_virtual_disk_parameters
         var floorOfValueInKB = (ulong)Math.Floor((value * OneKbInBytes) + 0.5);
         if (unitIsTb)
         {
