@@ -12,17 +12,22 @@
     <StackPanel Spacing="18">
         <labs:Shimmer HorizontalAlignment="Left" Width="10" />
         <labs:Shimmer HorizontalAlignment="Left" Width="100" />
-        <GridView SelectionMode="None" ItemsSource="{x:Bind ShimmerPackages}">
-            <GridView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </GridView.ItemsPanel>
-            <GridView.ItemTemplate>
+        <ItemsRepeater ItemsSource="{x:Bind ShimmerPackages}">
+            <ItemsRepeater.Layout>
+                <UniformGridLayout
+                    Orientation="Horizontal"
+                    MinItemWidth="190"
+                    MaximumRowsOrColumns="3"
+                    MinRowSpacing="4"
+                    MinColumnSpacing="4"
+                    MinItemHeight="140"
+                    ItemsStretch="Fill" />
+            </ItemsRepeater.Layout>
+            <ItemsRepeater.ItemTemplate>
                 <DataTemplate>
-                    <labs:Shimmer Width="190" Height="138" />
+                    <labs:Shimmer Height="140" />
                 </DataTemplate>
-            </GridView.ItemTemplate>
-        </GridView>
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
     </StackPanel>
 </UserControl>

@@ -13,6 +13,7 @@ using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
+using Microsoft.UI.Xaml.Controls;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.Services;
@@ -107,6 +108,13 @@ public partial class SetupFlowOrchestrator
     public bool HasPreviousPage => _currentPageIndex > 0;
 
     /// <summary>
+    /// Gets or sets a value indicating whether we should show the done button. When false, the cancel
+    /// hyperlink button will be shown in the UI.
+    /// </summary>
+    [ObservableProperty]
+    private bool _shouldShowDoneButton;
+
+    /// <summary>
     /// Notify all the navigation buttons that the CanExecute property has changed.
     /// </summary>
     /// <remarks>
@@ -185,6 +193,10 @@ public partial class SetupFlowOrchestrator
         _currentPageIndex = index;
         CurrentPageViewModel = FlowPages.Any() ? FlowPages[_currentPageIndex] : null;
         Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Moving to {CurrentPageViewModel?.GetType().Name}");
+
+        // Last page in the setup flow should always be the summary page. The summary page is the only page where we show
+        // the user the "Done" button.
+        ShouldShowDoneButton = _currentPageIndex == FlowPages.Count - 1;
 
         // Do post-navigation tasks only when moving forwards, not when going back to a previous page.
         if (movingForward)

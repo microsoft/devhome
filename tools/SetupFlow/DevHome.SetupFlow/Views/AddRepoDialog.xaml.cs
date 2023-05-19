@@ -212,8 +212,15 @@ internal partial class AddRepoDialog
         }
     }
 
+    /// <summary>
+    /// If any items in reposToSelect exist in the UI, select them.
+    /// An side-effect of SelectRange is SelectionChanged is fired for each item SelectRange is called on.
+    /// IsCallingSelectRange is used to prevent modifying EverythingToClone when repos are being re-selected after filtering.
+    /// </summary>
+    /// <param name="reposToSelect">The repos to select in the UI.</param>
     private void SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
     {
+        AddRepoViewModel.IsCallingSelectRange = true;
         var onlyRepoNames = AddRepoViewModel.Repositories.Select(x => x.RepoName).ToList();
         foreach (var repoToSelect in reposToSelect)
         {
@@ -226,6 +233,19 @@ internal partial class AddRepoDialog
                 RepositoriesListView.SelectRange(new ItemIndexRange(index, 1));
             }
         }
+
+        AddRepoViewModel.IsCallingSelectRange = false;
+    }
+
+    /// <summary>
+    /// If any items in reposToSelect exist in the UI, select them.
+    /// An side-effect of SelectRange is SelectionChanged is fired for each item SelectRange is called on.
+    /// IsCallingSelectRange is used to prevent modifying EverythingToClone when repos are being re-selected after filtering.
+    /// </summary>
+    /// <param name="reposToSelect">The repos to select in the UI.</param>
+    private void SelectRepositories(IEnumerable<CloningInformation> reposToSelect)
+    {
+        SelectRepositories(reposToSelect.Select(x => new RepoViewListItem(x.RepositoryToClone)));
     }
 
     /// <summary>
@@ -233,11 +253,6 @@ internal partial class AddRepoDialog
     /// </summary>
     private void RepositoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (!string.IsNullOrEmpty(FilterTextBox.Text))
-        {
-            return;
-        }
-
         var loginId = (string)AccountsComboBox.SelectedValue;
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
 
@@ -372,6 +387,22 @@ internal partial class AddRepoDialog
         else
         {
             ChangeToUrlPage();
+        }
+    }
+
+    /// <summary>
+    /// Putting the event in the view so SelectRange can be called.
+    /// SelectRange needs a reference to the ListView.
+    /// </summary>
+    /// <param name="sender">Who fired the event</param>
+    /// <param name="e">Any args</param>
+    private void FilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        // Just in case something other than a text box calls this.
+        if (sender is TextBox)
+        {
+            AddRepoViewModel.FilterRepositories(FilterTextBox.Text);
+            SelectRepositories(AddRepoViewModel.EverythingToClone);
         }
     }
 }

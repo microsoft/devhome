@@ -76,7 +76,7 @@ public partial class AddRepoViewModel : ObservableObject
     private string _selectedAccount;
 
     /// <summary>
-    /// All the repositories for a specific account and the symbol to show
+    /// All repositories currently shown on the screen.
     /// </summary>
     [ObservableProperty]
     private ObservableCollection<RepoViewListItem> _repositories = new ();
@@ -134,7 +134,32 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private Visibility _shouldShowUrlError;
 
-    [RelayCommand]
+    /// <summary>
+    /// Indicates if the ListView is currently filtering items.  An unfortunant result of manually filtering a list view
+    /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"
+    /// To prevent our EverythingToClone from changing this flag is used.
+    /// If true any removals caused by filtering are ignored.
+    /// Question.  If the items aren't "re-selected" how do they become selected?  The list view has SelectRange
+    /// that can be used to re-select items.  This is done in the view.
+    /// </summary>
+    private bool _isFiltering;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the SelectionChange event fired because SelectRange was called.
+    /// After filtering SelectRange is called to re-select all previously selected items.  This causes SelectionChanged
+    /// to be fired for each item.  Because EverythingToClone didn't change during filtering it contains every item to select.
+    /// This flag is to prevent adding duplicate items are being re-selected.
+    /// </summary>
+    public bool IsCallingSelectRange { get; set; }
+
+    /// <summary>
+    /// Filters all repos down to any that start with text.
+    /// A side-effect of filtering is that SelectionChanged fires for every selected repo but only on removal.
+    /// SelectionChanged isn't fired for re-adding.  To prevent the RepoTool from forgetting the repos that were selected
+    /// the flag _isFiltering is used to prevent modifications to EverythingToClone.
+    /// Once filtering is done SelectRange is called on each item in EverythingToClone to re-select them.
+    /// </summary>
+    /// <param name="text">The text to use with .StartsWith</param>
     public void FilterRepositories(string text)
     {
         IEnumerable<IRepository> filteredRepositories;
@@ -148,9 +173,20 @@ public partial class AddRepoViewModel : ObservableObject
                 .Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase));
         }
 
+        _isFiltering = true;
         Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(filteredRepositories));
+        _isFiltering = false;
     }
 
+    /// <summary>
+    /// Order repos in a particular order.  The order is
+    /// 1. User Private repos
+    /// 2. Org repos
+    /// 3. User Public repos.
+    /// Each section is ordered by the most recently updated.
+    /// </summary>
+    /// <param name="repos">The list of repos to order.</param>
+    /// <returns>An enumerable collection of items ready to be put into the ListView</returns>
     private IEnumerable<RepoViewListItem> OrderRepos(IEnumerable<IRepository> repos)
     {
         var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase))
@@ -206,6 +242,7 @@ public partial class AddRepoViewModel : ObservableObject
         EverythingToClone = new ();
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
+        EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
     }
 
     /// <summary>
@@ -359,9 +396,17 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="repositoriesToRemove">Repositories to remove.</param>
     /// <remarks>
     /// User has to go through the account screen to get here.  The login id to use is known.
+    /// Repos will not be saved when filtering is taking place, or SelectRange is being called.
+    /// Both filtering and SelectRange kicks off this event and EverythingToClone should not be altered at this time.
     /// </remarks>
     public void AddOrRemoveRepository(string providerName, string accountName, IList<object> repositoriesToAdd, IList<object> repositoriesToRemove)
     {
+        // return right away if this event is fired because of filtering or SelectRange is called.
+        if (_isFiltering || IsCallingSelectRange)
+        {
+            return;
+        }
+
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding and removing repositories");
         var developerId = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId() == accountName);
         foreach (RepoViewListItem repositoryToRemove in repositoriesToRemove)
@@ -375,7 +420,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
 
             var cloningInformation = new CloningInformation(repoToRemove);
-            cloningInformation.ProviderName = providerName;
+            cloningInformation.ProviderName = _providers.DisplayName(providerName);
             cloningInformation.OwningAccount = developerId;
 
             EverythingToClone.Remove(cloningInformation);
@@ -391,7 +436,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
 
             var cloningInformation = new CloningInformation(repoToAdd);
-            cloningInformation.ProviderName = providerName;
+            cloningInformation.ProviderName = _providers.DisplayName(providerName);
             cloningInformation.OwningAccount = developerId;
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");

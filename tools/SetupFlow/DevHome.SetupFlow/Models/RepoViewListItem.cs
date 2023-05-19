@@ -24,6 +24,9 @@ public partial class RepoViewListItem : ObservableObject
     /// </summary>
     public string RepoName { get; }
 
+    /// <summary>
+    /// Gets the name of the organization that owns this repo.
+    /// </summary>
     public string OwningAccountName { get; }
 
     public string RepoDisplayName => Path.Join(OwningAccountName, RepoName);

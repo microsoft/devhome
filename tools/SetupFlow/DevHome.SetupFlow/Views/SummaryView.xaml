@@ -10,13 +10,16 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:models="using:DevHome.SetupFlow.Models"
+    xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
+    setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
+    setupFlowBehaviors:SetupFlowNavigationBehavior.NextVisibility="Collapsed"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml"/>
                 <ResourceDictionary>
-                    <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
+                    <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
                     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
                     <converters:BoolToVisibilityConverter x:Key="BoolToInverseVisibilityConverter"  TrueValue="Collapsed" FalseValue="Visible" />
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
@@ -29,172 +32,214 @@
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_NextSteps"
                                 Style="{ThemeResource BodyStrongTextBlockStyle}"
                                 Padding="0,20,0,25" />
-                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_SetUpAnotherProject" Command="{Binding ViewModel.GoToMainPageCommand}"/>
-                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDevHomeSettings" Command="{Binding ViewModel.GoToDevHomeSettingsCommand}"/>
-                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDeveloperSettingsInWindows" Command="{Binding ViewModel.GoToForDevelopersSettingsPageCommand}"/>
-                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_LearnMoreAboutDevHome" Command="{Binding ViewModel.LearnMoreCommand}"/>
+                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_SetUpAnotherProject" Command="{Binding GoToMainPageCommand}"/>
+                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDevHomeSettings" Command="{Binding GoToDevHomeSettingsCommand}"/>
+                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDeveloperSettingsInWindows" Command="{Binding GoToForDevelopersSettingsPageCommand}"/>
+                            <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_LearnMoreAboutDevHome" Command="{Binding LearnMoreCommand}"/>
                         </StackPanel>
                     </ControlTemplate>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
+    <ScrollViewer 
+        VerticalScrollMode="Enabled" 
+        VerticalScrollBarVisibility="Auto"
+        Padding="0,0,10,0">
+        <Grid RowSpacing="5" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-    <Grid RowSpacing="5" >
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <!-- Display if the user has tasks need the machine to restart.-->
-        <Grid Visibility="{x:Bind ViewModel.ShowRestartNeeded}"  Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition MinWidth="100" />
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="5">
-                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF167;" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" />
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequired_First" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequired_Second" VerticalAlignment="Center"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5">
-                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequiredButton" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
-                <Button Command="{x:Bind ViewModel.RemoveRestartGridCommand}" Style="{ThemeResource AlternateCloseButtonStyle}">
-                    <Button.Content>
-                        <SymbolIcon Symbol="Cancel"/>
-                    </Button.Content>
-                </Button>
-            </StackPanel>
-        </Grid>
-
-        <Grid Grid.Row="1" Padding="0,20,0,40">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="auto" />
-            </Grid.ColumnDefinitions>
-            <!-- Intoduction to the summary page -->
-            <TextBlock
-                Style="{ThemeResource SubtitleTextBlockStyle}"
-                Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource BoolToInverseVisibilityConverter}}"
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Header"/>
-            <TextBlock
-                Style="{ThemeResource SubtitleTextBlockStyle}"
-                Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_HeaderWithErrors"/>
-            <Button x:Name="ReturnToMainPageButton" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_CloseButton_Description" Grid.Column="1" HorizontalAlignment="Right" Command="{x:Bind ViewModel.GoToMainPageCommand}" Style="{ThemeResource AlternateCloseButtonStyle}" VerticalAlignment="Center">
-                <Button.Content>
-                    <SymbolIcon Symbol="Cancel"/>
-                </Button.Content>
-            </Button>
-        </Grid>
-
-        <Grid Grid.Row="2" ColumnSpacing="25" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.77*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <!-- Configuration unit results -->
-            <Grid RowSpacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" >
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <!-- Section header -->
-                <Grid Padding="0,20,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Summary"
-                        Style="{ThemeResource BodyStrongTextBlockStyle}" />
-                    <TextBlock
-                        Grid.Column="1"
-                        Text="{x:Bind ViewModel.ConfigurationUnitStats}"
-                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                        Style="{ThemeResource CaptionTextBlockStyle}" />
-                </Grid>
-                <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
-                    <ItemsRepeater ItemsSource="{x:Bind ViewModel.ConfigurationUnitResults, Mode=OneWay}">
-                        <ItemsRepeater.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="FontFamily" Value="{StaticResource CascadiaMonoFontFamily}"/>
-                                <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}"/>
-                                <Setter Property="LineHeight" Value="20"/>
-                            </Style>
-                        </ItemsRepeater.Resources>
-                        <ItemsRepeater.ItemTemplate>
-                            <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
-                                <StackPanel>
-                                    <TextBlock Text="{x:Bind Title}"/>
-                                    <TextBlock Margin="20,0,0,0" Text="{x:Bind ApplyResult}">
-                                        <i:Interaction.Behaviors>
-                                            <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
-                                                <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}"/>
-                                            </ic:DataTriggerBehavior>
-                                            <ic:DataTriggerBehavior Binding="{x:Bind IsSkipped}" Value="True">
-                                                <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCautionBrush}"/>
-                                            </ic:DataTriggerBehavior>
-                                        </i:Interaction.Behaviors>
-                                    </TextBlock>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ItemsRepeater.ItemTemplate>
-                    </ItemsRepeater>
-                </ScrollViewer>
+            <!-- Display if the user has tasks need the machine to restart.-->
+            <Grid Visibility="{x:Bind ViewModel.ShowRestartNeeded}"  Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition MinWidth="100" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Column="0" Spacing="5">
+                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xF167;" Foreground="{ThemeResource AccentAAFillColorDefaultBrush}" />
+                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequired_First" Style="{ThemeResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
+                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequired_Second" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5">
+                    <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequiredButton" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
+                    <Button Command="{x:Bind ViewModel.RemoveRestartGridCommand}" Style="{ThemeResource AlternateCloseButtonStyle}">
+                        <Button.Content>
+                            <SymbolIcon Symbol="Cancel"/>
+                        </Button.Content>
+                    </Button>
+                </StackPanel>
             </Grid>
 
-            <!-- Next steps section -->
-            <ContentControl Grid.Column="1" Template="{ThemeResource LinksTemplate}" />
-        </Grid>
+            <Grid Grid.Row="1" Padding="0,20,0,40">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <!-- Intoduction to the summary page -->
+                <TextBlock
+                    Style="{ThemeResource SubtitleTextBlockStyle}"
+                    Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource BoolToInverseVisibilityConverter}}"
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Header"/>
+                <TextBlock
+                    Style="{ThemeResource SubtitleTextBlockStyle}"
+                    Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_HeaderWithErrors"/>
+            </Grid>
 
-        <!-- Grid with information on tasks completed-->
-        <Grid
-            Grid.Row="2"
-            Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource BoolToInverseVisibilityConverter}}"
-            ColumnSpacing="50">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="2" ColumnSpacing="25" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.77*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-            <!-- Numbers of tasks ran and next steps.-->
-            <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="30">
-
-                <!-- Number of apps and repos cloned.-->
-                <StackPanel Orientation="Horizontal" Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" HorizontalAlignment="Center" Padding="0, 15, 0, 0">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.AppsDownloaded.Count}" FontSize="{StaticResource TitleLargeTextBlockFontSize}" FontWeight="{StaticResource InfoBarTitleFontWeight}" HorizontalAlignment="center"/>
-                        <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownloadedCount" />
+                <!-- Configuration unit results -->
+                <Grid RowSpacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <!-- Section header -->
+                    <Grid Padding="0,20,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Summary"
+                            Style="{ThemeResource BodyStrongTextBlockStyle}" />
+                        <TextBlock
+                            Grid.Column="1"
+                            Text="{x:Bind ViewModel.ConfigurationUnitStats}"
+                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                            Style="{ThemeResource CaptionTextBlockStyle}" />
                     </Grid>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.RepositoriesCloned.Count}" FontSize="{StaticResource TitleLargeTextBlockFontSize}" FontWeight="{StaticResource InfoBarTitleFontWeight}" HorizontalAlignment="center"/>
-                        <TextBlock Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedCount" />
-                    </Grid>
-                </StackPanel>
-                <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" HorizontalAlignment="Center" Command="{x:Bind ViewModel.GoToDashboardCommand, Mode=OneWay}" />
+                    <ScrollViewer Grid.Row="1" VerticalScrollMode="Auto">
+                        <ItemsRepeater ItemsSource="{x:Bind ViewModel.ConfigurationUnitResults, Mode=OneWay}">
+                            <ItemsRepeater.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontFamily" Value="{StaticResource CascadiaMonoFontFamily}"/>
+                                    <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <Setter Property="LineHeight" Value="20"/>
+                                </Style>
+                            </ItemsRepeater.Resources>
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
+                                    <StackPanel>
+                                        <TextBlock Text="{x:Bind Title}"/>
+                                        <TextBlock Margin="20,0,0,0" Text="{x:Bind ApplyResult}">
+                                            <i:Interaction.Behaviors>
+                                                <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
+                                                    <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}"/>
+                                                </ic:DataTriggerBehavior>
+                                                <ic:DataTriggerBehavior Binding="{x:Bind IsSkipped}" Value="True">
+                                                    <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCautionBrush}"/>
+                                                </ic:DataTriggerBehavior>
+                                            </i:Interaction.Behaviors>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                    </ScrollViewer>
+                </Grid>
 
                 <!-- Next steps section -->
-                <ContentControl Template="{ThemeResource LinksTemplate}" />
-            </StackPanel>
+                <ContentControl Grid.Column="1" Template="{ThemeResource LinksTemplate}" />
+            </Grid>
 
-            <!-- Displays the repos cloned and apps downloaded -->
-            <StackPanel Grid.Column="1" Orientation="Vertical" Spacing="30">
+            <!-- Grid with information on tasks completed-->
+            <Grid
+                Grid.Row="2"
+                Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource BoolToInverseVisibilityConverter}}"
+                ColumnSpacing="50">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
 
-                <!-- Repos cloned -->
-                <StackPanel Orientation="Vertical" Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" >
-                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
-                    <ScrollViewer Grid.Column="1" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" Height="90">
+                <!-- Numbers of tasks ran and next steps.-->
+                <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="30">
+
+                    <!-- Number of apps and repos cloned.-->
+                    <StackPanel 
+                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" 
+                        HorizontalAlignment="Center" 
+                        Padding="30,15,30,0" 
+                        MinWidth="250">
+                        <Grid
+                            ColumnDefinitions="Auto, Auto"
+                            HorizontalAlignment="Center">
+                            <Grid
+                                Grid.Column="0"
+                                Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}"
+                                Margin="0,0,20,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <TextBlock 
+                                    Grid.Row="0" Text="{x:Bind ViewModel.AppsDownloaded.Count}" 
+                                    FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
+                                    FontWeight="{StaticResource InfoBarTitleFontWeight}" 
+                                    HorizontalAlignment="center"
+                                    Margin="15,0,0,0"/>
+                                <TextBlock 
+                                    Grid.Row="1" 
+                                    Text="{x:Bind ViewModel.ApplicationsClonedText}"
+                                    HorizontalAlignment="center"
+                                    Margin="20,0,0,0"/>
+                            </Grid>
+                            <Grid
+                                Grid.Column="1"
+                                Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}" HorizontalAlignment="Center">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <TextBlock 
+                                    Grid.Row="0" 
+                                    Text="{x:Bind ViewModel.RepositoriesCloned.Count}" 
+                                    FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
+                                    FontWeight="{StaticResource InfoBarTitleFontWeight}" 
+                                    HorizontalAlignment="center"/>
+                                <TextBlock 
+                                    Grid.Row="1" 
+                                    Text="{x:Bind ViewModel.RepositoriesClonedText}"
+                                    HorizontalAlignment="center"/>
+                            </Grid>
+                        </Grid>
+                    </StackPanel>
+                    <Button 
+                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" 
+                        HorizontalAlignment="Center" 
+                        Command="{x:Bind ViewModel.GoToDashboardCommand, Mode=OneWay}" 
+                        Style="{StaticResource AccentButtonStyle}"
+                        Margin="0"/>
+
+                    <!-- Next steps section -->
+                    <ContentControl Template="{ThemeResource LinksTemplate}" />
+                </StackPanel>
+
+
+                <!-- Displays the repos cloned and apps downloaded -->
+                <StackPanel Grid.Column="1" Orientation="Vertical">
+                    <!-- Repos cloned -->
+                    <StackPanel 
+                        Orientation="Vertical" 
+                        Spacing="20" 
+                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
+                        Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}"
+                        Margin="0,0,0,30">
+                        <TextBlock 
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" 
+                            Style="{ThemeResource BodyStrongTextBlockStyle}" 
+                            Padding="0, 20, 0, 0"/>
                         <StackPanel>
                             <StackPanel.Resources>
                                 <StackLayout x:Name="LayoutForRepos" Orientation="Vertical" Spacing="10"/>
@@ -214,21 +259,21 @@
                                 </DataTemplate>
                             </StackPanel.Resources>
                             <ItemsRepeater x:Name="TasksItemsRepeater" ItemsSource="{x:Bind ViewModel.RepositoriesCloned, Mode=OneWay}"
-                           Layout="{StaticResource LayoutForRepos}" 
-                           ItemTemplate="{StaticResource repoTemplate}">
+                               Layout="{StaticResource LayoutForRepos}" 
+                               ItemTemplate="{StaticResource repoTemplate}">
                             </ItemsRepeater>
                         </StackPanel>
-                    </ScrollViewer>
-                </StackPanel>
+                    </StackPanel>
 
-                <!-- Apps downloaded -->
-                <StackPanel Orientation="Vertical" Spacing="20" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
-                    <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
-                    <ScrollViewer VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto"  Height="300">
+                    <!-- Apps downloaded -->
+                    <StackPanel 
+                        Orientation="Vertical" 
+                        Spacing="20" 
+                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+                        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
+                        Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}">
+                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
                         <GridView
-                            ScrollViewer.VerticalScrollMode="Auto"
-                            ScrollViewer.HorizontalScrollMode="Auto"
-                            ScrollViewer.HorizontalScrollBarVisibility="Auto"
                             ItemsSource="{x:Bind ViewModel.AppsDownloaded, Mode=OneWay}"
                             SelectionMode="None">
                             <GridView.ItemsPanel>
@@ -238,7 +283,7 @@
                             </GridView.ItemsPanel>
                             <GridView.ItemTemplate>
                                 <DataTemplate x:DataType="viewModels:PackageViewModel">
-                                    <ctControls:SettingsCard Width="320" Padding="5" Background="Transparent">
+                                    <ctControls:SettingsCard Width="250" Padding="5" Background="Transparent">
                                         <ctControls:SettingsCard.Resources>
                                             <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
                                             <Thickness x:Key="SettingsCardPadding">0</Thickness>
@@ -261,9 +306,9 @@
                                 </DataTemplate>
                             </GridView.ItemTemplate>
                         </GridView>
-                    </ScrollViewer>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </Grid>
-    </Grid>
+    </ScrollViewer>
 </UserControl>
