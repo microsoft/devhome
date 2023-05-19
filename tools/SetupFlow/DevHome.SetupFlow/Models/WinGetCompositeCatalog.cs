@@ -172,14 +172,13 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         var findResult = await _catalog.FindPackagesAsync(options);
         if (findResult.Status != FindPackagesResultStatus.Ok)
         {
-            // TODO: Report error
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to find packages with status {findResult.Status}");
             throw new FindPackagesException(findResult.Status);
         }
 
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found {findResult.Matches} results");
 
-        // Cannot use foreach or Linq for out-of-process IVector
+        // Cannot use foreach or LINQ for out-of-process IVector
         // Bug: https://github.com/microsoft/CsWinRT/issues/1205
         for (var i = 0; i < findResult.Matches.Count; ++i)
         {

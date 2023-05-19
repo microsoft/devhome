@@ -61,8 +61,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// Gets the decimal formatter that will format the value in the numberbox. RoundHalfTowardsZero is used since we
-    /// utilize the SFBS_FLAGS_TRUNCATE_UNDISPLAYED_DECIMAL_DIGITS flag in <see cref="DevDriveUtil.ConvertBytesToString"/> to
+    /// Gets the decimal formatter that will format the value in the numberbox. RoundHalfTowardsZero is used
+    /// because the SFBS_FLAGS_TRUNCATE_UNDISPLAYED_DECIMAL_DIGITS flag in <see cref="DevDriveUtil.ConvertBytesToString"/> to
     /// get the formatted Drive size. RoundHalfTowardsZero will effectively truncate all values after the hundredth position.
     /// </summary>
     public DecimalFormatter DevDriveDecimalFormatter
@@ -81,7 +81,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// Gets the dictionary mapping between a ByteUnit and the the localized string it represents.
+    /// Gets the dictionary mapping between a ByteUnit and the localized string it represents.
     /// </summary>
     public Dictionary<ByteUnit, string> ByteUnitList => _byteUnitList;
 
@@ -150,7 +150,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private double _size;
 
     /// <summary>
-    /// Byte unit of mearsure combo box.
+    /// Byte unit of measure combo box.
     /// </summary>
     [NotifyPropertyChangedFor(nameof(MinimumAllowedSize))]
     [NotifyPropertyChangedFor(nameof(MaximumAllowedSize))]
@@ -165,13 +165,13 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private char? _comboBoxDriveLetter;
 
     /// <summary>
-    /// Gets or sets a value indicating whether we should show the the localized error text for when there is an error in the folder location.
+    /// Gets or sets a value indicating whether the localized error text for when there is an error in the folder location should be shown.
     /// </summary>
     [ObservableProperty]
     private DevDriveValidationResult? _folderLocationError;
 
     /// <summary>
-    /// Gets or sets a value indicating whether we should show the localized error text for when there is an error retrieving a drive letter for the user.
+    /// Gets or sets a value indicating whether the localized error text for when there is an error retrieving a drive letter for the user should be shown
     /// </summary>
     [ObservableProperty]
     private DevDriveValidationResult? _driveLetterError;
@@ -200,7 +200,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// Gets the minimumize size allowed in the Number box based
+    /// Gets the minimum size allowed in the Number box based
     /// on the value currently selected in _comboBoxByteUnit.
     /// </summary>
     public double MinimumAllowedSize
@@ -360,7 +360,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// We only allow users to save when there are no errors in the UI.
+    /// Only allow users to save when there are no errors in the UI.
     /// </summary>
     /// <returns>Boolean where true will enable the save button and sale disables the button.</returns>
     private bool CanSave()
@@ -484,7 +484,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         try
         {
-            // Calling the TotalFreeSpace property when the drive isn't ready will throw an exception, so we make its total available space set to 0.
+            // Calling the TotalFreeSpace property when the drive isn't ready will throw an exception, make its total available space set to 0.
             // This way it cannot be used to create a Dev Drive. The GetDrives method only returns drives that have drive letters. The name property returns the
             // drive letter in the form of "DriveLetter:\". E.g C:\
             DriveLetterToSizeMapping = DriveInfo.GetDrives().ToDictionary(drive => drive.Name.FirstOrDefault(), drive => drive.IsReady ? (ulong)drive.TotalFreeSpace : 0);
@@ -493,7 +493,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         {
             Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to refresh the drive letter to size mapping. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
 
-            // Clear the mapping since we can't refresh it. This shouldn't happen unless DriveInfo.GetDrives() fails. In that case we won't know which drive
+            // Clear the mapping since it can't be refreshed. This shouldn't happen unless DriveInfo.GetDrives() fails. In that case we won't know which drive
             // in the list is causing GetDrives()'s to throw. If there are values inside the dictionary at this point, they could be stale. Clearing the list
             // allows users to at least attempt to use the location they want to create the virtual disk in. Ultimately if the location is really unavailable the virtual disk
             // won't be created and we will send an error to the UI in the loading page.
@@ -502,7 +502,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// Validates the text input in the Dev Drive name textbox when the text changes. We show an error infobar when the text is invalid.
+    /// Validates the text input in the Dev Drive name textbox when the text changes. Show an error infobar when the text is invalid.
     /// </summary>
     /// <remarks>
     /// There are currently only 2 invalid states
@@ -525,7 +525,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// Validates the numeric input value in the size numberbox. We show an error infobar when the value is invalid.
+    /// Validates the numeric input value in the size numberbox. Show an error infobar when the value is invalid.
     /// </summary>
     /// <remarks>
     /// There is currently only 1 invalid state
@@ -540,7 +540,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         var shouldShowSizeError = !double.IsFinite(Size);
         if (!shouldShowSizeError && lengthAfterTrim.Length > 0)
         {
-            // We need to refresh the mapping because when the user frees up drive space, we need the updated totalAvailableSpace for the drive they plan
+            // Refresh the mapping because when the user frees up drive space, totalAvailableSpace needs to be updated for the drive they plan
             // on using.
             RefreshDriveLetterToSizeMapping();
             ulong totalAvailableSpace;
@@ -557,7 +557,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     }
 
     /// <summary>
-    /// Called when there is a TextChanged event from the Dev Drive location textbox. We show an error infobar when the text is invalid.
+    /// Called when there is a TextChanged event from the Dev Drive location textbox. Show an error infobar when the text is invalid.
     /// </summary>
     /// <remarks>
     /// There are currently 5 invalid states

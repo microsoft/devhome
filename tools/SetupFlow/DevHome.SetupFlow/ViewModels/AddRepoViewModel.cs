@@ -135,7 +135,7 @@ public partial class AddRepoViewModel : ObservableObject
     private Visibility _shouldShowUrlError;
 
     /// <summary>
-    /// Indicates if the ListView is currently filtering items.  An unfortunant result of manually filtering a list view
+    /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
     /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"
     /// To prevent our EverythingToClone from changing this flag is used.
     /// If true any removals caused by filtering are ignored.
@@ -155,7 +155,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <summary>
     /// Filters all repos down to any that start with text.
     /// A side-effect of filtering is that SelectionChanged fires for every selected repo but only on removal.
-    /// SelectionChanged isn't fired for re-adding.  To prevent the RepoTool from forgetting the repos that were selected
+    /// SelectionChanged isn't fired for re-adding because repos are removed, not added.  To prevent the RepoTool from forgetting the repos that were selected
     /// the flag _isFiltering is used to prevent modifications to EverythingToClone.
     /// Once filtering is done SelectRange is called on each item in EverythingToClone to re-select them.
     /// </summary>
@@ -249,7 +249,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// Gets all the plugins the DevHome can see.
     /// </summary>
     /// <remarks>
-    /// A valid plugin is one that has a repository provider and devid provider.
+    /// A valid plugin is one that has a repository provider and developerId provider.
     /// </remarks>
     public void GetPlugins()
     {
@@ -373,8 +373,8 @@ public partial class AddRepoViewModel : ObservableObject
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Measure, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false));
 
-            // Throw away developer id becase we're calling GetAllLoggedInAccounts in anticipation
-            // of 1 Provider : N DeveloperIds
+            // Throw away developerId because DevHome allows one account per provider. GetAllLoggedInAccounts is called
+            // in anticipation of 1 Provider : N DeveloperIds
             await Task.Run(() => _providers.LogInToProvider(repositoryProviderName));
             loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         }
@@ -485,9 +485,8 @@ public partial class AddRepoViewModel : ObservableObject
         }
         catch (Exception e)
         {
-            // Catching should not be used for branching logic.
-            // However, I forgot to consider the scenario where the URL can be parsed
-            // but the repo can't be found.  This can happen if
+            // Github extension throws if the URL is parsed but the repo can't be found.
+            // This can happen if
             // 1. Any logged in account does not have access
             // 2. The repo does not exist.
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationNotFound);
@@ -533,9 +532,9 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Gets all the repositories for the the specified provider and account.
+    /// Gets all the repositories for the specified provider and account.
     /// </summary>
-    /// <param name="repositoryProvider">The provider.  This should match IRepositoryProvider.LoginId</param>
+    /// <param name="repositoryProvider">The provider.  This should match the display name of the plugin</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
     public IEnumerable<RepoViewListItem> GetRepositories(string repositoryProvider, string loginId)
     {

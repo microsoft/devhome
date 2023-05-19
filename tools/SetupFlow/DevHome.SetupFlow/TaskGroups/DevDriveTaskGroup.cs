@@ -28,13 +28,14 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         // TODO Remove `this` argument from CreateInstance since this task
         // group is a registered type. This requires updating dependent classes
         // correspondingly.
+        // https://github.com/microsoft/devhome/issues/631
         _devDriveReviewViewModel = new (() => _host.CreateInstance<DevDriveReviewViewModel>(this));
         _stringResource = stringResource;
     }
 
     /// <summary>
-    /// Update the Dev Drive task with a new Dev Drive object. We currently only
-    /// support creating one dev drive at a time.
+    /// Update the Dev Drive task with a new Dev Drive object. Currently only
+    /// one dev drive can be created at a time.
     /// </summary>
     /// <param name="devDrive">
     /// The dev drive object that will be used to create a dev drive on the system
@@ -54,8 +55,8 @@ public class DevDriveTaskGroup : ISetupTaskGroup
     }
 
     /// <summary>
-    /// Remove all tasks from the task group. Since we only support creating one Dev
-    /// Drive at a time we can just clear out the tasks.
+    /// Remove all tasks from the task group. This is okay because only one Dev
+    /// Drive can be created at a time.
     /// </summary>
     public void RemoveDevDriveTasks()
     {
@@ -80,6 +81,6 @@ public class DevDriveTaskGroup : ISetupTaskGroup
 
     public SetupPageViewModelBase GetSetupPageViewModel() => null;
 
-    // Only show this tab when we are actually creating a dev drive
+    // Only show this tab when actually creating a dev drive
     public ReviewTabViewModelBase GetReviewTabViewModel() => _devDriveReviewViewModel.Value;
 }

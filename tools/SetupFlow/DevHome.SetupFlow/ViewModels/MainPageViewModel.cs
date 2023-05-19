@@ -102,7 +102,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     {
         StartSetupFlow.Invoke(null, (flowTitle, taskGroups));
 
-        // Report this after we set the flow pages as that will set an ActivityId
+        // Report this after setting the flow pages as that will set an ActivityId
         // we can later use to correlate with the flow termination.
         Log.Logger?.ReportInfo($"Starting setup flow with ActivityId={Orchestrator.ActivityId}");
         TelemetryFactory.Get<ITelemetry>().Log(

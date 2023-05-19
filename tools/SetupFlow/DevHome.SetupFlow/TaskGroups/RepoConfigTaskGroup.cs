@@ -34,6 +34,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         // TODO Remove `this` argument from CreateInstance since this task
         // group is a registered type. This requires updating dependent classes
         // correspondingly.
+        // https://github.com/microsoft/devhome/issues/631
         _repoConfigViewModel = new (() => _host.CreateInstance<RepoConfigViewModel>(this));
         _repoConfigReviewViewModel = new (() => _host.CreateInstance<RepoConfigReviewViewModel>(this));
     }

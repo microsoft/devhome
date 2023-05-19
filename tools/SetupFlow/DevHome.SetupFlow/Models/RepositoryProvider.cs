@@ -13,7 +13,7 @@ using Microsoft.Windows.DevHome.SDK;
 namespace DevHome.SetupFlow.Models;
 
 /// <summary>
-/// Object that holds a refrence to the providers in a plugin.
+/// Object that holds a reference to the providers in a plugin.
 /// This needs to be changed to handle multiple accounts per provider.
 /// </summary>
 internal class RepositoryProvider
@@ -28,7 +28,7 @@ internal class RepositoryProvider
     private readonly IPluginWrapper _pluginWrapper;
 
     /// <summary>
-    /// The DevId provider used to log a user into an account.
+    /// The DeveloperId provider used to log a user into an account.
     /// </summary>
     private IDeveloperIdProvider _devIdProvider;
 
@@ -63,7 +63,7 @@ internal class RepositoryProvider
     }
 
     /// <summary>
-    /// Tries to parse the repo name from the URi and makes a Repository from it.
+    /// Tries to parse the repo name from the URI and makes a Repository from it.
     /// </summary>
     /// <param name="uri">The Uri to parse.</param>
     /// <returns>The repository the user wants to clone.  Null if parsing was unsuccessful.</returns>

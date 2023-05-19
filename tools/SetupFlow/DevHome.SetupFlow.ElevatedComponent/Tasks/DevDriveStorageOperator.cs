@@ -27,7 +27,7 @@ public sealed class DevDriveStorageOperator
     public static readonly long _oneMb = _oneKb * _oneKb;
 
     /// <summary>
-    /// We need a way to hold the partition information, when we call IoDeviceControl with IOCTL_DISK_GET_DRIVE_LAYOUT_EX.
+    /// Store partition information, when IoDeviceControl is called with IOCTL_DISK_GET_DRIVE_LAYOUT_EX.
     /// </summary>
     internal struct PartitionLayout
     {
@@ -37,9 +37,9 @@ public sealed class DevDriveStorageOperator
     }
 
     /// <summary>
-    /// Since CsWin32 doesn't generate this macro from Ntdddisk.h we need to do it manually.
-    /// The IOCTL_DISK_ARE_VOLUMES_READY when used with ioDeviceControl, is used so that we
-    /// wait until all volumes have completed any work assigned to them before using them.
+    /// Manually make this macro because CsWin32 does not generate it from Ntddisk.h.
+    /// The IOCTL_DISK_ARE_VOLUMES_READY when used with ioDeviceControl, is used so that DevHome
+    /// waits until all volumes have completed any work assigned to them before using them.
     /// e.g creating the partition, before trying to use it again.
     /// see https://learn.microsoft.com/windows/win32/fileio/ioctl-disk-are-volumes-ready
     /// https://learn.microsoft.com/windows/win32/fileio/disk-management-control-codes
@@ -54,7 +54,7 @@ public sealed class DevDriveStorageOperator
     }
 
     // Signals to the system to reattach the virtual disk at boot time. This flag will be present in the public
-    // virtdisk.h file in the Windows SDK on systems that have it. For now since CsWin32 will not find this, we have to manually add it.
+    // virtdisk.h file in the Windows SDK on systems that have it. For now since CsWin32 will not find this, manually add it.
     // This will be documented here: https://learn.microsoft.com/windows/win32/api/virtdisk/ne-virtdisk-attach_virtual_disk_flag
     // This is only temporary, and will be removed once we can use it with CSWin32 out of the box.
     private const uint AttachVirtualDiskFlagAtBoot = 0x00000400;
@@ -115,7 +115,7 @@ public sealed class DevDriveStorageOperator
     }
 
     /// <summary>
-    /// Creates the virtual disk and also attaches it so that its lifespan is permanant and survives reboots.
+    /// Creates the virtual disk and also attaches it so that its lifespan is permanent and survives reboots.
     /// </summary>
     /// <param name="virtDiskPath">The place in the file system the vhdx file will be saved to</param>
     /// <param name="sizeInBytes">The size the drive will be created with</param>
@@ -159,10 +159,10 @@ public sealed class DevDriveStorageOperator
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"Starting AttachVirtualDisk");
 
         // This is only temporary until the api updates to AttachVirtualDisk have propagated. AttachVirtualDisk will return an invalid argument error (E_INVALIDARG)
-        // when passed an attach virt disk flag that it does not support. This failure is not a deal breaker as we should still be able to attach the virtual
+        // when passed an attach virtual disk flag that it does not support. This failure is not a deal breaker as we should still be able to attach the virtual
         // disk without the AttachVirtualDiskFlagAtBoot flag. Users would just have to manually remount their virtual disk file instead of the system
-        // doing it for them at boot time. Once the api changes have propagated we will update this to remove the loop and use both flags in a single
-        // call with no fallback. We only make 2 attempts, first with the new flag and then a second attempt without the new flag.
+        // doing it for them at boot time. Once the api changes have propagated remove the loop and use both flags in a single
+        // call with no fallback. Run 2 attempts, first with the new flag and then a second attempt without the new flag.
         var numberOfAttemptsToAttachVirtDisk = 0;
         while (++numberOfAttemptsToAttachVirtDisk <= 2)
         {
@@ -197,7 +197,7 @@ public sealed class DevDriveStorageOperator
 
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"Starting GetVirtualDiskPhysicalPath");
 
-        // Getting the virtual disk path here before exiting save alot more repeated win32 code in the long run
+        // Getting the virtual disk path here before exiting save a lot more repeated win32 code in the long run
         // as we need the path to get the disk number.
         var tempPhysicalPath = new string('\0', (int)PInvoke.MAX_PATH);
         var virtDiskPhysicalPathSize = PInvoke.MAX_PATH * sizeof(char);
@@ -285,8 +285,8 @@ public sealed class DevDriveStorageOperator
 
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreatePartition), $"Getting partition layout");
 
-        // Collect information about how we want the partition layout to look before
-        // we attempt to create it.
+        // Collect information about how the partition layout looks before
+        // attempting to create it.
         PartitionLayout partitionLayout;
         unsafe
         {
@@ -318,9 +318,9 @@ public sealed class DevDriveStorageOperator
             var partitionInfo = &partitionLayout.Info.PartitionEntry._0;
             partitionInfo->PartitionStyle = PARTITION_STYLE.PARTITION_STYLE_GPT;
 
-            // There are currently no partitions on the disk, so to make this easy for us, we start off the
-            // first partition to have an offset of 1024Kb, so 1 megabyte. The StartingUsableOffset is set by windows
-            // so we don't have control over that. But we can use it to make sure the starting offset and partition
+            // There are currently no partitions on the disk.  Start off the
+            // first partition to have an offset of 1024Kb, 1 megabyte. The StartingUsableOffset is set by windows and can't change it.
+            // But we can use it to make sure the starting offset and partition
             // length are 1Mb aligned. If you open the disk part app and select any disk and look at the partitions, you will
             // see the same thing done there. The goal here is to round the starting offset up to the nearest Mb and partition
             // length rounded down to the nearest Mb to keep this alignment.
@@ -355,8 +355,8 @@ public sealed class DevDriveStorageOperator
 
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreatePartition), $"Waiting on IOCTL_DISK_ARE_VOLUMES_READY");
 
-        // After the partition is created, we need to wait for the volume
-        // to become fully installed. IOCTL_DISK_ARE_VOLUMES_READY waits
+        // After the partition is created, wait for the volume
+        // to fully install. IOCTL_DISK_ARE_VOLUMES_READY waits
         // for all volumes on the specified disk to be ready for use
         unsafe
         {
@@ -384,8 +384,8 @@ public sealed class DevDriveStorageOperator
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreatePartition), $"Getting the virtual disks disk number");
 
         // At this point the partition has been created with the first assignable
-        // drive letter by windows. We need to use the disk number so we can change
-        // this drive letter to the one the user wants.
+        // drive letter by windows. Use the disk number so the drive letter can be changed to a
+        // drive letter the user wants.
         var storageDeviceInfo = new STORAGE_DEVICE_NUMBER_EX { };
         unsafe
         {
@@ -423,10 +423,10 @@ public sealed class DevDriveStorageOperator
     /// <returns>An Hresult that indicates whether the operation succeeded or failed</returns>
     private HRESULT AssignDriveLetterToPartition(uint diskNumber, char newDriveLetter)
     {
-        // Since we have just created the virtual disk and created a single partition, we don't have to worry about there
-        // being multiple on the disk. However in win32 to get the correct volume, we still need to use the FindFirstVolume
+        // Just created the virtual disk and created a single partition. Don't have to worry about there
+        // being multiple on the disk. However in win32 to get the correct volume, FindFirstVolume is still needed
         // which iterates through each volume on the system, and then compares the disk that volume is on with the virtual disk.
-        // Thats how we'll know which volume is the right one.
+        // That is how we'll know which volume is the right one.
         HRESULT error;
         unsafe
         {
@@ -450,7 +450,7 @@ public sealed class DevDriveStorageOperator
                 do
                 {
                     // The call to createFile succeeds with the trailing backslash, however when getting the device info
-                    // using that handle, it fails so we need to remove it before the call, and add it back later.
+                    // using that handle fails. Remove it before the call, and add it back later.
                     var volumeGuidPathAfterTrim = volumeGuidPathBeforeTrim.Trim('\0');
                     var hasTrailingbackslash = volumeGuidPathAfterTrim.Last() == '\\';
                     if (hasTrailingbackslash)
@@ -480,7 +480,7 @@ public sealed class DevDriveStorageOperator
 
                     Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Getting disk number for {volumeGuidPathAfterTrim}");
 
-                    // The device number will tell us if we're looking at the virtual disk or not.
+                    // The device number will tell us if it is a virtual disk or not.
                     var deviceInfo = new STORAGE_DEVICE_NUMBER_EX { };
                     uint unusedBytes;
                     var result = PInvoke.DeviceIoControl(
@@ -501,7 +501,7 @@ public sealed class DevDriveStorageOperator
 
                     Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Comparing disk number: {deviceInfo.DeviceNumber} for volume: {volumeGuidPathAfterTrim} with virtual disks disk number: {diskNumber}");
 
-                    // Only the virtual disk that we created above will have this disk number,
+                    // Only the virtual disk created above will have this disk number,
                     // the disk number is guaranteed to be the same until a reboot, which is fine
                     // since we use it immediately.
                     if (diskNumber != deviceInfo.DeviceNumber)
@@ -517,7 +517,7 @@ public sealed class DevDriveStorageOperator
                     Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Finding old drive letter for volume: {volumeGuidPathBeforeTrim}");
 
                     // At this point there will most likely be a default drive letter
-                    // if available that was given to the drive, so we need to remove it,
+                    // if available that was given to the drive, remove it,
                     // or else setting it will fail.
                     var oldDriveLetterPath = new string('\0', (int)PInvoke.MAX_PATH);
                     uint oldDrivePathLength;
@@ -575,14 +575,14 @@ public sealed class DevDriveStorageOperator
             }
         }
 
-        // FindNextVolume errored out for some other reason without us finding our volume.
+        // FindNextVolume failed for some other reason without us finding our volume.
         error = ReturnLastErrorAsHR();
         Log.Logger?.ReportError(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Failed to find the new volume on disk number {diskNumber} error: {error:X}");
         return error;
     }
 
     /// <summary>
-    /// Helper method that results in the the HRESULT class wrapping GetHRForLastWin32Error return value.
+    /// Helper method that results in the HRESULT class wrapping GetHRForLastWin32Error return value.
     /// </summary>
     /// <returns>Returns errorcode indicating success or failure</returns>
     private HRESULT ReturnLastErrorAsHR()
@@ -591,7 +591,7 @@ public sealed class DevDriveStorageOperator
     }
 
     /// <summary>
-    /// Uses WMI to and the storage Api to format the drive as a Dev Drive. Note: the implementation
+    /// Uses WMI to and the storage api to format the drive as a Dev Drive. Note: the implementation
     /// is subject to change in the future.
     /// </summary>
     /// <param name="curDriveLetter">The drive letter the method will use when attempting to find a volume and format it</param>
@@ -632,7 +632,7 @@ public sealed class DevDriveStorageOperator
                 vhdParams,
                 out tempHandle);
 
-            // We pass through errors here and after the detach call below instead of returning immediately because there are instances
+            // Pass through errors here and after the detach call below instead of returning immediately because there are instances
             // where the virtual disk file is created but not mounted. So in those instance a failure from OpenVirtualDisk and DetachVirtualDisk are expected.
             if (result != WIN32_ERROR.NO_ERROR)
             {

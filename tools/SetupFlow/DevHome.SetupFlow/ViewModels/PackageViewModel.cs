@@ -45,7 +45,7 @@ public partial class PackageViewModel : ObservableObject
     private readonly WindowsPackageManagerFactory _wingetFactory;
 
     /// <summary>
-    /// Occurrs after the package selection changes
+    /// Occurs after the package selection changes
     /// </summary>
     public event EventHandler<PackageViewModel> SelectionChanged;
 

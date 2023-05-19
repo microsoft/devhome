@@ -139,7 +139,7 @@ public class CloneRepoTask : ISetupTask
     }
 
     /// <summary>
-    /// Clones the repository.  Makes the directory if it does not exist.
+    /// Clones the repository.
     /// </summary>
     /// <returns>An awaitable operation.</returns>
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
@@ -148,11 +148,6 @@ public class CloneRepoTask : ISetupTask
         {
             try
             {
-                // If the user used the repo tab to add repos then _developerId points to the account used to clone their repo.
-                // What if the user used the URL tab?  On a private repo validation is done in the extension to figure out if any
-                // logged in account has access to the repo.  However, github plugin does not have a way to tell us what account.
-                // _developerId will be null in the case of adding via URL.  _developerId will be null.
-                // extension will iterate through all logged in Ids and clone with each one.
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
                 TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Measure, new ReposCloneEvent(ProviderName, _developerId));
                 await RepositoryToClone.CloneRepositoryAsync(_cloneLocation.FullName, _developerId);

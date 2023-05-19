@@ -64,7 +64,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     protected async override Task OnEachNavigateToAsync()
     {
-        // We re-compute the list of tabs as it can change depending on the current selections
+        // Re-compute the list of tabs as it can change depending on the current selections
         ReviewTabs =
             Orchestrator.TaskGroups
             .Select(taskGroup => taskGroup.GetReviewTabViewModel())

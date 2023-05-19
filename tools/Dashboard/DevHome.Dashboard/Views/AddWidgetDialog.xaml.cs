@@ -194,7 +194,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         NavigationView sender,
         NavigationViewSelectionChangedEventArgs args)
     {
-        // Delete previously shown configuation widget.
+        // Delete previously shown configuration widget.
         // Clearing the UI here results in a flash, so don't bother. It will update soon.
         Log.Logger()?.ReportDebug("AddWidgetDialog", $"Widget selection changed, delete widget if one exists");
         var clearWidgetTask = ClearCurrentWidget();
@@ -257,7 +257,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async void CancelButton_Click(object sender, RoutedEventArgs e)
     {
-        // Delete previously shown configuation card.
+        // Delete previously shown configuration card.
         Log.Logger()?.ReportDebug("AddWidgetDialog", $"Canceled dialog, delete widget");
         await ClearCurrentWidget();
 

@@ -79,6 +79,7 @@ public class WinGetPackage : IWinGetPackage
         {
             // TODO Use the API contract version to check if this method can be
             // called instead of a try/catch
+            // https://github.com/microsoft/devhome/issues/635
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting applicable installer info for package {Id}");
             var applicableInstaller = _package.DefaultInstallVersion.GetApplicableInstaller(options);
             if (applicableInstaller != null)

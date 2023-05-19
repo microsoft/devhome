@@ -79,7 +79,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
-                <!-- Intoduction to the summary page -->
+                <!-- Introduction to the summary page -->
                 <TextBlock
                     Style="{ThemeResource SubtitleTextBlockStyle}"
                     Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource BoolToInverseVisibilityConverter}}"
