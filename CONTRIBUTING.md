@@ -18,9 +18,10 @@ We employ a bot engine to help us automate common processes within our workflow.
 
 We drive the bot by tagging issues with specific labels which cause the bot engine to close issues, merge branches, etc. This bot engine helps us keep the repo clean by automating the process of notifying appropriate parties if/when information/follow-up is needed, and closing stale issues/PRs after reminders have remained unanswered for several days.
 
-Therefore, if you do file issues, or create PRs, please keep an eye on your GitHub notifications. If you do not respond to requests for information, your issues/PRs may be closed automatically.
+Therefore, if you do file issues or create PRs, please keep an eye on your GitHub notifications. If you do not respond to requests for information, your issues/PRs may be closed automatically.
 
 ---
+
 ## Reporting security issues
 
 **Please do not report security vulnerabilities through public GitHub issues.** Instead, please report them to the Microsoft Security Response Center (MSRC). See [SECURITY.md](./SECURITY.md) for more information.
@@ -109,7 +110,7 @@ Generally, we categorize issues in the following way, which is largely derived f
 
 Bugs and tasks are obviously the easiest to get started with, but don't feel afraid of features either!
 
-Often, we like to assign issues that generally belong to somebody's area of expertise to the team member that owns that area. This doesn't mean the community can't jump in -- they should reach out and have a chat with the assignee to see if it'd okay to take. If an issue's been assigned more than a month ago, there's a good chance it's fair game to try yourself.
+Generally, we like to assign issues that generally belong to somebody's area of expertise to the team member that owns that area. This doesn't mean the community can't jump in -- they should reach out and have a chat with the assignee to see if it'd okay to take. If an issue was assigned more than a month ago, there's a good chance it's fair game to try yourself.
 
 ### To spec or not to spec
 
@@ -125,7 +126,7 @@ Specs will be managed in a very similar manner as code contributions so please f
 
 ### Writing / Contributing to a spec
 
-To write/contribute to a spec: fork, branch and commit via PRs, as you would with any code changes.
+To write/contribute to a spec: fork, branch, and commit via PRs as you would with any code changes.
 
 Specs are written in markdown, stored under the [`\docs\specs`](./docs/specs) folder and named `[issue id] - [spec description].md`.
 
@@ -143,7 +144,7 @@ Once the team has approved an issue/spec, development can proceed. If no develop
 
 ### Fork, clone, branch and create your PR
 
-Once you've discussed your proposed feature/fix/etc. with a team member, and you've agreed an approach or a spec has been written and approved, it's time to start development:
+Once you've discussed your proposed feature/fix/etc. with a team member and you've agreed on an approach or a spec has been written and approved, it's time to start development:
 
 1. Fork the repo if you haven't already
 2. Clone your fork locally
@@ -154,7 +155,7 @@ Once you've discussed your proposed feature/fix/etc. with a team member, and you
 
 ### Code review
 
-When you'd like the team to take a look, (even if the work is not yet fully-complete), mark the PR as 'Ready For Review' so that the team can review your work and provide comments, suggestions, and request changes. It may take several cycles, but the end result will be solid, testable, conformant code that is safe for us to merge.
+When you'd like the team to take a look (even if the work is not yet fully-complete), mark the PR as 'Ready For Review' so that the team can review your work and provide comments, suggestions, and request changes. It may take several cycles but the end result will be solid, testable, conformant code that is safe for us to merge.
 
 ### Merge
 
