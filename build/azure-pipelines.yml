@@ -23,7 +23,7 @@ parameters:
     - Release
 
 variables:
-  MSIXVersion: '0.106'
+  MSIXVersion: '0.107'
   SDKVersion: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -508,7 +508,7 @@ stages:
         zipPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.zip'
         force: true
         deletePackages: true
-        numberOfPackagesToKeep: 3
+        numberOfPackagesToKeep: 0
         jsonZipUpdateMetadata: true
         updateImages: true
 
@@ -536,7 +536,7 @@ stages:
         zipPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.zip'
         force: true
         deletePackages: true
-        numberOfPackagesToKeep: 3
+        numberOfPackagesToKeep: 0
         jsonZipUpdateMetadata: true
         updateImages: true
 

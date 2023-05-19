@@ -22,12 +22,6 @@
         <Grid Margin="{ThemeResource ContentPageMargin}">
             <ContentDialog x:Name="reportBugDialog" x:Uid="Feedback_ReportBug_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
                 <Grid>
-                    <TextBlock>
-                        <Run x:Uid="Feedback_IssueGuidance"/>
-                        <Hyperlink x:Uid="Feedback_Guidance_Link" TextDecorations="None">
-                            <Run x:Uid="Feedback_Guidance_LinkText"></Run>
-                        </Hyperlink>
-                    </TextBlock>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{StaticResource FeedbackScrollViewerMargin}">
                         <StackPanel Margin="{StaticResource FeedbackScrollViewerContentMargin}">
                             <TextBox x:Name="ReportBugIssueTitle" x:Uid="Feedback_ReportBug_IssueTitle" AcceptsReturn="True"/>
@@ -67,12 +61,6 @@
             </ContentDialog>
             <ContentDialog x:Name="LocalizationIssueDialog" x:Uid="Feedback_LocalizationIssue_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
                 <Grid>
-                    <TextBlock>
-                    <Run x:Uid="Feedback_IssueGuidance"/>
-                    <Hyperlink x:Uid="Feedback_Guidance_Link" TextDecorations="None">
-                        <Run x:Uid="Feedback_Guidance_LinkText"></Run>
-                    </Hyperlink>
-                    </TextBlock>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{StaticResource FeedbackScrollViewerMargin}">
                         <StackPanel Margin="{StaticResource FeedbackScrollViewerContentMargin}">
                             <TextBox x:Name="LocalizationIssueTitle" x:Uid="Feedback_LocalizationIssue_IssueTitle" AcceptsReturn="True"/>
@@ -83,12 +71,6 @@
             </ContentDialog>
             <ContentDialog x:Name="suggestFeatureDialog" x:Uid="Feedback_SuggestFeature_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
                 <Grid>
-                    <TextBlock>
-                    <Run x:Uid="Feedback_Suggestion"/>
-                    <Hyperlink x:Uid="Feedback_Guidance_Link" TextDecorations="None">
-                        <Run x:Uid="Feedback_Guidance_LinkText"></Run>
-                    </Hyperlink>
-                    </TextBlock>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{StaticResource FeedbackScrollViewerMargin}">
                         <StackPanel Margin="{StaticResource FeedbackScrollViewerContentMargin}">
                             <TextBox x:Name="SuggestFeatureTitle" x:Uid="Feedback_SuggestFeature_IssueTitle" AcceptsReturn="True"/>
@@ -106,11 +88,6 @@
                 Style="{ThemeResource TitleTextBlockStyle}"
                 Margin="0 10"
                 />
-                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" FontWeight="Normal">
-                <Hyperlink x:Uid="Feedback_DocumentationInfo_Link" TextDecorations="None">
-                    <Run x:Uid="Feedback_DocumentationInfo_LinkText"/>
-                </Hyperlink>
-                </TextBlock>
                 <TextBlock Margin="{StaticResource MediumTopBottomMargin}">
                 <Run x:Uid="Feedback_OpenSource"/>
                 <Hyperlink x:Uid="Feedback_OpenSource_Link" TextDecorations="None">
