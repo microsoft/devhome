@@ -55,7 +55,7 @@ public class GetReposEvent : EventBase
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // The only sensitive strings is the developerIDd.  GetHashedDeveloperId is used to hash the developerId.
+        // The only sensitive strings is the developerID.  GetHashedDeveloperId is used to hash the developerId.
     }
 
     private static string GetHashedDeveloperId(string providerName, IDeveloperId devId)
