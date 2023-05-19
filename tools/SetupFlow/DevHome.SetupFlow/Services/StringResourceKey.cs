@@ -47,6 +47,7 @@ public static class StringResourceKey
     public static readonly string DevDriveUnableToCreateError = nameof(DevDriveUnableToCreateError);
     public static readonly string DevDriveWindowByteUnitComboBoxGB = nameof(DevDriveWindowByteUnitComboBoxGB);
     public static readonly string DevDriveWindowByteUnitComboBoxTB = nameof(DevDriveWindowByteUnitComboBoxTB);
+    public static readonly string DoneButton = nameof(DoneButton);
     public static readonly string EditClonePathDialog = nameof(EditClonePathDialog);
     public static readonly string EditClonePathDialogUncheckCheckMark = nameof(EditClonePathDialogUncheckCheckMark);
     public static readonly string FilePickerFileTypeOption = nameof(FilePickerFileTypeOption);
@@ -79,6 +80,10 @@ public static class StringResourceKey
     public static readonly string ApplicationsPageTitle = nameof(ApplicationsPageTitle);
     public static readonly string ReposConfigPageTitle = nameof(ReposConfigPageTitle);
     public static readonly string ReviewPageTitle = nameof(ReviewPageTitle);
+    public static readonly string SummaryPageOneApplicationInstalled = nameof(SummaryPageOneApplicationInstalled);
+    public static readonly string SummaryPageOneRepositoryCloned = nameof(SummaryPageOneRepositoryCloned);
+    public static readonly string SummaryPageAppsDownloadedCount = nameof(SummaryPageAppsDownloadedCount);
+    public static readonly string SummaryPageReposClonedCount = nameof(SummaryPageReposClonedCount);
 
     // Repository loading screen messages
     public static readonly string CloneRepoCreating = nameof(CloneRepoCreating);

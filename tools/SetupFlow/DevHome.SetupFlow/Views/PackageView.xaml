@@ -19,7 +19,7 @@
             <!--  Show "Learn more" or "Installed"-->
             <converters:BoolToObjectConverter x:Key="LearnMoreInstalledConverter">
                 <converters:BoolToObjectConverter.FalseValue>
-                    <HyperlinkButton Padding="0" Command="{x:Bind Package.LearnMoreCommand, Mode=OneWay}" Style="{ThemeResource TextBlockButtonStyle}">
+                    <HyperlinkButton Padding="0" Command="{Binding LearnMoreCommand, Mode=OneWay}" Style="{ThemeResource TextBlockButtonStyle}">
                         <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
                     </HyperlinkButton>
                 </converters:BoolToObjectConverter.FalseValue>
@@ -31,7 +31,7 @@
     </UserControl.Resources>
 
     <!-- Package card -->
-    <ContentControl Content="{x:Bind Package, Mode=OneWay}">
+    <ContentControl>
         <ContentControl.Template>
             <ControlTemplate>
                 <Grid Style="{ThemeResource CardGridSecondaryStyle}" Padding="12" RowSpacing="12">

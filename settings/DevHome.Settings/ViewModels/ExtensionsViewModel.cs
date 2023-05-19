@@ -11,6 +11,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Settings.Models;
 using Microsoft.UI.Xaml;
+using Windows.ApplicationModel;
 
 namespace DevHome.Settings.ViewModels;
 
@@ -77,6 +78,12 @@ public partial class ExtensionsViewModel : ObservableRecipient
 
         foreach (var pluginWrapper in pluginWrappers)
         {
+            // Don't show self as an extension
+            if (Package.Current.Id.FullName == pluginWrapper.PackageFullName)
+            {
+                continue;
+            }
+
             var setting = new Setting("Plugins/" + pluginWrapper.PluginClassId, pluginWrapper.PluginClassId, pluginWrapper.Name, string.Empty, string.Empty, true);
             SettingsList.Add(new ExtensionViewModel(setting, this));
         }

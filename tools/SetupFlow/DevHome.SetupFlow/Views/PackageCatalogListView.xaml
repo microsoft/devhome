@@ -7,6 +7,12 @@
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     xmlns:views="using:DevHome.SetupFlow.Views"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <!-- Number of items to display per panel -->
+            <x:Int32 x:Key="ItemsPerPanel">6</x:Int32>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <StackPanel>
         <!-- Package catalogs -->
         <ItemsRepeater
@@ -16,7 +22,7 @@
                 <DataTemplate x:DataType="viewmodels:PackageCatalogViewModel">
                     <!-- Border configuration is applied in code-behind -->
                     <Border>
-                        <views:PackageCatalogView Catalog="{x:Bind Mode=OneWay}" GroupSize="6"/>
+                        <views:PackageCatalogView Catalog="{x:Bind Mode=OneWay}" GroupSize="{StaticResource ItemsPerPanel}"/>
                     </Border>
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
@@ -29,7 +35,7 @@
         <ItemsRepeater ItemsSource="{x:Bind ViewModel.PackageCatalogShimmers, Mode=OneWay}">
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate>
-                    <views:ShimmerPackageCatalogView PackageCount="6" />
+                    <views:ShimmerPackageCatalogView PackageCount="{StaticResource ItemsPerPanel}" />
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
         </ItemsRepeater>
