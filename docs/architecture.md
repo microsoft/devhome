@@ -50,7 +50,3 @@ Extensions are separate packages living as out-of-process components that provid
 Extensions can be developed by third-party developers or by the app's core development team. These extensions allow the app to be extended without modifying its core codebase.
 
 Learn more about [writing an extension](./extensions.md).
-
-Currently, we officially support the following extensions:
-
-- [Dev Home GitHub extension](https://github.com/microsoft/devhomegithubextension)

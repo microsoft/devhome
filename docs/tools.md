@@ -37,7 +37,7 @@ public class SampleToolPage : ToolPage
 The Dev Home framework will look at all types in its assembly for any inheriting from `ToolPage`:
 
 On a found type, the framework will use:
-  - [`ShortName`](#ShortName) property to get the name of the tool
+  - ShortName property to get the name of the tool
 
 ### Method definition
 
@@ -69,5 +69,3 @@ Widgets are rendered by Adaptive Cards, and there are a few ways Dev Home custom
 * There are [HostConfig](https://learn.microsoft.com/en-us/adaptive-cards/sdk/rendering-cards/uwp/host-config) files that define common styles (e.g., font family, font sizes, default spacing) and behaviors (e.g., max number of actions) for all the widgets. There is one for [light mode](../tools/Dashboard/DevHome.Dashboard/Assets/HostConfigLight.json) and one for [dark mode](../tools/Dashboard/DevHome.Dashboard/Assets/HostConfigDark.json).
 * Dev Home supports a custom AdaptiveElement type called [`LabelGroup`](../common/Renderers/LabelGroup.cs). This allows a card author to render a set of labels, each with a specified background color. For an example of how to use this type, please see the [GitHub Issues widget](https://github.com/microsoft/devhomegithubextension/blob/main/src/GithubPlugin/Widgets/Templates/GithubIssuesTemplate.json).
 * When a widget is added or customized, Dev Home will show the widget in a ContentDialog, allowing for more space in which to put configuration UI. To signify that your widget is in this "configuration" mode, Dev Home supports the JSON field `"configuring" = true`. For an example of this, see [GitHubWidget](https://github.com/microsoft/devhomegithubextension/blob/main/src/GithubPlugin/Widgets/GithubWidget.cs).
-
-## Setup Flow Tool
