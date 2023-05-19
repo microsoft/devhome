@@ -514,17 +514,18 @@ stages:
 
     - task: PowerShell@2
       displayName: Move Loc files one level up
-      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'false'))
+      condition: eq(variables['EnableLocalization'], 'true')
       inputs:
         targetType: inline
         script: >-
           $Files = Get-ChildItem . -R -Filter 'Resources.resw' | ? FullName -Like '*en-US\*\Resources.resw'
+
           $Files | % { Move-Item -Verbose $_.Directory $_.Directory.Parent.Parent -EA:Ignore }
         pwsh: true
 
     - task: MS-RDX-MRO.windows-store-publish-dev.publish-task.store-publish@2
       displayName: 'Publish Staging build to store'
-      condition: eq(variables['BuildingBranch'], 'staging')
+      condition: and(eq(variables['BuildingBranch'], 'staging'), eq(variables['TestLocPublish'], 'false'))
       inputs:
         serviceEndpoint: 'DevHomeCanary StoreBroker'
         appId: 9MX22N5S7HRD
