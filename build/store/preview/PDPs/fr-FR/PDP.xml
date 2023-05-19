@@ -55,13 +55,13 @@ Il s’agit d’un projet open source et nous accueillons la participation de la
   <ScreenshotCaptions>
     <!-- Valid length: 200 character limit, up to 9 elements per platform -->
     <!-- Valid attributes: any of DesktopImage, MobileImage, XboxImage, SurfaceHubImage, and HoloLensImage -->
-    <Caption DesktopImage="DevHomeScreenshot.png" _locID="App_caption1">
+    <Caption DesktopImage="welcome.png" _locID="App_caption1">
       <!-- _locComment_text="{MaxLength=200} Screenshot caption 1" -->
     </Caption>
-    <Caption DesktopImage="" _locID="App_caption2">
+    <Caption DesktopImage="dashboard.png" _locID="App_caption2">
       <!-- _locComment_text="{MaxLength=200} Screenshot caption 2" -->
     </Caption>
-    <Caption DesktopImage="" _locID="App_caption3">
+    <Caption DesktopImage="machine-config.png" _locID="App_caption3">
       <!-- _locComment_text="{MaxLength=200} Screenshot caption 3" -->
     </Caption>
   </ScreenshotCaptions>
