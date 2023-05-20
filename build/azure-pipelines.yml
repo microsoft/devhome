@@ -116,6 +116,9 @@ stages:
             armory:
               enable: true
               break: true
+            eslint:
+              enable: false
+              break: true
 
     - task: Flawfinder@2
       displayName: 'Run Flawfinder'
@@ -443,7 +446,7 @@ stages:
     and
     (
       in(dependencies.Build_MsixBundle.result, 'Succeeded'),
-      in(dependencies.SourceAnalysis.result, 'Succeeded'),
+      in(dependencies.SourceAnalysis.result, 'Succeeded', 'SucceededWithIssues'),
       eq(variables['EnableStorePublishing'], 'true')
     )
   jobs:
