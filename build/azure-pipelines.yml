@@ -116,9 +116,6 @@ stages:
             armory:
               enable: true
               break: true
-            eslint:
-              enable: false
-              break: false
 
     - task: Flawfinder@2
       displayName: 'Run Flawfinder'
