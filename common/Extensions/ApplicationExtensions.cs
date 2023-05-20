@@ -16,7 +16,7 @@ public static class ApplicationExtensions
     /// application.
     ///
     /// Note:
-    /// https://learn.microsoft.com/en-us/uwp/api/windows.ui.xaml.application.current?view=winrt-22621#windows-ui-xaml-application-current
+    /// https://learn.microsoft.com/uwp/api/windows.ui.xaml.application.current?view=winrt-22621#windows-ui-xaml-application-current
     /// "Application is a singleton that implements the static Current property
     /// to provide shared access to the Application instance for the current
     /// application. The singleton pattern ensures that state managed by

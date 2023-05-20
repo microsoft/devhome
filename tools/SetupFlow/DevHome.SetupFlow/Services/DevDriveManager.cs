@@ -27,7 +27,7 @@ namespace DevHome.SetupFlow.Services;
 /// <summary>
 /// Class for Dev Drive manager. The Dev Drive manager is the mediator between the Dev Drive view Model for
 /// the Dev Drive window and the objects that requested the window to be launched. Message passing between the two so they do not
-/// need to know of eachothers existence. The Dev Drive manager uses a set to keep track of the Dev Drives created by the user.
+/// need to know of each others existence. The Dev Drive manager uses a set to keep track of the Dev Drives created by the user.
 /// </summary>
 public class DevDriveManager : IDevDriveManager
 {
@@ -38,8 +38,9 @@ public class DevDriveManager : IDevDriveManager
     private readonly string _defaultDevDriveLocation;
     private const uint MaxNumberToAppendToFileName = 1000;
 
-    // Query flag for persistent state info of the volume, the presense of this flag will let us know
+    // Query flag for persistent state info of the volume, the presence of this flag will let us know
     // its a Dev drive. TODO: Update this once in Windows SDK
+    // https://github.com/microsoft/devhome/issues/634
     private readonly uint _devDriveVolumeStateFlag = 0x00002000;
 
     /// <summary>
@@ -142,7 +143,7 @@ public class DevDriveManager : IDevDriveManager
     /// </returns>
     public IDevDrive GetNewDevDrive()
     {
-        // Currently we only support creating one Dev Drive at a time. If one was
+        // Currently only one Dev Drive can be created at a time. If one was
         // produced before reuse it.
         if (_devDrives.Any())
         {
@@ -245,7 +246,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            // Log then return empty list, as this only means we don't show the user their existing dev drive. Not catastrophic failure.
+            // Log then return empty list, don't show the user their existing dev drive. Not catastrophic failure.
             Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed Get existing Dev Drives. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
             return new List<IDevDrive>();
         }

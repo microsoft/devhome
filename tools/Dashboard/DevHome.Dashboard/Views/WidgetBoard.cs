@@ -23,7 +23,7 @@ public sealed class WidgetBoard : Panel
     /// </summary>
     /// <remarks>
     /// This control is based off of the
-    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/microsoft.toolkit.uwp.ui.controls.staggeredpanel">StaggeredPanel</see>
+    /// <see href="https://learn.microsoft.com/dotnet/api/microsoft.toolkit.uwp.ui.controls.staggeredpanel">StaggeredPanel</see>
     /// control from the Windows Community Toolkit.
     /// Similar to that control, the WidgetBoard will stagger items in a row so there is not a large gap between items in a column.
     /// However, unlike that control, items will always be added to the next column in sequence.

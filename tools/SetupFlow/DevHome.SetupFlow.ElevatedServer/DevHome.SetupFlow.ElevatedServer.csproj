@@ -24,9 +24,8 @@
     <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent\DevHome.SetupFlow.ElevatedComponent.csproj" />
   </ItemGroup>
 
-  <!-- The server .exe requires the .winmd to be located next to it. For some reason having the
-       project reference is not enough to have it automatically placed there, so we manually
-       include it in the outputs. -->
+  <!-- The server .exe requires the .winmd to be located next to it. The project reference 
+        is not enough to have it automatically placed there. Manually include it in the outputs. -->
   <ItemGroup>
     <Content Include="..\DevHome.SetupFlow.ElevatedComponent\bin\$(Platform)\$(Configuration)\$(TargetFramework)\DevHome.SetupFlow.ElevatedComponent.winmd">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

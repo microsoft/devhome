@@ -51,6 +51,7 @@
 
             <!-- Widget configuration UI -->
             <!-- TODO: This is a bare-bones representation of the configuration UI -->
+            <!-- https://github.com/microsoft/devhome/issues/642 -->
             <!--       Should have better layout / possibly be a user control -->
             <Grid x:Name="ConfigurationContentGrid">
                 <Grid.RowDefinitions>

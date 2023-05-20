@@ -31,7 +31,7 @@ public interface ITelemetry
     /// </summary>
     /// <param name="action">What we trying to do when the exception occurred.</param>
     /// <param name="e">Exception object</param>
-    /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and corelate them</param>
+    /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
     public void LogException(string action, Exception e, Guid? relatedActivityId = null);
 
     /// <summary>
@@ -39,7 +39,7 @@ public interface ITelemetry
     /// </summary>
     /// <param name="eventName">The measurement we're performing (ex. "DeployTime").</param>
     /// <param name="timeTakenMilliseconds">How long the action took in milliseconds.</param>
-    /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and corelate them</param>
+    /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
     public void LogTimeTaken(string eventName, uint timeTakenMilliseconds, Guid? relatedActivityId = null);
 
     /// <summary>
@@ -47,7 +47,7 @@ public interface ITelemetry
     /// </summary>
     /// <param name="eventName">The name of the event to log</param>
     /// <param name="isError">Set to true if an error condition raised this event.</param>
-    /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and corelate them</param>
+    /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
     public void LogMeasure(string eventName, bool isError = false, Guid? relatedActivityId = null);
 
     /// <summary>
@@ -57,7 +57,7 @@ public interface ITelemetry
     /// <param name="eventName">Name of the error event</param>
     /// <param name="level">Determines whether to upload the data to our servers, and on how many machines.</param>
     /// <param name="data">Values to send to the telemetry system.</param>
-    /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and corelate them</param>
+    /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
     /// <typeparam name="T">Anonymous type.</typeparam>
     public void Log<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
         where T : EventBase;
@@ -69,7 +69,7 @@ public interface ITelemetry
     /// <param name="eventName">Name of the error event</param>
     /// <param name="level">Determines whether to upload the data to our servers, and on how many machines.</param>
     /// <param name="data">Values to send to the telemetry system.</param>
-    /// <param name="relatedActivityId">Optional Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and corelate them</param>
+    /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
     /// <typeparam name="T">Anonymous type.</typeparam>
     public void LogError<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
         where T : EventBase;

@@ -175,6 +175,7 @@ public class PluginService : IPluginService
                         else
                         {
                             // TODO: throw warning or fire notification that plugin declared unsupported plugin interface
+                            // https://github.com/microsoft/devhome/issues/617
                         }
                     }
                 }

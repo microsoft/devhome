@@ -63,6 +63,6 @@ public class RepoDialogAddRepoEvent : EventBase
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // No sensitive strings held.
+        // No sensitive strings to replace
     }
 }

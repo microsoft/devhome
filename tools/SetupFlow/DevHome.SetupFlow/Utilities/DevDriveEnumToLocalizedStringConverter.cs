@@ -19,7 +19,7 @@ public class DevDriveEnumToLocalizedStringConverter : IValueConverter
         _stringResource = Application.Current.GetService<ISetupFlowStringResource>();
     }
 
-    // Since this is only a converter, this doesn't need to be registered as a service and we can pass the string
+    // Since this is only a converter, this doesn't need to be registered as a service and can passed the string
     // resource to the constructor for testing.
     public DevDriveEnumToLocalizedStringConverter(ISetupFlowStringResource setupFlowStringResource)
     {
