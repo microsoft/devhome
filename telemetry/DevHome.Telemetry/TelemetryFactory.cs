@@ -5,7 +5,7 @@ namespace DevHome.Telemetry;
 
 /// <summary>
 /// Creates instance of Telemetry
-/// This would be useful for future when we have updated interfaces for logger like ITelemetry2, ITelemetry3 and so on
+/// This would be useful for the future when interfaces have been updated for logger like ITelemetry2, ITelemetry3 and so on
 public class TelemetryFactory
 {
     private static readonly object LockObj = new ();
@@ -28,7 +28,7 @@ public class TelemetryFactory
 
     /// <summary>
     /// Gets a singleton instance of Telemetry
-    /// This would be useful for future when we have updated interfaces for logger like ITelemetry2, ITelemetry3 and so on
+    /// This would be useful for the future when interfaces have been updated for logger like ITelemetry2, ITelemetry3 and so on
     public static T Get<T>()
         where T : ITelemetry
     {

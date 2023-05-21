@@ -26,6 +26,7 @@ namespace DevHome.SetupFlow.ElevatedComponent.Tasks;
 /// and install given the package and catalog IDs.
 /// </remarks>
 //// TODO: Some of this can be refactored to avoid duplication with non-elevated installs
+//// https://github.com/microsoft/devhome/issues/622
 public sealed class ElevatedInstallTask
 {
     private readonly WindowsPackageManagerFactory _wingetFactory = new WindowsPackageManagerManualActivationFactory();

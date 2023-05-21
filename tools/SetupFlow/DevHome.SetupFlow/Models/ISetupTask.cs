@@ -30,6 +30,7 @@ public interface ISetupTask
     /// TODO: We need to figure a story around how to handle reboots and the different cases.
     ///       Setting up WSL (future) will require us to reboot the machine to finish, but other
     ///       tasks like installing an app may trigger a reboot out of our control.
+    /// https://github.com/microsoft/devhome/issues/637
     /// </remarks>
     public bool RequiresReboot
     {
@@ -45,6 +46,7 @@ public interface ISetupTask
     /// TODO: Define progress type to report status in Loading page
     /// TODO: We will have a background process to run tasks that require elevated permissions.
     ///       We will have to figure a way to communicate those tasks to the background process.
+    /// https://github.com/microsoft/devhome/issues/638
     /// </remarks>
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.

@@ -59,7 +59,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     private bool _canShowDevDriveUI;
 
     /// <summary>
-    /// Gets a value indicating whether the the drive label, location, size or drive letter has changed when the Dev Drive window closes.
+    /// Gets a value indicating whether the drive label, location, size or drive letter has changed when the Dev Drive window closes.
     /// </summary>
     public bool DevDriveDetailsChanged
     {
@@ -133,7 +133,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Get the display name for the Dev Drive. By default no arguments will return the Rooth path of the Dev Drive
+    /// Get the display name for the Dev Drive. By default no arguments will return the root path of the Dev Drive
     /// this is in the form of "DriveLetter:\" e.g D:\
     /// </summary>
     public string GetDriveDisplayName(DevDriveDisplayNameKind useDriveLetterOnly = DevDriveDisplayNameKind.DriveRootKind)
@@ -145,7 +145,7 @@ public partial class EditDevDriveViewModel : ObservableObject
 
         if (useDriveLetterOnly == DevDriveDisplayNameKind.DriveRootKind)
         {
-            // Uses the actual place where we'll be cloning to
+            // Uses the actual place to clone to
             return $@"{DevDrive.DriveLetter}:\";
         }
 

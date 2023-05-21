@@ -33,6 +33,7 @@ public class GitWatcher : IGitWatcher
     private GitWatcher()
     {
         // TODO: Add rehydration logic either here or in core app initialization code
+        // https://github.com/microsoft/devhome/issues/618
         newRepoWatchers = new ();
         existingRepoWatchers = new ();
     }
@@ -86,6 +87,7 @@ public class GitWatcher : IGitWatcher
                 (source) =>
                 {
                     // TODO: handle WSL paths
+                    // https://github.com/microsoft/devhome/issues/619
                     FileSystemWatcher watcher = new (source)
                     {
                         NotifyFilter = NotifyFilters.LastWrite
@@ -176,6 +178,7 @@ public class GitWatcher : IGitWatcher
             var path = GetRepoRootFromFileInGitFolder(e.FullPath);
 
             // TODO: Linux filesystems may recognize upper- and lowercase paths as distinct
+            // https://github.com/microsoft/devhome/issues/620
             path = path.ToLower(CultureInfo.InvariantCulture);
             if (!existingRepoWatchers.ContainsKey(path))
             {

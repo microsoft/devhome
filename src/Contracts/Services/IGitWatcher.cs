@@ -97,7 +97,7 @@ public interface IGitWatcher
     /// <param name="filePattern">
     /// The pattern to match. Supports asterisk and question mark wildcards; see
     /// <code>FileSystemWatcher.Filter</code>'s documentation for details:
-    /// https://learn.microsoft.com/en-us/dotnet/api/system.io.filesystemwatcher.filter
+    /// https://learn.microsoft.com/dotnet/api/system.io.filesystemwatcher.filter
     /// </param>
     /// <returns>An IGitFileWatcher watching for changes to the specified file(s)</returns>
     public IGitFileWatcher CreateFileWatcher(string filePattern);

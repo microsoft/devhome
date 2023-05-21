@@ -18,7 +18,7 @@ using Windows.Win32.Foundation;
 namespace DevHome.SetupFlow.Services;
 
 /// <summary>
-/// Windows package manager class is an entrypoint for using the WinGet COM API.
+/// Windows package manager class is an entry point for using the WinGet COM API.
 /// </summary>
 public class WindowsPackageManager : IWindowsPackageManager
 {
@@ -86,7 +86,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         });
 
         // Connect composite catalog for all local and remote catalogs to
-        // enable searching for pacakges from any source
+        // enable searching for packages from any source
         var allCatalogsConnect = Task.Run(async () =>
         {
             try
@@ -191,7 +191,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalogs = packageManager.GetPackageCatalogs();
 
-        // Cannot use foreach or Linq for out-of-process IVector
+        // Cannot use foreach or LINQ for out-of-process IVector
         // Bug: https://github.com/microsoft/CsWinRT/issues/1205
         for (var i = 0; i < catalogs.Count; ++i)
         {

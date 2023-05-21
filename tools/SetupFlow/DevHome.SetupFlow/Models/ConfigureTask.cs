@@ -23,8 +23,8 @@ public class ConfigureTask : ISetupTask
     private readonly StorageFile _file;
     private ConfigurationFileHelper _configurationFileHelper;
 
-    // We can run configuration files as admin or as regular user
-    // depending on the user, so we make this settable.
+    // Configuration files can run as either admin or as a regular user
+    // depending on the user, make this settable.
     public bool RequiresAdmin { get; set; }
 
     public bool RequiresReboot { get; private set; }
@@ -121,7 +121,7 @@ public class ConfigureTask : ISetupTask
             RequiresReboot = elevatedResult.RebootRequired;
             UnitResults = new List<ConfigurationUnitResult>();
 
-            // Cannot use foreach or Linq for out-of-process IVector
+            // Cannot use foreach or LINQ for out-of-process IVector
             // Bug: https://github.com/microsoft/CsWinRT/issues/1205
             for (var i = 0; i < elevatedResult.UnitResults.Count; ++i)
             {

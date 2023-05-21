@@ -180,7 +180,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     private async Task ReloadCatalogsAsync()
     {
-        // After installing packages, we should reconnect to catalogs to
+        // After installing packages, reconnect to catalogs to
         // reflect the latest changes when new Package COM objects are created
         Log.Logger?.ReportInfo(Log.Component.Summary, $"Checking if a new catalog connections should be established");
         if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
@@ -201,7 +201,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
-    /// Get the list of configuratoin unit restults for an applied
+    /// Get the list of configuration unit results for an applied
     /// configuration file task.
     /// </summary>
     /// <returns>List of configuration unit result</returns>

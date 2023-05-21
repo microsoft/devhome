@@ -44,7 +44,7 @@ public abstract class WinGetPackageDataSource
     /// Callback delegate for retrieving the package id
     /// </summary>
     /// <typeparam name="T">Input item type</typeparam>
-    /// <param name="item">Item tha can be mapped to a package id</param>
+    /// <param name="item">Item that can be mapped to a package id</param>
     /// <returns>Package id</returns>
     protected delegate string PackageIdCallback<T>(T item);
 
