@@ -180,7 +180,7 @@ public class InstallPackageTask : ISetupTask
     /// </summary>
     /// <param name="hr">The HRESULT value</param>
     /// <returns>Facility of the specified HRESULT</returns>
-    /// <remarks>https://learn.microsoft.com/en-us/windows/win32/api/winerror/nf-winerror-hresult_facility</remarks>
+    /// <remarks>https://learn.microsoft.com/windows/win32/api/winerror/nf-winerror-hresult_facility</remarks>
     private int HResultFacility(int hr) => (hr >> 16) & 0x1FFF;
 
     public bool IsAppInstallerErrorFacility(int hr) => HResultFacility(hr) == WindowsPackageManager.AppInstallerErrorFacility;

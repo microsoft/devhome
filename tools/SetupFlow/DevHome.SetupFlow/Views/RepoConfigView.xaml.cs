@@ -16,7 +16,7 @@ using Microsoft.UI.Xaml.Controls;
 namespace DevHome.SetupFlow.Views;
 
 /// <summary>
-/// Shows the user the repositories they have sleected.
+/// Shows the user the repositories they have selected.
 /// </summary>
 public sealed partial class RepoConfigView : UserControl
 {
@@ -86,8 +86,8 @@ public sealed partial class RepoConfigView : UserControl
 
         if (result == ContentDialogResult.Primary && everythingToClone.Any())
         {
-            // We currently only support adding either a local path or a new Dev Drive as the cloning location. Only one can be selected
-            // during the add repo dialog flow. So if multiple repositories are selected and the user chose to clone them to a Dev Drive
+            // Currently clone path supports either a local path or a new Dev Drive. Only one can be selected
+            // during the add repo dialog flow. If multiple repositories are selected and the user chose to clone them to a Dev Drive
             // that doesn't exist on the system yet, then we make sure all the locations will clone to that new Dev Drive.
             if (devDrive != null && devDrive.State != DevDriveState.ExistsOnSystem)
             {
@@ -99,7 +99,7 @@ public sealed partial class RepoConfigView : UserControl
 
                 // The cloning location may have changed e.g The original Drive clone path for Dev Drives was the F: drive for items
                 // on the add repo page, but during the Add repo dialog flow the user chose to change this location to the D: drive.
-                // we need to reflect this for all the old items currently in the add repo page.
+                // reflect this for all the old items currently in the add repo page.
                 ViewModel.UpdateCollectionWithDevDriveInfo(everythingToClone.First());
                 ViewModel.DevDriveManager.IncreaseRepositoriesCount(everythingToClone.Count);
                 ViewModel.DevDriveManager.ConfirmChangesToDevDrive();
@@ -219,8 +219,8 @@ public sealed partial class RepoConfigView : UserControl
                 ViewModel.UpdateCloneLocation(cloningInformation);
             }
 
-            // If the user launches the edit button, and changes or updates the clone path to be a Dev Drive, we need
-            // to update the other entries in the list, that are being cloned to the Dev Drive with this new information.
+            // If the user launches the edit button, and changes or updates the clone path to be a Dev Drive,
+            // update the other entries in the list, that are being cloned to the Dev Drive with this new information.
             if (oldLocation != cloningInformation.CloningLocation && cloningInformation.CloneToDevDrive)
             {
                 ViewModel.UpdateCollectionWithDevDriveInfo(cloningInformation);

@@ -23,6 +23,7 @@ using Windows.System;
 namespace DevHome.Views;
 
 // TODO: Update NavigationViewItem titles and icons in ShellPage.xaml.
+// https://github.com/microsoft/devhome/issues/614
 public sealed partial class ShellPage : Page
 {
     public ShellViewModel ViewModel

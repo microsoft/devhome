@@ -58,7 +58,7 @@ internal class RepositoryProviders
     /// Goes through all providers to figure out if they can make a repo from a Uri.
     /// </summary>
     /// <param name="uri">The Uri to parse.</param>
-    /// <returns>If a provider was found that can parse the Uri then (providerName, repository) in not
+    /// <returns>If a provider was found that can parse the Uri then (providerName, repository) if not
     /// (string.empty, null)</returns>
     public (string, IRepository) ParseRepositoryFromUri(Uri uri)
     {
@@ -81,7 +81,7 @@ internal class RepositoryProviders
     /// <summary>
     /// Logs the user into a certain provider.
     /// </summary>
-    /// <param name="providerName">The provider to log the user into.  Must match IRepositoryProvider.GetDisplayName</param>
+    /// <param name="providerName">The provider to log the user into.  Must match display name of the plugin</param>
     public IDeveloperId LogInToProvider(string providerName)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Logging in to provider {providerName}");
@@ -89,7 +89,7 @@ internal class RepositoryProviders
     }
 
     /// <summary>
-    /// Getss the display names of all providers.
+    /// Gets the display names of all providers.
     /// </summary>
     /// <returns>A collection of display names.</returns>
     public IEnumerable<string> GetAllProviderNames()
@@ -100,7 +100,7 @@ internal class RepositoryProviders
     /// <summary>
     /// Gets all logged in accounts for a specific provider.
     /// </summary>
-    /// <param name="providerName">The provider to use.  Must match IRepositoryProvider.GetDisplayName</param>
+    /// <param name="providerName">The provider to use.  Must match the display name of the provider</param>
     /// <returns>A collection of developer Ids of all logged in users.  Can be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts(string providerName)
     {
@@ -111,7 +111,7 @@ internal class RepositoryProviders
     /// <summary>
     /// Gets all the repositories for an account and provider.  The account will be logged in if they aren't already.
     /// </summary>
-    /// <param name="providerName">The specific provider.  Must match IRepositoryProvider.GetDisplayName</param>
+    /// <param name="providerName">The specific provider.  Must match the display name of a provider</param>
     /// <param name="developerId">The account to look for.  May not be logged in.</param>
     /// <returns>All the repositories for an account and provider.</returns>
     public IEnumerable<IRepository> GetAllRepositories(string providerName, IDeveloperId developerId)

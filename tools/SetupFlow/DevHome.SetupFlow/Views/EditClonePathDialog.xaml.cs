@@ -49,7 +49,7 @@ public sealed partial class EditClonePathDialog
     }
 
     /// <summary>
-    /// Gets a value indicating whether the Dev Drive checkmark was previously checked or unchecked.
+    /// Gets a value indicating whether the Dev Drive checkbox was previously checked or unchecked.
     /// </summary>
     public bool PrevCheckBoxSelection
     {
@@ -181,9 +181,9 @@ public sealed partial class EditClonePathDialog
     }
 
     /// <summary>
-    /// Used so we don't close the dialog when we're currently showing the user the warning message, and the user clicks the primary button.
+    /// Used so the dialog does not close when a warning message is shown to the user and the user clicks the primary button.
     /// <remarks>
-    /// Cancelling the button click args keeps the dialog alive without closing it. When the primary button is clicked we remove the Dev Drive info
+    /// Cancelling the button click args keeps the dialog alive without closing it. When the primary button is clicked remove the Dev Drive info
     /// from the dialog and show the default dialog content with the textbox and browse button.
     /// </remarks>
     /// </summary>
@@ -203,7 +203,7 @@ public sealed partial class EditClonePathDialog
     }
 
     /// <summary>
-    /// Used so we don't close the dialog when we're showing the user the warning message, and the user clicks cancel.
+    /// Used so the dialog does not close when a warning message is shown to the user and the user clicks cancel.
     /// <remarks>
     /// Cancelling the button click args keeps the dialog alive without closing it. When cancelled we repopulate the Dev drive
     /// info back into the dialog, and recheck the checkmark.

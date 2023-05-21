@@ -71,7 +71,7 @@ public sealed partial class FeedbackPage : Page
 
             ReportBugExpectedBehavior.Text = ReportBugActualBehavior.Text = string.Empty;
 
-            // Make sure any changes are consistent with the translatoin issue template on GitHuba
+            // Make sure any changes are consistent with the translation issue template on GitHuba
             await Windows.System.Launcher.LaunchUriAsync(new Uri(gitHubURL));
         }
         else

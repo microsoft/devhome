@@ -51,7 +51,7 @@ public class PackageProviderTest : BaseSetupFlowTest
         var packageProvider = TestHost.GetService<PackageProvider>();
 
         // Act
-        var result1 = packageProvider.CreateOrGet(mockPackage, cachePermanently: true); // Cahed permanently
+        var result1 = packageProvider.CreateOrGet(mockPackage, cachePermanently: true); // Cached permanently
         var result2 = packageProvider.CreateOrGet(mockPackage);                         // Same object from cache
 
         // Assert
@@ -88,7 +88,7 @@ public class PackageProviderTest : BaseSetupFlowTest
         result1.IsSelected = true;                              // Cached temporarily
         var result2 = packageProvider.CreateOrGet(mockPackage); // Same object from cache
         result1.IsSelected = false;                             // Removed from cache
-        var result3 = packageProvider.CreateOrGet(mockPackage); // New objec, not cached
+        var result3 = packageProvider.CreateOrGet(mockPackage); // New object, not cached
 
         // Assert
         Assert.AreEqual(result1, result2);
@@ -125,7 +125,7 @@ public class PackageProviderTest : BaseSetupFlowTest
 
         // Act
         var result1 = packageProvider.CreateOrGet(mockPackage, cachePermanently: true); // Cached permanently
-        result1.IsSelected = true;                                                      // Noop
+        result1.IsSelected = true;                                                      // No-op
         var result2 = packageProvider.CreateOrGet(mockPackage);                         // Same object from cache
         result1.IsSelected = false;                                                     // Not removed from cache
         var result3 = packageProvider.CreateOrGet(mockPackage);                         // Same object from cache

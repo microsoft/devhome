@@ -65,7 +65,7 @@ public partial class DashboardView : ToolPage
 
         ActualThemeChanged += OnActualThemeChanged;
 
-        // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
+        // If this is the first time initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
         {
             if (EnsureWebExperiencePack())
@@ -80,7 +80,7 @@ public partial class DashboardView : ToolPage
         }
         else
         {
-            // If above initialization failed, we don't have any widgets, so show the message.
+            // If above initialization failed, there are no widgets, show the message.
             NoWidgetsStackPanel.Visibility = Visibility.Visible;
         }
 
@@ -118,13 +118,13 @@ public partial class DashboardView : ToolPage
 
     private bool EnsureWebExperiencePack()
     {
-        // If we've already validated there's a good version, don't check again.
+        // If already validated there's a good version, don't check again.
         if (_validatedWebExpPack)
         {
             return true;
         }
 
-        // Ensure that the application is installed, and that the version is high enough.
+        // Ensure the application is installed, and the version is high enough.
         const string packageName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
         const int stableVer = 423;
         const int stableMin = 3800; // 423.3800.0.0
@@ -305,6 +305,7 @@ public partial class DashboardView : ToolPage
     private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
     {
         // TODO: Ideally there would be some sort of visual loading indicator while the renderer gets set up.
+        // https://github.com/microsoft/devhome/issues/640
         await ConfigureWidgetRenderer(_renderer);
 
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
@@ -486,9 +487,11 @@ public partial class DashboardView : ToolPage
                 // If the size the widget is currently set to is no longer supported by the widget, revert to its default size.
                 // TODO: Need to update WidgetControl with now-valid sizes.
                 // TODO: Properly compare widget capabilities.
+                // https://github.com/microsoft/devhome/issues/641
                 if (oldDef.GetWidgetCapabilities() != newDef.GetWidgetCapabilities())
                 {
                     // TODO: handle the case where this change is made while Dev Home is not running -- how do we restore?
+                    // https://github.com/microsoft/devhome/issues/641
                     if (!newDef.GetWidgetCapabilities().Any(cap => cap.Size == widgetToUpdate.WidgetSize))
                     {
                         var newDefaultSize = WidgetHelpers.GetDefaultWidgetSize(newDef.GetWidgetCapabilities());
@@ -499,6 +502,7 @@ public partial class DashboardView : ToolPage
             }
 
             // TODO: ThemeResource (icons) changed.
+            // https://github.com/microsoft/devhome/issues/641
         }
     }
 

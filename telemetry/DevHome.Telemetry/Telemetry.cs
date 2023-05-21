@@ -179,10 +179,11 @@ internal class Telemetry : ITelemetry
     }
 
     /// <summary>
-    /// Log an informal event with no additional data at log level measure.  Does not allow for coordinating activities.
+    /// Log an informal event with no additional data at log level measure.
     /// </summary>
     /// <param name="eventName">The name of the event to log</param>
     /// <param name="isError">Set to true if an error condition raised this event.</param>
+    /// <param name="relatedActivityId">GUID to correlate activities.</param>
     public void LogMeasure(string eventName, bool isError = false, Guid? relatedActivityId = null)
     {
         this.LogInternal(eventName, LogLevel.Measure, new EmptyEvent(), relatedActivityId, isError);
@@ -194,7 +195,7 @@ internal class Telemetry : ITelemetry
     /// <param name="eventName">Name of the error event</param>
     /// <param name="level">Determines whether to upload the data to our servers, and on how many machines.</param>
     /// <param name="data">Values to send to the telemetry system.</param>
-    /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and corelate them</param>
+    /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
     /// <typeparam name="T">Anonymous type.</typeparam>
     public void Log<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
         where T : EventBase
@@ -209,7 +210,7 @@ internal class Telemetry : ITelemetry
     /// <param name="eventName">Name of the error event</param>
     /// <param name="level">Determines whether to upload the data to our servers, and on how many machines.</param>
     /// <param name="data">Values to send to the telemetry system.</param>
-    /// <param name="relatedActivityId">Optional Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and corelate them</param>
+    /// <param name="relatedActivityId">Optional relatedActivityId which will allow to correlate this telemetry with other telemetry in the same action/activity or thread and correlate them</param>
     /// <typeparam name="T">Anonymous type.</typeparam>
     public void LogError<T>(string eventName, LogLevel level, T data, Guid? relatedActivityId = null)
         where T : EventBase

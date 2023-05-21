@@ -22,7 +22,7 @@ internal class DevDriveTriggeredEvent : EventBase
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // No sensitive strings to replace
+        // No sensitive strings to replace.
     }
 
     private readonly IDevDrive _devDrive;

@@ -14,6 +14,7 @@ public static class WinRTObjectExtensions
         where TProjectedClass : IWinRTObject
     {
         // TODO Use API contract version to check if member is available
+        // https://github.com/microsoft/devhome/issues/625
         // Modify the signature to take the current and min version
         try
         {

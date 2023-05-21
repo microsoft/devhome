@@ -66,7 +66,7 @@ public sealed partial class Banner : UserControl
     }
 
     /// <summary>
-    /// Gets or sets the text displayed on the Banner's action buttton.
+    /// Gets or sets the text displayed on the Banner's action button.
     /// </summary>
     public string ButtonText
     {
