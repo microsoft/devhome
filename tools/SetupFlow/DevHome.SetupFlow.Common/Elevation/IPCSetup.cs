@@ -18,7 +18,7 @@ namespace DevHome.SetupFlow.Common.Elevation;
 
 /// <summary>
 /// Helper class for establishing a background process to offload work to,
-/// and communication with it. This is currently used only when we need
+/// and communicate with it. This is currently used only when we need
 /// some tasks to be executed with admin permissions; in that case we
 /// create a background process with the required permissions and then
 /// hand off all the work to it.
@@ -62,11 +62,11 @@ namespace DevHome.SetupFlow.Common.Elevation;
 ////   process due to async calls.
 ////
 //// * The methods that set up the remote object are generic due to some
-////   behaviors of CsWinRT we need to work around. The ElevatedServer
+////   behaviors of CsWinRT that need to be worked around. The ElevatedServer
 ////   process needs the actual types from the ElevatedComponent to
 ////   create the new object, so it has a project reference to it.
 ////   Everywhere else, what we need is the projection types to be able
-////   to create the proxy objects; so we use a reference to the
+////   to create the proxy objects; use a reference to the
 ////   ElevatedComponent.Projection that uses the WinMD to generate the
 ////   projections. The code here is called from both sides, so it needs
 ////   to work for different versions of the same type
@@ -163,7 +163,7 @@ public static class IPCSetup
             HandleInheritability.Inheritable);
 
         // Write a failure result to the shared memory in case the background process
-        // fails without writting anything.
+        // fails without writing anything.
         MappedMemoryValue mappedMemoryValue = default;
         using (var mappedFileAccessor = mappedFile.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Write))
         {
@@ -197,7 +197,7 @@ public static class IPCSetup
 
             if (isForTesting)
             {
-                // For testing we run without ShellExecute so we can inspect the process output.
+                // For testing we run without ShellExecute so the process output can be inspected.
                 // This has the side effect of not running elevated.
                 processStartInfo.UseShellExecute = false;
                 processStartInfo.Verb = string.Empty;
@@ -248,7 +248,7 @@ public static class IPCSetup
             {
                 unsafe
                 {
-                    // Copy the object into an IStream that we can use with CoUnmarshalInterface
+                    // Copy the object into an IStream to use with CoUnmarshalInterface
                     byte* rawPointer = null;
                     uint bytesWritten;
                     try
@@ -288,7 +288,7 @@ public static class IPCSetup
             Log.Logger?.ReportError(Log.Component.IPCClient, $"Error occuring while setting up elevated process: {e.Message}");
 
             // Release the "mutex" if there is any error.
-            // On success, we will release it after we're done with the work.
+            // On success, the mutex will be released after work is done.
             completionSemaphore.Release();
             throw;
         }
@@ -329,7 +329,7 @@ public static class IPCSetup
             {
                 unsafe
                 {
-                    // Write the object into a stream from which we will copy to the shared memory
+                    // Write the object into a stream from which will be copied to the shared memory
                     Marshal.ThrowExceptionForHR(PInvoke.CreateStreamOnHGlobal(0, fDeleteOnRelease: true, out var stream));
 
                     var marshaler = MarshalInterface<T>.CreateMarshaler(value);

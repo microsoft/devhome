@@ -32,7 +32,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ContentDialog.Resources>
-    <!-- ContentDialog has a padding of 24 on left/right. Extend the ScrollViewer there so that we can show the scroll bar at the edge of the dialog. -->
+    <!-- ContentDialog has a padding of 24 on left/right. Extend the ScrollViewer there to show the scroll bar at the edge of the dialog. -->
     <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" Padding="24,0" Margin="-24,0">
         <StackPanel x:Name="AddRepoStackPanel" Orientation="Vertical" Spacing="5" MinWidth="450" MinHeight="550"  MaxWidth="450">
             <StackPanel.Resources>
@@ -94,7 +94,7 @@
                     <ColumnDefinition Width="5*"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <!--WINUI3 does not have a folder/file picker control.  Lets make one that looks like it.-->
+                <!-- Folder picker -->
                 <StackPanel
                     Grid.Column="0"
                     Spacing="7">
@@ -113,7 +113,8 @@
                      IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
                      Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
                 <Grid Grid.Column="1">
-                    <!-- Hacky way to show a tooltip on a disabled button-->
+                    <!-- Workaround to show a tooltip on a disabled button.
+                         https://github.com/microsoft/microsoft-ui-xaml/issues/2262 -->
                     <TextBlock>
                     <ToolTipService.ToolTip>
                         <ToolTip x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClearCheckboxToBrowse" Visibility="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>

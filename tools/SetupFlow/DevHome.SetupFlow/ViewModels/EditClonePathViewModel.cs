@@ -12,7 +12,7 @@ namespace DevHome.SetupFlow.ViewModels;
 public partial class EditClonePathViewModel : ObservableObject
 {
     /// <summary>
-    /// COntrols if the error text should be shown.
+    /// Controls if the error text should be shown.
     /// </summary>
     [ObservableProperty]
     private Visibility _showErrorTextBox;
@@ -24,7 +24,7 @@ public partial class EditClonePathViewModel : ObservableObject
     private bool _isPrimaryButtonEnabled;
 
     /// <summary>
-    /// Controls if the the warning message for removing the new dev drive should be shown.
+    /// Controls if the warning message for removing the new dev drive should be shown.
     /// </summary>
     [ObservableProperty]
     private bool _shouldShowAreYouSureMessage;

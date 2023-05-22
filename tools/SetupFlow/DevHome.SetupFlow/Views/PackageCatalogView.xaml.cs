@@ -43,7 +43,7 @@ public sealed partial class PackageCatalogView : UserControl
 
     /// <summary>
     /// Gets or sets the max size of each package group. If the total number of
-    /// packages is not divisible by the group size, then the lsat group will
+    /// packages is not divisible by the group size, then the last group will
     /// have less packages.
     /// </summary>
     public int GroupSize

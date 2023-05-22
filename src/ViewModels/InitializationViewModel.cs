@@ -37,7 +37,7 @@ public class InitializationViewModel : ObservableRecipient
             {
                 var appInstallTask = InstallStorePackageAsync(GitHubExtensionStorePackageId);
 
-                // wait for a maximunm of StoreInstallTimeout milis
+                // wait for a maximum of StoreInstallTimeout milliseconds
                 var completedTask = await Task.WhenAny(appInstallTask, Task.Delay(StoreInstallTimeout));
 
                 if (completedTask.Exception is not null)

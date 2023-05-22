@@ -117,6 +117,7 @@ public sealed partial class AccountsPage : Page
             await loginUIContentDialog.ShowAsync();
 
             // TODO: Await Login event to match up the loginEntryPoint and return DeveloperId
+            // https://github.com/microsoft/devhome/issues/607
             loginUIAdaptiveCardController.Dispose();
         }
         catch (Exception ex)

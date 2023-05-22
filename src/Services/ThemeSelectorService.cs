@@ -43,7 +43,7 @@ public class ThemeSelectorService : IThemeSelectorService
     public bool IsDarkTheme()
     {
         // If theme is Default, use the Application.RequestedTheme value
-        // https://learn.microsoft.com/en-us/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.elementtheme?view=windows-app-sdk-1.2#fields
+        // https://learn.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.elementtheme?view=windows-app-sdk-1.2#fields
         return Theme == ElementTheme.Dark ||
             (Theme == ElementTheme.Default && Application.Current.RequestedTheme == ApplicationTheme.Dark);
     }

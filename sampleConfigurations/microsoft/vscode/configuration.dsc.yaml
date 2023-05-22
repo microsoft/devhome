@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+# Reference: https://github.com/microsoft/vscode/wiki/How-to-Contribute
+properties:
+  resources:
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: npm
+      directives:
+        description: Install NodeJS version >=16.17.x and <17
+        allowPrerelease: true
+      settings:
+        id: OpenJS.NodeJS.LTS
+        version: 16.20.0
+        source: winget
+    - resource: NpmDsc/NpmPackage
+      id: yarn
+      dependsOn:
+        - npm
+      directives:
+        description: Install Yarn
+        allowPrerelease: true
+      settings:
+        Name: 'yarn'
+        Global: true
+        PackageDirectory: '${WinGetConfigRoot}\..\'         
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Python 3.10
+        allowPrerelease: true
+      settings:
+        id: Python.Python.3.10
+        source: winget
+    - resource: NpmDsc/NpmPackage
+      dependsOn:
+        - yarn
+      directives:
+        description: Install node-gyp (includes Windows Build Tools)
+        allowPrerelease: true
+      settings:
+        Name: 'node-gyp'
+        Global: true
+        PackageDirectory: '${WinGetConfigRoot}\..\' 
+    - resource: YarnDsc/YarnInstall
+      dependsOn:
+        - npm
+      directives:
+        description: Install dependencies
+        allowPrerelease: true
+      settings:
+        PackageDirectory: '${WinGetConfigRoot}\..\' 
+  configurationVersion: 0.2.0

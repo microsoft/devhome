@@ -69,7 +69,7 @@ public class PackageProvider
     public ReadOnlyObservableCollection<PackageViewModel> SelectedPackages => new (_selectedPackages);
 
     /// <summary>
-    /// Occurrs when a package selection has changed
+    /// Occurs when a package selection has changed
     /// </summary>
     public event EventHandler<PackageViewModel> PackageSelectionChanged;
 
