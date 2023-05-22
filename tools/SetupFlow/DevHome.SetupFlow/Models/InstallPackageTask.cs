@@ -117,13 +117,13 @@ public class InstallPackageTask : ISetupTask
                 _extendedErrorCode = e.ExtendedErrorCode;
                 _installerErrorCode = e.InstallerErrorCode;
                 ReportAppInstallFailedEvent();
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}.");
                 return TaskFinishedState.Failure;
             }
             catch (Exception e)
             {
                 ReportAppInstallFailedEvent();
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package", e);
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package.", e);
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();

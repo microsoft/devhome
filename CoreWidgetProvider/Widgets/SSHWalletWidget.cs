@@ -283,7 +283,7 @@ internal class SSHWalletWidget : CoreWidget
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError(Name, ShortId, $"Failed getting configuration information for input config file path: {data}", ex);
+                Log.Logger()?.ReportError(Name, ShortId, $"Failed getting configuration information for input config file path: {data}.", ex);
 
                 configurationData = FillConfigurationData(false, data, 0, true, Resources.GetResource(@"SSH_Widget_Template/ErrorProcessingConfigFile", Logger()));
 

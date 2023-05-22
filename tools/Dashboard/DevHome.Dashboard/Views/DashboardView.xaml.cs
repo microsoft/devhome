@@ -110,7 +110,7 @@ public partial class DashboardView : ToolPage
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError("DashboardView", "Exception in InitializeWidgetHost:", ex);
+            Log.Logger()?.ReportError("DashboardView", "Exception in InitializeWidgetHost.", ex);
             return false;
         }
 
@@ -194,7 +194,7 @@ public partial class DashboardView : ToolPage
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError("DashboardView", "Error retrieving HostConfig", ex);
+            Log.Logger()?.ReportError("DashboardView", "Error retrieving HostConfig.", ex);
         }
 
         _dispatcher.TryEnqueue(() =>
@@ -263,7 +263,7 @@ public partial class DashboardView : ToolPage
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError("DashboardView", $"Exception in CacheWidgetIcons:", ex);
+                Log.Logger()?.ReportError("DashboardView", $"Exception in CacheWidgetIcons.", ex);
                 _widgetLightIconCache.Add(widgetDefId, null);
                 _widgetDarkIconCache.Add(widgetDefId, null);
             }
@@ -335,7 +335,7 @@ public partial class DashboardView : ToolPage
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger()?.ReportError("DashboardView", $"RestorePinnedWidgets(): ", ex);
+                    Log.Logger()?.ReportError("DashboardView", $"RestorePinnedWidgets().", ex);
                 }
             }
         }

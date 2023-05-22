@@ -84,7 +84,7 @@ public class DevDriveFormatter
         }
         catch (ManagementException e)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"A management exception occurred while formating Dev Drive Error", ex);
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"A management exception occurred while formating Dev Drive Error.", e);
             return e.HResult;
         }
     }

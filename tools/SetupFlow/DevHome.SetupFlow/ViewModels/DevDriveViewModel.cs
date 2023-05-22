@@ -424,7 +424,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         FolderLocationError = null;
         foreach (DevDriveValidationResult result in resultSet)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Input validation Error in Dev Drive window: {result.ToString()}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Input validation Error in Dev Drive window: {result}");
             switch (result)
             {
                 case DevDriveValidationResult.NoDriveLettersAvailable:
@@ -491,7 +491,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to refresh the drive letter to size mapping", ex);
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to refresh the drive letter to size mapping.", ex);
 
             // Clear the mapping since it can't be refreshed. This shouldn't happen unless DriveInfo.GetDrives() fails. In that case we won't know which drive
             // in the list is causing GetDrives()'s to throw. If there are values inside the dictionary at this point, they could be stale. Clearing the list

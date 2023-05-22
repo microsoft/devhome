@@ -92,7 +92,7 @@ public sealed partial class WidgetControl : UserControl
                 }
                 catch (Exception ex)
                 {
-                    Log.Logger()?.ReportError("WidgetControl", $"Didn't delete Widget {widgetIdToDelete}", ex);
+                    Log.Logger()?.ReportError("WidgetControl", $"Didn't delete Widget {widgetIdToDelete}.", ex);
                 }
             }
         }

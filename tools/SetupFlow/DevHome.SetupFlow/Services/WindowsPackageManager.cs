@@ -81,7 +81,7 @@ public class WindowsPackageManager : IWindowsPackageManager
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {WinGetCatalog} when connecting to all catalogs", e);
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {WinGetCatalog} when connecting to all catalogs.", e);
             }
         });
 
@@ -95,7 +95,7 @@ public class WindowsPackageManager : IWindowsPackageManager
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {AllCatalogs} (search) when connecting to all catalogs", e);
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {AllCatalogs} (search) when connecting to all catalogs.", e);
             }
         });
 
@@ -146,7 +146,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to check if AppInstaller has an update, defaulting to false", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to check if AppInstaller has an update, defaulting to false.", e);
             return false;
         }
     }
@@ -162,7 +162,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to start AppInstaller update", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to start AppInstaller update.", e);
             return false;
         }
     }
@@ -243,7 +243,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create a {nameof(WindowsPackageManager)} COM object", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create a {nameof(WindowsPackageManager)} COM object.", e);
             return false;
         }
     }

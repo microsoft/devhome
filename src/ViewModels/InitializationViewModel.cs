@@ -53,7 +53,7 @@ public class InitializationViewModel : ObservableRecipient
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportError("GitHubExtension Hydration Failed", ex);
+            GlobalLog.Logger?.ReportError("GitHubExtension Hydration Failed.", ex);
         }
 
         App.MainWindow.Content = Application.Current.GetService<ShellPage>();
