@@ -47,7 +47,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
     {
         var size = WidgetHelpers.GetLargetstCapabilitySize(_widgetDefinition.GetWidgetCapabilities());
 
-        // Create the widget for configuration. We will need to delete it if
+        // Create the widget for configuration. We will need to delete it if the dialog is closed without updating.
         var widget = await _widgetHost.CreateWidgetAsync(_widgetDefinition.Id, size);
         Log.Logger()?.ReportInfo("CustomizeWidgetDialog", $"Created Widget {widget.Id}");
 
