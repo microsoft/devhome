@@ -124,7 +124,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get icon for restore package {appInfo.Id}.", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get icon for restore package {appInfo.Id}", e);
         }
 
         Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No {theme} icon found for restore package {appInfo.Id}. A default one will be provided.");

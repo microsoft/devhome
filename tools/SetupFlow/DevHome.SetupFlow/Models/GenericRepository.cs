@@ -48,12 +48,12 @@ internal class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
                 }
                 catch (RecurseSubmodulesException recurseException)
                 {
-                    Log.Logger?.ReportError("GenericRepository", "Could not clone all sub modules.", recurseException);
+                    Log.Logger?.ReportError("GenericRepository", "Could not clone all sub modules", recurseException);
                     throw;
                 }
                 catch (UserCancelledException userCancelledException)
                 {
-                    Log.Logger?.ReportError("GenericRepository", "The user stoped the clone operation.", userCancelledException);
+                    Log.Logger?.ReportError("GenericRepository", "The user stoped the clone operation", userCancelledException);
                     throw;
                 }
                 catch (NameConflictException nameConflictException)
@@ -63,7 +63,7 @@ internal class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
                 }
                 catch (Exception e)
                 {
-                    Log.Logger?.ReportError("GenericRepository", "Could not clone the repository.", e);
+                    Log.Logger?.ReportError("GenericRepository", "Could not clone the repository", e);
                     throw;
                 }
             }

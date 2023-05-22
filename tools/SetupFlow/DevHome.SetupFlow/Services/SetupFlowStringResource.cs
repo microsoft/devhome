@@ -37,7 +37,7 @@ public class SetupFlowStringResource : StringResource, ISetupFlowStringResource
                 if (msgLength == 0)
                 {
                     // if formatting the error code into a message fails, then log this and just return the error code.
-                    Log.Logger?.ReportError(logComponent, $"Failed to format error code. 0x{errorCode:X}");
+                    Log.Logger?.ReportError(logComponent, $"Failed to format error code.  0x{errorCode:X}");
                     return $"(0x{errorCode:X})";
                 }
 

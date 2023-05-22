@@ -88,7 +88,7 @@ public sealed partial class PackageCatalogView : UserControl
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to update {nameof(FlipView)} height.", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to update {nameof(FlipView)} height", e);
         }
     }
 

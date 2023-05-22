@@ -186,7 +186,7 @@ public partial class WidgetViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card.", ex);
+                Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card: ", ex);
                 WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
             }
         });
