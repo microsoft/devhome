@@ -44,7 +44,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         get; set;
     }
 
-    public string InternalProviderName
+    public string PluginName
     {
         get; set;
     }
