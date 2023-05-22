@@ -122,7 +122,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget catalog: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget catalog", e);
         }
 
         return null;

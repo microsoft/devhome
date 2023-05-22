@@ -123,7 +123,7 @@ public class InstallPackageTask : ISetupTask
             catch (Exception e)
             {
                 ReportAppInstallFailedEvent();
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package: {e.Message}");
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package", e);
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();
