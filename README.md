@@ -1,4 +1,4 @@
-![dev-home-readme-header](https://github.com/microsoft/devhome/assets/48369326/b2e16e96-b26c-45d2-9872-251ec707becd)
+![dev-home-readme-header](https://github.com/microsoft/devhome/blob/main/src/Assets/Preview/StoreDisplay-150.png)
 
 # Welcome to the Dev Home repo
 
