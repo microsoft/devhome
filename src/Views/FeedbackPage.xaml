@@ -112,7 +112,7 @@
                     <labs:SettingsCard x:Uid="Feedback_LocalizationIssue">
                         <labs:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
-                                  Glyph="&#xE128;"/>
+                                  Glyph="&#xE909;"/>
                         </labs:SettingsCard.HeaderIcon>
                         <Button x:Uid="Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog"/>
                     </labs:SettingsCard>

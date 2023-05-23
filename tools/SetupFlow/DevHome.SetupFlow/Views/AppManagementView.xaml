@@ -159,10 +159,10 @@
                                 <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
                             </ctControls:SettingsCard.HeaderIcon>
                             <ctControls:SettingsCard.ActionIcon>
-                                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE10A;"/>
+                                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE711;"/>
                             </ctControls:SettingsCard.ActionIcon>
                             <Button Command="{x:Bind ToggleSelectionCommand, Mode=OneWay}" Padding="10" Background="Transparent" BorderThickness="0">
-                                <FontIcon FontSize="{ThemeResource CaptionTextBlockFontSize}" FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE106;"/>
+                                <FontIcon FontSize="{ThemeResource CaptionTextBlockFontSize}" FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE894;"/>
                             </Button>
                         </ctControls:SettingsCard>
                     </DataTemplate>

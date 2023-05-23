@@ -29,7 +29,7 @@
                 <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
             </controls:SettingsCard.Resources>
             <controls:SettingsCard.ActionIcon>
-                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE10A;"/>
+                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE711;"/>
             </controls:SettingsCard.ActionIcon>
             <HyperlinkButton
                 Grid.Column="1"

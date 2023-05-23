@@ -21,8 +21,8 @@
     
     <!-- TODO Deprecated -->
     <x:String x:Key="SegoeFont">Segoe MDL2 Assets</x:String>
-    <x:String x:Key="FontIconSource">&#xE13D;</x:String>
-    <x:String x:Key="FontIconClose">&#xE10A;</x:String>
+    <x:String x:Key="FontIconSource">&#xE77B;</x:String>
+    <x:String x:Key="FontIconClose">&#xE711;</x:String>
 
     <!-- TODO Deprecated -->
     <Style x:Key="CheckBoxNoLabelStyle" TargetType="CheckBox" BasedOn="{StaticResource DefaultCheckBoxStyle}">
