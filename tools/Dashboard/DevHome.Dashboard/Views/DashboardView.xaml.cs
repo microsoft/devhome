@@ -63,6 +63,9 @@ public partial class DashboardView : ToolPage
         _widgetLightIconCache = new SortedDictionary<string, BitmapImage>();
         _widgetDarkIconCache = new SortedDictionary<string, BitmapImage>();
 
+        _renderer = new AdaptiveCardRenderer();
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
         ActualThemeChanged += OnActualThemeChanged;
 
         // If this is the first time initializing the Dashboard, or if initialization failed last time, initialize now.
@@ -98,8 +101,6 @@ public partial class DashboardView : ToolPage
             // The GUID is this app's Host GUID that Widget Platform will use to identify this host.
             _widgetHost = WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031"));
             _widgetCatalog = WidgetCatalog.GetDefault();
-            _renderer = new AdaptiveCardRenderer();
-            _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
             _widgetCatalog.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
             _widgetCatalog.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
@@ -213,8 +214,14 @@ public partial class DashboardView : ToolPage
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
+        // TODO: Ideally there would be some sort of visual loading indicator while the widgets get set up.
+        // https://github.com/microsoft/devhome/issues/640
+
         // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
         await CacheWidgetIcons();
+
+        await ConfigureWidgetRenderer(_renderer);
+
         RestorePinnedWidgets(null, null);
     }
 
@@ -304,10 +311,6 @@ public partial class DashboardView : ToolPage
 
     private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
     {
-        // TODO: Ideally there would be some sort of visual loading indicator while the renderer gets set up.
-        // https://github.com/microsoft/devhome/issues/640
-        await ConfigureWidgetRenderer(_renderer);
-
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
         var pinnedWidgets = _widgetHost.GetWidgets();
         if (pinnedWidgets != null)
@@ -352,6 +355,7 @@ public partial class DashboardView : ToolPage
             {
                 _widgetHostInitialized = InitializeWidgetHost();
                 await CacheWidgetIcons();
+                await ConfigureWidgetRenderer(_renderer);
             }
             else
             {
