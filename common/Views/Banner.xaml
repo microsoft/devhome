@@ -22,7 +22,7 @@
                 Visibility="{x:Bind HideButtonVisibility}">
             <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}"
                        FontSize="{ThemeResource BodyTextBlockFontSize}"
-                       Text="&#xE10A;" />
+                       Text="&#xE711;" />
         </Button>
         <StackPanel VerticalAlignment="Center" Margin="38 0 0 0" Spacing="12">
             <TextBlock
