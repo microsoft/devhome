@@ -97,7 +97,7 @@
   <data name="Settings_Theme.Header" xml:space="preserve">
     <value>App theme</value>
   </data>
-	<data name="Settings_Theme.Description" xml:space="preserve">
+  <data name="Settings_Theme.Description" xml:space="preserve">
     <value>Select which theme to display</value>
   </data>
   <data name="Settings_Theme_Light.Content" xml:space="preserve">
