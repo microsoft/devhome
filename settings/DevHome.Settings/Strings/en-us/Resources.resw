@@ -94,8 +94,11 @@
     <value>About</value>
     <comment>Header for a card than when clicked takes the user to the About settings page</comment>
   </data>
-  <data name="Settings_Theme.Text" xml:space="preserve">
-    <value>Theme</value>
+  <data name="Settings_Theme.Header" xml:space="preserve">
+    <value>App theme</value>
+  </data>
+	<data name="Settings_Theme.Description" xml:space="preserve">
+    <value>Select which theme to display</value>
   </data>
   <data name="Settings_Theme_Light.Content" xml:space="preserve">
     <value>Light</value>
@@ -104,7 +107,8 @@
     <value>Dark</value>
   </data>
   <data name="Settings_Theme_Default.Content" xml:space="preserve">
-    <value>Default</value>
+    <value>Windows default</value>
+	  <comment>Windows refers to the Operating system</comment>
   </data>
   <data name="Settings_About.Text" xml:space="preserve">
     <value>About this application</value>
