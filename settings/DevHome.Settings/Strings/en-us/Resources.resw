@@ -189,7 +189,7 @@
     <value>Dev Home</value>
   </data>
 	<data name="Settings_About_Card.Description" xml:space="preserve">
-    <value>© 2023 Microsoft. All rights reserved.</value>
+    <value>Made with 💗 by Microsoft and the DevHome community</value>
   </data>
   <data name="Settings_About_RelatedLinks.Text" xml:space="preserve">
     <value>Related links</value>
