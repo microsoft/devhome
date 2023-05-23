@@ -9,7 +9,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:DevHome.Common.Helpers"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-    xmlns:xaml="using:Microsoft.UI.Xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     mc:Ignorable="d"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
@@ -94,7 +93,7 @@
                     <Run x:Uid="Feedback_OpenSource_LinkText"></Run>
                 </Hyperlink>
                 </TextBlock>
-                <StackPanel>
+                <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
                     <labs:SettingsCard x:Uid="Feedback_ReportBug">
                         <labs:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
