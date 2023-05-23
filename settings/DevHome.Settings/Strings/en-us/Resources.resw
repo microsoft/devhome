@@ -108,7 +108,7 @@
   </data>
   <data name="Settings_Theme_Default.Content" xml:space="preserve">
     <value>Windows default</value>
-	  <comment>Windows refers to the Operating system</comment>
+    <comment>Windows refers to the Operating system</comment>
   </data>
   <data name="Settings_About.Text" xml:space="preserve">
     <value>About this application</value>
