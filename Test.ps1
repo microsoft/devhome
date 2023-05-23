@@ -148,3 +148,53 @@ Try {
 }
 
 ShutDownTests
+
+
+      $vstestArgs = @(
+          ("/Platform:$platform"),
+          ("/Logger:trx;LogFileName=DevHome.Test-$platform-$configuration.trx"),
+          ("test\bin\$platform\$configuration\net6.0-windows10.0.22000.0\DevHome.Test.dll")
+      )
+      $winAppTestArgs = @(
+          ("/Platform:$platform"),
+          ("/Logger:trx;LogFileName=DevHome.UITest-$platform-$configuration.trx"),
+          ("uitest\bin\$platform\$configuration\net6.0-windows10.0.22000.0\DevHome.UITest.dll")
+      )
+
+      & $vstestPath $vstestArgs
+      # TODO: UI tests are currently disabled in pipeline until signing is solved
+      if (-not($IsAzurePipelineBuild)) {
+          & $vstestPath $winAppTestArgs
+      }
+
+      foreach ($toolPath in (Get-ChildItem "tools")) {
+        $tool = $toolPath.Name
+        $vstestArgs = @(
+            ("/Platform:$platform"),
+            ("/Logger:trx;LogFileName=$tool.Test-$platform-$configuration.trx"),
+            ("tools\$tool\*UnitTest\bin\$platform\$configuration\net6.0-windows10.0.22000.0\*.UnitTest.dll")
+        )
+
+        $winAppTestArgs = @(
+            ("/Platform:$platform"),
+            ("/Logger:trx;LogFileName=$tool.UITest-$platform-$configuration.trx"),
+            ("tools\$tool\*UITest\bin\$platform\$configuration\net6.0-windows10.0.22000.0\*.UITest.dll")
+        )
+
+        & $vstestPath $vstestArgs
+        # TODO: UI tests are currently disabled in pipeline until signing is solved
+        if (-not($IsAzurePipelineBuild)) {
+          & $vstestPath $winAppTestArgs
+        }
+      }
+    }
+  }
+} Catch {
+  $formatString = "`n{0}`n`n{1}`n`n"
+  $fields = $_, $_.ScriptStackTrace
+  Write-Host ($formatString -f $fields) -ForegroundColor RED
+  ShutDownTests
+  Exit 1
+}
+
+ShutDownTests
