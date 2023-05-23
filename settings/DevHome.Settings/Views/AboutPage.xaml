@@ -2,55 +2,45 @@
     x:Class="DevHome.Settings.Views.AboutPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:helpers="using:DevHome.Common.Helpers"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="using:DevHome.Common.Helpers"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
-    <Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.ThemeDictionaries>
-                <ResourceDictionary x:Key="Light">
-                    <Color x:Key="CardBackground">#B3FFFFFF</Color>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Dark">
-                    <Color x:Key="CardBackground">#0DFFFFFF</Color>
-                </ResourceDictionary>
-            </ResourceDictionary.ThemeDictionaries>
-        </ResourceDictionary>
-    </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+    <ScrollViewer
+        MaxWidth="{ThemeResource MaxPageContentWidth}"
+        Margin="{ThemeResource ContentPageMargin}"
+        VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="{StaticResource XSmallTopMargin}">
-            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
+            <BreadcrumbBar
+                x:Name="BreadcrumbBar"
+                Margin="0,0,0,16"
+                ItemClicked="BreadcrumbBar_ItemClicked"
+                ItemsSource="{x:Bind Breadcrumbs}" />
 
-            <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                          IsExpanded="true" Background="{ThemeResource CardBackground}"
-                          MinHeight="64" CornerRadius="6,6,0,0" Padding="47,0,47,7" >
-                <Expander.Header>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="/Assets/DevHome.ico" HorizontalAlignment="Left" Width="16" Height="16" />
-                        <TextBlock x:Uid="Settings_About_Specifications" Margin="20,0,0,0" />
-                    </StackPanel>
-                </Expander.Header>
-                <Expander.Content>
-                    <StackPanel Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock x:Uid="Settings_About_Version" Width="100" />
-                            <TextBlock Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" />
+            <labs:SettingsExpander x:Uid="Settings_About_Card" IsExpanded="True">
+                <labs:SettingsExpander.HeaderIcon>
+                    <BitmapIcon ShowAsMonochrome="False" UriSource="/Assets/DevHome.ico" />
+                </labs:SettingsExpander.HeaderIcon>
+                <TextBlock
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    IsTextSelectionEnabled="True"
+                    Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" />
+                <labs:SettingsExpander.Items>
+                    <labs:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock x:Uid="Settings_About_RelatedLinks" Margin="{StaticResource XSmallTopBottomMargin}" />
+                            <HyperlinkButton x:Uid="SettingsPage_SourceCodeLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
+                            <HyperlinkButton x:Uid="SettingsPage_DocumentationLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
+                            <HyperlinkButton x:Uid="SettingsPage_ReleaseNotesLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
+                            <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
                         </StackPanel>
-                    </StackPanel>
-                </Expander.Content>
-            </Expander>
-            <StackPanel Orientation="Horizontal" Background="{ThemeResource CardBackground}"
-                        CornerRadius="0,0,6,6" Padding="15,0,47,7" Margin="1,0,1,0">
-                <TextBlock x:Uid="Settings_About_RelatedLinks" VerticalAlignment="Center" />
-                <HyperlinkButton x:Uid="SettingsPage_SourceCodeLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
-                <HyperlinkButton x:Uid="SettingsPage_DocumentationLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
-                <HyperlinkButton x:Uid="SettingsPage_ReleaseNotesLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
-                <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
-            </StackPanel>
+                    </labs:SettingsCard>
+                </labs:SettingsExpander.Items>
+            </labs:SettingsExpander>
         </StackPanel>
     </ScrollViewer>
 </Page>
