@@ -110,12 +110,6 @@
     <value>Windows default</value>
     <comment>Windows refers to the Operating system</comment>
   </data>
-  <data name="Settings_About.Text" xml:space="preserve">
-    <value>About this application</value>
-  </data>
-  <data name="Settings_AboutDescription.Text" xml:space="preserve">
-    <value>TODO: Replace with your app description.</value>
-  </data>
   <data name="SettingsPage_SourceCodeLink.Content" xml:space="preserve">
     <value>Source code</value>
   </data>
@@ -189,11 +183,11 @@
   <data name="LoginUIDialogTitle.Text" xml:space="preserve">
     <value>Connect your account</value>
   </data>
-  <data name="Settings_About_Specifications.Text" xml:space="preserve">
-    <value>Dev Home specifications</value>
+  <data name="Settings_About_Card.Header" xml:space="preserve">
+    <value>Dev Home</value>
   </data>
-  <data name="Settings_About_Version.Text" xml:space="preserve">
-    <value>Version</value>
+  <data name="Settings_About_Card.Description" xml:space="preserve">
+    <value>Made with 💗 by Microsoft and the Dev Home community</value>
   </data>
   <data name="Settings_About_RelatedLinks.Text" xml:space="preserve">
     <value>Related links</value>
