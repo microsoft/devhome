@@ -7,6 +7,7 @@
     xmlns:animations="using:CommunityToolkit.WinUI.UI.Animations"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls" 
     xmlns:models="using:DevHome.Models"
+    xmlns:setupUtils="using:DevHome.SetupFlow.Utilities"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="OnLoaded"
@@ -184,7 +185,8 @@
                                         Foreground="{ThemeResource LearnMoreForeground}"
                                         NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
                                         Padding="0"
-                                        Margin="0"/>
+                                        Margin="0"
+                                        Visibility="{x:Bind ShouldShowLink}"/>
                                 </StackPanel>
 
                                 <Button 

@@ -10,6 +10,7 @@ using DevHome.Dashboard.ViewModels;
 using DevHome.Models;
 using DevHome.Services;
 using DevHome.Settings.ViewModels;
+using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
@@ -21,6 +22,12 @@ namespace DevHome.Views;
 
 public sealed partial class WhatsNewPage : Page
 {
+    public Uri DevDrivePageKeyUri { get; private set; } = new ("ms-settings:disksandvolumes");
+
+    public Uri DevDriveLearnMoreLinkUri { get; private set; } = new ("https://go.microsoft.com/fwlink/?linkid=2236041");
+
+    public string DevDriveLinkResourceKey { get; private set; } = "WhatsNewPage_DevDriveCard/Link";
+
     public WhatsNewViewModel ViewModel
     {
         get;
@@ -48,6 +55,16 @@ public sealed partial class WhatsNewPage : Page
                 continue;
             }
 
+            // When the Dev Drive feature is not enabled don't show the learn more uri link, but instead move the learn more text into the button content.
+            if (card!.PageKey!.Equals(DevDrivePageKeyUri.AbsoluteUri, StringComparison.OrdinalIgnoreCase))
+            {
+                if (!DevDriveUtil.IsDevDriveFeatureEnabled)
+                {
+                    card.Button = Application.Current.GetService<IStringResource>().GetLocalized(DevDriveLinkResourceKey);
+                    card.ShouldShowLink = false;
+                }
+            }
+
             ViewModel.AddCard(card);
         }
     }
@@ -67,9 +84,11 @@ public sealed partial class WhatsNewPage : Page
             return;
         }
 
-        if (pageKey.StartsWith("ms-settings", StringComparison.InvariantCultureIgnoreCase))
+        if (pageKey.Equals(DevDrivePageKeyUri.AbsoluteUri, StringComparison.OrdinalIgnoreCase))
         {
-            _ = await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
+            // Only launch the disks and volumes settings page when the Dev Drive feature is enabled.
+            // Otherwise redirect the user to the Dev Drive support page to learn more about the feature.
+            await Launcher.LaunchUriAsync(DevDriveUtil.IsDevDriveFeatureEnabled ? DevDrivePageKeyUri : DevDriveLearnMoreLinkUri);
         }
         else
         {

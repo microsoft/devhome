@@ -45,4 +45,9 @@ public class WhatsNewCard
     {
         get; set;
     }
+
+    public bool? ShouldShowLink
+    {
+        get; set;
+    }
 }
