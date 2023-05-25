@@ -56,7 +56,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// <summary>
     /// Gets the configuration file content
     /// </summary>
-    public string Content => _configuration.Content;
+    public string Content => Configuration.Content;
 
     [RelayCommand(CanExecute = nameof(ReadAndAgree))]
     public async Task ConfigureAsAdminAsync()

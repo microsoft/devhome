@@ -106,7 +106,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void RemoveRestartGrid()
     {
-        _showRestartNeeded = Visibility.Collapsed;
+        ShowRestartNeeded = Visibility.Collapsed;
     }
 
     /// <summary>

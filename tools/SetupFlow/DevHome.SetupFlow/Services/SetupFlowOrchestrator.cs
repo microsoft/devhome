@@ -21,8 +21,7 @@ namespace DevHome.SetupFlow.Services;
 /// <summary>
 /// Orchestrator for the Setup Flow, in charge of functionality across multiple pages.
 /// </summary>
-[ObservableObject]
-public partial class SetupFlowOrchestrator
+public partial class SetupFlowOrchestrator : ObservableObject
 {
     private readonly List<SetupPageViewModelBase> _flowPages = new ();
 
