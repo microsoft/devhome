@@ -21,7 +21,7 @@ internal class SystemNetworkUsageWidget : CoreWidget, IDisposable
     public SystemNetworkUsageWidget()
         : base()
     {
-        dataManager = new DataManager(UpdateWidget);
+        dataManager = new (DataType.Network, UpdateWidget);
     }
 
     private string SpeedToString(float cpuSpeed)
@@ -93,8 +93,6 @@ internal class SystemNetworkUsageWidget : CoreWidget, IDisposable
 
     public override string GetData(WidgetPageState page)
     {
-        LoadContentData();
-
         return page switch
         {
             WidgetPageState.Content => ContentData,

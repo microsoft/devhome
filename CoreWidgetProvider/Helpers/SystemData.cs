@@ -5,27 +5,19 @@ namespace CoreWidgetProvider.Helpers;
 
 internal class SystemData : IDisposable
 {
-    public MemoryStats MemStats { get; set; }
+    public static MemoryStats MemStats { get; set; } = new MemoryStats();
 
-    public NetworkStats NetStats { get; set; }
+    public static NetworkStats NetStats { get; set; } = new NetworkStats();
 
-    public GPUStats GPUStats { get; set; }
+    public static GPUStats GPUStats { get; set; } = new GPUStats();
 
-    public CPUStats CpuStats { get; set; }
+    public static CPUStats CpuStats { get; set; } = new CPUStats();
 
     public SystemData()
     {
-        MemStats = new MemoryStats();
-        NetStats = new NetworkStats();
-        GPUStats = new GPUStats();
-        CpuStats = new CPUStats();
     }
 
     public void Dispose()
     {
-        MemStats.Dispose();
-        NetStats.Dispose();
-        GPUStats.Dispose();
-        CpuStats.Dispose();
     }
 }

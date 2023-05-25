@@ -98,6 +98,8 @@ internal class CoreWidget : WidgetImpl
 
     public virtual void UpdateWidget()
     {
+        LoadContentData();
+
         WidgetUpdateRequestOptions updateOptions = new (Id)
         {
             Data = GetData(Page),
