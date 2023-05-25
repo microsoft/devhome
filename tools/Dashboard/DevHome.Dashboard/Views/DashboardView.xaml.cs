@@ -214,8 +214,7 @@ public partial class DashboardView : ToolPage
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        // TODO: Ideally there would be some sort of visual loading indicator while the widgets get set up.
-        // https://github.com/microsoft/devhome/issues/640
+        LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
 
         // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
         await CacheWidgetIcons();
@@ -223,6 +222,8 @@ public partial class DashboardView : ToolPage
         await ConfigureWidgetRenderer(_renderer);
 
         RestorePinnedWidgets(null, null);
+
+        LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
     }
 
     private async Task CacheWidgetIcons()
