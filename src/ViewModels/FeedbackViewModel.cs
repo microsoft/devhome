@@ -15,7 +15,7 @@ using Windows.ApplicationModel;
 
 namespace DevHome.ViewModels;
 
-public partial class FeedbackViewModel : ObservableRecipient
+public partial class FeedbackViewModel : ObservableObject
 {
     private readonly IThemeSelectorService _themeSelectorService;
 
