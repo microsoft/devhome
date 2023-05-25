@@ -19,6 +19,7 @@
         <EnableMsixTooling>true</EnableMsixTooling>
         <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
         <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
+        <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -55,9 +56,6 @@
         <None Update="navConfig.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <Page Update="Styles\Feedback_ThemeResources.xaml">
-            <Generator>MSBuild:Compile</Generator>
-        </Page>
         <Page Update="Styles\BreadcrumbBar.xaml">
           <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
         </Page>
@@ -67,36 +65,8 @@
         <ProjectCapability Include="Msix" />
     </ItemGroup>
 
-    <ItemGroup>
-        <None Remove="Styles\BreadcrumbBar.xaml" />
-        <None Remove="Styles\Feedback_ThemeResources.xaml" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Assets\Preview\" />
-    </ItemGroup>
-
     <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
         <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'">
-        <DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup>
