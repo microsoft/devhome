@@ -45,15 +45,16 @@
                         IsPaneToggleButtonVisible="False"
                         IsTitleBarAutoPaddingEnabled="False"
                         OpenPaneLength="218"
+                        MaxHeight="{StaticResource ContentDialogMaxHeight}"
                         SelectionChanged="AddWidgetNavigationView_SelectionChanged">
             <NavigationView.MenuItems>
             </NavigationView.MenuItems>
-
+            
             <!-- Widget configuration UI -->
             <Grid x:Name="ConfigurationContentGrid">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
                 <ScrollViewer Grid.Row="0"
