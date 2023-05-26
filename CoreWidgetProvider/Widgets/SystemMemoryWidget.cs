@@ -19,7 +19,7 @@ internal class SystemMemoryWidget : CoreWidget, IDisposable
     public SystemMemoryWidget()
         : base()
     {
-        dataManager = new DataManager(UpdateWidget);
+        dataManager = new (DataType.Memory, UpdateWidget);
     }
 
     private string FloatToPercentString(float value)
@@ -93,8 +93,6 @@ internal class SystemMemoryWidget : CoreWidget, IDisposable
 
     public override string GetData(WidgetPageState page)
     {
-        LoadContentData();
-
         return page switch
         {
             WidgetPageState.Content => ContentData,
