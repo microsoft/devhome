@@ -45,7 +45,7 @@
                         IsPaneToggleButtonVisible="False"
                         IsTitleBarAutoPaddingEnabled="False"
                         OpenPaneLength="218"
-                        MaxHeight="{StaticResource ContentDialogMaxHeight}"
+                        MaxHeight="652"
                         SelectionChanged="AddWidgetNavigationView_SelectionChanged">
             <NavigationView.MenuItems>
             </NavigationView.MenuItems>
