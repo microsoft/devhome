@@ -13,6 +13,10 @@ public class ConfigurationUnitResult
     public ConfigurationUnitResult(ApplyConfigurationUnitResult result)
     {
         UnitName = result.Unit.UnitName;
+        Id = result.Unit.Identifier;
+        object descriptionObj;
+        result.Unit.Directives.TryGetValue("description", out descriptionObj);
+        Description = descriptionObj?.ToString() ?? string.Empty;
         Intent = result.Unit.Intent.ToString();
         IsSkipped = result.State == ConfigurationUnitState.Skipped;
         HResult = result.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK;
