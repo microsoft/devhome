@@ -21,12 +21,18 @@ public class ConfigurationUnitResult
     public ConfigurationUnitResult(ElevatedConfigureUnitTaskResult result)
     {
         UnitName = result.UnitName;
+        Id = result.Id;
+        Description = result.Description;
         Intent = result.Intent;
         IsSkipped = result.IsSkipped;
         HResult = result.HResult;
     }
 
     public string UnitName { get; }
+
+    public string Id { get; }
+
+    public string Description { get; }
 
     public string Intent { get; }
 
