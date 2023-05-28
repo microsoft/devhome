@@ -29,7 +29,7 @@ public class ConfigurationUnitResultViewModel
         _unitResult = unitResult;
     }
 
-    public string Title => _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummary, _unitResult.Intent, _unitResult.UnitName);
+    public string Title => BuildTitle();
 
     public string ApplyResult => GetApplyResult();
 
@@ -53,5 +53,25 @@ public class ConfigurationUnitResultViewModel
         }
 
         return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSuccess);
+    }
+
+    private string BuildTitle()
+    {
+        if (string.IsNullOrEmpty(_unitResult.Id) && string.IsNullOrEmpty(_unitResult.Description))
+        {
+            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryMinimal, _unitResult.Intent, _unitResult.UnitName);
+        }
+
+        if (string.IsNullOrEmpty(_unitResult.Id))
+        {
+            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoId, _unitResult.Intent, _unitResult.UnitName, _unitResult.Description);
+        }
+
+        if (string.IsNullOrEmpty(_unitResult.Description))
+        {
+            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoDescription, _unitResult.Intent, _unitResult.UnitName, _unitResult.Id);
+        }
+
+        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, _unitResult.Intent, _unitResult.UnitName, _unitResult.Id, _unitResult.Description);
     }
 }
