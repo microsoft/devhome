@@ -221,9 +221,21 @@
     <value>Configuration successfully applied</value>
     <comment>Message displayed when applying a configuration unit succeeds.</comment>
   </data>
-  <data name="ConfigurationUnitSummary" xml:space="preserve">
+  <data name="ConfigurationUnitSummaryFull" xml:space="preserve">
+    <value>{0} : {3} [{1} {2}]</value>
+    <comment>{Locked="{0}","{1}","{2}","{3}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit id. {3} is replaced by the configuration unit description.</comment>
+  </data>
+  <data name="ConfigurationUnitSummaryMinimal" xml:space="preserve">
     <value>{0} : {1}</value>
     <comment>{Locked="{0}","{1}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name.</comment>
+  </data>
+  <data name="ConfigurationUnitSummaryNoDescription" xml:space="preserve">
+    <value>{0} : {1} [{2}]</value>
+    <comment>{Locked="{0}","{1}","{2}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit id.</comment>
+  </data>
+  <data name="ConfigurationUnitSummaryNoId" xml:space="preserve">
+    <value>{0} : {2} [{1}]</value>
+    <comment>{Locked="{0}","{1}","{2}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit description.</comment>
   </data>
   <data name="ConfigurationUnitStats" xml:space="preserve">
     <value>Succeeded: {0} | Failed: {1} | Skipped: {2}</value>
