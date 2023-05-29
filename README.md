@@ -83,7 +83,7 @@ Please file new issues, feature requests, and suggestions but **DO search for si
 If you would like to ask a question that you feel doesn't warrant an issue (yet), please reach out to us via Twitter:
 
 * Kayla Cinnamon, Product Manager: [@cinnamon_msft](https://twitter.com/cinnamon_msft)
-* Clint Rutkas, Senior Product Manager: [@crutkas](https://twitter.com/crutkas)
+* Clint Rutkas, Senior Product Manager: [@clintrutkas](https://twitter.com/clintrutkas)
 * Ujjwal Chadha, Developer: [@ujjwalscript](https://twitter.com/ujjwalscript)
 
 ## Developer guidance
