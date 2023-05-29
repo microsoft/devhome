@@ -2,22 +2,24 @@
 // Licensed under the MIT license.
 
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace DevHome.Common.Helpers;
 
-public class RuntimeHelper
+public static class RuntimeHelper
 {
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-    private static extern int GetCurrentPackageFullName(ref int packageFullNameLength, StringBuilder? packageFullName);
-
-    public static bool IsMSIX
+    public static unsafe bool IsMSIX
     {
         get
         {
-            var length = 0;
+            const int APPMODEL_ERROR_NO_PACKAGE = 15700;
 
-            return GetCurrentPackageFullName(ref length, null) != 15700L;
+            uint length;
+
+            return GetCurrentPackageFullName(&length, null) != APPMODEL_ERROR_NO_PACKAGE;
+
+            // See: https://learn.microsoft.com/windows/win32/api/appmodel/nf-appmodel-getcurrentpackagefullname
+            [DllImport("kernel32", ExactSpelling = true)]
+            static extern int GetCurrentPackageFullName(uint* packageFullNameLength, ushort* packageFullName);
         }
     }
 }
