@@ -15,9 +15,8 @@ namespace DevHome.Services;
 
 public class AccountsService : IAccountsService
 {
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetForegroundWindow(IntPtr hWnd);
+    [DllImport("user32", ExactSpelling = true)]
+    private static extern int SetForegroundWindow(IntPtr hWnd);
 
     public AccountsService()
     {
@@ -74,7 +73,7 @@ public class AccountsService : IAccountsService
         }
 
         // Bring focus back to DevHome after login
-        SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
+        _ = SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
     }
 
     public void LoggedOutEventHandler(object? sender, IDeveloperId developerId)
