@@ -174,6 +174,12 @@ public partial class DashboardView : ToolPage
     {
         // The app uses a different host config to render widgets (adaptive cards) in light and dark themes.
         await ConfigureWidgetRenderer(_renderer);
+
+        // Re-render the widgets with the new theme and renderer.
+        foreach (var widget in PinnedWidgets)
+        {
+            widget.Refresh();
+        }
     }
 
     private async Task ConfigureWidgetRenderer(AdaptiveCardRenderer renderer)
