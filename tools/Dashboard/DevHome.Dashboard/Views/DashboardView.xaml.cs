@@ -178,7 +178,7 @@ public partial class DashboardView : ToolPage
         // Re-render the widgets with the new theme and renderer.
         foreach (var widget in PinnedWidgets)
         {
-            widget.Refresh();
+            widget.Render();
         }
     }
 

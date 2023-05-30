@@ -99,7 +99,7 @@ public partial class WidgetViewModel : ObservableObject
         WidgetDefinition = widgetDefintion;
     }
 
-    public void Refresh()
+    public void Render()
     {
         RenderWidgetFrameworkElement();
     }
