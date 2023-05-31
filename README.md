@@ -84,6 +84,7 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
 
 * Kayla Cinnamon, Product Manager: [@cinnamon_msft](https://twitter.com/cinnamon_msft)
 * Clint Rutkas, Senior Product Manager: [@clintrutkas](https://twitter.com/clintrutkas)
+* Leeza Mathew, Engineering Lead: [@leezamathew](https://twitter.com/leezamathew)
 * Ujjwal Chadha, Developer: [@ujjwalscript](https://twitter.com/ujjwalscript)
 
 ## Developer guidance
