@@ -36,7 +36,7 @@ public class WindowsPackageManagerManualActivationFactory : WindowsPackageManage
 
         try
         {
-            var hr = WinGetServerManualActivation_CreateInstance(&clsid, &iid, 0, &pUnknown);
+            var hr = WinGetServerManualActivation_CreateInstance(in clsid, in iid, 0, out pUnknown);
             Marshal.ThrowExceptionForHR(hr);
             return MarshalInterface<T>.FromAbi((IntPtr)pUnknown);
         }
@@ -53,8 +53,8 @@ public class WindowsPackageManagerManualActivationFactory : WindowsPackageManage
 
     [DllImport("winrtact.dll", ExactSpelling = true)]
     private static unsafe extern int WinGetServerManualActivation_CreateInstance(
-        Guid* clsid,
-        Guid* iid,
+        in Guid clsid,
+        in Guid iid,
         uint flags,
-        void** instance);
+        out void* instance);
 }

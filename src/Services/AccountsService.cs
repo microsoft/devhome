@@ -16,7 +16,8 @@ namespace DevHome.Services;
 public class AccountsService : IAccountsService
 {
     [DllImport("user32", ExactSpelling = true)]
-    private static extern int SetForegroundWindow(IntPtr hWnd);
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
 
     public AccountsService()
     {
