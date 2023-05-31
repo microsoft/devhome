@@ -58,6 +58,14 @@ internal class DataManager : IDisposable
         }
     }
 
+    private void GetDiskData()
+    {
+        lock (SystemData.DiskStats)
+        {
+            SystemData.DiskStats.GetData();
+        }
+    }
+
     private void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         switch (dataType)
@@ -87,6 +95,13 @@ internal class DataManager : IDisposable
                 {
                     // network
                     GetNetworkData();
+                    break;
+                }
+
+            case DataType.Disk:
+                {
+                    // disk
+                    GetDiskData();
                     break;
                 }
         }
@@ -126,6 +141,14 @@ internal class DataManager : IDisposable
         lock (SystemData.CpuStats)
         {
             return SystemData.CpuStats;
+        }
+    }
+
+    internal DiskStats GetDiskStats()
+    {
+        lock (SystemData.DiskStats)
+        {
+            return SystemData.DiskStats;
         }
     }
 

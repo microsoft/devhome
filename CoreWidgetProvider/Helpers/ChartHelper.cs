@@ -14,6 +14,7 @@ internal class ChartHelper
     private static readonly Pen GPUChartPen = new (Color.FromArgb(255, 222, 104, 242));
     private static readonly Pen MemChartPen = new (Color.FromArgb(255, 92, 158, 250));
     private static readonly Pen NetChartPen = new (Color.FromArgb(255, 245, 98, 142));
+    private static readonly Pen DiskChartPen = new (Color.FromArgb(255, 33, 139, 139));
 
     private static readonly Brush CPUBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 57, 184, 227), Color.FromArgb(65, 0, 86, 110));
     private static readonly Brush CPUBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 57, 184, 227), Color.FromArgb(65, 0, 86, 110));
@@ -30,6 +31,10 @@ internal class ChartHelper
     private static readonly Brush NetBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 245, 98, 142), Color.FromArgb(65, 130, 0, 47));
     private static readonly Brush NetBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 245, 98, 142), Color.FromArgb(65, 130, 0, 47));
     private static readonly Brush NetBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 245, 98, 142), Color.FromArgb(65, 130, 0, 47));
+
+    private static readonly Brush DiskBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 33, 139, 139), Color.FromArgb(65, 31, 108, 108));
+    private static readonly Brush DiskBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 33, 139, 139), Color.FromArgb(65, 31, 108, 108));
+    private static readonly Brush DiskBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 33, 139, 139), Color.FromArgb(65, 31, 108, 108));
 
     private const int MaxChartValues = 30;
 
@@ -92,6 +97,13 @@ internal class ChartHelper
                         brush20 = NetBrush20;
                         brush50 = NetBrush50;
                         brush100 = NetBrush100;
+                    }
+                    else if (type == "disk")
+                    {
+                        chartPen = DiskChartPen;
+                        brush20 = DiskBrush20;
+                        brush50 = DiskBrush50;
+                        brush100 = DiskBrush100;
                     }
 
                     points.Add(new PointF(startChartX, 95));

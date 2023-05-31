@@ -56,6 +56,9 @@
     <Content Include="Widgets\Templates\SystemCPUUsageTemplate.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+	  <Content Include="Widgets\Templates\SystemDiskUsageTemplate.json">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
   </ItemGroup>
 
   <ItemGroup>
