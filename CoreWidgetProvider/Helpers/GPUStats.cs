@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Management;
 
+using Microsoft.Management.Infrastructure;
+
 namespace CoreWidgetProvider.Helpers;
 
 internal class GPUStats : IDisposable
@@ -34,14 +36,12 @@ internal class GPUStats : IDisposable
 
     public void AddGPUPerfCounters()
     {
-        using (var searcher = new ManagementObjectSearcher("select * from Win32_VideoController"))
+        using var session = CimSession.Create(null);
+        var i = 0;
+        foreach (CimInstance obj in session.QueryInstances("root/cimv2", "WQL", "select * from Win32_VideoController"))
         {
-            var i = 0;
-            foreach (ManagementObject obj in searcher.Get())
-            {
-                var gpuName = (string)obj["Name"];
-                stats.Add(new Data() { Name = gpuName, PhysId = i++ });
-            }
+            var gpuName = (string)obj.CimInstanceProperties["name"].Value;
+            stats.Add(new Data() { Name = gpuName, PhysId = i++ });
         }
 
         var pcg = new PerformanceCounterCategory("GPU Engine");
