@@ -57,7 +57,6 @@ jobs:
         Add-Content $env:GITHUB_ENV "VSDevCmd=$VSDevCmd"
 
     - name: Restore dependencies
-      shell: bash
       run: |
         dotnet restore pluginsdk\\DevHomeSDK.sln -p:PublishReadyToRun=true
         dotnet restore DevHome.sln -p:PublishReadyToRun=true
