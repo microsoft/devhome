@@ -114,10 +114,15 @@ public sealed partial class PackageCatalogView : UserControl
         UpdateFlipViewHeight();
     }
 
-    /// <summary>
-    /// Handler for <see cref="FrameworkElement.LayoutUpdated"/>.
-    /// </summary>
-    private void OnLayoutUpdated(object sender, object e) => UpdateFlipViewHeight();
+    private void SettingsCard_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        UpdateFlipViewHeight();
+    }
+
+    private void PackagesFlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        UpdateFlipViewHeight();
+    }
 
     public static readonly DependencyProperty CatalogProperty = DependencyProperty.Register(nameof(Catalog), typeof(PackageCatalogViewModel), typeof(PackageCatalogView), new PropertyMetadata(null, (c, _) => ((PackageCatalogView)c).UpdateAll()));
     public static readonly DependencyProperty GroupSizeProperty = DependencyProperty.Register(nameof(GroupSize), typeof(int), typeof(PackageCatalogView), new PropertyMetadata(4, (c, _) => ((PackageCatalogView)c).UpdateAll()));
