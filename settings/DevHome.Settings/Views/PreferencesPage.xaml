@@ -2,55 +2,68 @@
     x:Class="DevHome.Settings.Views.PreferencesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:helpers="using:DevHome.Common.Helpers"
-    xmlns:xaml="using:Microsoft.UI.Xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="using:DevHome.Common.Helpers"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:xaml="using:Microsoft.UI.Xaml"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
         <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+    <ScrollViewer
+        MaxWidth="{ThemeResource MaxPageContentWidth}"
+        Margin="{ThemeResource ContentPageMargin}"
+        VerticalScrollBarVisibility="Auto">
         <StackPanel x:Name="ContentArea">
-            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
+            <BreadcrumbBar
+                x:Name="BreadcrumbBar"
+                Margin="0,0,0,16"
+                ItemClicked="BreadcrumbBar_ItemClicked"
+                ItemsSource="{x:Bind Breadcrumbs}" />
 
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <TextBlock x:Uid="Settings_Theme" />
-                <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                    <RadioButton
-                        x:Uid="Settings_Theme_Light"
-                        Command="{x:Bind ViewModel.SwitchThemeCommand}"
-                        IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}"
-                        FontSize="15"
-                        GroupName="AppTheme">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Light</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
-                    <RadioButton
-                        x:Uid="Settings_Theme_Dark"
-                        Command="{x:Bind ViewModel.SwitchThemeCommand}"
-                        IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}"
-                        FontSize="15"
-                        GroupName="AppTheme">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Dark</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
-                    <RadioButton
-                        x:Uid="Settings_Theme_Default"
-                        Command="{x:Bind ViewModel.SwitchThemeCommand}"
-                        IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}"
-                        FontSize="15"
-                        GroupName="AppTheme">
-                        <RadioButton.CommandParameter>
-                            <xaml:ElementTheme>Default</xaml:ElementTheme>
-                        </RadioButton.CommandParameter>
-                    </RadioButton>
-                </StackPanel>
+                <labs:SettingsExpander x:Uid="Settings_Theme" IsExpanded="True">
+                    <labs:SettingsExpander.HeaderIcon>
+                        <FontIcon Glyph="&#xE790;" />
+                    </labs:SettingsExpander.HeaderIcon>
+                    <labs:SettingsExpander.Items>
+                        <labs:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
+                            <StackPanel>
+                                <RadioButton
+                                    x:Uid="Settings_Theme_Light"
+                                    Command="{x:Bind ViewModel.SwitchThemeCommand}"
+                                    GroupName="AppTheme"
+                                    IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}">
+                                    <RadioButton.CommandParameter>
+                                        <xaml:ElementTheme>Light</xaml:ElementTheme>
+                                    </RadioButton.CommandParameter>
+                                </RadioButton>
+                                <RadioButton
+                                    x:Uid="Settings_Theme_Dark"
+                                    Command="{x:Bind ViewModel.SwitchThemeCommand}"
+                                    GroupName="AppTheme"
+                                    IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}">
+                                    <RadioButton.CommandParameter>
+                                        <xaml:ElementTheme>Dark</xaml:ElementTheme>
+                                    </RadioButton.CommandParameter>
+                                </RadioButton>
+                                <RadioButton
+                                    x:Uid="Settings_Theme_Default"
+                                    Command="{x:Bind ViewModel.SwitchThemeCommand}"
+                                    GroupName="AppTheme"
+                                    IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}">
+                                    <RadioButton.CommandParameter>
+                                        <xaml:ElementTheme>Default</xaml:ElementTheme>
+                                    </RadioButton.CommandParameter>
+                                </RadioButton>
+                            </StackPanel>
+                        </labs:SettingsCard>
+                    </labs:SettingsExpander.Items>
+                </labs:SettingsExpander>
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

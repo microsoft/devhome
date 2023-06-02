@@ -69,7 +69,7 @@ public static class DevDriveUtil
     // numbers start at 22000.
     private const ushort DevDriveMajorVersion = 10;
     private const ushort DevDriveMinorVersion = 0;
-    private const ushort DevDriveMinBuildForDevChannel = 23451;
+    private const ushort DevDriveMinBuildForDevChannel = 23466;
     private const ushort DevDriveMaxBuildForDevChannel = 23999;
     private const ushort DevDriveMinBuildForCanaryChannel = 25846;
 

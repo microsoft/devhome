@@ -17,14 +17,12 @@
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/LightTheme/Background.png</x:String>
-                    <Color x:Key="CardBackground">#fdfdfd</Color>
                     <Color x:Key="ButtonAccentBackground">#6659CA</Color>
                     <Color x:Key="ButtonAccentForeground">#FFFFFF</Color>
                     <Color x:Key="LearnMoreForeground">#005FB8</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
-                    <Color x:Key="CardBackground">#323232</Color>
                     <Color x:Key="ButtonAccentBackground">#47E1DA</Color>
                     <Color x:Key="ButtonAccentForeground">#000000</Color>
                     <Color x:Key="LearnMoreForeground">#60CDFF</Color>
@@ -87,7 +85,7 @@
                 <muxc:ItemsRepeater
                     Name="FeaturesContainer"
                     Grid.Row="1"
-                    Margin="45"
+                    Margin="35, 45, 45, 45"
                     animations:Connected.ListItemElementName="itemThumbnail"
                     animations:Connected.ListItemKey="animationKeyContentGrid"
                     ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}">
@@ -139,8 +137,8 @@
                                 Padding="15 15"
                                 CornerRadius="{ThemeResource ControlCornerRadius}"
                                 Margin="0"
-                                Background="{ThemeResource CardBackground}"
-                                BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="{ThemeResource ExpanderBorderThickness}">
                                 <Grid.Resources>
                                     <ResourceDictionary>
@@ -186,7 +184,8 @@
                                         Foreground="{ThemeResource LearnMoreForeground}"
                                         NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
                                         Padding="0"
-                                        Margin="0"/>
+                                        Margin="0"
+                                        Visibility="{x:Bind ShouldShowLink}"/>
                                 </StackPanel>
 
                                 <Button 
