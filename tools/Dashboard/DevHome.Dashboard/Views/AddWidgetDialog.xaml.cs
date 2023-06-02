@@ -336,4 +336,21 @@ public sealed partial class AddWidgetDialog : ContentDialog
             }
         });
     }
+
+    private void ContentDialog_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        const int ContentDialogMaxHeight = 684;
+
+        if (this.ActualHeight < ContentDialogMaxHeight)
+        {
+            AddWidgetNavigationView.Height = this.ActualHeight - AddWidgetTitleBar.ActualHeight;
+        }
+        else
+        {
+            AddWidgetNavigationView.Height = ContentDialogMaxHeight - AddWidgetTitleBar.ActualHeight;
+        }
+
+        // Subtract 45 for the margin around ConfigurationContentFrame.
+        ConfigurationContentViewer.Height = AddWidgetNavigationView.Height - PinRow.ActualHeight - 45;
+    }
 }
