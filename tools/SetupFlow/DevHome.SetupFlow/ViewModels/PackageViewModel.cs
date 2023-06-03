@@ -71,23 +71,29 @@ public partial class PackageViewModel : ObservableObject
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
         _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask);
         _packageDescription = new Lazy<string>(GetPackageDescription);
+
+        Version = _package.Version;
+        Name = _package.Name;
+        IsInstalled = _package.IsInstalled;
+        CatalogName = _package.CatalogName;
+        PublisherName = !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
     }
 
     public PackageUniqueKey UniqueKey => _package.UniqueKey;
 
     public IWinGetPackage Package => _package;
 
-    public string Name => _package.Name;
-
     public BitmapImage Icon => _themeSelector.IsDarkTheme() ? _packageDarkThemeIcon.Value : _packageLightThemeIcon.Value;
 
-    public string Version => _package.Version;
+    public string Name { get; }
 
-    public bool IsInstalled => _package.IsInstalled;
+    public string Version { get; }
 
-    public string CatalogName => _package.CatalogName;
+    public bool IsInstalled { get; }
 
-    public string PublisherName => !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
+    public string CatalogName { get; }
+
+    public string PublisherName { get; }
 
     public string PackageTitle => Name;
 
