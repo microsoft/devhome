@@ -4,14 +4,14 @@
       {
         "identity": "main",
         "tools": [
-          {
+        {
             "identity": "DevHome.Dashboard",
             "assembly": "DevHome.Dashboard",
             "viewFullName": "DevHome.Dashboard.Views.DashboardView",
             "viewModelFullName": "DevHome.Dashboard.ViewModels.DashboardViewModel",
             "icon": "f246"
-          },
-          {
+        },
+        {
             "identity": "DevHome.SetupFlow",
             "assembly": "DevHome.SetupFlow",
             "viewFullName": "DevHome.SetupFlow.Views.SetupFlowPage",
@@ -24,6 +24,13 @@
             "viewFullName": "DevHome.ExtensionLibrary.Views.ExtensionLibraryView",
             "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
             "icon": "ea86"
+          },
+          {
+            "identity": "DevHome.Projects",
+            "assembly": "DevHome.Projects",
+            "viewFullName": "DevHome.Projects.Views.ProjectsPage",
+            "viewModelFullName": "DevHome.Projects.ViewModels.ProjectsViewModel",
+            "icon": "f156"
           }
         ]
       }

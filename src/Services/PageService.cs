@@ -3,6 +3,8 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Contracts.Services;
+using DevHome.Projects.ViewModels;
+using DevHome.Projects.Views;
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
 using DevHome.ViewModels;
