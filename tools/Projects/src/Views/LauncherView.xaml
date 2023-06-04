@@ -17,9 +17,9 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
-        <Button Content="{x:Bind ((vm:LauncherViewModel)DataContext).DisplayName}" 
+        <Button Content="{x:Bind GetImage(DataContext)}"
                     Style="{ThemeResource ButtonRevealStyle}" 
                     Click="LauncherButton_Click"
-                    ToolTipService.ToolTip="{x:Bind ((vm:LauncherViewModel)DataContext).CommandLine}" />
+                    ToolTipService.ToolTip="{x:Bind ((vm:LauncherViewModel)DataContext).DisplayName}" />
     </Grid>
 </UserControl>
