@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Projects.ViewModels;
@@ -17,21 +18,24 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Newtonsoft.Json;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 
 namespace DevHome.Projects.Views;
 public sealed partial class ProjectView : UserControl
 {
-    public ProjectViewModel ViewModel => (ProjectViewModel)this.DataContext;
-
     public ProjectView()
     {
         this.InitializeComponent();
     }
 
+    public event EventHandler<ProjectViewModel> ProjectDeleted;
+
     private void DeleteProjectButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        var project = (sender as Button).DataContext as ProjectViewModel;
+        ProjectDeleted?.Invoke(sender, project);
     }
 
     private void Hyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
@@ -51,14 +55,4 @@ public sealed partial class ProjectView : UserControl
             Debug.WriteLine(ex.Message);
         }
     }
-
-    public string DisplayName => ViewModel?.Name;
-
-    public string FilePath => ViewModel?.FilePath;
-
-    public string Url => ViewModel?.Url ?? "https://github.com";
-
-    public string Color => ViewModel?.Color ?? "Transparent";
-
-    public ObservableCollection<LauncherViewModel> Launchers => ViewModel?.Launchers;
 }
