@@ -38,11 +38,6 @@ public sealed partial class ProjectView : UserControl
         ProjectDeleted?.Invoke(sender, project);
     }
 
-    private void Hyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
-    {
-        Process.Start(new ProcessStartInfo(sender.NavigateUri.AbsoluteUri));
-    }
-
     private void FilePath_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
     {
         try

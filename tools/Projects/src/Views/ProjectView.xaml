@@ -31,7 +31,7 @@
         <TextBlock x:Name="filePath" Grid.Row="1" Text="{x:Bind ((vm:ProjectViewModel)DataContext).ExpandedFilePath}" Style="{ThemeResource CaptionTextBlockStyle}" Padding="8" Tapped="FilePath_Tapped"/>
         <RichTextBlock Grid.Row="2" Padding="8">
             <Paragraph>
-                <Hyperlink NavigateUri="{x:Bind ((vm:ProjectViewModel)DataContext).Url}" Click="Hyperlink_Click">
+                <Hyperlink NavigateUri="{x:Bind ((vm:ProjectViewModel)DataContext).Url}">
                     <Run Text="{x:Bind ((vm:ProjectViewModel)DataContext).Url}" />
                 </Hyperlink>
             </Paragraph>
