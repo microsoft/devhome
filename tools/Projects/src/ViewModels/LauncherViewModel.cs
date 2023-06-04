@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
+using static Windows.Win32.PInvoke;
 
 namespace DevHome.Projects.ViewModels;
 
@@ -21,14 +22,9 @@ public class LauncherViewModel : ObservableObject
     [JsonIgnore]
     public WeakReference<ProjectViewModel> ProjectViewModel { get; set; }
 
-    // pinvoke import CommandLineToArgv
-    // https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-commandlinetoargvw
-    [DllImport("shell32.dll", SetLastError = true)]
-    private static extern IntPtr CommandLineToArgvW([MarshalAs(UnmanagedType.LPWStr)] string lpCmdLine, out int pNumArgs);
-
     internal void Launch()
     {
-        var cwd = ProjectViewModel?.TryGetTarget(out var p) == true ? p.FilePath : null;
+        var cwd = ProjectViewModel?.TryGetTarget(out var p) == true ? p.ExpandedFilePath : null;
         var argv = GetArgv();
 
         var psi = new ProcessStartInfo
@@ -43,14 +39,18 @@ public class LauncherViewModel : ObservableObject
 
     public string[] GetArgv()
     {
-        var args = CommandLineToArgvW(CommandLine, out var argc);
-        if (args == IntPtr.Zero)
+        unsafe
         {
-            throw new InvalidOperationException("Failed to parse command line.");
-        }
+            var args = CommandLineToArgv(CommandLine, out var argc);
+            if (args == null)
+            {
+                throw new InvalidOperationException("Failed to parse command line.");
+            }
 
-        var argv = Enumerable.Range(0, argc).Select(i => Marshal.PtrToStringUni(Marshal.ReadIntPtr(args, i * IntPtr.Size))).ToArray();
-        Marshal.FreeHGlobal(args);
-        return argv;
+            var ptr = (IntPtr)args;
+            var argv = Enumerable.Range(0, argc).Select(i => Marshal.PtrToStringUni(Marshal.ReadIntPtr(ptr, i * IntPtr.Size))).ToArray();
+            Marshal.FreeHGlobal(ptr);
+            return argv;
+        }
     }
 }
