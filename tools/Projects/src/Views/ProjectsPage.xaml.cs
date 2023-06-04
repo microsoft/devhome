@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using DevHome.Common;
 using DevHome.Projects.ViewModels;
 using Microsoft.Extensions.FileSystemGlobbing;
@@ -45,20 +46,29 @@ public partial class ProjectsPage : ToolPage, IDisposable
 
     public static ProjectsViewModel CreateViewModel()
     {
-        if (File.Exists(JsonFilePath))
+        Thread.Sleep(300); // wait for Defender to release the lock
+        for (int i = 0; i < 5; i++)
         {
-            var jsonStr = File.ReadAllText(JsonFilePath);
-            var vm = JsonConvert.DeserializeObject<ProjectsViewModel>(jsonStr);
-            foreach (var p in vm.Projects)
+            if (File.Exists(JsonFilePath))
             {
-                p.FilePath = Environment.ExpandEnvironmentVariables(p.FilePath);
-                foreach (var l in p.Launchers)
+                var jsonStr = File.ReadAllText(JsonFilePath);
+                var vm = JsonConvert.DeserializeObject<ProjectsViewModel>(jsonStr);
+                if (vm == null)
                 {
-                    l.ProjectViewModel = new WeakReference<ProjectViewModel>(p);
+                    Thread.Sleep(300); // wait for Defender to release the lock
+                    continue;
                 }
-            }
 
-            return vm;
+                foreach (var p in vm.Projects)
+                {
+                    foreach (var l in p.Launchers)
+                    {
+                        l.ProjectViewModel = new WeakReference<ProjectViewModel>(p);
+                    }
+                }
+
+                return vm;
+            }
         }
 
         return new ProjectsViewModel();
@@ -89,33 +99,19 @@ public partial class ProjectsPage : ToolPage, IDisposable
 
     private void AddProjectButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        Process.Start(new ProcessStartInfo { FileName = JsonFilePath, UseShellExecute = true });
     }
 
-    private void DeleteProjectButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    private void OnDeleteProject(object sender, ProjectViewModel project)
     {
-    }
-
-    private void Hyperlink_Click(Microsoft.UI.Xaml.Documents.Hyperlink sender, Microsoft.UI.Xaml.Documents.HyperlinkClickEventArgs args)
-    {
-        Process.Start(new ProcessStartInfo(sender.NavigateUri.AbsoluteUri));
-    }
-
-    private void FilePath_Tapped(object sender, Microsoft.UI.Xaml.Input.TappedRoutedEventArgs e)
-    {
-        try
+        DispatcherQueue.TryEnqueue(() =>
         {
-            var path = (sender as TextBlock).Text;
-            Process.Start(new ProcessStartInfo { FileName = path, UseShellExecute = true });
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.Message);
-        }
-    }
+            ViewModel.Projects.Remove(project);
 
-    private void LauncherButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    {
-        var project = (sender as Button).DataContext as LauncherViewModel;
-        project?.Launch();
+            // ViewModel inherits from ObservableRecipient, which has an IsActive property
+            // we don't want to serialize that, so we use a custom JsonConverter
+            var jsonStr = JsonConvert.SerializeObject(ViewModel, Formatting.Indented, new ObservableRecipientConverter());
+            File.WriteAllText(JsonFilePath, jsonStr);
+        });
     }
 }

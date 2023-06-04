@@ -9,6 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="ProjectsPage.xaml" />
+    <None Remove="Views\LauncherView.xaml" />
     <None Remove="Views\ProjectView.xaml" />
   </ItemGroup>
 
@@ -19,6 +20,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\LauncherView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>

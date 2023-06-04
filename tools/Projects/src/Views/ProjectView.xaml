@@ -9,9 +9,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:DevHome.Projects.ViewModels"
+    xmlns:views="using:DevHome.Projects.Views"
+    x:DefaultBindMode="OneWay"
     mc:Ignorable="d">
 
-    <Grid Background="{x:Bind Color}" Width="300" Padding="8" HorizontalAlignment="Left">
+    <Grid Background="{x:Bind ((vm:ProjectViewModel)DataContext).Color}" Width="300" Padding="8" HorizontalAlignment="Left">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
@@ -23,31 +25,22 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="{x:Bind DisplayName}" Style="{ThemeResource SubtitleTextBlockStyle}" />
+            <TextBlock Text="{x:Bind ((vm:ProjectViewModel)DataContext).Name}" Style="{ThemeResource SubtitleTextBlockStyle}" />
             <Button Grid.Column="1" x:Name="DeleteProjectButton" x:Uid="DeleteProject" Click="DeleteProjectButton_Click" />
         </Grid>
-        <TextBlock x:Name="filePath" Grid.Row="1" Text="{x:Bind FilePath}" Style="{ThemeResource CaptionTextBlockStyle}" Padding="8" Tapped="FilePath_Tapped"/>
-        <RichTextBlock Grid.Row="2">
+        <TextBlock x:Name="filePath" Grid.Row="1" Text="{x:Bind ((vm:ProjectViewModel)DataContext).ExpandedFilePath}" Style="{ThemeResource CaptionTextBlockStyle}" Padding="8" Tapped="FilePath_Tapped"/>
+        <RichTextBlock Grid.Row="2" Padding="8">
             <Paragraph>
-                <Hyperlink NavigateUri="{x:Bind Url}" Click="Hyperlink_Click">
-                    <Run Text="{x:Bind Url}" />
+                <Hyperlink NavigateUri="{x:Bind ((vm:ProjectViewModel)DataContext).Url}" Click="Hyperlink_Click">
+                    <Run Text="{x:Bind ((vm:ProjectViewModel)DataContext).Url}" />
                 </Hyperlink>
             </Paragraph>
         </RichTextBlock>
-        <ItemsRepeater Grid.Row="3" ItemsSource="{x:Bind Launchers}" 
+        <ItemsRepeater Grid.Row="3" ItemsSource="{x:Bind ((vm:ProjectViewModel)DataContext).Launchers}" 
                                        Margin="4">
-            <ItemsRepeater.Layout>
-                <UniformGridLayout />
-            </ItemsRepeater.Layout>
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="vm:LauncherViewModel">
-                    <Grid HorizontalAlignment="Left" Margin="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="auto" />
-                        </Grid.ColumnDefinitions>
-                        <Button Content="{x:Bind DisplayName}" Style="{ThemeResource ButtonRevealStyle}" ToolTipService.ToolTip="{x:Bind CommandLine}" />
-                    </Grid>
+                    <views:LauncherView DataContext="{x:Bind}" />
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
         </ItemsRepeater>

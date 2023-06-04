@@ -9,15 +9,21 @@ using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Media;
+using Newtonsoft.Json;
 
 namespace DevHome.Projects.ViewModels;
-public class ProjectViewModel : ObservableObject
+public partial class ProjectViewModel : ObservableObject
 {
     public string Name { get; set; }
 
     public string Url { get; set; }
 
-    public string FilePath { get; set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ExpandedFilePath))]
+    private string filePath;
+
+    [JsonIgnore]
+    public string ExpandedFilePath => Environment.ExpandEnvironmentVariables(FilePath);
 
     public string Color { get; set; } = "Transparent";
 

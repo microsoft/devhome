@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:DevHome.Projects.ViewModels"
+    xmlns:views="using:DevHome.Projects.Views"
     xmlns:pg="using:DevHome.Common"
     mc:Ignorable="d">
 
@@ -24,51 +25,7 @@
         <GridView Grid.Row="1" Margin="0,0,0,22" ItemsSource="{x:Bind ViewModel.Projects}">
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="vm:ProjectViewModel">
-                    <Grid Background="{x:Bind Color}" Width="300" Padding="8" HorizontalAlignment="Left">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="{x:Bind Name}" Style="{ThemeResource SubtitleTextBlockStyle}" />
-                            <Button Grid.Column="1" x:Name="DeleteProjectButton" x:Uid="DeleteProject" Click="DeleteProjectButton_Click" />
-                        </Grid>
-                        <TextBlock x:Name="filePath" Grid.Row="1" Text="{x:Bind FilePath}" Style="{ThemeResource CaptionTextBlockStyle}" Padding="8" Tapped="FilePath_Tapped"/>
-                        <RichTextBlock Grid.Row="2" Padding="8">
-                            <Paragraph>
-                                <Hyperlink NavigateUri="{x:Bind Url}" Click="Hyperlink_Click">
-                                    <Run Text="{x:Bind Url}" />
-                                </Hyperlink>
-                            </Paragraph>
-                        </RichTextBlock>
-                        <ItemsRepeater Grid.Row="3" ItemsSource="{x:Bind Launchers}" 
-                                       Margin="4">
-                            <ItemsRepeater.Layout>
-                                <UniformGridLayout />
-                            </ItemsRepeater.Layout>
-                            <ItemsRepeater.ItemTemplate>
-                                <DataTemplate x:DataType="vm:LauncherViewModel">
-                                    <Grid HorizontalAlignment="Left" Margin="4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <Button Content="{x:Bind DisplayName}" 
-                                                Style="{ThemeResource ButtonRevealStyle}" 
-                                                Click="LauncherButton_Click"
-                                                DataContext="{x:Bind}"
-                                                ToolTipService.ToolTip="{x:Bind CommandLine}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsRepeater.ItemTemplate>
-                        </ItemsRepeater>
-                    </Grid>
+                    <views:ProjectView DataContext="{x:Bind}" ProjectDeleted="OnDeleteProject" />
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>
