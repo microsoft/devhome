@@ -38,6 +38,9 @@
         </RichTextBlock>
         <ItemsRepeater Grid.Row="3" ItemsSource="{x:Bind ((vm:ProjectViewModel)DataContext).Launchers}" 
                                        Margin="4">
+            <ItemsRepeater.Layout>
+                <StackLayout Orientation="Horizontal"/>
+            </ItemsRepeater.Layout>
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="vm:LauncherViewModel">
                     <views:LauncherView DataContext="{x:Bind}" />
