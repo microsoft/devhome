@@ -134,9 +134,14 @@ public static class WindowExExtensions
                 fsd.Show(new HWND(hWnd));
                 fsd.GetResult(out var ppsi);
 
+                // Get the display name and then manually free it after creating the string.
+                // See https://learn.microsoft.com/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitem-getdisplayname:
+                // "It is the responsibility of the caller to free the string pointed to by ppszName
+                // when it is no longer needed. Call CoTaskMemFree on *ppszName to free the memory."
                 PWSTR pFileName;
                 ppsi.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, &pFileName);
                 fileName = new string(pFileName);
+                Marshal.FreeCoTaskMem((IntPtr)pFileName.Value);
             }
 
             return await StorageFile.GetFileFromPathAsync(fileName);
