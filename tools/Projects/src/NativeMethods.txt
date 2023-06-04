@@ -1,2 +1,3 @@
 ﻿CommandLineToArgv
+LocalFree
 PathFindOnPathW

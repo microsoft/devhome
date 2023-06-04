@@ -42,15 +42,20 @@ public class LauncherViewModel : ObservableObject
         unsafe
         {
             var args = CommandLineToArgv(CommandLine, out var argc);
-            if (args == null)
+            try
             {
-                throw new InvalidOperationException("Failed to parse command line.");
-            }
+                if (args == null)
+                {
+                    throw new InvalidOperationException("Failed to parse command line.");
+                }
 
-            var ptr = (IntPtr)args;
-            var argv = Enumerable.Range(0, argc).Select(i => Marshal.PtrToStringUni(Marshal.ReadIntPtr(ptr, i * IntPtr.Size))).ToArray();
-            Marshal.FreeHGlobal(ptr);
-            return argv;
+                var argv = Enumerable.Range(0, argc).Select(i => args[i].ToString()).ToArray();
+                return argv;
+            }
+            finally
+            {
+                LocalFree(new Windows.Win32.Foundation.HLOCAL((IntPtr)args));
+            }
         }
     }
 }

@@ -40,7 +40,8 @@ public sealed partial class LauncherView : UserControl
     private string ResolvePath(string inputPath, string launcherDirectory = null)
     {
         var cwd = ViewModel.ProjectViewModel.TryGetTarget(out var project) ? project.ExpandedFilePath : string.Empty;
-        Span<char> arr = stackalloc char[1024];
+        const int MAX_PATH = 260;
+        Span<char> arr = stackalloc char[MAX_PATH + 1];
         inputPath.CopyTo(arr);
 
         unsafe
