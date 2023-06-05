@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
-# Reference: https://github.com/videojs/videojs/blob/main/CONTRIBUTING.md#building-videojs-locally
+# Reference: https://github.com/videojs/video.js/blob/main/CONTRIBUTING.md#building-videojs-locally
 properties:
   resources:
     - resource: Microsoft.WinGet.DSC/WinGetPackage
