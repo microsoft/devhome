@@ -2,13 +2,11 @@
 // Licensed under the MIT License.
 
 using System.Globalization;
-using System.Management;
 using System.Runtime.InteropServices;
 using System.Web;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.ViewModels;
-
 using Microsoft.Management.Infrastructure;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;

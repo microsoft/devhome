@@ -1,16 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Linq;
-using System.Management;
 using DevHome.SetupFlow.Common.Helpers;
-
 using Microsoft.Management.Infrastructure;
-
 using Windows.Win32;
 using Windows.Win32.Foundation;
-
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace DevHome.SetupFlow.Common.DevDriveFormatter;
 
@@ -86,7 +80,7 @@ public class DevDriveFormatter
             Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Attempt to format drive as a Dev Drive failed default error: 0x{defaultError:X}");
             return defaultError;
         }
-        catch (ManagementException e)
+        catch (CimException e)
         {
             Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"A management exception occurred while formating Dev Drive Error: 0x{e.HResult:X}, error msg: {e.Message}");
             return e.HResult;
