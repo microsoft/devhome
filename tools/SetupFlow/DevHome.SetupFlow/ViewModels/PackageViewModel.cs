@@ -67,16 +67,21 @@ public partial class PackageViewModel : ObservableObject
         _package = package;
         _themeSelector = themeSelector;
         _wingetFactory = wingetFactory;
-        _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
-        _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
-        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask);
-        _packageDescription = new Lazy<string>(GetPackageDescription);
 
+        // Initialize package view model properties in the constructor to
+        // accelerate fetching the data when bound in the view and to avoid
+        // frequently requesting the values from the proxy COM object
         Version = _package.Version;
         Name = _package.Name;
         IsInstalled = _package.IsInstalled;
         CatalogName = _package.CatalogName;
         PublisherName = !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
+
+        // Lazy-initialize optional or expensive view model members
+        _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
+        _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
+        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask);
+        _packageDescription = new Lazy<string>(GetPackageDescription);
     }
 
     public PackageUniqueKey UniqueKey => _package.UniqueKey;
