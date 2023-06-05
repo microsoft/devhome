@@ -145,8 +145,10 @@ public partial class DashboardView : ToolPage
 
             Log.Logger()?.ReportInfo("DashboardView", $"{package.Id.FullName} Version: {major}.{minor}");
 
-            if ((major < stableVer) || (major == stableVer && minor < stableMin) || // Min 400's version is 423.3800.0.0
-                (major >= 500 && major < stageVer) || (major == stageVer && minor < stageMin)) // Min 500's version is 523.3300.0.0
+            // Min 400's version is 423.3800.0.0
+            // Min 500's version is 523.3300.0.0
+            if ((major < stableVer) || (major == stableVer && minor < stableMin) ||
+                (major >= 500 && major < stageVer) || (major == stageVer && minor < stageMin))
             {
                 return false;
             }
