@@ -6,21 +6,21 @@ This document outlines the roadmap of features and release cadence we're plannin
 
 In some cases, we have strategic work taking priority. This includes architecture that's required for partnering with other Microsoft teams. Others may come up in the future.
 
-- https://github.com/microsoft/devhome/issues/521
-- https://github.com/microsoft/devhome/issues/825
-- https://github.com/microsoft/devhome/issues/955
-- https://github.com/microsoft/devhome/issues/989
-- https://github.com/microsoft/devhome/issues/1067
+- Create an Azure DevOps Extension https://github.com/microsoft/devhome/issues/521
+- Dev Home GitHub extension should support Enterprise accounts https://github.com/microsoft/devhome/issues/825
+- Integration with Microsoft Dev Box https://github.com/microsoft/devhome/issues/955
+- Gaming Development in Dev Home https://github.com/microsoft/devhome/issues/989
+- Add additional WinGet capabilities. https://github.com/microsoft/devhome/issues/1067
 
 The next set of work items to be prioritized are based on "impact". These are items that would substantially improve capabilities.
 
-- https://github.com/microsoft/devhome/issues/503
-- https://github.com/microsoft/devhome/issues/673
-- https://github.com/microsoft/devhome/issues/675
-- https://github.com/microsoft/devhome/issues/676
-- https://github.com/microsoft/devhome/issues/679
-- https://github.com/microsoft/devhome/issues/683
-- https://github.com/microsoft/devhome/issues/684
+- App needs notification section in settings https://github.com/microsoft/devhome/issues/503
+- Cannot rearrange widgets on dashboard https://github.com/microsoft/devhome/issues/673
+- Detect DSC Configuration file in repo use that as base for setup https://github.com/microsoft/devhome/issues/675
+- Marketplace & Library for extensions https://github.com/microsoft/devhome/issues/676
+- File Explorer + native Git integration https://github.com/microsoft/devhome/issues/679
+- Windows 10 support https://github.com/microsoft/devhome/issues/683
+- Dashboard import / Export https://github.com/microsoft/devhome/issues/684
 
 Last, but certainly not least are features and bugs with the most 👍 indicating community support.
 
