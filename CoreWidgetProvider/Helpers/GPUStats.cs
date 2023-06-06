@@ -29,11 +29,14 @@ internal class GPUStats : IDisposable
 
     public GPUStats()
     {
-        AddGPUPerfCounters();
+        GetGPUs();
+        GetGPUPerfCounters();
     }
 
-    public void AddGPUPerfCounters()
+    public void GetGPUs()
     {
+        stats.Clear();
+
         using (var searcher = new ManagementObjectSearcher("select * from Win32_VideoController"))
         {
             var i = 0;
@@ -43,6 +46,11 @@ internal class GPUStats : IDisposable
                 stats.Add(new Data() { Name = gpuName, PhysId = i++ });
             }
         }
+    }
+
+    public void GetGPUPerfCounters()
+    {
+        gpuCounters.Clear();
 
         var pcg = new PerformanceCounterCategory("GPU Engine");
         var instanceNames = pcg.GetInstanceNames();
@@ -93,9 +101,18 @@ internal class GPUStats : IDisposable
 
             if (success)
             {
-                var sum = counters?.Sum(x => x.NextValue());
-                gpu.Usage = sum.GetValueOrDefault(0) / 100;
-                ChartHelper.AddNextChartValue(sum.GetValueOrDefault(0), gpu.GpuChartValues);
+                try
+                {
+                    var sum = counters?.Sum(x => x.NextValue());
+                    gpu.Usage = sum.GetValueOrDefault(0) / 100;
+                    ChartHelper.AddNextChartValue(sum.GetValueOrDefault(0), gpu.GpuChartValues);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Log.Logger()?.ReportWarn("GPUStats", "InvalidOperationException", ex);
+                    Log.Logger()?.ReportInfo("GPUStats", "Calling GetGPUPerfCounters again");
+                    GetGPUPerfCounters();
+                }
             }
         }
     }
