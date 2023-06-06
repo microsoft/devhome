@@ -12,6 +12,7 @@ using DevHome.Helpers;
 using DevHome.Logging;
 using DevHome.Services;
 using DevHome.Settings.Extensions;
+using DevHome.Settings.Views;
 using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -87,8 +88,6 @@ public partial class App : Application, IApp
             services.AddSingleton<WindowEx>(_ => MainWindow);
 
             // Views and ViewModels
-            services.AddTransient<FeedbackViewModel>();
-            services.AddTransient<FeedbackPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<InitializationPage>();
             services.AddTransient<ShellViewModel>();
