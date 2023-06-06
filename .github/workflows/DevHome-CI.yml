@@ -60,6 +60,7 @@ jobs:
       run: |
         dotnet restore pluginsdk\\DevHomeSDK.sln -p:PublishReadyToRun=true
         dotnet restore DevHome.sln -p:PublishReadyToRun=true
+      continue-on-error: true
 
     - name: Restore nuget packages
       run: |
