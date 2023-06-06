@@ -5,7 +5,7 @@
 # This configuration will install the tools necessary to get started with NodeJS development on Windows #
 # Reference: https://learn.microsoft.com/windows/dev-environment/javascript/nodejs-on-windows           #
 #                                                                                                       #
-# Note: If an existing version of NodeJS is installed on the machine outside of NVM, you will be        #
+# Note: If an existing version of Node.js is installed on the machine outside of NVM, you will be       #
 #       prompted to either allow NVM to manage that installation or remove it.                          #
 #########################################################################################################
 
