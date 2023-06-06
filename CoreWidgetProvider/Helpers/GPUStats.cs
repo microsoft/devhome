@@ -3,8 +3,6 @@
 
 using System.Diagnostics;
 using System.Globalization;
-using System.Management;
-
 using Microsoft.Management.Infrastructure;
 
 namespace CoreWidgetProvider.Helpers;
