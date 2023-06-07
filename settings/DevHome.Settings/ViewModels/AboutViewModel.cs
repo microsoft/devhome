@@ -10,13 +10,8 @@ namespace DevHome.Settings.ViewModels;
 
 public partial class AboutViewModel : ObservableRecipient
 {
+    [ObservableProperty]
     private string _versionDescription;
-
-    public string VersionDescription
-    {
-        get => _versionDescription;
-        set => SetProperty(ref _versionDescription, value);
-    }
 
     public AboutViewModel()
     {
