@@ -19,7 +19,7 @@ internal class SystemCPUUsageWidget : CoreWidget, IDisposable
     public SystemCPUUsageWidget()
         : base()
     {
-        dataManager = new DataManager(UpdateWidget);
+        dataManager = new (DataType.CPU, UpdateWidget);
     }
 
     private string SpeedToString(float cpuSpeed)
@@ -73,8 +73,6 @@ internal class SystemCPUUsageWidget : CoreWidget, IDisposable
 
     public override string GetData(WidgetPageState page)
     {
-        LoadContentData();
-
         return page switch
         {
             WidgetPageState.Content => ContentData,

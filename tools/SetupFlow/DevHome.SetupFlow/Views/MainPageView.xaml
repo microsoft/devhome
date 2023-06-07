@@ -21,11 +21,6 @@
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
-                <ResourceDictionary>
-                    <Style x:Key="MainPageCardStyle" TargetType="labs:SettingsCard">
-                        <Setter Property="CornerRadius" Value="7" />
-                    </Style>
-                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
 
             <ResourceDictionary.ThemeDictionaries>
@@ -74,7 +69,7 @@
         <!-- Main content -->
         <controls:SetupShell Grid.Row="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <StackPanel Spacing="30">
+                <StackPanel>
                     <commonviews:Banner
                         TextWidth="345"
                         HideButtonVisibility="True"
@@ -85,12 +80,11 @@
                         BackgroundSource="{ThemeResource Setup_Banner_Back}"
                         OverlaySource="{ThemeResource Setup_Banner_Front}" />
 
-                    <StackPanel Spacing="5">
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_EnvironmentSetup" />
+                    <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+                        <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_EnvironmentSetup" />
                         <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
                         <Grid Background="Transparent">
                             <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
-                                               Style="{StaticResource MainPageCardStyle}"
                                                IsClickEnabled="True"
                                                Command="{x:Bind ViewModel.StartSetupCommand}"
                                                CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
@@ -111,7 +105,6 @@
                             </ToolTipService.ToolTip>
                         </Grid>
                         <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile"
-                                           Style="{StaticResource MainPageCardStyle}"
                                            IsClickEnabled="True"
                                            Command="{x:Bind ViewModel.StartConfigurationFileCommand}"
                                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
@@ -122,10 +115,9 @@
                         </labs:SettingsCard>
                     </StackPanel>
 
-                    <StackPanel Spacing="5">
-                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
+                    <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
+                        <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
                         <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos"
-                                           Style="{StaticResource MainPageCardStyle}"
                                            IsClickEnabled="True"
                                            Command="{x:Bind ViewModel.StartRepoConfigCommand}"
                                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
@@ -137,7 +129,6 @@
                         <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
                         <Grid Background="Transparent">
                             <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
-                                               Style="{StaticResource MainPageCardStyle}"
                                                IsClickEnabled="True"
                                                Command="{x:Bind ViewModel.StartAppManagementCommand}"
                                                CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
@@ -158,7 +149,6 @@
                             </ToolTipService.ToolTip>
                         </Grid>
                         <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevDrive"
-                                           Style="{StaticResource MainPageCardStyle}"
                                            IsClickEnabled="True" Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}" 
                                            Visibility="{x:Bind ViewModel.ShowDevDriveItem, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" >
                             <labs:SettingsCard.ActionIcon>
