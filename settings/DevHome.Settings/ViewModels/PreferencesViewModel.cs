@@ -9,7 +9,7 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.ViewModels;
 
-public partial class PreferencesViewModel : ObservableRecipient
+public partial class PreferencesViewModel : ObservableObject
 {
     private readonly IThemeSelectorService _themeSelectorService;
 

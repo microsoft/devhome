@@ -12,7 +12,7 @@ using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.ViewModels;
 
-public partial class ShellViewModel : ObservableRecipient
+public partial class ShellViewModel : ObservableObject
 {
     private readonly ILocalSettingsService _localSettingsService;
 
