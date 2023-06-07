@@ -106,6 +106,13 @@ public partial class WidgetViewModel : ObservableObject
 
     private async void RenderWidgetFrameworkElement()
     {
+        Log.Logger()?.ReportDebug("WidgetViewModel", "RenderWidgetFrameworkElement");
+
+        if (_renderedCard != null)
+        {
+            _renderedCard.Action -= HandleAdaptiveAction;
+        }
+
         var cardTemplate = await Widget.GetCardTemplateAsync();
         var cardData = await Widget.GetCardDataAsync();
 
@@ -137,6 +144,16 @@ public partial class WidgetViewModel : ObservableObject
             GetConfiguring(cardData);
         }
 
+        if (string.IsNullOrEmpty(cardTemplate))
+        {
+            _dispatcher.TryEnqueue(() =>
+            {
+                WidgetFrameworkElement = GetLoadingCard();
+            });
+
+            return;
+        }
+
         // Use the data to fill in the template.
         AdaptiveCardParseResult card;
         try
@@ -156,11 +173,6 @@ public partial class WidgetViewModel : ObservableObject
             Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
             ShowErrorCard("WidgetErrorCardDisplayText");
             return;
-        }
-
-        if (_renderedCard != null)
-        {
-            _renderedCard.Action -= HandleAdaptiveAction;
         }
 
         if (card == null || card.AdaptiveCard == null)
@@ -254,6 +266,26 @@ public partial class WidgetViewModel : ObservableObject
 
             sp.Children.Add(subErrorText);
         }
+
+        grid.Children.Add(sp);
+        return grid;
+    }
+
+    private FrameworkElement GetLoadingCard()
+    {
+        var grid = new Grid
+        {
+            Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent),
+            Padding = new Thickness(15, 0, 15, 0),
+        };
+
+        var sp = new StackPanel
+        {
+            HorizontalAlignment = HorizontalAlignment.Center,
+        };
+
+        var progressRing = new ProgressRing();
+        sp.Children.Add(progressRing);
 
         grid.Children.Add(sp);
         return grid;
