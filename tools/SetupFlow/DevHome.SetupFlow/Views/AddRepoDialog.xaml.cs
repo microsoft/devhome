@@ -197,7 +197,7 @@ internal partial class AddRepoDialog
     /// <remarks>
     /// Fired when a user changes their account on a provider.
     /// </remarks>
-    private void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // This gets fired when events are removed from the account combo box.
         // When the provider combo box is changed all accounts are removed from the account combo box
@@ -208,7 +208,8 @@ internal partial class AddRepoDialog
         {
             var loginId = (string)AccountsComboBox.SelectedValue;
             var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-            SelectRepositories(AddRepoViewModel.GetRepositories(providerName, loginId));
+            var previouslySelectedRepositories = await AddRepoViewModel.GetRepositories(providerName, loginId);
+            SelectRepositories(previouslySelectedRepositories);
         }
     }
 
