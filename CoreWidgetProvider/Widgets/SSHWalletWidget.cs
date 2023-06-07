@@ -161,6 +161,10 @@ internal class SSHWalletWidget : CoreWidget
         cmd.StartInfo = info;
 
         cmd.Start();
+
+        // If we get here we have tried to connect so reset to the ssh host list
+        Page = WidgetPageState.Content;
+        UpdateWidget();
     }
 
     private void HandleCheckPath(WidgetActionInvokedArgs args)
