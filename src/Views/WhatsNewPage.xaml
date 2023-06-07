@@ -74,8 +74,7 @@
                         <Button
                             Margin="0 16"
                             MinWidth="258"
-                            Background="{ThemeResource ButtonAccentBackground}"
-                            Foreground="{ThemeResource ButtonAccentForeground}"
+                            Style="{ThemeResource AccentButtonStyle}"
                             Click="MachineConfigButton_Click"
                             x:Uid="WhatsNewPage_GetStartedButton" />
                         
