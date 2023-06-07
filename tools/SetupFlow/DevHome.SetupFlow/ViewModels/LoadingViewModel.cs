@@ -301,7 +301,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process: {e}");
+                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process.", e);
                 Log.Logger?.ReportInfo(Log.Component.Loading, "Will continue with setup as best-effort");
             }
         }

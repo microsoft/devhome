@@ -91,7 +91,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget restore catalog: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget restore catalog.", e);
         }
 
         return result;

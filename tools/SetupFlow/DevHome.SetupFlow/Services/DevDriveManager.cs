@@ -247,7 +247,7 @@ public class DevDriveManager : IDevDriveManager
         catch (Exception ex)
         {
             // Log then return empty list, don't show the user their existing dev drive. Not catastrophic failure.
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed Get existing Dev Drives. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get existing Dev Drives.", ex);
             return new List<IDevDrive>();
         }
     }
@@ -272,7 +272,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Unable to get available Free Space for {root}: ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Unable to get available Free Space for {root}.", ex);
             validationSuccessful = false;
         }
 
@@ -364,7 +364,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to validate selected Drive letter ({devDrive.DriveLocation.FirstOrDefault()}). ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to validate selected Drive letter ({devDrive.DriveLocation.FirstOrDefault()}).", ex);
             returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
         }
 
@@ -397,7 +397,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get Available Drive letters. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get Available Drive letters.", ex);
         }
 
         return driveLetterSet.ToList();

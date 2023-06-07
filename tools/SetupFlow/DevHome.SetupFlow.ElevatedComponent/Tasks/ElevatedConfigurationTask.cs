@@ -49,7 +49,7 @@ public sealed class ElevatedConfigurationTask
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration: {e.Message}");
+                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration.", e);
                 taskResult.TaskSucceeded = false;
             }
 
