@@ -4,22 +4,54 @@
   "version": "1.5",
   "body": [
     {
-      "type": "TextBlock",
-      "text": "Your SSH key contains pattern matching. Fill out the pattern to connect.",
-      "wrap": true
-    },
-    {
-      "type": "Input.Text",
-      "placeholder": "Placeholder text"
-    },
-    {
-      "type": "ActionSet",
-      "actions": [
+      "type": "Container",
+      "items": [
         {
-          "type": "Action.Submit",
-          "title": "Connect"
+          "type": "TextBlock",
+          "text": "Your SSH key contains pattern matching. Fill out the pattern to connect.",
+          "wrap": true,
+          "horizontalAlignment": "Left",
+          "size": "Medium",
+          "weight": "Bolder"
+        },
+        {
+          "type": "ColumnSet",
+          "spacing": "large",
+          "columns": [
+            {
+              "type": "Column",
+              "items": [
+                {
+                  "type": "Input.Text",
+                  "id": "PatternHost",
+                  "spacing": "large",
+                  "style": "Url",
+                  "value": "${patternHost}"
+                }
+              ],
+              "width": "stretch"
+            },
+            {
+              "type": "Column",
+              "items": [
+                {
+                  "type": "ActionSet",
+                  "actions": [
+                    {
+                      "type": "Action.Execute",
+                      "title": "Connect",
+                      "tooltip": "%Widget_Template_Tooltip/Submit%",
+                      "verb": "PatternConnect"
+                    }
+                  ]
+                }
+              ],
+              "width": "auto"
+            }
+          ]
         }
       ]
     }
   ]
 }
+

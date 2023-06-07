@@ -8,4 +8,5 @@ public enum WidgetPageState
     Configure,
     Loading,
     Content,
+    Pattern,
 }

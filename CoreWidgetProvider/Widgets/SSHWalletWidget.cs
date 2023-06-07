@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using Antlr4.Runtime.Misc;
 using CoreWidgetProvider.Helpers;
 using CoreWidgetProvider.Widgets.Enums;
 using Microsoft.Windows.Widgets.Providers;
@@ -36,6 +37,8 @@ internal class SSHWalletWidget : CoreWidget
 
     ~SSHWalletWidget()
     {
+        // Ensures widget is in the proper view when a user returns
+        UpdateWidget();
         FileWatcher?.Dispose();
     }
 
@@ -111,15 +114,40 @@ internal class SSHWalletWidget : CoreWidget
                 HandleCheckPath(actionInvokedArgs);
                 break;
 
+            case WidgetAction.PatternConnect:
+                HandleConnect(actionInvokedArgs, true);
+                break;
+
             case WidgetAction.Unknown:
                 Log.Logger()?.ReportError(Name, ShortId, $"Unknown verb: {actionInvokedArgs.Verb}");
                 break;
         }
     }
 
-    private void HandleConnect(WidgetActionInvokedArgs args)
+    private void HandleConnect(WidgetActionInvokedArgs args, bool matchingPattern = false)
     {
+        Log.Logger()?.ReportDebug(Name, ShortId, $"args: {args}");
+        Log.Logger()?.ReportDebug(Name, ShortId, $"args type: {args.Data.GetType()}");
         var data = args.Data;
+        Log.Logger()?.ReportDebug(Name, ShortId, $"HandleConnect data: {data}");
+
+        if (matchingPattern)
+        {
+            var jsonObject = JsonSerializer.Deserialize<JsonNode>(data);
+            var patternHostNode = jsonObject != null ? jsonObject["PatternHost"] : null;
+            Log.Logger()?.ReportDebug(Name, ShortId, $"help data: {patternHostNode}");
+            if (patternHostNode != null)
+            {
+                data = patternHostNode.ToString();
+            }
+        }
+
+        if (data.Contains('*') || data.Contains('?'))
+        {
+            Page = WidgetPageState.Pattern;
+            UpdateWidget(data);
+            return;
+        }
 
         Process cmd = new Process();
 
@@ -324,6 +352,25 @@ internal class SSHWalletWidget : CoreWidget
         WidgetManager.GetDefault().UpdateWidget(updateOptions);
     }
 
+    public void UpdateWidget(string patternHost)
+    {
+        // If patternHost is a JSON string, remove the leading and trailing quotes
+        if (patternHost.StartsWith("\"", StringComparison.Ordinal) && patternHost.EndsWith("\"", StringComparison.Ordinal))
+        {
+            patternHost = patternHost.Trim('"');
+        }
+
+        WidgetUpdateRequestOptions updateOptions = new (Id)
+        {
+            Data = new JsonObject { { "patternHost", patternHost } }.ToJsonString(),
+            Template = GetTemplateForPage(Page),
+            CustomState = ConfigFile,
+        };
+
+        Log.Logger()?.ReportDebug(Name, ShortId, $"Updating widget for {Page}");
+        WidgetManager.GetDefault().UpdateWidget(updateOptions);
+    }
+
     public override string GetTemplatePath(WidgetPageState page)
     {
         return page switch
@@ -331,6 +378,7 @@ internal class SSHWalletWidget : CoreWidget
             WidgetPageState.Configure => @"Widgets\Templates\SSHWalletConfigurationTemplate.json",
             WidgetPageState.Content => @"Widgets\Templates\SSHWalletTemplate.json",
             WidgetPageState.Loading => @"Widgets\Templates\LoadingTemplate.json",
+            WidgetPageState.Pattern => @"Widgets\Templates\SSHWalletPatternMatching.json",
             _ => throw new NotImplementedException(),
         };
     }

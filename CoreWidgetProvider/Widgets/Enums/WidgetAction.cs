@@ -20,6 +20,11 @@ public enum WidgetAction
     Connect,
 
     /// <summary>
+    /// Action to connect to a host after user inputs pattern.
+    /// </summary>
+    PatternConnect,
+
+    /// <summary>
     /// Action to show previous widget item.
     /// </summary>
     PrevItem,
