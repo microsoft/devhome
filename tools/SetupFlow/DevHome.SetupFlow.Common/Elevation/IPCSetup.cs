@@ -285,7 +285,7 @@ public static class IPCSetup
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.IPCClient, $"Error occuring while setting up elevated process.", e);
+            Log.Logger?.ReportError(Log.Component.IPCClient, $"Error occurring while setting up elevated process:", e);
 
             // Release the "mutex" if there is any error.
             // On success, the mutex will be released after work is done.
