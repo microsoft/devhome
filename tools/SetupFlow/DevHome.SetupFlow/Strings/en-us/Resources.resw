@@ -242,8 +242,8 @@
     <comment>Button text for learning more about setting up a development machine</comment>
   </data>
   <data name="DevDriveWindowByteUnitComboBox" xml:space="preserve">
-    <value>Byte unit of mearsure</value>
-    <comment>Unit of mearsure values that will populate the dropdown. Only gigabyte and terabyte</comment>
+    <value>Byte unit of measure</value>
+    <comment>Unit of measure values that will populate the dropdown. Only gigabyte and terabyte</comment>
   </data>
   <data name="DevDriveWindowByteUnitComboBoxGB" xml:space="preserve">
     <value>GB</value>
