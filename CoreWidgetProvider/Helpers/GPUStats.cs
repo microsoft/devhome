@@ -109,7 +109,7 @@ internal class GPUStats : IDisposable
                 }
                 catch (InvalidOperationException ex)
                 {
-                    Log.Logger()?.ReportWarn("GPUStats", "InvalidOperationException", ex);
+                    Log.Logger()?.ReportWarn("GPUStats", "Failed to get next value", ex);
                     Log.Logger()?.ReportInfo("GPUStats", "Calling GetGPUPerfCounters again");
                     GetGPUPerfCounters();
                 }
