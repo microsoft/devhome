@@ -89,7 +89,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     {
         get
         {
-            var path = _cloningLocation.FullName;
+            var path = CloningLocation.FullName;
 
             if (RepositoryToClone != null)
             {

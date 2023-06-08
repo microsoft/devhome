@@ -15,44 +15,32 @@ using Windows.ApplicationModel;
 
 namespace DevHome.ViewModels;
 
-public class FeedbackViewModel : ObservableRecipient
+public partial class FeedbackViewModel : ObservableObject
 {
     private readonly IThemeSelectorService _themeSelectorService;
+
+    [ObservableProperty]
     private ElementTheme _elementTheme;
+
+    [ObservableProperty]
     private string _versionDescription;
-
-    public ElementTheme ElementTheme
-    {
-        get => _elementTheme;
-        set => SetProperty(ref _elementTheme, value);
-    }
-
-    public string VersionDescription
-    {
-        get => _versionDescription;
-        set => SetProperty(ref _versionDescription, value);
-    }
-
-    public ICommand SwitchThemeCommand
-    {
-        get;
-    }
 
     public FeedbackViewModel(IThemeSelectorService themeSelectorService)
     {
         _themeSelectorService = themeSelectorService;
         _elementTheme = _themeSelectorService.Theme;
         _versionDescription = GetVersionDescription();
+    }
 
-        SwitchThemeCommand = new RelayCommand<ElementTheme>(
-            async (param) =>
-            {
-                if (ElementTheme != param)
-                {
-                    ElementTheme = param;
-                    await _themeSelectorService.SetThemeAsync(param);
-                }
-            });
+    [RelayCommand]
+    private async Task SwitchThemeAsync(ElementTheme theme)
+    {
+        if (ElementTheme != theme)
+        {
+            ElementTheme = theme;
+
+            await _themeSelectorService.SetThemeAsync(theme);
+        }
     }
 
     private static string GetVersionDescription()

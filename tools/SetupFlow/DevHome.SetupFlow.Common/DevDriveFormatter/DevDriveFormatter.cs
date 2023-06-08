@@ -82,7 +82,7 @@ public class DevDriveFormatter
         }
         catch (CimException e)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"A management exception occurred while formating Dev Drive Error: 0x{e.HResult:X}, error msg: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"A management exception occurred while formating Dev Drive Error.", e);
             return e.HResult;
         }
     }

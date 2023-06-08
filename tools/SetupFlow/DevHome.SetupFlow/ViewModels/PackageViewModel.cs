@@ -67,6 +67,17 @@ public partial class PackageViewModel : ObservableObject
         _package = package;
         _themeSelector = themeSelector;
         _wingetFactory = wingetFactory;
+
+        // Initialize package view model properties in the constructor to
+        // accelerate fetching the data when bound in the view and to avoid
+        // frequently requesting the values from the proxy COM object
+        Version = _package.Version;
+        Name = _package.Name;
+        IsInstalled = _package.IsInstalled;
+        CatalogName = _package.CatalogName;
+        PublisherName = !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
+
+        // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
         _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask);
@@ -77,17 +88,17 @@ public partial class PackageViewModel : ObservableObject
 
     public IWinGetPackage Package => _package;
 
-    public string Name => _package.Name;
-
     public BitmapImage Icon => _themeSelector.IsDarkTheme() ? _packageDarkThemeIcon.Value : _packageLightThemeIcon.Value;
 
-    public string Version => _package.Version;
+    public string Name { get; }
 
-    public bool IsInstalled => _package.IsInstalled;
+    public string Version { get; }
 
-    public string CatalogName => _package.CatalogName;
+    public bool IsInstalled { get; }
 
-    public string PublisherName => !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
+    public string CatalogName { get; }
+
+    public string PublisherName { get; }
 
     public string PackageTitle => Name;
 

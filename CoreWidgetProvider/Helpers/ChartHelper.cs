@@ -66,6 +66,8 @@ internal class ChartHelper
 
             lock (_lock)
             {
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+
                 using var darkGreyBrush = new SolidBrush(DarkGrayColor);
                 g.FillRectangle(darkGreyBrush, 0, 0, width - 1, height - 1);
                 g.DrawRectangle(Pens.LightGray, 0, 0, width - 1, height - 1);

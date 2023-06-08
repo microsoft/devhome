@@ -12,7 +12,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.ViewModels;
 
-public partial class InfoBarModel : ObservableRecipient
+public partial class InfoBarModel : ObservableObject
 {
     [ObservableProperty]
     private string? _title;

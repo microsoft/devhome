@@ -206,7 +206,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     private void SetExecutingTaskAndActionCenter()
     {
-        ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _tasksToRun.Count);
+        ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
         ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, 0);
     }
 
@@ -301,14 +301,14 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process: {e}");
+                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process.", e);
                 Log.Logger?.ReportInfo(Log.Component.Loading, "Will continue with setup as best-effort");
             }
         }
 
         FetchTaskInformation();
 
-        await StartAllTasks(_tasksToRun);
+        await StartAllTasks(TasksToRun);
     }
 
     /// <summary>
@@ -400,7 +400,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
-                ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _tasksToRun.Count);
+                ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
             });
 
             TaskFinishedState taskFinishedState;
