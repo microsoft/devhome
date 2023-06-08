@@ -56,15 +56,10 @@ jobs:
         echo "Using VSDevCmd: ${VSDevCmd}"
         Add-Content $env:GITHUB_ENV "VSDevCmd=$VSDevCmd"
 
-    - name: Restore dependencies
-      run: |
-        dotnet restore pluginsdk\\DevHomeSDK.sln -p:PublishReadyToRun=true
-        dotnet restore DevHome.sln -p:PublishReadyToRun=true
-
     - name: Restore nuget packages
       run: |
-        cmd /c "$env:VSDevCmd" "&" nuget restore pluginsdk\\DevHomeSDK.sln
-        cmd /c "$env:VSDevCmd" "&" nuget restore DevHome.sln
+        cmd /c "$env:VSDevCmd" "&" msbuild -t:restore /m /p:Configuration=Release,Platform=${{ matrix.platform }},RestorePackagesConfig=true pluginsdk\\DevHomeSDK.sln
+        cmd /c "$env:VSDevCmd" "&" msbuild -t:restore /m /p:Configuration=Release,Platform=${{ matrix.platform }} DevHome.sln
 
     - name: Build_SDK
       run: cmd /c "$env:VSDevCmd" "&" msbuild /m /p:Configuration=Release,Platform=${{ matrix.platform }} pluginsdk\\DevHomeSDK.sln
