@@ -208,8 +208,8 @@ internal partial class AddRepoDialog
         {
             var loginId = (string)AccountsComboBox.SelectedValue;
             var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-            var previouslySelectedRepositories = await AddRepoViewModel.GetRepositories(providerName, loginId);
-            SelectRepositories(previouslySelectedRepositories);
+            await AddRepoViewModel.GetRepositoriesAsync(providerName, loginId);
+            SelectRepositories(AddRepoViewModel.SetRepositories(providerName, loginId));
         }
     }
 
