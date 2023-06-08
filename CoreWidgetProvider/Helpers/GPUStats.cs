@@ -29,11 +29,14 @@ internal class GPUStats : IDisposable
 
     public GPUStats()
     {
-        AddGPUPerfCounters();
+        LoadGPUs();
+        GetGPUPerfCounters();
     }
 
-    public void AddGPUPerfCounters()
+    public void LoadGPUs()
     {
+        stats.Clear();
+
         using (var searcher = new ManagementObjectSearcher("select * from Win32_VideoController"))
         {
             var i = 0;
@@ -43,6 +46,11 @@ internal class GPUStats : IDisposable
                 stats.Add(new Data() { Name = gpuName, PhysId = i++ });
             }
         }
+    }
+
+    public void GetGPUPerfCounters()
+    {
+        gpuCounters.Clear();
 
         var pcg = new PerformanceCounterCategory("GPU Engine");
         var instanceNames = pcg.GetInstanceNames();
@@ -93,9 +101,19 @@ internal class GPUStats : IDisposable
 
             if (success)
             {
-                var sum = counters?.Sum(x => x.NextValue());
-                gpu.Usage = sum.GetValueOrDefault(0) / 100;
-                ChartHelper.AddNextChartValue(sum.GetValueOrDefault(0), gpu.GpuChartValues);
+                try
+                {
+                    // NextValue() can throw an InvalidOperationException if the counter is no longer there.
+                    var sum = counters?.Sum(x => x.NextValue()) ?? 0;
+                    gpu.Usage = sum / 100;
+                    ChartHelper.AddNextChartValue(sum, gpu.GpuChartValues);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Log.Logger()?.ReportWarn("GPUStats", "Failed to get next value", ex);
+                    Log.Logger()?.ReportInfo("GPUStats", "Calling GetGPUPerfCounters again");
+                    GetGPUPerfCounters();
+                }
             }
         }
     }
