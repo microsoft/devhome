@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -334,6 +335,15 @@ public partial class AddRepoViewModel : ObservableObject
             if (!Uri.TryCreate(Url, UriKind.RelativeOrAbsolute, out _))
             {
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
+                ShouldShowUrlError = Visibility.Visible;
+                return false;
+            }
+
+            var sshMatch = Regex.Match(Url, "^.*@.*:.*\\/.*");
+
+            if (sshMatch.Success)
+            {
+                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.SSHConnectionStringNotAllowed);
                 ShouldShowUrlError = Visibility.Visible;
                 return false;
             }

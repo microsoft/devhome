@@ -1183,4 +1183,8 @@
     <value>Repository type</value>
     <comment>Header for the repo  grid</comment>
   </data>
+  <data name="SSHConnectionStringNotAllowed" xml:space="preserve">
+    <value>SSH connection strings are not allowed</value>
+    <comment>Error string when a user enters in an SSH connection string</comment>
+  </data>
 </root>
