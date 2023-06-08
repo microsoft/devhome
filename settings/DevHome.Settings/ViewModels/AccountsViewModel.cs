@@ -12,7 +12,7 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.ViewModels;
 
-public class AccountsViewModel : ObservableRecipient
+public class AccountsViewModel : ObservableObject
 {
     public ObservableCollection<AccountsProviderViewModel> AccountsProviders { get; } = new ();
 

@@ -45,7 +45,15 @@ Function Create-AppxBundleMapping {
 
     $lines = @("[Files]")
     Get-ChildItem -Path:$InputPath -Recurse -Filter:*$ProjectName* -Include *.appx, *.msix | % {
-        $lines += ("`"{0}`" `"{1}`"" -f ($_.FullName, $_.Name))
+        if ($_.FullName -Match "AppxMetadata\\Stub")
+        {
+            # Stub is currently hardcoded to version 0.0.0.0 and store doesn't like that
+            # $lines += ("`"{0}`" `"AppxMetadata\Stub\{1}`"" -f ($_.FullName, $_.Name))
+        }
+        else
+        {
+            $lines += ("`"{0}`" `"{1}`"" -f ($_.FullName, $_.Name))
+        }
     }
 
     $outputFile = New-TemporaryFile

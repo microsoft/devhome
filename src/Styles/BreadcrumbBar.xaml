@@ -1,0 +1,16 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <x:Double x:Key="BreadcrumbBarChevronFontSize">12</x:Double>
+
+    <Thickness x:Key="BreadcrumbBarChevronPadding">12,0</Thickness>
+
+    <FontFamily x:Key="ContentControlThemeFontFamily">XamlAutoFontFamily</FontFamily>
+
+    <x:Double x:Key="BreadcrumbBarItemFontSize">28</x:Double>
+    <StaticResource x:Key="BreadcrumbBarItemThemeFontSize" ResourceKey="BreadcrumbBarItemFontSize" />
+
+    <FontWeight x:Key="BreadcrumbBarItemFontWeight">SemiBold</FontWeight>
+
+</ResourceDictionary>

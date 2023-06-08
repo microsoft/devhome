@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -24,9 +24,17 @@ public partial class RepoViewListItem : ObservableObject
     /// </summary>
     public string RepoName { get; }
 
+    /// <summary>
+    /// Gets the name of the organization that owns this repo.
+    /// </summary>
+    public string OwningAccountName { get; }
+
+    public string RepoDisplayName => Path.Join(OwningAccountName, RepoName);
+
     public RepoViewListItem(IRepository repo)
     {
         IsPrivate = repo.IsPrivate;
         RepoName = repo.DisplayName;
+        OwningAccountName = repo.OwningAccountName;
     }
 }

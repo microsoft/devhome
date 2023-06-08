@@ -16,16 +16,16 @@
         <ResourceDictionary>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
-                    <x:String x:Key="BackgroundFront">/Assets/WhatsNewPage/LightTheme/BackgroundFront.png</x:String>
-                    <x:String x:Key="BackgroundBack">/Assets/WhatsNewPage/LightTheme/BackgroundBack.png</x:String>
-                    <x:String x:Key="BackgroundShadow">/Assets/WhatsNewPage/LightTheme/BackgroundShadow.png</x:String>
-                    <Color x:Key="CardBackground">#fdfdfd</Color>
+                    <x:String x:Key="Background">/Assets/WhatsNewPage/LightTheme/Background.png</x:String>
+                    <Color x:Key="ButtonAccentBackground">#6659CA</Color>
+                    <Color x:Key="ButtonAccentForeground">#FFFFFF</Color>
+                    <Color x:Key="LearnMoreForeground">#005FB8</Color>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
-                    <x:String x:Key="BackgroundFront">/Assets/WhatsNewPage/DarkTheme/BackgroundFront.png</x:String>
-                    <x:String x:Key="BackgroundBack">/Assets/WhatsNewPage/DarkTheme/BackgroundBack.png</x:String>
-                    <x:String x:Key="BackgroundShadow">/Assets/WhatsNewPage/DarkTheme/BackgroundShadow.png</x:String>
-                    <Color x:Key="CardBackground">#323232</Color>
+                    <x:String x:Key="Background">/Assets/WhatsNewPage/DarkTheme/Background.png</x:String>
+                    <Color x:Key="ButtonAccentBackground">#47E1DA</Color>
+                    <Color x:Key="ButtonAccentForeground">#000000</Color>
+                    <Color x:Key="LearnMoreForeground">#60CDFF</Color>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
@@ -34,130 +34,98 @@
     <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" MaxWidth="{ThemeResource MaxPageBackgroundWidth}">
         <RelativePanel>
             <Grid>
-                <Image Source="{ThemeResource BackgroundBack}" MinWidth="974" VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="UniformToFill" />
-                <Image Source="{ThemeResource BackgroundFront}" MinWidth="974" VerticalAlignment="Top" HorizontalAlignment="Right" Stretch="UniformToFill"/>
-                <Image Source="{ThemeResource BackgroundShadow}" MinWidth="974" Margin="0 100 0 0" VerticalAlignment="Top" Stretch="UniformToFill"/>
+                <Image Source="{ThemeResource Background}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="UniformToFill" />
             </Grid>
             <Grid x:Name="ContentArea" Padding="35 0 35 30" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="236" />
+                    <RowDefinition Height="330" />
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Padding="32 0">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
+                        <RowDefinition Height="100" />
+                        <RowDefinition Height="55" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
                     <TextBlock
-                        x:Uid="WhatsNewPage_Title"
-                        Style="{ThemeResource TitleTextBlockStyle}"
+                        Grid.Row="0"
+                        x:Uid="WhatsNewPage_Header"
+                        Style="{ThemeResource SubtitleTextBlockStyle}"
                         VerticalAlignment="Bottom" />
-
+                    
                     <TextBlock
                         Grid.Row="1"
-                        Margin="0 12"
-                        VerticalAlignment="Top"
-                        x:Uid="WhatsNewPage_Description"
-                        Width="300"
-                        HorizontalAlignment="Left"
-                        TextWrapping="Wrap"
-                        Text="{StaticResource SplitViewPaneAnimationOpenDuration}" />
-                </Grid>
+                        x:Uid="WhatsNewPage_Title"
+                        Style="{ThemeResource TitleLargeTextBlockStyle}"
+                        VerticalAlignment="Bottom" />
 
-                <Grid 
-                    x:Name="ConnectDevIdContentArea"
-                    Grid.Row="1"
-                    Padding="28"
-                    CornerRadius="{ThemeResource ControlCornerRadius}"
-                    Margin="0 0 0 12"
-                    BorderBrush="{ThemeResource ControlElevationBorderBrush}"
-                    BorderThickness="{ThemeResource ExpanderBorderThickness}"
-                    Background="{ThemeResource CardBackground}">
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="30" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Image Source="/Assets/WhatsNewPage/ConnectDevId.png"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Width="32"
-                        Height="32" />
-
-                    <StackPanel 
-                        Orientation="Vertical" 
-                        Grid.Column="1"
-                        Margin="10 0 5 5">
-                
+                    <StackPanel Grid.Row="2">
+                        
                         <TextBlock
-                            Grid.Column="1"
-                            FontSize="20"
-                            x:Uid="WhatsNewPage_DevIdCard_Title" />
-                
-                        <TextBlock
-                            Grid.Column="1"
-                            Margin="0 10"
-                            x:Uid="WhatsNewPage_DevIdCard_Description" />
+                            Margin="0 12 0 0"
+                            x:Uid="WhatsNewPage_Description"
+                            Width="400"
+                            HorizontalAlignment="Left"
+                            TextWrapping="Wrap"
+                            Text="{StaticResource SplitViewPaneAnimationOpenDuration}" />
 
                         <Button
-                            Margin="0 10"
-                            Padding="30 7"
-                            x:Uid="WhatsNewPage_DevIdCard_Button"
-                            Click="ConnectToAccountsButton_Click" />
+                            Margin="0 16"
+                            MinWidth="258"
+                            Style="{ThemeResource AccentButtonStyle}"
+                            Click="MachineConfigButton_Click"
+                            x:Uid="WhatsNewPage_GetStartedButton" />
+                        
                     </StackPanel>
                 </Grid>
 
                 <muxc:ItemsRepeater
                     Name="FeaturesContainer"
-                    Grid.Row="2"
+                    Grid.Row="1"
+                    Margin="35, 45, 45, 45"
                     animations:Connected.ListItemElementName="itemThumbnail"
                     animations:Connected.ListItemKey="animationKeyContentGrid"
                     ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}">
 
                     <muxc:ItemsRepeater.Resources>
                         <models:WhatsNewCard 
-                            x:Uid="WhatsNewPage_ConfigMachineCard"
-                            x:Key="WhatsNewPage_ConfigMachineCard"
-                            Icon="/Assets/WhatsNewPage/ConfigNewMachine.png"
-                            Priority="0"
-                            LearnMoreUrl="https://microsoft.com/" />
-
-                        <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDashCard"
                             x:Key="WhatsNewPage_DevDashCard"
-                            Icon="/Assets/WhatsNewPage/DevDashboards.png"
-                            Priority="2"
-                            LearnMoreUrl="https://microsoft.com/" />
+                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DashboardHero.png"
+                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DashboardHero.png"
+                            PageKey="DevHome.Dashboard.ViewModels.DashboardViewModel"
+                            Priority="0" />
 
                         <models:WhatsNewCard 
-                            x:Uid="WhatsNewPage_DevPFeaturesCard"
-                            x:Key="WhatsNewPage_DevPFeaturesCard"
-                            Icon="/Assets/WhatsNewPage/DevPFeatures.png"
-                            Priority="1"
-                            LearnMoreUrl="https://microsoft.com/" />
+                            x:Uid="WhatsNewPage_DevIdCard"
+                            x:Key="WhatsNewPage_DevIdCard"
+                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DevIdHero.png"
+                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevIdHero.png"
+                            PageKey="DevHome.Settings.ViewModels.AccountsViewModel"
+                            Priority="1" />
 
-                        <models:WhatsNewCard
-                            x:Uid="WhatsNewPage_NotifCard"
-                            x:Key="WhatsNewPage_NotifCard"
-                            Icon="/Assets/WhatsNewPage/RepoNotifications.png"
-                            Priority="3"
-                            LearnMoreUrl="https://microsoft.com/" />
-
+                        <models:WhatsNewCard 
+                            x:Uid="WhatsNewPage_DevDriveCard"
+                            x:Key="WhatsNewPage_DevDriveCard"
+                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DevDriveHero.png"
+                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevDriveHero.png"
+                            PageKey="ms-settings:disksandvolumes"
+                            Priority="2" />
                     </muxc:ItemsRepeater.Resources>
 
                     <muxc:ItemsRepeater.Layout>
                         <muxc:UniformGridLayout 
                             x:Name="CardGrid"
                             Orientation="Horizontal" 
-                            MinItemWidth="400" 
-                            MinItemHeight="200"
+                            MinItemWidth="200"
+                            MinItemHeight="358"
                             MinRowSpacing="12" 
                             MinColumnSpacing="12"
-                            ItemsStretch="Fill" />
+                            ItemsStretch="Fill"
+                            MaximumRowsOrColumns="3"
+                            ItemsJustification="Center" />
                     </muxc:ItemsRepeater.Layout>
 
                     <muxc:ItemsRepeater.ItemTemplate>
@@ -165,48 +133,69 @@
                             x:DataType="models:WhatsNewCard">
                             <Grid
                                 HorizontalAlignment="Stretch"
-                                Padding="30 25"
+                                Padding="15 15"
                                 CornerRadius="{ThemeResource ControlCornerRadius}"
                                 Margin="0"
-                                Background="{ThemeResource CardBackground}"
-                                BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="{ThemeResource ExpanderBorderThickness}">
+                                <Grid.Resources>
+                                    <ResourceDictionary>
+                                        <ResourceDictionary.ThemeDictionaries>
+                                            <ResourceDictionary x:Key="Light">
+                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind LightThemeImage}" />
+                                            </ResourceDictionary>
+                                            <ResourceDictionary x:Key="Dark">
+                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind DarkThemeImage}" />
+                                            </ResourceDictionary>
+                                        </ResourceDictionary.ThemeDictionaries>
+                                    </ResourceDictionary>
+                                </Grid.Resources>
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="48" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <Image 
-                                    Source="{x:Bind Icon}"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top"
-                                    Grid.Column="0"
-                                    Width="32"
-                                    Height="32" />
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
 
-                                <StackPanel Grid.Column="1">
+                                <Image
+                                    Grid.Row="0"
+                                    Source="{ThemeResource ItemImage}"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Top"/>
 
+                                <StackPanel Grid.Row="1" Padding="15 10 15 0" >
                                     <TextBlock
                                         HorizontalAlignment="Left"
                                         Style="{ThemeResource BodyTextStyle}"
                                         Text="{x:Bind Title}" />
 
                                     <TextBlock
-                                        Margin="0 8"
+                                        Margin="0 16 0 25"
                                         TextWrapping="Wrap"
                                         Text="{x:Bind Description}"/>
 
-                                    <TextBlock
-                                        Foreground="#99EBFF">
-                                        <Hyperlink
-                                            NavigateUri="https://microsoft.com"
-                                            TextDecorations="None">
-                                            Learn more
-                                        </Hyperlink>
-                                    </TextBlock>
-
+                                    <HyperlinkButton
+                                        Content="{x:Bind Link}"
+                                        Foreground="{ThemeResource LearnMoreForeground}"
+                                        NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
+                                        Padding="0"
+                                        Margin="0"
+                                        Visibility="{x:Bind ShouldShowLink}"/>
                                 </StackPanel>
+
+                                <Button 
+                                    Grid.Row="1"
+                                    Margin="15 0 15 10"
+                                    DataContext="{x:Bind PageKey}"
+                                    Click="Button_ClickAsync"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Bottom"
+                                    Content="{x:Bind Button}" />
+
                             </Grid>
                         </DataTemplate>
                     </muxc:ItemsRepeater.ItemTemplate>

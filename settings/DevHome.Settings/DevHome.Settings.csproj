@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>DevHome.Settings</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>
@@ -8,14 +8,14 @@
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
-	<ItemGroup>
-	    <Content Update="Assets\LightHostConfig.json">
-		    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	    </Content>
-	    <Content Update="Assets\DarkHostConfig.json">
-		    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	    </Content>
-	</ItemGroup>
+  <ItemGroup>
+    <Content Update="Assets\LightHostConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Assets\DarkHostConfig.json">
+       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\AccountsPage.xaml" />
@@ -26,10 +26,10 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Labs.WinUI.SettingsControls" Version="0.0.14" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
     <PackageReference Include="CommunityToolkit.WinUI.UI" Version="7.1.2" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.2" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230331000" />
+
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
   </ItemGroup>
 

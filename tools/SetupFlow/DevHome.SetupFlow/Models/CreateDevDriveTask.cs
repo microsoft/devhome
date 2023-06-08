@@ -12,6 +12,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.ResultHelper;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Services;
@@ -19,9 +20,6 @@ using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
-using Windows.Win32;
-using Windows.Win32.Foundation;
-using Windows.Win32.System.Diagnostics.Debug;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -74,47 +72,6 @@ internal class CreateDevDriveTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    /// <summary>
-    /// Gets the localized system error message from the HResult passed into
-    /// the function.
-    /// </summary>
-    /// <param name="errorCode">Error code that comes from the CreateDevDrive method</param>
-    /// <returns>
-    /// Localized string error message from hresult if exists on the system else just the error code in Hexidecimal format
-    /// </returns>
-    public string GetLocalizedErrorMsg(int errorCode)
-    {
-        unsafe
-        {
-            PWSTR formattedMessage;
-            var msgLength = PInvoke.FormatMessage(
-                FORMAT_MESSAGE_OPTIONS.FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                FORMAT_MESSAGE_OPTIONS.FORMAT_MESSAGE_FROM_SYSTEM |
-                FORMAT_MESSAGE_OPTIONS.FORMAT_MESSAGE_IGNORE_INSERTS,
-                null,
-                unchecked((uint)errorCode),
-                0,
-                (PWSTR)(void*)&formattedMessage,
-                0,
-                null);
-            try
-            {
-                if (msgLength == 0)
-                {
-                    // if formatting the error code into a message fails, then log this and just return the error code.
-                    Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to format error code.  0x{errorCode:X}");
-                    return $"(0x{errorCode:X})";
-                }
-
-                return new string(formattedMessage.Value, 0, (int)msgLength) + $" (0x{errorCode:X})";
-            }
-            finally
-            {
-                PInvoke.LocalFree((IntPtr)formattedMessage.Value);
-            }
-        }
-    }
-
     IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
     {
         return Task.Run(() =>
@@ -124,6 +81,7 @@ internal class CreateDevDriveTask : ISetupTask
 
             try
             {
+                TelemetryFactory.Get<ITelemetry>().LogMeasure("CreateDevDrive_CreatingDevDrive_Event");
                 var manager = _host.GetService<IDevDriveManager>();
                 var validation = manager.GetDevDriveValidationResults(DevDrive);
                 manager.RemoveAllDevDrives();
@@ -143,8 +101,9 @@ internal class CreateDevDriveTask : ISetupTask
             catch (Exception ex)
             {
                 result = ex.HResult;
-                Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to create Dev Drive. Due to Exception ErrorCode: 0x{ex.HResult:X}, Msg: {ex.Message}");
-                _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, GetLocalizedErrorMsg(ex.HResult));
+                Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to create Dev Drive.", ex);
+                _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, _stringResource.GetLocalizedErrorMsg(ex.HResult, Log.Component.DevDrive));
+                TelemetryFactory.Get<ITelemetry>().LogException("CreatingDevDriveException", ex);
                 return TaskFinishedState.Failure;
             }
             finally

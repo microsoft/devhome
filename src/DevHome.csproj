@@ -4,8 +4,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
-        <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+        <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
+        <TargetPlatformMinVersion>10.0.22000.0</TargetPlatformMinVersion>
+        <SupportedOSPlatformVersion>10.0.22000.0</SupportedOSPlatformVersion>
         <RootNamespace>DevHome</RootNamespace>
         <ApplicationIcon>Assets/DevHome.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -17,7 +18,8 @@
         <UseWinUI>true</UseWinUI>
         <EnableMsixTooling>true</EnableMsixTooling>
         <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
-		<BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
+        <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
+        <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -26,9 +28,7 @@
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Labs.WinUI.SettingsControls" Version="0.0.14" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230331000" />
         <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.188-beta">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
@@ -36,12 +36,15 @@
         <PackageReference Include="System.Management" Version="7.0.0" />
         <PackageReference Include="WinUIEx" Version="1.8.0" />
         <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.2" />
+        <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
+            <ExcludeAssets>contentFiles</ExcludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\common\DevHome.Common.csproj" />
+        <ProjectReference Include="..\CoreWidgetProvider\CoreWidgetProvider.csproj" />
         <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
-        <ProjectReference Include="..\tools\SampleTool\src\SampleTool.csproj" />
         <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
         <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
     </ItemGroup>
@@ -52,8 +55,8 @@
         <None Update="navConfig.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <Page Update="Styles\Feedback_ThemeResources.xaml">
-            <Generator>MSBuild:Compile</Generator>
+        <Page Update="Styles\BreadcrumbBar.xaml">
+          <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
         </Page>
     </ItemGroup>
 
@@ -61,38 +64,50 @@
         <ProjectCapability Include="Msix" />
     </ItemGroup>
 
-    <ItemGroup>
-        <None Remove="Styles\Feedback_ThemeResources.xaml" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Assets\Preview\" />
-    </ItemGroup>
-
     <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
         <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
     </PropertyGroup>
-	
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'">
-		<DefineConstants>DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup>
-		<DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
-		<DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
-	</PropertyGroup>
+
+    <PropertyGroup>
+        <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
+        <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
+    </PropertyGroup>
+
+    <!-- PowerShell requires the content files from their nuget package to be next to System.Management.Automation.dll
+         This won't happen automatically for 'dotnet publish -r <RID>'
+         Here we explicitly exclude the content files, copy them manually to the output directory
+         and then add them as payload to the package to the right location.
+         https://github.com/PowerShell/PowerShell/issues/15274#issuecomment-984028028
+    -->
+    <Target Name="PwshFiles" AfterTargets="BeforeBuild">
+        <ItemGroup>
+            <RefFiles Include="$(PkgMicrosoft_PowerShell_SDK)\contentFiles\any\any\ref\*.*" />
+            <WinModuleFiles Include="$(PkgMicrosoft_PowerShell_SDK)\contentFiles\any\any\runtimes\win\lib\net6.0\Modules\**\*.*" />
+        </ItemGroup>
+        <Copy SourceFiles="@(RefFiles)" DestinationFolder="$(TargetDir)\ref\" />
+        <Copy SourceFiles="@(WinModuleFiles)" DestinationFolder="$(TargetDir)\Modules\%(RecursiveDir)\" />
+    </Target>
+
+    <Target Name="ExtraAppxFilesInPackage" AfterTargets="_ComputeAppxPackagePayload">
+
+        <!-- If the binary is not here, then it was a 'dotnet publish' or 'dotnet build' -->
+        <PropertyGroup Condition="!Exists('$(TargetDir)\System.Management.Automation.dll')">
+            <ModulePath>runtimes\win\lib\net6.0\</ModulePath>
+        </PropertyGroup>
+
+        <ItemGroup>
+            <AdditionalPackageFile Include="$(TargetDir)\ref\*.*">
+                <PackagePath>ref</PackagePath>
+            </AdditionalPackageFile>
+            <AdditionalPackageFile Include="$(TargetDir)\Modules\**\*.*">
+              <PackagePath>$(ModulePath)Modules</PackagePath>
+            </AdditionalPackageFile>
+        </ItemGroup>
+
+        <ItemGroup>
+            <AppxPackagePayload Include="%(AdditionalPackageFile.Identity)" KeepDuplicates="false">
+                <TargetPath>%(AdditionalPackageFile.PackagePath)\%(AdditionalPackageFile.RecursiveDir)%(AdditionalPackageFile.Filename)%(AdditionalPackageFile.Extension)</TargetPath>
+            </AppxPackagePayload>
+        </ItemGroup>
+    </Target>
 </Project>

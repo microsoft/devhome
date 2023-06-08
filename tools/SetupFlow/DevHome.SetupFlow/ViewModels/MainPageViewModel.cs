@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Models;
@@ -37,7 +38,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private bool _showDevDriveItem;
 
     [ObservableProperty]
-    private bool _showPackageInstallerItem;
+    private bool _enablePackageInstallerItem;
 
     [ObservableProperty]
     private bool _showAppInstallerUpdateNotification;
@@ -48,14 +49,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// all the work needed at that point.
     /// </summary>
     public event EventHandler<(string, IList<ISetupTaskGroup>)> StartSetupFlow;
-
-    public string AppInstallerUpdateAvailableTitle => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableTitle);
-
-    public string AppInstallerUpdateAvailableMessage => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableMessage);
-
-    public string AppInstallerUpdateAvailableUpdateButton => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableUpdateButton);
-
-    public string AppInstallerUpdateAvailableCancelButton => StringResource.GetLocalized(StringResourceKey.AppInstallerUpdateAvailableCancelButton);
 
     public MainPageViewModel(
         ISetupFlowStringResource stringResource,
@@ -77,8 +70,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         // If IsCOMServerAvailable is still being (lazily) evaluated form a
         // previous call, then await until the thread is unblocked and the
         // already computed value is returned.
-        ShowPackageInstallerItem = await Task.Run(() => _wpm.IsCOMServerAvailable());
-        if (ShowPackageInstallerItem)
+        EnablePackageInstallerItem = await Task.Run(() => _wpm.IsCOMServerAvailable());
+        if (EnablePackageInstallerItem)
         {
             Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");
             ShowAppInstallerUpdateNotification = await _wpm.IsAppInstallerUpdateAvailableAsync();
@@ -92,6 +85,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void HideBanner()
     {
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("MainPage_HideLearnMoreBanner_Event");
         ShowBanner = false;
     }
 
@@ -100,14 +94,22 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// </summary>
     /// <param name="flowTitle">Title to show in the flow; will use the SetupShell.Title property if empty</param>
     /// <param name="taskGroups">The task groups that will be included in this setup flow.</param>
-    private void StartSetupFlowForTaskGroups(string flowTitle, params ISetupTaskGroup[] taskGroups)
+    /// <remarks>
+    /// Note that the order of the task groups here will influence the order of the pages in
+    /// the flow and the tabs in the review page.
+    /// </remarks>
+    private void StartSetupFlowForTaskGroups(string flowTitle, string flowNameForTelemetry, params ISetupTaskGroup[] taskGroups)
     {
         StartSetupFlow.Invoke(null, (flowTitle, taskGroups));
-    }
 
-    private void StartSetupFlowForTaskGroups(params ISetupTaskGroup[] taskGroups)
-    {
-        StartSetupFlowForTaskGroups(string.Empty, taskGroups);
+        // Report this after setting the flow pages as that will set an ActivityId
+        // we can later use to correlate with the flow termination.
+        Log.Logger?.ReportInfo($"Starting setup flow with ActivityId={Orchestrator.ActivityId}");
+        TelemetryFactory.Get<ITelemetry>().Log(
+            "MainPage_StartFlow_Event",
+            LogLevel.Measure,
+            new StartFlowEvent(flowNameForTelemetry),
+            relatedActivityId: Orchestrator.ActivityId);
     }
 
     /// <summary>
@@ -117,23 +119,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private void StartSetup(string flowTitle)
     {
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting end-to-end setup");
-
-        var taskGroups = new List<ISetupTaskGroup>
-        {
-            _host.GetService<DevDriveTaskGroup>(),
+        StartSetupFlowForTaskGroups(
+            flowTitle,
+            "EndToEnd",
             _host.GetService<RepoConfigTaskGroup>(),
-        };
-
-        if (ShowPackageInstallerItem)
-        {
-            taskGroups.Add(_host.GetService<AppManagementTaskGroup>());
-        }
-        else
-        {
-            Log.Logger?.ReportInfo(Log.Component.MainPage, $"Skipping {nameof(AppManagementTaskGroup)} because COM server is not available");
-        }
-
-        StartSetupFlowForTaskGroups(flowTitle, taskGroups.ToArray());
+            _host.GetService<AppManagementTaskGroup>(),
+            _host.GetService<DevDriveTaskGroup>());
     }
 
     /// <summary>
@@ -145,8 +136,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for repo config");
         StartSetupFlowForTaskGroups(
             flowTitle,
-            _host.GetService<DevDriveTaskGroup>(),
-            _host.GetService<RepoConfigTaskGroup>());
+            "RepoConfig",
+            _host.GetService<RepoConfigTaskGroup>(),
+            _host.GetService<DevDriveTaskGroup>());
     }
 
     /// <summary>
@@ -156,7 +148,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private void StartAppManagement(string flowTitle)
     {
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for app management");
-        StartSetupFlowForTaskGroups(flowTitle,  _host.GetService<AppManagementTaskGroup>());
+        StartSetupFlowForTaskGroups(flowTitle, "AppManagement", _host.GetService<AppManagementTaskGroup>());
     }
 
     /// <summary>
@@ -179,11 +171,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task StartConfigurationFileAsync()
     {
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
         if (await configFileSetupFlow.PickConfigurationFileAsync())
         {
             Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for Configuration file");
-            StartSetupFlowForTaskGroups(configFileSetupFlow);
+            StartSetupFlowForTaskGroups(null, "ConfigurationFile", configFileSetupFlow);
         }
     }
 
@@ -203,16 +196,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task UpdateAppInstallerAsync()
     {
-        // Hide notification and attempt the update in the background.
-        // Update progress should be reflected in the store app (if successful)
         HideAppInstallerUpdateNotification();
-        if (await _wpm.StartAppInstallerUpdateAsync())
-        {
-            Log.Logger?.ReportInfo(Log.Component.MainPage, "AppInstaller update started");
-        }
-        else
-        {
-            Log.Logger?.ReportWarn(Log.Component.MainPage, "AppInstaller update did not start");
-        }
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Opening AppInstaller in the Store app");
+        await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?productid={WindowsPackageManager.AppInstallerProductId}"));
     }
 }

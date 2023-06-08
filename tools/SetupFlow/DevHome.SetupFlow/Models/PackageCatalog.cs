@@ -6,6 +6,7 @@ using System.Collections.Generic;
 namespace DevHome.SetupFlow.Models;
 
 // TODO Rename this class to PackageCollection to avoid confusion with the COM PackageCatalog class
+// https://github.com/microsoft/devhome/issues/636
 
 /// <summary>
 /// Model class for a package catalog. A package catalog contains a list of

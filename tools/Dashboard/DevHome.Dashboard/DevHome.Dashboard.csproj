@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>DevHome.Dashboard</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <UseWinUI>true</UseWinUI>
+    <CsWinRTIncludes>Microsoft.Windows.Widgets.Hosts</CsWinRTIncludes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,10 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Windows.Widgets" Version="0.3.3" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230331000" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.755" />
   </ItemGroup>
 
@@ -30,6 +29,13 @@
     <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
     <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Internal.winmd" Link="Microsoft.Windows.Widgets.Internal.winmd" CopyToOutputDirectory="PreserveNewest" />
     <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Hosts.winmd" Link="Microsoft.Windows.Widgets.Hosts.winmd" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Windows.Widgets.Hosts">
+      <HintPath>BuildAssets\Microsoft.Windows.Widgets.Hosts.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

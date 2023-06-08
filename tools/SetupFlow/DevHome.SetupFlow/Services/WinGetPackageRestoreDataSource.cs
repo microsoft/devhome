@@ -33,7 +33,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
     /// </summary>
     /// <remarks>
     /// Each collection of packages from a restore device is compiled into a
-    /// catalog. At most we show one catalog.
+    /// catalog. At most show one catalog.
     /// </remarks>
     public override int CatalogCount => _restoreDeviceInfo == null ? 0 : 1;
 
@@ -70,7 +70,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
                 appInfo => appInfo.Id,
                 async (package, appInfo) =>
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for package {package.Id}");
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for restore package {package.Id}");
                 package.LightThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Light);
                 package.DarkThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Dark);
             });
@@ -91,7 +91,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget restore catalog: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget restore catalog.", e);
         }
 
         return result;
@@ -107,12 +107,27 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
     {
         try
         {
-            return await appInfo.GetIconAsync(theme);
+            // Load icon from restore app data
+            var iconTask = appInfo.GetIconAsync(theme);
+
+            // Check if no icon is available
+            if (iconTask != null)
+            {
+                var icon = await iconTask;
+
+                // Ensure stream is not empty to prevent rendering an empty image
+                if (icon.Size > 0)
+                {
+                    return icon;
+                }
+            }
         }
-        catch
+        catch (Exception e)
         {
-            // Application does not have an icon
-            return null;
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get icon for restore package {appInfo.Id}", e);
         }
+
+        Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No {theme} icon found for restore package {appInfo.Id}. A default one will be provided.");
+        return null;
     }
 }

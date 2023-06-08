@@ -12,4 +12,15 @@ public class InstallPackageResult
     {
         init; get;
     }
+
+    /// <summary>
+    ///  Gets the error code of the overall operation.
+    /// </summary>
+    /// <remarks>
+    /// Reference: https://github.com/msftrubengu/winget-cli/blob/demo/src/Microsoft.Management.Deployment/PackageManager.idl
+    /// </remarks>
+    public int ExtendedErrorCode
+    {
+        init; get;
+    }
 }

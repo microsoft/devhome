@@ -38,7 +38,10 @@ public partial class PackageCatalogViewModel : ObservableObject
     public PackageCatalogViewModel(PackageProvider packageProvider, PackageCatalog packageCatalog)
     {
         _packageCatalog = packageCatalog;
-        Packages = packageCatalog.Packages.Select(p => packageProvider.CreateOrGet(p, cachePermanently: true)).ToReadOnlyCollection();
+        Packages = packageCatalog.Packages
+            .Select(p => packageProvider.CreateOrGet(p, cachePermanently: true))
+            .OrderBy(p => p.IsInstalled)
+            .ToReadOnlyCollection();
     }
 
     [RelayCommand]
@@ -47,7 +50,11 @@ public partial class PackageCatalogViewModel : ObservableObject
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Adding all packages from catalog {Name} to selection");
         foreach (var package in Packages)
         {
-            package.IsSelected = true;
+            // Select all non-installed packages
+            if (!package.IsInstalled)
+            {
+                package.IsSelected = true;
+            }
         }
     }
 }

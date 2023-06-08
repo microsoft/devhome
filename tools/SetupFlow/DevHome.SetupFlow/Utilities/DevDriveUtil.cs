@@ -58,16 +58,28 @@ public static class DevDriveUtil
     public static ulong MinDevDriveSizeInBytes => 50ul << 30;
 
     /// <summary>
-    /// Gets the list of the latin alphabet. Windows uses the latin letters as its drive letters.
+    /// Gets the list of the Latin alphabet. Windows uses the Latin letters as its drive letters.
     /// </summary>
     public static IList<char> DriveLetterCharArray => new List<char>("CDEFGHIJKLMNOPQRSTUVWXYZ");
 
     public static readonly List<char> InvalidCharactersNotInGetInvalidPathChars = new () { '*', '?', '\"', '<', '>', '|' };
 
+    // Temporary build version values, to use while the API to check for the Dev Drive feature is being created.
+    // Note: The major number and minor number for Windows 11 is still 10 and 0 respectively. Windows 11 build
+    // numbers start at 22000.
+    private const ushort DevDriveMajorVersion = 10;
+    private const ushort DevDriveMinorVersion = 0;
+    private const ushort DevDriveMinBuildForDevChannel = 23466;
+    private const ushort DevDriveMaxBuildForDevChannel = 23999;
+    private const ushort DevDriveMinBuildForCanaryChannel = 25846;
+
     /// <summary>
     /// Gets a value indicating whether the system has the ability to create Dev Drives
-    /// and whether the ability is enabled. Win10 machines will not have this ability.
+    /// and whether the ability is enabled. Windows 10 or below machines will not have this ability.
     /// </summary>
+    /// <remarks>
+    /// The body of this function is temporary and will be replaced by an API call once it is created.
+    /// </remarks>
     /// <returns>
     /// Returns true if Dev Drive creation functionality is present on the machine
     /// </returns>
@@ -75,29 +87,37 @@ public static class DevDriveUtil
     {
         get
         {
+            // Windows Insiders dev channel now uses the 23000 series for its build numbers. The Canary channel
+            // where the feature is enabled start on build number 25846.
+            // The Dev Drive Feature is only be enabled on these builds currently and will eventually go into a full retail
+            // release. The API should be created before the full retail release of the Dev Drive feature
+            // in which case we will not be checking windows build numbers, but will be checking the results of the
+            // API call.
             var osVersion = ToolKitHelpers.SystemInformation.Instance.OperatingSystemVersion;
-            if (osVersion.Major == 10 && osVersion.Minor == 0 && osVersion.Build < 22000)
+            if (osVersion.Major == DevDriveMajorVersion && osVersion.Minor == DevDriveMinorVersion)
             {
-                // Win 10
-                Log.Logger?.ReportInfo(Log.Component.DevDrive, "Dev Drive feature is not available on Win10");
-                return false;
+                // Check if on an acceptable Windows 11 Dev insider channel
+                if (osVersion.Build >= DevDriveMinBuildForDevChannel && osVersion.Build <= DevDriveMaxBuildForDevChannel)
+                {
+                    return true;
+                }
+
+                // Check if on an acceptable Windows 11 Canary insider channel that supports Dev Drive.
+                if (osVersion.Build >= DevDriveMinBuildForCanaryChannel)
+                {
+                    return true;
+                }
             }
 
-            if (osVersion.Major == 10 && osVersion.Minor == 0 && osVersion.Build >= 25309)
-            {
-                // Canary Insiders dev channel use the 25000 series numbering. Feature is enabled there.
-                return true;
-            }
-
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, "Dev Drive feature is not available on older Win11 builds");
+            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Dev Drive feature is not available on this build of Windows: {osVersion}");
             return false;
         }
     }
 
     /// <summary>
     /// Given a byte unit which is either GB or TB converts the value paramter to bytes.
-    /// Since this is just for DevDrives we know that the minimum size
-    /// that the value paramter should be is 50 (50 gb) and its max size should be 64  (64 Tb) which is
+    /// Since this is just for DevDrives the minimum size is known of value
+    /// is 50 (50 gb) and its max size should be 64 (64 Tb) which is
     /// the max size that a vhdx file can be.
     /// </summary>
     /// <param name="value">Dev Drive object</param>
@@ -122,8 +142,8 @@ public static class DevDriveUtil
 
         // Deal with decimal portion by getting the floor of the value in KB + half. This is to allow us to round up.
         // should the decimal portion be greater than 0.5. Also helps keep the value a multiple of 512 when we multiply
-        // by either 1 MB or 1 GB further down. This is crucial for the Version2.MaximumSize parameter in CREATE_VIRTUAL_DISK_PARAMETERS that we use to
-        // create the virtual disk. https://learn.microsoft.com/en-us/windows/win32/api/virtdisk/ns-virtdisk-create_virtual_disk_parameters
+        // by either 1 MB or 1 GB further down. This is crucial for the Version2.MaximumSize parameter in CREATE_VIRTUAL_DISK_PARAMETERS that wis used to
+        // create the virtual disk. https://learn.microsoft.com/windows/win32/api/virtdisk/ns-virtdisk-create_virtual_disk_parameters
         var floorOfValueInKB = (ulong)Math.Floor((value * OneKbInBytes) + 0.5);
         if (unitIsTb)
         {
@@ -173,7 +193,7 @@ public static class DevDriveUtil
             throw new ArgumentException("Invalid size in bytes, value must be greater than 0");
         }
 
-        // If value over 1 Tb then we know that we should convert this with terabytes in mind.
+        // If value over 1 Tb then convert this with terabytes in mind.
         var tempValue = value / OneGbInBytes;
         if (value.CompareTo(OneTbInBytes) >= 0)
         {
@@ -201,7 +221,7 @@ public static class DevDriveUtil
     /// <summary>
     /// Gets the set of invalid characters based on the passed in type. Type can be either a path or filename.
     /// </summary>
-    /// <param name="type">The type of invalid characters we need to get. Either for a path or filename</param>
+    /// <param name="type">The type of invalid characters to get. Either for a path or filename</param>
     /// <returns>Set of invalid characters based on the type passed in</returns>
     private static ISet<char> GetInvalidCharacters(InvalidCharactersKind type)
     {
@@ -234,13 +254,13 @@ public static class DevDriveUtil
     /// </summary>
     /// <returns>
     /// If succeeds internally return localized size in gigabytes, otherwise falls back to community toolkit
-    /// implementation which is in english.
+    /// implementation which is in English.
     /// </returns>
     public static string ConvertBytesToString(ulong sizeInBytes)
     {
         unsafe
         {
-            // We only need 15 characters + null terminator.
+            // 15 characters + null terminator.
             var buffer = new string(' ', 16);
             fixed (char* tempPath = buffer)
             {
@@ -261,6 +281,16 @@ public static class DevDriveUtil
                 }
             }
         }
+    }
+
+    public static bool IsCharValidDriveLetter(char? letter)
+    {
+        if (letter.HasValue)
+        {
+            return DriveLetterCharArray.Contains(char.ToUpperInvariant(letter.Value));
+        }
+
+        return false;
     }
 
     private static string FormatExceptionString(ByteUnit unit, double value, double minSize, double maxSize)

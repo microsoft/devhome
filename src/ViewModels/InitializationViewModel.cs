@@ -12,7 +12,7 @@ using Microsoft.UI.Xaml;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 
 namespace DevHome.ViewModels;
-public class InitializationViewModel : ObservableRecipient
+public class InitializationViewModel : ObservableObject
 {
     private const string GitHubExtensionStorePackageId = "9NZCC27PR6N6";
     private const string GitHubExtensionPackageFamilyName = "Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe";
@@ -37,7 +37,7 @@ public class InitializationViewModel : ObservableRecipient
             {
                 var appInstallTask = InstallStorePackageAsync(GitHubExtensionStorePackageId);
 
-                // wait for a maximunm of StoreInstallTimeout milis
+                // wait for a maximum of StoreInstallTimeout milliseconds
                 var completedTask = await Task.WhenAny(appInstallTask, Task.Delay(StoreInstallTimeout));
 
                 if (completedTask.Exception is not null)

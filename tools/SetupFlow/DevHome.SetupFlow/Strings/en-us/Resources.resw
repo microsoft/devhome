@@ -125,28 +125,12 @@
     <value>Select packages to restore from your backup, clone from repository, or search with Windows Package Manager.</value>
     <comment>Description for Add packages page</comment>
   </data>
-  <data name="AppInstallerUpdateAvailableCancelButton" xml:space="preserve">
-    <value>Cancel</value>
-    <comment>Text for a button to cancel a dialog window for updating 'App Installer' application</comment>
-  </data>
-  <data name="AppInstallerUpdateAvailableMessage" xml:space="preserve">
-    <value>Get the best experience and latest features when installing apps.</value>
-    <comment>Content of a notification panel for updating 'App Installer' application</comment>
-  </data>
-  <data name="AppInstallerUpdateAvailableTitle" xml:space="preserve">
-    <value>Update App Installer</value>
-    <comment>Title of a notification panel for updating 'App Installer' application</comment>
-  </data>
-  <data name="AppInstallerUpdateAvailableUpdateButton" xml:space="preserve">
-    <value>Update</value>
-    <comment>Text for a button to update 'App Installer' application</comment>
-  </data>
   <data name="AppListBackupBanner.Title" xml:space="preserve">
     <value>Transfer developer machine settings</value>
     <comment>Title text of an instruction banner section for transferring settings from a developer machine</comment>
   </data>
   <data name="AppListBackupBanner.Description" xml:space="preserve">
-    <value>Use Dev Home to quickly transfer you development machine settings from another PC to get back to coding.</value>
+    <value>Use Dev Home to quickly transfer your development machine settings from another PC to get back to coding.</value>
     <comment>{Locked="Dev Home"}Description text of an instruction banner section for transferring settings from a developer machine</comment>
   </data>
   <data name="AppListBackupBanner.ButtonText" xml:space="preserve">
@@ -218,7 +202,7 @@
     <comment>Title of the configuration file warning message</comment>
   </data>
   <data name="ConfigurationFileWarning.Message" xml:space="preserve">
-    <value>You are responsible for understanding the configuration settings you are choosing to execute. Microsoft is not responsible for the configuration file you have authored or imported. This configuration may change settings in Windows, install software, change software settings (including security settings), and accept user agreements to third-party packages and services on your behalf.  By running this configuration file, you acknowledge that you understand and agree to these resources and settings. Any applications installed are licensed to you by their owners. Microsoft is not responsible for, nor does it grant any licenses to, third-party packages or services.</value>
+    <value>You are responsible for understanding the configuration settings you are choosing to execute. Microsoft is not responsible for the configuration file you have authored or imported. This configuration may change settings in Windows, install software, change software settings (including security settings), and accept user agreements to third-party packages and services on your behalf. By running this configuration file, you acknowledge that you understand and agree to these resources and settings. Any applications installed are licensed to you by their owners. Microsoft is not responsible for, nor does it grant any licenses to, third-party packages or services.</value>
     <comment>Legal approved. Do not change without approval.</comment>
   </data>
   <data name="ConfigurationViewTitle" xml:space="preserve">
@@ -258,8 +242,8 @@
     <comment>Button text for learning more about setting up a development machine</comment>
   </data>
   <data name="DevDriveWindowByteUnitComboBox" xml:space="preserve">
-    <value>Byte unit of mearsure</value>
-    <comment>Unit of mearsure values that will populate the dropdown. Only gigabyte and terabyte</comment>
+    <value>Byte unit of measure</value>
+    <comment>Unit of measure values that will populate the dropdown. Only gigabyte and terabyte</comment>
   </data>
   <data name="DevDriveWindowByteUnitComboBoxGB" xml:space="preserve">
     <value>GB</value>
@@ -290,8 +274,8 @@
     <comment>Header for the Dev Drive location text box. This location can be on the location system or on a network share</comment>
   </data>
   <data name="DevDriveWindowLocationTextBox.PlaceholderText" xml:space="preserve">
-    <value>C:\ProgramData\Microsoft\Windows\DevDrives</value>
-    <comment>Placeholder value within the Dev Drive location text box to show the user an example input of a folder location</comment>
+    <value>C:\Users\User\DevDrives</value>
+    <comment>{Locked="C:\"} Placeholder value within the Dev Drive location text box to show the user an example input of a folder location</comment>
   </data>
   <data name="DevDriveWindowNameTextBox.Header" xml:space="preserve">
     <value>Dev Drive name</value>
@@ -302,7 +286,7 @@
     <comment>Placeholder drive label value that will be used as the file name within the Dev Drive name text box. VHD stands for virtual hard disk, which is what will be created when the user goes to create a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowOnlyOneDevDriveAllowedHeader.Text" xml:space="preserve">
-    <value>A Dev Drive optimizes performance for development. You can only create one in Dev Home.</value>
+    <value>A Dev Drive optimizes performance for development. You can create only one in Dev Home.</value>
     <comment>Text to advise users that they are only allowed the create one Dev Drive at a time.</comment>
   </data>
   <data name="DevDriveWindowSaveButton.Content" xml:space="preserve">
@@ -317,9 +301,17 @@
     <value>Create Dev Drive</value>
     <comment>Title for the Dev Drive window that opens up</comment>
   </data>
+  <data name="FilePickerFileTypeOption" xml:space="preserve">
+    <value>{0} files</value>
+    <comment>Dropdown option for a file picker. {0} is replaced by a file type (e.g. JSON, YAML, etc ...)</comment>
+  </data>
   <data name="FileTypeNotSupported" xml:space="preserve">
     <value>File type not supported</value>
     <comment>File type not supported error message</comment>
+  </data>
+  <data name="Installed.Text" xml:space="preserve">
+    <value>Installed</value>
+    <comment>Label for a package that is already installed.</comment>
   </data>
   <data name="InstalledPackage" xml:space="preserve">
     <value>Installed {0}</value>
@@ -338,28 +330,108 @@
     <comment>{Locked="{0}"} Label displayed when a package failed to install. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorBlockedByPolicy" xml:space="preserve">
-    <value>Operation is blocked by Group Policy</value>
-    <comment>Label displayed when a package installation fails because it is blocked by group policy</comment>
+    <value>{0} couldn't be installed due to a Group Policy setting.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it is blocked by group policy. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorInternalError" xml:space="preserve">
-    <value>Internal error</value>
-    <comment>Label displayed when a package installation fails because of an internal error</comment>
+    <value>{0} couldn't be installed due to an internal error.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because of an internal error. {0} is replaced by the package name.</comment>
   </data>
-  <data name="InstallPackageErrorInstallError" xml:space="preserve">
-    <value>Install error code ({0})</value>
-    <comment>{Locked="{0}"}Label displayed when a package installation fails because of an error. {0} is replaced by a numeric value</comment>
+  <data name="InstallPackageErrorMessagePackageInUse" xml:space="preserve">
+    <value>{0} couldn't be installed because the application is currently running. Exit the application then try again.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because the application is currently running. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageInstallInProgress" xml:space="preserve">
+    <value>{0} couldn't be installed because another installation is already in progress. Try again later.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because another installation is already in progress. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageFileInUse" xml:space="preserve">
+    <value>{0} couldn't be installed because one or more file is being used. Exit the application then try again.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because one or more file is being used. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageMissingDependency" xml:space="preserve">
+    <value>{0} couldn't be installed because this package has a dependency missing from your system.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it has a dependency missing from the user's system. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageDiskFull" xml:space="preserve">
+    <value>{0} couldn't be installed because there's no more space on your PC. Make space, then try again.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because there's no more space on the user's PC. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageInsufficientMemory" xml:space="preserve">
+    <value>{0} couldn't be installed because there's not enough memory available to install. Close other applications then try again.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because there's not enough memory available to install. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageNoNetwork" xml:space="preserve">
+    <value>{0} couldn't be installed because it requires internet connectivity. Connect to a network then try again.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it requires internet connectivity. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageContactSupport" xml:space="preserve">
+    <value>{0} couldn't be installed because it encountered an error during installation. Contact support.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it encountered an error during installation. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageRebootRequiredToFinish" xml:space="preserve">
+    <value>{0}: Restart your PC to finish installation.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation requires restarting the user's PC to finish installation. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageRebootRequiredToInstall" xml:space="preserve">
+    <value>{0} couldn't be installed. Restart your PC then try again.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails with a suggestion to re-attempt installation after a restarting the user's PC. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageRebootInitiated" xml:space="preserve">
+    <value>{0}: Your PC will restart to finish installation.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation requires restarting the user's PC to finish installation. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageCancelledByUser" xml:space="preserve">
+    <value>{0} couldn't be installed because the installation was cancelled by the user.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because the user cancelled the installation. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageAlreadyInstalled" xml:space="preserve">
+    <value>{0} couldn't be installed because another version of this application is already installed.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because another version is already installed. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageDowngrade" xml:space="preserve">
+    <value>{0} couldn't be installed because a higher version of this application is already installed.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because a higher version is already installed. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageBlockedByPolicy" xml:space="preserve">
+    <value>{0} couldn't be installed due to organization policies preventing installation. Contact your admin.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails due to organization policies preventing installation. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageDependencies" xml:space="preserve">
+    <value>{0} couldn't be installed because package dependencies failed to install.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because its dependencies failed to install. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessagePackageInUseByApplication" xml:space="preserve">
+    <value>{0} couldn't be installed because the application is currently in use by another application.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it is in use by another application. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageInvalidParameter" xml:space="preserve">
+    <value>{0} couldn't be installed due to invalid parameter.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails due to invalid parameter. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageSystemNotSupported" xml:space="preserve">
+    <value>{0} couldn't be installed because the package is not supported by the system.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because it is not supported by the system. {0} is replaced by the package name.</comment>
+  </data>
+  <data name="InstallPackageErrorMessageSystemMessage" xml:space="preserve">
+    <value>{0} couldn't be installed: {1}</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails. {0} is replaced by the package name and {1} is replaced by an error message.</comment>
   </data>
   <data name="InstallPackageErrorDownloadError" xml:space="preserve">
-    <value>Downloading installer failed</value>
-    <comment>{Locked="(0x{0})"}Label displayed when a package installation fails because the downloading the installer failed</comment>
+    <value>{0} couldn't be installed because the installer couldn't be downloaded.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because the downloading the installer failed. {0} is replaced by the package name.</comment>
   </data>
   <data name="InstallPackageErrorNoApplicableInstallers" xml:space="preserve">
-    <value>None of the installers are applicable for the current system</value>
-    <comment>Label displayed when a package installation fails because no applicable installer found for the current system</comment>
+    <value>{0} couldn't be installed because none of the available installers are supported.</value>
+    <comment>{Locked="{0}"}Label displayed when a package installation fails because no applicable installer found for the current system. {0} is replaced by the package name.</comment>
   </data>
-  <data name="InstallPackageErrorUnknownError" xml:space="preserve">
-    <value>Unknown error</value>
-    <comment>Label displayed when a package installation fails because of an unknown error</comment>
+  <data name="InstallPackageErrorUnknownErrorWithErrorCode" xml:space="preserve">
+    <value>{0} couldn't be installed due to an unknown error. Error code: {1}.</value>
+    <comment>{Locked="{0}","{1}"}Label displayed when a package installation fails because of an unknown error. {0} is replaced by the package name and {1} is replaced by the operation error code.</comment>
+  </data>
+  <data name="InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode" xml:space="preserve">
+    <value>{0} couldn't be installed due to an unknown error. Error code: {1}. Installer exit code: {2}</value>
+    <comment>{Locked="{0}","{1}","{2}"}Label displayed when a package installation fails because of an unknown error. {0} is replaced by the package name and {1} is replaced by the operation error code and {2} is replaced by the installer exit code.</comment>
   </data>
   <data name="LearnMore.Text" xml:space="preserve">
     <value>Learn more</value>
@@ -369,16 +441,44 @@
     <value>Machine configuration</value>
     <comment>Title for the main page where users can configure their machines</comment>
   </data>
+  <data name="MainPage_AppInstallerUpdateInfoBar.Title" xml:space="preserve">
+    <value>Update App Installer</value>
+    <comment>Title of a notification panel for updating 'App Installer' application</comment>
+  </data>
+  <data name="MainPage_AppInstallerUpdateInfoBar.Message" xml:space="preserve">
+    <value>Update App Installer to get the latest WinGet features and best experience when installing apps.</value>
+    <comment>Content of a notification panel for updating 'App Installer' application</comment>
+  </data>
+  <data name="MainPage_AppInstallerUpdateButton.Content" xml:space="preserve">
+    <value>Update</value>
+    <comment>Text for a button to update 'App Installer' application</comment>
+  </data>
+  <data name="MainPage_AppInstallerUpdateContentDialog.Title" xml:space="preserve">
+    <value>Update App Installer</value>
+    <comment>Title of a content dialog for updating 'App Installer' application</comment>
+  </data>
+  <data name="MainPage_AppInstallerUpdateContentDialog.Content" xml:space="preserve">
+    <value>Update App Installer through the Microsoft Store, then restart Dev Home to continue.</value>
+    <comment>Message of a content dialog for updating 'App Installer' application from the Store.</comment>
+  </data>
+  <data name="MainPage_AppInstallerUpdateContentDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Open Microsoft Store</value>
+    <comment>Text for a button to open 'App Installer' application in the Store application</comment>
+  </data>
+  <data name="MainPage_AppInstallerUpdateContentDialog.CloseButtonText" xml:space="preserve">
+    <value>Close</value>
+    <comment>Text for a button to close a content dialog</comment>
+  </data>
   <data name="MainPage_CloneRepos.Header" xml:space="preserve">
     <value>Clone repositories</value>
     <comment>Header for a card that when clicked takes the user to a page for cloning git repositories</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Description" xml:space="preserve">
-    <value>Set up you machine directly from one or multiple configuration files</value>
+    <value>Use a configuration file (YAML) for setup</value>
     <comment>Body text description for a card that when clicked allows the user to select a configuration file and run it</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Header" xml:space="preserve">
-    <value>Run a configuration file for an existing setup</value>
+    <value>Configuration file</value>
     <comment>Header for a card that when clicked allows the user to select a configuration file and run it</comment>
   </data>
   <data name="MainPage_DevDrive.Header" xml:space="preserve">
@@ -509,6 +609,10 @@
     <value>https://www.microsoft.com/store/b/terms-of-sale</value>
     <comment>{Locked}Uri to the Microsoft Store terms of sale</comment>
   </data>
+  <data name="Review_NothingToSetUp.Text" xml:space="preserve">
+    <value>Nothing to set up</value>
+    <comment>Text shown as the Setup details when there is noting to set up</comment>
+  </data>
   <data name="ReviewNothingToSetUpToolTip" xml:space="preserve">
     <value>There's nothing to set up</value>
     <comment>Text shown on a tool tip for a "Start set up" button if there is noting to set up</comment>
@@ -534,8 +638,8 @@
     <comment>Description for the application management page</comment>
   </data>
   <data name="SetupShell_RepoConfig.Description" xml:space="preserve">
-    <value>Add private or public repositories to clone to you computer.</value>
-    <comment>Description for the application management page</comment>
+    <value>Add private or public repositories to clone to your machine.</value>
+    <comment>Description for the repo config page</comment>
   </data>
   <data name="SetupShell_Review.Description" xml:space="preserve">
     <value>Review the terms and setup details below before applying these changes to your computer.</value>
@@ -557,8 +661,12 @@
     <value>Retry</value>
     <comment>Button to re-run all failed tasks.</comment>
   </data>
+  <data name="MainPage_MainPage_AppInstallerRequiredTooltip.Content" xml:space="preserve">
+    <value>App Installer required for this function</value>
+    <comment>Tooltip message displayed on a disabled button if 'App installer' application is not available</comment>
+  </data>
   <data name="MainPage_RepoReviewDescription.Text" xml:space="preserve">
-    <value>Add private or public repositories to clone to your compuer</value>
+    <value>Add private or public repositories to clone to your machine.</value>
     <comment>Description for the repo review page</comment>
   </data>
   <data name="MainPage_RepoReview_AddRepository.Content" xml:space="preserve">
@@ -566,15 +674,15 @@
     <comment>Add repository button text</comment>
   </data>
   <data name="ReposConfigPageTitle" xml:space="preserve">
-    <value>Clone repos</value>
+    <value>Clone repositories</value>
     <comment>Clone Repo label for the stepper</comment>
   </data>
   <data name="ApplicationsPageTitle" xml:space="preserve">
-    <value>Install Apps</value>
+    <value>Install applications</value>
     <comment>Install Apps label for the stepper</comment>
   </data>
   <data name="ReviewPageTitle" xml:space="preserve">
-    <value>Review &amp; setup</value>
+    <value>Review &amp; finish</value>
     <comment>Review and Setup label for the stepper</comment>
   </data>
   <data name="AddDevDriveLabel.Text" xml:space="preserve">
@@ -582,7 +690,7 @@
     <comment>Text for the use to choose to make a dev drive</comment>
   </data>
   <data name="ClonePath.Header" xml:space="preserve">
-    <value>Clone path</value>
+    <value>Path</value>
     <comment>Header for choosing a clone path</comment>
   </data>
   <data name="ClonePath.PlaceholderText" xml:space="preserve">
@@ -622,7 +730,7 @@
     <comment>Content for URL button</comment>
   </data>
   <data name="RepoTool_FilterTextBox.PlaceholderText" xml:space="preserve">
-    <value>Filter</value>
+    <value>Filter repositories</value>
     <comment>Prompt user to filter</comment>
   </data>
   <data name="Repo_ToolClonePathError.Text" xml:space="preserve">
@@ -642,7 +750,7 @@
     <comment>Header for the edit clone path dialog</comment>
   </data>
   <data name="RepositoriesList.Text" xml:space="preserve">
-    <value>Your repositories</value>
+    <value>Recent repositories</value>
     <comment>Shown above the list of user repositories</comment>
   </data>
   <data name="CloneRepoDialog.CloseButtonText" xml:space="preserve">
@@ -670,7 +778,7 @@
     <comment>Top row of the header for the loading page</comment>
   </data>
   <data name="LoadingExecutingProgress" xml:space="preserve">
-    <value>Executing Task {0}/{1}</value>
+    <value>Executing task {0}/{1}</value>
     <comment>Shows ot the user how many tasks have been completed</comment>
   </data>
   <data name="Loading_StopButton.Content" xml:space="preserve">
@@ -682,7 +790,7 @@
     <comment>Action center display to see status of all tasks that have finished.</comment>
   </data>
   <data name="Loading_ActionCenter.Text" xml:space="preserve">
-    <value>Action Center</value>
+    <value>Action center</value>
     <comment>Header for action center</comment>
   </data>
   <data name="Loading_ExecutingTasks.Text" xml:space="preserve">
@@ -760,7 +868,7 @@
     <value>Size:</value>
     <comment>Text label for any item that will display a number size. Example could be a using this with a textblock to make a label that is on the same line as another textblock that displays the amount of free storage space on a computer.</comment>
   </data>
-  <data name="DevDriveFilenameAlreadyExists" xml:space="preserve">
+  <data name="DevDriveFileNameAlreadyExists" xml:space="preserve">
     <value>The filename already exists in the selected location. Enter a new file name and try again.</value>
     <comment>Text that advises the user that the file name of the virtual hard disk they were trying to create already exists in the location they selected and that they should enter a new name.</comment>
   </data>
@@ -801,7 +909,7 @@
     <comment>Message when the configuration task needs the computer to reboot</comment>
   </data>
   <data name="DevDriveCreated" xml:space="preserve">
-    <value>Created DevDrive</value>
+    <value>Created Dev Drive</value>
     <comment>Task message when a Dev Drive is finished</comment>
   </data>
   <data name="DevDriveCreating" xml:space="preserve">
@@ -841,7 +949,7 @@
     <comment>Number of tasks that failed. Param: number of failed tasks</comment>
   </data>
   <data name="LoadingPage_ActionCenter_GoToSummary.Content" xml:space="preserve">
-    <value>View Summary</value>
+    <value>View summary</value>
     <comment>Button content to let users go to the summary page</comment>
   </data>
   <data name="LoadingPage_ActionCenter_Retry.Content" xml:space="preserve">
@@ -864,7 +972,7 @@
     <value>Set up as non-admin</value>
     <comment>Text shown on a split button for setting up configuration as non-admin</comment>
   </data>
-  <data name="SummaryPage_AppsDownloadedCount.Text" xml:space="preserve">
+  <data name="SummaryPageAppsDownloadedCount" xml:space="preserve">
     <value>Applications installed</value>
     <comment>Bottom footer of the number of apps downloaded</comment>
   </data>
@@ -873,7 +981,7 @@
     <comment>Header for the section that shows all the downloaded apps</comment>
   </data>
   <data name="SummaryPage_Header.Text" xml:space="preserve">
-    <value>We set up the following for you...</value>
+    <value>Here's what we set up for you</value>
     <comment>Header text for the summary page</comment>
   </data>
   <data name="SummaryPage_HeaderWithErrors.Text" xml:space="preserve">
@@ -881,7 +989,7 @@
     <comment>Header text for the summary page with certain unsuccessful tasks</comment>
   </data>
   <data name="SummaryPage_NextSteps.Text" xml:space="preserve">
-    <value>Next Steps</value>
+    <value>Next steps</value>
     <comment>Text for the "Next steps" section of the summary page</comment>
   </data>
   <data name="SummaryPage_OpenDashboard.Content" xml:space="preserve">
@@ -891,10 +999,6 @@
   <data name="SummaryPage_ReposClonedDisplay.Text" xml:space="preserve">
     <value>Cloned repositories</value>
     <comment>Header of the section that shows all cloned repositories</comment>
-  </data>
-  <data name="SummaryPage_ReposClonedCount.Text" xml:space="preserve">
-    <value>Repositories cloned</value>
-    <comment>Bottom header of the count of all repos cloned</comment>
   </data>
   <data name="SummaryPage_RestartRequiredButton.Content" xml:space="preserve">
     <value>Restart Now</value>
@@ -925,7 +1029,7 @@
     <comment>Text that shows the title of a tab in the review page where users can see the details of the Dev Drive they are about to create.</comment>
   </data>
   <data name="NoRepositoriesToClone.Text" xml:space="preserve">
-    <value>No Repositories to clone</value>
+    <value>No repositories to clone</value>
   </data>
   <data name="EditClonePathDialogUncheckCheckMark.PrimaryButtonText" xml:space="preserve">
     <value>Yes, I'm sure</value>
@@ -1005,7 +1109,7 @@
   </data>
   <data name="CustomizeHyperLink.Content" xml:space="preserve">
     <value>Customize</value>
-    <comment>Text for hyperlink that users see when they click the drive drive checkbox. The customize hyperlink when click will open a window where users can change the details of their dev drive.</comment>
+    <comment>Text for hyperlink that users see when they click the dev drive checkbox. The customize hyperlink when clicked will open a window where users can change the configuration of their dev drive.</comment>
   </data>
   <data name="DevDriveDefaultDriveCheckBoxError.Message" xml:space="preserve">
     <value>Couldn't set default Dev Drive configuration. Select the customize button to update the configuration.</value>
@@ -1042,5 +1146,45 @@
   <data name="ClonePathDriveDoesNotExist" xml:space="preserve">
     <value>Enter a drive that exists</value>
     <comment>Error string to show the user if the drive they want to clone to does not exist.  Should be used if not making a devdrive</comment>
+  </data>
+  <data name="CloneRepoErrorForActionCenter" xml:space="preserve">
+    <value>Couldn't clone {0} 0x{1}</value>
+    <comment>{Locked="{0}","{1}"}Action center message to give the hresult as to why the repo could not be cloned {0}: name of repo {1}:Hresult as a hex</comment>
+  </data>
+  <data name="ClonePathForTextBlock.Text" xml:space="preserve">
+    <value>Path</value>
+    <comment>Text for choosing a clone path in a block of text</comment>
+  </data>
+  <data name="DoneButton.Content" xml:space="preserve">
+    <value>Done</value>
+    <comment>Button label that when clicked will end the machine configuration wizard.</comment>
+  </data>
+  <data name="SummaryPageOneApplicationInstalled" xml:space="preserve">
+    <value>Application installed</value>
+    <comment>Bottom text to show when only one application is installed.</comment>
+  </data>
+  <data name="SummaryPageOneRepositoryCloned" xml:space="preserve">
+    <value>Repository cloned</value>
+    <comment>Bottom text to show when only one repository is cloned</comment>
+  </data>
+  <data name="SummaryPageReposClonedCount" xml:space="preserve">
+    <value>Repositories cloned</value>
+    <comment>Bottom header of the count of all repos cloned</comment>
+  </data>
+  <data name="RepositoryClonePathHeader.Text" xml:space="preserve">
+    <value>Clone path</value>
+    <comment>Header for the repo grid in the repo tool</comment>
+  </data>
+  <data name="RepositoryNameHeader.Text" xml:space="preserve">
+    <value>Repository name</value>
+    <comment>Header for the repo grid</comment>
+  </data>
+  <data name="RepositoryTypeHeader.Text" xml:space="preserve">
+    <value>Repository type</value>
+    <comment>Header for the repo  grid</comment>
+  </data>
+  <data name="SSHConnectionStringNotAllowed" xml:space="preserve">
+    <value>SSH connection strings are not allowed</value>
+    <comment>Error string when a user enters in an SSH connection string</comment>
   </data>
 </root>

@@ -9,7 +9,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:DevHome.Common.Helpers"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-    xmlns:xaml="using:Microsoft.UI.Xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     mc:Ignorable="d"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
@@ -22,12 +21,6 @@
         <Grid Margin="{ThemeResource ContentPageMargin}">
             <ContentDialog x:Name="reportBugDialog" x:Uid="Feedback_ReportBug_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
                 <Grid>
-                    <TextBlock>
-                        <Run x:Uid="Feedback_IssueGuidance"/>
-                        <Hyperlink x:Uid="Feedback_Guidance_Link" TextDecorations="None">
-                            <Run x:Uid="Feedback_Guidance_LinkText"></Run>
-                        </Hyperlink>
-                    </TextBlock>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{StaticResource FeedbackScrollViewerMargin}">
                         <StackPanel Margin="{StaticResource FeedbackScrollViewerContentMargin}">
                             <TextBox x:Name="ReportBugIssueTitle" x:Uid="Feedback_ReportBug_IssueTitle" AcceptsReturn="True"/>
@@ -46,10 +39,15 @@
                                     </StackPanel>
                                 </Expander.Content>
                             </Expander>
-                            <Expander x:Name="ReportBugPluginsExpander" Width="{StaticResource FeedbackExpanderWidth}">
+                            <Expander x:Name="ReportBugPluginsExpander" Expanding="ShowPluginsInfoExpander_Expanding" Width="{StaticResource FeedbackExpanderWidth}">
                                 <Expander.Header>
                                     <CheckBox x:Name="ReportBugIncludePlugins" x:Uid="Feedback_ReportBug_IncludePlugins" IsChecked="True"/>
                                 </Expander.Header>
+                                <Expander.Content>
+                                    <StackPanel>
+                                        <TextBlock x:Name="ReportBugIncludePluginsList" />
+                                    </StackPanel>
+                                </Expander.Content>
                             </Expander>
                             <Expander x:Name="ReportBugExperimentInfoExpander" Width="{StaticResource FeedbackExpanderWidth}">
                                 <Expander.Header>
@@ -62,12 +60,6 @@
             </ContentDialog>
             <ContentDialog x:Name="LocalizationIssueDialog" x:Uid="Feedback_LocalizationIssue_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
                 <Grid>
-                    <TextBlock>
-                    <Run x:Uid="Feedback_IssueGuidance"/>
-                    <Hyperlink x:Uid="Feedback_Guidance_Link" TextDecorations="None">
-                        <Run x:Uid="Feedback_Guidance_LinkText"></Run>
-                    </Hyperlink>
-                    </TextBlock>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{StaticResource FeedbackScrollViewerMargin}">
                         <StackPanel Margin="{StaticResource FeedbackScrollViewerContentMargin}">
                             <TextBox x:Name="LocalizationIssueTitle" x:Uid="Feedback_LocalizationIssue_IssueTitle" AcceptsReturn="True"/>
@@ -78,12 +70,6 @@
             </ContentDialog>
             <ContentDialog x:Name="suggestFeatureDialog" x:Uid="Feedback_SuggestFeature_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
                 <Grid>
-                    <TextBlock>
-                    <Run x:Uid="Feedback_Suggestion"/>
-                    <Hyperlink x:Uid="Feedback_Guidance_Link" TextDecorations="None">
-                        <Run x:Uid="Feedback_Guidance_LinkText"></Run>
-                    </Hyperlink>
-                    </TextBlock>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{StaticResource FeedbackScrollViewerMargin}">
                         <StackPanel Margin="{StaticResource FeedbackScrollViewerContentMargin}">
                             <TextBox x:Name="SuggestFeatureTitle" x:Uid="Feedback_SuggestFeature_IssueTitle" AcceptsReturn="True"/>
@@ -101,25 +87,13 @@
                 Style="{ThemeResource TitleTextBlockStyle}"
                 Margin="0 10"
                 />
-                <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" FontWeight="Normal">
-                <Hyperlink x:Uid="Feedback_DocumentationInfo_Link" TextDecorations="None">
-                    <Run x:Uid="Feedback_DocumentationInfo_LinkText"/>
-                </Hyperlink>
-                </TextBlock>
                 <TextBlock Margin="{StaticResource MediumTopBottomMargin}">
                 <Run x:Uid="Feedback_OpenSource"/>
                 <Hyperlink x:Uid="Feedback_OpenSource_Link" TextDecorations="None">
                     <Run x:Uid="Feedback_OpenSource_LinkText"></Run>
                 </Hyperlink>
                 </TextBlock>
-                <StackPanel>
-                    <labs:SettingsCard x:Uid="Feedback_ReportBug_Internal">
-                        <labs:SettingsCard.HeaderIcon>
-                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
-                                  Glyph="&#xebe8;"/>
-                        </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Feedback_ReportBug_Button" Click="OpenFeedbackHub"/>
-                    </labs:SettingsCard>
+                <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
                     <labs:SettingsCard x:Uid="Feedback_ReportBug">
                         <labs:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
@@ -137,7 +111,7 @@
                     <labs:SettingsCard x:Uid="Feedback_LocalizationIssue">
                         <labs:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
-                                  Glyph="&#xE128;"/>
+                                  Glyph="&#xE909;"/>
                         </labs:SettingsCard.HeaderIcon>
                         <Button x:Uid="Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog"/>
                     </labs:SettingsCard>

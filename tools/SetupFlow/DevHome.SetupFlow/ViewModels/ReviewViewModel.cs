@@ -64,16 +64,13 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     protected async override Task OnEachNavigateToAsync()
     {
-        // We re-compute the list of tabs as it can change depending on the current selections
-        // Specifically we don't need to show Dev Drive if it wasn't selected
+        // Re-compute the list of tabs as it can change depending on the current selections
         ReviewTabs =
             Orchestrator.TaskGroups
             .Select(taskGroup => taskGroup.GetReviewTabViewModel())
-            .Where(tab => tab is not null)
+            .Where(tab => tab?.HasItems == true)
             .ToList();
-
-        // Show the first tab that has any content, or the first one if they're all empty
-        SelectedReviewTab = ReviewTabs.FirstOrDefault(reviewTab => reviewTab.HasItems) ?? ReviewTabs.FirstOrDefault();
+        SelectedReviewTab = ReviewTabs.FirstOrDefault();
 
         NextPageButtonToolTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
         UpdateCanGoToNextPage();

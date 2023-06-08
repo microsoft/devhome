@@ -44,6 +44,11 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         get; set;
     }
 
+    public string PluginName
+    {
+        get; set;
+    }
+
     /// <summary>
     /// Gets or sets a value indicating whether the repository is to be cloned on a Dev Drive.
     /// </summary>
@@ -53,18 +58,29 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     }
 
     /// <summary>
-    /// Gets or sets a value indicating the alias associated with the Dev drive in the form of
-    /// "Drive label" (Drive letter:) [Size GB/TB]. E.g Dev Drive (D:) [50.0 GB]
+    /// Gets or sets a value indicating whether used specifically for telemetry to get insights if repos are being cloned to an existing devdrive.
     /// </summary>
-    public string CloneLocationAlias
+    public bool CloneToExistingDevDrive
     {
         get; set;
     }
 
     /// <summary>
+    /// Gets or sets a value indicating the alias associated with the Dev drive in the form of
+    /// "Drive label" (Drive letter:) [Size GB/TB]. E.g Dev Drive (D:) [50.0 GB]
+    /// </summary>
+    [ObservableProperty]
+    private string _cloneLocationAlias;
+
+    /// <summary>
     /// Gets the repo name and formats it for the Repo Review view.
     /// </summary>
     public string RepositoryId => $"{RepositoryToClone.DisplayName ?? string.Empty}";
+
+    /// <summary>
+    /// Gets the repository in a [organization]\[reponame] style
+    /// </summary>
+    public string RepositoryOwnerAndName => Path.Join(RepositoryToClone.OwningAccountName ?? string.Empty, RepositoryToClone.DisplayName);
 
     /// <summary>
     /// Gets the clone path the user wants to clone the repo to.
@@ -73,7 +89,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     {
         get
         {
-            var path = _cloningLocation.FullName;
+            var path = CloningLocation.FullName;
 
             if (RepositoryToClone != null)
             {
@@ -105,6 +121,23 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="CloningInformation"/> class.
+    /// Public constructor for XAML view to construct a CLoningInformation
+    /// </summary>
+    public CloningInformation()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CloningInformation"/> class.
+    /// </summary>
+    /// <param name="repoToClone">The repo to clone</param>
+    public CloningInformation(IRepository repoToClone)
+    {
+        RepositoryToClone = repoToClone;
+    }
+
+    /// <summary>
     /// Compares two CloningInformations for equality.
     /// </summary>
     /// <param name="other">The CloningInformation to compare to.</param>
@@ -120,6 +153,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         }
 
         return ProviderName.Equals(other.ProviderName, StringComparison.OrdinalIgnoreCase) &&
+            RepositoryToClone.OwningAccountName.Equals(other.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase) &&
             RepositoryToClone.DisplayName.Equals(other.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase);
     }
 

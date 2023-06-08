@@ -1,11 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Windows.Web.AtomPub;
 
 namespace DevHome.Models;
 public class WhatsNewCard
@@ -25,12 +21,32 @@ public class WhatsNewCard
         get; set;
     }
 
-    public string? LearnMoreUrl
+    public string? LightThemeImage
     {
         get; set;
     }
 
-    public string? Icon
+    public string? DarkThemeImage
+    {
+        get; set;
+    }
+
+    public string? Button
+    {
+        get; set;
+    }
+
+    public string? PageKey
+    {
+        get; set;
+    }
+
+    public string? Link
+    {
+        get; set;
+    }
+
+    public bool? ShouldShowLink
     {
         get; set;
     }

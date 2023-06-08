@@ -11,11 +11,13 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -128,15 +130,16 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
-    /// Command to re-re run all tasks by moving them from _failedTasks to TasksToRun
+    /// Command to re-run all tasks by moving them from _failedTasks to TasksToRun
     /// </summary>
     [RelayCommand]
     public async void RestartFailedTasks()
     {
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Loading_RestartFailedTasks_Event");
         Log.Logger?.ReportInfo(Log.Component.Loading, "Restarting all failed tasks");
 
         // Keep the number of successful tasks and needs attention tasks the same.
-        // Change failed tasks to 0 becuase, once restarted all tasks haven't failed yet.
+        // Change failed tasks to 0 because, once restarted, all tasks haven't failed yet.
         TasksStarted = 0;
         TasksFailed = 0;
         SetExecutingTaskAndActionCenter();
@@ -203,7 +206,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     private void SetExecutingTaskAndActionCenter()
     {
-        ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _tasksToRun.Count);
+        ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
         ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, 0);
     }
 
@@ -235,7 +238,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 }
                 else
                 {
-                    // I only have light and dark icons.  What would "default" be?
                     statusSymbolIcon = LightCaution;
                 }
 
@@ -299,14 +301,14 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process: {e}");
+                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process.", e);
                 Log.Logger?.ReportInfo(Log.Component.Loading, "Will continue with setup as best-effort");
             }
         }
 
         FetchTaskInformation();
 
-        await StartAllTasks(_tasksToRun);
+        await StartAllTasks(TasksToRun);
     }
 
     /// <summary>
@@ -324,6 +326,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             var tasksToRunSecond = new List<TaskInformation>();
 
             // TODO: Most likely need a better way to figure out dependencies.
+            // https://github.com/microsoft/devhome/issues/627
             // However, right now, the only dependency is "does this need to wait for a dev drive"
             foreach (var taskInformation in tasks)
             {
@@ -356,7 +359,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         });
 
         // All the tasks are done.  Re-try logic follows.
-        if (_failedTasks.Count == 0)
+        if (!_failedTasks.Any())
         {
             Log.Logger?.ReportInfo(Log.Component.Loading, "All tasks succeeded.  Moving to next page");
             ExecutionFinished.Invoke(null, null);
@@ -376,6 +379,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             ShowRetryButton = Visibility.Visible;
             IsNavigationBarVisible = true;
         }
+
+        if (_failedTasks.Any())
+        {
+            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Measure, new LoadingRetryEvent(_failedTasks.Count));
+        }
     }
 
     /// <summary>
@@ -392,7 +400,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
-                ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, _tasksToRun.Count);
+                ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
             });
 
             TaskFinishedState taskFinishedState;
@@ -418,6 +426,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             // Don't let a single task break everything
             // TODO: Show failed tasks on UI
+            // https://github.com/microsoft/devhome/issues/629
         }
     }
 }

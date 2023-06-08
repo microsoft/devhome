@@ -40,7 +40,7 @@
         <Grid Grid.Row="0" Margin="0,0,0,22">
             <TextBlock x:Uid="DashboardPage_Title" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Left"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="AddWidgetButton" x:Uid="AddWidget" HorizontalAlignment="Right" Click="AddWidgetButton_Click"/>
+                <Button x:Name="AddWidgetButton" x:Uid="AddWidget" HorizontalAlignment="Right" Click="AddWidget_Click"/>
             </StackPanel>
         </Grid>
 
@@ -73,15 +73,21 @@
                     </GridView.ItemsPanel>
                     <GridView.ItemContainerStyle>
                         <Style TargetType="GridViewItem">
-                            <!-- Default margin is "0,0,4,4". Override since we're setting margins on the WidgetBoard. -->
+                            <!-- Default margin is "0,0,4,4". Override since margins are set on the WidgetBoard instead. -->
                             <Setter Property="Margin" Value="0,0,0,0"/>
                         </Style>
                     </GridView.ItemContainerStyle>
                 </GridView>
 
-                <StackPanel x:Name="NoWidgetsStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
-                    <TextBlock x:Uid="NoWidgetsPinned" HorizontalAlignment="Center" />
-                    <HyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" Click="AddWidgetButton_Click" HorizontalAlignment="Center" />
+              <!-- Loading Progress -->
+              <ProgressRing x:Name="LoadingWidgetsProgressRing"
+                            Margin="0,150,0,0"
+                            IsActive="True"
+                            HorizontalAlignment="Center"/>
+
+              <StackPanel x:Name="NoWidgetsStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
+                    <TextBlock x:Uid="NoWidgetsAdded" HorizontalAlignment="Center" />
+                    <HyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" Click="AddWidget_Click" HorizontalAlignment="Center" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

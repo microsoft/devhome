@@ -5,10 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.TaskGroups;
@@ -32,6 +34,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         // TODO Remove `this` argument from CreateInstance since this task
         // group is a registered type. This requires updating dependent classes
         // correspondingly.
+        // https://github.com/microsoft/devhome/issues/631
         _repoConfigViewModel = new (() => _host.CreateInstance<RepoConfigViewModel>(this));
         _repoConfigReviewViewModel = new (() => _host.CreateInstance<RepoConfigReviewViewModel>(this));
     }
@@ -58,6 +61,9 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Saving cloning information to task group");
         CloneTasks.Clear();
+
+        List<FinalRepoResult> allAddedRepos = new ();
+
         foreach (var cloningInformation in cloningInformations)
         {
             // if the repo was added via URL.
@@ -77,6 +83,19 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
             }
 
             CloneTasks.Add(task);
+
+            // Perform telemetry work.
+            var providerName = cloningInformation.ProviderName;
+            var addKind = cloningInformation.OwningAccount == null ? AddKind.URL : AddKind.Account;
+            var cloneLocationKind = CloneLocationKind.LocalPath;
+            if (cloningInformation.CloneToExistingDevDrive || cloningInformation.CloneToDevDrive)
+            {
+                cloneLocationKind = CloneLocationKind.DevDrive;
+            }
+
+            allAddedRepos.Add(new FinalRepoResult(providerName, addKind, cloneLocationKind));
         }
+
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AllReposAdded_Event", LogLevel.Measure, new RepoToolFinalReposToAddEvent(allAddedRepos));
     }
 }

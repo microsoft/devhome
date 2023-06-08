@@ -11,7 +11,7 @@ namespace DevHome.Dashboard.Views;
 public sealed class WidgetBoard : Panel
 {
     private double _columnWidth;
-    private const int _maxColumns = 3;
+    private const int _maxColumns = 4;
 
     // We need to control the HorizontalAlignment, so hide this property.
 #pragma warning disable SA1306 // Field names should begin with lower-case letter
@@ -23,7 +23,7 @@ public sealed class WidgetBoard : Panel
     /// </summary>
     /// <remarks>
     /// This control is based off of the
-    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/microsoft.toolkit.uwp.ui.controls.staggeredpanel">StaggeredPanel</see>
+    /// <see href="https://learn.microsoft.com/dotnet/api/microsoft.toolkit.uwp.ui.controls.staggeredpanel">StaggeredPanel</see>
     /// control from the Windows Community Toolkit.
     /// Similar to that control, the WidgetBoard will stagger items in a row so there is not a large gap between items in a column.
     /// However, unlike that control, items will always be added to the next column in sequence.
@@ -77,7 +77,7 @@ public sealed class WidgetBoard : Panel
         new PropertyMetadata(default(Thickness), OnPaddingChanged));
 
     /// <summary>
-    /// Gets or sets the spacing between columns of widgets. The default value is 10.
+    /// Gets or sets the spacing between columns of widgets. The default value is 12.
     /// </summary>
     public double ColumnSpacing
     {
@@ -92,10 +92,10 @@ public sealed class WidgetBoard : Panel
         nameof(ColumnSpacing),
         typeof(double),
         typeof(WidgetBoard),
-        new PropertyMetadata(10d, OnPaddingChanged));
+        new PropertyMetadata(12d, OnPaddingChanged));
 
     /// <summary>
-    /// Gets or sets the spacing between rows of widgets. The default value is 10.
+    /// Gets or sets the spacing between rows of widgets. The default value is 12.
     /// </summary>
     public double RowSpacing
     {
@@ -110,7 +110,7 @@ public sealed class WidgetBoard : Panel
         nameof(RowSpacing),
         typeof(double),
         typeof(WidgetBoard),
-        new PropertyMetadata(10d, OnPaddingChanged));
+        new PropertyMetadata(12d, OnPaddingChanged));
 
     /// <inheritdoc/>
     protected override Size MeasureOverride(Size availableSize)

@@ -17,11 +17,12 @@
         <!-- Hide Banner Button -->
         <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
                 BorderThickness="0" Background="Transparent" Padding="5"
+                x:Uid="BannerHideButton"
                 Command="{x:Bind HideButtonCommand}"
                 Visibility="{x:Bind HideButtonVisibility}">
             <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}"
                        FontSize="{ThemeResource BodyTextBlockFontSize}"
-                       Text="&#xE10A;" />
+                       Text="&#xE711;" />
         </Button>
         <StackPanel VerticalAlignment="Center" Margin="38 0 0 0" Spacing="12">
             <TextBlock

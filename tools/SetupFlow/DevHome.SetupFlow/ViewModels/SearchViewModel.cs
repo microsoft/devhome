@@ -7,8 +7,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
+using DevHome.Telemetry;
 
 namespace DevHome.SetupFlow.ViewModels;
 public partial class SearchViewModel : ObservableObject
@@ -91,6 +93,7 @@ public partial class SearchViewModel : ObservableObject
         {
             // Run the search on a separate (non-UI) thread to prevent lagging the UI.
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Running package search for query [{text}]");
+            TelemetryFactory.Get<ITelemetry>().LogMeasure("Search_SerchingForApplication_Event");
             var matches = await Task.Run(async () => await _wpm.AllCatalogs.SearchAsync(text, SearchResultLimit), cancellationToken);
 
             // Don't update the UI if the operation was canceled
@@ -101,7 +104,7 @@ public partial class SearchViewModel : ObservableObject
 
             // Update the UI only if the operation was successful
             SearchText = text;
-            ResultPackages = matches.Select(m => _packageProvider.CreateOrGet(m)).ToList();
+            ResultPackages = await Task.Run(() => matches.Select(m => _packageProvider.CreateOrGet(m)).ToList());
             return (SearchResultStatus.Ok, ResultPackages);
         }
         catch (OperationCanceledException)
@@ -110,7 +113,7 @@ public partial class SearchViewModel : ObservableObject
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Search error: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Search error.", e);
             return (SearchResultStatus.ExceptionThrown, null);
         }
     }

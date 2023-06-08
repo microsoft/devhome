@@ -1,13 +1,12 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-using System;
 using System.Globalization;
 using System.Management;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Web;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -35,17 +34,6 @@ public sealed partial class FeedbackPage : Page
     {
         ViewModel = Application.Current.GetService<FeedbackViewModel>();
         InitializeComponent();
-    }
-
-    private void OpenFeedbackHub(object sender, RoutedEventArgs e)
-    {
-        // Opens feedback hub session with the correct context
-        const string feedbackUrl = "feedback-hub:?contextid=1330&tabid=2&newFeedback=true";
-
-        var psi = new System.Diagnostics.ProcessStartInfo();
-        psi.FileName = feedbackUrl;
-        psi.UseShellExecute = true;
-        System.Diagnostics.Process.Start(psi);
     }
 
     private async void DisplaySuggestFeature(object sender, RoutedEventArgs e)
@@ -83,7 +71,7 @@ public sealed partial class FeedbackPage : Page
 
             ReportBugExpectedBehavior.Text = ReportBugActualBehavior.Text = string.Empty;
 
-            // Make sure any changes are consistent with the translatoin issue template on GitHuba
+            // Make sure any changes are consistent with the translation issue template on GitHuba
             await Windows.System.Launcher.LaunchUriAsync(new Uri(gitHubURL));
         }
         else
@@ -113,10 +101,16 @@ public sealed partial class FeedbackPage : Page
                 sysInfo = HttpUtility.UrlEncode(wmiCPUInfo + "\n" + GetPhysicalMemory() + "\n" + GetProcessorArchitecture());
             }
 
+            var pluginsInfo = string.Empty;
+            if (ReportBugIncludePlugins.IsChecked.GetValueOrDefault())
+            {
+                pluginsInfo = HttpUtility.UrlEncode(GetPlugins());
+            }
+
             var otherSoftwareText = "OS Build Version: " + GetOSVersion() + "\n.NET Version: " + GetDotNetVersion();
             var otherSoftware = HttpUtility.UrlEncode(otherSoftwareText);
 
-            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle + "&labels=Issue-Bug&template=Bug_Report.yml&version=" + version + "&windowsversion=" + windowsversion + "&repro=" + reproSteps + "&expectedbehavior=" + expectedBehavior + "&actualbehavior=" + actualBehavior + "&includedsysinfo=" + sysInfo + "&othersoftware=" + otherSoftware;
+            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle + "&labels=Issue-Bug&template=Bug_Report.yml&version=" + version + "&windowsversion=" + windowsversion + "&repro=" + reproSteps + "&expectedbehavior=" + expectedBehavior + "&actualbehavior=" + actualBehavior + "&includedsysinfo=" + sysInfo + "&includedextensionsinfo=" + pluginsInfo + "&othersoftware=" + otherSoftware;
 
             // Make sure any changes are consistent with the report bug issue template on GitHub
             await Windows.System.Launcher.LaunchUriAsync(new Uri(gitHubURL));
@@ -136,6 +130,11 @@ public sealed partial class FeedbackPage : Page
         PhysicalMemory.Text = GetPhysicalMemory();
         ProcessorArchitecture.Text = GetProcessorArchitecture();
         CpuID.Text = wmiCPUInfo;
+    }
+
+    private void ShowPluginsInfoExpander_Expanding(Expander sender, ExpanderExpandingEventArgs args)
+    {
+        ReportBugIncludePluginsList.Text = GetPlugins();
     }
 
     private async void Reload()
@@ -164,8 +163,10 @@ public sealed partial class FeedbackPage : Page
     private string GetAppVersion()
     {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-        var appVersion = Assembly.GetEntryAssembly().GetName().Version;
-        return appVersion.ToString();
+        IAppInfoService appInfoService = Application.Current.GetService<IAppInfoService>();
+        var version = appInfoService.GetAppVersion();
+
+        return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 
@@ -247,6 +248,19 @@ public sealed partial class FeedbackPage : Page
         }
 
         return arch;
+    }
+
+    private string GetPlugins()
+    {
+        var pluginService = Application.Current.GetService<IPluginService>();
+        var plugins = pluginService.GetInstalledPluginsAsync(true).Result;
+        var pluginsStr = "Extensions: \n";
+        foreach (var plugin in plugins)
+        {
+            pluginsStr += plugin.PackageFullName + "\n";
+        }
+
+        return pluginsStr;
     }
 
     private async void BuildExtensionButtonClicked(object sender, RoutedEventArgs e)

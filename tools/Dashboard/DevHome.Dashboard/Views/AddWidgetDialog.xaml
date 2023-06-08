@@ -9,12 +9,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d"
-    Style="{StaticResource DefaultContentDialogStyle}">
+    Style="{StaticResource DefaultContentDialogStyle}"
+    SizeChanged="ContentDialog_SizeChanged">
 
     <!-- ContentDialog Width and Height are not properly hooked up and must be set this way -->
     <ContentDialog.Resources>
         <x:Double x:Key="ContentDialogMinWidth">652</x:Double>
-        <x:Double x:Key="ContentDialogMinHeight">684</x:Double>
         <x:Double x:Key="ContentDialogMaxWidth">652</x:Double>
         <x:Double x:Key="ContentDialogMaxHeight">684</x:Double>
         <Thickness x:Key="ContentDialogTitleMargin">0,0,0,0</Thickness>
@@ -25,13 +25,13 @@
 
     <StackPanel>
         <!-- Title and Close button -->
-        <Grid>
-            <TextBlock x:Uid="PinWidgetsTitle" HorizontalAlignment="Left" Margin="16,10,0,0" />
+        <Grid x:Name="AddWidgetTitleBar">
+            <TextBlock x:Uid="AddWidgetsTitle" HorizontalAlignment="Left" Margin="16,10,0,0" />
             <Button HorizontalAlignment="Right" Click="CancelButton_Click"
                     BorderThickness="0" Background="Transparent" Padding="10">
                 <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}" 
                            FontSize="{ThemeResource BodyTextBlockFontSize}" 
-                           Text="&#xE10A;" />
+                           Text="&#xE711;" />
             </Button>
         </Grid>
 
@@ -45,13 +45,12 @@
                         IsPaneToggleButtonVisible="False"
                         IsTitleBarAutoPaddingEnabled="False"
                         OpenPaneLength="218"
+                        MaxHeight="650"
                         SelectionChanged="AddWidgetNavigationView_SelectionChanged">
             <NavigationView.MenuItems>
             </NavigationView.MenuItems>
 
             <!-- Widget configuration UI -->
-            <!-- TODO: This is a bare-bones representation of the configuration UI -->
-            <!--       Should have better layout / possibly be a user control -->
             <Grid x:Name="ConfigurationContentGrid">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -59,15 +58,16 @@
                 </Grid.RowDefinitions>
 
                 <ScrollViewer Grid.Row="0"
+                              x:Name="ConfigurationContentViewer"
                               Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}"
-                              VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch"
-                              MinHeight="530" MaxHeight="530">
+                              VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
                     <Frame x:Name="ConfigurationContentFrame" Margin="45,45,45,0"
                            Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}" />
                 </ScrollViewer>
 
                 <!-- Pin button -->
                 <Grid Grid.Row="1"
+                      x:Name="PinRow"
                       Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
                     <Button x:Name="PinButton"
                             VerticalAlignment="Bottom" HorizontalAlignment="Center"

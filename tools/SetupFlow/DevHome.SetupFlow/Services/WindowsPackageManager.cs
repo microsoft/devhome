@@ -4,20 +4,26 @@
 using System;
 using System.Threading.Tasks;
 using DevHome.Services;
+using DevHome.SetupFlow.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
+using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
+using Namotion.Reflection;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.Services;
 
 /// <summary>
-/// Windows package manager class is an entrypoint for using the WinGet COM API.
+/// Windows package manager class is an entry point for using the WinGet COM API.
 /// </summary>
 public class WindowsPackageManager : IWindowsPackageManager
 {
-    private const string AppInstallerProductId = "9NBLGGH4NNS1";
+    public const int AppInstallerErrorFacility = 0xA15;
+    public const string AppInstallerProductId = "9NBLGGH4NNS1";
 
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;
@@ -61,17 +67,41 @@ public class WindowsPackageManager : IWindowsPackageManager
 
     public IWinGetCatalog WinGetCatalog => _wingetCatalog.Value;
 
-    public async Task ConnectToAllCatalogsAsync()
+    public async Task ConnectToAllCatalogsAsync(bool force)
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs");
 
-        // Connect composite catalog for all local and remote catalogs to
-        // enable searching for pacakges from any source
-        await AllCatalogs.ConnectAsync();
-
         // Connect predefined winget catalog to enable loading
         // package with a known source (e.g. for restoring packages)
-        await WinGetCatalog.ConnectAsync();
+        var wingetConnect = Task.Run(async () =>
+        {
+            try
+            {
+                await WinGetCatalog.ConnectAsync(force);
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {WinGetCatalog} when connecting to all catalogs", e);
+            }
+        });
+
+        // Connect composite catalog for all local and remote catalogs to
+        // enable searching for packages from any source
+        var allCatalogsConnect = Task.Run(async () =>
+        {
+            try
+            {
+                await AllCatalogs.ConnectAsync(force);
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {AllCatalogs} (search) when connecting to all catalogs", e);
+            }
+        });
+
+        await Task.WhenAll(wingetConnect, allCatalogsConnect);
+
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs completed");
     }
 
     public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package)
@@ -82,18 +112,23 @@ public class WindowsPackageManager : IWindowsPackageManager
 
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package install for {package.Id}");
         var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options).AsTask();
+        var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
+
+        // Contract version 4
+        var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK);
 
         Log.Logger?.ReportInfo(
             Log.Component.AppManagement,
-            $"Install result: Status={installResult.Status}, InstallerErrorCode={installResult.InstallerErrorCode}, RebootRequired={installResult.RebootRequired}");
+            $"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
 
         if (installResult.Status != InstallResultStatus.Ok)
         {
-            throw new InstallPackageException(installResult.Status, installResult.InstallerErrorCode);
+            throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
         }
 
         return new ()
         {
+            ExtendedErrorCode = extendedErrorCode,
             RebootRequired = installResult.RebootRequired,
         };
     }
@@ -156,7 +191,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalogs = packageManager.GetPackageCatalogs();
 
-        // Cannot use foreach or Linq for out-of-process IVector
+        // Cannot use foreach or LINQ for out-of-process IVector
         // Bug: https://github.com/microsoft/CsWinRT/issues/1205
         for (var i = 0; i < catalogs.Count; ++i)
         {

@@ -13,6 +13,7 @@ using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
+using Microsoft.UI.Xaml.Controls;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.Services;
@@ -20,8 +21,7 @@ namespace DevHome.SetupFlow.Services;
 /// <summary>
 /// Orchestrator for the Setup Flow, in charge of functionality across multiple pages.
 /// </summary>
-[ObservableObject]
-public partial class SetupFlowOrchestrator
+public partial class SetupFlowOrchestrator : ObservableObject
 {
     private readonly List<SetupPageViewModelBase> _flowPages = new ();
 
@@ -51,7 +51,16 @@ public partial class SetupFlowOrchestrator
     private string _flowTitle;
 
     /// <summary>
-    /// Occurrs right before a page changes
+    /// Gets a GUID that can be used to identify events related to the current setup flow in telemetry.
+    /// This GUID is re-set each time we modify the pages in the flow.
+    /// </summary>
+    public Guid ActivityId
+    {
+        get; private set;
+    }
+
+    /// <summary>
+    /// Occurs right before a page changes
     /// </summary>
     public event EventHandler PageChanging;
 
@@ -86,6 +95,7 @@ public partial class SetupFlowOrchestrator
             _flowPages.Clear();
             _flowPages.AddRange(value);
             _ = SetCurrentPageIndex(0);
+            ActivityId = Guid.NewGuid();
         }
     }
 
@@ -95,6 +105,13 @@ public partial class SetupFlowOrchestrator
     public IEnumerable<SetupPageViewModelBase> SetupStepPages => FlowPages.Where(page => page.IsStepPage);
 
     public bool HasPreviousPage => _currentPageIndex > 0;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the done button should be shown. When false, the cancel
+    /// hyperlink button will be shown in the UI.
+    /// </summary>
+    [ObservableProperty]
+    private bool _shouldShowDoneButton;
 
     /// <summary>
     /// Notify all the navigation buttons that the CanExecute property has changed.
@@ -175,6 +192,10 @@ public partial class SetupFlowOrchestrator
         _currentPageIndex = index;
         CurrentPageViewModel = FlowPages.Any() ? FlowPages[_currentPageIndex] : null;
         Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Moving to {CurrentPageViewModel?.GetType().Name}");
+
+        // Last page in the setup flow should always be the summary page. The summary page is the only page where we show
+        // the user the "Done" button.
+        ShouldShowDoneButton = _currentPageIndex == FlowPages.Count - 1;
 
         // Do post-navigation tasks only when moving forwards, not when going back to a previous page.
         if (movingForward)

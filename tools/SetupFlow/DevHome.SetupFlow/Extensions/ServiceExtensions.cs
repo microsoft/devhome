@@ -13,7 +13,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.Internal.Windows.DevHome.Helpers;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
-using Windows.ApplicationModel;
 
 namespace DevHome.SetupFlow.Extensions;
 
@@ -61,8 +60,10 @@ public static class ServiceExtensions
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();
-        services.AddTransient<WinGetPackageRestoreDataSource>();
-        services.AddTransient<WinGetPackageJsonDataSource>(sp =>
+        services.AddSingleton<CatalogDataSourceLoacder>();
+
+        services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
+        services.AddSingleton<WinGetPackageDataSource,  WinGetPackageJsonDataSource>(sp =>
         {
             var dataSourcePath = sp.GetService<IOptions<SetupFlowOptions>>().Value.WinGetPackageJsonDataSourcePath;
             var dataSourceFullPath = Path.Combine(AppContext.BaseDirectory, dataSourcePath);

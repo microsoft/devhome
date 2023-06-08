@@ -11,10 +11,6 @@ namespace DevHome.SetupFlow.Services;
 public static class StringResourceKey
 {
     // Keys in this file should be a subset of the ones found in the .resw file.
-    public static readonly string AppInstallerUpdateAvailableCancelButton = nameof(AppInstallerUpdateAvailableCancelButton);
-    public static readonly string AppInstallerUpdateAvailableMessage = nameof(AppInstallerUpdateAvailableMessage);
-    public static readonly string AppInstallerUpdateAvailableTitle = nameof(AppInstallerUpdateAvailableTitle);
-    public static readonly string AppInstallerUpdateAvailableUpdateButton = nameof(AppInstallerUpdateAvailableUpdateButton);
     public static readonly string ApplicationsAddedPlural = nameof(ApplicationsAddedPlural);
     public static readonly string ApplicationsAddedSingular = nameof(ApplicationsAddedSingular);
     public static readonly string Applications = nameof(Applications);
@@ -39,7 +35,8 @@ public static class StringResourceKey
     public static readonly string DevDriveReviewTitle = nameof(DevDriveReviewTitle);
     public static readonly string DevDriveDefaultFileName = nameof(DevDriveDefaultFileName);
     public static readonly string DevDriveDefaultFolderName = nameof(DevDriveDefaultFolderName);
-    public static readonly string DevDriveFilenameAlreadyExists = nameof(DevDriveFilenameAlreadyExists);
+    public static readonly string DevDriveDriveLetterNotAvailable = nameof(DevDriveDriveLetterNotAvailable);
+    public static readonly string DevDriveFileNameAlreadyExists = nameof(DevDriveFileNameAlreadyExists);
     public static readonly string DevDriveInvalidDriveLabel = nameof(DevDriveInvalidDriveLabel);
     public static readonly string DevDriveInvalidDriveSize = nameof(DevDriveInvalidDriveSize);
     public static readonly string DevDriveInvalidFolderLocation = nameof(DevDriveInvalidFolderLocation);
@@ -50,19 +47,14 @@ public static class StringResourceKey
     public static readonly string DevDriveUnableToCreateError = nameof(DevDriveUnableToCreateError);
     public static readonly string DevDriveWindowByteUnitComboBoxGB = nameof(DevDriveWindowByteUnitComboBoxGB);
     public static readonly string DevDriveWindowByteUnitComboBoxTB = nameof(DevDriveWindowByteUnitComboBoxTB);
+    public static readonly string DoneButton = nameof(DoneButton);
     public static readonly string EditClonePathDialog = nameof(EditClonePathDialog);
     public static readonly string EditClonePathDialogUncheckCheckMark = nameof(EditClonePathDialogUncheckCheckMark);
+    public static readonly string FilePickerFileTypeOption = nameof(FilePickerFileTypeOption);
     public static readonly string FileTypeNotSupported = nameof(FileTypeNotSupported);
     public static readonly string InstalledPackage = nameof(InstalledPackage);
     public static readonly string InstalledPackageReboot = nameof(InstalledPackageReboot);
     public static readonly string InstallingPackage = nameof(InstallingPackage);
-    public static readonly string InstallPackageErrorBlockedByPolicy = nameof(InstallPackageErrorBlockedByPolicy);
-    public static readonly string InstallPackageErrorDownloadError = nameof(InstallPackageErrorDownloadError);
-    public static readonly string InstallPackageErrorInternalError = nameof(InstallPackageErrorInternalError);
-    public static readonly string InstallPackageErrorInstallError = nameof(InstallPackageErrorInstallError);
-    public static readonly string InstallPackageErrorNoApplicableInstallers = nameof(InstallPackageErrorNoApplicableInstallers);
-    public static readonly string InstallPackageError = nameof(InstallPackageError);
-    public static readonly string InstallPackageErrorUnknownError = nameof(InstallPackageErrorUnknownError);
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
     public static readonly string PackagesCount = nameof(PackagesCount);
@@ -88,11 +80,17 @@ public static class StringResourceKey
     public static readonly string ApplicationsPageTitle = nameof(ApplicationsPageTitle);
     public static readonly string ReposConfigPageTitle = nameof(ReposConfigPageTitle);
     public static readonly string ReviewPageTitle = nameof(ReviewPageTitle);
+    public static readonly string SummaryPageOneApplicationInstalled = nameof(SummaryPageOneApplicationInstalled);
+    public static readonly string SummaryPageOneRepositoryCloned = nameof(SummaryPageOneRepositoryCloned);
+    public static readonly string SummaryPageAppsDownloadedCount = nameof(SummaryPageAppsDownloadedCount);
+    public static readonly string SummaryPageReposClonedCount = nameof(SummaryPageReposClonedCount);
+    public static readonly string SSHConnectionStringNotAllowed = nameof(SSHConnectionStringNotAllowed);
 
     // Repository loading screen messages
     public static readonly string CloneRepoCreating = nameof(CloneRepoCreating);
     public static readonly string CloneRepoCreated = nameof(CloneRepoCreated);
     public static readonly string CloneRepoError = nameof(CloneRepoError);
+    public static readonly string CloneRepoErrorForActionCenter = nameof(CloneRepoErrorForActionCenter);
     public static readonly string CloneRepoRestart = nameof(CloneRepoRestart);
 
     // Configure task loading screen messages
@@ -129,8 +127,36 @@ public static class StringResourceKey
     public static readonly string ClonePathDriveDoesNotExist = nameof(ClonePathDriveDoesNotExist);
 
     // Url Validation
-    public static readonly string UrlValidationEmpty = nameof(UrlValidationEmpty);
     public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);
     public static readonly string UrlValidationNotFound = nameof(UrlValidationNotFound);
     public static readonly string UrlValidationRepoAlreadyAdded = nameof(UrlValidationRepoAlreadyAdded);
+
+    // Install errors
+    public static readonly string InstallPackageError = nameof(InstallPackageError);
+    public static readonly string InstallPackageErrorMessagePackageInUse = nameof(InstallPackageErrorMessagePackageInUse);
+    public static readonly string InstallPackageErrorMessageInstallInProgress = nameof(InstallPackageErrorMessageInstallInProgress);
+    public static readonly string InstallPackageErrorMessageFileInUse = nameof(InstallPackageErrorMessageFileInUse);
+    public static readonly string InstallPackageErrorMessageMissingDependency = nameof(InstallPackageErrorMessageMissingDependency);
+    public static readonly string InstallPackageErrorMessageDiskFull = nameof(InstallPackageErrorMessageDiskFull);
+    public static readonly string InstallPackageErrorMessageInsufficientMemory = nameof(InstallPackageErrorMessageInsufficientMemory);
+    public static readonly string InstallPackageErrorMessageNoNetwork = nameof(InstallPackageErrorMessageNoNetwork);
+    public static readonly string InstallPackageErrorMessageContactSupport = nameof(InstallPackageErrorMessageContactSupport);
+    public static readonly string InstallPackageErrorMessageRebootRequiredToFinish = nameof(InstallPackageErrorMessageRebootRequiredToFinish);
+    public static readonly string InstallPackageErrorMessageRebootRequiredToInstall = nameof(InstallPackageErrorMessageRebootRequiredToInstall);
+    public static readonly string InstallPackageErrorMessageRebootInitiated = nameof(InstallPackageErrorMessageRebootInitiated);
+    public static readonly string InstallPackageErrorMessageCancelledByUser = nameof(InstallPackageErrorMessageCancelledByUser);
+    public static readonly string InstallPackageErrorMessageAlreadyInstalled = nameof(InstallPackageErrorMessageAlreadyInstalled);
+    public static readonly string InstallPackageErrorMessageDowngrade = nameof(InstallPackageErrorMessageDowngrade);
+    public static readonly string InstallPackageErrorMessageBlockedByPolicy = nameof(InstallPackageErrorMessageBlockedByPolicy);
+    public static readonly string InstallPackageErrorMessageDependencies = nameof(InstallPackageErrorMessageDependencies);
+    public static readonly string InstallPackageErrorMessagePackageInUseByApplication = nameof(InstallPackageErrorMessagePackageInUseByApplication);
+    public static readonly string InstallPackageErrorMessageInvalidParameter = nameof(InstallPackageErrorMessageInvalidParameter);
+    public static readonly string InstallPackageErrorMessageSystemNotSupported = nameof(InstallPackageErrorMessageSystemNotSupported);
+    public static readonly string InstallPackageErrorMessageSystemMessage = nameof(InstallPackageErrorMessageSystemMessage);
+    public static readonly string InstallPackageErrorBlockedByPolicy = nameof(InstallPackageErrorBlockedByPolicy);
+    public static readonly string InstallPackageErrorDownloadError = nameof(InstallPackageErrorDownloadError);
+    public static readonly string InstallPackageErrorInternalError = nameof(InstallPackageErrorInternalError);
+    public static readonly string InstallPackageErrorNoApplicableInstallers = nameof(InstallPackageErrorNoApplicableInstallers);
+    public static readonly string InstallPackageErrorUnknownErrorWithErrorCode = nameof(InstallPackageErrorUnknownErrorWithErrorCode);
+    public static readonly string InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode = nameof(InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode);
 }

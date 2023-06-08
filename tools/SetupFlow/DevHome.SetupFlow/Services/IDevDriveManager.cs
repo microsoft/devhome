@@ -20,13 +20,10 @@ public enum DevDriveValidationResult
     InvalidDriveSize,
     InvalidDriveLabel,
     InvalidFolderLocation,
-    FolderLocationNotFound,
     FileNameAlreadyExists,
-    DefaultFolderNotAvailable,
     DriveLetterNotAvailable,
     NoDriveLettersAvailable,
     NotEnoughFreeSpace,
-    DevDriveNotFound,
 }
 
 /// <summary>
@@ -153,6 +150,14 @@ public interface IDevDriveManager
     /// will be cloned to the Dev Drive.
     /// </remarks>
     public int RepositoriesUsingDevDrive
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets a value indicating the set of drive letters currently in use by Dev Drives on the system.
+    /// </summary>
+    public HashSet<char> DriveLettersInUseByDevDrivesCurrentlyOnSystem
     {
         get;
     }

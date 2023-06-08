@@ -11,10 +11,11 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Settings.Models;
 using Microsoft.UI.Xaml;
+using Windows.ApplicationModel;
 
 namespace DevHome.Settings.ViewModels;
 
-public partial class ExtensionViewModel : ObservableRecipient
+public partial class ExtensionViewModel : ObservableObject
 {
     private readonly Setting _setting;
 
@@ -47,7 +48,7 @@ public partial class ExtensionViewModel : ObservableRecipient
     }
 }
 
-public partial class ExtensionsViewModel : ObservableRecipient
+public partial class ExtensionsViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
@@ -77,7 +78,13 @@ public partial class ExtensionsViewModel : ObservableRecipient
 
         foreach (var pluginWrapper in pluginWrappers)
         {
-            var setting = new Setting("Plugins/" + pluginWrapper.Id, pluginWrapper.Id, pluginWrapper.Name, pluginWrapper.Description ?? string.Empty, string.Empty, true);
+            // Don't show self as an extension
+            if (Package.Current.Id.FullName == pluginWrapper.PackageFullName)
+            {
+                continue;
+            }
+
+            var setting = new Setting("Plugins/" + pluginWrapper.PackageFullName, pluginWrapper.PackageFullName, pluginWrapper.Name, string.Empty, string.Empty, true);
             SettingsList.Add(new ExtensionViewModel(setting, this));
         }
     }
@@ -90,5 +97,6 @@ public partial class ExtensionsViewModel : ObservableRecipient
     public void Navigate(string path)
     {
         // TODO: Navigate to Plugin's settings Adaptive Card
+        // https://github.com/microsoft/devhome/issues/608
     }
 }

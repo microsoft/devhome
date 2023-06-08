@@ -12,6 +12,7 @@ namespace DevHome.Test;
  * https://docs.microsoft.com/visualstudio/test/getting-started-with-unit-testing
  * https://docs.microsoft.com/visualstudio/test/using-microsoft-visualstudio-testtools-unittesting-members-in-unit-tests
  * https://docs.microsoft.com/visualstudio/test/run-unit-tests-with-test-explorer
+ * https://github.com/microsoft/devhome/issues/604
  */
 
 [TestClass]
@@ -53,12 +54,4 @@ public class TestClass
         Microsoft.Internal.Windows.DevHome.Helpers.Helpers helpers = new ();
         Assert.AreEqual("This is a test", helpers.Test());
     }
-
-/*
-    [UITestMethod]
-    public void UITestMethod()
-    {
-        Assert.AreEqual(0, new Grid().ActualWidth);
-    }
-*/
 }

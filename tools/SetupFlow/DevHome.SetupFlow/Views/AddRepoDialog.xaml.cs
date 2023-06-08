@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration.Provider;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
+using Windows.Security.Authentication.Identity.Provider;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.Views;
@@ -24,6 +27,8 @@ internal partial class AddRepoDialog
 {
     private readonly string _defaultClonePath;
 
+    private readonly List<CloningInformation> _previouslySelectedRepos = new ();
+
     /// <summary>
     /// Gets or sets the view model to handle selecting and de-selecting repositories.
     /// </summary>
@@ -33,7 +38,7 @@ internal partial class AddRepoDialog
     }
 
     /// <summary>
-    /// Gets or sets the view model to handle added a dev drive.
+    /// Gets or sets the view model to handle adding a dev drive.
     /// </summary>
     public EditDevDriveViewModel EditDevDriveViewModel
     {
@@ -56,6 +61,7 @@ internal partial class AddRepoDialog
     public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
     {
         this.InitializeComponent();
+        _previouslySelectedRepos = previouslySelectedRepos;
         AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
@@ -78,7 +84,7 @@ internal partial class AddRepoDialog
     }
 
     /// <summary>
-    /// Gets all plugins that have a provider type of repository and devid.
+    /// Gets all plugins that have a provider type of repository and developerId.
     /// </summary>
     public async Task GetPluginsAsync()
     {
@@ -163,7 +169,7 @@ internal partial class AddRepoDialog
     }
 
     /// <summary>
-    /// Validate the user put in an absolute path when they are done typing.
+    /// Validate the user put in a rooted, non-null path.
     /// </summary>
     private void CloneLocation_TextChanged(object sender, TextChangedEventArgs e)
     {
@@ -186,25 +192,60 @@ internal partial class AddRepoDialog
 
     /// <summary>
     /// Removes all shows repositories from the list view and replaces them with a new set of repositories from a
-    /// diffrent account.
+    /// different account.
     /// </summary>
     /// <remarks>
     /// Fired when a user changes their account on a provider.
     /// </remarks>
-    private void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // This gets fired when events are removed from the account combo box.
-        // When the provider combox is changed all accounts are removed from the account combo box
+        // When the provider combo box is changed all accounts are removed from the account combo box
         // and new accounts are added. This method fires twice.
         // Once to remove all accounts and once to add all logged in accounts.
         // GetRepositories sets the repositories list view.
         if (e.AddedItems.Count > 0)
         {
-            // Specific provider has started.
             var loginId = (string)AccountsComboBox.SelectedValue;
             var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-            AddRepoViewModel.GetRepositories(providerName, loginId);
+            await AddRepoViewModel.GetRepositoriesAsync(providerName, loginId);
+            SelectRepositories(AddRepoViewModel.SetRepositories(providerName, loginId));
         }
+    }
+
+    /// <summary>
+    /// If any items in reposToSelect exist in the UI, select them.
+    /// An side-effect of SelectRange is SelectionChanged is fired for each item SelectRange is called on.
+    /// IsCallingSelectRange is used to prevent modifying EverythingToClone when repos are being re-selected after filtering.
+    /// </summary>
+    /// <param name="reposToSelect">The repos to select in the UI.</param>
+    private void SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
+    {
+        AddRepoViewModel.IsCallingSelectRange = true;
+        var onlyRepoNames = AddRepoViewModel.Repositories.Select(x => x.RepoName).ToList();
+        foreach (var repoToSelect in reposToSelect)
+        {
+            var index = onlyRepoNames.IndexOf(repoToSelect.RepoName);
+            if (index != -1)
+            {
+                // SelectRange does not accept an index.  Call it multiple times on each index
+                // with a range of 1.
+                RepositoriesListView.SelectRange(new ItemIndexRange(index, 1));
+            }
+        }
+
+        AddRepoViewModel.IsCallingSelectRange = false;
+    }
+
+    /// <summary>
+    /// If any items in reposToSelect exist in the UI, select them.
+    /// An side-effect of SelectRange is SelectionChanged is fired for each item SelectRange is called on.
+    /// IsCallingSelectRange is used to prevent modifying EverythingToClone when repos are being re-selected after filtering.
+    /// </summary>
+    /// <param name="reposToSelect">The repos to select in the UI.</param>
+    private void SelectRepositories(IEnumerable<CloningInformation> reposToSelect)
+    {
+        SelectRepositories(reposToSelect.Select(x => new RepoViewListItem(x.RepositoryToClone)));
     }
 
     /// <summary>
@@ -293,9 +334,10 @@ internal partial class AddRepoDialog
     /// <summary>
     /// User wants to customize the default dev drive.
     /// </summary>
-    private void CustomizeDevDriveHyperlinkButton_Click(object sender, RoutedEventArgs e)
+    private async void CustomizeDevDriveHyperlinkButton_ClickAsync(object sender, RoutedEventArgs e)
     {
-        EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        await EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        ToggleCloneButton();
     }
 
     /// <summary>
@@ -325,13 +367,7 @@ internal partial class AddRepoDialog
         }
     }
 
-    /// <summary>
-    /// User navigated away from the URL text box.  Validate it.
-    /// </summary>
-    /// <remarks>
-    /// LostFocus event fires before data binding.  Set URL here.
-    /// </remarks>
-    private void RepoUrlTextBox_LostFocus(object sender, RoutedEventArgs e)
+    private void RepoUrlTextBox_TextChanged(object sender, RoutedEventArgs e)
     {
         // just in case something other than a text box calls this.
         if (sender is TextBox)
@@ -351,6 +387,22 @@ internal partial class AddRepoDialog
         else
         {
             ChangeToUrlPage();
+        }
+    }
+
+    /// <summary>
+    /// Putting the event in the view so SelectRange can be called.
+    /// SelectRange needs a reference to the ListView.
+    /// </summary>
+    /// <param name="sender">Who fired the event</param>
+    /// <param name="e">Any args</param>
+    private void FilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        // Just in case something other than a text box calls this.
+        if (sender is TextBox)
+        {
+            AddRepoViewModel.FilterRepositories(FilterTextBox.Text);
+            SelectRepositories(AddRepoViewModel.EverythingToClone);
         }
     }
 }

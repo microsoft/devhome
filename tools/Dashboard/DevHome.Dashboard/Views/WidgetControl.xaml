@@ -34,11 +34,12 @@
         <!-- Widget header: icon, title, menu -->
         <Grid Grid.Row="0" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}">
             <StackPanel Orientation="Horizontal" Margin="15,10,15,5">
-                <Rectangle Width="16" Height="16" Margin="0,0,8,0"
+                <Rectangle Width="16" Height="16" Margin="0,0,8,0" x:Name="WidgetHeaderIcon"
                            Fill="{x:Bind views:DashboardView.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme),Mode=OneWay}"/>
                 <TextBlock Text="{x:Bind WidgetSource.WidgetDisplayTitle, Mode=OneWay}" VerticalAlignment="Center" FontSize="{ThemeResource CaptionTextBlockFontSize}" />
             </StackPanel>
-            <Button Tag="{x:Bind}" Content="&#xE712;" 
+            <Button Tag="{x:Bind}" Content="&#xE712;"
+                    x:Uid="WidgetMoreOptionsButton"
                     FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{ThemeResource CaptionTextBlockFontSize}"
                     VerticalAlignment="Top" HorizontalAlignment="Right" Margin="15,10,15,5" BorderThickness="0" Padding="5"
                     Background="Transparent"
@@ -50,8 +51,12 @@
         </Grid>
 
         <!-- Widget content -->
-        <ScrollViewer x:Name="WidgetScrollViewer" Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}" Grid.Row="1" 
-                      VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled" />
+        <Grid Grid.Row="1" x:Name="ScollBarOffsetGridLeft" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}" Width="5"
+                      HorizontalAlignment="Left" />
+        <Grid Grid.Row="1" x:Name="ScollBarOffsetGridRight" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}" Width="5"
+                      HorizontalAlignment="Right" />
+        <ScrollViewer Grid.Row="1" x:Name="WidgetScrollViewer" Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}"
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled" Padding="5,0" />
 
     </Grid>
 </UserControl>

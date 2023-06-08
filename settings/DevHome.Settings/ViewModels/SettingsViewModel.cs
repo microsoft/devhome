@@ -11,7 +11,7 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.ViewModels;
 
-public partial class SettingViewModel : ObservableRecipient
+public partial class SettingViewModel : ObservableObject
 {
     private readonly Setting _setting;
 
@@ -40,7 +40,7 @@ public partial class SettingViewModel : ObservableRecipient
     }
 }
 
-public partial class SettingsViewModel : ObservableRecipient
+public partial class SettingsViewModel : ObservableObject
 {
     [ObservableProperty]
     private ObservableCollection<SettingViewModel> _settingsList = new ();

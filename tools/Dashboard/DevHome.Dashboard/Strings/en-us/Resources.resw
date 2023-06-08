@@ -59,12 +59,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddWidget.Content" xml:space="preserve">
-    <value>+ Add Widget</value>
-    <comment>Label for "Add Widget" button"</comment>
-  </data>
-  <data name="AllWidgetsList.PaneTitle" xml:space="preserve">
-    <value>All widgets</value>
-    <comment>PaneTitle for the list of Widgets in the NavigationView</comment>
+    <value>+ Add widget</value>
+    <comment>Label for "Add widget" button"</comment>
   </data>
   <data name="DashboardBanner.Title" xml:space="preserve">
     <value>Monitor your GitHub Issues and Pull Requests</value>
@@ -82,9 +78,9 @@
     <value>Dashboard</value>
     <comment>Navigation pane content</comment>
   </data>
-  <data name="PinWidgetsTitle.Text" xml:space="preserve">
-    <value>Pin Widgets</value>
-    <comment>Title for "Pin Widgets" dialog</comment>
+  <data name="AddWidgetsTitle.Text" xml:space="preserve">
+    <value>Add widgets</value>
+    <comment>Title for "Add widgets" dialog</comment>
   </data>
   <data name="PinButtonText.Text" xml:space="preserve">
     <value>Pin</value>
@@ -97,6 +93,10 @@
   <data name="RemoveWidgetMenuText" xml:space="preserve">
     <value>Remove widget</value>
     <comment>Menu item that will remove the Widget from being displayed on the dashboard if it is selected</comment>
+  </data>
+  <data name="WidgetMoreOptionsButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>More options</value>
+    <comment>Name of the button that brings up the "More options" menu</comment>
   </data>
   <data name="LargeWidgetMenuText" xml:space="preserve">
     <value>Large</value>
@@ -118,13 +118,13 @@
     <value>Dashboard</value>
     <comment>Header label for the Dashboard page</comment>
   </data>
-  <data name="NoWidgetsPinned.Text" xml:space="preserve">
-    <value>Pin a widget here</value>
-    <comment>Shown when no widgets are pinned</comment>
+  <data name="NoWidgetsAdded.Text" xml:space="preserve">
+    <value>No widgets added yet</value>
+    <comment>Message shown when no widgets have been added to the Dashboard</comment>
   </data>
   <data name="AddFirstWidgetLink.Content" xml:space="preserve">
     <value>+ Add new widget</value>
-    <comment>The hyperlink to bring the user to the Add Widget dialog. Shows if the user hasn't pinned any widgets.</comment>
+    <comment>The hyperlink to bring the user to the Add Widget dialog. Shows if the user hasn't added any widgets.</comment>
   </data>
   <data name="WidgetErrorCardDisplayText" xml:space="preserve">
     <value>This widget could not be displayed</value>
@@ -139,7 +139,19 @@
     <comment>Second part of message shown when the user tries to create a widet but the widget provider is not installed.</comment>
   </data>
   <data name="WidgetErrorCardNoWidgetsText" xml:space="preserve">
-    <value>There are no widgets available to pin</value>
+    <value>There are no widgets available to add</value>
     <comment>Message shown when the user tries to create a widet but there are no installed widgets.</comment>
+  </data>
+  <data name="UpdateWebExpContent" xml:space="preserve">
+    <value>Please ensure you have the latest version of the Windows Web Experience Pack installed.</value>
+    <comment>Message asking the user to udpate an app from the store.</comment>
+  </data>
+  <data name="UpdateWebExpCancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Button text to dismiss dialog</comment>
+  </data>
+  <data name="UpdateWebExpUpdate" xml:space="preserve">
+    <value>Get in Store app</value>
+    <comment>Button text to go to store listing</comment>
   </data>
 </root>

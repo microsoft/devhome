@@ -29,9 +29,9 @@ public class DevDriveFormatter
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Creating ManagementObjectSearcher to search for volume whose Drive letter is {curDriveLetter}:");
         try
         {
-            // Since at the time of this call we don't know the unique object ID of our new volume
-            // we need to iterate through the volumes that exist to find the one that matches our
-            // drive letter. Note: the object ID here is different than what we find in AssignDriveLetterToPartition.
+            // Since at the time of this call the unique object ID of the new volume in unknown,
+            // iterate through the volumes that exist to find the one that matches our
+            // drive letter. Note: the object ID here is different than what is in AssignDriveLetterToPartition.
             var searcher =
                 new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage", "SELECT * FROM MSFT_Volume");
             long fourKb = 4096;
@@ -75,16 +75,16 @@ public class DevDriveFormatter
                 Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"ManagementObjectSearcher found ObjectId: {objectId} but its Driveletter: {notCorrectDriveLetter}: is not correct, continuing search...");
             }
 
-            // If we got here that means the returnValue was not successful. We give this a specific error but this will need need
+            // ReturnValue was not successful. Give this a specific error but this will need
             // to be changed. WMI can return different status and error codes based on the function. The actual returnValue will need
-            // to be converted. https://learn.microsoft.com/en-us/windows/win32/wmisdk/wmi-return-codes
+            // to be converted. https://learn.microsoft.com/windows/win32/wmisdk/wmi-return-codes
             var defaultError = (int)PInvoke.HRESULT_FROM_WIN32(WIN32_ERROR.ERROR_FUNCTION_FAILED);
             Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Attempt to format drive as a Dev Drive failed default error: 0x{defaultError:X}");
             return defaultError;
         }
         catch (ManagementException e)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"A management exception occurred while formating Dev Drive Error: 0x{e.HResult:X}, error msg: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"A management exception occurred while formating Dev Drive Error.", e);
             return e.HResult;
         }
     }

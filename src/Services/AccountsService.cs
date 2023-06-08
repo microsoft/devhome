@@ -1,17 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Configuration.Provider;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Telemetry;
-using DevHome.TelemetryEvents;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace DevHome.Services;
 

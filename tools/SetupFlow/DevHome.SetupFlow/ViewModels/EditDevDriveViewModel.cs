@@ -3,10 +3,10 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Utilities;
 using Microsoft.UI.Xaml;
 
@@ -59,7 +59,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     private bool _canShowDevDriveUI;
 
     /// <summary>
-    /// Gets a value indicating whether the the drive label, location, size or drive letter has changed when the Dev Drive window closes.
+    /// Gets a value indicating whether the drive label, location, size or drive letter has changed when the Dev Drive window closes.
     /// </summary>
     public bool DevDriveDetailsChanged
     {
@@ -133,7 +133,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Get the display name for the Dev Drive. By default no arguments will return the Rooth path of the Dev Drive
+    /// Get the display name for the Dev Drive. By default no arguments will return the root path of the Dev Drive
     /// this is in the form of "DriveLetter:\" e.g D:\
     /// </summary>
     public string GetDriveDisplayName(DevDriveDisplayNameKind useDriveLetterOnly = DevDriveDisplayNameKind.DriveRootKind)
@@ -145,7 +145,7 @@ public partial class EditDevDriveViewModel : ObservableObject
 
         if (useDriveLetterOnly == DevDriveDisplayNameKind.DriveRootKind)
         {
-            // Uses the actual place where we'll be cloning to
+            // Uses the actual place to clone to
             return $@"{DevDrive.DriveLetter}:\";
         }
 
@@ -164,7 +164,7 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// Pops the dev drive customization window.
     /// Subscribe to an event that fires when the window is closed.
     /// </summary>
-    public async void PopDevDriveCustomizationAsync()
+    public async Task PopDevDriveCustomizationAsync()
     {
         if (IsWindowOpen)
         {
@@ -174,8 +174,21 @@ public partial class EditDevDriveViewModel : ObservableObject
         IsWindowOpen = await _devDriveManager.LaunchDevDriveWindow(DevDrive);
         if (IsWindowOpen)
         {
-            _devDriveManager.ViewModelWindowClosed += DevDriveCustomizationWindowClosed;
             IsDevDriveCheckboxEnabled = false;
+
+            // Convert the wait for closed event into an async task
+            TaskCompletionSource<IDevDrive> devDriveWindowTask = new ();
+            EventHandler<IDevDrive> eventHandler = (_, devDrive) => devDriveWindowTask.SetResult(devDrive);
+            _devDriveManager.ViewModelWindowClosed += eventHandler;
+            var devDriveFromWindow = await devDriveWindowTask.Task;
+            _devDriveManager.ViewModelWindowClosed -= eventHandler;
+
+            IsWindowOpen = false;
+            IsDevDriveCheckboxEnabled = true;
+            DevDriveDetailsChanged = DevDriveChanged(devDriveFromWindow);
+            DevDrive = devDriveFromWindow;
+            DevDriveValidationError = (DevDrive.State == DevDriveState.New) ? false : true;
+            ClonePathUpdated();
         }
     }
 
@@ -209,18 +222,6 @@ public partial class EditDevDriveViewModel : ObservableObject
         }
 
         _canShowDevDriveUI = true;
-    }
-
-    /// <summary>
-    /// Clean up when the customization window is closed.
-    /// </summary>
-    private void DevDriveCustomizationWindowClosed(object sender, IDevDrive devDrive)
-    {
-        IsWindowOpen = false;
-        IsDevDriveCheckboxEnabled = true;
-        DevDriveDetailsChanged = DevDriveChanged(devDrive);
-        DevDrive = devDrive;
-        ClonePathUpdated();
     }
 
     public bool IsDevDriveValid()

@@ -99,10 +99,13 @@ public partial class WidgetViewModel : ObservableObject
         WidgetDefinition = widgetDefintion;
     }
 
+    public void Render()
+    {
+        RenderWidgetFrameworkElement();
+    }
+
     private async void RenderWidgetFrameworkElement()
     {
-        Log.Logger()?.ReportDebug("WidgetViewModel", "RenderWidgetFrameworkElement");
-
         var cardTemplate = await Widget.GetCardTemplateAsync();
         var cardData = await Widget.GetCardDataAsync();
 
@@ -110,6 +113,7 @@ public partial class WidgetViewModel : ObservableObject
         {
             // TODO CreateWidgetAsync doesn't always seem to be "done", and returns blank templates and data.
             // Put in small wait to avoid this.
+            // https://github.com/microsoft/devhome/issues/643
             Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardTemplateAsync returned empty, try wait");
             await System.Threading.Tasks.Task.Delay(100);
             cardTemplate = await Widget.GetCardTemplateAsync();
@@ -154,21 +158,33 @@ public partial class WidgetViewModel : ObservableObject
             return;
         }
 
+        if (_renderedCard != null)
+        {
+            _renderedCard.Action -= HandleAdaptiveAction;
+        }
+
+        if (card == null || card.AdaptiveCard == null)
+        {
+            Log.Logger()?.ReportError("WidgetViewModel", "Error in AdaptiveCardParseResult");
+            ShowErrorCard("WidgetErrorCardDisplayText");
+            return;
+        }
+
         // Render card on the UI thread.
         _dispatcher.TryEnqueue(() =>
         {
             try
             {
-                if (_renderedCard != null)
-                {
-                    _renderedCard.Action -= HandleAdaptiveAction;
-                }
-
                 _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
                 if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                 {
                     _renderedCard.Action += HandleAdaptiveAction;
                     WidgetFrameworkElement = _renderedCard.FrameworkElement;
+                }
+                else
+                {
+                    Log.Logger()?.ReportError("WidgetViewModel", "Error in RenderedAdaptiveCard");
+                    WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
                 }
             }
             catch (Exception ex)
@@ -273,11 +289,12 @@ public partial class WidgetViewModel : ObservableObject
         }
 
         // TODO: Handle other ActionTypes
+        // https://github.com/microsoft/devhome/issues/644
     }
 
     private void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
     {
-        Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
+        Log.Logger()?.ReportDebug("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
         RenderWidgetFrameworkElement();
     }
 }

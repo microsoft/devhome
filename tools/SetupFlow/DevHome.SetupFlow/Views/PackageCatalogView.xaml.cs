@@ -1,9 +1,12 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -30,11 +33,6 @@ public sealed partial class PackageCatalogView : UserControl
     public Visibility PagerVisibility => PackageGroups.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
 
     /// <summary>
-    /// Store the set of flip view panels
-    /// </summary>
-    private readonly HashSet<ItemsWrapGrid> _panels = new ();
-
-    /// <summary>
     /// Gets or sets the package catalog to display
     /// </summary>
     public PackageCatalogViewModel Catalog
@@ -45,7 +43,7 @@ public sealed partial class PackageCatalogView : UserControl
 
     /// <summary>
     /// Gets or sets the max size of each package group. If the total number of
-    /// packages is not divisible by the group size, then the lsat group will
+    /// packages is not divisible by the group size, then the last group will
     /// have less packages.
     /// </summary>
     public int GroupSize
@@ -59,37 +57,38 @@ public sealed partial class PackageCatalogView : UserControl
         this.InitializeComponent();
     }
 
-    private void OnSizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        UpdateFlipViewSize();
-    }
-
-    private void OnItemsWrapGridLoaded(object sender, RoutedEventArgs e)
-    {
-        var panel = (ItemsWrapGrid)sender;
-        _panels.Add(panel);
-        UpdateFlipViewSize();
-    }
-
-    private void OnItemsWrapGridUnloaded(object sender, RoutedEventArgs e)
-    {
-        var panel = (ItemsWrapGrid)sender;
-        _panels.Remove(panel);
-        UpdateFlipViewSize();
-    }
-
     /// <summary>
-    /// Update the flip view size to match the max content height at all time.
-    /// This method covers the following scenarios:
-    /// - Maintain a consistent (max) height throughout the flip view rotation
-    /// - When the window width changes and the grid content wraps to a new
-    ///   row, update the flip view height accordingly to fit content
+    /// Re-compute the FlipView height.
     /// </summary>
-    private void UpdateFlipViewSize()
+    private void UpdateFlipViewHeight()
     {
-        if (_panels.Count > 0)
+        try
         {
-            PackagesFlipView.Height = _panels.Max(p => p.ActualHeight);
+            // Get index of the current FlipViewItem
+            var selectedIndex = PackagesFlipView.SelectedIndex;
+            if (selectedIndex >= 0)
+            {
+                // Get the current FlipViewItem
+                var flipViewItem = PackagesFlipView.ContainerFromIndex(selectedIndex) as FlipViewItem;
+                if (flipViewItem != null)
+                {
+                    var grid = flipViewItem.ContentTemplateRoot as Grid;
+                    if (grid != null)
+                    {
+                        // Get grid content child
+                        var itemsRepeater = grid.Children.FirstOrDefault() as ItemsRepeater;
+                        if (itemsRepeater != null)
+                        {
+                            // Set the FlipView height to the items repeater height
+                            PackagesFlipView.Height = itemsRepeater.ActualHeight;
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to update {nameof(FlipView)} height", e);
         }
     }
 
@@ -112,7 +111,28 @@ public sealed partial class PackageCatalogView : UserControl
     private void UpdateAll()
     {
         UpdatePackageGroups();
-        UpdateFlipViewSize();
+        UpdateFlipViewHeight();
+    }
+
+    private void SettingsCard_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        // Manually update the height of the FlipView since by default the
+        // control does not auto-resize to fit its current selected panel
+        // content. The FlipView content (grid of package cards) is by default
+        // responsive/adaptive to the screen size, hence the expected behavior
+        // is for the FlipView control to automatically adjust its height as
+        // the width of the panel changes. To avoid possible layout cycle
+        // exceptions, we use the SizeChanged event on an adjacent node and
+        // register a handler to perform the FlipView height update.
+        UpdateFlipViewHeight();
+    }
+
+    private void PackagesFlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        // Update the FlipView height when navigating to the next/previous
+        // panel of package cards (e.g. last panel might have less items, hence
+        // update the FlipView height accordingly)
+        UpdateFlipViewHeight();
     }
 
     public static readonly DependencyProperty CatalogProperty = DependencyProperty.Register(nameof(Catalog), typeof(PackageCatalogViewModel), typeof(PackageCatalogView), new PropertyMetadata(null, (c, _) => ((PackageCatalogView)c).UpdateAll()));

@@ -8,9 +8,11 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -19,13 +21,18 @@ public partial class SetupFlowViewModel : ObservableObject
 {
     private readonly IHost _host;
     private readonly MainPageViewModel _mainPageViewModel;
+    private readonly PackageProvider _packageProvider;
 
     public SetupFlowOrchestrator Orchestrator { get; }
 
-    public SetupFlowViewModel(IHost host, SetupFlowOrchestrator orchestrator)
+    public SetupFlowViewModel(
+        IHost host,
+        SetupFlowOrchestrator orchestrator,
+        PackageProvider packageProvider)
     {
         _host = host;
         Orchestrator = orchestrator;
+        _packageProvider = packageProvider;
 
         // Set initial view
         _mainPageViewModel = _host.GetService<MainPageViewModel>();
@@ -39,7 +46,7 @@ public partial class SetupFlowViewModel : ObservableObject
             var flowTitle = args.Item1;
             var taskGroups = args.Item2;
 
-            // Don't reset the title when we get an empty string; we may have set it earlier to what we want
+            // Don't reset the title when on an empty string; may have set it earlier to what we want
             if (!string.IsNullOrEmpty(flowTitle))
             {
                 Orchestrator.FlowTitle = flowTitle;
@@ -82,11 +89,22 @@ public partial class SetupFlowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void Cancel()
+    private void Cancel()
     {
-        Log.Logger?.ReportInfo(Log.Component.Orchestrator, "Cancelling flow");
+        var currentPage = Orchestrator.CurrentPageViewModel.GetType().Name;
+        TerminateCurrentFlow($"CancelButton_{currentPage}");
+    }
+
+    public void TerminateCurrentFlow(string callerNameForTelemetry)
+    {
+        // Report this before touching the pages so the current Activity ID can be obtained.
+        Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Terminating Setup flow by caller [{callerNameForTelemetry}]. ActivityId={Orchestrator.ActivityId}");
+        TelemetryFactory.Get<ITelemetry>().Log("SetupFlow_Termination", LogLevel.Measure, new EndFlowEvent(callerNameForTelemetry), relatedActivityId: Orchestrator.ActivityId);
+
         Orchestrator.ReleaseRemoteFactory();
         _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
+        _packageProvider.Clear();
+
         Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };
     }
 }

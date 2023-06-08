@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>DevHome.Common</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>
@@ -29,8 +29,8 @@
     <PackageReference Include="WinUIEx" Version="1.8.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Animations" Version="7.1.2" />
-    <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="0.4.0" />
-    <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="0.4.0" />
+    <PackageReference Include="AdaptiveCards.ObjectModel.WinUI3" Version="1.0.0" />
+    <PackageReference Include="AdaptiveCards.Rendering.WinUI3" Version="1.0.1" />
     <PackageReference Include="AdaptiveCards.Templating" Version="1.4.0" />
   </ItemGroup>
 

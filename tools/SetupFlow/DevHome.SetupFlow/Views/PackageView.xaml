@@ -11,98 +11,128 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <!-- Show `Undo` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
-            <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE7A7;" FalseValue="&#xE109;" />
-            <converters:BoolToObjectConverter x:Key="ImageOpacityConverter" TrueValue="0.4" FalseValue="1" />
-            <converters:BoolToObjectConverter x:Key="PrimaryTextEnableDisableConverter" TrueValue="{ThemeResource TextFillColorDisabledBrush}" FalseValue="{ThemeResource TextFillColorPrimaryBrush}" />
-            <converters:BoolToObjectConverter x:Key="SecondaryTextEnableDisableConverter" TrueValue="{ThemeResource TextFillColorDisabledBrush}" FalseValue="{ThemeResource TextFillColorSecondaryBrush}" />
+            <!-- Show `RevToggleKey` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
+            <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE845;" FalseValue="&#xE710;" />
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
+            <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
+
+            <!--  Show "Learn more" or "Installed"-->
+            <converters:BoolToObjectConverter x:Key="LearnMoreInstalledConverter">
+                <converters:BoolToObjectConverter.FalseValue>
+                    <HyperlinkButton Padding="0" Command="{Binding LearnMoreCommand, Mode=OneWay}" Style="{ThemeResource TextBlockButtonStyle}">
+                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
+                    </HyperlinkButton>
+                </converters:BoolToObjectConverter.FalseValue>
+                <converters:BoolToObjectConverter.TrueValue>
+                    <TextBlock Foreground="{ThemeResource TextFillColorDisabled}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Installed"/>
+                </converters:BoolToObjectConverter.TrueValue>
+            </converters:BoolToObjectConverter>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <!-- Package card -->
-    <Grid Style="{ThemeResource CardGridSecondaryStyle}" Padding="12" RowSpacing="12">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <ToolTipService.ToolTip>
-            <StackPanel>
-                <StackPanel.Resources>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
-                    </Style>
-                </StackPanel.Resources>
-                <TextBlock Text="{x:Bind Package.TooltipName, Mode=OneWay}"/>
-                <TextBlock Text="{x:Bind Package.TooltipVersion, Mode=OneWay}"/>
-                <TextBlock Text="{x:Bind Package.TooltipSource, Mode=OneWay}"/>
-                <TextBlock Text="{x:Bind Package.TooltipPublisher, Mode=OneWay}"/>
-            </StackPanel>
-        </ToolTipService.ToolTip>
+    <ContentControl>
+        <ContentControl.Template>
+            <ControlTemplate>
+                <Grid Style="{ThemeResource CardGridSecondaryStyle}" Padding="12" RowSpacing="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-        <!-- Package card header layout -->
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState>
+                                <VisualState.StateTriggers>
+                                    <StateTrigger IsActive="{Binding IsInstalled}" />
+                                    <StateTrigger IsActive="{Binding IsSelected}" />
+                                </VisualState.StateTriggers>
+                                <VisualState.Setters>
+                                    <Setter Target="Image.Opacity" Value="0.4"/>
+                                    <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
+                                    <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
 
-            <!-- Package image -->
-            <ImageIcon
-                Width="24"
-                VerticalAlignment="Center"
-                Opacity="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource ImageOpacityConverter}}"
-                Source="{x:Bind Package.Icon,Mode=OneWay}"/>
+                    <ToolTipService.ToolTip>
+                        <StackPanel>
+                            <StackPanel.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
+                                </Style>
+                            </StackPanel.Resources>
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorPrimary}"
+                                FontWeight="Bold"
+                                Text="{Binding TooltipIsInstalled}"
+                                Visibility="{Binding TooltipIsInstalled, Converter={StaticResource StringVisibilityConverter}}"/>
+                            <TextBlock Text="{Binding TooltipName}"/>
+                            <TextBlock Text="{Binding TooltipVersion}"/>
+                            <TextBlock Text="{Binding TooltipSource}"/>
+                            <TextBlock Text="{Binding TooltipPublisher}"/>
+                        </StackPanel>
+                    </ToolTipService.ToolTip>
 
-            <!-- Select button -->
-            <Button
-                Grid.Column="1"
-                Background="Transparent"
-                BorderThickness="0"
-                Command="{x:Bind Package.ToggleSelectionCommand,Mode=OneWay}"
-                HorizontalAlignment="Right"
-                Padding="5">
-                <FontIcon
-                    Glyph="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource SelectButtonGlyphConverter}}"
-                    FontSize="{ThemeResource CaptionTextBlockFontSize}"
-                    FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
-            </Button>
-        </Grid>
+                    <!-- Package card header layout -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-        <!-- Package card body layout -->
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-            
-            <!-- Package title -->
-            <TextBlock
-                MaxLines="2"
-                TextTrimming="CharacterEllipsis"
-                Foreground="{x:Bind Package.IsSelected, Mode=OneWay, Converter={StaticResource PrimaryTextEnableDisableConverter}}"
-                Style="{ThemeResource BodyTextBlockStyle}"
-                Text="{x:Bind Package.PackageTitle,Mode=OneWay}"/>
+                        <!-- Package image -->
+                        <ImageIcon Name="Image" Width="24" VerticalAlignment="Center" Source="{Binding Icon}"/>
 
-            <!-- Package Version -->
-            <TextBlock
-                Grid.Row="1"
-                MaxLines="1"
-                TextTrimming="CharacterEllipsis"
-                Foreground="{x:Bind Package.IsSelected,Mode=OneWay, Converter={StaticResource SecondaryTextEnableDisableConverter}}"
-                Style="{ThemeResource CaptionTextBlockStyle}"
-                Text="{x:Bind Package.PackageDescription,Mode=OneWay}"/>
+                        <!-- Select button -->
+                        <Button
+                            Grid.Column="1"
+                            IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Command="{Binding ToggleSelectionCommand}"
+                            HorizontalAlignment="Right"
+                            Padding="5">
+                            <FontIcon
+                                Glyph="{Binding IsSelected, Converter={StaticResource SelectButtonGlyphConverter}}"
+                                FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                                FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
+                        </Button>
+                    </Grid>
 
-            <!-- Package link -->
-            <HyperlinkButton
-                Grid.Row="2"
-                Padding="0"
-                IsEnabled="{x:Bind Package.IsSelected,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}"
-                Command="{x:Bind Package.LearnMoreCommand, Mode=OneWay}"
-                Style="{ThemeResource TextBlockButtonStyle}">
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
-            </HyperlinkButton>
-        </Grid>
-    </Grid>
+                    <!-- Package card body layout -->
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Package title -->
+                        <TextBlock
+                            Name="Title"
+                            MaxLines="2"
+                            TextTrimming="CharacterEllipsis"
+                            Style="{ThemeResource BodyTextBlockStyle}"
+                            Text="{Binding PackageTitle}"/>
+
+                        <!-- Package Version -->
+                        <TextBlock
+                            Name="Version"
+                            Grid.Row="1"
+                            MaxLines="1"
+                            TextTrimming="CharacterEllipsis"
+                            Style="{ThemeResource CaptionTextBlockStyle}"
+                            Text="{Binding PackageDescription}"/>
+
+                        <!-- Package link / "Installed" -->
+                        <ContentControl
+                            Grid.Row="2"
+                            Content="{Binding IsInstalled, Converter={StaticResource LearnMoreInstalledConverter}}" />
+                    </Grid>
+                </Grid>
+            </ControlTemplate>
+        </ContentControl.Template>
+    </ContentControl>
 </UserControl>

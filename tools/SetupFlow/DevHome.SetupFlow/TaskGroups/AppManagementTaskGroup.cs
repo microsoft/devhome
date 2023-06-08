@@ -23,11 +23,6 @@ public class AppManagementTaskGroup : ISetupTaskGroup
         _packageProvider = packageProvider;
         _appManagementViewModel = appManagementViewModel;
         _appManagementReviewViewModel = appManagementReviewViewModel;
-
-        // TODO Convert the package provider to a scoped instance, to avoid
-        // clearing it here. This requires refactoring and adding scopes when
-        // creating task groups in the main page.
-        _packageProvider.Clear();
     }
 
     public IEnumerable<ISetupTask> SetupTasks => _packageProvider.SelectedPackages.Select(sp => sp.InstallPackageTask);

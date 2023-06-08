@@ -49,6 +49,10 @@ $env:sdk_version = build\Scripts\CreateBuildInfo.ps1 -Version $SDKVersion -IsSdk
 
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 
+if ($IsAzurePipelineBuild) {
+  Copy-Item (Join-Path $env:Build_RootDirectory "build\nuget.config.internal") -Destination (Join-Path $env:Build_RootDirectory "nuget.config")
+}
+
 if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
   pluginsdk\Build.ps1 -SDKVersion $env:sdk_version -IsAzurePipelineBuild $IsAzurePipelineBuild
 }
@@ -94,10 +98,12 @@ Try {
     $xIdentity = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
     $xProperties = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Properties");
     $xDisplayName = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}DisplayName");
-
     $xApplications = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Applications");
     $xApplication = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Application");
     $uapVisualElements = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10}VisualElements");
+    $xExtensions = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Extensions");
+    $uapExtension = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10/3}Extension");
+    $uapAppExtension = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/uap/windows10/3}AppExtension");
 
     # Update the appxmanifest
     $appxmanifestPath = (Join-Path $env:Build_RootDirectory "src\Package.appxmanifest")
@@ -111,6 +117,15 @@ Try {
     }
     if (-not ([string]::IsNullOrEmpty($newAppDisplayNameResource))) {
       $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($uapVisualElements).Attribute("DisplayName").Value = $newAppDisplayNameResource
+      $extensions = $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($xExtensions).Elements($uapExtension)
+      foreach ($extension in $extensions) {
+        if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
+          $appExtension = $extension.Element($uapAppExtension)
+          if ($appExtension.Attribute("Name").Value -eq "com.microsoft.devhome") {
+            $appExtension.Attribute("DisplayName").Value = $newAppDisplayNameResource
+          }
+        }
+      }
     }
     $appxmanifest.Save($appxmanifestPath)
 
@@ -143,6 +158,15 @@ Try {
     $appxmanifest.Root.Element($xIdentity).Attribute("Name").Value = "Microsoft.Windows.DevHome.Dev"
     $appxmanifest.Root.Element($xProperties).Element($xDisplayName).Value = "Dev Home (Dev)"
     $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($uapVisualElements).Attribute("DisplayName").Value = "ms-resource:AppDisplayNameDev"
+    $extensions = $appxmanifest.Root.Element($xApplications).Element($xApplication).Element($xExtensions).Elements($uapExtension)
+    foreach ($extension in $extensions) {
+      if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
+        $appExtension = $extension.Element($uapAppExtension)
+        if ($appExtension.Attribute("Name").Value -eq "com.microsoft.devhome") {
+          $appExtension.Attribute("DisplayName").Value = "ms-resource:AppDisplayNameDev"
+        }
+      }
+    }
     $appxmanifest.Save($appxmanifestPath)
   }
 

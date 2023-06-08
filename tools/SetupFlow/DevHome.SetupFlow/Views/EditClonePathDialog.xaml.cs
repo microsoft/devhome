@@ -2,15 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 
 namespace DevHome.SetupFlow.Views;
 
@@ -46,9 +49,17 @@ public sealed partial class EditClonePathDialog
     }
 
     /// <summary>
-    /// Gets a value indicating whether the Dev Drive checkmark was previously checked or unchecked.
+    /// Gets a value indicating whether the Dev Drive checkbox was previously checked or unchecked.
     /// </summary>
     public bool PrevCheckBoxSelection
+    {
+        get; private set;
+    }
+
+    /// <summary>
+    /// Gets a value indicating the set of drive letters currently in use by a Dev Drives on the system.
+    /// </summary>
+    public HashSet<char> DriveLettersInUseByDevDrivesOnSystem
     {
         get; private set;
     }
@@ -75,6 +86,8 @@ public sealed partial class EditClonePathDialog
         EditClonePathViewModel.IsPrimaryButtonEnabled = FolderPickerViewModel.ValidateCloneLocation();
         _stringResource = Application.Current.GetService<ISetupFlowStringResource>();
         PrevCheckBoxSelection = DevDriveCheckBox.IsChecked.GetValueOrDefault(false);
+        DriveLettersInUseByDevDrivesOnSystem = devDriveManager.DriveLettersInUseByDevDrivesCurrentlyOnSystem;
+        ShowCheckboxIfPathNotAnExistingDevDrive();
         UpdateDialogState();
         ChangePrimaryButtonStyleIfEnabled();
     }
@@ -121,7 +134,7 @@ public sealed partial class EditClonePathDialog
     /// </summary>
     private void CustomizeDevDriveHyperlinkButton_Click(object sender, RoutedEventArgs e)
     {
-        EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        _ = EditDevDriveViewModel.PopDevDriveCustomizationAsync();
     }
 
     /// <summary>
@@ -147,6 +160,7 @@ public sealed partial class EditClonePathDialog
             validationResult &= EditDevDriveViewModel.IsDevDriveValid();
         }
 
+        ShowCheckboxIfPathNotAnExistingDevDrive();
         EditClonePathViewModel.IsPrimaryButtonEnabled = validationResult;
 
         ChangePrimaryButtonStyleIfEnabled();
@@ -167,9 +181,9 @@ public sealed partial class EditClonePathDialog
     }
 
     /// <summary>
-    /// Used so we don't close the dialog when we're currently showing the user the warning message, and the user clicks the primary button.
+    /// Used so the dialog does not close when a warning message is shown to the user and the user clicks the primary button.
     /// <remarks>
-    /// Cancelling the button click args keeps the dialog alive without closing it. When the primary button is clicked we remove the Dev Drive info
+    /// Cancelling the button click args keeps the dialog alive without closing it. When the primary button is clicked remove the Dev Drive info
     /// from the dialog and show the default dialog content with the textbox and browse button.
     /// </remarks>
     /// </summary>
@@ -189,7 +203,7 @@ public sealed partial class EditClonePathDialog
     }
 
     /// <summary>
-    /// Used so we don't close the dialog when we're showing the user the warning message, and the user clicks cancel.
+    /// Used so the dialog does not close when a warning message is shown to the user and the user clicks cancel.
     /// <remarks>
     /// Cancelling the button click args keeps the dialog alive without closing it. When cancelled we repopulate the Dev drive
     /// info back into the dialog, and recheck the checkmark.
@@ -267,5 +281,33 @@ public sealed partial class EditClonePathDialog
         FolderPickerViewModel.CloneLocationAlias = string.Empty;
         FolderPickerViewModel.CloneLocation = string.Empty;
         FolderPickerViewModel.EnableBrowseButton();
+    }
+
+    /// <summary>
+    /// Shows or hides the checkbox based on whether the path entered in the textbox is to an existing Dev Drive or not. If the path is an
+    /// existing Dev Drive we don't show the checkbox. If it is not an existing Dev Drive we show the checkbox.
+    /// </summary>
+    public void ShowCheckboxIfPathNotAnExistingDevDrive()
+    {
+        if (!DevDriveUtil.IsDevDriveFeatureEnabled)
+        {
+            EditDevDriveViewModel.HideDevDriveUI();
+            return;
+        }
+
+        var cloneLocation = FolderPickerViewModel.CloneLocation.Trim();
+        if (cloneLocation.Length >= 3)
+        {
+            var letter = char.ToUpper(cloneLocation[0], CultureInfo.InvariantCulture);
+            var secondCharIsColon = cloneLocation[1] == ':';
+            var thirdCharIsSlash = cloneLocation[2] == '\\' || cloneLocation[2] == '/';
+            if (DriveLettersInUseByDevDrivesOnSystem.Contains(letter) && secondCharIsColon && thirdCharIsSlash)
+            {
+                EditDevDriveViewModel.HideDevDriveUI();
+                return;
+            }
+        }
+
+        EditDevDriveViewModel.ShowDevDriveInformation = Visibility.Visible;
     }
 }

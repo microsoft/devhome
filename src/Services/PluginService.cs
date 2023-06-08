@@ -202,7 +202,7 @@ public class PluginService : IPluginService
                 }
 
                 var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(pluginWrapper.Id + "-ExtensionDisabled");
+                var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(extension.Package.Id.FullName + "-ExtensionDisabled");
 
                 _installedPlugins.Add(pluginWrapper);
                 if (!isPluginDisabled)

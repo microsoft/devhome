@@ -54,9 +54,11 @@ public class ConfigurationFileHelper
     {
         try
         {
-            var modulesPath = Path.Combine(AppContext.BaseDirectory, "ExternalModules");
+            var modulesPath = Path.Combine(AppContext.BaseDirectory, @"runtimes\win\lib\net6.0\Modules");
+            var externalModulesPath = Path.Combine(AppContext.BaseDirectory, "ExternalModules");
             var properties = new ConfigurationProcessorFactoryProperties();
-            properties.AdditionalModulePaths = new List<string>() { modulesPath };
+            properties.Policy = ConfigurationProcessorPolicy.Unrestricted;
+            properties.AdditionalModulePaths = new List<string>() { modulesPath, externalModulesPath };
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Additional module paths: {string.Join(", ", properties.AdditionalModulePaths)}");
             var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
 
@@ -66,12 +68,18 @@ public class ConfigurationFileHelper
             _processor.Caller = nameof(DevHome);
 
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {_file.Path}");
+            var parentDir = await _file.GetParentAsync();
             var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
             _configSet = openResult.Set;
             if (_configSet == null)
             {
                 throw new OpenConfigurationSetException(openResult.ResultCode, openResult.Field);
             }
+
+            // Set input file path to the configuration set
+            _configSet.Name = _file.Name;
+            _configSet.Origin = parentDir.Path;
+            _configSet.Path = _file.Path;
         }
         catch
         {
