@@ -103,7 +103,7 @@ internal class GPUStats : IDisposable
             {
                 try
                 {
-                    var sum = counters?.Sum(x => x.NextValue());
+                    var sum = counters?.Sum(x => x.NextValue()) ?? 0;
                     gpu.Usage = sum.GetValueOrDefault(0) / 100;
                     ChartHelper.AddNextChartValue(sum.GetValueOrDefault(0), gpu.GpuChartValues);
                 }
