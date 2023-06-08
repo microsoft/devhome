@@ -75,7 +75,7 @@ jobs:
     - name: Find vstest.console.exe
       if: ${{ matrix.platform != 'arm64' }}
       run: |
-        $VSDevTestCmd = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere" -latest -prerelease -products * -find **\TestPlatform\vstest.console.exe
+        $VSDevTestCmd = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere" -latest -prerelease -products * -find Common7\IDE\Extensions\TestPlatform\vstest.console.exe
         if (!$VSDevTestCmd) { exit 1 }
         echo "Using VSDevTestCmd: ${VSDevTestCmd}"
         Add-Content $env:GITHUB_ENV "VSDevTestCmd=$VSDevTestCmd"
