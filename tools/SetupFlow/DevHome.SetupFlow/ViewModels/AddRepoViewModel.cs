@@ -339,7 +339,8 @@ public partial class AddRepoViewModel : ObservableObject
                 return false;
             }
 
-            var sshMatch = Regex.Match(Url, "^.*@.*:.*\\/.*[.].*");
+            var sshMatch = Regex.Match(Url, "^.*@.*:.*\\/.*");
+
             if (sshMatch.Success)
             {
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.SSHConnectionStringNotAllowed);
