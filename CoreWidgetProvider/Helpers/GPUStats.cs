@@ -38,7 +38,7 @@ internal class GPUStats : IDisposable
         using var session = CimSession.Create(null);
         var i = 0;
         stats.Clear();
-        
+
         foreach (CimInstance obj in session.QueryInstances("root/cimv2", "WQL", "select * from Win32_VideoController"))
         {
             var gpuName = (string)obj.CimInstanceProperties["name"].Value;
