@@ -29,11 +29,11 @@ internal class GPUStats : IDisposable
 
     public GPUStats()
     {
-        GetGPUs();
+        LoadGPUs();
         GetGPUPerfCounters();
     }
 
-    public void GetGPUs()
+    public void LoadGPUs()
     {
         stats.Clear();
 
@@ -103,9 +103,10 @@ internal class GPUStats : IDisposable
             {
                 try
                 {
+                    // NextValue() can throw an InvalidOperationException if the counter is no longer there.
                     var sum = counters?.Sum(x => x.NextValue()) ?? 0;
-                    gpu.Usage = sum.GetValueOrDefault(0) / 100;
-                    ChartHelper.AddNextChartValue(sum.GetValueOrDefault(0), gpu.GpuChartValues);
+                    gpu.Usage = sum / 100;
+                    ChartHelper.AddNextChartValue(sum, gpu.GpuChartValues);
                 }
                 catch (InvalidOperationException ex)
                 {
