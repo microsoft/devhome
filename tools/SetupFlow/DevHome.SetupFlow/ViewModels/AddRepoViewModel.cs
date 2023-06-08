@@ -19,6 +19,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -546,18 +547,33 @@ public partial class AddRepoViewModel : ObservableObject
     /// <summary>
     /// Gets all the repositories for the specified provider and account.
     /// </summary>
+    /// <remarks>
+    /// The side effect of this method is _repositoriesForAccount is populated with repositories.
+    /// </remarks>
     /// <param name="repositoryProvider">The provider.  This should match the display name of the plugin</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
-    public IEnumerable<RepoViewListItem> GetRepositories(string repositoryProvider, string loginId)
+    public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
     {
         _selectedAccount = loginId;
 
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
-        var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
+        await Task.Run(() =>
+        {
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
+            var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
 
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
-        _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
+            _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
+        });
+    }
 
+    /// <summary>
+    /// Updates the UI with the repositories to display for the specific user and provider.
+    /// </summary>
+    /// <param name="repositoryProvider">The name of the provider</param>
+    /// <param name="loginId">The login ID</param>
+    /// <returns>All previously selected repos excluding any added via URL.</returns>
+    public IEnumerable<RepoViewListItem> SetRepositories(string repositoryProvider, string loginId)
+    {
         Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
