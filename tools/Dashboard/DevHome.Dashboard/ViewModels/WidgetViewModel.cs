@@ -99,10 +99,13 @@ public partial class WidgetViewModel : ObservableObject
         WidgetDefinition = widgetDefintion;
     }
 
+    public void Render()
+    {
+        RenderWidgetFrameworkElement();
+    }
+
     private async void RenderWidgetFrameworkElement()
     {
-        Log.Logger()?.ReportDebug("WidgetViewModel", "RenderWidgetFrameworkElement");
-
         var cardTemplate = await Widget.GetCardTemplateAsync();
         var cardData = await Widget.GetCardDataAsync();
 
@@ -291,7 +294,7 @@ public partial class WidgetViewModel : ObservableObject
 
     private void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
     {
-        Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
+        Log.Logger()?.ReportDebug("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
         RenderWidgetFrameworkElement();
     }
 }
