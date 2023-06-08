@@ -7,7 +7,6 @@ using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
@@ -20,6 +19,7 @@ public sealed partial class WidgetControl : UserControl
     public WidgetControl()
     {
         this.InitializeComponent();
+        ActualThemeChanged += OnActualThemeChanged;
     }
 
     public WidgetViewModel WidgetSource
@@ -208,5 +208,10 @@ public sealed partial class WidgetControl : UserControl
                 widgetViewModel.IsInEditMode = true;
             }
         }
+    }
+
+    private void OnActualThemeChanged(FrameworkElement sender, object args)
+    {
+        WidgetHeaderIcon.Fill = DashboardView.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme);
     }
 }

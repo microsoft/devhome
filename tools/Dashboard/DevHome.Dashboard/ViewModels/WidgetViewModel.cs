@@ -99,6 +99,11 @@ public partial class WidgetViewModel : ObservableObject
         WidgetDefinition = widgetDefintion;
     }
 
+    public void Render()
+    {
+        RenderWidgetFrameworkElement();
+    }
+
     private async void RenderWidgetFrameworkElement()
     {
         Log.Logger()?.ReportDebug("WidgetViewModel", "RenderWidgetFrameworkElement");

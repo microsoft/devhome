@@ -75,7 +75,7 @@ public static class WindowExExtensions
         if (window.Content is FrameworkElement rootElement)
         {
             rootElement.RequestedTheme = theme;
-            TitleBarHelper.UpdateTitleBar(window, theme);
+            TitleBarHelper.UpdateTitleBar(window, rootElement.ActualTheme);
         }
     }
 
