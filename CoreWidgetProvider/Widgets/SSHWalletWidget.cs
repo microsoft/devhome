@@ -126,10 +126,7 @@ internal class SSHWalletWidget : CoreWidget
 
     private void HandleConnect(WidgetActionInvokedArgs args, bool matchingPattern = false)
     {
-        Log.Logger()?.ReportDebug(Name, ShortId, $"args: {args}");
-        Log.Logger()?.ReportDebug(Name, ShortId, $"args type: {args.Data.GetType()}");
         var data = args.Data;
-        Log.Logger()?.ReportDebug(Name, ShortId, $"HandleConnect data: {data}");
 
         if (matchingPattern)
         {
