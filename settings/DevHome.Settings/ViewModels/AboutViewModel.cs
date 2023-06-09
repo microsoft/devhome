@@ -8,15 +8,10 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.ViewModels;
 
-public partial class AboutViewModel : ObservableRecipient
+public partial class AboutViewModel : ObservableObject
 {
+    [ObservableProperty]
     private string _versionDescription;
-
-    public string VersionDescription
-    {
-        get => _versionDescription;
-        set => SetProperty(ref _versionDescription, value);
-    }
 
     public AboutViewModel()
     {

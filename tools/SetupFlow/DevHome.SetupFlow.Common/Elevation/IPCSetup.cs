@@ -285,7 +285,7 @@ public static class IPCSetup
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.IPCClient, $"Error occuring while setting up elevated process: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.IPCClient, $"Error occurring while setting up elevated process:", e);
 
             // Release the "mutex" if there is any error.
             // On success, the mutex will be released after work is done.
@@ -375,7 +375,7 @@ public static class IPCSetup
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.IPCServer, $"Error occurred during setup: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.IPCServer, $"Error occurred during setup.", e);
             mappedMemory.HResult = e.HResult;
         }
 

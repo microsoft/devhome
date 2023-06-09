@@ -15,7 +15,7 @@ public class Setting
 
     public string Path { get; }
 
-    public string ClassId { get; }
+    public string FullName { get; }
 
     public string Header { get; }
 
@@ -36,7 +36,7 @@ public class Setting
                 Task.Run(() =>
                 {
                     var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                    return localSettingsService.SaveSettingAsync(ClassId + "-ExtensionDisabled", !value);
+                    return localSettingsService.SaveSettingAsync(FullName + "-ExtensionDisabled", !value);
                 }).Wait();
 
                 _isExtensionEnabled = value;
@@ -55,7 +55,7 @@ public class Setting
                 Task.Run(() =>
                 {
                     var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                    return localSettingsService.SaveSettingAsync(ClassId + "-NotificationsDisabled", !value);
+                    return localSettingsService.SaveSettingAsync(FullName + "-NotificationsDisabled", !value);
                 }).Wait();
 
                 _isNotificationsEnabled = value;
@@ -63,10 +63,10 @@ public class Setting
         }
     }
 
-    public Setting(string path, string classId, string header, string description, string glyph, bool hasToggleSwitch)
+    public Setting(string path, string fullName, string header, string description, string glyph, bool hasToggleSwitch)
     {
         Path = path;
-        ClassId = classId;
+        FullName = fullName;
         Header = header;
         Description = description;
         Glyph = glyph;
@@ -81,7 +81,7 @@ public class Setting
         var isDisabled = Task.Run(() =>
         {
             var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-            return localSettingsService.ReadSettingAsync<bool>(ClassId + "-ExtensionDisabled");
+            return localSettingsService.ReadSettingAsync<bool>(FullName + "-ExtensionDisabled");
         }).Result;
         return !isDisabled;
     }
@@ -91,7 +91,7 @@ public class Setting
         var isDisabled = Task.Run(() =>
         {
             var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-            return localSettingsService.ReadSettingAsync<bool>(ClassId + "-NotificationsDisabled");
+            return localSettingsService.ReadSettingAsync<bool>(FullName + "-NotificationsDisabled");
         }).Result;
         return !isDisabled;
     }
