@@ -1,17 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Reflection;
-using System.Windows.Input;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
-using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.Helpers;
 using Microsoft.UI.Xaml;
-using Windows.ApplicationModel;
 
 namespace DevHome.Settings.ViewModels;
 

@@ -13,6 +13,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
+using Microsoft.Management.Infrastructure;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.System;
@@ -200,8 +201,9 @@ public sealed partial class FeedbackPage : Page
     {
         try
         {
-            using var mos = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
-            var name = (string)await Task.Run(() => mos.Get().Cast<ManagementBaseObject>().First()["Name"]);
+            using var session = CimSession.Create(null);
+
+            var name = (string)await Task.Run(() => session.QueryInstances("root\\CIMV2", "WQL", "SELECT * from Win32_Processor").First().CimInstanceProperties["Name"].Value);
             return "CPU: " + name;
         }
         catch (Exception)
