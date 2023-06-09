@@ -68,13 +68,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="NativeMethods.txt" />
         <None Remove="Styles\BreadcrumbBar.xaml" />
         <None Remove="Styles\Feedback_ThemeResources.xaml" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <AdditionalFiles Include="NativeMethods.txt" />
     </ItemGroup>
 
     <ItemGroup>

@@ -196,7 +196,7 @@
     <value>Feedback</value>
   </data>
     <data name="Settings_Feedback_Description" xml:space="preserve">
-    <value>Send feedback</value>
+    <value>Report problems, suggest a feature, report translation problems</value>
   </data>
   <data name="Settings_Feedback_OpenSource.Text" xml:space="preserve">
     <value>Dev Home follows the Microsoft Open Source Code of Conduct. </value>

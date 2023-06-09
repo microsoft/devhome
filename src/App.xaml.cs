@@ -12,7 +12,6 @@ using DevHome.Helpers;
 using DevHome.Logging;
 using DevHome.Services;
 using DevHome.Settings.Extensions;
-using DevHome.Settings.Views;
 using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
