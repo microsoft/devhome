@@ -9,7 +9,8 @@ internal class CPUStats : IDisposable
 {
     // CPU counters
     private readonly PerformanceCounter procPerf = new ("Processor Information", "% Processor Utility", "_Total");
-    private readonly PerformanceCounter procSpeed = new ("Processor Information", "Processor Frequency", "_Total");
+    private readonly PerformanceCounter procPerformance = new ("Processor Information", "% Processor Performance", "_Total");
+    private readonly PerformanceCounter procFrequency = new ("Processor Information", "Processor Frequency", "_Total");
     private readonly Dictionary<Process, PerformanceCounter> cpuCounters = new ();
 
     internal class ProcessStats
@@ -48,7 +49,7 @@ internal class CPUStats : IDisposable
     public void GetData()
     {
         CpuUsage = procPerf.NextValue() / 100;
-        CpuSpeed = procSpeed.NextValue();
+        CpuSpeed = procFrequency.NextValue() * (procPerformance.NextValue() / 100);
 
         ChartHelper.AddNextChartValue(CpuUsage * 100, CpuChartValues);
 
@@ -103,7 +104,7 @@ internal class CPUStats : IDisposable
     public void Dispose()
     {
         procPerf.Dispose();
-        procSpeed.Dispose();
+        procPerformance.Dispose();
 
         foreach (var counter in cpuCounters.Values)
         {
