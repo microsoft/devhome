@@ -167,7 +167,10 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _wpm = wpm;
         _packageProvider = packageProvider;
         _catalogDataSourceLoacder = catalogDataSourceLoader;
+
         IsNavigationBarVisible = true;
+        IsStepPage = false;
+
         _configurationUnitResults = new (GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
     }
