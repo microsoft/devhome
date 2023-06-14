@@ -105,6 +105,7 @@ internal class CPUStats : IDisposable
     {
         procPerf.Dispose();
         procPerformance.Dispose();
+        procFrequency.Dispose();
 
         foreach (var counter in cpuCounters.Values)
         {
