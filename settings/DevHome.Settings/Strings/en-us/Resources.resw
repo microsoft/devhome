@@ -192,4 +192,8 @@
   <data name="Settings_About_RelatedLinks.Text" xml:space="preserve">
     <value>Related links</value>
   </data>
+  <data name="Settings_Preferences_StartupAppCard.Header" xml:space="preserve">
+    <value>Launch Dev Home when Windows starts</value>
+    <comment>Header for a card that contains settings for whether Dev Home should start on windows startup</comment>
+  </data>
 </root>

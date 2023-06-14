@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:xaml="using:Microsoft.UI.Xaml"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
+    Loaded="Page_Loaded"
     mc:Ignorable="d">
     <Page.Resources>
         <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
@@ -64,6 +65,25 @@
                         </labs:SettingsCard>
                     </labs:SettingsExpander.Items>
                 </labs:SettingsExpander>
+                <labs:SettingsCard
+                    x:Uid="Settings_Preferences_StartupAppCard"
+                    Margin="{ThemeResource SettingsCardMargin}"
+                    IsClickEnabled="False">
+                    <StackPanel Orientation="Horizontal">
+                        <ToggleSwitch
+                            Visibility="Visible"
+                            IsEnabled="{x:Bind ViewModel.LaunchAtStartupButtonEnabled, Mode=TwoWay}"
+                            IsOn="{x:Bind ViewModel.LaunchAtStartup, Mode=TwoWay}"
+                            Margin="0 0 15 0"/>
+                        <Button Click="StartupAppsExternalButton_Click" Padding="3">
+                            <FontIcon Glyph="&#xE8A7;"/>
+                        </Button>
+                    </StackPanel>
+                    <labs:SettingsCard.ActionIcon>
+                        <!-- The open new window icon -->
+                        <FontIcon Glyph="&#xE8A7;" />
+                    </labs:SettingsCard.ActionIcon>
+                </labs:SettingsCard>
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

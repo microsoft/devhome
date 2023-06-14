@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.ObjectModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
@@ -43,5 +44,15 @@ public sealed partial class PreferencesPage : Page
             var crumb = (Breadcrumb)args.Item;
             crumb.NavigateTo();
         }
+    }
+
+    private async void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.OnPageLaunched();
+    }
+
+    private async void StartupAppsExternalButton_Click(object sender, RoutedEventArgs e)
+    {
+        await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:startupapps"));
     }
 }
