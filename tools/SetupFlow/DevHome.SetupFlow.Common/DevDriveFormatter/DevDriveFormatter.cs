@@ -17,6 +17,11 @@ namespace DevHome.SetupFlow.Common.DevDriveFormatter;
 public class DevDriveFormatter
 {
     /// <summary>
+    /// Default allocation unit size for Dev Drives created via a virtual hard disk.
+    /// </summary>
+    private const uint FourKb = 4096;
+
+    /// <summary>
     /// Uses WMI to and the storage Api to format the drive as a Dev Drive. Note: the implementation
     /// is subject to change in the future.
     /// </summary>
@@ -32,7 +37,6 @@ public class DevDriveFormatter
             // iterate through the volumes that exist to find the one that matches our
             // drive letter. Note: the object ID here is different than what is in AssignDriveLetterToPartition.
             using var session = CimSession.Create(null);
-            long fourKb = 4096;
             foreach (var queryObj in session.QueryInstances("root\\Microsoft\\Windows\\Storage", "WQL", "SELECT * from MSFT_Volume"))
             {
                 var objectId = queryObj.CimInstanceProperties["ObjectId"].Value as string;
@@ -42,7 +46,7 @@ public class DevDriveFormatter
                     && curDriveLetter == foundALetter &&
                     !string.IsNullOrEmpty(objectId))
                 {
-                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Starting WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter}, using args: DeveloperVolume: true, FileSystem: ReFS, FileSystemLabel: {driveLabel}, AllocationUnitSize: {fourKb}");
+                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Starting WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter}, using args: DeveloperVolume: true, FileSystem: ReFS, FileSystemLabel: {driveLabel}, AllocationUnitSize: {FourKb}");
 
                     // Obtain in-parameters for the method
                     var inParams = new CimMethodParametersCollection
@@ -51,7 +55,7 @@ public class DevDriveFormatter
                         CimMethodParameter.Create("DevDrive", true, CimFlags.In),
                         CimMethodParameter.Create("FileSystem", "ReFS", CimFlags.In),
                         CimMethodParameter.Create("FileSystemLabel", driveLabel, CimFlags.In),
-                        CimMethodParameter.Create("AllocationUnitSize", fourKb, CimFlags.In),
+                        CimMethodParameter.Create("AllocationUnitSize", FourKb, CimFlags.In),
                     };
 
                     // Execute the method and obtain the return values.
@@ -82,7 +86,7 @@ public class DevDriveFormatter
         }
         catch (CimException e)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"A management exception occurred while formating Dev Drive Error.", e);
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"A CimException occurred while formatting Dev Drive Error.", e);
             return e.HResult;
         }
     }
