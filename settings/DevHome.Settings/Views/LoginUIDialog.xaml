@@ -26,7 +26,7 @@
                     BorderThickness="0" Background="Transparent" Padding="15">
                 <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}"
                            FontSize="{ThemeResource BodyTextBlockFontSize}"
-                           Text="&#xE10A;" />
+                           Text="&#xE711;" />
             </Button>
         </Grid>
 

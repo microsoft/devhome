@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -18,6 +19,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -338,6 +340,15 @@ public partial class AddRepoViewModel : ObservableObject
                 return false;
             }
 
+            var sshMatch = Regex.Match(Url, "^.*@.*:.*\\/.*");
+
+            if (sshMatch.Success)
+            {
+                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.SSHConnectionStringNotAllowed);
+                ShouldShowUrlError = Visibility.Visible;
+                return false;
+            }
+
             ShouldShowUrlError = Visibility.Collapsed;
             return true;
         }
@@ -421,6 +432,7 @@ public partial class AddRepoViewModel : ObservableObject
 
             var cloningInformation = new CloningInformation(repoToRemove);
             cloningInformation.ProviderName = _providers.DisplayName(providerName);
+            cloningInformation.PluginName = providerName;
             cloningInformation.OwningAccount = developerId;
 
             EverythingToClone.Remove(cloningInformation);
@@ -437,6 +449,7 @@ public partial class AddRepoViewModel : ObservableObject
 
             var cloningInformation = new CloningInformation(repoToAdd);
             cloningInformation.ProviderName = _providers.DisplayName(providerName);
+            cloningInformation.PluginName = providerName;
             cloningInformation.OwningAccount = developerId;
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
@@ -534,22 +547,37 @@ public partial class AddRepoViewModel : ObservableObject
     /// <summary>
     /// Gets all the repositories for the specified provider and account.
     /// </summary>
+    /// <remarks>
+    /// The side effect of this method is _repositoriesForAccount is populated with repositories.
+    /// </remarks>
     /// <param name="repositoryProvider">The provider.  This should match the display name of the plugin</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
-    public IEnumerable<RepoViewListItem> GetRepositories(string repositoryProvider, string loginId)
+    public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
     {
         _selectedAccount = loginId;
 
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
-        var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
+        await Task.Run(() =>
+        {
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
+            var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
 
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
-        _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
+            _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
+        });
+    }
 
+    /// <summary>
+    /// Updates the UI with the repositories to display for the specific user and provider.
+    /// </summary>
+    /// <param name="repositoryProvider">The name of the provider</param>
+    /// <param name="loginId">The login ID</param>
+    /// <returns>All previously selected repos excluding any added via URL.</returns>
+    public IEnumerable<RepoViewListItem> SetRepositories(string repositoryProvider, string loginId)
+    {
         Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
-            .Where(x => x.ProviderName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
+            .Where(x => x.PluginName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
             && x.OwningAccount.LoginId().Equals(loginId, StringComparison.OrdinalIgnoreCase))
             .Select(x => new RepoViewListItem(x.RepositoryToClone));
     }

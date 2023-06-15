@@ -51,7 +51,7 @@ public class ConfigureTask : ISetupTask
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to open configuration set: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to open configuration set.", e);
             throw;
         }
     }
@@ -103,7 +103,7 @@ public class ConfigureTask : ISetupTask
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration: {e.Message}");
+                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration.", e);
                 return TaskFinishedState.Failure;
             }
         }).AsAsyncOperation();

@@ -84,6 +84,7 @@ public static class StringResourceKey
     public static readonly string SummaryPageOneRepositoryCloned = nameof(SummaryPageOneRepositoryCloned);
     public static readonly string SummaryPageAppsDownloadedCount = nameof(SummaryPageAppsDownloadedCount);
     public static readonly string SummaryPageReposClonedCount = nameof(SummaryPageReposClonedCount);
+    public static readonly string SSHConnectionStringNotAllowed = nameof(SSHConnectionStringNotAllowed);
 
     // Repository loading screen messages
     public static readonly string CloneRepoCreating = nameof(CloneRepoCreating);

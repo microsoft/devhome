@@ -17,6 +17,7 @@
     <StackPanel>
         <!-- Card header -->
         <controls:SettingsCard
+            SizeChanged="SettingsCard_SizeChanged"
             Background="Transparent"
             Header="{x:Bind Catalog.Name}"
             Description="{x:Bind Catalog.Description}">
@@ -29,7 +30,7 @@
                 <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
             </controls:SettingsCard.Resources>
             <controls:SettingsCard.ActionIcon>
-                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE10A;"/>
+                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE711;"/>
             </controls:SettingsCard.ActionIcon>
             <HyperlinkButton
                 Grid.Column="1"
@@ -43,7 +44,7 @@
         <FlipView
             x:Name="PackagesFlipView"
             Background="Transparent"
-            LayoutUpdated="OnLayoutUpdated"
+            SelectionChanged="PackagesFlipView_SelectionChanged"
             ItemsSource="{x:Bind PackageGroups, Mode=OneWay}">
             <FlipView.ItemTemplate>
                 <DataTemplate>

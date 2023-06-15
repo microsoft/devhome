@@ -49,6 +49,10 @@ $env:sdk_version = build\Scripts\CreateBuildInfo.ps1 -Version $SDKVersion -IsSdk
 
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 
+if ($IsAzurePipelineBuild) {
+  Copy-Item (Join-Path $env:Build_RootDirectory "build\nuget.config.internal") -Destination (Join-Path $env:Build_RootDirectory "nuget.config")
+}
+
 if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
   pluginsdk\Build.ps1 -SDKVersion $env:sdk_version -IsAzurePipelineBuild $IsAzurePipelineBuild
 }

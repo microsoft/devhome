@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.Logging;
 using DevHome.SetupFlow.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
@@ -38,52 +39,62 @@ public sealed class ElevatedInstallTask
     {
         return Task.Run(async () =>
         {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Elevated install requested for package [{packageId}] from catalog [{catalogName}]");
             var result = new ElevatedInstallTaskResult();
-
-            var packageManager = _wingetFactory.CreatePackageManager();
-
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Connecting to catalog [{catalogName}]");
-            var catalogReference = packageManager.GetPackageCatalogByName(catalogName);
-            var connectResult = await catalogReference.ConnectAsync();
-            if (connectResult.Status != ConnectResultStatus.Ok)
+            try
             {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to the catalog [{catalogName}] with status {connectResult.Status}");
-                result.TaskAttempted = false;
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Elevated install requested for package [{packageId}] from catalog [{catalogName}]");
+
+                var packageManager = _wingetFactory.CreatePackageManager();
+
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Connecting to catalog [{catalogName}]");
+                var catalogReference = packageManager.GetPackageCatalogByName(catalogName);
+                var connectResult = await catalogReference.ConnectAsync();
+                if (connectResult.Status != ConnectResultStatus.Ok)
+                {
+                    Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to the catalog [{catalogName}] with status {connectResult.Status}");
+                    result.TaskAttempted = false;
+                    return result;
+                }
+
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Finding package [{packageId}] in catalog");
+                var findOptions = CreateFindOptionsForPackageId(packageId);
+                var findResult = connectResult.PackageCatalog.FindPackages(findOptions);
+                if (findResult.Status != FindPackagesResultStatus.Ok
+                    || findResult.Matches.Count < 1
+                    || findResult.WasLimitExceeded)
+                {
+                    Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to find package. Status={findResult.Status}, Matches Count={findResult.Matches.Count}, LimitReached={findResult.WasLimitExceeded}");
+                    result.TaskAttempted = false;
+                    return result;
+                }
+
+                var packageToInstall = findResult.Matches[0].CatalogPackage;
+
+                var installOptions = _wingetFactory.CreateInstallOptions();
+                installOptions.PackageInstallMode = PackageInstallMode.Silent;
+
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initiating install of package {packageId}");
+                var installResult = await packageManager.InstallPackageAsync(packageToInstall, installOptions);
+                var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
+
+                // Contract version 4
+                var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK);
+
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Install finished. Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
+                result.TaskAttempted = true;
+                result.TaskSucceeded = installResult.Status == InstallResultStatus.Ok;
+                result.RebootRequired = installResult.RebootRequired;
+                result.Status = (int)installResult.Status;
+                result.ExtendedErrorCode = extendedErrorCode;
+                result.InstallerErrorCode = installErrorCode;
+
                 return result;
             }
-
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Finding package [{packageId}] in catalog");
-            var findOptions = CreateFindOptionsForPackageId(packageId);
-            var findResult = connectResult.PackageCatalog.FindPackages(findOptions);
-            if (findResult.Status != FindPackagesResultStatus.Ok
-                || findResult.Matches.Count < 1
-                || findResult.WasLimitExceeded)
+            catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to find package. Status={findResult.Status}, Matches Count={findResult.Matches.Count}, LimitReached={findResult.WasLimitExceeded}");
-                result.TaskAttempted = false;
-                return result;
+                Log.Logger?.ReportError(Log.Component.AppManagement, "Elevated app install failed.", e);
+                result.TaskSucceeded = false;
             }
-
-            var packageToInstall = findResult.Matches[0].CatalogPackage;
-
-            var installOptions = _wingetFactory.CreateInstallOptions();
-            installOptions.PackageInstallMode = PackageInstallMode.Silent;
-
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initiating install of package {packageId}");
-            var installResult = await packageManager.InstallPackageAsync(packageToInstall, installOptions);
-            var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
-
-            // Contract version 4
-            var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK);
-
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Install finished. Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
-            result.TaskAttempted = true;
-            result.TaskSucceeded = installResult.Status == InstallResultStatus.Ok;
-            result.RebootRequired = installResult.RebootRequired;
-            result.Status = (int)installResult.Status;
-            result.ExtendedErrorCode = extendedErrorCode;
-            result.InstallerErrorCode = installErrorCode;
 
             return result;
         }).AsAsyncOperation();

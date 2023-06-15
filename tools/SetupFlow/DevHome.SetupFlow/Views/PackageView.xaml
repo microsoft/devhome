@@ -12,7 +12,7 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <!-- Show `RevToggleKey` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
-            <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE845;" FalseValue="&#xE109;" />
+            <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE845;" FalseValue="&#xE710;" />
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
             <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
 

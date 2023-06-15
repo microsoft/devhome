@@ -106,7 +106,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void RemoveRestartGrid()
     {
-        _showRestartNeeded = Visibility.Collapsed;
+        ShowRestartNeeded = Visibility.Collapsed;
     }
 
     /// <summary>
@@ -174,6 +174,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_NavigatedTo_Event");
         _orchestrator.ReleaseRemoteFactory();
         await ReloadCatalogsAsync();
     }

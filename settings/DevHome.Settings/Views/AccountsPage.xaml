@@ -19,22 +19,16 @@
 
         <DataTemplate x:Key="AccountsProviderViewTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
             <StackPanel>
-                <StackPanel>
-                    <TextBlock Text="{x:Bind ProviderName}" Style="{ThemeResource SubtitleTextBlockStyle}" Margin="{StaticResource XSmallTopMargin}"/>
-                </StackPanel>
-                <StackPanel>
-                    <ItemsRepeater ItemsSource="{x:Bind LoggedInAccounts}" ItemTemplate="{StaticResource AccountsViewTemplate}"
+                <TextBlock Text="{x:Bind ProviderName}" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}"/>
+                <ItemsRepeater ItemsSource="{x:Bind LoggedInAccounts}" ItemTemplate="{StaticResource AccountsViewTemplate}"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible" />
-                </StackPanel>
             </StackPanel>
         </DataTemplate>
 
         <DataTemplate x:Key="AccountsViewTemplate" x:DataType="models:Account">
-            <StackPanel Margin="{StaticResource XSmallTopMargin}">
-                <labs:SettingsCard Header="{x:Bind LoginId}">
-                    <Button Tag="{x:Bind}" x:Uid="Settings_Accounts_LogoutButton" Click="Logout_Click"/>
-                </labs:SettingsCard>
-            </StackPanel>
+            <labs:SettingsCard Header="{x:Bind LoginId}" Margin="{StaticResource SettingsCardMargin}">
+                <Button Tag="{x:Bind}" x:Uid="Settings_Accounts_LogoutButton" Click="Logout_Click"/>
+            </labs:SettingsCard>
         </DataTemplate>
     </Page.Resources>
 

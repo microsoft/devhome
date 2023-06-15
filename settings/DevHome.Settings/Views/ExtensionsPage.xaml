@@ -27,9 +27,10 @@
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="settings:ExtensionViewModel">
                         <labs:SettingsCard Header="{x:Bind Header}"
-                                   IsClickEnabled="False" Command="{x:Bind NavigateSettingsCommand}">
+                                           Margin="{ThemeResource SettingsCardMargin}"
+                                           IsClickEnabled="False" Command="{x:Bind NavigateSettingsCommand}">
                             <ToggleSwitch Visibility="{x:Bind HasToggleSwitch, Converter={StaticResource BoolToVisibilityConverter}}"
-                                      IsOn="{x:Bind IsEnabled, Mode=TwoWay}" />
+                                          IsOn="{x:Bind IsEnabled, Mode=TwoWay}" />
                         </labs:SettingsCard>
                     </DataTemplate>
                 </ItemsRepeater.ItemTemplate>

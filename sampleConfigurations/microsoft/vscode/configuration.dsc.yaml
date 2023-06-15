@@ -9,7 +9,7 @@ properties:
         allowPrerelease: true
       settings:
         id: OpenJS.NodeJS.LTS
-        version: 16.20.0
+        version: "16.20.0"
         source: winget
     - resource: NpmDsc/NpmPackage
       id: yarn
@@ -21,7 +21,7 @@ properties:
       settings:
         Name: 'yarn'
         Global: true
-        PackageDirectory: '${WinGetConfigRoot}\..\'         
+        PackageDirectory: '${WinGetConfigRoot}\..\'
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
         description: Install Python 3.10
@@ -29,22 +29,24 @@ properties:
       settings:
         id: Python.Python.3.10
         source: winget
-    - resource: NpmDsc/NpmPackage
-      dependsOn:
-        - yarn
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: vsPackage
       directives:
-        description: Install node-gyp (includes Windows Build Tools)
+        description: Install Visual Studio 2022 (any edition is OK)
         allowPrerelease: true
       settings:
-        Name: 'node-gyp'
-        Global: true
-        PackageDirectory: '${WinGetConfigRoot}\..\' 
-    - resource: YarnDsc/YarnInstall
+        id: Microsoft.VisualStudio.2022.BuildTools
+        source: winget
+    - resource: Microsoft.VisualStudio.DSC/VSComponents
       dependsOn:
-        - npm
+        - vsPackage
       directives:
-        description: Install dependencies
+        description: Install required VS workloads
         allowPrerelease: true
       settings:
-        PackageDirectory: '${WinGetConfigRoot}\..\' 
+        productId: Microsoft.VisualStudio.Product.BuildTools
+        channelId: VisualStudio.17.Release
+        includeRecommended: true
+        components:
+          - Microsoft.VisualStudio.Workload.VCTools
   configurationVersion: 0.2.0

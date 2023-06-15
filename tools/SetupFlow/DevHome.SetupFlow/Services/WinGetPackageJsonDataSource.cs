@@ -122,7 +122,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget catalog: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget catalog.", e);
         }
 
         return null;
@@ -147,7 +147,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get icon for JSON package {package.Id}", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get icon for JSON package {package.Id}.", e);
         }
 
         Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No icon found for JSON package {package.Id}. A default one will be provided.");

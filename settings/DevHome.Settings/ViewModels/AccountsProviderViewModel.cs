@@ -45,7 +45,7 @@ public partial class AccountsProviderViewModel : ObservableObject
             }
             catch (Exception ex)
             {
-                GlobalLog.Logger?.ReportError($"RemoveAccount() failed - developerId: {loginId} Error: {ex}");
+                GlobalLog.Logger?.ReportError($"RemoveAccount() failed - developerId: {loginId}.", ex);
                 throw;
             }
         }

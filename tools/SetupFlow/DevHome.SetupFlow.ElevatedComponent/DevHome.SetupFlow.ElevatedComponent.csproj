@@ -32,7 +32,6 @@
     The ComInterop project was used since this The ElevatedComponent already depends on it. But a better solution is needed once we figure out 
     why 2 separate dlls get produced.
     -->
-    <PackageReference Include="System.Management" Version="7.0.0" ExcludeAssets="runtime" />
   </ItemGroup>
 
   <ItemGroup>

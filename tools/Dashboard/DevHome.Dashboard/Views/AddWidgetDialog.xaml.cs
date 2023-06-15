@@ -241,7 +241,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
         else if (selectedTag as WidgetProviderDefinition is not null)
         {
-            // Null out the view model background so we don't bind to the old one
+            // Null out the view model background so we don't bind to the old one.
             ViewModel.WidgetBackground = null;
             ConfigurationContentFrame.Content = null;
             PinButton.Visibility = Visibility.Collapsed;
@@ -324,7 +324,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                             {
                                 menuItems.Remove(providerItem);
 
-                                // If we've removed all providers from the list, show a message
+                                // If we've removed all providers from the list, show a message.
                                 if (!menuItems.Any())
                                 {
                                     ViewModel.ShowErrorCard("WidgetErrorCardNoWidgetsText");
@@ -335,5 +335,15 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 }
             }
         });
+    }
+
+    private void ContentDialog_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        const int ContentDialogMaxHeight = 684;
+
+        AddWidgetNavigationView.Height = Math.Min(this.ActualHeight, ContentDialogMaxHeight) - AddWidgetTitleBar.ActualHeight;
+
+        // Subtract 45 for the margin around ConfigurationContentFrame.
+        ConfigurationContentViewer.Height = AddWidgetNavigationView.Height - PinRow.ActualHeight - 45;
     }
 }
