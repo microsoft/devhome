@@ -21,14 +21,31 @@
                 <ResourceDictionary>
                     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
                     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityInvertedConverter" TrueValue="Collapsed" FalseValue="Visible"/>
-
                     <converters:BoolNegationConverter x:Key="BoolNegation"/>
+                    <converters:BoolToObjectConverter x:Key="BoolToTextBrush" TrueValue="{ThemeResource PrimaryTextStyle}" FalseValue="{ThemeResource SecondaryTextStyle}"/>
                 </ResourceDictionary>
                 <ResourceDictionary>
                     <Style x:Key="DevHomeBorderStyle" TargetType="Border" >
                         <Setter Property="BorderBrush">
                             <Setter.Value>
                                 <SolidColorBrush Opacity="{StaticResource TextControlBackgroundRestOpacity}" Color="{StaticResource TextFillColorTertiary}"/>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <!-- Because a data template is an encapsulation layer, dynamic style lookups won't look past the data template.
+                         This means that using a converter to change foreground to a ThemeResource on a textblock does not work.
+                         The work around is to define the styles in a resource and use the keys in the data template.-->
+                    <Style x:Key="PrimaryTextStyle" TargetType="TextBlock">
+                        <Setter Property="Foreground">
+                            <Setter.Value>
+                                <SolidColorBrush Color="{ThemeResource TextFillColorPrimary}"/>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <Style x:Key="SecondaryTextStyle" TargetType="TextBlock">
+                        <Setter Property="Foreground">
+                            <Setter.Value>
+                                <SolidColorBrush Color="{ThemeResource TextFillColorSecondary}"/>
                             </Setter.Value>
                         </Setter>
                     </Style>
@@ -82,10 +99,9 @@
                 <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Style="{StaticResource SemiBoldTextStyle}"/>
             </Border>
             <ScrollViewer Grid.Column="0" Grid.Row="1" x:Name="AllRunningTasksScrollViewer" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto" Margin="0, 10, 0, 0">
-                <StackPanel>
-                    <StackPanel.Resources>
-                        <StackLayout x:Name="VerticalStackLayout" Orientation="Vertical" Spacing="10"/>
-                        <DataTemplate x:Key="HorizontalBarTemplate" x:DataType="models:TaskInformation">
+                <ListView ItemsSource="{x:Bind ViewModel.TasksToRun, Mode=OneWay}" SelectionMode="None">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:TaskInformation">
                             <StackPanel Orientation="Horizontal" Spacing="5">
                                 <ImageIcon
                                     Width="18"
@@ -96,17 +112,13 @@
                                 <!-- If the status icon is visible it means the task has stopped.  Don't show progress ring.-->
                                 <ProgressRing
                                     IsActive="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource BoolNegation}}"
-                                    Visibility="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}"
+                                    Visibility="{x:Bind ShouldShowProgressRing, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
                                     Width="20" Height="20"/>
-                                <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" VerticalAlignment="Center" Style="{x:Bind ShouldShowProgressRing, Mode=OneWay, Converter={StaticResource BoolToTextBrush}}"/>
                             </StackPanel>
                         </DataTemplate>
-                    </StackPanel.Resources>
-                    <ItemsRepeater x:Name="TasksItemsRepeater" ItemsSource="{x:Bind ViewModel.TasksToRun, Mode=OneWay}"
-                           Layout="{StaticResource VerticalStackLayout}" 
-                           ItemTemplate="{StaticResource HorizontalBarTemplate}">
-                    </ItemsRepeater>
-                </StackPanel>
+                    </ListView.ItemTemplate>
+                </ListView>
             </ScrollViewer>
             <Border Grid.Row="0" Grid.Column="1" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1" >
                 <Grid>

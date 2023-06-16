@@ -20,7 +20,9 @@ using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.VisualBasic;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using WinUIEx;
 
@@ -194,7 +196,15 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             foreach (var task in taskGroup.SetupTasks)
             {
-                TasksToRun.Add(new TaskInformation { TaskIndex = taskIndex++, TaskToExecute = task, MessageToShow = task.GetLoadingMessages().Executing, StatusIconGridVisibility = false });
+                TasksToRun.Add(new TaskInformation
+                {
+                    TaskIndex = taskIndex++,
+                    TaskToExecute = task,
+                    MessageToShow = task.GetLoadingMessages().Executing,
+                    StatusIconGridVisibility = false,
+                    ShouldShowProgressRing = false,
+                    MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"],
+                });
             }
         }
 
@@ -285,6 +295,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         information.StatusIconGridVisibility = true;
         information.StatusSymbolIcon = statusSymbolIcon;
         information.MessageToShow = stringToReplace;
+        information.ShouldShowProgressRing = false;
+        information.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
     }
 
     /// <summary>
@@ -401,6 +413,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             {
                 TasksStarted++;
                 ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
+                taskInformation.ShouldShowProgressRing = true;
+                taskInformation.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
             });
 
             TaskFinishedState taskFinishedState;

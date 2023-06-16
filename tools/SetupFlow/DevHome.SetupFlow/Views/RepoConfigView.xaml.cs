@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -26,6 +27,20 @@ public sealed partial class RepoConfigView : UserControl
     {
         relatedActivityId = Guid.NewGuid();
         this.InitializeComponent();
+
+        var selectorService = Application.Current.GetService<IThemeSelectorService>();
+        selectorService.ThemeChanged += OnThemeChanged;
+    }
+
+    public void OnThemeChanged(object sender, ElementTheme theme)
+    {
+        if (ViewModel != null)
+        {
+            foreach (var cloneInformation in ViewModel.RepoReviewItems)
+            {
+                cloneInformation.SetIcon(theme);
+            }
+        }
     }
 
     public RepoConfigViewModel ViewModel => (RepoConfigViewModel)this.DataContext;
