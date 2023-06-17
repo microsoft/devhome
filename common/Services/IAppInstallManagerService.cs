@@ -31,4 +31,11 @@ public interface IAppInstallManagerService
     /// <returns>True if an app update was triggered, false otherwise</returns>
     /// <exception cref="COMException">Throws exception if operation failed (e.g. product id was not found)</exception>
     public Task<bool> StartAppUpdateAsync(string productId);
+
+    /// <summary>
+    /// Start installing an application
+    /// </summary>
+    /// <param name="productId">Target product id</param>
+    /// <returns>True if an installation was queued, false otherwise.</returns>
+    public Task<bool> StartAppInstallAsync(string productId);
 }

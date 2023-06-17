@@ -78,6 +78,7 @@ public partial class App : Application, IApp
             services.AddSingleton<ITelemetry>(TelemetryFactory.Get<ITelemetry>());
             services.AddSingleton<IStringResource, StringResource>();
             services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
+            services.AddSingleton<IPackageManagerService, PackageManagerService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -135,26 +136,19 @@ public partial class App : Application, IApp
 
         await Task.Run(async () =>
         {
+            // Initialize/Load catalogs from all data sources
+            GlobalLog.Logger?.ReportInfo($"Initializing App install catalogs data sources");
+            await catalogDataSourceLoader.InitializeAsync();
+            GlobalLog.Logger?.ReportInfo($"Found a total of {catalogDataSourceLoader.CatalogCount} catalogs");
             if (wpm.IsCOMServerAvailable())
             {
                 GlobalLog.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
-
-                // Initialize/Load catalogs from all data sources
-                GlobalLog.Logger?.ReportInfo($"Initializing App install catalogs data sources");
-                await catalogDataSourceLoader.InitializeAsync();
-                GlobalLog.Logger?.ReportInfo($"Found a total of {catalogDataSourceLoader.CatalogCount} catalogs");
-
                 GlobalLog.Logger?.ReportInfo($"Calling {nameof(wpm.ConnectToAllCatalogsAsync)} to connect to catalogs");
                 await wpm.ConnectToAllCatalogsAsync();
-
-                GlobalLog.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to reduce the wait time when this information is requested");
-                await foreach (var dataSourceCatalogs in catalogDataSourceLoader.LoadCatalogsAsync())
-                {
-                    GlobalLog.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
-                }
             }
             else
             {
+                await wpm.StartAppInstallerUpdateAsync();
                 GlobalLog.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
             }
         });

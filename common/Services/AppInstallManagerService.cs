@@ -49,6 +49,17 @@ public class AppInstallManagerService : IAppInstallManagerService
         });
     }
 
+    public async Task<bool> StartAppInstallAsync(string productId)
+    {
+        return await InstallAsync(productId, new AppInstallOptions
+        {
+            CompletedInstallToastNotificationMode = AppInstallationToastNotificationMode.Toast,
+            InstallInProgressToastNotificationMode = AppInstallationToastNotificationMode.NoToast,
+            ForceUseOfNonRemovableStorage = false,
+            Repair = false,
+        });
+    }
+
     /// <summary>
     /// Search for an update for the specified product id
     /// </summary>
@@ -66,6 +77,26 @@ public class AppInstallManagerService : IAppInstallManagerService
             options);
 
         // Check if update is available
+        return appInstallItem != null;
+    }
+
+    /// <summary>
+    /// Start installing an app by product id
+    /// </summary>
+    /// <param name="productId">Target product id</param>
+    /// <param name="options">Install option</param>
+    /// <returns>True if an installation was queued, false otherwise.</returns>
+    /// <exception cref="COMException">Throws exception if operation failed (e.g. product id was not found)</exception>
+    private async Task<bool> InstallAsync(string productId, AppInstallOptions options)
+    {
+        var appInstallItem = await _appInstallManager.StartProductInstallAsync(
+            productId,
+            flightId: null,
+            clientId: null,
+            correlationVector: null,
+            options);
+
+        // Check if install was queued
         return appInstallItem != null;
     }
 }
