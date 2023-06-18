@@ -15,9 +15,10 @@
 
     <Grid Background="{x:Bind ((vm:ProjectViewModel)DataContext).Color}" Width="300" Padding="8" HorizontalAlignment="Left">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid>
@@ -26,17 +27,28 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <TextBlock Text="{x:Bind ((vm:ProjectViewModel)DataContext).Name}" Style="{ThemeResource SubtitleTextBlockStyle}" />
-            <Button Grid.Column="1" x:Name="DeleteProjectButton" x:Uid="DeleteProject" Click="DeleteProjectButton_Click" />
+            <Button Grid.Column="1" x:Name="DeleteProjectButton" 
+                    Click="DeleteProjectButton_Click"
+                    Background="Transparent" 
+                    BorderThickness="0"
+                    HorizontalContentAlignment="Right"
+                    Padding="4"
+                    Margin="0"
+                    BorderBrush="Transparent">
+                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xe106;" />
+            </Button>
         </Grid>
-        <TextBlock x:Name="filePath" Grid.Row="1" Text="{x:Bind ((vm:ProjectViewModel)DataContext).ExpandedFilePath}" Style="{ThemeResource CaptionTextBlockStyle}" Padding="8" Tapped="FilePath_Tapped"/>
-        <RichTextBlock Grid.Row="2" Padding="8">
+        <TextBlock x:Name="filePath" Grid.Row="1" Text="{x:Bind ((vm:ProjectViewModel)DataContext).ExpandedFilePath}" 
+                   Style="{ThemeResource CaptionTextBlockStyle}" Padding="8,2" Tapped="FilePath_Tapped"/>
+        <RichTextBlock Grid.Row="2" Padding="8,2">
             <Paragraph>
                 <Hyperlink NavigateUri="{x:Bind ((vm:ProjectViewModel)DataContext).Url}">
-                    <Run Text="{x:Bind ((vm:ProjectViewModel)DataContext).Url}" />
+                    <Run Text="{x:Bind ((vm:ProjectViewModel)DataContext).Url}" FontSize="12" />
                 </Hyperlink>
             </Paragraph>
         </RichTextBlock>
-        <ItemsRepeater Grid.Row="3" ItemsSource="{x:Bind ((vm:ProjectViewModel)DataContext).Launchers}" 
+        <TextBlock Grid.Row="3" Text="{x:Bind ((vm:ProjectViewModel)DataContext).Branch}" Style="{ThemeResource BodyTextStyle}" Padding="8,2"/>
+        <ItemsRepeater Grid.Row="4" ItemsSource="{x:Bind ((vm:ProjectViewModel)DataContext).Launchers}" 
                                        Margin="4">
             <ItemsRepeater.Layout>
                 <StackLayout Orientation="Horizontal"/>

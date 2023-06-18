@@ -120,8 +120,8 @@
   <data name="AddProject.Content" xml:space="preserve">
     <value>+</value>
   </data>
-  <data name="DeleteProject.Content" xml:space="preserve">
-    <value>✖️</value>
+  <data name="NavigationPane.Content" xml:space="preserve">
+    <value>Projects</value>
   </data>
   <data name="ProjectsPage_Title.Text" xml:space="preserve">
     <value>My Projects</value>
