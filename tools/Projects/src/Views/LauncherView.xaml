@@ -20,6 +20,8 @@
         <Button Content="{x:Bind GetImage(DataContext)}"
                     Style="{ThemeResource ButtonRevealStyle}" 
                     Click="LauncherButton_Click"
+                    Width="48" Height="48"
+                    Background="Transparent"
                     ToolTipService.ToolTip="{x:Bind ((vm:LauncherViewModel)DataContext).DisplayName}" />
     </Grid>
 </UserControl>
