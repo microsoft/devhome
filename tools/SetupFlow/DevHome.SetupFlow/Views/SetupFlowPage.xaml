@@ -104,28 +104,14 @@
                     <!-- Workaround to show a tooltip on a disabled button
                          https://github.com/microsoft/microsoft-ui-xaml/issues/2262-->
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
-                        <Grid>
+                        <Grid ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
                             <TextBlock IsTabStop="False" />
                             <Button
                                 Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
                                 Style="{StaticResource AccentButtonStyle}"
                                 MinWidth="120" Margin="4,0"
-                                x:Name="SetupFlowNextButton"
-                                Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}">
-                                <!--<ToolTipService.ToolTip>
-                                    <ToolTip 
-                                        Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}"
-                                        Visibility="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.ShouldShowTeachingTip, Mode=OneWay, Converter={StaticResource NegateBoolToVisibility}}"/>
-                                </ToolTipService.ToolTip>-->
-                            </Button>
-                            <TeachingTip
-                                x:Name="MyTeachingTip"
-                                IsOpen="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.ShouldShowTeachingTip, Mode=OneWay}"
-                                Visibility="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.ShouldShowTeachingTip, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
-                                Target="{x:Bind SetupFlowNextButton}"
-                                Subtitle="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}"
-                                PreferredPlacement="TopLeft">
-                            </TeachingTip>
+                                Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
+                                ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
                         </Grid>
                     </setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
                 </setupFlowBehaviors:SetupFlowNavigationBehavior>

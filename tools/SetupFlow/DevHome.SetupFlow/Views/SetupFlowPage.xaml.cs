@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Threading;
-using System.Threading.Tasks;
 using DevHome.Common;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.ViewModels;
@@ -22,10 +20,5 @@ public partial class SetupFlowPage : ToolPage
     {
         ViewModel = Application.Current.GetService<SetupFlowViewModel>();
         InitializeComponent();
-        this.Loaded += async (_, _) =>
-        {
-            MyTeachingTip.XamlRoot = XamlRoot;
-            await Task.Delay(1000);
-        };
     }
 }

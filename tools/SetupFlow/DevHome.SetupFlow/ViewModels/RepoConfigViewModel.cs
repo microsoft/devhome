@@ -5,14 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
-using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -29,9 +27,6 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     private readonly IDevDriveManager _devDriveManager;
 
     public ISetupFlowStringResource LocalStringResource { get; }
-
-    [ObservableProperty]
-    private bool _isTeachingTipEnabled;
 
     /// <summary>
     /// All repositories the user wants to clone.

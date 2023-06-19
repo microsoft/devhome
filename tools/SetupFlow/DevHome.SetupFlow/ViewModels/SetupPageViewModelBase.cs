@@ -4,10 +4,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
-using Microsoft.UI.Xaml;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -91,9 +89,6 @@ public partial class SetupPageViewModelBase : ObservableObject
         get;
     }
 
-    [ObservableProperty]
-    private bool _shouldShowTeachingTip;
-
     public bool IsLastStepPage => IsStepPage && Orchestrator.SetupStepPages.LastOrDefault() == this;
 
     public bool IsPastPage => Orchestrator.IsPastPage(this);
@@ -123,7 +118,6 @@ public partial class SetupPageViewModelBase : ObservableObject
     {
         if (!_hasExecutedFirstNavigateTo)
         {
-            ShouldShowTeachingTip = IsStepPage && Orchestrator.SetupStepPages.FirstOrDefault() == this;
             _hasExecutedFirstNavigateTo = true;
             Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Executing post-navigation tasks for page {this.GetType().Name}");
             await OnFirstNavigateToAsync();
@@ -142,7 +136,6 @@ public partial class SetupPageViewModelBase : ObservableObject
     {
         if (!_hasExecutedFirstNavigateFrom)
         {
-            ShouldShowTeachingTip = false;
             _hasExecutedFirstNavigateFrom = true;
             Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Executing pre-navigation tasks for page {this.GetType().Name}");
             await OnFirstNavigateFromAsync();
