@@ -1,3 +1,10 @@
 ﻿CommandLineToArgv
 LocalFree
 PathFindOnPathW
+ICreatingProcess
+IServiceProvider
+ShellExecuteExW
+SHELLEXECUTEINFOW
+SEE_MASK_FLAG_HINST_IS_SITE
+SHOW_WINDOW_CMD
+
