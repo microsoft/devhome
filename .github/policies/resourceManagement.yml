@@ -114,12 +114,12 @@ configuration:
       - removeLabel:
           label: Needs-Team-Response
       - addLabel:
-          label: Resolution-Please File on Feedback Hub
+          label: Resolution-Please-File-on-Feedback-Hub
       description: 
     - if:
       - payloadType: Issue_Comment
       - commentContains:
-          pattern: '\/dup(licate|e)?(\s+of)?\s+(\#[\d]+|https)'
+          pattern: '\/[Dd]up(licate|e)?(\s+of)?\s+(\#[\d]+|https)'
           isRegex: True
       - or:
         - activitySenderHasAssociation:
