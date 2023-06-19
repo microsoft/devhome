@@ -107,7 +107,7 @@ configuration:
             association: Collaborator
       then:
       - addReply:
-          reply: Hi! We've identified this issue that best is suited for Windows Feedback Hub. To do this on Windows, WinKey+F will bring it up!
+          reply: Hi! We've identified that this issue is best suited for Windows Feedback Hub. To do this on Windows, WinKey+F will bring it up!
       - closeIssue
       - removeLabel:
           label: Needs-Triage
@@ -175,7 +175,7 @@ configuration:
       - addLabel:
           label: Loc-Sent To Team
       - addReply:
-          reply: Hi! Thanks for making us aware of the problem. We raised the issue with our internal localization team. This issue should be fixed hopefully in the next version of DevHome.
+          reply: Hi! Thanks for making us aware of the problem. We raised the issue with our internal localization team. This issue should be fixed hopefully in the next version of Dev Home.
       description: 
 onFailure: 
 onSuccess: 
