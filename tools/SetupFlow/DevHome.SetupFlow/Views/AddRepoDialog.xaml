@@ -82,7 +82,6 @@
                             <StackPanel Orientation="Horizontal" Spacing="5">
                                 <FontIcon FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
                                 <TextBlock Text="{x:Bind RepoDisplayName}"/>
-                                <TextBlock Text="{x:Bind LastUpdated}"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListView.ItemTemplate>

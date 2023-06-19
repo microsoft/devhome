@@ -32,13 +32,10 @@ public partial class RepoViewListItem : ObservableObject
 
     public string RepoDisplayName => Path.Join(OwningAccountName, RepoName);
 
-    public DateTimeOffset LastUpdated { get; }
-
     public RepoViewListItem(IRepository repo)
     {
         IsPrivate = repo.IsPrivate;
         RepoName = repo.DisplayName;
         OwningAccountName = repo.OwningAccountName;
-        LastUpdated = repo.LastUpdated;
     }
 }
