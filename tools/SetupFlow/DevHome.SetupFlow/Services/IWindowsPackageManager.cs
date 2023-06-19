@@ -72,9 +72,23 @@ public interface IWindowsPackageManager
     public Task<bool> StartAppInstallerUpdateAsync();
 
     /// <summary>
+    /// Start AppInstaller install
+    /// </summary>
+    /// <returns>True if the install was queued, false otherwise.</returns>
+    public Task<bool> StartAppInstallerInstallAsync();
+
+    /// <summary>
+    /// Check if AppInstaller is installed
+    /// </summary>
+    /// <returns>True if AppInstaller is installed, false otherwise.</returns>
+    public Task<bool> IsAppInstallerInstalledAsync();
+
+    /// <summary>
     /// Check whether the WindowsPackageManagerServer is available to create
     /// out-of-proc COM objects
     /// </summary>
     /// <returns>True if COM Server is available, false otherwise</returns>
-    public bool IsCOMServerAvailable();
+    public Task<bool> IsCOMServerAvailableAsync();
+
+    public event EventHandler<bool> COMServerAvailabilityChanged;
 }

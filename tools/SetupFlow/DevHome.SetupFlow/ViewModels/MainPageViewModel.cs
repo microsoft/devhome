@@ -63,14 +63,12 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
+        _wpm.COMServerAvailabilityChanged += (_, isAvailable) => EnablePackageInstallerItem = isAvailable;
     }
 
-    protected async override Task OnFirstNavigateToAsync()
+    protected async override Task OnEachNavigateToAsync()
     {
-        // If IsCOMServerAvailable is still being (lazily) evaluated form a
-        // previous call, then await until the thread is unblocked and the
-        // already computed value is returned.
-        EnablePackageInstallerItem = await Task.Run(() => _wpm.IsCOMServerAvailable());
+        EnablePackageInstallerItem = await _wpm.IsCOMServerAvailableAsync();
         if (EnablePackageInstallerItem)
         {
             Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");

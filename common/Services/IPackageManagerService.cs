@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 
@@ -16,4 +17,6 @@ public delegate bool PackageVersionCondition(PackageVersion version);
 public interface IPackageManagerService
 {
     public Task<bool> IsInstalledAsync(string packageFamilyName, PackageVersionCondition? versionCondition = null);
+
+    public Task<IReadOnlyCollection<PackageVersion>> GetInstalledVersionsAsync(string packageFamilyName);
 }

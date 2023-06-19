@@ -54,7 +54,7 @@ public class AppInstallManagerService : IAppInstallManagerService
         return await InstallAsync(productId, new AppInstallOptions
         {
             CompletedInstallToastNotificationMode = AppInstallationToastNotificationMode.Toast,
-            InstallInProgressToastNotificationMode = AppInstallationToastNotificationMode.NoToast,
+            InstallInProgressToastNotificationMode = AppInstallationToastNotificationMode.Toast,
             ForceUseOfNonRemovableStorage = false,
             Repair = false,
         });

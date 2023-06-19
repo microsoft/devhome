@@ -125,33 +125,7 @@ public partial class App : Application, IApp
         await Task.WhenAll(
             GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data),
             GetService<IAccountsService>().InitializeAsync(),
-            WindowsPackageManagerInitializationAsync());
-    }
-
-    private async Task WindowsPackageManagerInitializationAsync()
-    {
-        GlobalLog.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at app launch");
-        var wpm = GetService<IWindowsPackageManager>();
-        var catalogDataSourceLoader = GetService<CatalogDataSourceLoacder>();
-
-        await Task.Run(async () =>
-        {
-            // Initialize/Load catalogs from all data sources
-            GlobalLog.Logger?.ReportInfo($"Initializing App install catalogs data sources");
-            await catalogDataSourceLoader.InitializeAsync();
-            GlobalLog.Logger?.ReportInfo($"Found a total of {catalogDataSourceLoader.CatalogCount} catalogs");
-            if (wpm.IsCOMServerAvailable())
-            {
-                GlobalLog.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
-                GlobalLog.Logger?.ReportInfo($"Calling {nameof(wpm.ConnectToAllCatalogsAsync)} to connect to catalogs");
-                await wpm.ConnectToAllCatalogsAsync();
-            }
-            else
-            {
-                await wpm.StartAppInstallerUpdateAsync();
-                GlobalLog.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
-            }
-        });
+            GetService<IAppManagementRoutine>().InitializeAsync());
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)

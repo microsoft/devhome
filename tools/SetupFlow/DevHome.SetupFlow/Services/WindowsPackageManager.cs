@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
 using DevHome.Services;
@@ -18,7 +19,7 @@ namespace DevHome.SetupFlow.Services;
 /// <summary>
 /// Windows package manager class is an entry point for using the WinGet COM API.
 /// </summary>
-public class WindowsPackageManager : IWindowsPackageManager
+public class WindowsPackageManager : IWindowsPackageManager, IDisposable
 {
     public const int AppInstallerErrorFacility = 0xA15;
     public const string AppInstallerProductId = "9NBLGGH4NNS1";
@@ -37,8 +38,12 @@ public class WindowsPackageManager : IWindowsPackageManager
     private readonly Lazy<string> _msStoreCatalogId;
 
     // App installer
-    private readonly Lazy<bool> _isCOMServerAvailable;
-    private bool _appInstallerUpdateAvailable;
+    private readonly SemaphoreSlim _comServerPingLock = new (1, 1);
+    private PackageManager _packageManager;
+    private bool _comServerAvailable;
+    private bool _disposedValue;
+
+    public event EventHandler<bool> COMServerAvailabilityChanged;
 
     public WindowsPackageManager(
         WindowsPackageManagerFactory wingetFactory,
@@ -56,9 +61,6 @@ public class WindowsPackageManager : IWindowsPackageManager
         // Lazy-initialize predefined catalog ids
         _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
         _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
-
-        // Lazy-initialize COM server availability
-        _isCOMServerAvailable = new (IsCOMServerAvailableInternal);
     }
 
     public string WinGetCatalogId => _wingetCatalogId.Value;
@@ -135,16 +137,14 @@ public class WindowsPackageManager : IWindowsPackageManager
         };
     }
 
-    public bool IsCOMServerAvailable() => _isCOMServerAvailable.Value;
-
     public async Task<bool> IsAppInstallerUpdateAvailableAsync()
     {
         try
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, "Checking if AppInstaller has an update ...");
-            _appInstallerUpdateAvailable = await _appInstallManagerService.IsAppUpdateAvailableAsync(AppInstallerProductId);
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller update available = {_appInstallerUpdateAvailable}");
-            return _appInstallerUpdateAvailable;
+            var appInstallerUpdateAvailable = await _appInstallManagerService.IsAppUpdateAvailableAsync(AppInstallerProductId);
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller update available = {appInstallerUpdateAvailable}");
+            return appInstallerUpdateAvailable;
         }
         catch (Exception e)
         {
@@ -266,19 +266,61 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// dummy out-of-proc object
     /// </summary>
     /// <returns>True if server is available, false otherwise.</returns>
-    private bool IsCOMServerAvailableInternal()
+    public async Task<bool> IsCOMServerAvailableAsync()
     {
+        await _comServerPingLock.WaitAsync();
+
         try
         {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to create a dummy out-of-proc {nameof(WindowsPackageManager)} COM object to test if the COM server is available");
-            _wingetFactory.CreatePackageManager();
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"{nameof(WindowsPackageManager)} COM object created successfully");
+            await Task.Run(() =>
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to use out-of-proc COM object to test if the WinGet COM server is available");
+                _packageManager ??= _wingetFactory.CreatePackageManager();
+                _packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"WinGet COM Server is available");
+            });
+
+            if (!_comServerAvailable)
+            {
+                _comServerAvailable = true;
+                COMServerAvailabilityChanged?.Invoke(null, true);
+            }
+
             return true;
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create a {nameof(WindowsPackageManager)} COM object", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to use COM object. WinGet COM Server is not available.", e);
+            if (_comServerAvailable)
+            {
+                _comServerAvailable = false;
+                COMServerAvailabilityChanged?.Invoke(null, false);
+            }
+
             return false;
         }
+        finally
+        {
+            _comServerPingLock.Release();
+        }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _comServerPingLock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
