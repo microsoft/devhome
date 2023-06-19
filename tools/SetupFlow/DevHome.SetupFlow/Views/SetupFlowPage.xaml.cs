@@ -6,7 +6,6 @@ using DevHome.Common.Extensions;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.Views;
 

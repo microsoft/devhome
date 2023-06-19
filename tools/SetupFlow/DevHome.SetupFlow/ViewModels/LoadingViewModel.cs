@@ -22,7 +22,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.VisualBasic;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using WinUIEx;
 
