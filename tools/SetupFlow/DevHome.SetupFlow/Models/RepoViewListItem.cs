@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Windows.DevHome.SDK;
@@ -31,10 +32,13 @@ public partial class RepoViewListItem : ObservableObject
 
     public string RepoDisplayName => Path.Join(OwningAccountName, RepoName);
 
+    public DateTimeOffset LastUpdated { get; }
+
     public RepoViewListItem(IRepository repo)
     {
         IsPrivate = repo.IsPrivate;
         RepoName = repo.DisplayName;
         OwningAccountName = repo.OwningAccountName;
+        LastUpdated = repo.LastUpdated;
     }
 }
