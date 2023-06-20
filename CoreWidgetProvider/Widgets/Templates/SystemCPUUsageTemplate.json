@@ -4,8 +4,9 @@
     {
       "type": "Image",
       "url": "${cpuGraphUrl}",
-      "height": "100px",
-      "width": "268px"
+      "height": "102x",
+      "width": "264px",
+      "horizontalAlignment": "center"
     },
     {
       "type": "ColumnSet",
