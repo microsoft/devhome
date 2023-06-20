@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using DevHome.Common.Exceptions;
 using DevHome.Common.Services;
 using DevHome.Services;
 using DevHome.SetupFlow.Common.Extensions;

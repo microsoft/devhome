@@ -3,27 +3,30 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Windows.ApplicationModel;
 using Windows.Management.Deployment;
 
 namespace DevHome.Common.Services;
 
 /// <summary>
-/// Delegate for a package version condition
+/// Interface for using the deployment API
+/// <see cref="Windows.Management.Deployment.PackageManager"/>
 /// </summary>
-/// <param name="version">Package version</param>
-public delegate bool PackageVersionCondition(PackageVersion version);
-
 public interface IPackageDeploymentService
 {
-    public Task<bool> IsPackageFoundForCurrentUserAsync(string packageFamilyName, PackageVersionCondition? versionCondition = null);
-
-    public Task<IReadOnlyCollection<PackageVersion>> GetPackageVersionsForCurrentUserAsync(string packageFamilyName);
-
+    /// <summary>
+    /// Register a package for the current user
+    /// </summary>
+    /// <param name="packageFamilyName">Package family name</param>
+    /// <param name="options">Register package options</param>
+    /// <exception cref="RegisterPackageException">Exception thrown if registration failed</exception>
     public Task RegisterPackageForCurrentUserAsync(string packageFamilyName, RegisterPackageOptions? options = null);
 }
 
-public class RegisterPackageOptions
+/// <summary>
+/// Parameter object for <see cref="IPackageDeploymentService.RegisterPackageForCurrentUserAsync"/>
+/// More details: <seealso cref="PackageManager.RegisterPackageByFamilyNameAsync"/>
+/// </summary>
+public sealed class RegisterPackageOptions
 {
     public IEnumerable<string>? DependencyPackageFamilyNames { get; set; }
 
