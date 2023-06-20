@@ -65,7 +65,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
     }
 
-    protected async override Task OnEachNavigateToAsync()
+    protected async override Task OnFirstNavigateToAsync()
     {
         EnablePackageInstallerItem = await _wpm.IsCOMServerAvailableAsync();
         if (EnablePackageInstallerItem)
