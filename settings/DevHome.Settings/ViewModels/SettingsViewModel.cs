@@ -55,6 +55,7 @@ public partial class SettingsViewModel : ObservableObject
             new Setting("Accounts", string.Empty, stringResource.GetLocalized("Settings_Accounts_Header"), stringResource.GetLocalized("Settings_Accounts_Description"), "\ue77b", false),
             new Setting("Extensions", string.Empty, stringResource.GetLocalized("Settings_Extensions_Header"), stringResource.GetLocalized("Settings_Extensions_Description"), "\ued35", false),
             new Setting("About", string.Empty, stringResource.GetLocalized("Settings_About_Header"), stringResource.GetLocalized("Settings_About_Description"), "\ue946", false),
+            new Setting("Feedback", string.Empty, stringResource.GetLocalized("Settings_Feedback_Header"), stringResource.GetLocalized("Settings_Feedback_Description"), "\ued15", false),
         };
 
         foreach (var setting in settings)
@@ -80,6 +81,9 @@ public partial class SettingsViewModel : ObservableObject
                 return;
             case "About":
                 navigationService.NavigateTo(typeof(AboutViewModel).FullName!);
+                return;
+            case "Feedback":
+                navigationService.NavigateTo(typeof(FeedbackViewModel).FullName!);
                 return;
             default:
                 return;
