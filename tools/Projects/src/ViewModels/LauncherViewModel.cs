@@ -81,19 +81,27 @@ public class LauncherViewModel : ObservableObject
             fixed (char* file = argv[0], paramsPtr = @params, cwdPtr = cwd)
             {
                 var cp = new CreatingProcess { Environment = Environment };
-                var execInfo = new SHELLEXECUTEINFOW
+                var cpUnk = Marshal.GetIUnknownForObject(cp);
+                try
                 {
-                    cbSize = (uint)Marshal.SizeOf<SHELLEXECUTEINFOW>(),
-                    lpVerb = new PCWSTR(open),
-                    lpFile = file,
-                    lpParameters = paramsPtr,
-                    lpDirectory = cwdPtr,
-                    nShow = (int)SHOW_WINDOW_CMD.SW_SHOWNORMAL,
-                    fMask = SEE_MASK_FLAG_HINST_IS_SITE,
-                    hInstApp = new HINSTANCE(Marshal.GetIUnknownForObject(cp)),
-                };
+                    var execInfo = new SHELLEXECUTEINFOW
+                    {
+                        cbSize = (uint)Marshal.SizeOf<SHELLEXECUTEINFOW>(),
+                        lpVerb = new PCWSTR(open),
+                        lpFile = file,
+                        lpParameters = paramsPtr,
+                        lpDirectory = cwdPtr,
+                        nShow = (int)SHOW_WINDOW_CMD.SW_SHOWNORMAL,
+                        fMask = SEE_MASK_FLAG_HINST_IS_SITE,
+                        hInstApp = new HINSTANCE(cpUnk),
+                    };
 
-                PInvoke.ShellExecuteEx(ref execInfo);
+                    PInvoke.ShellExecuteEx(ref execInfo);
+                }
+                finally
+                {
+                    Marshal.Release(cpUnk);
+                }
             }
         }
     }
