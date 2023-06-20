@@ -210,4 +210,16 @@
   <data name="WhatsNewPage_Header.Text" xml:space="preserve">
     <value>Introducing Dev Home</value>
   </data>
+  <data name="WidgetsDisplayNameDev" xml:space="preserve">
+    <value>Core (Dev)</value>
+    <comment>The display name for core widgets provider</comment>
+  </data>
+  <data name="WidgetsDisplayNameCanary" xml:space="preserve">
+    <value>Core (Canary)</value>
+    <comment>The display name for core widgets provider</comment>
+  </data>
+  <data name="WidgetsDisplayNameStable" xml:space="preserve">
+    <value>Core (Preview)</value>
+    <comment>The display name for core widgets provider</comment>
+  </data>
 </root>

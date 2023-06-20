@@ -81,17 +81,20 @@ Try {
     $newPackageName = $null
     $newPackageDisplayName = $null
     $newAppDisplayNameResource = $null
+    $newWidgetsDisplayName = $null
 
     if ($AzureBuildingBranch -ieq "release") {
       $buildRing = "Stable"
       $newPackageName = "Microsoft.Windows.DevHome"
       $newPackageDisplayName = "Dev Home (Preview)"
       $newAppDisplayNameResource = "ms-resource:AppDisplayNameStable"
+      $newWidgetsDisplayName = "ms-resource:WidgetsDisplayNameStable"
     } elseif ($AzureBuildingBranch -ieq "staging") {
       $buildRing = "Canary"
       $newPackageName = "Microsoft.Windows.DevHome.Canary"
       $newPackageDisplayName = "Dev Home (Canary)"
       $newAppDisplayNameResource = "ms-resource:AppDisplayNameCanary"
+      $newWidgetsDisplayName = "ms-resource:WidgetsDisplayNameCanary"
     }
 
     [Reflection.Assembly]::LoadWithPartialName("System.Xml.Linq")
@@ -121,8 +124,13 @@ Try {
       foreach ($extension in $extensions) {
         if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
           $appExtension = $extension.Element($uapAppExtension)
-          if ($appExtension.Attribute("Name").Value -eq "com.microsoft.devhome") {
-            $appExtension.Attribute("DisplayName").Value = $newAppDisplayNameResource
+          switch ($appExtension.Attribute("Name").Value) {
+            "com.microsoft.devhome" {
+              $appExtension.Attribute("DisplayName").Value = $newAppDisplayNameResource
+            }
+            "com.microsoft.windows.widgets" {
+              $appExtension.Attribute("DisplayName").Value = $newWidgetsDisplayName
+            }
           }
         }
       }
@@ -162,8 +170,13 @@ Try {
     foreach ($extension in $extensions) {
       if ($extension.Attribute("Category").Value -eq "windows.appExtension") {
         $appExtension = $extension.Element($uapAppExtension)
-        if ($appExtension.Attribute("Name").Value -eq "com.microsoft.devhome") {
-          $appExtension.Attribute("DisplayName").Value = "ms-resource:AppDisplayNameDev"
+        switch ($appExtension.Attribute("Name").Value) {
+          "com.microsoft.devhome" {
+            $appExtension.Attribute("DisplayName").Value = "ms-resource:AppDisplayNameDev"
+          }
+          "com.microsoft.windows.widgets" {
+            $appExtension.Attribute("DisplayName").Value = "ms-resource:WidgetsDisplayNameDev"
+          }
         }
       }
     }
