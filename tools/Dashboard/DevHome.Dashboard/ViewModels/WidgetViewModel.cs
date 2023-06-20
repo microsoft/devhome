@@ -106,6 +106,11 @@ public partial class WidgetViewModel : ObservableObject
 
     private async void RenderWidgetFrameworkElement()
     {
+        if (_renderedCard != null)
+        {
+            _renderedCard.Action -= HandleAdaptiveAction;
+        }
+
         var cardTemplate = await Widget.GetCardTemplateAsync();
         var cardData = await Widget.GetCardDataAsync();
 
@@ -138,29 +143,32 @@ public partial class WidgetViewModel : ObservableObject
         }
 
         // Use the data to fill in the template.
-        AdaptiveCardParseResult card;
+        AdaptiveCardParseResult card = null;
         try
         {
-            var template = new AdaptiveCardTemplate(cardTemplate);
-            var json = template.Expand(cardData);
+            if (!string.IsNullOrEmpty(cardTemplate))
+            {
+                var template = new AdaptiveCardTemplate(cardTemplate);
+                var json = template.Expand(cardData);
 
-            // Use custom parser.
-            var elementParser = new AdaptiveElementParserRegistration();
-            elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
+                // Use custom parser.
+                var elementParser = new AdaptiveElementParserRegistration();
+                elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
 
-            // Create adaptive card.
-            card = AdaptiveCard.FromJsonString(json, elementParser, new AdaptiveActionParserRegistration());
+                // Create adaptive card.
+                card = AdaptiveCard.FromJsonString(json, elementParser, new AdaptiveActionParserRegistration());
+            }
+            else
+            {
+                ShowLoadingCard();
+                return;
+            }
         }
         catch (Exception ex)
         {
             Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
             ShowErrorCard("WidgetErrorCardDisplayText");
             return;
-        }
-
-        if (_renderedCard != null)
-        {
-            _renderedCard.Action -= HandleAdaptiveAction;
         }
 
         if (card == null || card.AdaptiveCard == null)
@@ -257,6 +265,24 @@ public partial class WidgetViewModel : ObservableObject
 
         grid.Children.Add(sp);
         return grid;
+    }
+
+    private void ShowLoadingCard()
+    {
+        _dispatcher.TryEnqueue(() =>
+        {
+            var grid = new Grid
+            {
+                Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent),
+                Padding = new Thickness(15, 0, 15, 0),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+            };
+
+            grid.Children.Add(new ProgressRing());
+
+            WidgetFrameworkElement = grid;
+        });
     }
 
     private async void HandleAdaptiveAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
