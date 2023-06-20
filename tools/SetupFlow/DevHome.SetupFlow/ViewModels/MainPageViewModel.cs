@@ -63,7 +63,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
-        _wpm.COMServerAvailabilityChanged += (_, isAvailable) => EnablePackageInstallerItem = isAvailable;
     }
 
     protected async override Task OnEachNavigateToAsync()

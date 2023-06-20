@@ -18,6 +18,7 @@ public class AppManagementInitializer : IAppManagementInitializer
         _catalogDataSourceLoader = catalogDataSourceLoader;
     }
 
+    /// <inheritdoc />
     public async Task InitializeAsync()
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing {nameof(AppManagementInitializer)}");
@@ -30,12 +31,19 @@ public class AppManagementInitializer : IAppManagementInitializer
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed {nameof(AppManagementInitializer)} initialization");
     }
 
+    /// <summary>
+    /// Initialize catalogs from all data sources (e.g. Restore packages, etc ...)
+    /// </summary>
     private async Task InitializeCatalogsAsync()
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Initialize catalogs from all data sources");
         await _catalogDataSourceLoader.InitializeAsync();
     }
 
+    /// <summary>
+    /// Try to register AppInstaller
+    /// </summary>
+    /// <returns>True if AppInstaller is registered, false otherwise</returns>
     private async Task<bool> TryRegisterAppInstallerAsync()
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Ensuring AppInstaller is registered ...");

@@ -3,11 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Exceptions;
-using DevHome.Common.Extensions;
-using Windows.ApplicationModel;
 using Windows.Management.Deployment;
 
 namespace DevHome.Common.Services;
@@ -16,6 +13,7 @@ public class PackageDeploymentService : IPackageDeploymentService
 {
     private readonly PackageManager _packageManager = new ();
 
+    /// <inheritdoc />
     public async Task RegisterPackageForCurrentUserAsync(string packageFamilyName, RegisterPackageOptions? options = null)
     {
         var result = await _packageManager.RegisterPackageByFamilyNameAsync(
@@ -29,11 +27,5 @@ public class PackageDeploymentService : IPackageDeploymentService
         {
             throw new RegisterPackageException(result.ErrorText, result.ExtendedErrorCode);
         }
-    }
-
-    private async Task<IEnumerable<Package>> FindInstalledPackagesForCurrentUserAsync(string packageFamilyName)
-    {
-        var currentUser = string.Empty;
-        return await Task.Run(() => _packageManager.FindPackagesForUser(currentUser, packageFamilyName));
     }
 }
