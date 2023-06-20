@@ -47,7 +47,7 @@
     },
     {
       "type": "TextBlock",
-      "subtle": "true",
+      "isSubtle": true,
       "text": "%CPUUsage_Widget_Template/Processes%",
       "wrap": true
     },
@@ -76,8 +76,7 @@
                 {
                   "type": "Action.Execute",
                   "title": "%CPUUsage_Widget_Template/End_Process%",
-                  "verb": "CpuKill1",
-                  "horizontalAlignment": "right"
+                  "verb": "CpuKill1"
                 }
               ]
             }
