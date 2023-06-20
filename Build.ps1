@@ -88,13 +88,13 @@ Try {
       $newPackageName = "Microsoft.Windows.DevHome"
       $newPackageDisplayName = "Dev Home (Preview)"
       $newAppDisplayNameResource = "ms-resource:AppDisplayNameStable"
-      $newWidgetsDisplayName = "ms-resource:WidgetsDisplayNameStable"
+      $newWidgetProviderDisplayName = "ms-resource:WidgetProviderDisplayNameStable"
     } elseif ($AzureBuildingBranch -ieq "staging") {
       $buildRing = "Canary"
       $newPackageName = "Microsoft.Windows.DevHome.Canary"
       $newPackageDisplayName = "Dev Home (Canary)"
       $newAppDisplayNameResource = "ms-resource:AppDisplayNameCanary"
-      $newWidgetsDisplayName = "ms-resource:WidgetsDisplayNameCanary"
+      $newWidgetProviderDisplayName = "ms-resource:WidgetProviderDisplayNameCanary"
     }
 
     [Reflection.Assembly]::LoadWithPartialName("System.Xml.Linq")
@@ -129,7 +129,7 @@ Try {
               $appExtension.Attribute("DisplayName").Value = $newAppDisplayNameResource
             }
             "com.microsoft.windows.widgets" {
-              $appExtension.Attribute("DisplayName").Value = $newWidgetsDisplayName
+              $appExtension.Attribute("DisplayName").Value = $newWidgetProviderDisplayName
             }
           }
         }
@@ -175,7 +175,7 @@ Try {
             $appExtension.Attribute("DisplayName").Value = "ms-resource:AppDisplayNameDev"
           }
           "com.microsoft.windows.widgets" {
-            $appExtension.Attribute("DisplayName").Value = "ms-resource:WidgetsDisplayNameDev"
+            $appExtension.Attribute("DisplayName").Value = "ms-resource:WidgetProviderDisplayNameDev"
           }
         }
       }
