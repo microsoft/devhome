@@ -78,7 +78,7 @@ public partial class App : Application, IApp
             services.AddSingleton<ITelemetry>(TelemetryFactory.Get<ITelemetry>());
             services.AddSingleton<IStringResource, StringResource>();
             services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
-            services.AddSingleton<IPackageManagerService, PackageManagerService>();
+            services.AddSingleton<IPackageDeploymentService, PackageDeploymentService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -125,7 +125,7 @@ public partial class App : Application, IApp
         await Task.WhenAll(
             GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data),
             GetService<IAccountsService>().InitializeAsync(),
-            GetService<IAppManagementRoutine>().InitializeAsync());
+            GetService<IAppManagementInitializer>().InitializeAsync());
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)

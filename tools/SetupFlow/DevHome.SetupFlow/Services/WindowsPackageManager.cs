@@ -27,7 +27,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
 
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;
-    private readonly IPackageManagerService _packageManagerService;
+    private readonly IPackageDeploymentService _packageDeploymentService;
 
     // Custom composite catalogs
     private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
@@ -48,11 +48,11 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     public WindowsPackageManager(
         WindowsPackageManagerFactory wingetFactory,
         IAppInstallManagerService appInstallManagerService,
-        IPackageManagerService packageManagerService)
+        IPackageDeploymentService packageDeploymentService)
     {
         _wingetFactory = wingetFactory;
         _appInstallManagerService = appInstallManagerService;
-        _packageManagerService = packageManagerService;
+        _packageDeploymentService = packageDeploymentService;
 
         // Lazy-initialize custom composite catalogs
         _allCatalogs = new (CreateAllCatalogs);
@@ -169,34 +169,23 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         }
     }
 
-    public async Task<bool> StartAppInstallerInstallAsync()
+    public async Task<bool> RegisterAppInstallerAsync()
     {
         try
         {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting AppInstaller install ...");
-            var installStarted = await _appInstallManagerService.StartAppInstallAsync(AppInstallerProductId);
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Start AppInstaller install = {installStarted}");
-            return installStarted;
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting AppInstaller registration ...");
+            await _packageDeploymentService.RegisterPackageForCurrentUserAsync(AppInstallerPackageFamilyName);
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller registered succcessfully");
+            return true;
         }
-        catch (Exception e)
+        catch (RegisterPackageException e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to start AppInstaller install", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to register AppInstaller", e);
             return false;
         }
-    }
-
-    public async Task<bool> IsAppInstallerInstalledAsync()
-    {
-        try
-        {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Checking if AppInstaller is installed ...");
-            var installed = await _packageManagerService.IsInstalledAsync(AppInstallerPackageFamilyName);
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller installed = {installed}");
-            return installed;
-        }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to check if AppInstaller is install. Defaulting to false.", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, "An unexpected error occurred when registering AppInstaller", e);
             return false;
         }
     }

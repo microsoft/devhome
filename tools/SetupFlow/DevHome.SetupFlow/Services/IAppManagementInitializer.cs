@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 
 namespace DevHome.SetupFlow.Services;
-public interface IAppManagementRoutine
+public interface IAppManagementInitializer
 {
     public Task InitializeAsync();
 }
