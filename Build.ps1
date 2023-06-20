@@ -81,7 +81,7 @@ Try {
     $newPackageName = $null
     $newPackageDisplayName = $null
     $newAppDisplayNameResource = $null
-    $newWidgetsDisplayName = $null
+    $newWidgetProviderDisplayName = $null
 
     if ($AzureBuildingBranch -ieq "release") {
       $buildRing = "Stable"
