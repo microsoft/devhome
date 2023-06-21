@@ -23,6 +23,9 @@ public class PackageDeploymentService : IPackageDeploymentService
             options?.AppDataVolume,
             options?.OptionalPackageFamilyNames ?? new List<string>());
 
+        // If registration failed, throw an exception with the failure text and inner exception.
+        // Note: This also makes the code more testable as DeploymentResult
+        // type returned by the original register method cannot be mocked.
         if (!result.IsRegistered)
         {
             throw new RegisterPackageException(result.ErrorText, result.ExtendedErrorCode);
