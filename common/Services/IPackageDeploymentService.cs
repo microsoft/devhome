@@ -24,7 +24,7 @@ public interface IPackageDeploymentService
 
 /// <summary>
 /// Parameter object for <see cref="IPackageDeploymentService.RegisterPackageForCurrentUserAsync"/>
-/// More details: https://learn.microsoft.com/en-us/uwp/api/windows.management.deployment.packagemanager.registerpackagebyfamilynameasync?view=winrt-22621
+/// More details: https://learn.microsoft.com/uwp/api/windows.management.deployment.packagemanager.registerpackagebyfamilynameasync?view=winrt-22621
 /// </summary>
 public sealed class RegisterPackageOptions
 {
