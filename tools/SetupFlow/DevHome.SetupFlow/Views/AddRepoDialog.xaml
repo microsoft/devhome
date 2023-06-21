@@ -70,7 +70,9 @@
                     <ComboBox x:Name="AccountsComboBox" IsEnabled="{x:Bind AddRepoViewModel.IsAccountComboBoxEnabled, Mode=OneWay}" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AccountComboBox_Description" Grid.Column="0" SelectionChanged="AccountsComboBox_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Accounts, Mode=OneWay}" />
                     <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
                 </Grid>
-                <ProgressRing Background="LightGray" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" Height="300" Width="300"/>
+                <Grid Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" Height="300" Width="300">
+                    <ProgressRing/>
+                </Grid>
                 <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
                     <ListView.Header>
                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoriesList" Margin="0, 0, 0, 8"/>
