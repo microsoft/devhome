@@ -7,8 +7,6 @@
                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
-               xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-               xmlns:i="using:Microsoft.Xaml.Interactivity"
                xmlns:labs="using:CommunityToolkit.Labs.WinUI"
                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
                mc:Ignorable="d"
@@ -28,7 +26,6 @@
                     <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
-                    <converters:BoolToObjectConverter x:Key="BoolToTextBrush" TrueValue="{ThemeResource TextFillColorPrimaryBrush}" FalseValue="{ThemeResource TextFillColorSecondaryBrush}"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

@@ -32,9 +32,6 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-                    <!-- Because a data template is an encapsulation layer, dynamic style lookups won't look past the data template.
-                         This means that using a converter to change foreground to a ThemeResource on a textblock does not work.
-                         The work around is to define the styles in a resource and use the keys in the data template.-->
                     <Style x:Key="PrimaryTextStyle" TargetType="TextBlock">
                         <Setter Property="Foreground">
                             <Setter.Value>
@@ -103,6 +100,24 @@
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:TaskInformation">
                             <StackPanel Orientation="Horizontal" Spacing="5">
+                                <StackPanel.Resources>
+                                    <ResourceDictionary>
+                                        <Style x:Key="PrimaryTextStyle" TargetType="TextBlock">
+                                            <Setter Property="Foreground">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Color="{ThemeResource TextFillColorPrimary}"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                        <Style x:Key="SecondaryTextStyle" TargetType="TextBlock">
+                                            <Setter Property="Foreground">
+                                                <Setter.Value>
+                                                    <SolidColorBrush Color="{ThemeResource TextFillColorSecondary}"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ResourceDictionary>
+                                </StackPanel.Resources>
                                 <ImageIcon
                                     Width="18"
                                     Height="18"
