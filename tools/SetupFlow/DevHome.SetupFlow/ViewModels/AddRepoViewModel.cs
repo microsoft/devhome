@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -136,6 +135,9 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private Visibility _shouldShowUrlError;
 
+    [ObservableProperty]
+    private bool _isFetchingRepos;
+
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
     /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"
@@ -245,6 +247,8 @@ public partial class AddRepoViewModel : ObservableObject
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
+
+        IsFetchingRepos = false;
     }
 
     /// <summary>
@@ -555,7 +559,7 @@ public partial class AddRepoViewModel : ObservableObject
     public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
     {
         _selectedAccount = loginId;
-
+        IsFetchingRepos = true;
         await Task.Run(() =>
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
@@ -564,6 +568,7 @@ public partial class AddRepoViewModel : ObservableObject
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
             _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
         });
+        IsFetchingRepos = false;
     }
 
     /// <summary>

@@ -7,8 +7,6 @@
                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
-               xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-               xmlns:i="using:Microsoft.Xaml.Interactivity"
                xmlns:labs="using:CommunityToolkit.Labs.WinUI"
                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
                mc:Ignorable="d"
@@ -24,9 +22,8 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml"/>
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Converters/Converters.xaml"/>
                 <ResourceDictionary>
-                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
-                    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
@@ -37,7 +34,7 @@
         <StackPanel x:Name="AddRepoStackPanel" Orientation="Vertical" Spacing="5" MinWidth="450" MinHeight="550"  MaxWidth="450">
             <StackPanel.Resources>
                 <ResourceDictionary>
-                    <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+                    <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource AccentButtonStyle}">
                         <Setter Property="Background">
                             <Setter.Value>
                                 <SolidColorBrush Color="{ThemeResource SystemAccentColor}"/>
@@ -73,7 +70,8 @@
                     <ComboBox x:Name="AccountsComboBox" IsEnabled="{x:Bind AddRepoViewModel.IsAccountComboBoxEnabled, Mode=OneWay}" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AccountComboBox_Description" Grid.Column="0" SelectionChanged="AccountsComboBox_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Accounts, Mode=OneWay}" />
                     <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
                 </Grid>
-                <ListView x:Name="RepositoriesListView" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
+                <ProgressRing Background="LightGray" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" Height="300" Width="300"/>
+                <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
                     <ListView.Header>
                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoriesList" Margin="0, 0, 0, 8"/>
                     </ListView.Header>
