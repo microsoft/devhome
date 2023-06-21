@@ -247,8 +247,6 @@ public partial class AddRepoViewModel : ObservableObject
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
-
-        IsFetchingRepos = false;
     }
 
     /// <summary>
