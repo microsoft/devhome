@@ -26,6 +26,7 @@ public class AppManagementInitializer : IAppManagementInitializer
         if (await TryRegisterAppInstallerAsync())
         {
             await _wpm.ConnectToAllCatalogsAsync();
+            await LoadCatalogsAsync();
         }
 
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed {nameof(AppManagementInitializer)} initialization");
@@ -38,6 +39,18 @@ public class AppManagementInitializer : IAppManagementInitializer
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Initialize catalogs from all data sources");
         await _catalogDataSourceLoader.InitializeAsync();
+    }
+
+    /// <summary>
+    /// Loading catalogs from all data sources(e.g. Restore packages, etc ...)
+    /// </summary>
+    private async Task LoadCatalogsAsync()
+    {
+        Log.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to reduce the wait time when this information is requested");
+        await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
+        {
+            Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
+        }
     }
 
     /// <summary>
