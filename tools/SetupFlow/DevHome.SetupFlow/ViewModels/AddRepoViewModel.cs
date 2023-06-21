@@ -192,16 +192,16 @@ public partial class AddRepoViewModel : ObservableObject
     private IEnumerable<RepoViewListItem> OrderRepos(IEnumerable<IRepository> repos)
     {
         var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase))
-            .OrderBy(x => x.LastUpdated)
+            .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
         var userRepos = repos.Where(x => x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase));
         var userPublicRepos = userRepos.Where(x => !x.IsPrivate)
-            .OrderBy(x => x.LastUpdated)
+            .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
         var userPrivateRepos = userRepos.Where(x => x.IsPrivate)
-            .OrderBy(x => x.LastUpdated)
+            .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
         return userPrivateRepos
