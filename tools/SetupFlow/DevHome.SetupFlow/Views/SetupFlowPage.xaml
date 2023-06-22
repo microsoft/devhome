@@ -18,7 +18,7 @@
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
-        <converters:BoolToVisibilityConverter x:Key="NegateBoolToVisibility" TrueValue="Collapsed" FalseValue="Visible" />
+        <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
     </Page.Resources>
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
@@ -85,7 +85,7 @@
                                 Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
                                 MinWidth="120" Margin="4,0"
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel"
-                                Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowDoneButton, Mode=OneWay, Converter={StaticResource NegateBoolToVisibility}}"/>
+                                Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowDoneButton, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
                             <Button
                                 Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
                                 MinWidth="120" Margin="4,0"

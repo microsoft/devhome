@@ -10,7 +10,7 @@
     <UserControl.Resources>
         <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
         <converters:BoolToObjectConverter x:Key="StepperBoolToGlyphBrushConverter" TrueValue="{ThemeResource AccentFillColorDisabledBrush}" FalseValue="{ThemeResource AccentFillColorDefaultBrush}" />
-        <converters:BoolToObjectConverter x:Key="BoolToInverseVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        <converters:BoolToObjectConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
         <!-- If no custom header template was provided, display a TextBlock -->
         <ControlTemplate x:Name="defaultHeaderTemplate">
             <ContentPresenter />
@@ -56,7 +56,7 @@
                                           Glyph="&#xEA3B;"
                                           Foreground="{x:Bind IsUpcomingPage, Converter={StaticResource StepperBoolToGlyphBrushConverter}}" />
                                 <TextBlock VerticalAlignment="Center" Text="{x:Bind PageTitle}" />
-                                <StackPanel VerticalAlignment="Center" Visibility="{x:Bind IsLastStepPage, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+                                <StackPanel VerticalAlignment="Center" Visibility="{x:Bind IsLastStepPage, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
                                     <ProgressBar Width="20" Value="100"
                                                  Visibility="{x:Bind IsPastPage}"
                                                  Background="{ThemeResource AccentFillColorDisabledBrush}" />

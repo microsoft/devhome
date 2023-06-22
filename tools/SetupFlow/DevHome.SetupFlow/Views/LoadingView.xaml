@@ -19,7 +19,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
                 <ResourceDictionary>
-                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityInvertedConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+                    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
                     <converters:BoolNegationConverter x:Key="BoolNegation"/>
                 </ResourceDictionary>
                 <ResourceDictionary>
@@ -94,7 +94,7 @@
                                 <!-- If the status icon is visible it means the task has stopped.  Don't show progress ring.-->
                                 <ProgressRing
                                     IsActive="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource BoolNegation}}"
-                                    Visibility="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}"
+                                    Visibility="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                                     Width="20" Height="20"/>
                                 <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center"/>
                             </StackPanel>
