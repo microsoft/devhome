@@ -9,7 +9,6 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:BoolToObjectConverter x:Key="StepperBoolToGlyphBrushConverter" TrueValue="{ThemeResource AccentFillColorDisabledBrush}" FalseValue="{ThemeResource AccentFillColorDefaultBrush}" />
         <converters:BoolToObjectConverter x:Key="BoolToInverseVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
         <!-- If no custom header template was provided, display a TextBlock -->
@@ -29,7 +28,7 @@
             <TextBlock
                 Style="{ThemeResource TitleTextBlockStyle}"
                 TextWrapping="WrapWholeWords"
-                Visibility="{x:Bind UseOrchestratorTitle, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                Visibility="{x:Bind UseOrchestratorTitle, Mode=OneWay}"
                 Text="{x:Bind Orchestrator.FlowTitle}" />
             <TextBlock
                 Style="{ThemeResource TitleTextBlockStyle}"
@@ -43,7 +42,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <!-- Stepper showing the progress within the flow -->
-            <StackPanel Visibility="{x:Bind Orchestrator.CurrentPageViewModel.IsStepPage, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+            <StackPanel Visibility="{x:Bind Orchestrator.CurrentPageViewModel.IsStepPage, Mode=OneWay}">
                 <ItemsRepeater ItemsSource="{x:Bind Orchestrator.SetupStepPages, Mode=OneWay}">
                     <ItemsRepeater.Layout>
                         <StackLayout Orientation="Horizontal" Spacing="5"/>
@@ -51,7 +50,7 @@
                     <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:SetupPageViewModelBase">
                             <StackPanel Spacing="8" Orientation="Horizontal"
-                                Visibility="{x:Bind IsStepPage, Converter={StaticResource BoolToVisibilityConverter}}">
+                                Visibility="{x:Bind IsStepPage}">
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"
                                           FontSize="16"
                                           Glyph="&#xEA3B;"
@@ -59,13 +58,13 @@
                                 <TextBlock VerticalAlignment="Center" Text="{x:Bind PageTitle}" />
                                 <StackPanel VerticalAlignment="Center" Visibility="{x:Bind IsLastStepPage, Converter={StaticResource BoolToInverseVisibilityConverter}}">
                                     <ProgressBar Width="20" Value="100"
-                                                 Visibility="{x:Bind IsPastPage, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                 Visibility="{x:Bind IsPastPage}"
                                                  Background="{ThemeResource AccentFillColorDisabledBrush}" />
                                     <ProgressBar Width="20" Value="50"
-                                                 Visibility="{x:Bind IsCurrentPage, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                 Visibility="{x:Bind IsCurrentPage}"
                                                  Background="{ThemeResource AccentFillColorDisabledBrush}" />
                                     <ProgressBar Width="20" Value="0"
-                                                 Visibility="{x:Bind IsUpcomingPage, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                 Visibility="{x:Bind IsUpcomingPage}"
                                                  Background="{ThemeResource AccentFillColorDisabledBrush}" />
                                 </StackPanel>
                             </StackPanel>
