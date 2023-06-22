@@ -10,7 +10,7 @@
     <UserControl.Resources>
         <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
         <converters:BoolToObjectConverter x:Key="StepperBoolToGlyphBrushConverter" TrueValue="{ThemeResource AccentFillColorDisabledBrush}" FalseValue="{ThemeResource AccentFillColorDefaultBrush}" />
-        <converters:BoolToObjectConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
         <!-- If no custom header template was provided, display a TextBlock -->
         <ControlTemplate x:Name="defaultHeaderTemplate">
             <ContentPresenter />
