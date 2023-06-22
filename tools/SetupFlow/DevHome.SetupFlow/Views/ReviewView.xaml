@@ -37,6 +37,7 @@
     <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_ReadAndAgree"
+            Visibility="{x:Bind ViewModel.RequiresTermsAgreement, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
 
@@ -110,7 +111,7 @@
                 </Expander>
 
                 <StackPanel Style="{StaticResource ReviewStackPanelStyle}"
-                            Visibility="{x:Bind ViewModel.HasApplicationsToInstall, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            Visibility="{x:Bind ViewModel.RequiresTermsAgreement, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsTitle" />
                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
