@@ -27,19 +27,17 @@ public sealed partial class RepoConfigView : UserControl
     {
         relatedActivityId = Guid.NewGuid();
         this.InitializeComponent();
-
-        var selectorService = Application.Current.GetService<IThemeSelectorService>();
-        selectorService.ThemeChanged += OnThemeChanged;
+        ActualThemeChanged += OnThemeChanged;
     }
 
-    public void OnThemeChanged(object sender, ElementTheme theme)
+    public void OnThemeChanged(FrameworkElement sender, object args)
     {
         if (ViewModel != null)
         {
             // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
             foreach (var cloneInformation in ViewModel.RepoReviewItems)
             {
-                cloneInformation.SetIcon(theme);
+                cloneInformation.SetIcon(sender.ActualTheme);
             }
         }
     }
