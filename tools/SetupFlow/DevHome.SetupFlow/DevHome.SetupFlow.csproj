@@ -47,9 +47,6 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Page Update="Converts\Converters.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Content Update="Assets\DevHomeFluentIcons.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -61,7 +58,6 @@
   <ItemGroup>
     <None Remove="Assets\DevHomeFluentIcons.ttf" />
     <None Remove="Controls\SetupFlowNavigation.xaml" />
-    <None Remove="Converters\Converters.xaml" />
     <None Remove="NativeMethods.txt" />
     <None Remove="SetupFlowPage.xaml" />
     <None Remove="Controls\SetupShell.xaml" />
