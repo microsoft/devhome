@@ -8,17 +8,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-    xmlns:settings="using:DevHome.Settings.ViewModels"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:behaviors="using:DevHome.Common.Behaviors" 
-    xmlns:helpers="using:DevHome.Common.Helpers"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
-    <Page.Resources>
-        <ResourceDictionary>
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
-        </ResourceDictionary>
-    </Page.Resources>
 
     <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{StaticResource ContentPageMargin}">
         <Grid>
