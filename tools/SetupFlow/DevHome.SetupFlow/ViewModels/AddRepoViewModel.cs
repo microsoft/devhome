@@ -230,8 +230,6 @@ public partial class AddRepoViewModel : ObservableObject
         get; set;
     }
 
-    private readonly ElementTheme _currentTheme;
-
     public AddRepoViewModel(ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
     {
         _stringResource = stringResource;
@@ -246,8 +244,6 @@ public partial class AddRepoViewModel : ObservableObject
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
-
-        _currentTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
     }
 
     /// <summary>
@@ -456,7 +452,6 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.OwningAccount = developerId;
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
-            cloningInformation.SetIcon(_currentTheme);
             EverythingToClone.Add(cloningInformation);
         }
     }
@@ -545,7 +540,6 @@ public partial class AddRepoViewModel : ObservableObject
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
 
-        cloningInformation.SetIcon(_currentTheme);
         EverythingToClone.Add(cloningInformation);
     }
 

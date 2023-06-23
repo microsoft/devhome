@@ -27,10 +27,24 @@ public sealed partial class RepoConfigView : UserControl
     {
         relatedActivityId = Guid.NewGuid();
         this.InitializeComponent();
-        ActualThemeChanged += OnThemeChanged;
+        ActualThemeChanged += OnActualThemeChanged;
+
+        Application.Current.GetService<IThemeSelectorService>().ThemeChanged += OnThemeChanged;
     }
 
-    public void OnThemeChanged(FrameworkElement sender, object args)
+    private void OnThemeChanged(object sender, ElementTheme e)
+    {
+        if (ViewModel != null)
+        {
+            // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
+            foreach (var cloneInformation in ViewModel.RepoReviewItems)
+            {
+                cloneInformation.SetIcon(e);
+            }
+        }
+    }
+
+    public void OnActualThemeChanged(FrameworkElement sender, object args)
     {
         if (ViewModel != null)
         {
@@ -67,9 +81,8 @@ public sealed partial class RepoConfigView : UserControl
         var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList());
         var getPluginsTask = addRepoDialog.GetPluginsAsync();
         var setupDevDrivesTask = addRepoDialog.SetupDevDrivesAsync();
-        var themeService = Application.Current.GetService<IThemeSelectorService>();
         addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
-        addRepoDialog.RequestedTheme = themeService.Theme;
+        addRepoDialog.RequestedTheme = ActualTheme;
 
         // Start
         await getPluginsTask;
@@ -91,6 +104,11 @@ public sealed partial class RepoConfigView : UserControl
         // save cloneLocationKind for telemetry
         CloneLocationKind cloneLocationKind = CloneLocationKind.LocalPath;
         var everythingToClone = addRepoDialog.AddRepoViewModel.EverythingToClone;
+
+        foreach (var repoToClone in everythingToClone)
+        {
+            repoToClone.SetIcon(ActualTheme);
+        }
 
         // Handle the case the user de-selected all repos.
         if (result == ContentDialogResult.Primary && !everythingToClone.Any())
