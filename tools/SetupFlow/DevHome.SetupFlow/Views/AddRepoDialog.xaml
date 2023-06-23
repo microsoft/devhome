@@ -8,9 +8,9 @@
                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
                xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-               x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
-               mc:Ignorable="d"
                xmlns:models="using:DevHome.SetupFlow.Models"
+               mc:Ignorable="d"
+               x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
                x:Name="AddRepoContentDialog"
                PrimaryButtonClick="AddRepoContentDialog_PrimaryButtonClick"
                IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldPrimaryButtonBeEnabled, Mode=OneWay}"
@@ -23,8 +23,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml"/>
                 <ResourceDictionary>
+                    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
-                    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
