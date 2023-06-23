@@ -31,6 +31,53 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class AddRepoViewModel : ObservableObject
 {
+    [ObservableProperty]
+    private string _cloneLocation;
+
+    [ObservableProperty]
+    private string _cloneLocationAlias;
+
+    [ObservableProperty]
+    private bool _shouldShowFilePicker;
+
+    [ObservableProperty]
+    private bool _isDevDriveScenario;
+
+    [ObservableProperty]
+    private bool _isBrowseButtonEnabled;
+
+    [ObservableProperty]
+    private bool _shouldShowUrlPage;
+
+    [ObservableProperty]
+    private bool _shouldShowAccountPage;
+
+    [ObservableProperty]
+    private bool _shouldShowRepoPage;
+
+    private AddViaUrlViewModel _addViaUrlViewModel;
+
+    private AddViaAccountViewModel _addViaAccountViewModel;
+
+    public AddRepoViewModel(ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
+    {
+        /*
+        _stringResource = stringResource;
+        ChangeToUrlPage();
+
+        // override changes ChangeToUrlPage to correctly set the state.
+        UrlParsingError = string.Empty;
+        ShouldShowUrlError = Visibility.Collapsed;
+        ShouldPrimaryButtonBeEnabled = false;
+        ShowErrorTextBox = Visibility.Collapsed;
+        EverythingToClone = new ();
+
+        _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
+        EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
+        */
+    }
+
+    /*
     private readonly ISetupFlowStringResource _stringResource;
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
@@ -42,17 +89,6 @@ public partial class AddRepoViewModel : ObservableObject
     {
         get; set;
     }
-
-    /// <summary>
-    /// The url of the repository the user wants to clone.
-    /// </summary>
-    [ObservableProperty]
-    private string _url = string.Empty;
-
-    /// <summary>
-    /// All the providers Dev Home found.  Used for logging in the accounts and getting all repositories.
-    /// </summary>
-    private RepositoryProviders _providers;
 
     /// <summary>
     /// The list of all repositories shown to the user on the repositories page.
@@ -231,22 +267,9 @@ public partial class AddRepoViewModel : ObservableObject
         get; set;
     }
 
-    public AddRepoViewModel(ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
-    {
-        _stringResource = stringResource;
-        ChangeToUrlPage();
+    */
 
-        // override changes ChangeToUrlPage to correctly set the state.
-        UrlParsingError = string.Empty;
-        ShouldShowUrlError = Visibility.Collapsed;
-        ShouldPrimaryButtonBeEnabled = false;
-        ShowErrorTextBox = Visibility.Collapsed;
-        EverythingToClone = new ();
-
-        _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
-        EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
-    }
-
+    /*
     /// <summary>
     /// Gets all the plugins the DevHome can see.
     /// </summary>
@@ -594,4 +617,5 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
         }
     }
+    */
 }
