@@ -28,7 +28,6 @@
                     </Style>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionToVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
             <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionToInverseVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         </ResourceDictionary>
@@ -117,7 +116,7 @@
                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_Terms" />
                     <commonviews:HyperlinkTextBlock
-                        Visibility="{x:Bind ViewModel.HasMSStoreApplicationsToInstall, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                        Visibility="{x:Bind ViewModel.HasMSStoreApplicationsToInstall, Mode=OneWay}"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_MSStoreTerms" />
                 </StackPanel>
             </StackPanel>
