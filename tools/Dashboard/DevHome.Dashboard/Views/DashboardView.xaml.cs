@@ -345,7 +345,7 @@ public partial class DashboardView : ToolPage
                     Log.Logger()?.ReportInfo("DashboardView", $"GetWidgetCustomState: {stateStr}");
                     if (!string.IsNullOrEmpty(stateStr))
                     {
-                        var stateObj = System.Text.Json.JsonSerializer.Deserialize<WidgetCustomState>(stateStr);
+                        var stateObj = System.Text.Json.JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
                         if (stateObj.Host == WidgetHelpers.DevHomeHostName)
                         {
                             var size = await widget.GetSizeAsync();

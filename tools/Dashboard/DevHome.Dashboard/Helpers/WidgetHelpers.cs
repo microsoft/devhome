@@ -79,6 +79,7 @@ internal class WidgetHelpers
         {
             Host = DevHomeHostName,
         };
-        return JsonSerializer.Serialize(state);
+
+        return JsonSerializer.Serialize(state, SourceGenerationContext.Default.WidgetCustomState);
     }
 }

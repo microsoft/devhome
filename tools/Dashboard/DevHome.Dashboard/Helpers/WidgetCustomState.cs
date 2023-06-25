@@ -4,8 +4,13 @@
 using System.Text.Json.Serialization;
 
 namespace DevHome.Dashboard.Helpers;
-internal class WidgetCustomState
+internal sealed class WidgetCustomState
 {
     [JsonPropertyName("host")]
     public string Host { get; set; }
+}
+
+[JsonSerializable(typeof(WidgetCustomState))]
+internal sealed partial class SourceGenerationContext : JsonSerializerContext
+{
 }
