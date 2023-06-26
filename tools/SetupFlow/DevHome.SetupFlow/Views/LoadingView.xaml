@@ -19,8 +19,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
                 <ResourceDictionary>
-                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
-                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityInvertedConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+                    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
                     <converters:BoolNegationConverter x:Key="BoolNegation"/>
                     <converters:BoolToObjectConverter x:Key="BoolToTextBrush" TrueValue="{ThemeResource PrimaryTextStyle}" FalseValue="{ThemeResource SecondaryTextStyle}"/>
                 </ResourceDictionary>
@@ -52,7 +51,7 @@
     </UserControl.Resources>
 
     <StackPanel x:Name="LoadingPageStackPanel" Orientation="Vertical" Spacing="20">
-        <Grid Visibility="{x:Bind ViewModel.ShowOutOfRetriesBanner, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"  Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10">
+        <Grid Visibility="{x:Bind ViewModel.ShowOutOfRetriesBanner, Mode=OneWay}" Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition MinWidth="100" />
@@ -121,13 +120,17 @@
                                 <ImageIcon
                                     Width="18"
                                     Height="18"
-                                    Visibility="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    Visibility="{x:Bind StatusIconGridVisibility, Mode=OneWay}"
                                     Source="{x:Bind StatusSymbolIcon, Mode=OneWay}"/>
 
                                 <!-- If the status icon is visible it means the task has stopped.  Don't show progress ring.-->
                                 <ProgressRing
                                     IsActive="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource BoolNegation}}"
+<<<<<<< HEAD
                                     Visibility="{x:Bind ShouldShowProgressRing, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+=======
+                                    Visibility="{x:Bind StatusIconGridVisibility, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
+>>>>>>> main
                                     Width="20" Height="20"/>
                                 <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" VerticalAlignment="Center" Style="{x:Bind ShouldShowProgressRing, Mode=OneWay, Converter={StaticResource BoolToTextBrush}}"/>
                             </StackPanel>
