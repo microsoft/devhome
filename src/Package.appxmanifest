@@ -61,7 +61,7 @@
           </uap3:AppExtension>
         </uap3:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="ms-resource:WidgetsDisplayNameDev" Id="CoreWidgetProvider" PublicFolder="Public">
+          <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="ms-resource:WidgetProviderDisplayNameDev" Id="CoreWidgetProvider" PublicFolder="Public">
             <uap3:Properties>
               <WidgetProvider>
                 <ProviderIcons>
