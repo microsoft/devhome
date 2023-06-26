@@ -106,7 +106,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void RemoveRestartGrid()
     {
-        _showRestartNeeded = Visibility.Collapsed;
+        ShowRestartNeeded = Visibility.Collapsed;
     }
 
     /// <summary>
@@ -167,20 +167,23 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _wpm = wpm;
         _packageProvider = packageProvider;
         _catalogDataSourceLoacder = catalogDataSourceLoader;
-        IsNavigationBarVisible = true;
         _configurationUnitResults = new (GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
+
+        IsNavigationBarVisible = true;
+        IsStepPage = false;
     }
 
     protected async override Task OnFirstNavigateToAsync()
     {
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_NavigatedTo_Event");
         _orchestrator.ReleaseRemoteFactory();
         await ReloadCatalogsAsync();
     }
 
     private async Task ReloadCatalogsAsync()
     {
-        // After installing packages, we should reconnect to catalogs to
+        // After installing packages, reconnect to catalogs to
         // reflect the latest changes when new Package COM objects are created
         Log.Logger?.ReportInfo(Log.Component.Summary, $"Checking if a new catalog connections should be established");
         if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
@@ -201,7 +204,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
-    /// Get the list of configuratoin unit restults for an applied
+    /// Get the list of configuration unit results for an applied
     /// configuration file task.
     /// </summary>
     /// <returns>List of configuration unit result</returns>

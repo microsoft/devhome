@@ -47,6 +47,10 @@ public partial class DashboardView : ToolPage
     private static SortedDictionary<string, BitmapImage> _widgetLightIconCache;
     private static SortedDictionary<string, BitmapImage> _widgetDarkIconCache;
 
+    private readonly Version minSupportedVersion400 = new (423, 3800);
+    private readonly Version minSupportedVersion500 = new (523, 3300);
+    private readonly Version version500 = new (500, 0);
+
     public DashboardView()
     {
         ViewModel = new DashboardViewModel();
@@ -63,9 +67,12 @@ public partial class DashboardView : ToolPage
         _widgetLightIconCache = new SortedDictionary<string, BitmapImage>();
         _widgetDarkIconCache = new SortedDictionary<string, BitmapImage>();
 
+        _renderer = new AdaptiveCardRenderer();
+        _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
         ActualThemeChanged += OnActualThemeChanged;
 
-        // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
+        // If this is the first time initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
         {
             if (EnsureWebExperiencePack())
@@ -80,7 +87,7 @@ public partial class DashboardView : ToolPage
         }
         else
         {
-            // If above initialization failed, we don't have any widgets, so show the message.
+            // If above initialization failed, there are no widgets, show the message.
             NoWidgetsStackPanel.Visibility = Visibility.Visible;
         }
 
@@ -98,8 +105,6 @@ public partial class DashboardView : ToolPage
             // The GUID is this app's Host GUID that Widget Platform will use to identify this host.
             _widgetHost = WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031"));
             _widgetCatalog = WidgetCatalog.GetDefault();
-            _renderer = new AdaptiveCardRenderer();
-            _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
             _widgetCatalog.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
             _widgetCatalog.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
@@ -118,24 +123,20 @@ public partial class DashboardView : ToolPage
 
     private bool EnsureWebExperiencePack()
     {
-        // If we've already validated there's a good version, don't check again.
+        // If already validated there's a good version, don't check again.
         if (_validatedWebExpPack)
         {
             return true;
         }
 
-        // Ensure that the application is installed, and that the version is high enough.
+        // Ensure the application is installed, and the version is high enough.
         const string packageName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
-        const int stableVer = 423;
-        const int stableMin = 3800; // 423.3800.0.0
-        const int stageVer = 523;
-        const int stageMin = 3300; // 523.3300.0.0
 
         var packageManager = new PackageManager();
         var packages = packageManager.FindPackagesForUser(string.Empty, packageName);
         if (packages.Any())
         {
-            // A user cannot actually have more than one version installed.
+            // A user cannot actually have more than one version installed, so only need to look at the first result.
             var package = packages.First();
 
             var version = package.Id.Version;
@@ -144,7 +145,8 @@ public partial class DashboardView : ToolPage
 
             Log.Logger()?.ReportInfo("DashboardView", $"{package.Id.FullName} Version: {major}.{minor}");
 
-            if ((major < stableVer) || (major == stableVer && minor < stableMin) || (major == stageVer && minor < stageMin))
+            // Create System.Version type from PackageVersion to test. System.Version supports CompareTo() for easy comparisons.
+            if (!IsVersionSupported(new (major, minor)))
             {
                 return false;
             }
@@ -158,6 +160,18 @@ public partial class DashboardView : ToolPage
         _validatedWebExpPack = true;
         return _validatedWebExpPack;
     }
+
+    /// <summary>
+    /// Tests whether a version is equal to or above the min, but less than the max.
+    /// </summary>
+    private bool IsVersionBetween(Version target, Version min, Version max) => target.CompareTo(min) >= 0 && target.CompareTo(max) < 0;
+
+    /// <summary>
+    /// Tests whether a version is equal to or above the min.
+    /// </summary>
+    private bool IsVersionAtOrAbove(Version target, Version min) => target.CompareTo(min) >= 0;
+
+    private bool IsVersionSupported(Version target) => IsVersionBetween(target, minSupportedVersion400, version500) || IsVersionAtOrAbove(target, minSupportedVersion500);
 
     private async Task<AdaptiveCardRenderer> GetConfigurationRendererAsync()
     {
@@ -174,6 +188,12 @@ public partial class DashboardView : ToolPage
     {
         // The app uses a different host config to render widgets (adaptive cards) in light and dark themes.
         await ConfigureWidgetRenderer(_renderer);
+
+        // Re-render the widgets with the new theme and renderer.
+        foreach (var widget in PinnedWidgets)
+        {
+            widget.Render();
+        }
     }
 
     private async Task ConfigureWidgetRenderer(AdaptiveCardRenderer renderer)
@@ -213,9 +233,16 @@ public partial class DashboardView : ToolPage
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
+        LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
+
         // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
         await CacheWidgetIcons();
+
+        await ConfigureWidgetRenderer(_renderer);
+
         RestorePinnedWidgets(null, null);
+
+        LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
     }
 
     private async Task CacheWidgetIcons()
@@ -304,9 +331,6 @@ public partial class DashboardView : ToolPage
 
     private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
     {
-        // TODO: Ideally there would be some sort of visual loading indicator while the renderer gets set up.
-        await ConfigureWidgetRenderer(_renderer);
-
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
         var pinnedWidgets = _widgetHost.GetWidgets();
         if (pinnedWidgets != null)
@@ -351,6 +375,7 @@ public partial class DashboardView : ToolPage
             {
                 _widgetHostInitialized = InitializeWidgetHost();
                 await CacheWidgetIcons();
+                await ConfigureWidgetRenderer(_renderer);
             }
             else
             {
@@ -486,9 +511,11 @@ public partial class DashboardView : ToolPage
                 // If the size the widget is currently set to is no longer supported by the widget, revert to its default size.
                 // TODO: Need to update WidgetControl with now-valid sizes.
                 // TODO: Properly compare widget capabilities.
+                // https://github.com/microsoft/devhome/issues/641
                 if (oldDef.GetWidgetCapabilities() != newDef.GetWidgetCapabilities())
                 {
                     // TODO: handle the case where this change is made while Dev Home is not running -- how do we restore?
+                    // https://github.com/microsoft/devhome/issues/641
                     if (!newDef.GetWidgetCapabilities().Any(cap => cap.Size == widgetToUpdate.WidgetSize))
                     {
                         var newDefaultSize = WidgetHelpers.GetDefaultWidgetSize(newDef.GetWidgetCapabilities());
@@ -499,6 +526,7 @@ public partial class DashboardView : ToolPage
             }
 
             // TODO: ThemeResource (icons) changed.
+            // https://github.com/microsoft/devhome/issues/641
         }
     }
 

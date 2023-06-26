@@ -175,12 +175,13 @@ public class PluginService : IPluginService
                         else
                         {
                             // TODO: throw warning or fire notification that plugin declared unsupported plugin interface
+                            // https://github.com/microsoft/devhome/issues/617
                         }
                     }
                 }
 
                 var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(classId + "-ExtensionDisabled");
+                var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(extension.Package.Id.FullName + "-ExtensionDisabled");
 
                 _installedPlugins.Add(pluginWrapper);
                 if (!isPluginDisabled)

@@ -43,7 +43,7 @@ public sealed partial class PackageCatalogView : UserControl
 
     /// <summary>
     /// Gets or sets the max size of each package group. If the total number of
-    /// packages is not divisible by the group size, then the lsat group will
+    /// packages is not divisible by the group size, then the last group will
     /// have less packages.
     /// </summary>
     public int GroupSize
@@ -114,10 +114,26 @@ public sealed partial class PackageCatalogView : UserControl
         UpdateFlipViewHeight();
     }
 
-    /// <summary>
-    /// Handler for <see cref="FrameworkElement.LayoutUpdated"/>.
-    /// </summary>
-    private void OnLayoutUpdated(object sender, object e) => UpdateFlipViewHeight();
+    private void SettingsCard_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        // Manually update the height of the FlipView since by default the
+        // control does not auto-resize to fit its current selected panel
+        // content. The FlipView content (grid of package cards) is by default
+        // responsive/adaptive to the screen size, hence the expected behavior
+        // is for the FlipView control to automatically adjust its height as
+        // the width of the panel changes. To avoid possible layout cycle
+        // exceptions, we use the SizeChanged event on an adjacent node and
+        // register a handler to perform the FlipView height update.
+        UpdateFlipViewHeight();
+    }
+
+    private void PackagesFlipView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        // Update the FlipView height when navigating to the next/previous
+        // panel of package cards (e.g. last panel might have less items, hence
+        // update the FlipView height accordingly)
+        UpdateFlipViewHeight();
+    }
 
     public static readonly DependencyProperty CatalogProperty = DependencyProperty.Register(nameof(Catalog), typeof(PackageCatalogViewModel), typeof(PackageCatalogView), new PropertyMetadata(null, (c, _) => ((PackageCatalogView)c).UpdateAll()));
     public static readonly DependencyProperty GroupSizeProperty = DependencyProperty.Register(nameof(GroupSize), typeof(int), typeof(PackageCatalogView), new PropertyMetadata(4, (c, _) => ((PackageCatalogView)c).UpdateAll()));

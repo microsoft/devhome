@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
@@ -16,6 +15,7 @@ using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.Windows;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Management.Infrastructure;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -27,7 +27,7 @@ namespace DevHome.SetupFlow.Services;
 /// <summary>
 /// Class for Dev Drive manager. The Dev Drive manager is the mediator between the Dev Drive view Model for
 /// the Dev Drive window and the objects that requested the window to be launched. Message passing between the two so they do not
-/// need to know of eachothers existence. The Dev Drive manager uses a set to keep track of the Dev Drives created by the user.
+/// need to know of each others existence. The Dev Drive manager uses a set to keep track of the Dev Drives created by the user.
 /// </summary>
 public class DevDriveManager : IDevDriveManager
 {
@@ -38,8 +38,9 @@ public class DevDriveManager : IDevDriveManager
     private readonly string _defaultDevDriveLocation;
     private const uint MaxNumberToAppendToFileName = 1000;
 
-    // Query flag for persistent state info of the volume, the presense of this flag will let us know
+    // Query flag for persistent state info of the volume, the presence of this flag will let us know
     // its a Dev drive. TODO: Update this once in Windows SDK
+    // https://github.com/microsoft/devhome/issues/634
     private readonly uint _devDriveVolumeStateFlag = 0x00002000;
 
     /// <summary>
@@ -142,7 +143,7 @@ public class DevDriveManager : IDevDriveManager
     /// </returns>
     public IDevDrive GetNewDevDrive()
     {
-        // Currently we only support creating one Dev Drive at a time. If one was
+        // Currently only one Dev Drive can be created at a time. If one was
         // produced before reuse it.
         if (_devDrives.Any())
         {
@@ -175,16 +176,14 @@ public class DevDriveManager : IDevDriveManager
     {
         try
         {
+            using var session = CimSession.Create(null);
             var devDrives = new List<IDevDrive>();
-            ManagementObjectSearcher searcher =
-                    new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage", "SELECT * FROM MSFT_Volume");
-
-            foreach (ManagementObject queryObj in searcher.Get())
+            foreach (var queryObj in session.QueryInstances("root\\Microsoft\\Windows\\Storage", "WQL", "SELECT * FROM MSFT_Volume"))
             {
-                var volumePath = queryObj["Path"] as string;
-                var volumeLabel = queryObj["FileSystemLabel"] as string;
-                var volumeSize = queryObj["Size"];
-                var volumeLetter = queryObj["DriveLetter"];
+                var volumePath = queryObj.CimInstanceProperties["Path"].Value as string;
+                var volumeLabel = queryObj.CimInstanceProperties["FileSystemLabel"].Value as string;
+                var volumeSize = queryObj.CimInstanceProperties["Size"].Value;
+                var volumeLetter = queryObj.CimInstanceProperties["DriveLetter"].Value;
                 uint outputSize;
                 var volumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
                 var inputVolumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
@@ -245,8 +244,8 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            // Log then return empty list, as this only means we don't show the user their existing dev drive. Not catastrophic failure.
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed Get existing Dev Drives. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            // Log then return empty list, don't show the user their existing dev drive. Not catastrophic failure.
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get existing Dev Drives.", ex);
             return new List<IDevDrive>();
         }
     }
@@ -271,7 +270,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Unable to get available Free Space for {root}: ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Unable to get available Free Space for {root}.", ex);
             validationSuccessful = false;
         }
 
@@ -363,7 +362,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to validate selected Drive letter ({devDrive.DriveLocation.FirstOrDefault()}). ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to validate selected Drive letter ({devDrive.DriveLocation.FirstOrDefault()}).", ex);
             returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
         }
 
@@ -396,7 +395,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get Available Drive letters. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get Available Drive letters.", ex);
         }
 
         return driveLetterSet.ToList();

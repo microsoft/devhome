@@ -20,6 +20,7 @@ public class BackgroundProcessTest
     /// we are not running the process elevated.
     /// </remarks>
     //// TODO: This test works locally but not on the pipeline.
+    //// https://github.com/microsoft/devhome/issues/621
     ////       Disabling it for now to get the change in and unblock consumers.
     [TestMethod]
     [Ignore]

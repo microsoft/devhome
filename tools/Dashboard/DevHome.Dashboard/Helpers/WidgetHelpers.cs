@@ -34,7 +34,7 @@ internal class WidgetHelpers
 
     public static WidgetSize GetDefaultWidgetSize(WidgetCapability[] capabilities)
     {
-        // The default size of the widget should be priortized as Medium, Large, Small.
+        // The default size of the widget should be prioritized as Medium, Large, Small.
         // This matches the size preferences of the Windows Widget Dashboard.
         if (capabilities.Any(cap => cap.Size == WidgetSize.Medium))
         {

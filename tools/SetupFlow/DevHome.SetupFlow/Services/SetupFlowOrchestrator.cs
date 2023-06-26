@@ -21,8 +21,7 @@ namespace DevHome.SetupFlow.Services;
 /// <summary>
 /// Orchestrator for the Setup Flow, in charge of functionality across multiple pages.
 /// </summary>
-[ObservableObject]
-public partial class SetupFlowOrchestrator
+public partial class SetupFlowOrchestrator : ObservableObject
 {
     private readonly List<SetupPageViewModelBase> _flowPages = new ();
 
@@ -61,7 +60,7 @@ public partial class SetupFlowOrchestrator
     }
 
     /// <summary>
-    /// Occurrs right before a page changes
+    /// Occurs right before a page changes
     /// </summary>
     public event EventHandler PageChanging;
 
@@ -108,7 +107,7 @@ public partial class SetupFlowOrchestrator
     public bool HasPreviousPage => _currentPageIndex > 0;
 
     /// <summary>
-    /// Gets or sets a value indicating whether we should show the done button. When false, the cancel
+    /// Gets or sets a value indicating whether the done button should be shown. When false, the cancel
     /// hyperlink button will be shown in the UI.
     /// </summary>
     [ObservableProperty]

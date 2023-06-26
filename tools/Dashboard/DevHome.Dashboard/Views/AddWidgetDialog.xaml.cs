@@ -194,7 +194,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         NavigationView sender,
         NavigationViewSelectionChangedEventArgs args)
     {
-        // Delete previously shown configuation widget.
+        // Delete previously shown configuration widget.
         // Clearing the UI here results in a flash, so don't bother. It will update soon.
         Log.Logger()?.ReportDebug("AddWidgetDialog", $"Widget selection changed, delete widget if one exists");
         var clearWidgetTask = ClearCurrentWidget();
@@ -241,7 +241,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
         else if (selectedTag as WidgetProviderDefinition is not null)
         {
-            // Null out the view model background so we don't bind to the old one
+            // Null out the view model background so we don't bind to the old one.
             ViewModel.WidgetBackground = null;
             ConfigurationContentFrame.Content = null;
             PinButton.Visibility = Visibility.Collapsed;
@@ -257,7 +257,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async void CancelButton_Click(object sender, RoutedEventArgs e)
     {
-        // Delete previously shown configuation card.
+        // Delete previously shown configuration card.
         Log.Logger()?.ReportDebug("AddWidgetDialog", $"Canceled dialog, delete widget");
         await ClearCurrentWidget();
 
@@ -324,7 +324,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                             {
                                 menuItems.Remove(providerItem);
 
-                                // If we've removed all providers from the list, show a message
+                                // If we've removed all providers from the list, show a message.
                                 if (!menuItems.Any())
                                 {
                                     ViewModel.ShowErrorCard("WidgetErrorCardNoWidgetsText");
@@ -335,5 +335,15 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 }
             }
         });
+    }
+
+    private void ContentDialog_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        const int ContentDialogMaxHeight = 684;
+
+        AddWidgetNavigationView.Height = Math.Min(this.ActualHeight, ContentDialogMaxHeight) - AddWidgetTitleBar.ActualHeight;
+
+        // Subtract 45 for the margin around ConfigurationContentFrame.
+        ConfigurationContentViewer.Height = AddWidgetNavigationView.Height - PinRow.ActualHeight - 45;
     }
 }

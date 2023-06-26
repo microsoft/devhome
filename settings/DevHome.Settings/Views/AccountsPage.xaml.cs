@@ -117,11 +117,12 @@ public sealed partial class AccountsPage : Page
             await loginUIContentDialog.ShowAsync();
 
             // TODO: Await Login event to match up the loginEntryPoint and return DeveloperId
+            // https://github.com/microsoft/devhome/issues/607
             loginUIAdaptiveCardController.Dispose();
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed - Error: {ex}");
+            GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
         }
 
         accountProvider.RefreshLoggedInAccounts();
@@ -144,7 +145,7 @@ public sealed partial class AccountsPage : Page
         }
         catch (Exception ex)
         {
-            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file - Error: {ex} HostConfigFileName: {hostConfigFileName}");
+            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file - HostConfigFileName: {hostConfigFileName}.", ex);
         }
 
         // Add host config for current theme to renderer

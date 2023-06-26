@@ -38,7 +38,7 @@ public static class Resources
         foreach (var identifier in resourceIdentifiers)
         {
             // What is faster, String.Replace, RegEx, or StringBuilder.Replace? It is String.Replace().
-            // https://learn.microsoft.com/en-us/archive/blogs/debuggingtoolbox/comparing-regex-replace-string-replace-and-stringbuilder-replace-which-has-better-performance
+            // https://learn.microsoft.com/archive/blogs/debuggingtoolbox/comparing-regex-replace-string-replace-and-stringbuilder-replace-which-has-better-performance
             var resourceString = GetResource(identifier, log);
             str = str.Replace($"%{identifier}%", resourceString);
         }

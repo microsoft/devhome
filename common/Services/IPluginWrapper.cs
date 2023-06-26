@@ -41,7 +41,7 @@ public interface IPluginWrapper
     /// <summary>
     /// Checks whether we have a reference to the plugin process and we are able to call methods on the interface.
     /// </summary>
-    /// <returns>whether we have a reference to the plugin process and we are able to call methods on the interface</returns>
+    /// <returns>Whether we have a reference to the plugin process and we are able to call methods on the interface.</returns>
     bool IsRunning();
 
     /// <summary>

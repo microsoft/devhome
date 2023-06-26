@@ -87,8 +87,6 @@ public partial class App : Application, IApp
             services.AddSingleton<WindowEx>(_ => MainWindow);
 
             // Views and ViewModels
-            services.AddTransient<FeedbackViewModel>();
-            services.AddTransient<FeedbackPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<InitializationPage>();
             services.AddTransient<ShellViewModel>();
@@ -114,6 +112,7 @@ public partial class App : Application, IApp
     {
         // TODO: Log and handle exceptions as appropriate.
         // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
+        // https://github.com/microsoft/devhome/issues/613
         await GetService<IPluginService>().SignalStopPluginsAsync();
     }
 

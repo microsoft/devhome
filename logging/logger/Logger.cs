@@ -12,7 +12,7 @@ public class Logger : ILoggerHost, IDisposable
         Name = name;
         Options = options;
 
-        // Debug Listneer
+        // Debug listener
         if (options.DebugListenerEnabled)
         {
             var debugListener = new DebugListener("Debug");

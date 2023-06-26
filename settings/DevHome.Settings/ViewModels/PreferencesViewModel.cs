@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Windows.Input;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Contracts.Services;
@@ -9,35 +9,27 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.ViewModels;
 
-public partial class PreferencesViewModel : ObservableRecipient
+public partial class PreferencesViewModel : ObservableObject
 {
     private readonly IThemeSelectorService _themeSelectorService;
+
+    [ObservableProperty]
     private ElementTheme _elementTheme;
-
-    public ElementTheme ElementTheme
-    {
-        get => _elementTheme;
-        set => SetProperty(ref _elementTheme, value);
-    }
-
-    public ICommand SwitchThemeCommand
-    {
-        get;
-    }
 
     public PreferencesViewModel(IThemeSelectorService themeSelectorService)
     {
         _themeSelectorService = themeSelectorService;
         _elementTheme = _themeSelectorService.Theme;
+    }
 
-        SwitchThemeCommand = new RelayCommand<ElementTheme>(
-            async (param) =>
-            {
-                if (ElementTheme != param)
-                {
-                    ElementTheme = param;
-                    await _themeSelectorService.SetThemeAsync(param);
-                }
-            });
+    [RelayCommand]
+    private async Task SwitchThemeAsync(ElementTheme theme)
+    {
+        if (ElementTheme != theme)
+        {
+            ElementTheme = theme;
+
+            await _themeSelectorService.SetThemeAsync(theme);
+        }
     }
 }

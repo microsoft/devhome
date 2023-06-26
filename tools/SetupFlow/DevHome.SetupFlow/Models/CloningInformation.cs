@@ -44,6 +44,11 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         get; set;
     }
 
+    public string PluginName
+    {
+        get; set;
+    }
+
     /// <summary>
     /// Gets or sets a value indicating whether the repository is to be cloned on a Dev Drive.
     /// </summary>
@@ -84,7 +89,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     {
         get
         {
-            var path = _cloningLocation.FullName;
+            var path = CloningLocation.FullName;
 
             if (RepositoryToClone != null)
             {

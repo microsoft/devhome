@@ -26,6 +26,6 @@ public class AppInstallEvent : EventBase
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // No sensitive strings to replace
+        // No sensitive strings to replace.
     }
 }

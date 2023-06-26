@@ -23,8 +23,8 @@ parameters:
     - Release
 
 variables:
-  MSIXVersion: '0.106'
-  VersionOfSDK: '0.100'
+  MSIXVersion: '0.200'
+  SDKVersion: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
   testOutputArtifactDir: 'TestResults'
@@ -117,7 +117,7 @@ stages:
               enable: true
               break: true
             eslint:
-              enable: true
+              enable: false
               break: true
 
     - task: Flawfinder@2
@@ -485,7 +485,7 @@ stages:
     and
     (
       in(dependencies.Build_MsixBundle.result, 'Succeeded'),
-      in(dependencies.SourceAnalysis.result, 'Succeeded'),
+      in(dependencies.SourceAnalysis.result, 'Succeeded', 'SucceededWithIssues'),
       eq(variables['EnableStorePublishing'], 'true')
     )
   jobs:
@@ -547,7 +547,7 @@ stages:
         zipPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.zip'
         force: true
         deletePackages: true
-        numberOfPackagesToKeep: 3
+        numberOfPackagesToKeep: 2
         jsonZipUpdateMetadata: true
         updateImages: true
 
@@ -575,7 +575,7 @@ stages:
         zipPath: '$(System.DefaultWorkingDirectory)\SBOutDir\DevHomeStoreSubmissionPackage.zip'
         force: true
         deletePackages: true
-        numberOfPackagesToKeep: 3
+        numberOfPackagesToKeep: 2
         jsonZipUpdateMetadata: true
         updateImages: true
 

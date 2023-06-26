@@ -5,18 +5,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.Labs.WinUI"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     xmlns:views="using:DevHome.SetupFlow.Views"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
-        </ResourceDictionary>
-    </UserControl.Resources>
     <StackPanel>
         <!-- Card header -->
         <controls:SettingsCard
+            SizeChanged="SettingsCard_SizeChanged"
             Background="Transparent"
             Header="{x:Bind Catalog.Name}"
             Description="{x:Bind Catalog.Description}">
@@ -29,11 +24,11 @@
                 <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
             </controls:SettingsCard.Resources>
             <controls:SettingsCard.ActionIcon>
-                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE10A;"/>
+                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE711;"/>
             </controls:SettingsCard.ActionIcon>
             <HyperlinkButton
                 Grid.Column="1"
-                Visibility="{x:Bind Catalog.CanAddAllPackages, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                Visibility="{x:Bind Catalog.CanAddAllPackages, Mode=OneWay}"
                 Command="{x:Bind Catalog.AddAllPackagesCommand}">
                 <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AddAll" />
             </HyperlinkButton>
@@ -43,7 +38,7 @@
         <FlipView
             x:Name="PackagesFlipView"
             Background="Transparent"
-            LayoutUpdated="OnLayoutUpdated"
+            SelectionChanged="PackagesFlipView_SelectionChanged"
             ItemsSource="{x:Bind PackageGroups, Mode=OneWay}">
             <FlipView.ItemTemplate>
                 <DataTemplate>

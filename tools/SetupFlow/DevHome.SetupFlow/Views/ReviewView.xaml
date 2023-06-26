@@ -28,7 +28,6 @@
                     </Style>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionToVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
             <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionToInverseVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         </ResourceDictionary>
@@ -37,6 +36,7 @@
     <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_ReadAndAgree"
+            Visibility="{x:Bind ViewModel.RequiresTermsAgreement, Mode=OneWay}"
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
 
@@ -46,7 +46,8 @@
             <StackPanel>
                 <!-- TODO: We should use the labs:SettingsExpander to get some of the styling for
                            free, but it crashes when the content is not a SettingsCard, and
-                           SettingsCards are hard to style to use the full width. -->
+                           SettingsCards are hard to style to use the full width. 
+                           https://github.com/microsoft/devhome/issues/626-->
                 <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           IsExpanded="true"
                           MinHeight="64" CornerRadius="3" Padding="47,0,47,7" >
@@ -109,13 +110,13 @@
                 </Expander>
 
                 <StackPanel Style="{StaticResource ReviewStackPanelStyle}"
-                            Visibility="{x:Bind ViewModel.HasApplicationsToInstall, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            Visibility="{x:Bind ViewModel.RequiresTermsAgreement, Mode=OneWay}">
                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsTitle" />
                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_Terms" />
                     <commonviews:HyperlinkTextBlock
-                        Visibility="{x:Bind ViewModel.HasMSStoreApplicationsToInstall, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                        Visibility="{x:Bind ViewModel.HasMSStoreApplicationsToInstall, Mode=OneWay}"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_MSStoreTerms" />
                 </StackPanel>
             </StackPanel>

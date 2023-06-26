@@ -69,7 +69,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error connecting to catalog reference: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error connecting to catalog reference.", e);
             throw;
         }
         finally
@@ -96,7 +96,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error searching for packages: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error searching for packages.", e);
             throw;
         }
     }
@@ -129,7 +129,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error getting packages: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error getting packages.", e);
             throw;
         }
     }
@@ -172,14 +172,13 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         var findResult = await _catalog.FindPackagesAsync(options);
         if (findResult.Status != FindPackagesResultStatus.Ok)
         {
-            // TODO: Report error
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to find packages with status {findResult.Status}");
             throw new FindPackagesException(findResult.Status);
         }
 
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found {findResult.Matches} results");
 
-        // Cannot use foreach or Linq for out-of-process IVector
+        // Cannot use foreach or LINQ for out-of-process IVector
         // Bug: https://github.com/microsoft/CsWinRT/issues/1205
         for (var i = 0; i < findResult.Matches.Count; ++i)
         {

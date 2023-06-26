@@ -73,13 +73,19 @@
                     </GridView.ItemsPanel>
                     <GridView.ItemContainerStyle>
                         <Style TargetType="GridViewItem">
-                            <!-- Default margin is "0,0,4,4". Override since we're setting margins on the WidgetBoard. -->
+                            <!-- Default margin is "0,0,4,4". Override since margins are set on the WidgetBoard instead. -->
                             <Setter Property="Margin" Value="0,0,0,0"/>
                         </Style>
                     </GridView.ItemContainerStyle>
                 </GridView>
 
-                <StackPanel x:Name="NoWidgetsStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
+              <!-- Loading Progress -->
+              <ProgressRing x:Name="LoadingWidgetsProgressRing"
+                            Margin="0,150,0,0"
+                            IsActive="True"
+                            HorizontalAlignment="Center"/>
+
+              <StackPanel x:Name="NoWidgetsStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
                     <TextBlock x:Uid="NoWidgetsAdded" HorizontalAlignment="Center" />
                     <HyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" Click="AddWidget_Click" HorizontalAlignment="Center" />
                 </StackPanel>

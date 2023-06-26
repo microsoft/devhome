@@ -147,7 +147,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
-    /// Event that the Dev Drive manager can subscribe to, to know when if the Add repo or edit clone path
+    /// Event that the Dev Drive manager can subscribe to, to know when and if the Add repo or edit clone path
     /// dialogs closed using the cancel button.
     /// </summary>
     /// <remarks>

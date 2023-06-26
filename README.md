@@ -1,4 +1,4 @@
-![dev-home-readme-header](https://github.com/microsoft/devhome/assets/48369326/b2e16e96-b26c-45d2-9872-251ec707becd)
+![dev-home-readme-header](https://github.com/microsoft/devhome/blob/main/src/Assets/Preview/StoreDisplay-150.png)
 
 # Welcome to the Dev Home repo
 
@@ -82,9 +82,10 @@ Please file new issues, feature requests, and suggestions but **DO search for si
 
 If you would like to ask a question that you feel doesn't warrant an issue (yet), please reach out to us via Twitter:
 
-* Kayla Cinnamon, Product Manager: [@cinnamon_msft](https://twitter.com/cinnamon_msft)
-* Clint Rutkas, Senior Product Manager: [@crutkas](https://twitter.com/crutkas)
-* Ujjwal Chadha, Developer: [@ujjwalscript](https://twitter.com/ujjwalscript)
+* [Kayla Cinnamon](https://github.com/cinnamon-msft), Product Manager: [@cinnamon_msft](https://twitter.com/cinnamon_msft)
+* [Clint Rutkas](https://github.com/crutkas), Senior Product Manager: [@clintrutkas](https://twitter.com/clintrutkas) 
+* [Leeza Mathew](https://github.com/mathewleeza), Engineering Lead: [@leezamathew](https://twitter.com/leezamathew)
+* [Ujjwal Chadha](https://github.com/ujjwalchadha), Developer: [@ujjwalscript](https://twitter.com/ujjwalscript)
 
 ## Developer guidance
 

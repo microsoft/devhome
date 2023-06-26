@@ -16,6 +16,7 @@ internal class SystemGPUUsageWidget : CoreWidget, IDisposable
     protected static readonly new string Name = nameof(SystemGPUUsageWidget);
 
     private readonly DataManager dataManager;
+
     private readonly string gpuActiveEngType = "3D";
 
     private int gpuActiveIndex;
@@ -23,7 +24,7 @@ internal class SystemGPUUsageWidget : CoreWidget, IDisposable
     public SystemGPUUsageWidget()
         : base()
     {
-        dataManager = new DataManager(UpdateWidget);
+        dataManager = new (DataType.GPU, UpdateWidget);
     }
 
     private string SpeedToString(float cpuSpeed)
@@ -75,8 +76,6 @@ internal class SystemGPUUsageWidget : CoreWidget, IDisposable
 
     public override string GetData(WidgetPageState page)
     {
-        LoadContentData();
-
         return page switch
         {
             WidgetPageState.Content => ContentData,

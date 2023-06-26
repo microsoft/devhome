@@ -38,7 +38,7 @@ internal partial class AddRepoDialog
     }
 
     /// <summary>
-    /// Gets or sets the view model to handle added a dev drive.
+    /// Gets or sets the view model to handle adding a dev drive.
     /// </summary>
     public EditDevDriveViewModel EditDevDriveViewModel
     {
@@ -84,7 +84,7 @@ internal partial class AddRepoDialog
     }
 
     /// <summary>
-    /// Gets all plugins that have a provider type of repository and devid.
+    /// Gets all plugins that have a provider type of repository and developerId.
     /// </summary>
     public async Task GetPluginsAsync()
     {
@@ -169,7 +169,7 @@ internal partial class AddRepoDialog
     }
 
     /// <summary>
-    /// Validate the user put in an absolute path when they are done typing.
+    /// Validate the user put in a rooted, non-null path.
     /// </summary>
     private void CloneLocation_TextChanged(object sender, TextChangedEventArgs e)
     {
@@ -192,15 +192,15 @@ internal partial class AddRepoDialog
 
     /// <summary>
     /// Removes all shows repositories from the list view and replaces them with a new set of repositories from a
-    /// diffrent account.
+    /// different account.
     /// </summary>
     /// <remarks>
     /// Fired when a user changes their account on a provider.
     /// </remarks>
-    private void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // This gets fired when events are removed from the account combo box.
-        // When the provider combox is changed all accounts are removed from the account combo box
+        // When the provider combo box is changed all accounts are removed from the account combo box
         // and new accounts are added. This method fires twice.
         // Once to remove all accounts and once to add all logged in accounts.
         // GetRepositories sets the repositories list view.
@@ -208,7 +208,8 @@ internal partial class AddRepoDialog
         {
             var loginId = (string)AccountsComboBox.SelectedValue;
             var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-            SelectRepositories(AddRepoViewModel.GetRepositories(providerName, loginId));
+            await AddRepoViewModel.GetRepositoriesAsync(providerName, loginId);
+            SelectRepositories(AddRepoViewModel.SetRepositories(providerName, loginId));
         }
     }
 
@@ -227,8 +228,7 @@ internal partial class AddRepoDialog
             var index = onlyRepoNames.IndexOf(repoToSelect.RepoName);
             if (index != -1)
             {
-                // Seems like the "Correct" way to pre-select items in a list view is to call range.
-                // SelectRange does not accept an index though.  Call it multiple times on each index
+                // SelectRange does not accept an index.  Call it multiple times on each index
                 // with a range of 1.
                 RepositoriesListView.SelectRange(new ItemIndexRange(index, 1));
             }

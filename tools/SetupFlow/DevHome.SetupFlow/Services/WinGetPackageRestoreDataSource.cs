@@ -33,7 +33,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
     /// </summary>
     /// <remarks>
     /// Each collection of packages from a restore device is compiled into a
-    /// catalog. At most we show one catalog.
+    /// catalog. At most show one catalog.
     /// </remarks>
     public override int CatalogCount => _restoreDeviceInfo == null ? 0 : 1;
 
@@ -91,7 +91,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget restore catalog: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget restore catalog.", e);
         }
 
         return result;

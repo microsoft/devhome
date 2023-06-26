@@ -7,12 +7,10 @@
                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
-               xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-               xmlns:i="using:Microsoft.Xaml.Interactivity"
                xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-               x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
-               mc:Ignorable="d"
                xmlns:models="using:DevHome.SetupFlow.Models"
+               mc:Ignorable="d"
+               x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
                x:Name="AddRepoContentDialog"
                PrimaryButtonClick="AddRepoContentDialog_PrimaryButtonClick"
                IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldPrimaryButtonBeEnabled, Mode=OneWay}"
@@ -25,19 +23,18 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml"/>
                 <ResourceDictionary>
-                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ContentDialog.Resources>
-    <!-- ContentDialog has a padding of 24 on left/right. Extend the ScrollViewer there so that we can show the scroll bar at the edge of the dialog. -->
+    <!-- ContentDialog has a padding of 24 on left/right. Extend the ScrollViewer there to show the scroll bar at the edge of the dialog. -->
     <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" Padding="24,0" Margin="-24,0">
         <StackPanel x:Name="AddRepoStackPanel" Orientation="Vertical" Spacing="5" MinWidth="450" MinHeight="550"  MaxWidth="450">
             <StackPanel.Resources>
                 <ResourceDictionary>
-                    <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+                    <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource AccentButtonStyle}">
                         <Setter Property="Background">
                             <Setter.Value>
                                 <SolidColorBrush Color="{ThemeResource SystemAccentColor}"/>
@@ -73,7 +70,10 @@
                     <ComboBox x:Name="AccountsComboBox" IsEnabled="{x:Bind AddRepoViewModel.IsAccountComboBoxEnabled, Mode=OneWay}" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AccountComboBox_Description" Grid.Column="0" SelectionChanged="AccountsComboBox_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Accounts, Mode=OneWay}" />
                     <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
                 </Grid>
-                <ListView x:Name="RepositoriesListView" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
+                <Grid Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay}" Height="300" Width="300">
+                    <ProgressRing/>
+                </Grid>
+                <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
                     <ListView.Header>
                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoriesList" Margin="0, 0, 0, 8"/>
                     </ListView.Header>
@@ -94,7 +94,7 @@
                     <ColumnDefinition Width="5*"/>
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <!--WINUI3 does not have a folder/file picker control.  Lets make one that looks like it.-->
+                <!-- Folder picker -->
                 <StackPanel
                     Grid.Column="0"
                     Spacing="7">
@@ -113,7 +113,8 @@
                      IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
                      Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
                 <Grid Grid.Column="1">
-                    <!-- Hacky way to show a tooltip on a disabled button-->
+                    <!-- Workaround to show a tooltip on a disabled button.
+                         https://github.com/microsoft/microsoft-ui-xaml/issues/2262 -->
                     <TextBlock>
                     <ToolTipService.ToolTip>
                         <ToolTip x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClearCheckboxToBrowse" Visibility="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>

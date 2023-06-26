@@ -130,7 +130,7 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
     /// <summary>
     /// Create a SolidColorBrush from the given RGB color and opacity. If a color is not supplied, return a transparent brush.
     /// </summary>
-    /// <param name="colorString">A string in 8-character RGB format.</param>
+    /// <param name="colorString">A string in 6-character RGB format.</param>
     /// <param name="opacity">A percentage given as a double between 0 and 1.</param>
     private Microsoft.UI.Xaml.Media.SolidColorBrush GetBrushFromColor(string colorString, double opacity)
     {

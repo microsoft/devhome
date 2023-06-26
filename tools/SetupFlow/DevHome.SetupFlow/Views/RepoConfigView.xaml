@@ -6,8 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
-    xmlns:primitives="using:CommunityToolkit.WinUI.UI.Controls.Primitives"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:setupControls="using:DevHome.SetupFlow.Controls"
     xmlns:models="using:DevHome.SetupFlow.Models"
@@ -17,7 +15,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
                 <ResourceDictionary>
-                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
                     <converters:CollectionVisibilityConverter x:Key="CollectionShowWhenEmpty" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
@@ -99,7 +96,7 @@
                                     <TextBox 
                                             Text="{x:Bind CloneLocationAlias, Mode=OneWay}" 
                                             IsEnabled="False"
-                                            Visibility="{x:Bind CloneToDevDrive, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                            Visibility="{x:Bind CloneToDevDrive, Mode=OneWay}"
                                             MinWidth="300"
                                             MaxWidth="300"
                                             Margin="10, 5, 0, 5"/>
