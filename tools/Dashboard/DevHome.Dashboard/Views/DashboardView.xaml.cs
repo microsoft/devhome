@@ -360,13 +360,13 @@ public partial class DashboardView : ToolPage
                             {
                                 if (!restoredWidgetsWithPosition.ContainsKey(position))
                                 {
-                                    restoredWidgetsWithPosition.Add(numUnorderedWidgets++, widget);
+                                    restoredWidgetsWithPosition.Add(position, widget);
                                 }
                                 else
                                 {
                                     // If there was an error and a widget with this position is alredy there,
                                     // treat this widget as unordered and put it into the unordered map.
-                                    restoredWidgetsWithoutPosition.Add(position, widget);
+                                    restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
                                 }
                             }
                             else
