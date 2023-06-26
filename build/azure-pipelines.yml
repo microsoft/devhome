@@ -145,7 +145,7 @@ stages:
         displayName: Build Stub Packages
         inputs:
           filePath: 'Build.ps1'
-          arguments: -Configuration "Release" -Version $(MSIXVersion) -BuildStep "stubpackages"
+          arguments: -Configuration "Release" -Version $(MSIXVersion) -BuildStep "stubpackages" -IsAzurePipelineBuild
       - task: PublishPipelineArtifact@0
         displayName: Publish MSIX Bundle Artifacts
         inputs:
