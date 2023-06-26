@@ -390,7 +390,7 @@ public partial class DashboardView : ToolPage
                 var widget = orderedWidget.Value;
                 var size = await widget.GetSizeAsync();
                 await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace);
-                await WidgetHelpers.SetPositionOnWidget(widget, finalPlace);
+                await WidgetHelpers.SetPositionCustomState(widget, finalPlace);
 
                 finalPlace++;
             }
@@ -400,7 +400,7 @@ public partial class DashboardView : ToolPage
                 var widget = orderedWidget.Value;
                 var size = await widget.GetSizeAsync();
                 await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace);
-                await WidgetHelpers.SetPositionOnWidget(widget, finalPlace);
+                await WidgetHelpers.SetPositionCustomState(widget, finalPlace);
 
                 finalPlace++;
             }
