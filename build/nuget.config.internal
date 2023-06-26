@@ -9,7 +9,6 @@
     <clear />
     <add key="DevHome.nuget.internal" value="https://microsoft.pkgs.visualstudio.com/Dart/_packaging/DevHome.nuget.internal/nuget/v3/index.json" />
     <add key="SDKLocalSource" value=".\pluginsdk\_build" />
-    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
   </packageSources>
   <disabledPackageSources>
     <clear />
