@@ -80,6 +80,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Assets\GitHubLogo_Dark.png" />
+    <None Include="Assets\GitHubLogo_Light.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Update="Controls\SetupShell.xaml">
       <Generator>MSBuild:Compile</Generator>
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
