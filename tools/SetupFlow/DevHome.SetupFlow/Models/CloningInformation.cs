@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;

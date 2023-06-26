@@ -23,23 +23,40 @@ public sealed partial class RepoConfigView : UserControl
 {
     private readonly Guid relatedActivityId;
 
+    private IThemeSelectorService _themeSelectorService;
+
     public RepoConfigView()
     {
         relatedActivityId = Guid.NewGuid();
         this.InitializeComponent();
         ActualThemeChanged += OnActualThemeChanged;
 
-        Application.Current.GetService<IThemeSelectorService>().ThemeChanged += OnThemeChanged;
+        _themeSelectorService = Application.Current.GetService<IThemeSelectorService>();
+        _themeSelectorService.ThemeChanged += OnThemeChanged;
     }
 
     private void OnThemeChanged(object sender, ElementTheme e)
     {
+        ElementTheme themeToSwitchTo = e;
+
+        if (themeToSwitchTo == ElementTheme.Default)
+        {
+            if (_themeSelectorService.IsDarkTheme())
+            {
+                themeToSwitchTo = ElementTheme.Dark;
+            }
+            else
+            {
+                themeToSwitchTo = ElementTheme.Light;
+            }
+        }
+
         if (ViewModel != null)
         {
             // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
             foreach (var cloneInformation in ViewModel.RepoReviewItems)
             {
-                cloneInformation.SetIcon(e);
+                cloneInformation.SetIcon(themeToSwitchTo);
             }
         }
     }
