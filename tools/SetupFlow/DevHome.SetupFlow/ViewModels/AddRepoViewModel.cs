@@ -12,13 +12,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
-using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -455,7 +455,6 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.OwningAccount = developerId;
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
-
             EverythingToClone.Add(cloningInformation);
         }
     }
@@ -543,6 +542,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
+
         EverythingToClone.Add(cloningInformation);
     }
 

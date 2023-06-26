@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -22,10 +23,54 @@ public sealed partial class RepoConfigView : UserControl
 {
     private readonly Guid relatedActivityId;
 
+    private IThemeSelectorService _themeSelectorService;
+
     public RepoConfigView()
     {
         relatedActivityId = Guid.NewGuid();
         this.InitializeComponent();
+        ActualThemeChanged += OnActualThemeChanged;
+
+        _themeSelectorService = Application.Current.GetService<IThemeSelectorService>();
+        _themeSelectorService.ThemeChanged += OnThemeChanged;
+    }
+
+    private void OnThemeChanged(object sender, ElementTheme e)
+    {
+        ElementTheme themeToSwitchTo = e;
+
+        if (themeToSwitchTo == ElementTheme.Default)
+        {
+            if (_themeSelectorService.IsDarkTheme())
+            {
+                themeToSwitchTo = ElementTheme.Dark;
+            }
+            else
+            {
+                themeToSwitchTo = ElementTheme.Light;
+            }
+        }
+
+        if (ViewModel != null)
+        {
+            // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
+            foreach (var cloneInformation in ViewModel.RepoReviewItems)
+            {
+                cloneInformation.SetIcon(themeToSwitchTo);
+            }
+        }
+    }
+
+    public void OnActualThemeChanged(FrameworkElement sender, object args)
+    {
+        if (ViewModel != null)
+        {
+            // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
+            foreach (var cloneInformation in ViewModel.RepoReviewItems)
+            {
+                cloneInformation.SetIcon(sender.ActualTheme);
+            }
+        }
     }
 
     public RepoConfigViewModel ViewModel => (RepoConfigViewModel)this.DataContext;
@@ -53,9 +98,8 @@ public sealed partial class RepoConfigView : UserControl
         var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList());
         var getPluginsTask = addRepoDialog.GetPluginsAsync();
         var setupDevDrivesTask = addRepoDialog.SetupDevDrivesAsync();
-        var themeService = Application.Current.GetService<IThemeSelectorService>();
         addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
-        addRepoDialog.RequestedTheme = themeService.Theme;
+        addRepoDialog.RequestedTheme = ActualTheme;
 
         // Start
         await getPluginsTask;
@@ -77,6 +121,11 @@ public sealed partial class RepoConfigView : UserControl
         // save cloneLocationKind for telemetry
         CloneLocationKind cloneLocationKind = CloneLocationKind.LocalPath;
         var everythingToClone = addRepoDialog.AddRepoViewModel.EverythingToClone;
+
+        foreach (var repoToClone in everythingToClone)
+        {
+            repoToClone.SetIcon(ActualTheme);
+        }
 
         // Handle the case the user de-selected all repos.
         if (result == ContentDialogResult.Primary && !everythingToClone.Any())

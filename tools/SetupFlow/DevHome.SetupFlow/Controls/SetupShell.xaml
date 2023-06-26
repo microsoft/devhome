@@ -42,7 +42,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <!-- Stepper showing the progress within the flow -->
-            <StackPanel Visibility="{x:Bind Orchestrator.CurrentPageViewModel.IsStepPage, Mode=OneWay}">
+            <StackPanel Margin="0, 20, 0, 0" Visibility="{x:Bind Orchestrator.CurrentPageViewModel.IsStepPage, Mode=OneWay}">
                 <ItemsRepeater ItemsSource="{x:Bind Orchestrator.SetupStepPages, Mode=OneWay}">
                     <ItemsRepeater.Layout>
                         <StackLayout Orientation="Horizontal" Spacing="5"/>
