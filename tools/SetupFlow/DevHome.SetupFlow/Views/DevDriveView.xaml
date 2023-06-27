@@ -9,14 +9,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:util="using:DevHome.SetupFlow.Utilities"
-    xmlns:vm="using:DevHome.SetupFlow.ViewModels"
     xmlns:services="using:DevHome.Common.Services"
     mc:Ignorable="d"
     Background="{ThemeResource ContentDialogBackground}"
     Foreground="{ThemeResource ContentDialogForeground}">
     <Page.Resources>
         <ResourceDictionary>
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
             <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
             <util:DevDriveEnumToLocalizedStringConverter x:Key="DevDriveEnumToLocalizedStringConverter"/>
         </ResourceDictionary>
@@ -55,159 +53,158 @@
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 TabNavigation="Cycle">
-                    <StackPanel
-                        Margin="10 0 10 0">
-                        <Grid
+                <StackPanel
+                    Margin="10 0 10 0">
+                    <Grid
+                        Margin="0 0 0 12"
+                        RowDefinitions="*, Auto, *, *"
+                        ColumnDefinitions="*"
+                        HorizontalAlignment="Left">
+                        <TextBlock
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowTitle"
+                            Style="{ThemeResource SubtitleTextBlockStyle}"
+                            Margin="0 5 0 12"
+                            Grid.Row="0"
+                            TextWrapping="Wrap" />
+                        <TextBlock
                             Margin="0 0 0 12"
-                            RowDefinitions="*, Auto, *, *"
-                            ColumnDefinitions="*"
-                            HorizontalAlignment="Left">
-                            <TextBlock
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowTitle"
-                                Style="{ThemeResource SubtitleTextBlockStyle}"
-                                Margin="0 5 0 12"
-                                Grid.Row="0"
-                                TextWrapping="Wrap" />
-                            <TextBlock
-                                Margin="0 0 0 12"
-                                Width="450"
-                                Grid.Row="1"
-                                TextWrapping="Wrap" >
-                                <!-- 
-                                    The comment tags and the spaces Before the Run tags are necessary so the clickable area
-                                    of the hyperlink does not extend to edge of the grid column, and instead stay only over the text.
-                                -->
-                                <Span
-                                    xml:space="preserve">
-                                    <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowOnlyOneDevDriveAllowedHeader" /> <!--
-                                    --><Hyperlink
-                                            UnderlineStyle="None"
-                                            NavigateUri="https://go.microsoft.com/fwlink/?linkid=2226090"><!--
-                                        --> <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore" /> <!--
-                                        --></Hyperlink> <!--
-                                    --></Span>
-                            </TextBlock>
-                            <TextBlock
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLaunchSettingsDisksAndVolumesHeader"
-                                Grid.Row="2"
-                                TextWrapping="Wrap" 
-                                Margin="0 0 0 1"/>
-                            <HyperlinkButton
-                                Grid.Row="4"
-                                Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}"
-                                Padding="0"
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink">
-                            </HyperlinkButton>
-                        </Grid>
-                        <Grid
-                            Margin="0 0 0 12"
-                            ColumnDefinitions="4*, *, Auto"
-                            RowDefinitions="*, *">
-                            <TextBox 
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowNameTextBox"
-                                x:Name="DriveLabelTextBox"
-                                Grid.Column="0"
-                                Grid.Row="0"
-                                Margin="0 0 18 0"
-                                HorizontalAlignment="Stretch"
-                                Text="{x:Bind ViewModel.DriveLabel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                MaxLength="{x:Bind util:DevDriveUtil.MaxDriveLabelSize}"
-                                IsSpellCheckEnabled="False">
-                            </TextBox>
-                            <NumberBox 
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Size"
-                                x:Name="DriveSizeNumberBox"
-                                Grid.Column="1"
-                                Grid.Row="0"
-                                Margin="0"
-                                HorizontalAlignment="Stretch"
-                                Value="{x:Bind ViewModel.Size, Mode=TwoWay}"
-                                Maximum="{x:Bind ViewModel.MaximumAllowedSize, Mode=OneWay}"
-                                Minimum="{x:Bind ViewModel.MinimumAllowedSize, Mode=OneWay}"
-                                AcceptsExpression="False"
-                                NumberFormatter="{x:Bind ViewModel.DevDriveDecimalFormatter, Mode=OneWay}"
-                                ValidationMode="InvalidInputOverwritten">
-                            </NumberBox> 
-                            <ComboBox 
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowByteUnitComboBox"
-                                x:Name="DriveByteUnitComboBox"
-                                Grid.Column="2"
-                                Grid.Row="0"
-                                Margin="13 26 0 0"
-                                Padding="5"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Bottom"
-                                ItemsSource="{x:Bind ViewModel.ByteUnitList, Mode=OneWay}"
-                                DisplayMemberPath="Value"
-                                SelectedIndex="{x:Bind ViewModel.ComboBoxByteUnit, Mode=TwoWay }">
-                            </ComboBox>
-                            <ItemsRepeater
-                                ItemsSource="{x:Bind ViewModel.FileNameAndSizeErrorList, Mode=OneWay}"
-                                Grid.Row="1"
-                                Grid.ColumnSpan="3"
-                                Margin="0, 5, 0, 0">
-                                <ItemsRepeater.ItemTemplate>
-                                    <DataTemplate x:DataType="services:DevDriveValidationResult">
-                                        <InfoBar
-                                            Margin="0, 3, 0, 3"
-                                            IsClosable="False"
-                                            Severity="Error"
-                                            IsOpen="True"
-                                            Message="{Binding Converter={StaticResource DevDriveEnumToLocalizedStringConverter}}" />
-                                    </DataTemplate>
-                                </ItemsRepeater.ItemTemplate>
+                            Width="450"
+                            Grid.Row="1"
+                            TextWrapping="Wrap" >
+                            <!-- 
+                                The comment tags and the spaces Before the Run tags are necessary so the clickable area
+                                of the hyperlink does not extend to edge of the grid column, and instead stay only over the text.
+                            -->
+                            <Span
+                                xml:space="preserve">
+                                <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowOnlyOneDevDriveAllowedHeader" /> <!--
+                                --><Hyperlink
+                                        UnderlineStyle="None"
+                                        NavigateUri="https://go.microsoft.com/fwlink/?linkid=2226090"><!--
+                                    --> <Run x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore" /> <!--
+                                    --></Hyperlink> <!--
+                                --></Span>
+                        </TextBlock>
+                        <TextBlock
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLaunchSettingsDisksAndVolumesHeader"
+                            Grid.Row="2"
+                            TextWrapping="Wrap" 
+                            Margin="0 0 0 1"/>
+                        <HyperlinkButton
+                            Grid.Row="4"
+                            Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}"
+                            Padding="0"
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink">
+                        </HyperlinkButton>
+                    </Grid>
+                    <Grid
+                        Margin="0 0 0 12"
+                        ColumnDefinitions="4*, *, Auto"
+                        RowDefinitions="*, *">
+                        <TextBox 
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowNameTextBox"
+                            x:Name="DriveLabelTextBox"
+                            Grid.Column="0"
+                            Grid.Row="0"
+                            Margin="0 0 18 0"
+                            HorizontalAlignment="Stretch"
+                            Text="{x:Bind ViewModel.DriveLabel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            MaxLength="{x:Bind util:DevDriveUtil.MaxDriveLabelSize}"
+                            IsSpellCheckEnabled="False">
+                        </TextBox>
+                        <NumberBox 
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Size"
+                            x:Name="DriveSizeNumberBox"
+                            Grid.Column="1"
+                            Grid.Row="0"
+                            Margin="0"
+                            HorizontalAlignment="Stretch"
+                            Value="{x:Bind ViewModel.Size, Mode=TwoWay}"
+                            Maximum="{x:Bind ViewModel.MaximumAllowedSize, Mode=OneWay}"
+                            Minimum="{x:Bind ViewModel.MinimumAllowedSize, Mode=OneWay}"
+                            AcceptsExpression="False"
+                            NumberFormatter="{x:Bind ViewModel.DevDriveDecimalFormatter, Mode=OneWay}"
+                            ValidationMode="InvalidInputOverwritten">
+                        </NumberBox>
+                        <ComboBox 
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowByteUnitComboBox"
+                            x:Name="DriveByteUnitComboBox"
+                            Grid.Column="2"
+                            Grid.Row="0"
+                            Margin="13 26 0 0"
+                            Padding="5"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Bottom"
+                            ItemsSource="{x:Bind ViewModel.ByteUnitList, Mode=OneWay}"
+                            DisplayMemberPath="Value"
+                            SelectedIndex="{x:Bind ViewModel.ComboBoxByteUnit, Mode=TwoWay }">
+                        </ComboBox>
+                        <ItemsRepeater
+                            ItemsSource="{x:Bind ViewModel.FileNameAndSizeErrorList, Mode=OneWay}"
+                            Grid.Row="1"
+                            Grid.ColumnSpan="3"
+                            Margin="0, 5, 0, 0">
+                            <ItemsRepeater.ItemTemplate>
+                                <DataTemplate x:DataType="services:DevDriveValidationResult">
+                                    <InfoBar
+                                        Margin="0, 3, 0, 3"
+                                        IsClosable="False"
+                                        Severity="Error"
+                                        IsOpen="True"
+                                        Message="{Binding Converter={StaticResource DevDriveEnumToLocalizedStringConverter}}" />
+                                </DataTemplate>
+                            </ItemsRepeater.ItemTemplate>
                         </ItemsRepeater>
                     </Grid>
-                        <Grid
-                            Margin="0 0 0 12"
-                            ColumnDefinitions="*, Auto"
-                            RowDefinitions="*, *">
-                            <TextBox 
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLocationTextBox"
-                                x:Name="DriveLocationTextBox"
-                                Grid.Column="0"
-                                Grid.Row="0"
-                                Margin="0"
-                                Text="{x:Bind ViewModel.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                MaxLength="{x:Bind util:DevDriveUtil.MaxDrivePathLength}"
-                                IsSpellCheckEnabled="False" 
-                                TextWrapping="Wrap">
-                            </TextBox>
-                            <Button 
-                                Grid.Column="1"
-                                Grid.Row="0"
-                                Margin="10 26 0 0"
-                                Padding="30 7 33 7"
-                                HorizontalContentAlignment="Center"
-                                VerticalAlignment="Bottom"
-                                Command="{x:Bind ViewModel.ChooseFolderLocationCommand, Mode=OneWay}">
+                    <Grid
+                        Margin="0 0 0 12"
+                        ColumnDefinitions="*, Auto"
+                        RowDefinitions="*, *">
+                        <TextBox 
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLocationTextBox"
+                            x:Name="DriveLocationTextBox"
+                            Grid.Column="0"
+                            Grid.Row="0"
+                            Margin="0"
+                            Text="{x:Bind ViewModel.Location, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            MaxLength="{x:Bind util:DevDriveUtil.MaxDrivePathLength}"
+                            IsSpellCheckEnabled="False" 
+                            TextWrapping="Wrap">
+                        </TextBox>
+                        <Button 
+                            Grid.Column="1"
+                            Grid.Row="0"
+                            Margin="10 26 0 0"
+                            Padding="30 7 33 7"
+                            HorizontalContentAlignment="Center"
+                            VerticalAlignment="Bottom"
+                            Command="{x:Bind ViewModel.ChooseFolderLocationCommand, Mode=OneWay}">
                             <TextBlock 
-                                    Text="{x:Bind ViewModel.LocalizedBrowseButtonText, Mode=OneWay}"/>
-                            </Button>
-                            <InfoBar
-                                Grid.Row="1"
-                                Grid.ColumnSpan="2"
-                                Margin="0 5 0 0"
-                                IsClosable="False"
-                                IsOpen="True"
-                                Severity="Error"
-                                Message="{x:Bind ViewModel.FolderLocationError, Mode=OneWay, Converter={StaticResource DevDriveEnumToLocalizedStringConverter}}"
-                                Visibility="{x:Bind ViewModel.FolderLocationError, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"
-                                />
-                        </Grid>
-                        <Grid
-                            Margin="0 0 0 12"
-                            RowDefinitions="Auto, *">
-                            <ComboBox 
-                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowDriveLettersComboBox"
-                                x:Name="NoDriveLettersAvailableBox"
-                                Grid.Row="0"
-                                Padding="20 5 40 5"
-                                Margin="0 5 0 5"
-                                VerticalAlignment="Top"
-                                ItemsSource="{x:Bind ViewModel.DriveLetters, Mode=OneWay}"
-                                SelectedValue="{x:Bind ViewModel.ComboBoxDriveLetter, Mode=TwoWay}">
-                            </ComboBox>
+                                Text="{x:Bind ViewModel.LocalizedBrowseButtonText, Mode=OneWay}"/>
+                        </Button>
+                        <InfoBar
+                            Grid.Row="1"
+                            Grid.ColumnSpan="2"
+                            Margin="0 5 0 0"
+                            IsClosable="False"
+                            IsOpen="True"
+                            Severity="Error"
+                            Message="{x:Bind ViewModel.FolderLocationError, Mode=OneWay, Converter={StaticResource DevDriveEnumToLocalizedStringConverter}}"
+                            Visibility="{x:Bind ViewModel.FolderLocationError, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}" />
+                    </Grid>
+                    <Grid
+                        Margin="0 0 0 12"
+                        RowDefinitions="Auto, *">
+                        <ComboBox 
+                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowDriveLettersComboBox"
+                            x:Name="NoDriveLettersAvailableBox"
+                            Grid.Row="0"
+                            Padding="20 5 40 5"
+                            Margin="0 5 0 5"
+                            VerticalAlignment="Top"
+                            ItemsSource="{x:Bind ViewModel.DriveLetters, Mode=OneWay}"
+                            SelectedValue="{x:Bind ViewModel.ComboBoxDriveLetter, Mode=TwoWay}">
+                        </ComboBox>
                         <InfoBar
                             Grid.Row="1"
                             Margin="0 5 0 0"
@@ -217,42 +214,41 @@
                             Message="{x:Bind ViewModel.DriveLetterError, Mode=OneWay, Converter={StaticResource DevDriveEnumToLocalizedStringConverter}}"
                             Visibility="{x:Bind ViewModel.DriveLetterError, Mode=OneWay, Converter={StaticResource EmptyObjectToObjectConverter}}"/>
                     </Grid>
-                        <StackPanel 
-                            VerticalAlignment="Bottom">
-                            <Rectangle 
-                                Margin="0 10 0 15"
-                                HorizontalAlignment="Stretch" 
-                                Fill="{ThemeResource ControlStrokeColorSecondaryBrush}" 
-                                Height="1"/>
-                            <Grid
+                    <StackPanel 
+                        VerticalAlignment="Bottom">
+                        <Rectangle 
+                            Margin="0 10 0 15"
+                            HorizontalAlignment="Stretch" 
+                            Fill="{ThemeResource ControlStrokeColorSecondaryBrush}" 
+                            Height="1"/>
+                        <Grid
+                            VerticalAlignment="Bottom"
+                            ColumnDefinitions="Auto, Auto"
+                            HorizontalAlignment="Right">
+                            <Button 
+                                Grid.Column="0"
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Save"
+                                Style="{StaticResource AccentButtonStyle}"
+                                VerticalContentAlignment="Center"
+                                HorizontalContentAlignment="Center"
+                                HorizontalAlignment="Right"
                                 VerticalAlignment="Bottom"
-                                ColumnDefinitions="Auto, Auto"
-                                HorizontalAlignment="Right">
-                                <Button 
-                                    Grid.Column="0"
-                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Save"
-                                    Style="{StaticResource AccentButtonStyle}"
-                                    VerticalContentAlignment="Center"
-                                    HorizontalContentAlignment="Center"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Bottom"
-                                    Padding="50 10 50 10"
-                                    Margin="0 0 5 0"
-                                    Command="{x:Bind ViewModel.SaveButtonCommand, Mode=OneWay}"
-                                    />
-                                <Button 
-                                    Grid.Column="1"
-                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel"
-                                    VerticalContentAlignment="Center"
-                                    HorizontalContentAlignment="Center"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Bottom"
-                                    Padding="50 10 50 10"
-                                    Margin="5 0 0 0"
-                                    Command="{x:Bind ViewModel.CancelButtonCommand, Mode=OneWay}"/>
-                            </Grid>
-                        </StackPanel>
+                                Padding="50 10 50 10"
+                                Margin="0 0 5 0"
+                                Command="{x:Bind ViewModel.SaveButtonCommand, Mode=OneWay}" />
+                            <Button 
+                                Grid.Column="1"
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel"
+                                VerticalContentAlignment="Center"
+                                HorizontalContentAlignment="Center"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                Padding="50 10 50 10"
+                                Margin="5 0 0 0"
+                                Command="{x:Bind ViewModel.CancelButtonCommand, Mode=OneWay}"/>
+                        </Grid>
                     </StackPanel>
+                </StackPanel>
             </ScrollViewer>
         </Grid>
     </UserControl>
