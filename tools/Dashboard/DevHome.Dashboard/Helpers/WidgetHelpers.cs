@@ -85,7 +85,7 @@ internal class WidgetHelpers
         return JsonSerializer.Serialize(state, SourceGenerationContext.Default.WidgetCustomState);
     }
 
-    public static async Task SetPositionCustomState(Widget widget, int ordinal)
+    public static async Task SetPositionCustomStateAsync(Widget widget, int ordinal)
     {
         var stateStr = await widget.GetCustomStateAsync();
         var state = JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
