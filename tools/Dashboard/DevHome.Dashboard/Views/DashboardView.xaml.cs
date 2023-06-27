@@ -387,22 +387,12 @@ public partial class DashboardView : ToolPage
             var finalPlace = 0;
             foreach (var orderedWidget in restoredWidgetsWithPosition)
             {
-                var widget = orderedWidget.Value;
-                var size = await widget.GetSizeAsync();
-                await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace);
-                await WidgetHelpers.SetPositionCustomStateAsync(widget, finalPlace);
-
-                finalPlace++;
+                await PlaceWidget(orderedWidget, finalPlace++);
             }
 
             foreach (var orderedWidget in restoredWidgetsWithoutPosition)
             {
-                var widget = orderedWidget.Value;
-                var size = await widget.GetSizeAsync();
-                await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace);
-                await WidgetHelpers.SetPositionCustomStateAsync(widget, finalPlace);
-
-                finalPlace++;
+                await PlaceWidget(orderedWidget, finalPlace++);
             }
         }
         else
@@ -410,6 +400,14 @@ public partial class DashboardView : ToolPage
             Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
             NoWidgetsStackPanel.Visibility = Visibility.Visible;
         }
+    }
+
+    private async Task PlaceWidget(KeyValuePair<int, Widget> orderedWidget, int finalPlace)
+    {
+        var widget = orderedWidget.Value;
+        var size = await widget.GetSizeAsync();
+        await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace);
+        await WidgetHelpers.SetPositionCustomStateAsync(widget, finalPlace);
     }
 
     private async void AddWidget_Click(object sender, RoutedEventArgs e)
