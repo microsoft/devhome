@@ -107,7 +107,7 @@ configuration:
             association: Collaborator
       then:
       - addReply:
-          reply: Hi! We've identified that this issue is best suited for Windows Feedback Hub. To do this on Windows, WinKey+F will bring it up!
+          reply: Hi @${issueAuthor}. Please file this issue on Feedback Hub [Windows]+[f] and paste the link here so we can more easily find your information on the back end. The link can be found at the bottom of the feedback report. Please use "Apps" and "Dev Home" for the Category. 
       - closeIssue
       - removeLabel:
           label: Needs-Triage
@@ -119,7 +119,7 @@ configuration:
     - if:
       - payloadType: Issue_Comment
       - commentContains:
-          pattern: '\/[Dd]up(licate|e)?(\s+of)?\s+(\#[\d]+|https)'
+          pattern: '(\/)?[Dd]up(licate|e)?(\s+of)?\s+(\#[\d]+|https)'
           isRegex: True
       - or:
         - activitySenderHasAssociation:
@@ -130,7 +130,7 @@ configuration:
             association: Collaborator
       then:
       - addReply:
-          reply: Hi! We've identified this issue as a duplicate of another one that already exists on this Issue Tracker. This specific instance is being closed in favor of tracking the concern over on the referenced thread. Thanks for your report!
+          reply: We've identified this as a duplicate of another issue or PR that already exists. This specific instance is being closed in favor of the linked issue. Please add your 👍 to the other issue to raise its priority. Thanks for your contribution! 
       - closeIssue
       - removeLabel:
           label: Needs-Triage
@@ -138,6 +138,25 @@ configuration:
           label: Needs-Team-Response
       - addLabel:
           label: Resolution-Duplicate
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/logs)'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - addReply:
+          reply: Hi @${issueAuthor}. It would be helpful for us if you could share your Dev Home logs. These logs can be found at `%LOCALAPPDATA%\Packages\Microsoft.Windows.DevHome_8wekyb3d8bbwe\TempState` and `%LOCALAPPDATA%\Packages\Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe\TempState`. You can share these folders via a OneDrive link or zip them and attach them to a comment here. If you share this way, you may want to look through the logs in case there are any details included that you would like to remove (for example, private repo names). Alternatively, you can open a Feedback Hub issue and attach them there. If you use Feedback Hub, please paste the URL at the bottom of the report here so we can easily find it. 
+      - closeIssue
+      - removeLabel:
+          label: Needs-Triage
+      - removeLabel:
+          label: Needs-Team-Response
       description: 
     - if:
       - payloadType: Issue_Comment
@@ -175,7 +194,6 @@ configuration:
       - addLabel:
           label: Loc-Sent To Team
       - addReply:
-          reply: Hi! Thanks for making us aware of the problem. We raised the issue with our internal localization team. This issue should be fixed hopefully in the next version of Dev Home.
-      description: 
+          reply: Hi! Thanks for making us aware of the problem. We raised the issue with our internal localization team.
 onFailure: 
 onSuccess: 
