@@ -358,11 +358,7 @@ public partial class DashboardView : ToolPage
                             var position = stateObj.Position;
                             if (position >= 0)
                             {
-                                if (!restoredWidgetsWithPosition.ContainsKey(position))
-                                {
-                                    restoredWidgetsWithPosition.Add(position, widget);
-                                }
-                                else
+                                if (!restoredWidgetsWithPosition.TryAdd(position, widget))
                                 {
                                     // If there was an error and a widget with this position is alredy there,
                                     // treat this widget as unordered and put it into the unordered map.
