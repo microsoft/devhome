@@ -44,8 +44,8 @@ public partial class DashboardView : ToolPage
 
     private static bool _widgetHostInitialized;
 
-    private static SortedDictionary<string, BitmapImage> _widgetLightIconCache;
-    private static SortedDictionary<string, BitmapImage> _widgetDarkIconCache;
+    private static Dictionary<string, BitmapImage> _widgetLightIconCache;
+    private static Dictionary<string, BitmapImage> _widgetDarkIconCache;
 
     private readonly Version minSupportedVersion400 = new (423, 3800);
     private readonly Version minSupportedVersion500 = new (523, 3300);
@@ -64,8 +64,8 @@ public partial class DashboardView : ToolPage
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
         PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
 
-        _widgetLightIconCache = new SortedDictionary<string, BitmapImage>();
-        _widgetDarkIconCache = new SortedDictionary<string, BitmapImage>();
+        _widgetLightIconCache = new Dictionary<string, BitmapImage>();
+        _widgetDarkIconCache = new Dictionary<string, BitmapImage>();
 
         _renderer = new AdaptiveCardRenderer();
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
@@ -240,7 +240,7 @@ public partial class DashboardView : ToolPage
 
         await ConfigureWidgetRenderer(_renderer);
 
-        RestorePinnedWidgets(null, null);
+        RestorePinnedWidgets();
 
         LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
     }
@@ -329,14 +329,20 @@ public partial class DashboardView : ToolPage
         return itemImage;
     }
 
-    private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
+    private async void RestorePinnedWidgets()
     {
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
         var pinnedWidgets = _widgetHost.GetWidgets();
         if (pinnedWidgets != null)
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found {pinnedWidgets.Length} widgets for this host");
+            var restoredWidgetsWithPosition = new SortedDictionary<int, Widget>();
+            var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
+            var numUnorderedWidgets = 0;
 
+            // Widgets do not come from the host in a deterministic order, so save their order in each widget's CustomState.
+            // Iterate through all the widgets and put them in order. If a widget does not have a position assigned to it,
+            // append it at the end. If a position is missing, just show the next widget in order.
             foreach (var widget in pinnedWidgets)
             {
                 try
@@ -345,11 +351,25 @@ public partial class DashboardView : ToolPage
                     Log.Logger()?.ReportInfo("DashboardView", $"GetWidgetCustomState: {stateStr}");
                     if (!string.IsNullOrEmpty(stateStr))
                     {
-                        var stateObj = System.Text.Json.JsonSerializer.Deserialize<WidgetCustomState>(stateStr);
+                        var stateObj = System.Text.Json.JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
+
                         if (stateObj.Host == WidgetHelpers.DevHomeHostName)
                         {
-                            var size = await widget.GetSizeAsync();
-                            AddWidgetToPinnedWidgetsAsync(widget, size);
+                            var position = stateObj.Position;
+                            if (position >= 0)
+                            {
+                                if (!restoredWidgetsWithPosition.TryAdd(position, widget))
+                                {
+                                    // If there was an error and a widget with this position is alredy there,
+                                    // treat this widget as unordered and put it into the unordered map.
+                                    restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
+                                }
+                            }
+                            else
+                            {
+                                // Widgets with no position will get the default of -1. Append these at the end.
+                                restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
+                            }
                         }
                     }
                 }
@@ -358,12 +378,32 @@ public partial class DashboardView : ToolPage
                     Log.Logger()?.ReportError("DashboardView", $"RestorePinnedWidgets(): ", ex);
                 }
             }
+
+            // Now that we've ordered the widgets, put them in their final collection.
+            var finalPlace = 0;
+            foreach (var orderedWidget in restoredWidgetsWithPosition)
+            {
+                await PlaceWidget(orderedWidget, finalPlace++);
+            }
+
+            foreach (var orderedWidget in restoredWidgetsWithoutPosition)
+            {
+                await PlaceWidget(orderedWidget, finalPlace++);
+            }
         }
         else
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
             NoWidgetsStackPanel.Visibility = Visibility.Visible;
         }
+    }
+
+    private async Task PlaceWidget(KeyValuePair<int, Widget> orderedWidget, int finalPlace)
+    {
+        var widget = orderedWidget.Value;
+        var size = await widget.GetSizeAsync();
+        await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace);
+        await WidgetHelpers.SetPositionCustomStateAsync(widget, finalPlace);
     }
 
     private async void AddWidget_Click(object sender, RoutedEventArgs e)
@@ -414,7 +454,8 @@ public partial class DashboardView : ToolPage
         if (newWidget != null)
         {
             // Set custom state on new widget.
-            var newCustomState = WidgetHelpers.CreateWidgetCustomState();
+            var position = PinnedWidgets.Count;
+            var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
             Log.Logger()?.ReportDebug("DashboardView", $"SetCustomState: {newCustomState}");
             await newWidget.SetCustomStateAsync(newCustomState);
 
@@ -424,15 +465,9 @@ public partial class DashboardView : ToolPage
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
                 await newWidget.SetSizeAsync(size);
-                AddWidgetToPinnedWidgetsAsync(newWidget, size);
+                await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
             }
         }
-    }
-
-    private async void AddWidgetToPinnedWidgetsAsync(Widget widget, WidgetSize size)
-    {
-        Log.Logger()?.ReportDebug("DashboardView", $"Add widget to pinned widgets, id = {widget.Id}");
-        await InsertWidgetInPinnedWidgetsAsync(widget, size, PinnedWidgets.Count);
     }
 
     private async Task InsertWidgetInPinnedWidgetsAsync(Widget widget, WidgetSize size, int index)

@@ -9,17 +9,16 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
-using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -136,6 +135,9 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private Visibility _shouldShowUrlError;
 
+    [ObservableProperty]
+    private bool _isFetchingRepos;
+
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
     /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"
@@ -192,16 +194,16 @@ public partial class AddRepoViewModel : ObservableObject
     private IEnumerable<RepoViewListItem> OrderRepos(IEnumerable<IRepository> repos)
     {
         var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase))
-            .OrderBy(x => x.LastUpdated)
+            .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
         var userRepos = repos.Where(x => x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase));
         var userPublicRepos = userRepos.Where(x => !x.IsPrivate)
-            .OrderBy(x => x.LastUpdated)
+            .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
         var userPrivateRepos = userRepos.Where(x => x.IsPrivate)
-            .OrderBy(x => x.LastUpdated)
+            .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
         return userPrivateRepos
@@ -453,7 +455,6 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.OwningAccount = developerId;
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
-
             EverythingToClone.Add(cloningInformation);
         }
     }
@@ -541,6 +542,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
+
         EverythingToClone.Add(cloningInformation);
     }
 
@@ -555,7 +557,7 @@ public partial class AddRepoViewModel : ObservableObject
     public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
     {
         _selectedAccount = loginId;
-
+        IsFetchingRepos = true;
         await Task.Run(() =>
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
@@ -564,6 +566,7 @@ public partial class AddRepoViewModel : ObservableObject
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
             _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
         });
+        IsFetchingRepos = false;
     }
 
     /// <summary>

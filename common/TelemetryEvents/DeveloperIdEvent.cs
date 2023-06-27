@@ -28,33 +28,16 @@ public class DeveloperIdEvent : EventBase
 
     public DeveloperIdEvent(string providerName, IDeveloperId devId)
     {
-        this.developerId = GetHashedDeveloperId(providerName, devId);
+        this.developerId = DeveloperIdHelper.GetHashedDeveloperId(providerName, devId);
     }
 
     public DeveloperIdEvent(string providerName, IEnumerable<IDeveloperId> devIds)
     {
-        this.developerId = string.Join(" , ", devIds.Select(devId => GetHashedDeveloperId(providerName, devId)));
+        this.developerId = string.Join(" , ", devIds.Select(devId => DeveloperIdHelper.GetHashedDeveloperId(providerName, devId)));
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
         // The only sensitive strings is the developerID.  GetHashedDeveloperId is used to hash the developerId.
-    }
-
-    private static string GetHashedDeveloperId(string providerName, IDeveloperId devId)
-    {
-        // TODO: Instead of LoginId, hash a globally unique id of DeveloperId (like url)
-        // https://github.com/microsoft/devhome/issues/611
-        using var hasher = SHA256.Create();
-        var loginIdBytes = Encoding.ASCII.GetBytes(devId.LoginId());
-        var hashedLoginId = hasher.ComputeHash(loginIdBytes);
-        if (BitConverter.IsLittleEndian)
-        {
-            Array.Reverse(hashedLoginId);
-        }
-
-        var hashedLoginIdString = BitConverter.ToString(hashedLoginId).Replace("-", string.Empty);
-
-        return $"{hashedLoginIdString}_{providerName}";
     }
 }

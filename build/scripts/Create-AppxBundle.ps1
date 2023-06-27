@@ -47,8 +47,7 @@ Function Create-AppxBundleMapping {
     Get-ChildItem -Path:$InputPath -Recurse -Filter:*$ProjectName* -Include *.appx, *.msix | % {
         if ($_.FullName -Match "AppxMetadata\\Stub")
         {
-            # Stub is currently hardcoded to version 0.0.0.0 and store doesn't like that
-            # $lines += ("`"{0}`" `"AppxMetadata\Stub\{1}`"" -f ($_.FullName, $_.Name))
+            $lines += ("`"{0}`" `"AppxMetadata\Stub\{1}`"" -f ($_.FullName, $_.Name))
         }
         else
         {
