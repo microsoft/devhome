@@ -8,6 +8,9 @@ internal sealed class WidgetCustomState
 {
     [JsonPropertyName("host")]
     public string Host { get; set; }
+
+    [JsonPropertyName("position")]
+    public int Position { get; set; } = -1;
 }
 
 [JsonSerializable(typeof(WidgetCustomState))]
