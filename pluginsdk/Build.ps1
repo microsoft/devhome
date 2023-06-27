@@ -1,6 +1,6 @@
 Param(
   [string]$Configuration = "Release",
-  [string]$SDKVersion,
+  [string]$VersionOfSDK,
   [bool]$IsAzurePipelineBuild = $false,
   [switch]$Help = $false
 )
@@ -66,11 +66,11 @@ Try {
   Exit 1
 }
 
-& $nugetPath pack (Join-Path $PSScriptRoot "nuget\Microsoft.Windows.DevHome.SDK.nuspec") -Version $SDKVersion -OutputDirectory "$PSScriptRoot\_build"
+& $nugetPath pack (Join-Path $PSScriptRoot "nuget\Microsoft.Windows.DevHome.SDK.nuspec") -Version $VersionOfSDK -OutputDirectory "$PSScriptRoot\_build"
 
 if ($IsAzurePipelineBuild) {
-  Write-Host "##vso[task.setvariable variable=SDKVersion;]$SDKVersion"
-  Write-Host "##vso[task.setvariable variable=SDKVersion;isOutput=true;]$SDKVersion"
+  Write-Host "##vso[task.setvariable variable=VersionOfSDK;]$VersionOfSDK"
+  Write-Host "##vso[task.setvariable variable=VersionOfSDK;isOutput=true;]$VersionOfSDK"
 }
 
 $TotalTime = (Get-Date)-$StartTime
