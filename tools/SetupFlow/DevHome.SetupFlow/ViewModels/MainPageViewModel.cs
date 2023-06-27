@@ -67,10 +67,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        // If IsCOMServerAvailable is still being (lazily) evaluated form a
-        // previous call, then await until the thread is unblocked and the
-        // already computed value is returned.
-        EnablePackageInstallerItem = await Task.Run(() => _wpm.IsCOMServerAvailable());
+        EnablePackageInstallerItem = await _wpm.IsCOMServerAvailableAsync();
         if (EnablePackageInstallerItem)
         {
             Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 
@@ -76,5 +75,11 @@ public interface IWindowsPackageManager
     /// out-of-proc COM objects
     /// </summary>
     /// <returns>True if COM Server is available, false otherwise</returns>
-    public bool IsCOMServerAvailable();
+    public Task<bool> IsCOMServerAvailableAsync();
+
+    /// <summary>
+    /// Register AppInstaller
+    /// </summary>
+    /// <returns>True if AppInstaller was registered, false otherwise.</returns>
+    public Task<bool> RegisterAppInstallerAsync();
 }
