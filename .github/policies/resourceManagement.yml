@@ -130,7 +130,7 @@ configuration:
             association: Collaborator
       then:
       - addReply:
-          reply: We've identified this as a duplicate of another issue or PR that already exists. This specific instance is being closed in favor of the linked issue. Please add your 👍 to the other issue to raise its priority. Thanks for your contribution! 
+          reply: We've identified this as a duplicate of another issue or PR that already exists. This specific instance is being closed in favor of tracking the concern over on the the linked issue. Please add your 👍 to the other issue to raise its priority. Thanks for your report! 
       - closeIssue
       - removeLabel:
           label: Needs-Triage
@@ -195,5 +195,6 @@ configuration:
           label: Loc-Sent To Team
       - addReply:
           reply: Hi! Thanks for making us aware of the problem. We raised the issue with our internal localization team.
+      description:
 onFailure: 
 onSuccess: 
