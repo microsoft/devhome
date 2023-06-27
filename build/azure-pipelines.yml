@@ -24,7 +24,7 @@ parameters:
 
 variables:
   MSIXVersion: '0.200'
-  SDKVersion: '0.100'
+  VersionOfSDK: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
   testOutputArtifactDir: 'TestResults'
@@ -53,7 +53,7 @@ stages:
       name: BuildSDKCommand
       inputs:
         filePath: 'Build.ps1'
-        arguments: -Configuration "Release" -SDKVersion $(SDKVersion) -BuildStep "sdk" -IsAzurePipelineBuild
+        arguments: -Configuration "Release" -VersionOfSDK $(VersionOfSDK) -BuildStep "sdk" -IsAzurePipelineBuild
 
     - task: PublishPipelineArtifact@0
       displayName: Publish Artifacts
@@ -127,11 +127,36 @@ stages:
         minRiskLevel: 2
         onlyInputs: false
 
+- stage: Build_StubPackages
+  dependsOn: []
+  jobs:
+  - job: Build_StubPackages
+    steps:
+      - checkout: self
+        path: s
+      - checkout: git://Dart/DevHomeStub
+
+      - task: NuGetToolInstaller@1
+      
+      - task: NuGetAuthenticate@1
+        inputs:
+          nuGetServiceConnections: 'DevHomeInternal'
+      - task: PowerShell@2
+        displayName: Build Stub Packages
+        inputs:
+          filePath: 'Build.ps1'
+          arguments: -Configuration "Release" -Version $(MSIXVersion) -BuildStep "stubpackages" -IsAzurePipelineBuild
+      - task: PublishPipelineArtifact@0
+        displayName: Publish MSIX Bundle Artifacts
+        inputs:
+          artifactName: MsixBundle_Stub
+          targetPath: DevHomeStub\DevHomeStubPackage\AppxPackages
+
 - stage: Build_DevHome
   dependsOn: Build_SDK
   condition: in(dependencies.Build_SDK.result, 'Succeeded')
   variables:
-    SDKVersion: $[stageDependencies.Build_SDK.Build_SDK.outputs['BuildSDKCommand.SDKVersion']]
+    VersionOfSDK: $[stageDependencies.Build_SDK.Build_SDK.outputs['BuildSDKCommand.VersionOfSDK']]
   jobs:
   - ${{ each configuration in parameters.Configurations }}:
     - ${{ each platform in parameters.Platforms }}:
@@ -211,7 +236,7 @@ stages:
           retryCountOnTaskFailure: 2
           inputs:
             filePath: 'Build.ps1'
-            arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -Version $(MSIXVersion) -SDKVersion $(SDKVersion) -SDKNugetSource $(Pipeline.Workspace)\sdkArtifacts\ -BuildStep "msix" -AzureBuildingBranch "$(BuildingBranch)" -IsAzurePipelineBuild
+            arguments: -Platform "${{ platform }}" -Configuration "${{ configuration }}" -Version $(MSIXVersion) -VersionOfSDK $(VersionOfSDK) -SDKNugetSource $(Pipeline.Workspace)\sdkArtifacts\ -BuildStep "msix" -AzureBuildingBranch "$(BuildingBranch)" -IsAzurePipelineBuild
 
         - task: EsrpCodeSigning@2
           inputs:
@@ -323,7 +348,7 @@ stages:
             SymbolsProduct: DevHome
 
 - stage: Build_MsixBundle
-  dependsOn: Build_DevHome
+  dependsOn: [Build_DevHome, Build_StubPackages]
   condition: in(dependencies.Build_DevHome.result, 'Succeeded')
   jobs:
   - job: Build_MsixBundles
@@ -341,7 +366,21 @@ stages:
           condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
           inputs:
             targetType: 'inline'
-            script: New-Item -Path $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub -ItemType Directory ; Copy-Item -Path "stub\*" -Destination $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub\
+            script: New-Item -Path $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub -ItemType Directory
+
+        - task: DownloadPipelineArtifact@2
+          condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
+          inputs:
+            buildType: 'current'
+            artifactName: MsixBundle_Stub
+            targetPath: $(appxPackageDir)\Staging
+
+        - task: PowerShell@2
+          displayName: Unbundle Stub Packages
+          condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
+          inputs:
+            filePath: 'build/scripts/UnbundleStubPackage.ps1'
+            arguments: -InputPath $(appxPackageDir)\Staging -OutputLocation $(appxPackageDir)\${{ configuration }}\AppxMetadata\Stub
 
         - task: EsrpCodeSigning@2
           condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))

@@ -46,8 +46,13 @@ if ([string]::IsNullOrWhiteSpace($Elapsed)) {
 #
 $version_h = $now.Hour
 $version_m = $now.Minute
-if (-not($IsAzurePipelineBuild) -And [string]::IsNullOrWhiteSpace($Build)) {
-  $Build = ($version_h * 100 + $version_m).ToString()
+if ([string]::IsNullOrWhiteSpace($Build)) {
+  if ($IsAzurePipelineBuild) {
+    $Build = "1"
+  }
+  else {
+    $Build = ($version_h * 100 + $version_m).ToString()
+  }
 }
 #
 if ($IsSdkVersion) {
