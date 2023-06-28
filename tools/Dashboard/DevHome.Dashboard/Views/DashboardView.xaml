@@ -11,6 +11,7 @@
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:vm="using:DevHome.Dashboard.ViewModels"
     xmlns:views="using:DevHome.Dashboard.Views"
+    xmlns:controls="using:DevHome.Dashboard.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
@@ -63,12 +64,12 @@
                           SelectionMode="None">
                     <GridView.ItemTemplate>
                         <DataTemplate x:DataType="vm:WidgetViewModel">
-                            <views:WidgetControl WidgetSource="{x:Bind}" />
+                            <controls:WidgetControl WidgetSource="{x:Bind}" />
                         </DataTemplate>
                     </GridView.ItemTemplate>
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <views:WidgetBoard />
+                            <controls:WidgetBoard />
                         </ItemsPanelTemplate>
                     </GridView.ItemsPanel>
                     <GridView.ItemContainerStyle>
