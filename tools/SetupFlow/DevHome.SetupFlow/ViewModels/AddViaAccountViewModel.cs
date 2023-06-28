@@ -106,6 +106,11 @@ public partial class AddViaAccountViewModel : ObservableObject
         */
     }
 
+    public bool ValidateRepos()
+    {
+        return SelectedRepositories.Count > 0;
+    }
+
     /// <summary>
     /// Gets all the accounts for a provider and updates the UI.
     /// </summary>

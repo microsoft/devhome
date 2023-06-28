@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Antlr4.Runtime.Misc;
@@ -24,6 +25,8 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Storage.Pickers;
+using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -35,6 +38,8 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class AddRepoViewModel : ObservableObject
 {
+    private readonly ISetupFlowStringResource _stringResource;
+
     [ObservableProperty]
     private string _cloneLocation;
 
@@ -93,122 +98,91 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     public void ToggleCloneButton()
     {
-        /*
-        var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
-        if (EditDevDriveViewModel.DevDrive != null && EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
+        var isEverythingGood = ValidateRepoInformation() && ValidateCloneLocation();
+        if (_editDevDriveViewModel.DevDrive != null && _editDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
         {
-            isEverythingGood &= EditDevDriveViewModel.IsDevDriveValid();
+            isEverythingGood &= _editDevDriveViewModel.IsDevDriveValid();
         }
 
-        if (isEverythingGood)
-        {
-            IsPrimaryButtonEnabled = true;
-        }
-        else
-        {
-            IsPrimaryButtonEnabled = false;
-        }
-
-        // Fill in EverythingToClone with the location
-        if (isEverythingGood)
-        {
-            AddRepoViewModel.SetCloneLocation(FolderPickerViewModel.CloneLocation);
-        }
-        */
+        ShouldPrimaryButtonBeEnabled = isEverythingGood;
     }
 
     [RelayCommand]
-    public void CustomizeDevDrive()
+    public async void CustomizeDevDrive()
     {
-        /*
-        await EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        await _editDevDriveViewModel.PopDevDriveCustomizationAsync();
         ToggleCloneButton();
-        */
     }
 
     [RelayCommand]
-    public void MakeNewDevDrive()
+    public void MakeNewDevDrive(bool isChecked)
     {
-        /*
-         *         // Getting here means
+        // Getting here means
         // 1. The user does not have any existing dev drives
         // 2. The user wants to clone to a new dev drive.
         // 3. The user un-checked this and does not want a new dev drive.
-        var isChecked = (sender as CheckBox).IsChecked;
-        if (isChecked.Value)
+        if (isChecked)
         {
-            EditDevDriveViewModel.MakeDefaultDevDrive();
-            FolderPickerViewModel.DisableBrowseButton();
-            _oldCloneLocation = FolderPickerViewModel.CloneLocation;
-            FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
-            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-            FolderPickerViewModel.InDevDriveScenario = true;
+            _editDevDriveViewModel.MakeDefaultDevDrive();
+            IsBrowseButtonEnabled = false;
+            _oldCloneLocation = CloneLocation;
+            CloneLocation = _editDevDriveViewModel.GetDriveDisplayName();
+            CloneLocationAlias = _editDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+            IsDevDriveScenario = true;
         }
         else
         {
-            FolderPickerViewModel.CloneLocationAlias = string.Empty;
-            FolderPickerViewModel.InDevDriveScenario = false;
-            EditDevDriveViewModel.RemoveNewDevDrive();
-            FolderPickerViewModel.EnableBrowseButton();
-            FolderPickerViewModel.CloneLocation = _oldCloneLocation;
+            CloneLocationAlias = string.Empty;
+            IsDevDriveScenario = false;
+            _editDevDriveViewModel.RemoveNewDevDrive();
+            IsBrowseButtonEnabled = true;
+            CloneLocation = _oldCloneLocation;
         }
-        */
     }
 
     [RelayCommand]
     public void ValidateCloneLocation(string cloneLocation)
     {
-        /*
-        // just in case something other than a text box calls this.
-        if (sender is TextBox cloneLocationTextBox)
+        if (IsDevDriveScenario)
         {
-            var location = cloneLocationTextBox.Text;
-            if (string.Equals(cloneLocationTextBox.Name, "DevDriveCloneLocationAliasTextBox", StringComparison.Ordinal))
-            {
-                location = (EditDevDriveViewModel.DevDrive != null) ? EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
-            }
-
-            FolderPickerViewModel.CloneLocation = location;
+            CloneLocation = (_editDevDriveViewModel.DevDrive != null) ? _editDevDriveViewModel.GetDriveDisplayName() : string.Empty;
         }
 
-        FolderPickerViewModel.ValidateCloneLocation();
+        ValidateCloneLocation();
 
         ToggleCloneButton();
-        */
     }
 
     [RelayCommand]
-    public void OpenFolderPicker()
+    public async void OpenFolderPicker()
     {
-        /*
-        await FolderPickerViewModel.ChooseCloneLocation();
+        await ChooseCloneLocation();
         ToggleCloneButton();
-        */
     }
 
     [RelayCommand]
     public void PrimaryButton()
     {
-        /*
-        if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
+        if (_currentPage == PageKind.AddViaUrl)
         {
-            AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation);
-            if (AddRepoViewModel.ShouldShowUrlError == Visibility.Visible)
+            AddViaUrlViewModel.AddRepositoryViaUri(CloneLocation, _previouslySelectedRepos, EverythingToClone);
+            if (AddViaUrlViewModel.ShouldShowUriError)
             {
-                IsPrimaryButtonEnabled = false;
+                ShouldPrimaryButtonBeEnabled = false;
+
+                /*
+                 * No idea how to cancel the button click in a command.
                 args.Cancel = true;
+                */
             }
         }
-        else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
+        else if (_currentPage == PageKind.AddViaAccount)
         {
+            /*
             args.Cancel = true;
-            var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
-            if (!string.IsNullOrEmpty(repositoryProviderName))
-            {
-                SwitchToRepoPage(repositoryProviderName);
-            }
+            */
+            SwitchToRepoPage();
         }
-        */
     }
 
     public AddViaUrlViewModel AddViaUrlViewModel { get; }
@@ -217,26 +191,36 @@ public partial class AddRepoViewModel : ObservableObject
 
     private EditDevDriveViewModel _editDevDriveViewModel = new (null);
 
-    /*
     private PageKind _currentPage = PageKind.AddViaUrl;
-    */
+
+    private string _oldCloneLocation;
+
+    /// <summary>
+    /// Gets or sets the list that keeps all repositories the user wants to clone.
+    /// </summary>
+    public List<CloningInformation> EverythingToClone
+    {
+        get; set;
+    }
+
+    private readonly List<CloningInformation> _previouslySelectedRepos;
 
     public AddRepoViewModel(ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
     {
-        /*
         _stringResource = stringResource;
-        ChangeToUrlPage();
+        /*
+ChangeToUrlPage();
 
-        // override changes ChangeToUrlPage to correctly set the state.
-        UrlParsingError = string.Empty;
-        ShouldShowUrlError = Visibility.Collapsed;
-        ShouldPrimaryButtonBeEnabled = false;
-        ShowErrorTextBox = Visibility.Collapsed;
-        EverythingToClone = new ();
+// override changes ChangeToUrlPage to correctly set the state.
+UrlParsingError = string.Empty;
+ShouldShowUrlError = Visibility.Collapsed;
+ShouldPrimaryButtonBeEnabled = false;
+ShowErrorTextBox = Visibility.Collapsed;
+EverythingToClone = new ();
 
-        _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
-        EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
-        */
+_previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
+EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
+*/
     }
 
     /// <summary>
@@ -358,6 +342,114 @@ public partial class AddRepoViewModel : ObservableObject
         SelectRepositories(reposToSelect.Select(x => new RepoViewListItem(x.RepositoryToClone)));
         */
     }
+
+    /// <summary>
+    /// Makes sure the clone location is not null and is rooted.
+    /// </summary>
+    /// <returns>True if clone location is good.  Otherwise false.</returns>
+    public bool ValidateCloneLocation()
+    {
+        // Make sure clone location is filled in and is fully qualified.
+        if (string.IsNullOrEmpty(CloneLocation) || string.IsNullOrWhiteSpace(CloneLocation))
+        {
+            ShouldShowFolderPickerError = false;
+            return false;
+        }
+
+        if (!Path.IsPathFullyQualified(CloneLocation))
+        {
+            FolderPickerErrorMessage = _stringResource.GetLocalized(StringResourceKey.ClonePathNotFullyQualifiedMessage);
+            ShouldShowFolderPickerError = true;
+            return false;
+        }
+
+        if (!IsDevDriveScenario)
+        {
+            // User could enter a path that does not exist.  That is okay.  Clone will make the path.
+            // If the location does exist, make sure it does not point to a file.
+            if (File.Exists(CloneLocation))
+            {
+                FolderPickerErrorMessage = _stringResource.GetLocalized(StringResourceKey.ClonePathNotFolder);
+                ShouldShowFolderPickerError = true;
+                return false;
+            }
+
+            // User could put in a drive letter that does not exist.
+            var drive = Path.GetPathRoot(CloneLocation);
+            if (!Directory.Exists(drive))
+            {
+                FolderPickerErrorMessage = _stringResource.GetLocalized(StringResourceKey.ClonePathDriveDoesNotExist);
+                ShouldShowFolderPickerError = true;
+                return false;
+            }
+        }
+
+        ShouldShowFolderPickerError = false;
+        return true;
+    }
+
+    /// <summary>
+    /// Makes sure all needed information is present.
+    /// </summary>
+    /// <returns>True if all information is in order, otherwise false</returns>
+    public bool ValidateRepoInformation()
+    {
+        if (_currentPage == PageKind.AddViaUrl)
+        {
+            return AddViaUrlViewModel.ValidateUri();
+        }
+        else if (_currentPage == PageKind.AddViaAccount || _currentPage == PageKind.Repositories)
+        {
+            return AddViaAccountViewModel.ValidateRepos();
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    ///   Opens the directory picker and saves the location if a location was chosen.
+    /// </summary>
+    public async Task ChooseCloneLocation()
+    {
+        IsBrowseButtonEnabled = false;
+        var maybeCloneLocation = await PickCloneDirectoryAsync();
+        if (maybeCloneLocation != null)
+        {
+            IsDevDriveScenario = false;
+            CloneLocationAlias = string.Empty;
+            CloneLocation = maybeCloneLocation.FullName;
+        }
+
+        IsBrowseButtonEnabled = true;
+    }
+
+    /// <summary>
+    /// Opens the directory picker
+    /// </summary>
+    /// <returns>An awaitable task.</returns>
+    private async Task<DirectoryInfo> PickCloneDirectoryAsync()
+    {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Opening folder picker to select clone directory");
+        var folderPicker = new FolderPicker();
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, Application.Current.GetService<WindowEx>().GetWindowHandle());
+        folderPicker.FileTypeFilter.Add("*");
+
+        var locationToCloneTo = await folderPicker.PickSingleFolderAsync();
+        if (locationToCloneTo != null && locationToCloneTo.Path.Length > 0)
+        {
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Selected '{locationToCloneTo.Path}' as location to clone to");
+            return new DirectoryInfo(locationToCloneTo.Path);
+        }
+        else
+        {
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Didn't select a location to clone to");
+            return null;
+        }
+    }
+
+   
 
     /*
     private readonly ISetupFlowStringResource _stringResource;
