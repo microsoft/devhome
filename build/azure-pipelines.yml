@@ -23,6 +23,7 @@ parameters:
     - Release
 
 variables:
+  # MSIXVersion's second part should always be odd to account for stub app's version
   MSIXVersion: '0.301'
   VersionOfSDK: '0.100'
   solution: '**/DevHome.sln'
