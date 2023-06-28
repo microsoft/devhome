@@ -69,7 +69,7 @@ public partial class AddRepoViewModel : ObservableObject
     private bool _isPageSegmentedViewEnabled;
 
     [ObservableProperty]
-    private bool _isPrimaryButtonEnabled;
+    private bool _shouldPrimaryButtonBeEnabled;
 
     [ObservableProperty]
     private string _primaryButtonContent;
@@ -317,7 +317,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-        IsPrimaryButtonEnabled = false;
+        ShouldPrimaryButtonBeEnabled = false;
     }
 
     /// <summary>

@@ -32,10 +32,10 @@ public partial class AddViaAccountViewModel : ObservableObject
     private RepositoryProvider _selectedProvider;
 
     [ObservableProperty]
-    private IEnumerable<IRepository> _repositories;
+    private IEnumerable<RepoViewListItem> _repositories;
 
     [ObservableProperty]
-    private ObservableCollection<IRepository> _selectedRepositories;
+    private ObservableCollection<RepoViewListItem> _selectedRepositories;
 
     [ObservableProperty]
     private bool _canSelectAccounts;

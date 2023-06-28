@@ -25,9 +25,7 @@ namespace DevHome.SetupFlow.Views;
 /// </summary>
 internal partial class AddRepoDialog
 {
-    /*
     private readonly string _defaultClonePath;
-    */
 
     private readonly List<CloningInformation> _previouslySelectedRepos = new ();
 
@@ -58,7 +56,6 @@ internal partial class AddRepoDialog
     {
         this.InitializeComponent();
 
-        /*
         _previouslySelectedRepos = previouslySelectedRepos;
         AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
@@ -73,6 +70,7 @@ internal partial class AddRepoDialog
             AddRepoViewModel.CloneLocation = updatedDevDriveRootPath;
         };
 
+        /*
         // Changing view to account so the selection changed event for Segment correctly shows URL.
         AddRepoViewModel.CurrentPage = PageKind.AddViaAccount;
         IsPrimaryButtonEnabled = false;
