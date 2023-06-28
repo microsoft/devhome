@@ -2,3 +2,4 @@
 GlobalMemoryStatusEx
 GetSystemInfo
 CoCreateInstance
+SetForegroundWindow

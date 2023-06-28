@@ -6,7 +6,7 @@ Param(
 )
 
 $Major = "0"
-$Minor = "2"
+$Minor = "3"
 $Patch = "99" # default to 99 for local builds
 
 $versionSplit = $Version.Split(".");
@@ -48,7 +48,7 @@ $version_h = $now.Hour
 $version_m = $now.Minute
 if ([string]::IsNullOrWhiteSpace($Build)) {
   if ($IsAzurePipelineBuild) {
-    $Build = "1"
+    $Build = "0"
   }
   else {
     $Build = ($version_h * 100 + $version_m).ToString()

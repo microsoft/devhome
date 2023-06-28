@@ -30,31 +30,31 @@ public class WindowsPackageManagerManualActivationFactory : WindowsPackageManage
     {
     }
 
-    protected override T CreateInstance<T>(Guid clsid, Guid iid)
+    protected override unsafe T CreateInstance<T>(Guid clsid, Guid iid)
     {
-        var pUnknown = IntPtr.Zero;
+        void* pUnknown = null;
+
         try
         {
-            var hr = WinGetServerManualActivation_CreateInstance(clsid, iid, 0, out var instance);
+            var hr = WinGetServerManualActivation_CreateInstance(in clsid, in iid, 0, out pUnknown);
             Marshal.ThrowExceptionForHR(hr);
-            pUnknown = Marshal.GetIUnknownForObject(instance);
-            return MarshalInterface<T>.FromAbi(pUnknown);
+            return MarshalInterface<T>.FromAbi((IntPtr)pUnknown);
         }
         finally
         {
             // CoCreateInstance and FromAbi both AddRef on the native object.
             // Release once to prevent memory leak.
-            if (pUnknown != IntPtr.Zero)
+            if (pUnknown is not null)
             {
-                Marshal.Release(pUnknown);
+                Marshal.Release((IntPtr)pUnknown);
             }
         }
     }
 
-    [DllImport("winrtact.dll", EntryPoint = "WinGetServerManualActivation_CreateInstance", ExactSpelling = true, PreserveSig = true)]
-    private static extern int WinGetServerManualActivation_CreateInstance(
-        [In, MarshalAs(UnmanagedType.LPStruct)] Guid clsid,
-        [In, MarshalAs(UnmanagedType.LPStruct)] Guid iid,
+    [DllImport("winrtact.dll", ExactSpelling = true)]
+    private static unsafe extern int WinGetServerManualActivation_CreateInstance(
+        in Guid clsid,
+        in Guid iid,
         uint flags,
-        [Out, MarshalAs(UnmanagedType.IUnknown)] out object instance);
+        out void* instance);
 }

@@ -23,7 +23,8 @@ parameters:
     - Release
 
 variables:
-  MSIXVersion: '0.200'
+  # MSIXVersion's second part should always be odd to account for stub app's version
+  MSIXVersion: '0.301'
   VersionOfSDK: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -490,7 +491,7 @@ stages:
     )
   jobs:
   - job: Store_Publish
-    timeoutInMinutes: 120
+    timeoutInMinutes: 360
     steps:
     - task: DownloadPipelineArtifact@2
       inputs:
