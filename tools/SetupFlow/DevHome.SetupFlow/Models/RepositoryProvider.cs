@@ -16,7 +16,7 @@ namespace DevHome.SetupFlow.Models;
 /// Object that holds a reference to the providers in a plugin.
 /// This needs to be changed to handle multiple accounts per provider.
 /// </summary>
-internal class RepositoryProvider
+public class RepositoryProvider
 {
     /// <summary>
     /// Wrapper for the plugin that is providing a repository and developer id.

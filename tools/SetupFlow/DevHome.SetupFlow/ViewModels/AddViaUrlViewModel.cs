@@ -8,4 +8,10 @@ public partial class AddViaUrlViewModel : ObservableObject
 {
     [ObservableProperty]
     private string _uri;
+
+    [ObservableProperty]
+    private string _uriError;
+
+    [ObservableProperty]
+    private bool _shouldShowUriError;
 }

@@ -10,13 +10,14 @@
                xmlns:labs="using:CommunityToolkit.Labs.WinUI"
                xmlns:models="using:DevHome.SetupFlow.Models"
                mc:Ignorable="d"
+               xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+               xmlns:i="using:Microsoft.Xaml.Interactivity"
                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
                x:Name="AddRepoContentDialog"
-               PrimaryButtonClick="AddRepoContentDialog_PrimaryButtonClick"
-               IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldPrimaryButtonBeEnabled, Mode=OneWay}"
+               IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.IsPrimaryButtonEnabled, Mode=OneWay}"
                DefaultButton="Primary"
                Style="{StaticResource DefaultContentDialogStyle}"
-               PrimaryButtonText="{x:Bind AddRepoViewModel.PrimaryButtonText, Mode=OneWay}"
+               PrimaryButtonText="{x:Bind AddRepoViewModel.PrimaryButtonContent, Mode=OneWay}"
                CornerRadius="8">
     <ContentDialog.Resources>
         <ResourceDictionary>
@@ -29,6 +30,13 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ContentDialog.Resources>
+
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="PrimaryButtonClick">
+            <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.AddViaAccountViewModel.ChangeAccountsCommand}"  CommandParameter="{Binding SelectedItem, ElementName=AccountsComboBox}"/>
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+
     <!-- ContentDialog has a padding of 24 on left/right. Extend the ScrollViewer there to show the scroll bar at the edge of the dialog. -->
     <ScrollViewer VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" Padding="24,0" Margin="-24,0">
         <StackPanel x:Name="AddRepoStackPanel" Orientation="Vertical" Spacing="5" MinWidth="450" MinHeight="550"  MaxWidth="450">
@@ -43,7 +51,12 @@
                     </Style>
                 </ResourceDictionary>
             </StackPanel.Resources>
-            <labs:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single" SelectionChanged="Segmented_SelectionChanged">
+            <labs:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single">
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="SelectionChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.ToggleScreenCommand}"/>
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
                 <labs:SegmentedItem x:Name="AddViaAccountSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton"/>
                 <labs:SegmentedItem x:Name="AddViaUrlSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" />
             </labs:Segmented>
@@ -51,29 +64,57 @@
             <!-- Adding a repo via URL -->
             <TextBox x:Name="RepoUrlTextBox"
                      x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoUrl"
-                     Visibility="{x:Bind AddRepoViewModel.ShowUrlPage, Mode=OneWay}"
-                     TextChanged="RepoUrlTextBox_TextChanged"
-                     Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}"
-                     Margin="0, 20, 0, 0"/>
-            <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.UrlParsingError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlError, Mode=OneWay}"/>
+                     Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlPage, Mode=OneWay}"
+                     Text="{x:Bind AddRepoViewModel.AddViaUrlViewModel.Uri, Mode=TwoWay}"
+                     Margin="0, 20, 0, 0">
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="TextChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.ToggleCloneButtonCommand}" CommandParameter="{Binding Text, ElementName=RepoUrlTextBox}"/>
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </TextBox>
+            <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.AddViaUrlViewModel.UriError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.AddViaUrlViewModel.ShouldShowUriError, Mode=OneWay}"/>
 
             <!-- Log into account -->
-            <ComboBox x:Name="RepositoryProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}" SelectionChanged="RepositoryProviderNamesComboBox_SelectionChanged" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}" Margin="0, 20, 0, 0" />
+            <ComboBox x:Name="ProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShouldShowAccountPage, Mode=OneWay}" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.AddViaAccountViewModel.Providers, Mode=OneWay}" Margin="0, 20, 0, 0" >
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="SelectionChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.AddViaAccountViewModel.ChangeRepositoryProviderCommand}" CommandParameter="{Binding SelectedItem, ElementName=ProviderComboBox}"/>
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </ComboBox>
 
             <!-- Show Repositories -->
-            <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
+            <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShouldShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
                 <Grid ColumnSpacing="8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="3*"/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="AccountsComboBox" IsEnabled="{x:Bind AddRepoViewModel.IsAccountComboBoxEnabled, Mode=OneWay}" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AccountComboBox_Description" Grid.Column="0" SelectionChanged="AccountsComboBox_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Accounts, Mode=OneWay}" />
-                    <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
+                    <ComboBox x:Name="AccountsComboBox" IsEnabled="{x:Bind AddRepoViewModel.AddViaAccountViewModel.CanSelectAccounts, Mode=OneWay}" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AccountComboBox_Description" Grid.Column="0" ItemsSource="{x:Bind AddRepoViewModel.AddViaAccountViewModel.Accounts, Mode=OneWay}">
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="SelectionChanged">
+                                <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.AddViaAccountViewModel.ChangeAccountsCommand}"  CommandParameter="{Binding SelectedItem, ElementName=AccountsComboBox}"/>
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </ComboBox>
+                    <TextBox x:Name="FilterTextBox" Grid.Column="1" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox">
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="TextChanged">
+                                <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.AddViaAccountViewModel.FilterReposCommand}" CommandParameter="{Binding Text, ElementName=FilterTextBox}"/>
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </TextBox>
                 </Grid>
-                <Grid Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay}" Height="300" Width="300">
+                <Grid Visibility="{x:Bind AddRepoViewModel.AddViaAccountViewModel.IsFetchingRepos, Mode=OneWay}" Height="300" Width="300">
                     <ProgressRing/>
                 </Grid>
-                <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
+                <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.AddViaAccountViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" ItemsSource="{x:Bind AddRepoViewModel.AddViaAccountViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="SelectionChanged">
+                            <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.AddViaAccountViewModel.AddOrRemoveReposCommand}" CommandParameter="{Binding SelectedItems, ElementName=RepositoriesListView}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
                     <ListView.Header>
                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoriesList" Margin="0, 0, 0, 8"/>
                     </ListView.Header>
@@ -87,48 +128,59 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackPanel>
-            <TextBlock x:Name="ErrorTextBlock" Style="{ThemeResource BodyStrongTextBlockStyle}" Visibility="{x:Bind AddRepoViewModel.ShowErrorTextBox, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Repo_ToolClonePathError"/>
             <!-- Repo page and URL page both have clonepath + dev drive check box-->
-            <Grid Visibility="{x:Bind FolderPickerViewModel.ShouldShowFolderPicker, Mode=OneWay}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="auto"/>
-                </Grid.ColumnDefinitions>
-                <!-- Folder picker -->
-                <StackPanel
-                    Grid.Column="0"
-                    Spacing="7">
-                    <TextBlock 
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePathForTextBlock" />
+            <!-- Folder picker template -->
+                <Grid Visibility="{x:Bind AddRepoViewModel.ShouldShowFolderPicker, Mode=OneWay}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="5*"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Folder picker -->
+                    <StackPanel
+                                Grid.Column="0"
+                                Spacing="7">
+                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePathForTextBlock" />
                     <TextBox
-                        TextChanged="CloneLocation_TextChanged"
-                        Text="{x:Bind FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
-                        IsEnabled="False"
-                        Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay}"
-                        x:Name="DevDriveCloneLocationAliasTextBox" />
+                                    Text="{x:Bind AddRepoViewModel.CloneLocationAlias, Mode=TwoWay}"
+                                    IsEnabled="False"
+                                    Visibility="{x:Bind AddRepoViewModel.IsDevDriveScenario, Mode=OneWay}"
+                                    x:Name="DevDriveCloneLocationAliasTextBox">
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="TextChanged">
+                                <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.ValidateCloneLocationCommand}" CommandParameter="{Binding Text, ElementName=DevDriveCloneLocationAliasTextBox}"/>
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </TextBox>
                 </StackPanel>
-                <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
-                     TextChanged="CloneLocation_TextChanged" Grid.Column="0" 
-                     Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
-                     IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
-                     Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
-                <Grid Grid.Column="1">
-                    <!-- Workaround to show a tooltip on a disabled button.
-                         https://github.com/microsoft/microsoft-ui-xaml/issues/2262 -->
-                    <TextBlock>
-                    <ToolTipService.ToolTip>
-                        <ToolTip x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClearCheckboxToBrowse" Visibility="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
-                    </ToolTipService.ToolTip>
-                    </TextBlock>
-                    <Button IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click" Margin="5, 25, 0, 0"/>
+                    <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
+                                     x:Name="CloneLocationTextBox"
+                                Grid.Column="0" 
+                                Text="{x:Bind AddRepoViewModel.CloneLocation, Mode=TwoWay}"
+                                IsEnabled="{x:Bind AddRepoViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
+                                Visibility="{x:Bind AddRepoViewModel.IsDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="TextChanged">
+                                <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.ValidateCloneLocationCommand}" CommandParameter="{Binding Text, ElementName=CloneLocationTextBox}"/>
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </TextBox>
+                    <Grid Grid.Column="1">
+                        <!-- Workaround to show a tooltip on a disabled button.
+                                https://github.com/microsoft/microsoft-ui-xaml/issues/2262 -->
+                        <TextBlock>
+                                    <ToolTipService.ToolTip>
+                                        <ToolTip x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClearCheckboxToBrowse" Visibility="{x:Bind AddRepoViewModel.IsBrowseButtonEnabled, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
+                                    </ToolTipService.ToolTip>
+                        </TextBlock>
+                    <Button IsEnabled="{x:Bind AddRepoViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Command="{x:Bind AddRepoViewModel.OpenFolderPickerCommand}" Margin="5, 25, 0, 0"/>
+                    </Grid>
+                <TextBlock Text="{x:Bind AddRepoViewModel.FolderPickerErrorMessage, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowFolderPickerError, Mode=OneWay}"/>
                 </Grid>
-            </Grid>
-            <TextBlock Text="{x:Bind FolderPickerViewModel.FolderPickerErrorMessage, Mode=OneWay}" Visibility="{x:Bind FolderPickerViewModel.ShowFolderPickerError, Mode=OneWay}"/>
             <Grid 
-                    Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" 
-                    Margin="0 10 0 10"
-                    Grid.Row="2"
-                    ColumnSpacing="10">
+                            Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" 
+                            Margin="0 10 0 10"
+                            Grid.Row="2"
+                            ColumnSpacing="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="7*"/>
                     <ColumnDefinition Width="3*"/>
@@ -138,31 +190,42 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <CheckBox
-                        Click="MakeNewDevDriveCheckBox_Click" 
-                        IsEnabled="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" 
-                        Grid.Column="0" 
-                        Grid.Row="0"
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NewDevDriveComboBox"/>
+                                x:Name="MakeNewDevDriveCheckBox"
+                                IsEnabled="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" 
+                                Grid.Column="0" 
+                                Grid.Row="0"
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NewDevDriveComboBox">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="Click">
+                            <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.MakeNewDevDriveCommand}" CommandParameter="{Binding IsChecked, ElementName=MakeNewDevDriveCheckBox}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </CheckBox>
                 <HyperlinkButton 
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CustomizeHyperLink"
-                        Grid.Column="1" 
-                        Visibility="{x:Bind EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" 
-                        Click="CustomizeDevDriveHyperlinkButton_ClickAsync"
-                        Grid.Row="0"
-                        Margin="0 -3 0 0"
-                        Padding="3" />
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CustomizeHyperLink"
+                                Grid.Column="1" 
+                                Visibility="{x:Bind EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" 
+                                Grid.Row="0"
+                                Margin="0 -3 0 0"
+                                Padding="3">
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="Click">
+                            <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.CustomizeDevDriveCommand}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </HyperlinkButton>
                 <InfoBar
-                        Grid.Row="1"
-                        Grid.Column="0" 
-                        Grid.ColumnSpan="2"
-                        Margin="0 5 0 0"
-                        IsClosable="False"
-                        IsOpen="True"
-                        Severity="Error"
-                        Width="400"
-                        HorizontalAlignment="Left"
-                        x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveDefaultDriveCheckBoxError"
-                        Visibility="{x:Bind EditDevDriveViewModel.DevDriveValidationError, Mode=OneWay}"/>
+                                Grid.Row="1"
+                                Grid.Column="0" 
+                                Grid.ColumnSpan="2"
+                                Margin="0 5 0 0"
+                                IsClosable="False"
+                                IsOpen="True"
+                                Severity="Error"
+                                Width="400"
+                                HorizontalAlignment="Left"
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveDefaultDriveCheckBoxError"
+                                Visibility="{x:Bind EditDevDriveViewModel.DevDriveValidationError, Mode=OneWay}"/>
             </Grid>
         </StackPanel>
     </ScrollViewer>

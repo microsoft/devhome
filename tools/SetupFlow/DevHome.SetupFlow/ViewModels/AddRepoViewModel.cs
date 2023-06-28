@@ -8,8 +8,11 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Antlr4.Runtime.Misc;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
@@ -18,6 +21,8 @@ using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.Windows.DevHome.SDK;
 using static DevHome.SetupFlow.Models.Common;
 
@@ -37,7 +42,13 @@ public partial class AddRepoViewModel : ObservableObject
     private string _cloneLocationAlias;
 
     [ObservableProperty]
-    private bool _shouldShowFilePicker;
+    private bool _shouldShowFolderPicker;
+
+    [ObservableProperty]
+    private bool _shouldShowFolderPickerError;
+
+    [ObservableProperty]
+    private string _folderPickerErrorMessage;
 
     [ObservableProperty]
     private bool _isDevDriveScenario;
@@ -54,9 +65,161 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowRepoPage;
 
-    private AddViaUrlViewModel _addViaUrlViewModel;
+    [ObservableProperty]
+    private bool _isPageSegmentedViewEnabled;
 
-    private AddViaAccountViewModel _addViaAccountViewModel;
+    [ObservableProperty]
+    private bool _isPrimaryButtonEnabled;
+
+    [ObservableProperty]
+    private string _primaryButtonContent;
+
+    [ObservableProperty]
+    private Style _primaryButtonStyle;
+
+    [RelayCommand]
+    public void ToggleScreen()
+    {
+        if (ShouldShowAccountPage || ShouldShowRepoPage)
+        {
+            SwitchToUrlPage();
+        }
+        else
+        {
+            SwitchToAccountPage();
+        }
+    }
+
+    [RelayCommand]
+    public void ToggleCloneButton()
+    {
+        /*
+        var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
+        if (EditDevDriveViewModel.DevDrive != null && EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
+        {
+            isEverythingGood &= EditDevDriveViewModel.IsDevDriveValid();
+        }
+
+        if (isEverythingGood)
+        {
+            IsPrimaryButtonEnabled = true;
+        }
+        else
+        {
+            IsPrimaryButtonEnabled = false;
+        }
+
+        // Fill in EverythingToClone with the location
+        if (isEverythingGood)
+        {
+            AddRepoViewModel.SetCloneLocation(FolderPickerViewModel.CloneLocation);
+        }
+        */
+    }
+
+    [RelayCommand]
+    public void CustomizeDevDrive()
+    {
+        /*
+        await EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        ToggleCloneButton();
+        */
+    }
+
+    [RelayCommand]
+    public void MakeNewDevDrive()
+    {
+        /*
+         *         // Getting here means
+        // 1. The user does not have any existing dev drives
+        // 2. The user wants to clone to a new dev drive.
+        // 3. The user un-checked this and does not want a new dev drive.
+        var isChecked = (sender as CheckBox).IsChecked;
+        if (isChecked.Value)
+        {
+            EditDevDriveViewModel.MakeDefaultDevDrive();
+            FolderPickerViewModel.DisableBrowseButton();
+            _oldCloneLocation = FolderPickerViewModel.CloneLocation;
+            FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
+            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+            FolderPickerViewModel.InDevDriveScenario = true;
+        }
+        else
+        {
+            FolderPickerViewModel.CloneLocationAlias = string.Empty;
+            FolderPickerViewModel.InDevDriveScenario = false;
+            EditDevDriveViewModel.RemoveNewDevDrive();
+            FolderPickerViewModel.EnableBrowseButton();
+            FolderPickerViewModel.CloneLocation = _oldCloneLocation;
+        }
+        */
+    }
+
+    [RelayCommand]
+    public void ValidateCloneLocation(string cloneLocation)
+    {
+        /*
+        // just in case something other than a text box calls this.
+        if (sender is TextBox cloneLocationTextBox)
+        {
+            var location = cloneLocationTextBox.Text;
+            if (string.Equals(cloneLocationTextBox.Name, "DevDriveCloneLocationAliasTextBox", StringComparison.Ordinal))
+            {
+                location = (EditDevDriveViewModel.DevDrive != null) ? EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
+            }
+
+            FolderPickerViewModel.CloneLocation = location;
+        }
+
+        FolderPickerViewModel.ValidateCloneLocation();
+
+        ToggleCloneButton();
+        */
+    }
+
+    [RelayCommand]
+    public void OpenFolderPicker()
+    {
+        /*
+        await FolderPickerViewModel.ChooseCloneLocation();
+        ToggleCloneButton();
+        */
+    }
+
+    [RelayCommand]
+    public void PrimaryButton()
+    {
+        /*
+        if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
+        {
+            AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation);
+            if (AddRepoViewModel.ShouldShowUrlError == Visibility.Visible)
+            {
+                IsPrimaryButtonEnabled = false;
+                args.Cancel = true;
+            }
+        }
+        else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
+        {
+            args.Cancel = true;
+            var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
+            if (!string.IsNullOrEmpty(repositoryProviderName))
+            {
+                SwitchToRepoPage(repositoryProviderName);
+            }
+        }
+        */
+    }
+
+    public AddViaUrlViewModel AddViaUrlViewModel { get; }
+
+    public AddViaAccountViewModel AddViaAccountViewModel { get; }
+
+    private EditDevDriveViewModel _editDevDriveViewModel = new (null);
+
+    /*
+    private PageKind _currentPage = PageKind.AddViaUrl;
+    */
 
     public AddRepoViewModel(ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
     {
@@ -73,6 +236,126 @@ public partial class AddRepoViewModel : ObservableObject
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
+        */
+    }
+
+    /// <summary>
+    /// Gets all plugins that have a provider type of repository and developerId.
+    /// </summary>
+    public void GetPluginsAsync()
+    {
+        /*
+        await Task.Run(() => AddRepoViewModel.GetPlugins());
+        */
+    }
+
+    /// <summary>
+    /// Sets up the UI for dev drives.
+    /// </summary>
+    public void SetupDevDrivesAsync()
+    {
+        /*
+        await Task.Run(() =>
+        {
+            EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
+
+            if (EditDevDriveViewModel.DevDrive != null &&
+                EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+            {
+                FolderPickerViewModel.InDevDriveScenario = true;
+                EditDevDriveViewModel.ClonePathUpdated();
+            }
+        });
+        */
+    }
+
+    private void SwitchToAccountPage()
+    {
+        // disable segmented view to prevent clicks while running.
+        IsPageSegmentedViewEnabled = false;
+        ShouldShowFolderPicker = false;
+        _editDevDriveViewModel.HideDevDriveUI();
+        ShouldShowUrlPage = false;
+
+        if (AddViaAccountViewModel.CanSkipAccountPage)
+        {
+            /*
+            SwitchToRepoPage(string.Empty);
+            */
+        }
+        else
+        {
+            ShouldShowAccountPage = true;
+        }
+
+        ToggleCloneButton();
+
+        IsPageSegmentedViewEnabled = true;
+    }
+
+    private void SwitchToUrlPage()
+    {
+        ShouldShowFolderPicker = true;
+        _editDevDriveViewModel.ShowDevDriveUIIfEnabled();
+        ToggleCloneButton();
+
+        ShouldShowUrlPage = true;
+        ShouldShowAccountPage = false;
+        ShouldShowRepoPage = false;
+    }
+
+    private async Task SwitchToRepoPage(string repositoryProviderName)
+    {
+        var getAccountsTask = AddViaAccountViewModel.GetAccountsAsync(repositoryProviderName);
+        ShouldShowFolderPicker = true;
+        _editDevDriveViewModel.ShowDevDriveUIIfEnabled();
+
+        await getAccountsTask;
+        if (AddViaAccountViewModel.Accounts.Any())
+        {
+            AddViaAccountViewModel.SelectedAccount = AddViaAccountViewModel.Accounts.First();
+        }
+
+        PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+        IsPrimaryButtonEnabled = false;
+    }
+
+    /// <summary>
+    /// If any items in reposToSelect exist in the UI, select them.
+    /// An side-effect of SelectRange is SelectionChanged is fired for each item SelectRange is called on.
+    /// IsCallingSelectRange is used to prevent modifying EverythingToClone when repos are being re-selected after filtering.
+    /// </summary>
+    /// <param name="reposToSelect">The repos to select in the UI.</param>
+    private void SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
+    {
+        /*
+        AddRepoViewModel.IsCallingSelectRange = true;
+        var onlyRepoNames = AddRepoViewModel.Repositories.Select(x => x.RepoName).ToList();
+        foreach (var repoToSelect in reposToSelect)
+        {
+            var index = onlyRepoNames.IndexOf(repoToSelect.RepoName);
+            if (index != -1)
+            {
+                // SelectRange does not accept an index.  Call it multiple times on each index
+                // with a range of 1.
+                RepositoriesListView.SelectRange(new ItemIndexRange(index, 1));
+            }
+        }
+
+        AddRepoViewModel.IsCallingSelectRange = false;
+        */
+    }
+
+    /// <summary>
+    /// If any items in reposToSelect exist in the UI, select them.
+    /// An side-effect of SelectRange is SelectionChanged is fired for each item SelectRange is called on.
+    /// IsCallingSelectRange is used to prevent modifying EverythingToClone when repos are being re-selected after filtering.
+    /// </summary>
+    /// <param name="reposToSelect">The repos to select in the UI.</param>
+    private void SelectRepositories(IEnumerable<CloningInformation> reposToSelect)
+    {
+        /*
+        SelectRepositories(reposToSelect.Select(x => new RepoViewListItem(x.RepositoryToClone)));
         */
     }
 
@@ -395,31 +678,6 @@ public partial class AddRepoViewModel : ObservableObject
     public void DisablePrimaryButton()
     {
         ShouldPrimaryButtonBeEnabled = false;
-    }
-
-    /// <summary>
-    /// Gets all the accounts for a provider and updates the UI.
-    /// </summary>
-    /// <param name="repositoryProviderName">The provider the user wants to use.</param>
-    public async Task GetAccountsAsync(string repositoryProviderName)
-    {
-        await Task.Run(() => _providers.StartIfNotRunning(repositoryProviderName));
-        var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
-        if (!loggedInAccounts.Any())
-        {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Measure, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false));
-
-            // Throw away developerId because DevHome allows one account per provider. GetAllLoggedInAccounts is called
-            // in anticipation of 1 Provider : N DeveloperIds
-            await Task.Run(() => _providers.LogInToProvider(repositoryProviderName));
-            loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
-        }
-        else
-        {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Measure, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: true));
-        }
-
-        Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId()));
     }
 
     /// <summary>

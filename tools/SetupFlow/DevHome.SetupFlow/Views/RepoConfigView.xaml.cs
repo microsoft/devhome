@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
@@ -80,6 +81,8 @@ public sealed partial class RepoConfigView : UserControl
     /// </summary>
     private async void AddRepoButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        await Task.Run(() => { Thread.Sleep(2000); });
+        /*
         // hold information for telemetry calls
         const string EventName = "RepoTool_AddRepos_Event";
         var dialogName = "RepoDialog";
@@ -212,6 +215,7 @@ public sealed partial class RepoConfigView : UserControl
         }
 
         telemetryLogger.Log(EventName, LogLevel.Measure, new DialogEvent("Close", dialogName, result), relatedActivityId);
+        */
     }
 
     /// <summary>

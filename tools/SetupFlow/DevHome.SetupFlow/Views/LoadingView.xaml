@@ -31,20 +31,6 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-                    <Style x:Key="PrimaryTextStyle" TargetType="TextBlock">
-                        <Setter Property="Foreground">
-                            <Setter.Value>
-                                <SolidColorBrush Color="{ThemeResource TextFillColorPrimary}"/>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                    <Style x:Key="SecondaryTextStyle" TargetType="TextBlock">
-                        <Setter Property="Foreground">
-                            <Setter.Value>
-                                <SolidColorBrush Color="{ThemeResource TextFillColorSecondary}"/>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
