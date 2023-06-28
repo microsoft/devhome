@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
@@ -10,15 +9,13 @@ using DevHome.Common.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Win32;
+using Windows.Win32.Foundation;
 
 namespace DevHome.Services;
 
 public class AccountsService : IAccountsService
 {
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SetForegroundWindow(IntPtr hWnd);
-
     public AccountsService()
     {
     }
@@ -74,7 +71,7 @@ public class AccountsService : IAccountsService
         }
 
         // Bring focus back to DevHome after login
-        SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
+        _ = PInvoke.SetForegroundWindow((HWND)Process.GetCurrentProcess().MainWindowHandle);
     }
 
     public void LoggedOutEventHandler(object? sender, IDeveloperId developerId)
