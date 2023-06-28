@@ -48,7 +48,7 @@ $version_h = $now.Hour
 $version_m = $now.Minute
 if ([string]::IsNullOrWhiteSpace($Build)) {
   if ($IsAzurePipelineBuild) {
-    $Build = "1"
+    $Build = "0"
   }
   else {
     $Build = ($version_h * 100 + $version_m).ToString()
