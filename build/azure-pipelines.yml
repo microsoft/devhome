@@ -23,7 +23,7 @@ parameters:
     - Release
 
 variables:
-  MSIXVersion: '0.300'
+  MSIXVersion: '0.301'
   VersionOfSDK: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'

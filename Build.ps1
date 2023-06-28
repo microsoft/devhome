@@ -196,7 +196,9 @@ Try {
     $xIdentity = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
     $appxmanifestPath = (Join-Path $env:Build_RootDirectory "DevHomeStub\DevHomeStubPackage\Package.appxmanifest")
     $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
-    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = (($env:msix_version).Substring(0, $env:msix_version.LastIndexOf('.')) + ".0")
+    $versionParts = ($env:msix_version).Split('.')
+    $versionParts[1] = [string]([int]($versionParts[1]) - 1)
+    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = ($versionParts -join '.')
     $appxmanifest.Save($appxmanifestPath)
 
     & $msbuildPath  $msbuildArgs
