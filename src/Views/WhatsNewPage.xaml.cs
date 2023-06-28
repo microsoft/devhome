@@ -6,6 +6,7 @@ using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Models;
 using DevHome.Services;
@@ -86,6 +87,10 @@ public sealed partial class WhatsNewPage : Page
         {
             // Only launch the disks and volumes settings page when the Dev Drive feature is enabled.
             // Otherwise redirect the user to the Dev Drive support page to learn more about the feature.
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "LaunchDisksAndVolumesSettingsPageTriggered",
+                LogLevel.Measure,
+                new DisksAndVolumesSettingsPageTriggeredEvent(source: "WhatsNewPageView"));
             await Launcher.LaunchUriAsync(DevDriveUtil.IsDevDriveFeatureEnabled ? _devDrivePageKeyUri : _devDriveLearnMoreLinkUri);
         }
         else
