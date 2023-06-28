@@ -23,7 +23,7 @@ parameters:
     - Release
 
 variables:
-  MSIXVersion: '0.200'
+  MSIXVersion: '0.300'
   VersionOfSDK: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -490,7 +490,7 @@ stages:
     )
   jobs:
   - job: Store_Publish
-    timeoutInMinutes: 120
+    timeoutInMinutes: 360
     steps:
     - task: DownloadPipelineArtifact@2
       inputs:
