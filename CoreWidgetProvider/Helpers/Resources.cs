@@ -63,6 +63,7 @@ public static class Resources
             "SSH_Widget_Template/EmptyHosts",
             "SSH_Widget_Template/Connect",
             "SSH_Widget_Template/ErrorProcessingConfigFile",
+            "SSH_Widget_Template/PatternMatching",
             "Memory_Widget_Template/SystemMemory",
             "Memory_Widget_Template/MemoryUsage",
             "Memory_Widget_Template/AllMemory",

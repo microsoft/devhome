@@ -8,7 +8,7 @@
       "items": [
         {
           "type": "TextBlock",
-          "text": "Your SSH key contains pattern matching. Fill out the pattern to connect.",
+          "text": "%SSH_Widget_Template/PatternMatching%",
           "wrap": true,
           "horizontalAlignment": "Left",
           "size": "Medium",
@@ -39,7 +39,7 @@
                   "actions": [
                     {
                       "type": "Action.Execute",
-                      "title": "Connect",
+                      "title": "%SSH_Widget_Template/Connect%",
                       "tooltip": "%Widget_Template_Tooltip/Submit%",
                       "verb": "PatternConnect"
                     }
