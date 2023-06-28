@@ -1,0 +1,200 @@
+id: 
+name: GitOps.PullRequestIssueManagement
+description: GitOps.PullRequestIssueManagement primitive
+owner: 
+resource: repository
+disabled: false
+where: 
+configuration:
+  resourceManagementConfiguration:
+    scheduledSearches:
+    - description: 
+      frequencies:
+      - hourly:
+          hour: 6
+      filters:
+      - isIssue
+      - isOpen
+      - hasLabel:
+          label: Needs-Author-Feedback
+      - hasLabel:
+          label: Status-No recent activity
+      - noActivitySince:
+          days: 5
+      actions:
+      - closeIssue
+    - description: 
+      frequencies:
+      - hourly:
+          hour: 6
+      filters:
+      - isIssue
+      - isOpen
+      - hasLabel:
+          label: Needs-Author-Feedback
+      - noActivitySince:
+          days: 5
+      - isNotLabeledWith:
+          label: Status-No recent activity
+      actions:
+      - addLabel:
+          label: Status-No recent activity
+      - addReply:
+          reply: This issue has been automatically marked as stale because it has been marked as requiring author feedback but has not had any activity for **5 days**. It will be closed if no further activity occurs **within 5 days of this comment**.
+    - description: 
+      frequencies:
+      - hourly:
+          hour: 6
+      filters:
+      - isIssue
+      - isOpen
+      - hasLabel:
+          label: Resolution-Duplicate
+      - noActivitySince:
+          days: 1
+      actions:
+      - addReply:
+          reply: This issue has been marked as duplicate and has not had any activity for **1 day**. It will be closed for housekeeping purposes.
+      - closeIssue
+    eventResponderTasks:
+    - if:
+      - payloadType: Issue_Comment
+      - isAction:
+          action: Created
+      - isActivitySender:
+          issueAuthor: True
+      - hasLabel:
+          label: Needs-Author-Feedback
+      - isOpen
+      then:
+      - addLabel:
+          label: Needs-Triage
+      - removeLabel:
+          label: Needs-Author-Feedback
+      - addLabel:
+          label: Needs-Team-Response
+      description: 
+    - if:
+      - payloadType: Issues
+      - not:
+          isAction:
+            action: Closed
+      - hasLabel:
+          label: Status-No recent activity
+      then:
+      - removeLabel:
+          label: Status-No recent activity
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - hasLabel:
+          label: Status-No recent activity
+      then:
+      - removeLabel:
+          label: Status-No recent activity
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/feedback[H|h]ub'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+        - activitySenderHasAssociation:
+            association: Collaborator
+      then:
+      - addReply:
+          reply: Hi @${issueAuthor}. Please file this issue on Feedback Hub [Windows]+[f] and paste the link here so we can more easily find your information on the back end. The link can be found at the bottom of the feedback report. Please use "Apps" and "Dev Home" for the Category. 
+      - closeIssue
+      - removeLabel:
+          label: Needs-Triage
+      - removeLabel:
+          label: Needs-Team-Response
+      - addLabel:
+          label: Resolution-Please-File-on-Feedback-Hub
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '(\/)?[Dd]up(licate|e)?(\s+of)?\s+(\#[\d]+|https)'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+        - activitySenderHasAssociation:
+            association: Collaborator
+      then:
+      - addReply:
+          reply: We've identified this as a duplicate of another one that already exists. This specific instance is being closed in favor of tracking the concern over on the the linked issue. Please add your 👍 to the other issue to raise its priority. Thanks for your report!
+      - closeIssue
+      - removeLabel:
+          label: Needs-Triage
+      - removeLabel:
+          label: Needs-Team-Response
+      - addLabel:
+          label: Resolution-Duplicate
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/logs)'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - addReply:
+          reply: Hi @${issueAuthor}. It would be helpful for us if you could share your Dev Home logs. These logs can be found at `%LOCALAPPDATA%\Packages\Microsoft.Windows.DevHome_8wekyb3d8bbwe\TempState` and `%LOCALAPPDATA%\Packages\Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe\TempState`. You can share these folders via a OneDrive link or zip them and attach them to a comment here. If you share this way, you may want to look through the logs in case there are any details included that you would like to remove (for example, private repo names). Alternatively, you can open a Feedback Hub issue and attach them there. If you use Feedback Hub, please paste the URL at the bottom of the report here so we can easily find it. 
+      - closeIssue
+      - removeLabel:
+          label: Needs-Triage
+      - removeLabel:
+          label: Needs-Team-Response
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/needinfo'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+        - activitySenderHasAssociation:
+            association: Collaborator
+      then:
+      - removeLabel:
+          label: Needs-Triage
+      - removeLabel:
+          label: Needs-Team-Response
+      - addLabel:
+          label: Needs-Author-Feedback
+      description: 
+    - if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/loc\b'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - removeLabel:
+          label: Needs-Triage
+      - addLabel:
+          label: Loc-Sent To Team
+      - addReply:
+          reply: Hi! Thanks for making us aware of the problem. We raised the issue with our internal localization team.
+      description:
+onFailure: 
+onSuccess: 
