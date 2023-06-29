@@ -22,8 +22,6 @@ configuration:
           label: Needs-Author-Feedback
       - isOpen
       then:
-      - addLabel:
-          label: Needs-Triage
       - removeLabel:
           label: Needs-Author-Feedback
       - addLabel:
