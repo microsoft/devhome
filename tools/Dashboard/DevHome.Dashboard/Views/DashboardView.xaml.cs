@@ -9,7 +9,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.WinUI;
 using DevHome.Common;
 using DevHome.Common.Renderers;
