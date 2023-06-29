@@ -79,10 +79,14 @@
                     </ListView.Header>
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:RepoViewListItem">
-                            <StackPanel Orientation="Horizontal" Spacing="5">
-                                <FontIcon FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
-                                <TextBlock Text="{x:Bind RepoDisplayName}"/>
-                            </StackPanel>
+                            <Grid ColumnSpacing="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <FontIcon Grid.Column="0" FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
+                                <TextBlock Grid.Column="1" Text="{x:Bind RepoDisplayName}" TextTrimming="CharacterEllipsis"/>
+                            </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>
