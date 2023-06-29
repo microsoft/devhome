@@ -1,0 +1,40 @@
+id: scheduledSearch.markNoRecentActivity
+name: GitOps.PullRequestIssueManagement
+description: Marks issues that are inactive
+owner: 
+resource: repository
+disabled: false
+where: 
+configuration:
+  resourceManagementConfiguration:
+    scheduledSearches:
+    - description: >-
+          Search for Issues where -
+          * Issue is Open
+          * Issue has the label Needs-Author-Feedback
+          * Issue does not have the label Status-No recent activity
+          * Issue does not have the label Issue-Feature
+          * Has not had activity in the last 5 days
+          Then -
+          * Mark the issue as Status-No recent activity
+      frequencies:
+      - hourly:
+          hour: 6
+      filters:
+      - isIssue
+      - isOpen
+      - hasLabel:
+          label: Needs-Author-Feedback
+      - noActivitySince:
+          days: 5
+      - isNotLabeledWith:
+          label: Status-No recent activity
+      - isNotLabeledWith:
+          label: Issue-Feature
+      actions:
+      - addLabel:
+          label: Status-No recent activity
+      - addReply:
+          reply: This issue has been automatically marked as stale because it has been marked as requiring author feedback but has not had any activity for **5 days**. It will be closed if no further activity occurs **within 5 days of this comment**.
+onFailure: 
+onSuccess: 
