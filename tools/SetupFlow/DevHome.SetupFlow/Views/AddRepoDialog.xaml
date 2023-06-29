@@ -61,7 +61,8 @@
                 <labs:SegmentedItem x:Name="AddViaUrlSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" />
             </labs:Segmented>
 
-            <!-- Adding a repo via URL -->
+            <!--
+            Adding a repo via URL
             <TextBox x:Name="RepoUrlTextBox"
                      x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoUrl"
                      Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlPage, Mode=OneWay}"
@@ -75,19 +76,19 @@
             </TextBox>
             <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.AddViaUrlViewModel.UriError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.AddViaUrlViewModel.ShouldShowUriError, Mode=OneWay}"/>
 
-            <!-- Log into the provider -->
+             Log into the provider
             <ComboBox x:Name="ProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShouldShowAccountPage, Mode=OneWay}" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.AddViaAccountViewModel.Providers, Mode=OneWay}" Margin="0, 20, 0, 0" >
                 <DataTemplate x:DataType="models:RepositoryProvider">
                     <TextBlock Text="{x:Bind DisplayName}"/>
                 </DataTemplate>
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="SelectionChanged">
-                        <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.AddViaAccountViewModel.ChangeRepositoryProviderCommand}" CommandParameter="{Binding SelectedItem, ElementName=ProviderComboBox}"/>
+                        <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.ChangeRepositoryProviderCommand}" CommandParameter="{Binding SelectedItem, ElementName=ProviderComboBox}"/>
                     </ic:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </ComboBox>
 
-            <!-- Show Repositories -->
+            Show Repositories
             <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShouldShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
                 <Grid ColumnSpacing="8">
                     <Grid.ColumnDefinitions>
@@ -134,14 +135,14 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackPanel>
-            <!-- Repo page and URL page both have clonepath + dev drive check box-->
-            <!-- Folder picker template -->
+            Repo page and URL page both have clonepath + dev drive check box
+            Folder picker template
                 <Grid Visibility="{x:Bind AddRepoViewModel.ShouldShowFolderPicker, Mode=OneWay}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="5*"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <!-- Folder picker -->
+                    Folder picker
                     <StackPanel
                                 Grid.Column="0"
                                 Spacing="7">
@@ -171,8 +172,8 @@
                         </i:Interaction.Behaviors>
                     </TextBox>
                     <Grid Grid.Column="1">
-                        <!-- Workaround to show a tooltip on a disabled button.
-                                https://github.com/microsoft/microsoft-ui-xaml/issues/2262 -->
+                        Workaround to show a tooltip on a disabled button.
+                                https://github.com/microsoft/microsoft-ui-xaml/issues/2262
                         <TextBlock>
                                     <ToolTipService.ToolTip>
                                         <ToolTip x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClearCheckboxToBrowse" Visibility="{x:Bind AddRepoViewModel.IsBrowseButtonEnabled, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
@@ -232,7 +233,7 @@
                                 HorizontalAlignment="Left"
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveDefaultDriveCheckBoxError"
                                 Visibility="{x:Bind EditDevDriveViewModel.DevDriveValidationError, Mode=OneWay}"/>
-            </Grid>
+            </Grid>-->
         </StackPanel>
     </ScrollViewer>
 </ContentDialog>

@@ -56,9 +56,9 @@ internal partial class AddRepoDialog
     {
         this.InitializeComponent();
 
-        _previouslySelectedRepos = previouslySelectedRepos;
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
+        _previouslySelectedRepos = previouslySelectedRepos;
+        AddRepoViewModel = new AddRepoViewModel(stringResource, EditDevDriveViewModel, previouslySelectedRepos);
 
         var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         _defaultClonePath = Path.Join(userFolder, "source", "repos");

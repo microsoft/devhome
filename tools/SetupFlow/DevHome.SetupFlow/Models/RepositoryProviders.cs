@@ -119,4 +119,9 @@ public class RepositoryProviders
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all repositories for repository provider {providerName}");
         return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId) ?? new List<IRepository>();
     }
+
+    public IEnumerable<RepositoryProvider> GetAllProviders()
+    {
+        return _providers.Values;
+    }
 }

@@ -24,7 +24,7 @@ public sealed partial class RepoConfigView : UserControl
 {
     private readonly Guid relatedActivityId;
 
-    private IThemeSelectorService _themeSelectorService;
+    private readonly IThemeSelectorService _themeSelectorService;
 
     public RepoConfigView()
     {
@@ -81,7 +81,10 @@ public sealed partial class RepoConfigView : UserControl
     /// </summary>
     private async void AddRepoButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        await Task.Run(() => { Thread.Sleep(2000); });
+        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList());
+        addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
+        addRepoDialog.RequestedTheme = ActualTheme;
+        await addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
         /*
         // hold information for telemetry calls
         const string EventName = "RepoTool_AddRepos_Event";

@@ -85,6 +85,7 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     public void ToggleScreen()
     {
+        /*
         if (ShouldShowAccountPage || ShouldShowRepoPage)
         {
             SwitchToUrlPage();
@@ -93,11 +94,28 @@ public partial class AddRepoViewModel : ObservableObject
         {
             SwitchToAccountPage();
         }
+        */
+    }
+
+    [RelayCommand]
+    public void ChangeRepositoryProvider(string providerName)
+    {
+        if (!string.IsNullOrEmpty(providerName))
+        {
+            PrimaryButtonStyle = Application.Current.Resources["ContentDialogLogInButtonStyle"] as Style;
+            ShouldPrimaryButtonBeEnabled = true;
+        }
+        else
+        {
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+            ShouldPrimaryButtonBeEnabled = false;
+        }
     }
 
     [RelayCommand]
     public void ToggleCloneButton()
     {
+        /*
         var isEverythingGood = ValidateRepoInformation() && ValidateCloneLocation();
         if (_editDevDriveViewModel.DevDrive != null && _editDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
         {
@@ -105,6 +123,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         ShouldPrimaryButtonBeEnabled = isEverythingGood;
+        */
     }
 
     [RelayCommand]
@@ -165,7 +184,9 @@ public partial class AddRepoViewModel : ObservableObject
     {
         if (_currentPage == PageKind.AddViaUrl)
         {
+            /*
             AddViaUrlViewModel.AddRepositoryViaUri(CloneLocation, _previouslySelectedRepos, EverythingToClone);
+            */
             if (AddViaUrlViewModel.ShouldShowUriError)
             {
                 ShouldPrimaryButtonBeEnabled = false;
@@ -180,20 +201,37 @@ public partial class AddRepoViewModel : ObservableObject
         {
             /*
             args.Cancel = true;
-            */
             SwitchToRepoPage();
+            */
         }
     }
 
-    public AddViaUrlViewModel AddViaUrlViewModel { get; }
+    public AddViaUrlViewModel AddViaUrlViewModel
+    {
+        get;
+    }
 
-    public AddViaAccountViewModel AddViaAccountViewModel { get; }
+    public AddViaAccountViewModel AddViaAccountViewModel
+    {
+        get;
+    }
 
-    private EditDevDriveViewModel _editDevDriveViewModel = new (null);
+    private readonly EditDevDriveViewModel _editDevDriveViewModel;
 
-    private PageKind _currentPage = PageKind.AddViaUrl;
+    private readonly PageKind _currentPage = PageKind.AddViaUrl;
 
     private string _oldCloneLocation;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the SelectionChange event fired because SelectRange was called.
+    /// After filtering SelectRange is called to re-select all previously selected items.  This causes SelectionChanged
+    /// to be fired for each item.  Because EverythingToClone didn't change during filtering it contains every item to select.
+    /// This flag is to prevent adding duplicate items are being re-selected.
+    /// </summary>
+    public bool IsCallingSelectRange
+    {
+        get; set;
+    }
 
     /// <summary>
     /// Gets or sets the list that keeps all repositories the user wants to clone.
@@ -205,55 +243,36 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
-    public AddRepoViewModel(ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
+    public AddRepoViewModel(ISetupFlowStringResource stringResource, EditDevDriveViewModel editDevDriveViewModel, List<CloningInformation> previouslySelectedRepos)
     {
         _stringResource = stringResource;
-        /*
-ChangeToUrlPage();
+        EverythingToClone = new ();
+        _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
+        EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
+        _editDevDriveViewModel = editDevDriveViewModel;
 
-// override changes ChangeToUrlPage to correctly set the state.
-UrlParsingError = string.Empty;
-ShouldShowUrlError = Visibility.Collapsed;
-ShouldPrimaryButtonBeEnabled = false;
-ShowErrorTextBox = Visibility.Collapsed;
-EverythingToClone = new ();
-
-_previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
-EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
-*/
-    }
-
-    /// <summary>
-    /// Gets all plugins that have a provider type of repository and developerId.
-    /// </summary>
-    public void GetPluginsAsync()
-    {
-        /*
-        await Task.Run(() => AddRepoViewModel.GetPlugins());
-        */
+        SwitchToUrlPage();
     }
 
     /// <summary>
     /// Sets up the UI for dev drives.
     /// </summary>
-    public void SetupDevDrivesAsync()
+    public async void SetupDevDrivesAsync()
     {
-        /*
         await Task.Run(() =>
         {
-            EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
+            _editDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
 
-            if (EditDevDriveViewModel.DevDrive != null &&
-                EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+            if (_editDevDriveViewModel.DevDrive != null &&
+                _editDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
             {
-                FolderPickerViewModel.InDevDriveScenario = true;
-                EditDevDriveViewModel.ClonePathUpdated();
+                IsDevDriveScenario = true;
+                _editDevDriveViewModel.ClonePathUpdated();
             }
         });
-        */
     }
 
-    private void SwitchToAccountPage()
+    private async void SwitchToAccountPage()
     {
         // disable segmented view to prevent clicks while running.
         IsPageSegmentedViewEnabled = false;
@@ -263,9 +282,7 @@ EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
 
         if (AddViaAccountViewModel.CanSkipAccountPage)
         {
-            /*
-            SwitchToRepoPage(string.Empty);
-            */
+            await SwitchToRepoPage(AddViaAccountViewModel.SelectedProvider.DisplayName);
         }
         else
         {
@@ -310,24 +327,22 @@ EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
     /// IsCallingSelectRange is used to prevent modifying EverythingToClone when repos are being re-selected after filtering.
     /// </summary>
     /// <param name="reposToSelect">The repos to select in the UI.</param>
-    private void SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
+    private List<int> SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
     {
+        List<int> repoIndeciesToSelect = new ();
+
         /*
-        AddRepoViewModel.IsCallingSelectRange = true;
-        var onlyRepoNames = AddRepoViewModel.Repositories.Select(x => x.RepoName).ToList();
+        var onlyRepoNames = AddViaAccountViewModel.Repositories.Select(x => x.RepoName).ToList();
         foreach (var repoToSelect in reposToSelect)
         {
             var index = onlyRepoNames.IndexOf(repoToSelect.RepoName);
             if (index != -1)
             {
-                // SelectRange does not accept an index.  Call it multiple times on each index
-                // with a range of 1.
-                RepositoriesListView.SelectRange(new ItemIndexRange(index, 1));
+                repoIndeciesToSelect.Add(index);
             }
         }
-
-        AddRepoViewModel.IsCallingSelectRange = false;
         */
+        return repoIndeciesToSelect;
     }
 
     /// <summary>
@@ -338,9 +353,7 @@ EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
     /// <param name="reposToSelect">The repos to select in the UI.</param>
     private void SelectRepositories(IEnumerable<CloningInformation> reposToSelect)
     {
-        /*
         SelectRepositories(reposToSelect.Select(x => new RepoViewListItem(x.RepositoryToClone)));
-        */
     }
 
     /// <summary>
@@ -448,8 +461,6 @@ EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
             return null;
         }
     }
-
-   
 
     /*
     private readonly ISetupFlowStringResource _stringResource;

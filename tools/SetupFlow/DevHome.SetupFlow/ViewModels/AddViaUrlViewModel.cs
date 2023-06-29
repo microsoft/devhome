@@ -16,6 +16,8 @@ using Microsoft.Windows.DevHome.SDK;
 namespace DevHome.SetupFlow.ViewModels;
 public partial class AddViaUrlViewModel : ObservableObject
 {
+    private readonly ISetupFlowStringResource _stringResource;
+
     [ObservableProperty]
     private string _enteredUri;
 
@@ -24,8 +26,6 @@ public partial class AddViaUrlViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _shouldShowUriError;
-
-    private readonly ISetupFlowStringResource _stringResource;
 
     public AddViaUrlViewModel(ISetupFlowStringResource stringResource)
     {

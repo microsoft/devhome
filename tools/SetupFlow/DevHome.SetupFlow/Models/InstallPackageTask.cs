@@ -93,6 +93,42 @@ public class InstallPackageTask : ISetupTask
         };
     }
 
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteBase()
+    {
+        ReportAppSelectedForInstallEvent();
+        return Task.Run(async () =>
+        {
+            try
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
+                var installResult = await _wpm.InstallPackageAsync(_package);
+                RequiresReboot = installResult.RebootRequired;
+                WasInstallSuccessful = true;
+
+                // Set the extended error code in case a reboot is required
+                _extendedErrorCode = installResult.ExtendedErrorCode;
+
+                ReportAppInstallSucceededEvent();
+                return TaskFinishedState.Success;
+            }
+            catch (InstallPackageException e)
+            {
+                _installResultStatus = e.Status;
+                _extendedErrorCode = e.ExtendedErrorCode;
+                _installerErrorCode = e.InstallerErrorCode;
+                ReportAppInstallFailedEvent();
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
+                return TaskFinishedState.Failure;
+            }
+            catch (Exception e)
+            {
+                ReportAppInstallFailedEvent();
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package.", e);
+                return TaskFinishedState.Failure;
+            }
+        }).AsAsyncOperation();
+    }
+
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
     {
         ReportAppSelectedForInstallEvent();
