@@ -110,6 +110,7 @@ internal class CreateDevDriveTask : ISetupTask
             finally
             {
                 timer.Stop();
+
                 // Critical level approved by subhasan
                 TelemetryFactory.Get<ITelemetry>().Log("CreateDevDriveTriggered", LogLevel.Critical, new DevDriveTriggeredEvent(DevDrive, timer.ElapsedTicks, result));
             }
