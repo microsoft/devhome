@@ -81,7 +81,8 @@ internal class CreateDevDriveTask : ISetupTask
 
             try
             {
-                TelemetryFactory.Get<ITelemetry>().LogMeasure("CreateDevDrive_CreatingDevDrive_Event");
+                // Critical level approved by subhasan
+                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDrive_CreatingDevDrive_Event", LogLevel.Critical, new EmptyEvent());
                 var manager = _host.GetService<IDevDriveManager>();
                 var validation = manager.GetDevDriveValidationResults(DevDrive);
                 manager.RemoveAllDevDrives();
@@ -109,7 +110,8 @@ internal class CreateDevDriveTask : ISetupTask
             finally
             {
                 timer.Stop();
-                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDriveTriggered", LogLevel.Measure, new DevDriveTriggeredEvent(DevDrive, timer.ElapsedTicks, result));
+                // Critical level approved by subhasan
+                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDriveTriggered", LogLevel.Critical, new DevDriveTriggeredEvent(DevDrive, timer.ElapsedTicks, result));
             }
         }).AsAsyncOperation();
     }

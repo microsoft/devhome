@@ -155,10 +155,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async void LaunchDisksAndVolumesSettingsPage()
     {
+        // Critical level approved by subhasan
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
         TelemetryFactory.Get<ITelemetry>().Log(
             "LaunchDisksAndVolumesSettingsPageTriggered",
-            LogLevel.Measure,
+            LogLevel.Critical,
             new DisksAndVolumesSettingsPageTriggeredEvent(source: "MainPageView"));
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }

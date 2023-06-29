@@ -318,9 +318,10 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [RelayCommand]
     public async void LaunchDisksAndVolumesSettingsPage()
     {
+        // Critical level approved by subhasan
         TelemetryFactory.Get<ITelemetry>().Log(
             "LaunchDisksAndVolumesSettingsPageTriggered",
-            LogLevel.Measure,
+            LogLevel.Critical,
             new DisksAndVolumesSettingsPageTriggeredEvent(source: "DevDriveView"));
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
