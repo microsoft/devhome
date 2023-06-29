@@ -11,10 +11,10 @@ configuration:
     - description: Add Needs-Triage to new issues
       if:
       - payloadType: Issues
-        - isAction:
-            action: Opened
+      - isAction:
+          action: Opened
       then:
       - addLabel:
-            label: Needs-Triage
+          label: Needs-Triage
 onFailure: 
 onSuccess: 
