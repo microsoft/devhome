@@ -21,7 +21,6 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
-using Windows.Management.Deployment;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System;
@@ -40,20 +39,17 @@ public partial class DashboardView : ToolPage
     private static AdaptiveCardRenderer _renderer;
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
-    private bool _validatedWebExpPack;
+    private readonly WidgetServiceHelper _widgetServiceHelper;
 
     private static bool _widgetHostInitialized;
 
     private static Dictionary<string, BitmapImage> _widgetLightIconCache;
     private static Dictionary<string, BitmapImage> _widgetDarkIconCache;
 
-    private readonly Version minSupportedVersion400 = new (423, 3800);
-    private readonly Version minSupportedVersion500 = new (523, 3300);
-    private readonly Version version500 = new (500, 0);
-
     public DashboardView()
     {
         ViewModel = new DashboardViewModel();
+        _widgetServiceHelper = new WidgetServiceHelper();
         this.InitializeComponent();
 
         if (PinnedWidgets != null)
@@ -75,7 +71,7 @@ public partial class DashboardView : ToolPage
         // If this is the first time initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
         {
-            if (EnsureWebExperiencePack())
+            if (_widgetServiceHelper.EnsureWebExperiencePack())
             {
                 _widgetHostInitialized = InitializeWidgetHost();
             }
@@ -120,58 +116,6 @@ public partial class DashboardView : ToolPage
 
         return true;
     }
-
-    private bool EnsureWebExperiencePack()
-    {
-        // If already validated there's a good version, don't check again.
-        if (_validatedWebExpPack)
-        {
-            return true;
-        }
-
-        // Ensure the application is installed, and the version is high enough.
-        const string packageName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
-
-        var packageManager = new PackageManager();
-        var packages = packageManager.FindPackagesForUser(string.Empty, packageName);
-        if (packages.Any())
-        {
-            // A user cannot actually have more than one version installed, so only need to look at the first result.
-            var package = packages.First();
-
-            var version = package.Id.Version;
-            var major = version.Major;
-            var minor = version.Minor;
-
-            Log.Logger()?.ReportInfo("DashboardView", $"{package.Id.FullName} Version: {major}.{minor}");
-
-            // Create System.Version type from PackageVersion to test. System.Version supports CompareTo() for easy comparisons.
-            if (!IsVersionSupported(new (major, minor)))
-            {
-                return false;
-            }
-        }
-        else
-        {
-            // If there is no version installed at all.
-            return false;
-        }
-
-        _validatedWebExpPack = true;
-        return _validatedWebExpPack;
-    }
-
-    /// <summary>
-    /// Tests whether a version is equal to or above the min, but less than the max.
-    /// </summary>
-    private bool IsVersionBetween(Version target, Version min, Version max) => target.CompareTo(min) >= 0 && target.CompareTo(max) < 0;
-
-    /// <summary>
-    /// Tests whether a version is equal to or above the min.
-    /// </summary>
-    private bool IsVersionAtOrAbove(Version target, Version min) => target.CompareTo(min) >= 0;
-
-    private bool IsVersionSupported(Version target) => IsVersionBetween(target, minSupportedVersion400, version500) || IsVersionAtOrAbove(target, minSupportedVersion500);
 
     private async Task<AdaptiveCardRenderer> GetConfigurationRendererAsync()
     {
@@ -411,7 +355,7 @@ public partial class DashboardView : ToolPage
         // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
         {
-            if (EnsureWebExperiencePack())
+            if (_widgetServiceHelper.EnsureWebExperiencePack())
             {
                 _widgetHostInitialized = InitializeWidgetHost();
                 await CacheWidgetIcons();
