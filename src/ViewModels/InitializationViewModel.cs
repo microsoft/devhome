@@ -40,7 +40,8 @@ public class InitializationViewModel : ObservableObject
     {
         try
         {
-            if (!(await _pluginService.GetInstalledAppExtensionsAsync())
+            if (!string.IsNullOrEmpty(GitHubExtensionStorePackageId) &&
+                !(await _pluginService.GetInstalledAppExtensionsAsync())
                 .Any(extension => extension.AppInfo.PackageFamilyName.Equals(GitHubExtensionPackageFamilyName, StringComparison.OrdinalIgnoreCase)))
             {
                 var appInstallTask = InstallStorePackageAsync(GitHubExtensionStorePackageId);
