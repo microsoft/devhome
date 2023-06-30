@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
@@ -154,10 +155,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async void LaunchDisksAndVolumesSettingsPage()
     {
+        // Critical level approved by subhasan
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
         TelemetryFactory.Get<ITelemetry>().Log(
             "LaunchDisksAndVolumesSettingsPageTriggered",
-            LogLevel.Measure,
+            LogLevel.Critical,
             new DisksAndVolumesSettingsPageTriggeredEvent(source: "MainPageView"));
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
