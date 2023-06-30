@@ -67,6 +67,7 @@ if ($IsAzurePipelineBuild) {
 $ErrorActionPreference = "Stop"
 
 # Install NuGet Cred Provider
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Invoke-Expression "& { $(irm https://aka.ms/install-artifacts-credprovider.ps1) } -AddNetfx"
 
 if (-not([string]::IsNullOrWhiteSpace($SDKNugetSource))) {

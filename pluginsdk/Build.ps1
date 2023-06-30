@@ -34,7 +34,6 @@ Options:
 $ErrorActionPreference = "Stop"
 
 $buildPlatforms = "x64","x86","arm64","AnyCPU"
-$env:Build_Configuration = $Configuration
 
 $msbuildPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
 if ($IsAzurePipelineBuild) {
@@ -48,12 +47,12 @@ New-Item -ItemType Directory -Force -Path "$PSScriptRoot\_build"
 
 Try {
   foreach ($platform in $buildPlatforms) {
-    foreach ($configuration in $env:Build_Configuration.Split(",")) {
+    foreach ($config in $Configuration.Split(",")) {
       $msbuildArgs = @(
         ("$PSScriptRoot\DevHomeSDK.sln"),
         ("/p:Platform="+$platform),
-        ("/p:Configuration="+$configuration),
-        ("/binaryLogger:DevHome.SDK.$platform.$configuration.binlog")
+        ("/p:Configuration="+$config),
+        ("/binaryLogger:DevHome.SDK.$platform.$config.binlog")
       )
 
       & $msbuildPath $msbuildArgs
