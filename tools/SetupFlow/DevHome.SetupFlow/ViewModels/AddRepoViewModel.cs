@@ -85,7 +85,6 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     public void ToggleScreen()
     {
-        /*
         if (ShouldShowAccountPage || ShouldShowRepoPage)
         {
             SwitchToUrlPage();
@@ -94,7 +93,6 @@ public partial class AddRepoViewModel : ObservableObject
         {
             SwitchToAccountPage();
         }
-        */
     }
 
     [RelayCommand]
@@ -115,7 +113,6 @@ public partial class AddRepoViewModel : ObservableObject
     [RelayCommand]
     public void ToggleCloneButton()
     {
-        /*
         var isEverythingGood = ValidateRepoInformation() && ValidateCloneLocation();
         if (_editDevDriveViewModel.DevDrive != null && _editDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
         {
@@ -123,7 +120,6 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         ShouldPrimaryButtonBeEnabled = isEverythingGood;
-        */
     }
 
     [RelayCommand]
@@ -184,9 +180,7 @@ public partial class AddRepoViewModel : ObservableObject
     {
         if (_currentPage == PageKind.AddViaUrl)
         {
-            /*
-            AddViaUrlViewModel.AddRepositoryViaUri(CloneLocation, _previouslySelectedRepos, EverythingToClone);
-            */
+            AddViaUrlViewModel.AddRepositoryViaUri(AddViaAccountViewModel.Providers, CloneLocation, _previouslySelectedRepos, EverythingToClone);
             if (AddViaUrlViewModel.ShouldShowUriError)
             {
                 ShouldPrimaryButtonBeEnabled = false;
@@ -246,12 +240,14 @@ public partial class AddRepoViewModel : ObservableObject
     public AddRepoViewModel(ISetupFlowStringResource stringResource, EditDevDriveViewModel editDevDriveViewModel, List<CloningInformation> previouslySelectedRepos)
     {
         _stringResource = stringResource;
-        EverythingToClone = new ();
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
         _editDevDriveViewModel = editDevDriveViewModel;
+        AddViaAccountViewModel = new AddViaAccountViewModel();
+        AddViaUrlViewModel = new AddViaUrlViewModel(stringResource);
 
         SwitchToUrlPage();
+        IsBrowseButtonEnabled = true;
     }
 
     /// <summary>

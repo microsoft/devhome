@@ -22,16 +22,16 @@ using Microsoft.Windows.DevHome.SDK;
 namespace DevHome.SetupFlow.ViewModels;
 public partial class AddViaAccountViewModel : ObservableObject
 {
-    private readonly RepositoryProviders _providers = new (null);
+    public RepositoryProviders Providers { get; private set; }
 
     [ObservableProperty]
     private bool _isFetchingRepos;
 
     [ObservableProperty]
-    private IEnumerable<IDeveloperId> _accounts;
+    private IEnumerable<DeveloperIdViewModel> _accounts;
 
     [ObservableProperty]
-    private IDeveloperId _selectedAccount;
+    private DeveloperIdViewModel _selectedAccount;
 
     [ObservableProperty]
     private ObservableCollection<RepositoryProvider> _providersToDisplay;
@@ -65,6 +65,22 @@ public partial class AddViaAccountViewModel : ObservableObject
         /*
         SelectRepositories(SetRepositories(SelectedProvider.DisplayName, accountName));
         */
+    }
+
+    public AddViaAccountViewModel()
+    {
+        Accounts = new List<DeveloperIdViewModel>();
+        GetPlugins();
+
+        if (Providers.GetAllProviderNames().Count() == 1)
+        {
+            Providers.StartIfNotRunning(Providers.GetAllProviderNames().First());
+            var accounts = Providers.GetAllLoggedInAccounts(Providers.GetAllProviderNames().First());
+            if (accounts.Count() == 1)
+            {
+                CanSkipAccountPage = true;
+            }
+        }
     }
 
     /// <summary>
@@ -183,7 +199,6 @@ public partial class AddViaAccountViewModel : ObservableObject
     /// </remarks>
     public void GetPlugins()
     {
-        /*
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed plugins with Repository and DevId providers");
         var pluginService = Application.Current.GetService<IPluginService>();
         var pluginWrappers = pluginService.GetInstalledPluginsAsync().Result;
@@ -191,14 +206,13 @@ public partial class AddViaAccountViewModel : ObservableObject
             plugin => plugin.HasProviderType(ProviderType.Repository) &&
             plugin.HasProviderType(ProviderType.DeveloperId));
 
-        _providers = new RepositoryProviders(plugins);
+        Providers = new RepositoryProviders(plugins);
 
         // Start all plugins to get the DisplayName of each provider.
-        _providers.StartAllPlugins();
+        Providers.StartAllPlugins();
 
-        ProvidersToDisplay = new ObservableCollection<RepositoryProvider>(_providers.GetAllProviders());
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForProviders_Event", LogLevel.Measure, new ProviderEvent(ProviderNames.Count));
-        */
+        ProvidersToDisplay = new ObservableCollection<RepositoryProvider>(Providers.GetAllProviders());
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForProviders_Event", LogLevel.Measure, new ProviderEvent(ProvidersToDisplay.Count));
     }
 
     public bool ValidateRepos()
@@ -212,16 +226,18 @@ public partial class AddViaAccountViewModel : ObservableObject
     /// <param name="repositoryProviderName">The provider the user wants to use.</param>
     public async Task GetAccountsAsync(string repositoryProviderName)
     {
-        await Task.Run(() => _providers.StartIfNotRunning(repositoryProviderName));
-        Accounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
+        await Task.Run(() => Providers.StartIfNotRunning(repositoryProviderName));
+        Accounts = await Task.Run(() => Providers.GetAllLoggedInAccounts(repositoryProviderName)
+        .Select(x => new DeveloperIdViewModel(x)));
         if (!Accounts.Any())
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Measure, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false));
 
             // Throw away developerId because DevHome allows one account per provider. GetAllLoggedInAccounts is called
             // in anticipation of 1 Provider : N DeveloperIds
-            await Task.Run(() => _providers.LogInToProvider(repositoryProviderName));
-            Accounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
+            await Task.Run(() => Providers.LogInToProvider(repositoryProviderName));
+            Accounts = await Task.Run(() => Providers.GetAllLoggedInAccounts(repositoryProviderName)
+            .Select(x => new DeveloperIdViewModel(x)));
         }
         else
         {
