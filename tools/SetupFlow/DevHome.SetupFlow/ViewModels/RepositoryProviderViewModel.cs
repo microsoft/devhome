@@ -11,8 +11,9 @@ public partial class RepositoryProviderViewModel : ObservableObject
 
     public string DisplayName { get; private set; }
 
-    public RepoProviderViewModel(RepositoryProvider repositoryProvider)
+    public RepositoryProviderViewModel(string providerName, string displayName)
     {
-        ProviderName = repositoryProvider.
+        ProviderName = providerName;
+        DisplayName = displayName;
     }
 }

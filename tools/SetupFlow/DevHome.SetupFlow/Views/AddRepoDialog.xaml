@@ -75,11 +75,10 @@
                 </i:Interaction.Behaviors>
             </TextBox>
             <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.AddViaUrlViewModel.UriError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.AddViaUrlViewModel.ShouldShowUriError, Mode=OneWay}"/>
-            <!--
-             Log into the provider-->
+            <!-- Log into the provider-->
             <ComboBox x:Name="ProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShouldShowAccountPage, Mode=OneWay}" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.AddViaAccountViewModel.ProvidersToDisplay, Mode=OneWay}" Margin="0, 20, 0, 0" >
-                <DataTemplate x:DataType="models:RepositoryProvider">
-                    <TextBlock Text="{x:Bind DisplayName}"/>
+                <DataTemplate x:DataType="viewmodels:RepositoryProviderViewModel">
+                    <TextBlock Text="{x:Bind ProviderName}"/>
                 </DataTemplate>
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="SelectionChanged">
@@ -105,7 +104,7 @@
                         </ComboBox.ItemTemplate>
                         <i:Interaction.Behaviors>
                             <ic:EventTriggerBehavior EventName="SelectionChanged">
-                                <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.AddViaAccountViewModel.ChangeAccountsCommand}"  CommandParameter="{Binding SelectedItem, ElementName=AccountsComboBox}"/>
+                                <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.AddViaAccountViewModel.ChangeAccountsCommand}"/>
                             </ic:EventTriggerBehavior>
                         </i:Interaction.Behaviors>
                     </ComboBox>

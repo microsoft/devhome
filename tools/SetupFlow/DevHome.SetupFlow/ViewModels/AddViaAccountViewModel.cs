@@ -2,11 +2,9 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -34,13 +32,13 @@ public partial class AddViaAccountViewModel : ObservableObject
     private DeveloperIdViewModel _selectedAccount;
 
     [ObservableProperty]
-    private ObservableCollection<RepositoryProvider> _providersToDisplay;
+    private ObservableCollection<RepositoryProviderViewModel> _providersToDisplay;
 
     [ObservableProperty]
-    private RepositoryProvider _selectedProvider;
+    private RepositoryProviderViewModel _selectedProvider;
 
     [ObservableProperty]
-    private IEnumerable<IRepository> _repositories;
+    private IEnumerable<RepoViewListItem> _repositories;
 
     [ObservableProperty]
     private ObservableCollection<RepoViewListItem> _selectedRepositories;
@@ -54,14 +52,15 @@ public partial class AddViaAccountViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async void ChangeAccounts(string accountName)
+    public async void ChangeAccounts()
     {
         // This gets fired when events are removed from the account combo box.
         // When the provider combo box is changed all accounts are removed from the account combo box
         // and new accounts are added. This method fires twice.
         // Once to remove all accounts and once to add all logged in accounts.
         // GetRepositories sets the repositories list view.
-        await GetRepositoriesAsync();
+        var repositories = await GetRepositoriesAsync();
+        Repositories = OrderRepos(repositories);
         /*
         SelectRepositories(SetRepositories(SelectedProvider.DisplayName, accountName));
         */
@@ -72,13 +71,16 @@ public partial class AddViaAccountViewModel : ObservableObject
         Accounts = new List<DeveloperIdViewModel>();
         GetPlugins();
 
-        if (Providers.GetAllProviderNames().Count() == 1)
+        var allProviders = Providers.GetAllProviders();
+        if (allProviders.Count() == 1)
         {
-            Providers.StartIfNotRunning(Providers.GetAllProviderNames().First());
-            var accounts = Providers.GetAllLoggedInAccounts(Providers.GetAllProviderNames().First());
+            Providers.StartIfNotRunning(allProviders.First().ProviderName);
+            var accounts = Providers.GetAllLoggedInAccounts(allProviders.First().ProviderName);
             if (accounts.Count() == 1)
             {
                 CanSkipAccountPage = true;
+                SelectedProvider = allProviders.First();
+                SelectedAccount = new DeveloperIdViewModel(accounts.First());
             }
         }
     }
@@ -91,26 +93,21 @@ public partial class AddViaAccountViewModel : ObservableObject
     /// </remarks>
     /// <param name="repositoryProvider">The provider.  This should match the display name of the plugin</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
-    public async Task GetRepositoriesAsync()
+    public async Task<IEnumerable<IRepository>> GetRepositoriesAsync()
     {
-        /*
         IsFetchingRepos = true;
-        */
+        IEnumerable<IRepository> repositories = new List<IRepository>();
         await Task.Run(() =>
         {
-            /*
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
-            var loggedInDeveloper = _providers.GetAllLoggedInAccounts(SelectedProvider.DisplayName).FirstOrDefault(x => x.LoginId() == loginId);
+            var loggedInDeveloper = Providers.GetAllLoggedInAccounts(SelectedProvider.ProviderName).FirstOrDefault(x => x.LoginId() == SelectedAccount.LoginId);
 
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
-            Repositories = _providers.GetAllRepositories(SelectedProvider.DisplayName, loggedInDeveloper);
-            */
-            Thread.Sleep(2000);
+            repositories = Providers.GetAllRepositories(SelectedProvider.ProviderName, loggedInDeveloper);
         });
 
-        /*
         IsFetchingRepos = false;
-        */
+        return repositories;
     }
 
     /// <summary>
@@ -124,12 +121,11 @@ public partial class AddViaAccountViewModel : ObservableObject
     /// <returns>An enumerable collection of items ready to be put into the ListView</returns>
     private IEnumerable<RepoViewListItem> OrderRepos(IEnumerable<IRepository> repos)
     {
-        /*
-        var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase))
+        var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(SelectedAccount.LoginId, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
-        var userRepos = repos.Where(x => x.OwningAccountName.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase));
+        var userRepos = repos.Where(x => x.OwningAccountName.Equals(SelectedAccount.LoginId, StringComparison.OrdinalIgnoreCase));
         var userPublicRepos = userRepos.Where(x => !x.IsPrivate)
             .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
@@ -141,9 +137,6 @@ public partial class AddViaAccountViewModel : ObservableObject
         return userPrivateRepos
             .Concat(organizationRepos)
             .Concat(userPublicRepos);
-        */
-
-        return new List<RepoViewListItem>();
     }
 
     /// <summary>
@@ -211,7 +204,7 @@ public partial class AddViaAccountViewModel : ObservableObject
         // Start all plugins to get the DisplayName of each provider.
         Providers.StartAllPlugins();
 
-        ProvidersToDisplay = new ObservableCollection<RepositoryProvider>(Providers.GetAllProviders());
+        ProvidersToDisplay = new ObservableCollection<RepositoryProviderViewModel>(Providers.GetAllProviders());
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForProviders_Event", LogLevel.Measure, new ProviderEvent(ProvidersToDisplay.Count));
     }
 

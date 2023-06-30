@@ -315,6 +315,9 @@ public partial class AddRepoViewModel : ObservableObject
 
         PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
         ShouldPrimaryButtonBeEnabled = false;
+        ShouldShowRepoPage = true;
+        ShouldShowAccountPage = false;
+        AddViaAccountViewModel.ChangeAccounts();
     }
 
     /// <summary>

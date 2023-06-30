@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.ViewModels;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -120,8 +121,15 @@ public class RepositoryProviders
         return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId) ?? new List<IRepository>();
     }
 
-    public IEnumerable<RepositoryProvider> GetAllProviders()
+    public IEnumerable<RepositoryProviderViewModel> GetAllProviders()
     {
-        return _providers.Values;
+        var providers = new List<RepositoryProviderViewModel>();
+
+        foreach (var provider in _providers)
+        {
+            providers.Add(new (provider.Key, provider.Value.DisplayName));
+        }
+
+        return providers;
     }
 }
