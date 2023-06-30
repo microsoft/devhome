@@ -14,8 +14,16 @@ using Windows.ApplicationModel.Store.Preview.InstallControl;
 namespace DevHome.ViewModels;
 public class InitializationViewModel : ObservableObject
 {
+#if CANARY_BUILD
+    private const string GitHubExtensionStorePackageId = "9N806ZKPW85R";
+    private const string GitHubExtensionPackageFamilyName = "Microsoft.Windows.DevHomeGitHubExtension.Canary_8wekyb3d8bbwe";
+#elif STABLE_BUILD
     private const string GitHubExtensionStorePackageId = "9NZCC27PR6N6";
     private const string GitHubExtensionPackageFamilyName = "Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe";
+#else
+    private const string GitHubExtensionStorePackageId = "";
+    private const string GitHubExtensionPackageFamilyName = "";
+#endif
 
     private const int StoreInstallTimeout = 60_000;
 
