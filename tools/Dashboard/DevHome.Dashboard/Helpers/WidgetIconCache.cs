@@ -20,6 +20,12 @@ internal class WidgetIconCache
     private static Dictionary<string, BitmapImage> _widgetLightIconCache;
     private static Dictionary<string, BitmapImage> _widgetDarkIconCache;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="WidgetIconCache"/> class.
+    /// </summary>
+    /// <remarks>
+    /// The WidgetIconCache is backed by two dictionaries, one for light themed icons and one for dark themed icons.
+    /// </remarks>
     public WidgetIconCache(DispatcherQueue dispatcher)
     {
         _dispatcher = dispatcher;
@@ -27,6 +33,9 @@ internal class WidgetIconCache
         _widgetDarkIconCache = new Dictionary<string, BitmapImage>();
     }
 
+    /// <summary>
+    /// Caches icons for all widgets in the WidgetCatalog that are included in Dev Home.
+    /// </summary>
     public async Task CacheAllWidgetIcons(WidgetCatalog widgetCatalog)
     {
         var widgetDefs = widgetCatalog.GetWidgetDefinitions();
@@ -36,6 +45,9 @@ internal class WidgetIconCache
         }
     }
 
+    /// <summary>
+    /// Caches two icons for each widget, one for light theme and one for dark theme.
+    /// </summary>
     public async Task AddIconsToCache(WidgetDefinition widgetDef)
     {
         // Only cache icons for providers that we're including.
@@ -44,12 +56,12 @@ internal class WidgetIconCache
             var widgetDefId = widgetDef.Id;
             try
             {
-                Log.Logger()?.ReportDebug("DashboardView", $"Cache widget icon for {widgetDefId}");
+                Log.Logger()?.ReportDebug("WidgetIconCache", $"Cache widget icons for {widgetDefId}");
                 var itemLightImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Light).Icon);
                 var itemDarkImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Dark).Icon);
 
                 // There is a widget bug where Definition update events are being raised as added events.
-                // If we already have an icon for this key, just remove and add again.
+                // If we already have an icon for this key, just remove and add again in case the icons changed.
                 if (_widgetLightIconCache.ContainsKey(widgetDefId))
                 {
                     _widgetLightIconCache.Remove(widgetDefId);
@@ -65,11 +77,17 @@ internal class WidgetIconCache
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError("DashboardView", $"Exception in CacheWidgetIcons:", ex);
+                Log.Logger()?.ReportError("WidgetIconCache", $"Exception in AddIconsToCache:", ex);
                 _widgetLightIconCache.Add(widgetDefId, null);
                 _widgetDarkIconCache.Add(widgetDefId, null);
             }
         }
+    }
+
+    public void RemoveIconsFromCache(string definitionId)
+    {
+        _widgetLightIconCache.Remove(definitionId);
+        _widgetDarkIconCache.Remove(definitionId);
     }
 
     public static BitmapImage GetWidgetIconForTheme(WidgetDefinition widgetDefinition, ElementTheme theme)
@@ -96,12 +114,6 @@ internal class WidgetIconCache
             ImageSource = image,
         };
         return brush;
-    }
-
-    public void RemoveIconsFromCache(string definitionId)
-    {
-        _widgetLightIconCache.Remove(definitionId);
-        _widgetDarkIconCache.Remove(definitionId);
     }
 
     private static async Task<BitmapImage> WidgetIconToBitmapImage(IRandomAccessStreamReference iconStreamRef)
