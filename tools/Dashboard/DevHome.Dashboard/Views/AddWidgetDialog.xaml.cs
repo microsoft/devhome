@@ -119,7 +119,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private StackPanel BuildWidgetNavItem(WidgetDefinition widgetDefinition)
     {
-        var image = DashboardView.GetWidgetIconForTheme(widgetDefinition, ActualTheme);
+        var image = WidgetIconCache.GetWidgetIconForTheme(widgetDefinition, ActualTheme);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
     }
 
