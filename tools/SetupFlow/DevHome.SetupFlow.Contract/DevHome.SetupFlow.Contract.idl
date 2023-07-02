@@ -59,8 +59,10 @@ namespace DevHome.SetupFlow.Contract
 
         interface IConfigurationOperator
         {
-            Windows.Foundation.IAsyncOperation<IApplyConfigurationResult> ApplyConfigurationAsync(Windows.Storage.StorageFile file);
-        };
+            Windows.Foundation.IAsyncAction OpenConfigurationSetAsync(Windows.Storage.StorageFile file);
+
+            Windows.Foundation.IAsyncOperation<IApplyConfigurationResult> ApplyConfigurationAsync();
+        }
 
         interface ITaskOperatorFactory
         {

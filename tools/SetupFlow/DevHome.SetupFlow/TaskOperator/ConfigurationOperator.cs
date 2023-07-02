@@ -16,7 +16,15 @@ using Windows.Win32.Foundation;
 namespace DevHome.SetupFlow.TaskOperator;
 public class ConfigurationOperator : IConfigurationOperator
 {
-    public IAsyncOperation<IApplyConfigurationResult> ApplyConfigurationAsync(StorageFile file)
+    private readonly ConfigurationFileHelper _helper = new ();
+
+    public IAsyncAction OpenConfigurationSetAsync(StorageFile file)
+    {
+        Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from file: {file.Path}");
+        return _helper.OpenConfigurationSetAsync(file).AsAsyncAction();
+    }
+
+    public IAsyncOperation<IApplyConfigurationResult> ApplyConfigurationAsync()
     {
         return Task.Run<IApplyConfigurationResult>(async () =>
         {
@@ -24,13 +32,8 @@ public class ConfigurationOperator : IConfigurationOperator
 
             try
             {
-                var configurationFileHelper = new ConfigurationFileHelper(file);
-
-                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from file: {file.Path}");
-                await configurationFileHelper.OpenConfigurationSetAsync();
-
                 Log.Logger?.ReportInfo(Log.Component.Configuration, "Starting configuration set application");
-                var result = await configurationFileHelper.ApplyConfigurationAsync();
+                var result = await _helper.ApplyConfigurationAsync();
                 Log.Logger?.ReportInfo(Log.Component.Configuration, "Configuration application finished");
 
                 taskResult.Attempted = true;

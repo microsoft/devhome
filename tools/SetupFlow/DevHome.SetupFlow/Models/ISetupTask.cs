@@ -58,7 +58,7 @@ public interface ISetupTask
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
-    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(ITaskOperatorFactory elevatedComponentFactory);
+    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(ITaskOperatorFactory elevatedOperatorFactory);
 
     /// <summary>
     /// Gets the object used to display all messages in the loading screen.

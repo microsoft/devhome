@@ -3,12 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Configuration;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskOperator;
 using Windows.Foundation;
 using Windows.Storage;
 
@@ -18,7 +17,7 @@ public class ConfigureTask : ISetupTask
 {
     private readonly ISetupFlowStringResource _stringResource;
     private readonly StorageFile _file;
-    private ConfigurationFileHelper _configurationFileHelper;
+    private IConfigurationOperator _taskOperator;
 
     // Configuration files can run as either admin or as a regular user
     // depending on the user, make this settable.
@@ -43,8 +42,9 @@ public class ConfigureTask : ISetupTask
     {
         try
         {
-            _configurationFileHelper = new ConfigurationFileHelper(_file);
-            await _configurationFileHelper.OpenConfigurationSetAsync();
+            var taskOperatorFactory = new TaskOperatorFactory();
+            _taskOperator = taskOperatorFactory.CreateConfigurationOperator();
+            await _taskOperator.OpenConfigurationSetAsync(_file);
         }
         catch (Exception e)
         {
@@ -80,52 +80,54 @@ public class ConfigureTask : ISetupTask
         };
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
+    /// <inheritdoc/>
+    public IAsyncOperation<TaskFinishedState> Execute()
     {
         return Task.Run(async () =>
         {
-            try
-            {
-                var result = await _configurationFileHelper.ApplyConfigurationAsync();
-                RequiresReboot = result.RequiresReboot;
-                UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
-                if (result.Succeeded)
-                {
-                    return TaskFinishedState.Success;
-                }
-                else
-                {
-                    throw result.ResultException;
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration.", e);
-                return TaskFinishedState.Failure;
-            }
+            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting application of configuration file {_file.Path}");
+            return await ExecuteAsync(_taskOperator);
         }).AsAsyncOperation();
     }
 
     /// <inheritdoc/>
     /// <remarks><seealso cref="RequiresAdmin"/></remarks>
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(ITaskOperatorFactory elevatedComponentFactory)
+    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(ITaskOperatorFactory elevatedOperatorFactory)
     {
         return Task.Run(async () =>
         {
-            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file {_file.Path}");
-            var elevatedTask = elevatedComponentFactory.CreateConfigurationOperator();
-            var elevatedResult = await elevatedTask.ApplyConfigurationAsync(_file);
-            RequiresReboot = elevatedResult.RebootRequired;
-            UnitResults = new List<ConfigurationUnitResult>();
-
-            // Cannot use foreach or LINQ for out-of-process IVector
-            // Bug: https://github.com/microsoft/CsWinRT/issues/1205
-            for (var i = 0; i < elevatedResult.UnitResults.Count; ++i)
+            try
             {
-                UnitResults.Add(new ConfigurationUnitResult(elevatedResult.UnitResults[i]));
-            }
+                var taskOperator = elevatedOperatorFactory.CreateConfigurationOperator();
 
-            return elevatedResult.Succeeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
+                // Re-open the configuration file in the elevated process
+                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set in elevated process: {_file.Path}");
+                await taskOperator.OpenConfigurationSetAsync(_file);
+
+                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file");
+                return await ExecuteAsync(taskOperator);
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to execute {nameof(ConfigureTask)} in elevated process", e);
+                return TaskFinishedState.Failure;
+            }
         }).AsAsyncOperation();
+    }
+
+    private async Task<TaskFinishedState> ExecuteAsync(IConfigurationOperator taskOperator)
+    {
+        var result = await taskOperator.ApplyConfigurationAsync();
+        RequiresReboot = result.RebootRequired;
+        UnitResults = new List<ConfigurationUnitResult>();
+
+        // Cannot use foreach or LINQ for out-of-process IVector
+        // Bug: https://github.com/microsoft/CsWinRT/issues/1205
+        for (var i = 0; i < result.UnitResults.Count; ++i)
+        {
+            UnitResults.Add(new ConfigurationUnitResult(result.UnitResults[i]));
+        }
+
+        return result.Succeeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
     }
 }

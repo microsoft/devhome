@@ -41,16 +41,10 @@ public class ConfigurationFileHelper
         }
     }
 
-    private readonly StorageFile _file;
     private ConfigurationProcessor _processor;
     private ConfigurationSet _configSet;
 
-    public ConfigurationFileHelper(StorageFile file)
-    {
-        _file = file;
-    }
-
-    public async Task OpenConfigurationSetAsync()
+    public async Task OpenConfigurationSetAsync(StorageFile file)
     {
         try
         {
@@ -67,9 +61,9 @@ public class ConfigurationFileHelper
             _processor.Diagnostics += (sender, args) => LogConfigurationDiagnostics(args);
             _processor.Caller = nameof(DevHome);
 
-            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {_file.Path}");
-            var parentDir = await _file.GetParentAsync();
-            var openResult = _processor.OpenConfigurationSet(await _file.OpenReadAsync());
+            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {file.Path}");
+            var parentDir = await file.GetParentAsync();
+            var openResult = _processor.OpenConfigurationSet(await file.OpenReadAsync());
             _configSet = openResult.Set;
             if (_configSet == null)
             {
@@ -77,9 +71,9 @@ public class ConfigurationFileHelper
             }
 
             // Set input file path to the configuration set
-            _configSet.Name = _file.Name;
+            _configSet.Name = file.Name;
             _configSet.Origin = parentDir.Path;
-            _configSet.Path = _file.Path;
+            _configSet.Path = file.Path;
         }
         catch
         {
