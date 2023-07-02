@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-extern alias Projection;
-
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -12,13 +10,12 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.ResultHelper;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
+using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
-using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
@@ -72,7 +69,7 @@ internal class CreateDevDriveTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(ITaskOperatorFactory elevatedComponentFactory)
     {
         return Task.Run(() =>
         {
@@ -95,7 +92,8 @@ internal class CreateDevDriveTask : ISetupTask
 
                 var storageOperator = elevatedComponentFactory.CreateDevDriveStorageOperator();
                 var virtDiskPath = Path.Combine(DevDrive.DriveLocation, DevDrive.DriveLabel + ".vhdx");
-                Result.ThrowIfFailed(storageOperator.CreateDevDrive(virtDiskPath, DevDrive.DriveSizeInBytes, DevDrive.DriveLetter, DevDrive.DriveLabel));
+                var devDrive = storageOperator.CreateDevDrive(virtDiskPath, DevDrive.DriveSizeInBytes, DevDrive.DriveLetter, DevDrive.DriveLabel);
+                Result.ThrowIfFailed(devDrive.HResult);
                 return TaskFinishedState.Success;
             }
             catch (Exception ex)

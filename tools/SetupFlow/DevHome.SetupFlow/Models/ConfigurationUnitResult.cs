@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-extern alias Projection;
-
+using DevHome.SetupFlow.Contract.TaskOperator;
 using Microsoft.Management.Configuration;
-using Projection::DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.Models;
@@ -18,7 +16,7 @@ public class ConfigurationUnitResult
         HResult = result.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK;
     }
 
-    public ConfigurationUnitResult(ElevatedConfigureUnitTaskResult result)
+    public ConfigurationUnitResult(IConfigurationUnitResult result)
     {
         UnitName = result.UnitName;
         Intent = result.Intent;

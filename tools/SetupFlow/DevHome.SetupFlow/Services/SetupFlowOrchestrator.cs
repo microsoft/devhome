@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-extern alias Projection;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +9,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
-using Microsoft.UI.Xaml.Controls;
-using Projection::DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.Services;
 
@@ -72,7 +69,7 @@ public partial class SetupFlowOrchestrator : ObservableObject
         get; set;
     }
 
-    public RemoteObject<IElevatedComponentFactory> RemoteElevatedFactory
+    public RemoteObject<ITaskOperatorFactory> RemoteElevatedFactory
     {
         get; set;
     }

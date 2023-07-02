@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-extern alias Projection;
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

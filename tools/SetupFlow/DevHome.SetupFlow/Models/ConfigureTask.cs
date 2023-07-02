@@ -1,19 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-extern alias Projection;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Configuration;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Services;
-using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 using Windows.Storage;
-using WinRT;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -111,13 +108,13 @@ public class ConfigureTask : ISetupTask
 
     /// <inheritdoc/>
     /// <remarks><seealso cref="RequiresAdmin"/></remarks>
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(ITaskOperatorFactory elevatedComponentFactory)
     {
         return Task.Run(async () =>
         {
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file {_file.Path}");
-            var elevatedTask = elevatedComponentFactory.CreateElevatedConfigurationTask();
-            var elevatedResult = await elevatedTask.ApplyConfiguration(_file);
+            var elevatedTask = elevatedComponentFactory.CreateConfigurationOperator();
+            var elevatedResult = await elevatedTask.ApplyConfigurationAsync(_file);
             RequiresReboot = elevatedResult.RebootRequired;
             UnitResults = new List<ConfigurationUnitResult>();
 
@@ -128,7 +125,7 @@ public class ConfigureTask : ISetupTask
                 UnitResults.Add(new ConfigurationUnitResult(elevatedResult.UnitResults[i]));
             }
 
-            return elevatedResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
+            return elevatedResult.Succeeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }
 }

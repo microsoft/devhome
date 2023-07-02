@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-extern alias Server;
-
 using DevHome.SetupFlow.Common.Elevation;
-using Server::DevHome.SetupFlow.ElevatedComponent;
+using DevHome.SetupFlow.Contract.TaskOperator;
 
 namespace DevHome.SetupFlow.UnitTest;
 
@@ -27,7 +25,7 @@ public class BackgroundProcessTest
     public void BackgroundProcessIPCSetup()
     {
         (var remoteElevatedFactory, var backgroundProcess) =
-            IPCSetup.CreateOutOfProcessObjectAndGetProcess<IElevatedComponentFactory>(isForTesting: true);
+            IPCSetup.CreateOutOfProcessObjectAndGetProcess<ITaskOperatorFactory>(isForTesting: true);
         Assert.IsFalse(backgroundProcess.HasExited, "Process should still be running right after creation");
 
         // Write a random string on the background process

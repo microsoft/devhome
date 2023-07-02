@@ -35,9 +35,6 @@
     <ProjectReference Include="..\..\..\settings\DevHome.Settings\DevHome.Settings.csproj" />
     <ProjectReference Include="..\..\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
     <ProjectReference Include="..\DevHome.SetupFlow.Common\DevHome.SetupFlow.Common.csproj" />
-    <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Projection\DevHome.SetupFlow.ElevatedComponent.Projection.csproj">
-      <Aliases>Projection</Aliases>
-    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

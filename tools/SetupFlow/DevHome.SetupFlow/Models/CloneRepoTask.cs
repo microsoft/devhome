@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-extern alias Projection;
-
 using System;
 using System.Globalization;
 using System.IO;
@@ -11,10 +9,10 @@ using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
-using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
@@ -165,5 +163,5 @@ public class CloneRepoTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(ITaskOperatorFactory elevatedComponentFactory) => throw new NotImplementedException();
 }

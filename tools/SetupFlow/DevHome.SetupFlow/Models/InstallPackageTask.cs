@@ -1,18 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-extern alias Projection;
-
 using System;
 using System.Threading.Tasks;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
+using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
-using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 using Windows.Win32.Foundation;
 
@@ -129,7 +127,7 @@ public class InstallPackageTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(ITaskOperatorFactory elevatedComponentFactory)
     {
         ReportAppSelectedForInstallEvent();
         return Task.Run(async () =>
@@ -137,15 +135,15 @@ public class InstallPackageTask : ISetupTask
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
-                var elevatedTask = elevatedComponentFactory.CreateElevatedInstallTask();
-                var elevatedResult = await elevatedTask.InstallPackage(_package.Id, _package.CatalogName);
-                WasInstallSuccessful = elevatedResult.TaskSucceeded;
+                var elevatedTask = elevatedComponentFactory.CreateInstallOperator();
+                var elevatedResult = await elevatedTask.InstallPackageAsync(_package.Id, _package.CatalogName);
+                WasInstallSuccessful = elevatedResult.Succeeded;
                 RequiresReboot = elevatedResult.RebootRequired;
                 _installResultStatus = (InstallResultStatus)elevatedResult.Status;
                 _extendedErrorCode = elevatedResult.ExtendedErrorCode;
                 _installerErrorCode = elevatedResult.InstallerErrorCode;
 
-                if (elevatedResult.TaskSucceeded)
+                if (elevatedResult.Succeeded)
                 {
                     ReportAppInstallSucceededEvent();
                     return TaskFinishedState.Success;

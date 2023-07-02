@@ -1,9 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-extern alias Projection;
-
-using Projection::DevHome.SetupFlow.ElevatedComponent;
+using DevHome.SetupFlow.Contract.TaskOperator;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
@@ -60,7 +58,7 @@ public interface ISetupTask
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
-    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory);
+    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(ITaskOperatorFactory elevatedComponentFactory);
 
     /// <summary>
     /// Gets the object used to display all messages in the loading screen.

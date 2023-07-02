@@ -27,7 +27,7 @@ namespace DevHome.SetupFlow.Contract
         interface IDevDriveResult
             requires IOperationResult
         {
-            HRESULT HResult { get; };
+            Int32 HResult { get; };
         };
 
 		interface IConfigurationUnitResult
@@ -38,7 +38,7 @@ namespace DevHome.SetupFlow.Contract
 
 			Boolean IsSkipped { get; };
 
-			HRESULT HResult { get; };
+			Int32 HResult { get; };
 		}
 
         interface IApplyConfigurationResult
@@ -49,7 +49,7 @@ namespace DevHome.SetupFlow.Contract
 
         interface IInstallOperator
         {
-            IInstallPackageResult InstallPackageAsync(String packageId, String catalogName);
+            Windows.Foundation.IAsyncOperation<IInstallPackageResult> InstallPackageAsync(String packageId, String catalogName);
         };
 
         interface IDevDriveStorageOperator
@@ -64,6 +64,8 @@ namespace DevHome.SetupFlow.Contract
 
         interface ITaskOperatorFactory
         {
+            void WriteToStdOut(String message);
+
             IInstallOperator CreateInstallOperator();
 
             IDevDriveStorageOperator CreateDevDriveStorageOperator();

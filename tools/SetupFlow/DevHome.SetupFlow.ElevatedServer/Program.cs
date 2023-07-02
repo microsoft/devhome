@@ -2,7 +2,8 @@
 // Licensed under the MIT license.
 
 using DevHome.SetupFlow.Common.Elevation;
-using DevHome.SetupFlow.ElevatedComponent;
+using DevHome.SetupFlow.Contract.TaskOperator;
+using DevHome.SetupFlow.TaskOperator;
 
 namespace DevHome.SetupFlow.ElevatedServer;
 
@@ -21,16 +22,16 @@ internal sealed class Program
         var initEventName = args[1];
         var completionSemaphoreName = args[2];
 
-        var factory = new ElevatedComponentFactory();
+        var factory = new TaskOperatorFactory();
 
         try
         {
-            IPCSetup.CompleteRemoteObjectInitialization<IElevatedComponentFactory>(0, factory, mappedFileName, initEventName, completionSemaphoreName);
+            IPCSetup.CompleteRemoteObjectInitialization<ITaskOperatorFactory>(0, factory, mappedFileName, initEventName, completionSemaphoreName);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Remote factory initialization failed: {ex}");
-            IPCSetup.CompleteRemoteObjectInitialization<IElevatedComponentFactory>(ex.HResult, null, mappedFileName, initEventName, completionSemaphoreName);
+            IPCSetup.CompleteRemoteObjectInitialization<ITaskOperatorFactory>(ex.HResult, null, mappedFileName, initEventName, completionSemaphoreName);
             throw;
         }
     }
