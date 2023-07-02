@@ -38,9 +38,6 @@
     <ProjectReference Include="..\DevHome.SetupFlow.ElevatedComponent.Projection\DevHome.SetupFlow.ElevatedComponent.Projection.csproj">
       <Aliases>Projection</Aliases>
     </ProjectReference>
-    <ProjectReference Include="..\DevHome.SetupFlow.ElevatedServer\DevHome.SetupFlow.ElevatedServer.csproj">
-      <Aliases>Server</Aliases>
-    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

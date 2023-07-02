@@ -1,0 +1,74 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+namespace DevHome.SetupFlow.Contract
+{
+    namespace TaskOperator
+    {
+        interface IOperationResult
+        {
+            Boolean Attempted { get; };
+
+            Boolean Succeeded { get; };
+
+            Boolean RebootRequired { get; };
+        };
+
+        interface IInstallPackageResult
+            requires IOperationResult
+        {
+            Int32 Status { get; };
+			
+            UInt32 InstallerErrorCode { get; };
+
+			Int32 ExtendedErrorCode { get; };
+        };
+
+        interface IDevDriveResult
+            requires IOperationResult
+        {
+            HRESULT HResult { get; };
+        };
+
+		interface IConfigurationUnitResult
+		{
+            String UnitName { get; };
+
+			String Intent { get; };
+
+			Boolean IsSkipped { get; };
+
+			HRESULT HResult { get; };
+		}
+
+        interface IApplyConfigurationResult
+            requires IOperationResult
+        {
+            Windows.Foundation.Collections.IVector<IConfigurationUnitResult> UnitResults { get; };
+        };
+
+        interface IInstallOperator
+        {
+            IInstallPackageResult InstallPackageAsync(String packageId, String catalogName);
+        };
+
+        interface IDevDriveStorageOperator
+        {
+            IDevDriveResult CreateDevDrive(String virtDiskPath, UInt64 sizeInBytes, Char newDriveLetter, String driveLabel);
+        };
+
+        interface IConfigurationOperator
+        {
+            Windows.Foundation.IAsyncOperation<IApplyConfigurationResult> ApplyConfigurationAsync(Windows.Storage.StorageFile file);
+        };
+
+        interface ITaskOperatorFactory
+        {
+            IInstallOperator CreateInstallOperator();
+
+            IDevDriveStorageOperator CreateDevDriveStorageOperator();
+
+            IConfigurationOperator CreateConfigurationOperator();
+        };
+    }
+}

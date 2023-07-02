@@ -14,7 +14,10 @@
   -->
   <PropertyGroup>
     <CsWinRTWindowsMetadata>10.0.19041.0</CsWinRTWindowsMetadata>
-    <CsWinRTIncludes>Microsoft.Management.Deployment</CsWinRTIncludes>
+    <CsWinRTIncludes>
+        Microsoft.Management.Deployment;
+        DevHome.SetupFlow.Contract;
+    </CsWinRTIncludes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -55,6 +58,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
     <ProjectReference Include="..\..\..\telemetry\DevHome.Telemetry\DevHome.Telemetry.csproj" />
+    <ProjectReference Include="..\DevHome.SetupFlow.Contract\DevHome.SetupFlow.Contract.vcxproj" />
   </ItemGroup>
 
   <Target Name="CopyWinmdToTargetDir" BeforeTargets="BeforeBuild">
