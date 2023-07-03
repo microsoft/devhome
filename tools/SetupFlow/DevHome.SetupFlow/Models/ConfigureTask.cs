@@ -40,12 +40,11 @@ public class ConfigureTask : ISetupTask
         _file = file;
     }
 
-    public async Task OpenConfigurationSetAsync()
+    public async Task OpenConfigurationSetAsync(ITaskOperatorFactory operatorFactory)
     {
         try
         {
-            var taskOperatorFactory = new TaskOperatorFactory(Application.Current.GetService<IWindowsPackageManager>());
-            _taskOperator = taskOperatorFactory.CreateConfigurationOperator();
+            _taskOperator = operatorFactory.CreateConfigurationOperator();
             await _taskOperator.OpenConfigurationSetAsync(_file);
         }
         catch (Exception e)
@@ -83,7 +82,7 @@ public class ConfigureTask : ISetupTask
     }
 
     /// <inheritdoc/>
-    public IAsyncOperation<TaskFinishedState> Execute()
+    public IAsyncOperation<TaskFinishedState> Execute(ITaskOperatorFactory operatorFactory)
     {
         return Task.Run(async () =>
         {

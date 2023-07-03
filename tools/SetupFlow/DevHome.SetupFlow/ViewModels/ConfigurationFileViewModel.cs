@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
@@ -18,6 +19,8 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
+    private readonly ITaskOperatorFactory _operatorFactory;
+
     public List<ConfigureTask> TaskList { get; } = new List<ConfigureTask>();
 
     /// <summary>
@@ -37,9 +40,12 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
     public ConfigurationFileViewModel(
         ISetupFlowStringResource stringResource,
-        SetupFlowOrchestrator orchestrator)
+        SetupFlowOrchestrator orchestrator,
+        ITaskOperatorFactory operatorFactory)
         : base(stringResource, orchestrator)
     {
+        _operatorFactory = operatorFactory;
+
         // Configure navigation bar
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         IsStepPage = false;
@@ -100,7 +106,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
                 Configuration = new (file.Path);
                 Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
                 var task = new ConfigureTask(StringResource, file);
-                await task.OpenConfigurationSetAsync();
+                await task.OpenConfigurationSetAsync(_operatorFactory);
                 TaskList.Add(task);
                 return true;
             }

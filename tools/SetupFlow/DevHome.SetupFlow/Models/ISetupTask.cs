@@ -49,12 +49,12 @@ public interface ISetupTask
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
-    public IAsyncOperation<TaskFinishedState> Execute();
+    public IAsyncOperation<TaskFinishedState> Execute(ITaskOperatorFactory operatorFactory);
 
     /// <summary>
     /// Executes this setup task as admin.
     /// </summary>
-    /// <param name="elevatedComponentFactory">Helper object to create the needed objects on the elevated process.</param>
+    /// <param name="elevatedOperatorFactory">Helper object to create the needed objects on the elevated process.</param>
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>

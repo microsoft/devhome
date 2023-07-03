@@ -17,7 +17,6 @@ using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
-using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -27,8 +26,7 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class LoadingViewModel : SetupPageViewModelBase
 {
-    private readonly IHost _host;
-
+    private readonly ITaskOperatorFactory _operatorFactory;
     private readonly ElementTheme _currentTheme;
 
     private static readonly BitmapImage DarkCaution = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
@@ -164,14 +162,15 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     public LoadingViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
-        IHost host)
+        ITaskOperatorFactory operatorFactory,
+        IThemeSelectorService themeSelector)
         : base(stringResource, orchestrator)
     {
-        _host = host;
+        _operatorFactory = operatorFactory;
         _tasksToRun = new ();
 
         // Assuming that the theme can't change while the user is in the loading screen.
-        _currentTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
+        _currentTheme = themeSelector.Theme;
 
         IsStepPage = false;
         IsNavigationBarVisible = false;
@@ -422,7 +421,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             }
             else
             {
-                taskFinishedState = await taskInformation.TaskToExecute.Execute();
+                taskFinishedState = await taskInformation.TaskToExecute.Execute(_operatorFactory);
             }
 
             window.DispatcherQueue.TryEnqueue(() =>

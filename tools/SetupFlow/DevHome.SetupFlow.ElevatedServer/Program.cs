@@ -1,11 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.Common.Extensions;
+using DevHome.Common.Services;
+using DevHome.Services;
 using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskOperator;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace DevHome.SetupFlow.ElevatedServer;
 
@@ -24,9 +29,8 @@ internal sealed class Program
         var initEventName = args[1];
         var completionSemaphoreName = args[2];
 
-        var wingetFactory = new WindowsPackageManagerManualActivationFactory();
-        var wpm = new WindowsPackageManager(wingetFactory, null, null);
-        var factory = new TaskOperatorFactory(wpm);
+        var host = BuildHost();
+        var factory = host.GetService<ITaskOperatorFactory>();
 
         try
         {
@@ -38,5 +42,19 @@ internal sealed class Program
             IPCSetup.CompleteRemoteObjectInitialization<ITaskOperatorFactory>(ex.HResult, null, mappedFileName, initEventName, completionSemaphoreName);
             throw;
         }
+    }
+
+    private static IHost BuildHost()
+    {
+        return Host.
+            CreateDefaultBuilder().
+            ConfigureServices((context, services) =>
+            {
+                services.AddSingleton<WindowsPackageManagerFactory, WindowsPackageManagerManualActivationFactory>();
+                services.AddSingleton<IWindowsPackageManager, WindowsPackageManager>();
+                services.AddSingleton<IPackageDeploymentService, PackageDeploymentService>();
+                services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
+                services.AddSingleton<ITaskOperatorFactory, TaskOperatorFactory>();
+            }).Build();
     }
 }

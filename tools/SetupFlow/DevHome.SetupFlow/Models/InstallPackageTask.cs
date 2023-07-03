@@ -9,6 +9,7 @@ using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.TaskOperator;
 using DevHome.Telemetry;
 using Microsoft.Management.Deployment;
 using Windows.Foundation;
@@ -91,76 +92,57 @@ public class InstallPackageTask : ISetupTask
         };
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
+    public IAsyncOperation<TaskFinishedState> Execute(ITaskOperatorFactory operatorFactory)
     {
         ReportAppSelectedForInstallEvent();
         return Task.Run(async () =>
         {
-            try
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
-                var installResult = await _wpm.InstallPackageAsync(_package);
-                RequiresReboot = installResult.RebootRequired;
-                WasInstallSuccessful = true;
-
-                // Set the extended error code in case a reboot is required
-                _extendedErrorCode = installResult.ExtendedErrorCode;
-
-                ReportAppInstallSucceededEvent();
-                return TaskFinishedState.Success;
-            }
-            catch (InstallPackageException e)
-            {
-                _installResultStatus = e.Status;
-                _extendedErrorCode = e.ExtendedErrorCode;
-                _installerErrorCode = e.InstallerErrorCode;
-                ReportAppInstallFailedEvent();
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to install package with status {e.Status} and installer error code {e.InstallerErrorCode}");
-                return TaskFinishedState.Failure;
-            }
-            catch (Exception e)
-            {
-                ReportAppInstallFailedEvent();
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package.", e);
-                return TaskFinishedState.Failure;
-            }
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
+            var installOperator = (InstallOperator)operatorFactory.CreateInstallOperator();
+            return await InstallAsync(async () => await installOperator.InstallPackageAsync(_package));
         }).AsAsyncOperation();
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(ITaskOperatorFactory elevatedComponentFactory)
+    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(ITaskOperatorFactory elevatedOperatorFactory)
     {
         ReportAppSelectedForInstallEvent();
         return Task.Run(async () =>
         {
-            try
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
-                var elevatedTask = elevatedComponentFactory.CreateInstallOperator();
-                var elevatedResult = await elevatedTask.InstallPackageAsync(_package.Id, _package.CatalogName);
-                WasInstallSuccessful = elevatedResult.Succeeded;
-                RequiresReboot = elevatedResult.RebootRequired;
-                _installResultStatus = (InstallResultStatus)elevatedResult.Status;
-                _extendedErrorCode = elevatedResult.ExtendedErrorCode;
-                _installerErrorCode = elevatedResult.InstallerErrorCode;
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting elevated installation of package {_package.Id}");
+            var installOperator = elevatedOperatorFactory.CreateInstallOperator();
+            return await InstallAsync(async () => await installOperator.InstallPackageAsync(_package.Id, _package.CatalogName));
+        }).AsAsyncOperation();
+    }
 
-                if (elevatedResult.Succeeded)
-                {
-                    ReportAppInstallSucceededEvent();
-                    return TaskFinishedState.Success;
-                }
-                else
-                {
-                    ReportAppInstallFailedEvent();
-                    return TaskFinishedState.Failure;
-                }
+    private async Task<TaskFinishedState> InstallAsync(Func<Task<IInstallPackageResult>> installFunction)
+    {
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
+            var result = await installFunction();
+            WasInstallSuccessful = result.Succeeded;
+            RequiresReboot = result.RebootRequired;
+            _installResultStatus = (InstallResultStatus)result.Status;
+            _extendedErrorCode = result.ExtendedErrorCode;
+            _installerErrorCode = result.InstallerErrorCode;
+
+            if (result.Succeeded)
+            {
+                ReportAppInstallSucceededEvent();
+                return TaskFinishedState.Success;
             }
-            catch (Exception e)
+            else
             {
                 ReportAppInstallFailedEvent();
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package.", e);
                 return TaskFinishedState.Failure;
             }
-        }).AsAsyncOperation();
+        }
+        catch (Exception e)
+        {
+            ReportAppInstallFailedEvent();
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while installing package.", e);
+            return TaskFinishedState.Failure;
+        }
     }
 
     private string GetInstallResultMessage()

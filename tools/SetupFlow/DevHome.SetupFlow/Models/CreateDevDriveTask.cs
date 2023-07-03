@@ -61,15 +61,12 @@ internal class CreateDevDriveTask : ISetupTask
     /// <summary>
     /// Not used, as Dev Drive creation requires elevation
     /// </summary>
-    IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
+    public IAsyncOperation<TaskFinishedState> Execute(ITaskOperatorFactory operatorFactory)
     {
-        return Task.Run(() =>
-        {
-            return TaskFinishedState.Failure;
-        }).AsAsyncOperation();
+        return Task.FromResult(TaskFinishedState.Failure).AsAsyncOperation();
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(ITaskOperatorFactory elevatedComponentFactory)
+    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(ITaskOperatorFactory elevatedOperatorFactory)
     {
         return Task.Run(() =>
         {
@@ -90,7 +87,7 @@ internal class CreateDevDriveTask : ISetupTask
                     return TaskFinishedState.Failure;
                 }
 
-                var storageOperator = elevatedComponentFactory.CreateDevDriveStorageOperator();
+                var storageOperator = elevatedOperatorFactory.CreateDevDriveStorageOperator();
                 var virtDiskPath = Path.Combine(DevDrive.DriveLocation, DevDrive.DriveLabel + ".vhdx");
                 var devDrive = storageOperator.CreateDevDrive(virtDiskPath, DevDrive.DriveSizeInBytes, DevDrive.DriveLetter, DevDrive.DriveLabel);
                 Result.ThrowIfFailed(devDrive.HResult);

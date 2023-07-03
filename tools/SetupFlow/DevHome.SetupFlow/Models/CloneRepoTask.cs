@@ -140,7 +140,7 @@ public class CloneRepoTask : ISetupTask
     /// Clones the repository.
     /// </summary>
     /// <returns>An awaitable operation.</returns>
-    IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
+    public IAsyncOperation<TaskFinishedState> Execute(ITaskOperatorFactory operatorFactory)
     {
         return Task.Run(async () =>
         {
@@ -163,5 +163,5 @@ public class CloneRepoTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(ITaskOperatorFactory elevatedComponentFactory) => throw new NotImplementedException();
+    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(ITaskOperatorFactory elevatedOperatorFactory) => throw new NotImplementedException();
 }

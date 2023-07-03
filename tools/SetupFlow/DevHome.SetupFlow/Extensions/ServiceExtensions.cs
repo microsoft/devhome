@@ -5,8 +5,10 @@ using System;
 using System.IO;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
+using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.SetupFlow.TaskOperator;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,6 +36,7 @@ public static class ServiceExtensions
         services.AddSingleton<SetupFlowViewModel>();
 
         // Services
+        services.AddSingleton<ITaskOperatorFactory, TaskOperatorFactory>();
         services.AddSingleton<ISetupFlowStringResource, SetupFlowStringResource>();
         services.AddSingleton<SetupFlowOrchestrator>();
 
