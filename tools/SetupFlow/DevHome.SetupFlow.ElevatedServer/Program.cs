@@ -2,7 +2,9 @@
 // Licensed under the MIT license.
 
 using DevHome.SetupFlow.Common.Elevation;
+using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Contract.TaskOperator;
+using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskOperator;
 
 namespace DevHome.SetupFlow.ElevatedServer;
@@ -22,7 +24,9 @@ internal sealed class Program
         var initEventName = args[1];
         var completionSemaphoreName = args[2];
 
-        var factory = new TaskOperatorFactory();
+        var wingetFactory = new WindowsPackageManagerManualActivationFactory();
+        var wpm = new WindowsPackageManager(wingetFactory, null, null);
+        var factory = new TaskOperatorFactory(wpm);
 
         try
         {

@@ -12,7 +12,6 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
-using Windows.Storage;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;

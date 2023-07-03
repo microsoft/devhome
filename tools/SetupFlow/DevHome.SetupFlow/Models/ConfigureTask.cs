@@ -4,10 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskOperator;
+using Microsoft.UI.Xaml;
 using Windows.Foundation;
 using Windows.Storage;
 
@@ -42,7 +44,7 @@ public class ConfigureTask : ISetupTask
     {
         try
         {
-            var taskOperatorFactory = new TaskOperatorFactory();
+            var taskOperatorFactory = new TaskOperatorFactory(Application.Current.GetService<IWindowsPackageManager>());
             _taskOperator = taskOperatorFactory.CreateConfigurationOperator();
             await _taskOperator.OpenConfigurationSetAsync(_file);
         }

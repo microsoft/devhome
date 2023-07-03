@@ -3,6 +3,7 @@
 
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
+using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.Services;
 
@@ -82,4 +83,6 @@ public interface IWindowsPackageManager
     /// </summary>
     /// <returns>True if AppInstaller was registered, false otherwise.</returns>
     public Task<bool> RegisterAppInstallerAsync();
+
+    public WinGetCompositeCatalog CreateCatalogByName(CompositeSearchBehavior searchBehavior, string catalogName);
 }

@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Exceptions;
 using DevHome.Common.Services;
@@ -183,6 +183,13 @@ public class WindowsPackageManager : IWindowsPackageManager
         }
     }
 
+    public WinGetCompositeCatalog CreateCatalogByName(CompositeSearchBehavior searchBehavior, string catalogName)
+    {
+        var packageManager = _wingetFactory.CreatePackageManager();
+        var catalog = packageManager.GetPackageCatalogByName(catalogName);
+        return CreateCompositeCatalog(searchBehavior, catalog);
+    }
+
     /// <summary>
     /// Gets the id of the provided predefined catalog
     /// </summary>
@@ -202,19 +209,18 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// <returns>Catalog composed of all remote and local catalogs</returns>
     private WinGetCompositeCatalog CreateAllCatalogs()
     {
-        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory);
-        compositeCatalog.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalogs = packageManager.GetPackageCatalogs();
 
         // Cannot use foreach or LINQ for out-of-process IVector
         // Bug: https://github.com/microsoft/CsWinRT/issues/1205
-        for (var i = 0; i < catalogs.Count; ++i)
+        var catalogsArray = new PackageCatalogReference[catalogs.Count];
+        for (var i = 0; i < catalogsArray.Length; ++i)
         {
-            compositeCatalog.AddPackageCatalog(catalogs[i]);
+            catalogsArray[i] = catalogs[i];
         }
 
-        return compositeCatalog;
+        return CreateCompositeCatalog(CompositeSearchBehavior.RemotePackagesFromAllCatalogs, catalogsArray);
     }
 
     /// <summary>
@@ -222,10 +228,8 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// winget and local catalogs
     /// </summary>
     /// <returns>Catalog composed of winget and local catalogs</returns>
-    private WinGetCompositeCatalog CreateWinGetCatalog()
-    {
-        return CreatePredefinedCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
-    }
+    private WinGetCompositeCatalog CreateWinGetCatalog() =>
+        CreatePredefinedCatalog(CompositeSearchBehavior.RemotePackagesFromAllCatalogs, PredefinedPackageCatalog.OpenWindowsCatalog);
 
     /// <summary>
     /// Create a composite catalog that can be used for finding packages in
@@ -233,13 +237,22 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// </summary>
     /// <param name="predefinedPackageCatalog">Predefined package catalog</param>
     /// <returns>Catalog composed of the provided and local catalogs</returns>
-    private WinGetCompositeCatalog CreatePredefinedCatalog(PredefinedPackageCatalog predefinedPackageCatalog)
+    private WinGetCompositeCatalog CreatePredefinedCatalog(CompositeSearchBehavior searchBehavior, PredefinedPackageCatalog predefinedPackageCatalog)
     {
-        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory);
-        compositeCatalog.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalog = packageManager.GetPredefinedPackageCatalog(predefinedPackageCatalog);
-        compositeCatalog.AddPackageCatalog(catalog);
+        return CreateCompositeCatalog(searchBehavior, catalog);
+    }
+
+    private WinGetCompositeCatalog CreateCompositeCatalog(CompositeSearchBehavior searchBehavior, params PackageCatalogReference[] catalogs)
+    {
+        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory);
+        compositeCatalog.CompositeSearchBehavior = searchBehavior;
+        foreach (var catalog in catalogs)
+        {
+            compositeCatalog.AddPackageCatalog(catalog);
+        }
+
         return compositeCatalog;
     }
 
