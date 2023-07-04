@@ -4,12 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Services;
-using DevHome.SetupFlow.TaskOperator;
-using Microsoft.UI.Xaml;
 using Windows.Foundation;
 using Windows.Storage;
 
@@ -29,7 +26,7 @@ public class ConfigureTask : ISetupTask
 
     public bool DependsOnDevDriveToBeInstalled => false;
 
-    public IList<ConfigurationUnitResult> UnitResults
+    public IList<IConfigurationUnitResult> UnitResults
     {
         get; private set;
     }
@@ -120,13 +117,13 @@ public class ConfigureTask : ISetupTask
     {
         var result = await taskOperator.ApplyConfigurationAsync();
         RequiresReboot = result.RebootRequired;
-        UnitResults = new List<ConfigurationUnitResult>();
+        UnitResults = new List<IConfigurationUnitResult>();
 
         // Cannot use foreach or LINQ for out-of-process IVector
         // Bug: https://github.com/microsoft/CsWinRT/issues/1205
         for (var i = 0; i < result.UnitResults.Count; ++i)
         {
-            UnitResults.Add(new ConfigurationUnitResult(result.UnitResults[i]));
+            UnitResults.Add(result.UnitResults[i]);
         }
 
         return result.Succeeded ? TaskFinishedState.Success : TaskFinishedState.Failure;

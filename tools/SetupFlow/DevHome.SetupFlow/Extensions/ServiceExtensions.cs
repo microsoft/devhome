@@ -78,7 +78,13 @@ public static class ServiceExtensions
         // determined at runtime
         services.AddSingleton<PackageViewModelFactory>(sp => package => ActivatorUtilities.CreateInstance<PackageViewModel>(sp, package));
         services.AddSingleton<PackageCatalogViewModelFactory>(sp => catalog => ActivatorUtilities.CreateInstance<PackageCatalogViewModel>(sp, catalog));
-        services.AddSingleton<ConfigurationUnitResultViewModelFactory>(sp => unitResult => ActivatorUtilities.CreateInstance<ConfigurationUnitResultViewModel>(sp, unitResult));
+        services.AddSingleton<ConfigurationUnitResultViewModelFactory>(sp => unitResult =>
+        {
+            // Manually create an instance because CreateInstance<T>(...) will
+            // not be able to resolve the appropriate constructor when a proxy
+            // object is provided (of type WinRT.IInspectable)
+            return new ConfigurationUnitResultViewModel(sp.GetService<ISetupFlowStringResource>(), unitResult);
+        });
 
         return services;
     }

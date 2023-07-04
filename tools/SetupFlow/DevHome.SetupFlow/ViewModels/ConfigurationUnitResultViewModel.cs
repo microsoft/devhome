@@ -1,8 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Globalization;
-using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Contract.TaskOperator;
 using DevHome.SetupFlow.Services;
 using Windows.Win32.Foundation;
 
@@ -13,35 +12,48 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 /// <param name="unitResult">Configuration unit result model</param>
 /// <returns>Configuration unit result view model</returns>
-public delegate ConfigurationUnitResultViewModel ConfigurationUnitResultViewModelFactory(ConfigurationUnitResult unitResult);
+public delegate ConfigurationUnitResultViewModel ConfigurationUnitResultViewModelFactory(IConfigurationUnitResult unitResult);
 
 /// <summary>
 /// View model for a configuration unit result
 /// </summary>
 public class ConfigurationUnitResultViewModel
 {
-    private readonly ConfigurationUnitResult _unitResult;
     private readonly ISetupFlowStringResource _stringResource;
+    private readonly int _hresult;
+    private readonly string _intent;
+    private readonly string _unitName;
 
-    public ConfigurationUnitResultViewModel(ISetupFlowStringResource stringResource, ConfigurationUnitResult unitResult)
+    public ConfigurationUnitResultViewModel(ISetupFlowStringResource stringResource, IConfigurationUnitResult unitResult)
     {
         _stringResource = stringResource;
-        _unitResult = unitResult;
+
+        // Initialize members in the constructor
+        // Note: A unit result can be a proxy for an OOP COM object (e.g. when
+        // running elevated). Storing object values in the constructor allows
+        // XAML bindings to access the initialized values, without repeatedly
+        // querying the COM object.
+        _intent = unitResult.Intent;
+        _unitName = unitResult.UnitName;
+        _hresult = unitResult.HResult;
+        IsSkipped = unitResult.IsSkipped;
+        IsSuccess = unitResult.HResult == HRESULT.S_OK;
+        IsError = !IsSkipped && !IsSuccess;
     }
 
-    public string Title => _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummary, _unitResult.Intent, _unitResult.UnitName);
+    public string Title => _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummary, _intent, _unitName);
 
     public string ApplyResult => GetApplyResult();
 
-    public bool IsSkipped => _unitResult.IsSkipped;
+    public bool IsSkipped { get; }
 
-    public bool IsError => !IsSkipped && _unitResult.HResult != HRESULT.S_OK;
+    public bool IsError { get; }
 
-    public bool IsSuccess => _unitResult.HResult == HRESULT.S_OK;
+    public bool IsSuccess { get; }
 
     private string GetApplyResult()
     {
-        var hresult = $"0x{_unitResult.HResult:X}";
+        var hresult = $"0x{_hresult:X}";
         if (IsSkipped)
         {
             return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSkipped, hresult);

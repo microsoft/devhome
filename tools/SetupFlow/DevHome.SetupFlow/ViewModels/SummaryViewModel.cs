@@ -29,7 +29,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly SetupFlowViewModel _setupFlowViewModel;
     private readonly IHost _host;
-    private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
     private readonly IWindowsPackageManager _wpm;
     private readonly PackageProvider _packageProvider;
@@ -37,6 +36,13 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowConfigurationUnitResults))]
+    [NotifyPropertyChangedFor(nameof(CompletedWithErrors))]
+    [NotifyPropertyChangedFor(nameof(ConfigurationUnitFailedCount))]
+    [NotifyPropertyChangedFor(nameof(ConfigurationUnitSkippedCount))]
+    private IList<ConfigurationUnitResultViewModel> _configurationUnitResults = new List<ConfigurationUnitResultViewModel>();
 
     public ObservableCollection<RepoViewListItem> RepositoriesCloned
     {
@@ -78,8 +84,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
             return packagesInstalled;
         }
     }
-
-    public IList<ConfigurationUnitResultViewModel> ConfigurationUnitResults => _configurationUnitResults.Value;
 
     public bool ShowConfigurationUnitResults => ConfigurationUnitResults.Any();
 
@@ -167,7 +171,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _wpm = wpm;
         _packageProvider = packageProvider;
         _catalogDataSourceLoacder = catalogDataSourceLoader;
-        _configurationUnitResults = new (GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
 
         IsNavigationBarVisible = true;
@@ -177,8 +180,11 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     protected async override Task OnFirstNavigateToAsync()
     {
         TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_NavigatedTo_Event");
-        _orchestrator.ReleaseRemoteFactory();
+        ConfigurationUnitResults = GetConfigurationUnitResults();
         await ReloadCatalogsAsync();
+
+        // Release remote object at the end
+        _orchestrator.ReleaseRemoteFactory();
     }
 
     private async Task ReloadCatalogsAsync()
