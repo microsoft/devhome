@@ -15,11 +15,11 @@ public class TaskOperatorFactory : ITaskOperatorFactory
         _wpm = wpm;
     }
 
-    public void WriteToStdOut(string message) => Console.WriteLine(message);
-
     public IConfigurationOperator CreateConfigurationOperator() => new ConfigurationOperator();
 
     public IDevDriveStorageOperator CreateDevDriveStorageOperator() => new DevDriveStorageOperator();
 
-    public IInstallOperator CreateInstallOperator() => new InstallOperator(_wpm);
+    public IInstallPackageOperator CreateInstallPackageOperator() => new InstallOperator(_wpm);
+
+    public ITestOperator CreateTestOperator() => new TestOperator();
 }

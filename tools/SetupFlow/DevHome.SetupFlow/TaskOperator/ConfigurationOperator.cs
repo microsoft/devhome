@@ -92,7 +92,6 @@ public class ConfigurationOperator : IConfigurationOperator
 
                 return new ApplyConfigurationResult
                 {
-                    Attempted = true,
                     Succeeded = result.ResultCode == null,
                     RebootRequired = result.UnitResults.Any(result => result.RebootRequired),
                     UnitResults = result.UnitResults.Select(unitResult => new ConfigurationUnitResult
@@ -109,7 +108,6 @@ public class ConfigurationOperator : IConfigurationOperator
                 Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to apply configuration.", e);
                 return new ApplyConfigurationResult
                 {
-                    Attempted = true,
                     Succeeded = false,
                 };
             }

@@ -14,7 +14,7 @@ using Microsoft.Management.Deployment;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.TaskOperator;
-public class InstallOperator : IInstallOperator
+public class InstallOperator : IInstallPackageOperator
 {
     private readonly IWindowsPackageManager _wpm;
 
@@ -44,7 +44,6 @@ public class InstallOperator : IInstallOperator
                 ExtendedErrorCode = e.ExtendedErrorCode,
                 InstallerErrorCode = e.InstallerErrorCode,
                 Succeeded = false,
-                Attempted = true,
             };
         }
     }
@@ -65,7 +64,6 @@ public class InstallOperator : IInstallOperator
                     return new InstallPackageResult
                     {
                         Succeeded = false,
-                        Attempted = false,
                     };
                 }
 
@@ -77,7 +75,6 @@ public class InstallOperator : IInstallOperator
                 return new InstallPackageResult
                 {
                     Succeeded = false,
-                    Attempted = false,
                 };
             }
             catch (Exception e)
@@ -86,7 +83,6 @@ public class InstallOperator : IInstallOperator
                 return new InstallPackageResult
                 {
                     Succeeded = false,
-                    Attempted = false,
                 };
             }
         }).AsAsyncOperation();

@@ -10,8 +10,6 @@ public class ApplyConfigurationResult : IApplyConfigurationResult
 {
     public IList<IConfigurationUnitResult> UnitResults { get; set; }
 
-    public bool Attempted { get; set; }
-
     public bool RebootRequired { get; set; }
 
     public bool Succeeded { get; set; }

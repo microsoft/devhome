@@ -30,7 +30,8 @@ public class BackgroundProcessTest
 
         // Write a random string on the background process
         var randomString = Guid.NewGuid().ToString();
-        remoteElevatedFactory.Value.WriteToStdOut(randomString);
+        var testOperator = remoteElevatedFactory.Value.CreateTestOperator();
+        testOperator.WriteToStdOut(randomString);
         Assert.IsFalse(backgroundProcess.HasExited, "Process should still be running after calling a method");
 
         // Release the completion mutex to signal the process to exit

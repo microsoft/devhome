@@ -98,7 +98,7 @@ public class InstallPackageTask : ISetupTask
         return Task.Run(async () =>
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
-            var installOperator = (InstallOperator)operatorFactory.CreateInstallOperator();
+            var installOperator = (InstallOperator)operatorFactory.CreateInstallPackageOperator();
             return await InstallAsync(async () => await installOperator.InstallPackageAsync(_package));
         }).AsAsyncOperation();
     }
@@ -109,7 +109,7 @@ public class InstallPackageTask : ISetupTask
         return Task.Run(async () =>
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting elevated installation of package {_package.Id}");
-            var installOperator = elevatedOperatorFactory.CreateInstallOperator();
+            var installOperator = elevatedOperatorFactory.CreateInstallPackageOperator();
             return await InstallAsync(async () => await installOperator.InstallPackageAsync(_package.Id, _package.CatalogName));
         }).AsAsyncOperation();
     }

@@ -3,76 +3,102 @@
 
 namespace DevHome.SetupFlow.Contract
 {
+    // Contracts for task operators
     namespace TaskOperator
     {
+        // Interface required by all operation results
         interface IOperationResult
         {
-            Boolean Attempted { get; };
-
+            // Gets a value indicating whether the operation succeeded
             Boolean Succeeded { get; };
 
+            // Gets a value indicating whether the operation requires rebooting the machine
             Boolean RebootRequired { get; };
         };
 
         interface IInstallPackageResult
             requires IOperationResult
         {
+            // Gets the status of the install call
             Int32 Status { get; };
-			
+
+            // Gets the installer error code
             UInt32 InstallerErrorCode { get; };
 
-			Int32 ExtendedErrorCode { get; };
+            // Gets the error code of the overall install operation
+            Int32 ExtendedErrorCode { get; };
         };
 
-        interface IDevDriveResult
+        interface ICreateDevDriveResult
             requires IOperationResult
         {
+            // Gets the HRESULT value of the operation
             Int32 HResult { get; };
         };
 
-		interface IConfigurationUnitResult
-		{
+        interface IConfigurationUnitResult
+        {
+            // Gets the name of the configuration unit
             String UnitName { get; };
 
-			String Intent { get; };
+            // Gets the intent of the configuration unit (e.g. Assert, Inform, Apply)
+            String Intent { get; };
 
-			Boolean IsSkipped { get; };
+            // Gets a value indicating whether the configuration unit was skipped
+            Boolean IsSkipped { get; };
 
-			Int32 HResult { get; };
-		}
+            // Gets the HRESULT value of the operation
+            Int32 HResult { get; };
+        }
 
         interface IApplyConfigurationResult
             requires IOperationResult
         {
+            // Gets the list of the configuration unit results
             Windows.Foundation.Collections.IVector<IConfigurationUnitResult> UnitResults { get; };
         };
 
-        interface IInstallOperator
+        interface IInstallPackageOperator
         {
+            // Install package
             Windows.Foundation.IAsyncOperation<IInstallPackageResult> InstallPackageAsync(String packageId, String catalogName);
         };
 
         interface IDevDriveStorageOperator
         {
-            IDevDriveResult CreateDevDrive(String virtDiskPath, UInt64 sizeInBytes, Char newDriveLetter, String driveLabel);
+            // Create Dev Drive
+            ICreateDevDriveResult CreateDevDrive(String virtDiskPath, UInt64 sizeInBytes, Char newDriveLetter, String driveLabel);
         };
 
         interface IConfigurationOperator
         {
+            // Open a configuration file
             Windows.Foundation.IAsyncAction OpenConfigurationSetAsync(Windows.Storage.StorageFile file);
 
+            // Apply configuration file
             Windows.Foundation.IAsyncOperation<IApplyConfigurationResult> ApplyConfigurationAsync();
         }
 
+        // This operator exists just for testing
+        interface ITestOperator
+        {
+            // Write to standard output
+            void WriteToStdOut(String msg);
+        };
+
         interface ITaskOperatorFactory
         {
-            void WriteToStdOut(String message);
+            // Create operator for installing packages
+            IInstallPackageOperator CreateInstallPackageOperator();
 
-            IInstallOperator CreateInstallOperator();
-
+            // Create operator for creating Dev drive storage
             IDevDriveStorageOperator CreateDevDriveStorageOperator();
 
+            // Create operator for applying DSC configurations
             IConfigurationOperator CreateConfigurationOperator();
+
+            // Create operator for testing
+            ITestOperator CreateTestOperator();
         };
     }
 }

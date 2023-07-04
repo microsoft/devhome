@@ -76,7 +76,7 @@ public class DevDriveStorageOperator : IDevDriveStorageOperator
     /// <param name="newDriveLetter">The drive letter to format the new drive</param>
     /// <param name="driveLabel">The label that will be given to the drive during formatting</param>
     /// <returns>An int which is the Hresult code that indicates whether the operation succeeded or failed</returns>
-    public IDevDriveResult CreateDevDrive(string virtDiskPath, ulong sizeInBytes, char newDriveLetter, string driveLabel)
+    public ICreateDevDriveResult CreateDevDrive(string virtDiskPath, ulong sizeInBytes, char newDriveLetter, string driveLabel)
     {
         // Create the location if it doesn't exist.
         var location = Path.GetDirectoryName(virtDiskPath);
@@ -86,47 +86,41 @@ public class DevDriveStorageOperator : IDevDriveStorageOperator
         }
 
         string virtDiskPhysicalPath;
-        var result = CreateAndAttachVhdx(virtDiskPath, sizeInBytes, out virtDiskPhysicalPath);
-        if (result.Failed)
+        var result = new CreateDevDriveResult();
+        var resultCode = CreateAndAttachVhdx(virtDiskPath, sizeInBytes, out virtDiskPhysicalPath);
+        if (resultCode.Failed)
         {
             DetachVirtualDisk(virtDiskPath);
-            return new DevDriveResult
-            {
-                HResult = result.Value,
-            };
+            result.HResult = resultCode.Value;
+            return result;
         }
 
         uint diskNumber;
-        result = CreatePartition(virtDiskPhysicalPath, out diskNumber);
-        if (result.Failed)
+        resultCode = CreatePartition(virtDiskPhysicalPath, out diskNumber);
+        if (resultCode.Failed)
         {
             DetachVirtualDisk(virtDiskPath);
-            return new DevDriveResult
-            {
-                HResult = result.Value,
-            };
+            result.HResult = resultCode.Value;
+            return result;
         }
 
-        result = AssignDriveLetterToPartition(diskNumber, newDriveLetter);
-        if (result.Failed)
+        resultCode = AssignDriveLetterToPartition(diskNumber, newDriveLetter);
+        if (resultCode.Failed)
         {
             DetachVirtualDisk(virtDiskPath);
-            return new DevDriveResult
-            {
-                HResult = result.Value,
-            };
+            result.HResult = resultCode.Value;
+            return result;
         }
 
         var finishedResult = FormatPartitionAsDevDrive(newDriveLetter, driveLabel);
-        if (finishedResult != 0)
+        if (finishedResult != HRESULT.S_OK)
         {
             DetachVirtualDisk(virtDiskPath);
         }
 
-        return new DevDriveResult
-        {
-            HResult = finishedResult,
-        };
+        result.Succeeded = finishedResult == HRESULT.S_OK;
+        result.HResult = finishedResult;
+        return result;
     }
 
     /// <summary>
