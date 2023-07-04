@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Management.Deployment;
