@@ -669,14 +669,3 @@ public class DevDriveStorageOperator : IDevDriveStorageOperator
         }
     }
 }
-
-public class DevDriveResult : IDevDriveResult
-{
-    public int HResult { get; set; }
-
-    public bool Attempted { get; set; }
-
-    public bool RebootRequired { get; set; }
-
-    public bool Succeeded { get; set; }
-}
