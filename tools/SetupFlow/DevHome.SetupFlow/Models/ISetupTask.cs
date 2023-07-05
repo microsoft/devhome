@@ -40,12 +40,10 @@ public interface ISetupTask
     /// </summary>
     /// <remarks>
     /// The task must work correctly in a background thread (not the UI thread).
-    /// TODO: Define return type to report status in Loading page (success, failure)
-    /// TODO: Define progress type to report status in Loading page
-    /// TODO: We will have a background process to run tasks that require elevated permissions.
-    ///       We will have to figure a way to communicate those tasks to the background process.
-    /// https://github.com/microsoft/devhome/issues/638
+    /// TODO: Define progress type to report status in Loading page: https://github.com/microsoft/devhome/issues/638
+    /// TODO: Execute on a separate non-elevated process: https://github.com/microsoft/devhome/issues/1251
     /// </remarks>
+    /// <param name="operatorFactory">Local factory to create the needed objects on the current process.</param>
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
@@ -54,7 +52,7 @@ public interface ISetupTask
     /// <summary>
     /// Executes this setup task as admin.
     /// </summary>
-    /// <param name="elevatedOperatorFactory">Helper object to create the needed objects on the elevated process.</param>
+    /// <param name="elevatedOperatorFactory">Remote factory to create the needed objects on the elevated process.</param>
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>

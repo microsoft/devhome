@@ -109,7 +109,8 @@ public class InstallPackageTask : ISetupTask
                 // we can use the previously obtained catalog package.
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
                 var installOperator = (InstallOperator)operatorFactory.CreateInstallPackageOperator();
-                return await InstallAsync(async () => await installOperator.InstallPackageAsync(_package));
+                var result = await installOperator.InstallPackageAsync(_package);
+                return ProcessResult(result);
             }
             catch (Exception e)
             {
@@ -128,7 +129,8 @@ public class InstallPackageTask : ISetupTask
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting elevated installation of package {_package.Id}");
                 var installOperator = elevatedOperatorFactory.CreateInstallPackageOperator();
-                return await InstallAsync(async () => await installOperator.InstallPackageAsync(_package.Id, _package.CatalogName));
+                var result = await installOperator.InstallPackageAsync(_package.Id, _package.CatalogName);
+                return ProcessResult(result);
             }
             catch (Exception e)
             {
@@ -138,10 +140,8 @@ public class InstallPackageTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    private async Task<TaskFinishedState> InstallAsync(Func<Task<IInstallPackageResult>> installFunction)
+    private TaskFinishedState ProcessResult(IInstallPackageResult result)
     {
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
-        var result = await installFunction();
         WasInstallSuccessful = result.Succeeded;
         RequiresReboot = result.RebootRequired;
         _installResultStatus = (InstallResultStatus)result.Status;

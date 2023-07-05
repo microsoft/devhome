@@ -72,19 +72,16 @@ public class InstallOperator : IInstallPackageOperator
             catch (CatalogConnectionException e)
             {
                 Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to the catalog [{catalogName}]", e);
-                return new InstallPackageResult
-                {
-                    Succeeded = false,
-                };
             }
             catch (Exception e)
             {
                 Log.Logger?.ReportError(Log.Component.AppManagement, $"Unexpected error occurred when attempting to install package {packageId} from catalog {catalogName}", e);
-                return new InstallPackageResult
-                {
-                    Succeeded = false,
-                };
             }
+
+            return new InstallPackageResult
+            {
+                Succeeded = false,
+            };
         }).AsAsyncOperation();
     }
 }

@@ -84,5 +84,11 @@ public interface IWindowsPackageManager
     /// <returns>True if AppInstaller was registered, false otherwise.</returns>
     public Task<bool> RegisterAppInstallerAsync();
 
+    /// <summary>
+    /// Create a composite catalog from a package catalog name
+    /// </summary>
+    /// <param name="searchBehavior">Search behavior</param>
+    /// <param name="catalogName">Package catalog name</param>
+    /// <returns>Composite catalog of the specified catalog name</returns>
     public WinGetCompositeCatalog CreateCatalogByName(CompositeSearchBehavior searchBehavior, string catalogName);
 }
