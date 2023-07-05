@@ -15,8 +15,6 @@ using Windows.Storage.Streams;
 namespace DevHome.Dashboard.Helpers;
 internal class WidgetIconCache
 {
-    private static DispatcherQueue _dispatcher;
-
     private static Dictionary<string, BitmapImage> _widgetLightIconCache;
     private static Dictionary<string, BitmapImage> _widgetDarkIconCache;
 
@@ -26,9 +24,8 @@ internal class WidgetIconCache
     /// <remarks>
     /// The WidgetIconCache is backed by two dictionaries, one for light themed icons and one for dark themed icons.
     /// </remarks>
-    public WidgetIconCache(DispatcherQueue dispatcher)
+    public WidgetIconCache()
     {
-        _dispatcher = dispatcher;
         _widgetLightIconCache = new Dictionary<string, BitmapImage>();
         _widgetDarkIconCache = new Dictionary<string, BitmapImage>();
     }
@@ -36,19 +33,19 @@ internal class WidgetIconCache
     /// <summary>
     /// Caches icons for all widgets in the WidgetCatalog that are included in Dev Home.
     /// </summary>
-    public async Task CacheAllWidgetIcons(WidgetCatalog widgetCatalog)
+    public async Task CacheAllWidgetIcons(WidgetCatalog widgetCatalog, DispatcherQueue dispatcher)
     {
         var widgetDefs = widgetCatalog.GetWidgetDefinitions();
         foreach (var widgetDef in widgetDefs ?? Array.Empty<WidgetDefinition>())
         {
-            await AddIconsToCache(widgetDef);
+            await AddIconsToCache(widgetDef, dispatcher);
         }
     }
 
     /// <summary>
     /// Caches two icons for each widget, one for light theme and one for dark theme.
     /// </summary>
-    public async Task AddIconsToCache(WidgetDefinition widgetDef)
+    public async Task AddIconsToCache(WidgetDefinition widgetDef, DispatcherQueue dispatcher)
     {
         // Only cache icons for providers that we're including.
         if (WidgetHelpers.IsIncludedWidgetProvider(widgetDef.ProviderDefinition))
@@ -57,8 +54,8 @@ internal class WidgetIconCache
             try
             {
                 Log.Logger()?.ReportDebug("WidgetIconCache", $"Cache widget icons for {widgetDefId}");
-                var itemLightImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Light).Icon);
-                var itemDarkImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Dark).Icon);
+                var itemLightImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Light).Icon, dispatcher);
+                var itemDarkImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Dark).Icon, dispatcher);
 
                 // There is a widget bug where Definition update events are being raised as added events.
                 // If we already have an icon for this key, just remove and add again in case the icons changed.
@@ -117,9 +114,9 @@ internal class WidgetIconCache
         return brush;
     }
 
-    private static async Task<BitmapImage> WidgetIconToBitmapImage(IRandomAccessStreamReference iconStreamRef)
+    private static async Task<BitmapImage> WidgetIconToBitmapImage(IRandomAccessStreamReference iconStreamRef, DispatcherQueue dispatcher)
     {
-        var itemImage = await _dispatcher.EnqueueAsync(async () =>
+        var itemImage = await dispatcher.EnqueueAsync(async () =>
         {
             using var bitmapStream = await iconStreamRef.OpenReadAsync();
             var itemImage = new BitmapImage();
