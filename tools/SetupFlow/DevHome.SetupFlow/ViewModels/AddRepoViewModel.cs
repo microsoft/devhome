@@ -283,6 +283,7 @@ public partial class AddRepoViewModel : ObservableObject
         else
         {
             ShouldShowAccountPage = true;
+            PrimaryButtonContent = _stringResource.GetLocalized(StringResourceKey.RepoAccountPagePrimaryButtonText);
         }
 
         ToggleCloneButton();
@@ -299,6 +300,7 @@ public partial class AddRepoViewModel : ObservableObject
         ShouldShowUrlPage = true;
         ShouldShowAccountPage = false;
         ShouldShowRepoPage = false;
+        PrimaryButtonContent = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
     }
 
     private async Task SwitchToRepoPage(string repositoryProviderName)
@@ -318,6 +320,7 @@ public partial class AddRepoViewModel : ObservableObject
         ShouldShowRepoPage = true;
         ShouldShowAccountPage = false;
         AddViaAccountViewModel.ChangeAccounts();
+        PrimaryButtonContent = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
     }
 
     /// <summary>
