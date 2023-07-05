@@ -136,7 +136,7 @@ public class ConfigureTask : ISetupTask
         RequiresReboot = result.RebootRequired;
         UnitResults = new List<IConfigurationUnitResult>();
 
-        // Cannot use foreach or LINQ for out-of-process IVector
+        // Ensure list is in-proc (list items can be in-proc or out-of-proc)
         // Bug: https://github.com/microsoft/CsWinRT/issues/1205
         for (var i = 0; i < result.UnitResults.Count; ++i)
         {
