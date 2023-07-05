@@ -7,10 +7,10 @@ using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.SetupFlow.Common.TelemetryEvents;
+namespace DevHome.Common.TelemetryEvents;
 
 [EventData]
-internal class DisksAndVolumesSettingsPageTriggeredEvent : EventBase
+public class DisksAndVolumesSettingsPageTriggeredEvent : EventBase
 {
     public DisksAndVolumesSettingsPageTriggeredEvent(string source)
     {

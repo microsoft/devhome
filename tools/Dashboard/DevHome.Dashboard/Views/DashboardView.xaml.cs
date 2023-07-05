@@ -9,7 +9,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
-using CommunityToolkit.WinUI;
 using DevHome.Common;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
@@ -17,13 +16,9 @@ using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
-using Windows.Management.Deployment;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.System;
 
 namespace DevHome.Dashboard.Views;
@@ -40,20 +35,15 @@ public partial class DashboardView : ToolPage
     private static AdaptiveCardRenderer _renderer;
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
-    private bool _validatedWebExpPack;
+    private readonly WidgetServiceHelper _widgetServiceHelper;
+    private readonly WidgetIconCache _widgetIconCache;
 
     private static bool _widgetHostInitialized;
-
-    private static Dictionary<string, BitmapImage> _widgetLightIconCache;
-    private static Dictionary<string, BitmapImage> _widgetDarkIconCache;
-
-    private readonly Version minSupportedVersion400 = new (423, 3800);
-    private readonly Version minSupportedVersion500 = new (523, 3300);
-    private readonly Version version500 = new (500, 0);
 
     public DashboardView()
     {
         ViewModel = new DashboardViewModel();
+        _widgetServiceHelper = new WidgetServiceHelper();
         this.InitializeComponent();
 
         if (PinnedWidgets != null)
@@ -64,18 +54,17 @@ public partial class DashboardView : ToolPage
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
         PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
 
-        _widgetLightIconCache = new Dictionary<string, BitmapImage>();
-        _widgetDarkIconCache = new Dictionary<string, BitmapImage>();
-
         _renderer = new AdaptiveCardRenderer();
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+        _widgetIconCache = new WidgetIconCache();
 
         ActualThemeChanged += OnActualThemeChanged;
 
         // If this is the first time initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
         {
-            if (EnsureWebExperiencePack())
+            if (_widgetServiceHelper.EnsureWebExperiencePack())
             {
                 _widgetHostInitialized = InitializeWidgetHost();
             }
@@ -120,58 +109,6 @@ public partial class DashboardView : ToolPage
 
         return true;
     }
-
-    private bool EnsureWebExperiencePack()
-    {
-        // If already validated there's a good version, don't check again.
-        if (_validatedWebExpPack)
-        {
-            return true;
-        }
-
-        // Ensure the application is installed, and the version is high enough.
-        const string packageName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
-
-        var packageManager = new PackageManager();
-        var packages = packageManager.FindPackagesForUser(string.Empty, packageName);
-        if (packages.Any())
-        {
-            // A user cannot actually have more than one version installed, so only need to look at the first result.
-            var package = packages.First();
-
-            var version = package.Id.Version;
-            var major = version.Major;
-            var minor = version.Minor;
-
-            Log.Logger()?.ReportInfo("DashboardView", $"{package.Id.FullName} Version: {major}.{minor}");
-
-            // Create System.Version type from PackageVersion to test. System.Version supports CompareTo() for easy comparisons.
-            if (!IsVersionSupported(new (major, minor)))
-            {
-                return false;
-            }
-        }
-        else
-        {
-            // If there is no version installed at all.
-            return false;
-        }
-
-        _validatedWebExpPack = true;
-        return _validatedWebExpPack;
-    }
-
-    /// <summary>
-    /// Tests whether a version is equal to or above the min, but less than the max.
-    /// </summary>
-    private bool IsVersionBetween(Version target, Version min, Version max) => target.CompareTo(min) >= 0 && target.CompareTo(max) < 0;
-
-    /// <summary>
-    /// Tests whether a version is equal to or above the min.
-    /// </summary>
-    private bool IsVersionAtOrAbove(Version target, Version min) => target.CompareTo(min) >= 0;
-
-    private bool IsVersionSupported(Version target) => IsVersionBetween(target, minSupportedVersion400, version500) || IsVersionAtOrAbove(target, minSupportedVersion500);
 
     private async Task<AdaptiveCardRenderer> GetConfigurationRendererAsync()
     {
@@ -236,97 +173,13 @@ public partial class DashboardView : ToolPage
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
 
         // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
-        await CacheWidgetIcons();
+        await _widgetIconCache.CacheAllWidgetIcons(_widgetCatalog, _dispatcher);
 
         await ConfigureWidgetRenderer(_renderer);
 
         RestorePinnedWidgets();
 
         LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
-    }
-
-    private async Task CacheWidgetIcons()
-    {
-        var widgetDefs = _widgetCatalog.GetWidgetDefinitions();
-        foreach (var widgetDef in widgetDefs ?? Array.Empty<WidgetDefinition>())
-        {
-            await CacheWidgetIcon(widgetDef);
-        }
-    }
-
-    private async Task CacheWidgetIcon(WidgetDefinition widgetDef)
-    {
-        // Only cache icons for providers that we're including.
-        if (WidgetHelpers.IsIncludedWidgetProvider(widgetDef.ProviderDefinition))
-        {
-            var widgetDefId = widgetDef.Id;
-            try
-            {
-                Log.Logger()?.ReportDebug("DashboardView", $"Cache widget icon for {widgetDefId}");
-                var itemLightImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Light).Icon);
-                var itemDarkImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Dark).Icon);
-
-                // There is a widget bug where Definition update events are being raised as added events.
-                // If we already have an icon for this key, just remove and add again.
-                if (_widgetLightIconCache.ContainsKey(widgetDefId))
-                {
-                    _widgetLightIconCache.Remove(widgetDefId);
-                }
-
-                if (_widgetDarkIconCache.ContainsKey(widgetDefId))
-                {
-                    _widgetDarkIconCache.Remove(widgetDefId);
-                }
-
-                _widgetLightIconCache.Add(widgetDefId, itemLightImage);
-                _widgetDarkIconCache.Add(widgetDefId, itemDarkImage);
-            }
-            catch (Exception ex)
-            {
-                Log.Logger()?.ReportError("DashboardView", $"Exception in CacheWidgetIcons:", ex);
-                _widgetLightIconCache.Add(widgetDefId, null);
-                _widgetDarkIconCache.Add(widgetDefId, null);
-            }
-        }
-    }
-
-    public static BitmapImage GetWidgetIconForTheme(WidgetDefinition widgetDefinition, ElementTheme theme)
-    {
-        BitmapImage image;
-        if (theme == ElementTheme.Light)
-        {
-            _widgetLightIconCache.TryGetValue(widgetDefinition.Id, out image);
-        }
-        else
-        {
-            _widgetDarkIconCache.TryGetValue(widgetDefinition.Id, out image);
-        }
-
-        return image;
-    }
-
-    public static Brush GetBrushForWidgetIcon(WidgetDefinition widgetDefinition, ElementTheme theme)
-    {
-        var image = GetWidgetIconForTheme(widgetDefinition, theme);
-
-        var brush = new Microsoft.UI.Xaml.Media.ImageBrush
-        {
-            ImageSource = image,
-        };
-        return brush;
-    }
-
-    public static async Task<BitmapImage> WidgetIconToBitmapImage(IRandomAccessStreamReference iconStreamRef)
-    {
-        var itemImage = await _dispatcher.EnqueueAsync(async () =>
-        {
-            using var bitmapStream = await iconStreamRef.OpenReadAsync();
-            var itemImage = new BitmapImage();
-            await itemImage.SetSourceAsync(bitmapStream);
-            return itemImage;
-        });
-
-        return itemImage;
     }
 
     private async void RestorePinnedWidgets()
@@ -411,10 +264,10 @@ public partial class DashboardView : ToolPage
         // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
         {
-            if (EnsureWebExperiencePack())
+            if (_widgetServiceHelper.EnsureWebExperiencePack())
             {
                 _widgetHostInitialized = InitializeWidgetHost();
-                await CacheWidgetIcons();
+                await _widgetIconCache.CacheAllWidgetIcons(_widgetCatalog, _dispatcher);
                 await ConfigureWidgetRenderer(_renderer);
             }
             else
@@ -511,7 +364,7 @@ public partial class DashboardView : ToolPage
     private async void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args)
     {
         Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetDefinitionAdded {args.Definition.Id}");
-        await CacheWidgetIcon(args.Definition);
+        await _widgetIconCache.AddIconsToCache(args.Definition, _dispatcher);
     }
 
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
@@ -582,8 +435,7 @@ public partial class DashboardView : ToolPage
             }
         });
 
-        _widgetLightIconCache.Remove(definitionId);
-        _widgetDarkIconCache.Remove(definitionId);
+        _widgetIconCache.RemoveIconsFromCache(definitionId);
     }
 
     // Listen for widgets being added or removed, so we can add or remove listeners on the WidgetViewModels' properties.

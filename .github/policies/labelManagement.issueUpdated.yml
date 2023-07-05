@@ -1,0 +1,43 @@
+id: labelManagement.issueUpdated
+name: GitOps.PullRequestIssueManagement
+description: GitOps.PullRequestIssueManagement primitive
+owner: 
+resource: repository
+disabled: false
+where: 
+configuration:
+  resourceManagementConfiguration:
+    eventResponderTasks:
+    - description: >-
+          If an author responds to an issue which needs author feedback
+          * Remove the Needs-Author-Feedback Label
+          * Add the Needs-Team-Response
+      if:
+      - payloadType: Issue_Comment
+      - isAction:
+          action: Created
+      - isActivitySender:
+          issueAuthor: True
+      - hasLabel:
+          label: Needs-Author-Feedback
+      - isOpen
+      then:
+      - removeLabel:
+          label: Needs-Author-Feedback
+      - addLabel:
+          label: Needs-Team-Response
+    - description: Remove "Status-No recent activity" when a pull request or issue is updated
+      if:
+      - payloadType: Issue_Comment
+      - hasLabel:
+          label: Status-No recent activity
+      then:
+      - removeLabel:
+          label: Status-No recent activity
+    - description: Clean email replies on every comment
+      if:
+      - payloadType: Issue_Comment
+      then:
+      - cleanEmailReply
+onFailure: 
+onSuccess: 

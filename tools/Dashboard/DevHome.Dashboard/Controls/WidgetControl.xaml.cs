@@ -5,13 +5,14 @@ using System;
 using System.Linq;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
+using DevHome.Dashboard.Views;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
-namespace DevHome.Dashboard.Views;
+namespace DevHome.Dashboard.Controls;
 public sealed partial class WidgetControl : UserControl
 {
     private MenuFlyoutItem _currentSelectedSize;
@@ -212,6 +213,6 @@ public sealed partial class WidgetControl : UserControl
 
     private void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        WidgetHeaderIcon.Fill = DashboardView.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme);
+        WidgetHeaderIcon.Fill = WidgetIconCache.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme);
     }
 }
