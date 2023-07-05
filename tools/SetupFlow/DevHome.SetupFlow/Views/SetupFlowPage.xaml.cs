@@ -19,5 +19,10 @@ public partial class SetupFlowPage : ToolPage
     {
         ViewModel = Application.Current.GetService<SetupFlowViewModel>();
         InitializeComponent();
+        this.Loaded += (_, _) =>
+        {
+            MyTeachingTip.XamlRoot = XamlRoot;
+            ViewModel.Orchestrator.HasLoaded = true;
+        };
     }
 }

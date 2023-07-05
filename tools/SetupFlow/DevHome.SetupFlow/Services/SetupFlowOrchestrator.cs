@@ -171,6 +171,17 @@ public partial class SetupFlowOrchestrator : ObservableObject
         return HasPreviousPage && CurrentPageViewModel.CanGoToPreviousPage;
     }
 
+    [ObservableProperty]
+    private bool _isTeachingTipOpen;
+
+    [ObservableProperty]
+    private bool _isTeachingTipVisible;
+
+    public bool HasLoaded
+    {
+        get; set;
+    }
+
     [RelayCommand(CanExecute = nameof(CanGoToNextPage))]
     public async Task GoToNextPage()
     {
@@ -196,6 +207,17 @@ public partial class SetupFlowOrchestrator : ObservableObject
         // Last page in the setup flow should always be the summary page. The summary page is the only page where we show
         // the user the "Done" button.
         ShouldShowDoneButton = _currentPageIndex == FlowPages.Count - 1;
+
+        if (CurrentPageViewModel.IsStepPage && HasLoaded && index == 0)
+        {
+            IsTeachingTipOpen = true;
+            IsTeachingTipVisible = true;
+        }
+        else
+        {
+            IsTeachingTipOpen = false;
+            IsTeachingTipVisible = false;
+        }
 
         // Do post-navigation tasks only when moving forwards, not when going back to a previous page.
         if (movingForward)

@@ -106,11 +106,17 @@
                         <Grid ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
                             <TextBlock IsTabStop="False" />
                             <Button
+                                x:Name="MyButton"
                                 Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
                                 Style="{StaticResource AccentButtonStyle}"
                                 MinWidth="120" Margin="4,0"
-                                Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
-                                ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
+                                Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}">
+                                <ToolTipService.ToolTip>
+                                    <ToolTip Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" Visibility="{x:Bind ViewModel.Orchestrator.IsTeachingTipVisible, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
+                                </ToolTipService.ToolTip>
+                            </Button>
+                            <TeachingTip x:Name="MyTeachingTip" Visibility="{x:Bind ViewModel.Orchestrator.IsTeachingTipVisible}" IsOpen="{x:Bind ViewModel.Orchestrator.IsTeachingTipOpen, Mode=OneWay}" Target="{x:Bind MyButton}" PreferredPlacement="TopLeft" Title="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+                            </TeachingTip>
                         </Grid>
                     </setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
                 </setupFlowBehaviors:SetupFlowNavigationBehavior>

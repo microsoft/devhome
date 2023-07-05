@@ -23,6 +23,9 @@ public partial class SetupFlowViewModel : ObservableObject
     private readonly MainPageViewModel _mainPageViewModel;
     private readonly PackageProvider _packageProvider;
 
+    [ObservableProperty]
+    private bool _shouldShowTooltip;
+
     public SetupFlowOrchestrator Orchestrator { get; }
 
     public SetupFlowViewModel(
