@@ -113,6 +113,7 @@ internal class WidgetIconCache
         {
             ImageSource = image,
         };
+
         return brush;
     }
 
