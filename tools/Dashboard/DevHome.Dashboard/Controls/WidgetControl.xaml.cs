@@ -213,6 +213,6 @@ public sealed partial class WidgetControl : UserControl
 
     private void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        WidgetHeaderIcon.Fill = DashboardView.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme);
+        WidgetHeaderIcon.Fill = WidgetIconCache.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme);
     }
 }
