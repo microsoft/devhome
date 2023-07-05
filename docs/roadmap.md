@@ -35,7 +35,7 @@ Dev Home is engineered and delivered as a set of 4-week [milestones]. Below is t
 | Milestone end date | Milestone name | Blog post |
 | ------------------ | -------------- | --------- |
 | 2023-05-23 | 0.1 | [Introducing Dev Home] |
-| 2023-06-15 | [0.2] | |
+| 2023-06-15 | [0.2] | [Dev Home Preview 0.2 Release] |
 | 2023-07-13 | [0.3] | |
 | 2023-08-17 | [0.4] | |
 | 2023-09-14 | [0.5] | |
@@ -56,3 +56,4 @@ Dev Home is engineered and delivered as a set of 4-week [milestones]. Below is t
 [0.5]: https://github.com/microsoft/devhome/milestone/5
 
 [Introducing Dev Home]: https://blogs.windows.com/windowsdeveloper/2023/05/30/introducing-dev-home/
+[Dev Home Preview 0.2 Release]: https://blogs.windows.com/windowsdeveloper/2023/06/21/dev-home-preview-0-2-release/
