@@ -81,7 +81,8 @@ internal class CreateDevDriveTask : ISetupTask
 
             try
             {
-                TelemetryFactory.Get<ITelemetry>().LogMeasure("CreateDevDrive_CreatingDevDrive_Event");
+                // Critical level approved by subhasan
+                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDrive_CreatingDevDrive_Event", LogLevel.Critical, new EmptyEvent());
                 var manager = _host.GetService<IDevDriveManager>();
                 var validation = manager.GetDevDriveValidationResults(DevDrive);
                 manager.RemoveAllDevDrives();
@@ -101,7 +102,7 @@ internal class CreateDevDriveTask : ISetupTask
             catch (Exception ex)
             {
                 result = ex.HResult;
-                Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to create Dev Drive. Due to Exception ErrorCode: 0x{ex.HResult:X}, Msg: {ex.Message}");
+                Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to create Dev Drive.", ex);
                 _actionCenterMessages.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.DevDriveErrorWithReason, _stringResource.GetLocalizedErrorMsg(ex.HResult, Log.Component.DevDrive));
                 TelemetryFactory.Get<ITelemetry>().LogException("CreatingDevDriveException", ex);
                 return TaskFinishedState.Failure;
@@ -109,7 +110,9 @@ internal class CreateDevDriveTask : ISetupTask
             finally
             {
                 timer.Stop();
-                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDriveTriggered", LogLevel.Measure, new DevDriveTriggeredEvent(DevDrive, timer.ElapsedTicks, result));
+
+                // Critical level approved by subhasan
+                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDriveTriggered", LogLevel.Critical, new DevDriveTriggeredEvent(DevDrive, timer.ElapsedTicks, result));
             }
         }).AsAsyncOperation();
     }

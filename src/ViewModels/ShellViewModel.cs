@@ -12,11 +12,9 @@ using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.ViewModels;
 
-public class ShellViewModel : ObservableRecipient
+public partial class ShellViewModel : ObservableObject
 {
     private readonly ILocalSettingsService _localSettingsService;
-    private object? _selected;
-    private InfoBarModel _shellInfoBarModel = new ();
 
     public INavigationService NavigationService
     {
@@ -28,17 +26,11 @@ public class ShellViewModel : ObservableRecipient
         get;
     }
 
-    public object? Selected
-    {
-        get => _selected;
-        set => SetProperty(ref _selected, value);
-    }
+    [ObservableProperty]
+    private object? _selected;
 
-    public InfoBarModel ShellInfoBarModel
-    {
-        get => _shellInfoBarModel;
-        set => SetProperty(ref _shellInfoBarModel, value);
-    }
+    [ObservableProperty]
+    private InfoBarModel _shellInfoBarModel = new ();
 
     public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, ILocalSettingsService localSettingsService)
     {

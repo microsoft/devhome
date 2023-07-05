@@ -26,13 +26,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Management.Infrastructure" Version="2.0.0" />
     <PackageReference Include="Microsoft.WindowsPackageManager.Configuration" Version="0.0.5" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.188-beta">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Management" Version="7.0.0" />
 
     <!--
     Microsoft.WindowsPackageManager.ComInterop nuget targets .NET Framework:
@@ -45,7 +45,7 @@
     - Feed the $(TargetDir)\WINMD path to CsWinRT in order to generate the projected classes
     NOTE: Suppressing the warning only is not enough as this will cause CoreClrInitFailure (0x80008089) error.
     -->
-    <PackageReference Include="Microsoft.WindowsPackageManager.ComInterop" Version="1.5.863-preview">
+    <PackageReference Include="Microsoft.WindowsPackageManager.ComInterop" Version="1.5.1572">
       <NoWarn>NU1701</NoWarn>
       <GeneratePathProperty>true</GeneratePathProperty>
       <IncludeAssets>none</IncludeAssets>

@@ -106,7 +106,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void RemoveRestartGrid()
     {
-        _showRestartNeeded = Visibility.Collapsed;
+        ShowRestartNeeded = Visibility.Collapsed;
     }
 
     /// <summary>
@@ -167,13 +167,16 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _wpm = wpm;
         _packageProvider = packageProvider;
         _catalogDataSourceLoacder = catalogDataSourceLoader;
-        IsNavigationBarVisible = true;
         _configurationUnitResults = new (GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
+
+        IsNavigationBarVisible = true;
+        IsStepPage = false;
     }
 
     protected async override Task OnFirstNavigateToAsync()
     {
+        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_NavigatedTo_Event");
         _orchestrator.ReleaseRemoteFactory();
         await ReloadCatalogsAsync();
     }

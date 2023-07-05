@@ -7,13 +7,13 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Management.Automation;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Models;
@@ -190,7 +190,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         get
         {
-            if ((ByteUnit)_comboBoxByteUnit == ByteUnit.TB)
+            if ((ByteUnit)ComboBoxByteUnit == ByteUnit.TB)
             {
                 return DevDriveUtil.MaxSizeForTbComboBox;
             }
@@ -207,7 +207,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         get
         {
-            if ((ByteUnit)_comboBoxByteUnit == ByteUnit.TB)
+            if ((ByteUnit)ComboBoxByteUnit == ByteUnit.TB)
             {
                 return DevDriveUtil.MinSizeForTbComboBox;
             }
@@ -318,9 +318,10 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     [RelayCommand]
     public async void LaunchDisksAndVolumesSettingsPage()
     {
+        // Critical level approved by subhasan
         TelemetryFactory.Get<ITelemetry>().Log(
             "LaunchDisksAndVolumesSettingsPageTriggered",
-            LogLevel.Measure,
+            LogLevel.Critical,
             new DisksAndVolumesSettingsPageTriggeredEvent(source: "DevDriveView"));
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
@@ -334,14 +335,14 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private void SaveButton()
     {
         Log.Logger?.ReportInfo(Log.Component.DevDrive, "Saving changes to Dev Drive");
-        ByteUnit driveUnitOfMeasure = (ByteUnit)_comboBoxByteUnit;
+        ByteUnit driveUnitOfMeasure = (ByteUnit)ComboBoxByteUnit;
         var tempDrive = new Models.DevDrive()
         {
             DriveLetter = ComboBoxDriveLetter.Value,
             DriveSizeInBytes = DevDriveUtil.ConvertToBytes(Size, driveUnitOfMeasure),
             DriveUnitOfMeasure = driveUnitOfMeasure,
             DriveLocation = Location,
-            DriveLabel = _driveLabel,
+            DriveLabel = DriveLabel,
             ID = _concreteDevDrive.ID,
         };
 
@@ -424,7 +425,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         FolderLocationError = null;
         foreach (DevDriveValidationResult result in resultSet)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Input validation Error in Dev Drive window: {result.ToString()}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Input validation Error in Dev Drive window: {result}");
             switch (result)
             {
                 case DevDriveValidationResult.NoDriveLettersAvailable:
@@ -491,7 +492,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to refresh the drive letter to size mapping. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to refresh the drive letter to size mapping.", ex);
 
             // Clear the mapping since it can't be refreshed. This shouldn't happen unless DriveInfo.GetDrives() fails. In that case we won't know which drive
             // in the list is causing GetDrives()'s to throw. If there are values inside the dictionary at this point, they could be stale. Clearing the list
@@ -546,7 +547,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
             ulong totalAvailableSpace;
             if (DriveLetterToSizeMapping.TryGetValue(char.ToUpperInvariant(lengthAfterTrim[0]), out totalAvailableSpace))
             {
-                shouldShowSizeError = DevDriveUtil.ConvertToBytes(Size, (ByteUnit)_comboBoxByteUnit) > totalAvailableSpace;
+                shouldShowSizeError = DevDriveUtil.ConvertToBytes(Size, (ByteUnit)ComboBoxByteUnit) > totalAvailableSpace;
             }
         }
 

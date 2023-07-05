@@ -51,7 +51,7 @@ Il s’agit d’un projet open source et nous accueillons la participation de la
     <!-- _locComment_text="{MaxLength=255} App DevStudio" -->
   </DevStudio>
   <ReleaseNotes _locID="App_ReleaseNotes">
-    <!-- _locComment_text="{MaxLength=1500} {Locked=__VERSION_NUMBER__} App Release Note" -->Veuillez consulter notre page de versions GitHub pour plus de détails.</ReleaseNotes>
+    <!-- _locComment_text="{MaxLength=1500} {Locked=__VERSION_NUMBER__} App Release Note" -->Veuillez consulter notre page de versions GitHub à https://github.com/microsoft/devhome/releases pour plus de détails.</ReleaseNotes>
   <ScreenshotCaptions>
     <!-- Valid length: 200 character limit, up to 9 elements per platform -->
     <!-- Valid attributes: any of DesktopImage, MobileImage, XboxImage, SurfaceHubImage, and HoloLensImage -->

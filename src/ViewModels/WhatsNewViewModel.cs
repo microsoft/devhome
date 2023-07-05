@@ -7,7 +7,7 @@ using DevHome.Models;
 
 namespace DevHome.ViewModels;
 
-public class WhatsNewViewModel : ObservableRecipient
+public class WhatsNewViewModel : ObservableObject
 {
     public ObservableCollection<WhatsNewCard> Source { get; } = new ObservableCollection<WhatsNewCard>();
 

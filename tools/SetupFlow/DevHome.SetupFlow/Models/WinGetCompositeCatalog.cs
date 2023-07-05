@@ -69,7 +69,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error connecting to catalog reference: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error connecting to catalog reference.", e);
             throw;
         }
         finally
@@ -96,7 +96,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error searching for packages: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error searching for packages.", e);
             throw;
         }
     }
@@ -129,7 +129,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error getting packages: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error getting packages.", e);
             throw;
         }
     }

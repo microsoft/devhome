@@ -1,0 +1,153 @@
+id: moderatorTriggers
+name: GitOps.PullRequestIssueManagement
+description: GitOps.PullRequestIssueManagement primitive
+owner: 
+resource: repository
+disabled: false
+where: 
+configuration:
+  resourceManagementConfiguration:
+    eventResponderTasks:
+    #
+    # /feedbackHub
+    - description: >-
+          Triggers:
+          * /feedbackhub
+          * /feedbackHub
+      if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/feedback[H|h]ub'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - addReply:
+          reply: >- 
+              Hi @${issueAuthor}. Please file this issue on Feedback Hub [Windows]+[f] and paste 
+              the link here so we can more easily find your information on the back end. The link 
+              can be found at the bottom of the feedback report. Please use "Apps" and "Dev Home" 
+              for the Category. 
+      - closeIssue
+      - removeLabel:
+          label: Needs-Triage
+      - removeLabel:
+          label: Needs-Team-Response
+      - addLabel:
+          label: Resolution-Please-File-on-Feedback-Hub
+    #
+    # /dupe
+    - description: >-
+          Example triggers:
+          * /dup of #000
+          * /dupe of #000
+          * Duplicate of #000 (preferred)
+          * Duplicate of https://github.com/microsoft/devhome/issues/000
+      if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '(\/)?[Dd]up(licate|e)?(\s+of)?\s+(\#[\d]+|https)'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - addReply:
+          reply: >- 
+              We've identified this as a duplicate of another one that already exists. This 
+              specific instance is being closed in favor of tracking the concern over on the the 
+              linked issue. Please add your 👍 to the other issue to raise its priority. Thanks 
+              for your report!
+      - closeIssue
+      - removeLabel:
+          label: Needs-Triage
+      - removeLabel:
+          label: Needs-Team-Response
+      - addLabel:
+          label: Resolution-Duplicate
+    #
+    # /logs
+    - description: >-
+          Trigger:
+          * /logs
+      if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/logs)'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - addReply:
+          reply: >-
+              Hi @${issueAuthor}. It would be helpful for us if you could share your Dev Home logs. 
+              These logs can be found at 
+              `%LOCALAPPDATA%\Packages\Microsoft.Windows.DevHome_8wekyb3d8bbwe\TempState` and 
+              `%LOCALAPPDATA%\Packages\Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe\TempState`. 
+              You can share these folders via a OneDrive link or zip them and attach them to a 
+              comment here. If you share this way, you may want to look through the logs in case 
+              there are any details included that you would like to remove (for example, private 
+              repo names). Alternatively, you can open a Feedback Hub issue and attach them there. 
+              If you use Feedback Hub, please paste the URL at the bottom of the report here so we 
+              can easily find it. 
+      - closeIssue
+      - removeLabel:
+          label: Needs-Triage
+      - removeLabel:
+          label: Needs-Team-Response
+    #
+    # /needinfo
+    - description: >-
+          Trigger:
+          * /needinfo
+      if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/needinfo'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - removeLabel:
+          label: Needs-Triage
+      - removeLabel:
+          label: Needs-Team-Response
+      - addLabel:
+          label: Needs-Author-Feedback
+    #
+    # /loc
+    - description: >-
+          Trigger:
+          * /loc
+      if:
+      - payloadType: Issue_Comment
+      - commentContains:
+          pattern: '\/loc\b'
+          isRegex: True
+      - or:
+        - activitySenderHasAssociation:
+            association: Owner
+        - activitySenderHasAssociation:
+            association: Member
+      then:
+      - removeLabel:
+          label: Needs-Triage
+      - addLabel:
+          label: Loc-Sent To Team
+      - addReply:
+          reply: >-
+              Hi! Thanks for making us aware of the problem. We raised the issue with our internal 
+              localization team.
+onFailure: 
+onSuccess: 

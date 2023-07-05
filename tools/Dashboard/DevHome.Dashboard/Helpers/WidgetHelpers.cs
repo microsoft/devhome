@@ -4,6 +4,7 @@
 using System;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
@@ -73,12 +74,23 @@ internal class WidgetHelpers
         return include;
     }
 
-    public static string CreateWidgetCustomState()
+    public static string CreateWidgetCustomState(int ordinal)
     {
         var state = new WidgetCustomState
         {
             Host = DevHomeHostName,
+            Position = ordinal,
         };
-        return JsonSerializer.Serialize(state);
+
+        return JsonSerializer.Serialize(state, SourceGenerationContext.Default.WidgetCustomState);
+    }
+
+    public static async Task SetPositionCustomStateAsync(Widget widget, int ordinal)
+    {
+        var stateStr = await widget.GetCustomStateAsync();
+        var state = JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
+        state.Position = ordinal;
+        stateStr = JsonSerializer.Serialize(state, SourceGenerationContext.Default.WidgetCustomState);
+        await widget.SetCustomStateAsync(stateStr);
     }
 }

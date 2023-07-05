@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
@@ -134,6 +135,9 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private Visibility _shouldShowUrlError;
 
+    [ObservableProperty]
+    private bool _isFetchingRepos;
+
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
     /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"
@@ -190,16 +194,16 @@ public partial class AddRepoViewModel : ObservableObject
     private IEnumerable<RepoViewListItem> OrderRepos(IEnumerable<IRepository> repos)
     {
         var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase))
-            .OrderBy(x => x.LastUpdated)
+            .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
         var userRepos = repos.Where(x => x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase));
         var userPublicRepos = userRepos.Where(x => !x.IsPrivate)
-            .OrderBy(x => x.LastUpdated)
+            .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
         var userPrivateRepos = userRepos.Where(x => x.IsPrivate)
-            .OrderBy(x => x.LastUpdated)
+            .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
         return userPrivateRepos
@@ -338,6 +342,15 @@ public partial class AddRepoViewModel : ObservableObject
                 return false;
             }
 
+            var sshMatch = Regex.Match(Url, "^.*@.*:.*\\/.*");
+
+            if (sshMatch.Success)
+            {
+                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.SSHConnectionStringNotAllowed);
+                ShouldShowUrlError = Visibility.Visible;
+                return false;
+            }
+
             ShouldShowUrlError = Visibility.Collapsed;
             return true;
         }
@@ -442,7 +455,6 @@ public partial class AddRepoViewModel : ObservableObject
             cloningInformation.OwningAccount = developerId;
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
-
             EverythingToClone.Add(cloningInformation);
         }
     }
@@ -530,24 +542,41 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
+
         EverythingToClone.Add(cloningInformation);
     }
 
     /// <summary>
     /// Gets all the repositories for the specified provider and account.
     /// </summary>
+    /// <remarks>
+    /// The side effect of this method is _repositoriesForAccount is populated with repositories.
+    /// </remarks>
     /// <param name="repositoryProvider">The provider.  This should match the display name of the plugin</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
-    public IEnumerable<RepoViewListItem> GetRepositories(string repositoryProvider, string loginId)
+    public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
     {
         _selectedAccount = loginId;
+        IsFetchingRepos = true;
+        await Task.Run(() =>
+        {
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
+            var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
 
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
-        var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
+            _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
+        });
+        IsFetchingRepos = false;
+    }
 
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
-        _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
-
+    /// <summary>
+    /// Updates the UI with the repositories to display for the specific user and provider.
+    /// </summary>
+    /// <param name="repositoryProvider">The name of the provider</param>
+    /// <param name="loginId">The login ID</param>
+    /// <returns>All previously selected repos excluding any added via URL.</returns>
+    public IEnumerable<RepoViewListItem> SetRepositories(string repositoryProvider, string loginId)
+    {
         Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)

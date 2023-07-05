@@ -4,6 +4,10 @@
 using System;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
+using DevHome.Contracts.Services;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -14,6 +18,21 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloningInformation : ObservableObject, IEquatable<CloningInformation>
 {
+    // TODO: Remove when plugin SDK has the ability to pass an icon to DevHome.
+    private static readonly BitmapImage LightGithub = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Light.png"));
+
+    private static readonly BitmapImage DarkGithub = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Dark.png"));
+
+    private static readonly BitmapImage LightGit = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitLight.png"));
+
+    private static readonly BitmapImage DarkGit = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitDark.png"));
+
+    /// <summary>
+    /// Gets a value indicating whether the repo is a private repo.  If changed to "IsPublic" the
+    /// values of the converters in the views need to change order.
+    /// </summary>
+    public bool IsPrivate => RepositoryToClone.IsPrivate;
+
     /// <summary>
     /// Gets or sets the repository the user wants to clone.
     /// </summary>
@@ -65,6 +84,38 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         get; set;
     }
 
+    [ObservableProperty]
+    private BitmapImage _repositoryTypeIcon;
+
+    public void SetIcon(ElementTheme theme)
+    {
+        if (theme == ElementTheme.Dark)
+        {
+            // Currently the only providers are Github and the generic provider.  The provider type
+            // for the generic provider is git.
+            // TODO: Remove when extensions have a GetIcon method.
+            if (ProviderName.Equals("github", StringComparison.OrdinalIgnoreCase))
+            {
+                RepositoryTypeIcon = DarkGithub;
+            }
+            else
+            {
+                RepositoryTypeIcon = DarkGit;
+            }
+        }
+        else
+        {
+            if (ProviderName.Equals("github", StringComparison.OrdinalIgnoreCase))
+            {
+                RepositoryTypeIcon = LightGithub;
+            }
+            else
+            {
+                RepositoryTypeIcon = LightGit;
+            }
+        }
+    }
+
     /// <summary>
     /// Gets or sets a value indicating the alias associated with the Dev drive in the form of
     /// "Drive label" (Drive letter:) [Size GB/TB]. E.g Dev Drive (D:) [50.0 GB]
@@ -89,7 +140,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     {
         get
         {
-            var path = _cloningLocation.FullName;
+            var path = CloningLocation.FullName;
 
             if (RepositoryToClone != null)
             {

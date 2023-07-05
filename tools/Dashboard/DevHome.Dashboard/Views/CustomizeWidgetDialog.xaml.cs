@@ -102,4 +102,14 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
             });
         }
     }
+
+    private void ContentDialog_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        const int ContentDialogMaxHeight = 684;
+
+        ConfigurationContentGrid.Height = Math.Min(this.ActualHeight, ContentDialogMaxHeight) - CustomizeWidgetTitleBar.ActualHeight;
+
+        // Subtract 80 for the margin around the button.
+        ConfigurationContentViewer.Height = ConfigurationContentGrid.Height - UpdateWidgetButton.ActualHeight - 80;
+    }
 }
