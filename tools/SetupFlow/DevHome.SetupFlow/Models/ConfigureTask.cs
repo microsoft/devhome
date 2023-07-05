@@ -83,8 +83,25 @@ public class ConfigureTask : ISetupTask
     {
         return Task.Run(async () =>
         {
-            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting application of configuration file {_file.Path}");
-            return await ExecuteAsync(_taskOperator);
+            try
+            {
+                // TODO: Run configuration in a separate non-elevated process
+                // instead of the same Dev Home process. This ensures that even
+                // if Dev Home is launched as admin, configuration will still
+                // run in non-elevated process.
+                // https://github.com/microsoft/devhome/issues/1251
+
+                // Since Execute method runs in the same process as Dev Home,
+                // we can use the same configuration operator without
+                // re-opening the file.
+                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting application of configuration file {_file.Path}");
+                return await ExecuteAsync(_taskOperator);
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to execute {nameof(ConfigureTask)}", e);
+                return TaskFinishedState.Failure;
+            }
         }).AsAsyncOperation();
     }
 
