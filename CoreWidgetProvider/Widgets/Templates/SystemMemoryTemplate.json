@@ -4,8 +4,8 @@
     {
       "type": "Image",
       "url": "${memGraphUrl}",
-      "height": "102x",
-      "width": "264px",
+      "height": "${chartHeight}",
+      "width": "${chartWidth}",
       "horizontalAlignment": "center"
     },
     {

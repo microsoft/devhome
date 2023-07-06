@@ -3,6 +3,7 @@
 
 using System.Text;
 using System.Xml.Linq;
+using CoreWidgetProvider.Widgets;
 
 namespace CoreWidgetProvider.Helpers;
 
@@ -16,26 +17,47 @@ internal class ChartHelper
         Net,
     }
 
-    private static readonly string LightGrayBoxStyle = "fill:none;stroke:lightgrey;stroke-width:1";
+    public const int ChartHeight = 102;
+    public const int ChartWidth = 264;
 
-    private static readonly string CPULineStyle = "fill:none;stroke:rgb(57,184,227);stroke-width:1";
-    private static readonly string GPULineStyle = "fill:none;stroke:rgb(222,104,242);stroke-width:1";
-    private static readonly string MemLineStyle = "fill:none;stroke:rgb(92,158,250);stroke-width:1";
-    private static readonly string NetLineStyle = "fill:none;stroke:rgb(245,98,142);stroke-width:1";
+    private const string LightGrayBoxStyle = "fill:none;stroke:lightgrey;stroke-width:1";
 
-    private static readonly string FillStyle = "fill:url(#gradientId);stroke:transparent";
+    private const string CPULineStyle = "fill:none;stroke:rgb(57,184,227);stroke-width:1";
+    private const string GPULineStyle = "fill:none;stroke:rgb(222,104,242);stroke-width:1";
+    private const string MemLineStyle = "fill:none;stroke:rgb(92,158,250);stroke-width:1";
+    private const string NetLineStyle = "fill:none;stroke:rgb(245,98,142);stroke-width:1";
 
-    private static readonly string CPUBrushStop1Style = "stop-color:rgb(57,184,227);stop-opacity:0.4";
-    private static readonly string CPUBrushStop2Style = "stop-color:rgb(0,86,110);stop-opacity:0.25";
+    private const string FillStyle = "fill:url(#gradientId);stroke:transparent";
 
-    private static readonly string GPUBrushStop1Style = "stop-color:rgb(222,104,242);stop-opacity:0.4";
-    private static readonly string GPUBrushStop2Style = "stop-color:rgb(125,0,138);stop-opacity:0.25";
+    private const string CPUBrushStop1Style = "stop-color:rgb(57,184,227);stop-opacity:0.4";
+    private const string CPUBrushStop2Style = "stop-color:rgb(0,86,110);stop-opacity:0.25";
 
-    private static readonly string MemBrushStop1Style = "stop-color:rgb(92,158,250);stop-opacity:0.4";
-    private static readonly string MemBrushStop2Style = "stop-color:rgb(0,34,92);stop-opacity:0.25";
+    private const string GPUBrushStop1Style = "stop-color:rgb(222,104,242);stop-opacity:0.4";
+    private const string GPUBrushStop2Style = "stop-color:rgb(125,0,138);stop-opacity:0.25";
 
-    private static readonly string NetBrushStop1Style = "stop-color:rgb(245,98,142);stop-opacity:0.4";
-    private static readonly string NetBrushStop2Style = "stop-color:rgb(130,0,47);stop-opacity:0.25";
+    private const string MemBrushStop1Style = "stop-color:rgb(92,158,250);stop-opacity:0.4";
+    private const string MemBrushStop2Style = "stop-color:rgb(0,34,92);stop-opacity:0.25";
+
+    private const string NetBrushStop1Style = "stop-color:rgb(245,98,142);stop-opacity:0.4";
+    private const string NetBrushStop2Style = "stop-color:rgb(130,0,47);stop-opacity:0.25";
+
+    private const string SvgElement = "svg";
+    private const string RectElement = "rect";
+    private const string PolylineElement = "polyline";
+    private const string DefsElement = "defs";
+    private const string LinearGradientElement = "linearGradient";
+    private const string StopElement = "stop";
+
+    private const string HeightAttr = "height";
+    private const string WidthAttr = "width";
+    private const string StyleAttr = "style";
+    private const string PointsAttr = "points";
+    private const string OffsetAttr = "offset";
+    private const string X1Attr = "x1";
+    private const string X2Attr = "x2";
+    private const string Y1Attr = "y1";
+    private const string Y2Attr = "y2";
+    private const string IdAttr = "id";
 
     private const int MaxChartValues = 30;
 
@@ -60,9 +82,6 @@ internal class ChartHelper
             0, 30, 20, 40, 30, 50, 40, 60, 50, 70,
         }; */
 
-        var height = 102;
-        var width = 264;
-
         var chartDoc = new XDocument();
 
         lock (_lock)
@@ -72,25 +91,25 @@ internal class ChartHelper
             // * a transparent line, outlining the gradient under the graph
             // * a grey box, outlining the entire image
             // The SVG also contains a definition for the fill gradient.
-            var svgElement = CreateBlankSvg(height, width);
+            var svgElement = CreateBlankSvg(ChartHeight, ChartWidth);
 
             // Create the line that will show the points on the graph.
-            var lineElement = new XElement("polyline");
+            var lineElement = new XElement(PolylineElement);
             var points = TransformPointsToLine(chartValues, out var startX, out var finalX);
-            lineElement.SetAttributeValue("points", points.ToString());
-            lineElement.SetAttributeValue("style", GetLineStyle(type));
+            lineElement.SetAttributeValue(PointsAttr, points.ToString());
+            lineElement.SetAttributeValue(StyleAttr, GetLineStyle(type));
 
             // Create the line that will contain the gradient fill.
             TransformPointsToLoop(points, startX, finalX);
-            var fillElement = new XElement("polyline");
-            fillElement.SetAttributeValue("points", points.ToString());
-            fillElement.SetAttributeValue("style", FillStyle);
+            var fillElement = new XElement(PolylineElement);
+            fillElement.SetAttributeValue(PointsAttr, points.ToString());
+            fillElement.SetAttributeValue(StyleAttr, FillStyle);
 
             // Add the gradient definition and the three shapes to the svg.
             svgElement.Add(CreateGradientDefinition(type));
             svgElement.Add(fillElement);
             svgElement.Add(lineElement);
-            svgElement.Add(CreateBorderBox(height, width));
+            svgElement.Add(CreateBorderBox(ChartHeight, ChartWidth));
 
             chartDoc.Add(svgElement);
         }
@@ -100,23 +119,23 @@ internal class ChartHelper
 
     private static XElement CreateBlankSvg(int height, int width)
     {
-        var svgElement = new XElement("svg");
-        svgElement.SetAttributeValue("height", height);
-        svgElement.SetAttributeValue("width", width);
+        var svgElement = new XElement(SvgElement);
+        svgElement.SetAttributeValue(HeightAttr, height);
+        svgElement.SetAttributeValue(WidthAttr, width);
         return svgElement;
     }
 
     private static XElement CreateGradientDefinition(ChartType type)
     {
-        var defsElement = new XElement("defs");
-        var gradientElement = new XElement("linearGradient");
+        var defsElement = new XElement(DefsElement);
+        var gradientElement = new XElement(LinearGradientElement);
 
         // Vertical gradients are created when x1 and x2 are equal and y1 and y2 differ.
-        gradientElement.SetAttributeValue("x1", "0%");
-        gradientElement.SetAttributeValue("x2", "0%");
-        gradientElement.SetAttributeValue("y1", "0%");
-        gradientElement.SetAttributeValue("y2", "100%");
-        gradientElement.SetAttributeValue("id", "gradientId");
+        gradientElement.SetAttributeValue(X1Attr, "0%");
+        gradientElement.SetAttributeValue(X2Attr, "0%");
+        gradientElement.SetAttributeValue(Y1Attr, "0%");
+        gradientElement.SetAttributeValue(Y2Attr, "100%");
+        gradientElement.SetAttributeValue(IdAttr, "gradientId");
 
         string stop1Style;
         string stop2Style;
@@ -141,13 +160,13 @@ internal class ChartHelper
                 break;
         }
 
-        var stop1 = new XElement("stop");
-        stop1.SetAttributeValue("offset", "0%");
-        stop1.SetAttributeValue("style", stop1Style);
+        var stop1 = new XElement(StopElement);
+        stop1.SetAttributeValue(OffsetAttr, "0%");
+        stop1.SetAttributeValue(StyleAttr, stop1Style);
 
-        var stop2 = new XElement("stop");
-        stop2.SetAttributeValue("offset", "95%");
-        stop2.SetAttributeValue("style", stop2Style);
+        var stop2 = new XElement(StopElement);
+        stop2.SetAttributeValue(OffsetAttr, "95%");
+        stop2.SetAttributeValue(StyleAttr, stop2Style);
 
         gradientElement.Add(stop1);
         gradientElement.Add(stop2);
@@ -158,10 +177,10 @@ internal class ChartHelper
 
     private static XElement CreateBorderBox(int height, int width)
     {
-        var boxElement = new XElement("rect");
-        boxElement.SetAttributeValue("height", height);
-        boxElement.SetAttributeValue("width", width);
-        boxElement.SetAttributeValue("style", LightGrayBoxStyle);
+        var boxElement = new XElement(RectElement);
+        boxElement.SetAttributeValue(HeightAttr, height);
+        boxElement.SetAttributeValue(WidthAttr, width);
+        boxElement.SetAttributeValue(StyleAttr, LightGrayBoxStyle);
         return boxElement;
     }
 
@@ -183,13 +202,12 @@ internal class ChartHelper
     {
         var points = new StringBuilder();
 
-        var pxBtwnPoints = 9;
-
         // The X value where the graph starts must be adjusted so that the graph is right-aligned.
         // The max available width of the widget is 268. Since there is a 1 px border around the chart, the width of the chart's line must be <=266.
         // To create a chart of exactly the right size, we'll have 30 points with 9 pixels in between:
         // index 0            1                      2 - 262                          263
         // 1 px left border + 1 px for first point + 29 segments * 9 px per segment + 1 px right border = 264 pixels total in width.
+        var pxBtwnPoints = 9;
 
         // When the chart doesn't have all points yet, move the chart over to the right by increasing the starting X coordinate.
         // For a chart with only 1 point, the svg will not render a polyline.
@@ -199,7 +217,8 @@ internal class ChartHelper
         finalX = startX;
         foreach (var origY in chartValues)
         {
-            points.Append(finalX + "," + (101 - origY) + " ");
+            var finalY = ChartHeight - 1 - origY;
+            points.Append(finalX + "," + finalY + " ");
             finalX += pxBtwnPoints;
         }
 
@@ -217,10 +236,10 @@ internal class ChartHelper
     {
         // Close the loop.
         // Add a point at the most recent X value that corresponds with y = 0
-        points.Append(" " + finalX + ",101 ");
+        points.Append(" " + finalX + "," + (ChartHeight - 1));
 
         // Add a point at the start of the chart that corresponds with y = 0
-        points.Append(startX + ",101");
+        points.Append(" " + startX + "," + (ChartHeight - 1));
     }
 
     public static void AddNextChartValue(float value, List<float> chartValues)
