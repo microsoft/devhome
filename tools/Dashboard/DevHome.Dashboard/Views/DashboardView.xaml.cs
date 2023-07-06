@@ -263,11 +263,6 @@ public partial class DashboardView : ToolPage
     [RelayCommand]
     public async Task AddWidgetClickAsync()
     {
-        await AddWidgetAsync();
-    }
-
-    private async Task AddWidgetAsync()
-    {
         // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
         {
