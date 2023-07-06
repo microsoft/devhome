@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
@@ -259,7 +260,13 @@ public partial class DashboardView : ToolPage
         await WidgetHelpers.SetPositionCustomStateAsync(widget, finalPlace);
     }
 
-    private async void AddWidget_Click(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    public async Task AddWidgetClickAsync()
+    {
+        await AddWidgetAsync();
+    }
+
+    private async Task AddWidgetAsync()
     {
         // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
