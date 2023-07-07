@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Globalization;
 using System.Text;
 using System.Xml.Linq;
 
@@ -217,7 +218,7 @@ internal class ChartHelper
         foreach (var origY in chartValues)
         {
             var finalY = ChartHeight - 1 - origY;
-            points.Append(finalX + "," + finalY + " ");
+            points.Append(CultureInfo.InvariantCulture, $"{finalX},{finalY} ");
             finalX += pxBtwnPoints;
         }
 
@@ -235,10 +236,10 @@ internal class ChartHelper
     {
         // Close the loop.
         // Add a point at the most recent X value that corresponds with y = 0
-        points.Append(" " + finalX + "," + (ChartHeight - 1));
+        points.Append(CultureInfo.InvariantCulture, $" {finalX},{ChartHeight - 1}");
 
         // Add a point at the start of the chart that corresponds with y = 0
-        points.Append(" " + startX + "," + (ChartHeight - 1));
+        points.Append(CultureInfo.InvariantCulture, $" {startX},{ChartHeight - 1}");
     }
 
     public static void AddNextChartValue(float value, List<float> chartValues)
