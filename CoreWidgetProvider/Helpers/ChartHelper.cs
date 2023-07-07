@@ -71,26 +71,49 @@ internal class ChartHelper
         return "data:image/svg+xml;base64," + b64String;
     }
 
+    /// <summary>
+    /// Creates an SVG image for the chart.
+    /// </summary>
+    /// <param name="chartValues">The values to plot on the chart</param>
+    /// <param name="type">The type of chart. Each chart type uses different colors.</param>
+    /// <remarks>
+    /// The SVG is made of three shapes: <br/>
+    /// 1. A colored line, plotting the points on the graph <br/>
+    /// 2. A transparent line, outlining the gradient under the graph <br/>
+    /// 3. A grey box, outlining the entire image <br/>
+    /// The SVG also contains a definition for the fill gradient.
+    /// </remarks>
+    /// <returns>A string representing the chart as an SVG image.</returns>
     public static string CreateChart(List<float> chartValues, ChartType type)
     {
-        // Values to use for testing when a static image is desired.
+        // The SVG created by this method will look similar to this:
+        /*
+        <svg height="102" width="264">
+            <defs>
+                <linearGradient x1="0%" x2="0%" y1="0%" y2="100%" id="gradientId">
+                    <stop offset="0%" style="stop-color:rgb(222,104,242);stop-opacity:0.4" />
+                    <stop offset="95%" style="stop-color:rgb(125,0,138);stop-opacity:0.25" />
+                </linearGradient>
+            </defs>
+            <polyline points="1,91 10,71 253,51 262,31 262,101 1,101" style="fill:url(#gradientId);stroke:transparent" />
+            <polyline points="1,91 10,71 253,51 262,31" style="fill:none;stroke:rgb(222,104,242);stroke-width:1" />
+            <rect height="102" width="264" style="fill:none;stroke:lightgrey;stroke-width:1" />
+        </svg>
+        */
+
+        // The following code can be uncommented for testing when a static image is desired.
         /* chartValues.Clear();
         chartValues = new List<float>
         {
             10, 30, 20, 40, 30, 50, 40, 60, 50, 100,
             10, 30, 20, 40, 30, 50, 40, 60, 50, 70,
             0, 30, 20, 40, 30, 50, 40, 60, 50, 70,
-        }; */
+        };*/
 
         var chartDoc = new XDocument();
 
         lock (_lock)
         {
-            // The SVG is made of three shapes:
-            // 1. A colored line, plotting the points on the graph
-            // 2. A transparent line, outlining the gradient under the graph
-            // 3. A grey box, outlining the entire image
-            // The SVG also contains a definition for the fill gradient.
             var svgElement = CreateBlankSvg(ChartHeight, ChartWidth);
 
             // Create the line that will show the points on the graph.
