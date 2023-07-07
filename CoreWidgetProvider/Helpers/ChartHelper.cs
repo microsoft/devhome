@@ -3,7 +3,6 @@
 
 using System.Text;
 using System.Xml.Linq;
-using CoreWidgetProvider.Widgets;
 
 namespace CoreWidgetProvider.Helpers;
 
