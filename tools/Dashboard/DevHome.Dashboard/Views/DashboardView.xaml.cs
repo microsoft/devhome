@@ -174,7 +174,7 @@ public partial class DashboardView : ToolPage
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
 
         // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
-        await _widgetIconCache.CacheAllWidgetIcons(_widgetCatalog, _dispatcher);
+        await WidgetIconCache.CacheAllWidgetIcons(_widgetCatalog, _dispatcher);
 
         await ConfigureWidgetRenderer(_renderer);
 
@@ -269,7 +269,7 @@ public partial class DashboardView : ToolPage
             if (_widgetServiceHelper.EnsureWebExperiencePack())
             {
                 _widgetHostInitialized = InitializeWidgetHost();
-                await _widgetIconCache.CacheAllWidgetIcons(_widgetCatalog, _dispatcher);
+                await WidgetIconCache.CacheAllWidgetIcons(_widgetCatalog, _dispatcher);
                 await ConfigureWidgetRenderer(_renderer);
             }
             else
@@ -366,7 +366,7 @@ public partial class DashboardView : ToolPage
     private static async void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args)
     {
         Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetDefinitionAdded {args.Definition.Id}");
-        await _widgetIconCache.AddIconsToCache(args.Definition, _dispatcher);
+        await WidgetIconCache.AddIconsToCache(args.Definition, _dispatcher);
     }
 
     private static async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
@@ -437,7 +437,7 @@ public partial class DashboardView : ToolPage
             }
         });
 
-        _widgetIconCache.RemoveIconsFromCache(definitionId);
+        WidgetIconCache.RemoveIconsFromCache(definitionId);
     }
 
     // Listen for widgets being added or removed, so we can add or remove listeners on the WidgetViewModels' properties.
