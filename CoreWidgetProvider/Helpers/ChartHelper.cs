@@ -73,8 +73,8 @@ internal class ChartHelper
 
     public static string CreateChart(List<float> chartValues, ChartType type)
     {
-        /* // Values to use for testing when a static image is desired.
-        chartValues.Clear();
+        // Values to use for testing when a static image is desired.
+        /* chartValues.Clear();
         chartValues = new List<float>
         {
             10, 30, 20, 40, 30, 50, 40, 60, 50, 100,
@@ -87,9 +87,9 @@ internal class ChartHelper
         lock (_lock)
         {
             // The SVG is made of three shapes:
-            // * a colored line, plotting the points on the graph
-            // * a transparent line, outlining the gradient under the graph
-            // * a grey box, outlining the entire image
+            // 1. A colored line, plotting the points on the graph
+            // 2. A transparent line, outlining the gradient under the graph
+            // 3. A grey box, outlining the entire image
             // The SVG also contains a definition for the fill gradient.
             var svgElement = CreateBlankSvg(ChartHeight, ChartWidth);
 
@@ -207,26 +207,26 @@ internal class ChartHelper
         // To create a chart of exactly the right size, we'll have 30 points with 9 pixels in between:
         // index 0            1                      2 - 262                          263
         // 1 px left border + 1 px for first point + 29 segments * 9 px per segment + 1 px right border = 264 pixels total in width.
-        var pxBtwnPoints = 9;
+        const int pxBetweenPoints = 9;
 
         // When the chart doesn't have all points yet, move the chart over to the right by increasing the starting X coordinate.
         // For a chart with only 1 point, the svg will not render a polyline.
         // For a chart with 2 points, starting X coordinate ==  1 + (30 -  2) * 9 == 1 + 28 * 9 == 1 + 252 == 253
         // For a chart with 30 points, starting X coordinate == 1 + (30 - 30) * 9 == 1 +  0 * 9 == 1 +   0 ==   1
-        startX = 1 + ((MaxChartValues - chartValues.Count) * pxBtwnPoints);
+        startX = 1 + ((MaxChartValues - chartValues.Count) * pxBetweenPoints);
         finalX = startX;
         foreach (var origY in chartValues)
         {
             var finalY = ChartHeight - 1 - origY;
             points.Append(CultureInfo.InvariantCulture, $"{finalX},{finalY} ");
-            finalX += pxBtwnPoints;
+            finalX += pxBetweenPoints;
         }
 
         // Remove the trailing space.
         if (points.Length > 0)
         {
             points.Remove(points.Length - 1, 1);
-            finalX -= pxBtwnPoints;
+            finalX -= pxBetweenPoints;
         }
 
         return points;
