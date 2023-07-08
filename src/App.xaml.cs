@@ -9,7 +9,6 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
-using DevHome.Logging;
 using DevHome.Services;
 using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
@@ -107,6 +106,22 @@ public partial class App : Application, IApp
 
         UnhandledException += App_UnhandledException;
         AppInstance.GetCurrent().Activated += OnActivated;
+    }
+
+    public void ShowMainWindow()
+    {
+        _dispatcherQueue.TryEnqueue(() =>
+        {
+            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(MainWindow);
+            if (Windows.Win32.PInvoke.IsIconic(new Windows.Win32.Foundation.HWND(hWnd)))
+            {
+                MainWindow.Restore();
+            }
+            else
+            {
+                MainWindow.SetForegroundWindow();
+            }
+        });
     }
 
     private async void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
