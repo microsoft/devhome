@@ -154,4 +154,8 @@
     <value>Get in Store app</value>
     <comment>Button text to go to store listing</comment>
   </data>
+  <data name="DashboardBanner.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Dashboard Banner</value>
+    <comment>Name of the dashboard banner for automation</comment>
+  </data>
 </root>
