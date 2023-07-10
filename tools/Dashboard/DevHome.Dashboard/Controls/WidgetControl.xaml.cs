@@ -7,6 +7,7 @@ using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Dashboard.Views;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Widgets;
@@ -68,6 +69,7 @@ public sealed partial class WidgetControl : UserControl
             Icon = icon,
         };
         menuItemClose.Click += OnRemoveWidgetClick;
+        menuItemClose.SetValue(AutomationProperties.AutomationIdProperty, "RemoveWidgetButton");
         widgetMenuFlyout.Items.Add(menuItemClose);
     }
 

@@ -84,6 +84,7 @@
                         <Style TargetType="GridViewItem">
                             <!-- Default margin is "0,0,4,4". Override since margins are set on the WidgetBoard instead. -->
                             <Setter Property="Margin" Value="0,0,0,0"/>
+                            <Setter Property="AutomationProperties.AutomationId" Value="WidgetItem"/>
                         </Style>
                     </GridView.ItemContainerStyle>
                 </GridView>
