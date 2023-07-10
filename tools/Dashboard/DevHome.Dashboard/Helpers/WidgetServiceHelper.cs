@@ -9,7 +9,7 @@ namespace DevHome.Dashboard.Helpers;
 internal class WidgetServiceHelper
 {
     private readonly Version minSupportedVersion400 = new (423, 3800);
-    private readonly Version minSupportedVersion500 = new (523, 3300);
+    private readonly Version minSupportedVersion500 = new (523, 17300);
     private readonly Version version500 = new (500, 0);
 
     private bool _validatedWebExpPack;
