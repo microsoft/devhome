@@ -532,15 +532,34 @@ public partial class DashboardView : ToolPage
     private void WidgetControl_DragOver(object sender, DragEventArgs e)
     {
         // A widget may be dropped on top of another widget, in which case the dropped widget will take the target widget's place.
-        e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
+        if (e.Data != null)
+        {
+            e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
+        }
+        else
+        {
+            // If the dragged item doesn't have a DataPackage, don't allow it to be dropped.
+            e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.None;
+        }
     }
 
     private async void WidgetControl_Drop(object sender, DragEventArgs e)
     {
         Log.Logger()?.ReportDebug("DashboardView", $"Drop starting");
 
+        // If the the thing we're dragging isn't a widget, it might not have a DataPackage and we shouldn't do anything with it.
+        if (e.Data == null)
+        {
+            return;
+        }
+
         // When drop happens, get the original index of the widget that was dragged and dropped.
-        e.Data.Properties.TryGetValue(DraggedIndex, out var draggedIndexObject);
+        var result = e.Data.Properties.TryGetValue(DraggedIndex, out var draggedIndexObject);
+        if (!result || draggedIndexObject == null)
+        {
+            return;
+        }
+
         var draggedIndex = (int)draggedIndexObject;
 
         // Get the index of the widget that was dropped onto -- the dragged widget will take the place of this one,
@@ -555,7 +574,12 @@ public partial class DashboardView : ToolPage
             return;
         }
 
-        e.Data.Properties.TryGetValue(DraggedWidget, out var draggedObject);
+        result = e.Data.Properties.TryGetValue(DraggedWidget, out var draggedObject);
+        if (!result || draggedObject == null)
+        {
+            return;
+        }
+
         var draggedWidgetViewModel = draggedObject as WidgetViewModel;
 
         // Remove the moved widget then insert it back in the collection at the new location. If the dropped widget was
