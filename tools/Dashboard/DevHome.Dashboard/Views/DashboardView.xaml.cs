@@ -12,6 +12,7 @@ using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
 using DevHome.Common.Renderers;
+using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
@@ -40,6 +41,9 @@ public partial class DashboardView : ToolPage
     private readonly WidgetIconCache _widgetIconCache;
 
     private static bool _widgetHostInitialized;
+
+    private const string DraggedWidget = "DraggedWidget";
+    private const string DraggedIndex = "DraggedIndex";
 
     public DashboardView()
     {
@@ -113,7 +117,7 @@ public partial class DashboardView : ToolPage
 
     private async Task<AdaptiveCardRenderer> GetConfigurationRendererAsync()
     {
-        // When we render a card in an add or edit dialog, we need to have a different Hostonfig,
+        // When we render a card in an add or edit dialog, we need to have a different HostConfig,
         // so create a new renderer for those situations. We can't just temporarily edit the existing
         // renderer, because a pinned widget might get re-rendered the wrong way while the dialog is open.
         var configRenderer = new AdaptiveCardRenderer();
@@ -214,7 +218,7 @@ public partial class DashboardView : ToolPage
                             {
                                 if (!restoredWidgetsWithPosition.TryAdd(position, widget))
                                 {
-                                    // If there was an error and a widget with this position is alredy there,
+                                    // If there was an error and a widget with this position is already there,
                                     // treat this widget as unordered and put it into the unordered map.
                                     restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
                                 }
@@ -327,9 +331,9 @@ public partial class DashboardView : ToolPage
 
     private async Task InsertWidgetInPinnedWidgetsAsync(Widget widget, WidgetSize size, int index)
     {
-        var widgetDefintionId = widget.DefinitionId;
+        var widgetDefinitionId = widget.DefinitionId;
         var widgetId = widget.Id;
-        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetDefintionId);
+        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetDefinitionId);
 
         if (widgetDefinition != null)
         {
@@ -340,7 +344,7 @@ public partial class DashboardView : ToolPage
         else
         {
             // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
-            Log.Logger()?.ReportInfo("DashboardView", $"No widget defintion '{widgetDefintionId}', delete widget {widgetId} with that definition");
+            Log.Logger()?.ReportInfo("DashboardView", $"No widget definition '{widgetDefinitionId}', delete widget {widgetId} with that definition");
             try
             {
                 await widget.SetCustomStateAsync(string.Empty);
@@ -512,6 +516,67 @@ public partial class DashboardView : ToolPage
         }
 
         widgetViewModel.IsInEditMode = false;
+    }
+
+    private void WidgetGridView_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+    {
+        Log.Logger()?.ReportDebug("DashboardView", $"Drag starting");
+
+        // When drag starts, save the WidgetViewModel and the original index of the widget being dragged.
+        var draggedObject = e.Items.FirstOrDefault();
+        var draggedWidgetViewModel = draggedObject as WidgetViewModel;
+        e.Data.Properties.Add(DraggedWidget, draggedWidgetViewModel);
+        e.Data.Properties.Add(DraggedIndex, PinnedWidgets.IndexOf(draggedWidgetViewModel));
+    }
+
+    private void WidgetControl_DragOver(object sender, DragEventArgs e)
+    {
+        // A widget may be dropped on top of another widget, in which case the dropped widget will take the target widget's place.
+        e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
+    }
+
+    private async void WidgetControl_Drop(object sender, DragEventArgs e)
+    {
+        Log.Logger()?.ReportDebug("DashboardView", $"Drop starting");
+
+        // When drop happens, get the original index of the widget that was dragged and dropped.
+        e.Data.Properties.TryGetValue(DraggedIndex, out var draggedIndexObject);
+        var draggedIndex = (int)draggedIndexObject;
+
+        // Get the index of the widget that was dropped onto -- the dragged widget will take the place of this one,
+        // and this widget and all subsequent widgets will move over to the right.
+        var droppedControl = sender as WidgetControl;
+        var droppedIndex = WidgetGridView.Items.IndexOf(droppedControl.WidgetSource);
+        Log.Logger()?.ReportInfo("DashboardView", $"Widget dragged from index {draggedIndex} to {droppedIndex}");
+
+        // If the widget is dropped at the position it's already at, there's nothing to do.
+        if (draggedIndex == droppedIndex)
+        {
+            return;
+        }
+
+        e.Data.Properties.TryGetValue(DraggedWidget, out var draggedObject);
+        var draggedWidgetViewModel = draggedObject as WidgetViewModel;
+
+        // Remove the moved widget then insert it back in the collection at the new location. If the dropped widget was
+        // moved from a lower index to a higher one, removing the moved widget before inserting it will ensure that any
+        // widgets between the starting and ending indices move up to replace the removed widget. If the widget was
+        // moved from a higher index to a lower one, then the order of removal and insertion doesn't matter.
+        PinnedWidgets.RemoveAt(draggedIndex);
+        var widgetPair = new KeyValuePair<int, Widget>(droppedIndex, draggedWidgetViewModel.Widget);
+        await PlaceWidget(widgetPair, droppedIndex);
+
+        // Update the CustomState Position of any widgets that were moved.
+        // The widget that has been dropped has already been updated, so don't do it again here.
+        var startIndex = draggedIndex < droppedIndex ? draggedIndex : droppedIndex + 1;
+        var endIndex = draggedIndex < droppedIndex ? droppedIndex : draggedIndex + 1;
+        for (var i = startIndex; i < endIndex; i++)
+        {
+            var widgetToUpdate = PinnedWidgets.ElementAt(i);
+            await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
+        }
+
+        Log.Logger()?.ReportDebug("DashboardView", $"Drop ended");
     }
 
 #if DEBUG
