@@ -19,6 +19,7 @@
     mc:Ignorable="d">
     <Page.Resources>
         <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
     </Page.Resources>
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
@@ -112,10 +113,10 @@
                                 MinWidth="120" Margin="4,0"
                                 Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}">
                                 <ToolTipService.ToolTip>
-                                    <ToolTip Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" Visibility="{x:Bind ViewModel.Orchestrator.IsTeachingTipVisible, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
+                                    <ToolTip Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" Placement="Top" IsOpen="{x:Bind ViewModel.Orchestrator.IsToolTipOpen, Mode=TwoWay}" Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowTooltip, Mode=OneWay}"/>
                                 </ToolTipService.ToolTip>
                             </Button>
-                            <TeachingTip x:Name="MyTeachingTip" Visibility="{x:Bind ViewModel.Orchestrator.IsTeachingTipVisible}" IsOpen="{x:Bind ViewModel.Orchestrator.IsTeachingTipOpen, Mode=OneWay}" Target="{x:Bind MyButton}" PreferredPlacement="TopLeft" Title="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+                            <TeachingTip x:Name="MyTeachingTip" Visibility="{x:Bind ViewModel.Orchestrator.IsTeachingTipVisible}" IsOpen="{x:Bind ViewModel.Orchestrator.IsTeachingTipOpen, Mode=OneWay}" Target="{x:Bind MyButton}" PreferredPlacement="TopLeft" Subtitle="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
                             </TeachingTip>
                         </Grid>
                     </setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>

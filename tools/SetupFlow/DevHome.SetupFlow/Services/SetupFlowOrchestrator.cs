@@ -13,6 +13,7 @@ using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 
@@ -177,6 +178,12 @@ public partial class SetupFlowOrchestrator : ObservableObject
     [ObservableProperty]
     private bool _isTeachingTipVisible;
 
+    [ObservableProperty]
+    private Visibility _shouldShowTooltip;
+
+    [ObservableProperty]
+    private bool _isToolTipOpen;
+
     public bool HasLoaded
     {
         get; set;
@@ -212,11 +219,18 @@ public partial class SetupFlowOrchestrator : ObservableObject
         {
             IsTeachingTipOpen = true;
             IsTeachingTipVisible = true;
+            ShouldShowTooltip = Visibility.Collapsed;
+            IsToolTipOpen = false;
         }
         else
         {
             IsTeachingTipOpen = false;
             IsTeachingTipVisible = false;
+            if (!string.IsNullOrEmpty(CurrentPageViewModel.NextPageButtonToolTipText))
+            {
+                ShouldShowTooltip = Visibility.Visible;
+                IsToolTipOpen = true;
+            }
         }
 
         // Do post-navigation tasks only when moving forwards, not when going back to a previous page.
