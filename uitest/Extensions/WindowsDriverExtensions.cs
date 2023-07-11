@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using OpenQA.Selenium;
-using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Windows;
 using OpenQA.Selenium.Support.UI;
 
@@ -63,6 +62,13 @@ public static class WindowsDriverExtensions
         return wait;
     }
 
+    /// <summary>
+    /// Wait until an element is invisible or timeout
+    /// </summary>
+    /// <param name="driver">Driver instance</param>
+    /// <param name="by">Element locator</param>
+    /// <param name="timeoutInMS">Wait timeout in milliseconds</param>
+    /// <param name="pollingIntervalInMS">Action interval in milliseconds</param>
     public static void WaitUntilInvisible(
         this WindowsDriver<WindowsElement> driver,
         By by,
@@ -84,6 +90,13 @@ public static class WindowsDriverExtensions
             });
     }
 
+    /// <summary>
+    /// Wait until an element is visible or timeout
+    /// </summary>
+    /// <param name="driver">Driver instance</param>
+    /// <param name="by">Element locator</param>
+    /// <param name="timeoutInMS">Wait timeout in milliseconds</param>
+    /// <param name="pollingIntervalInMS">Action interval in milliseconds</param>
     public static WindowsElement WaitUntilVisible(
         this WindowsDriver<WindowsElement> driver,
         By by,
@@ -106,6 +119,13 @@ public static class WindowsDriverExtensions
             });
     }
 
+    /// <summary>
+    /// Retry an action until returning true, an object not null or timeout
+    /// </summary>
+    /// <param name="driver">Driver instance</param>
+    /// <param name="retryAction">Action to retry</param>
+    /// <param name="timeoutInMS">Wait timeout in milliseconds</param>
+    /// <param name="pollingIntervalInMS">Action interval in milliseconds</param>
     public static T RetryUntil<T>(
         this WindowsDriver<WindowsElement> driver,
         Func<WindowsDriver<WindowsElement>, T> retryAction,
@@ -115,14 +135,5 @@ public static class WindowsDriverExtensions
         return driver
             .WaitAndIgnoreExceptions(timeoutInMS, pollingIntervalInMS)
             .Until(retryAction);
-    }
-
-    public static WindowsElement FindElementByAccessibilityIdWithRetry(
-        this WindowsDriver<WindowsElement> driver,
-        string accessibilityId,
-        int timeoutInMS = DefaultTimeoutInMS,
-        int pollingIntervalInMS = DefaultPollingIntervalInMS)
-    {
-        return driver.RetryUntil(_ => driver.FindElementByAccessibilityId(accessibilityId));
     }
 }

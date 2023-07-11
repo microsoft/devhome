@@ -4,9 +4,9 @@
       <!--
         Run settings parameters:
         * AppSettingsMode:
-            - 'local': Run unit tests using appsettings.json
-            - 'canary': Run unit test using appsettings.json and appsettings.canary.json
-            - 'prod': Run unit test using appsettings.json and appsettings.prod.json
+            - 'local': Run ui tests using appsettings.json
+            - 'canary': Run ui test using appsettings.json and appsettings.canary.json
+            - 'prod': Run ui test using appsettings.json and appsettings.prod.json
         -->
       <Parameter name="AppSettingsMode" value="local" />
   </TestRunParameters>

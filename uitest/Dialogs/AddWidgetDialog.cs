@@ -7,6 +7,10 @@ using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Windows;
 
 namespace DevHome.UITest.Dialogs;
+
+/// <summary>
+/// Dialog model class for the add widget dialog
+/// </summary>
 public class AddWidgetDialog : PageDialog<DashboardPage>
 {
     private WindowsElement SSHNavigationItem => Driver.FindElementByAccessibilityId($"{Configuration.Widget.IdPrefix}!App!!{Configuration.Widget.Provider}!!SSH_Wallet");
@@ -53,6 +57,11 @@ public class AddWidgetDialog : PageDialog<DashboardPage>
         });
     }
 
+    /// <summary>
+    /// Add a widget to the dashboard without any configuration
+    /// </summary>
+    /// <param name="element">Widget navigation item</param>
+    /// <returns>Widget control added to the dashboard</returns>
     private DashboardPage.WidgetControl QuickAddWidget(WindowsElement element)
     {
         return WaitForWidgetToBeAdded(() =>
@@ -62,6 +71,11 @@ public class AddWidgetDialog : PageDialog<DashboardPage>
         });
     }
 
+    /// <summary>
+    /// Wait for the widget to be added on the dashboard
+    /// </summary>
+    /// <param name="addWidgetAction">Action for adding the widget</param>
+    /// <returns>Widget control added to the dashboard</returns>
     private DashboardPage.WidgetControl WaitForWidgetToBeAdded(Action addWidgetAction)
     {
         var initialWidgetCount = Parent.DisplayedWidgets.Count;

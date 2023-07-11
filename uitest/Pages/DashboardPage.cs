@@ -30,8 +30,15 @@ public class DashboardPage : ApplicationPage
         return new AddWidgetDialog(Driver, this);
     }
 
+    /// <summary>
+    /// Remove all dashboard widgets one by one
+    /// </summary>
     public void RemoveAllWidgets()
     {
+        // Remove widgets in reverse order. It is slower to remove widgets
+        // top-down because the remove animation could cause the automated
+        // cursor to miss the 'more options' button, often requiring two
+        // attempts to remove a single widget
         foreach (var widget in DisplayedWidgets.Reverse())
         {
             widget.Remove();
@@ -40,6 +47,7 @@ public class DashboardPage : ApplicationPage
 
     public void WaitForWidgetsToBeLoaded()
     {
+        // Wait for the progress ring to disappear
         Driver.WaitUntilInvisible(ByWindowsAutomation.AccessibilityId("LoadingWidgetsProgressRing"));
     }
 
@@ -53,6 +61,11 @@ public class DashboardPage : ApplicationPage
 
         private AppiumWebElement MoreOptionsButton => _element.FindElementByAccessibilityId("WidgetMoreOptionsButton");
 
+        /// <summary>
+        /// Gets the remove button on the context menu.
+        /// </summary>
+        /// <remarks>The remove button on the 'more options' context menu
+        /// should be located from the application window</remarks>
         private WindowsElement RemoveButton => _driver.FindElementByAccessibilityId("RemoveWidgetButton");
 
         public string TitleText => _element.FindElementByAccessibilityId("WidgetTitle").Text;
@@ -68,7 +81,7 @@ public class DashboardPage : ApplicationPage
             // Click on more options then on the remove button.
             // Note: Because widgets move on the dashboard when added/removed,
             // we want to attempt more than one time to remove a widget in case
-            // the click was performed during an animation and missing the button.
+            // the click was performed during an animation and missed the button.
             _driver
                 .RetryUntil(_ =>
                 {

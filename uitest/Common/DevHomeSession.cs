@@ -12,7 +12,7 @@ public sealed class DevHomeSession
     private readonly string _driverUrl;
     private readonly string _appId;
 
-    public WindowsDriver<WindowsElement> Session { get; private set; }
+    public WindowsDriver<WindowsElement> Driver { get; private set; }
 
     public DevHomeSession(string driverUrl, string appId)
     {
@@ -20,32 +20,36 @@ public sealed class DevHomeSession
         _appId = appId;
     }
 
+    /// <summary>
+    /// Create and start a new session to bring up an instance of the Dev Home
+    /// application
+    /// </summary>
     public void Start()
     {
-        if (Session == null)
+        if (Driver == null)
         {
-            // Create a new session to bring up an instance of the Dev Home application
-            // Note: Multiple calculator windows (instances) share the same process Id
             var options = new AppiumOptions();
             options.AddAdditionalCapability("deviceName", "WindowsPC");
             options.AddAdditionalCapability("platformName", "Windows");
             options.AddAdditionalCapability("app", _appId);
 
-            Session = new WindowsDriver<WindowsElement>(new Uri(_driverUrl), options);
-            Assert.IsNotNull(Session);
+            Driver = new WindowsDriver<WindowsElement>(new Uri(_driverUrl), options);
+            Assert.IsNotNull(Driver);
 
             // Set implicit timeout to 5 seconds to make element search to retry every 500 ms for at most ten times
-            Session.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
+            Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
         }
     }
 
+    /// <summary>
+    /// Close the application and delete the session
+    /// </summary>
     public void Stop()
     {
-        // Close the application and delete the session
-        if (Session != null)
+        if (Driver != null)
         {
-            Session.Quit();
-            Session = null;
+            Driver.Quit();
+            Driver = null;
         }
     }
 }
