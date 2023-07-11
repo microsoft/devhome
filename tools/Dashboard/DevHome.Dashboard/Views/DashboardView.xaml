@@ -68,11 +68,16 @@
                     Margin="0,0,0,10" />
 
                 <!-- Widget grid -->
-                <GridView x:Name="MainGridView" ItemsSource="{x:Bind views:DashboardView.PinnedWidgets}"
-                          SelectionMode="None">
+                <GridView x:Name="WidgetGridView" ItemsSource="{x:Bind views:DashboardView.PinnedWidgets}"
+                          CanReorderItems="True"
+                          CanDragItems="True"
+                          DragItemsStarting="WidgetGridView_DragItemsStarting">
                     <GridView.ItemTemplate>
                         <DataTemplate x:DataType="vm:WidgetViewModel">
-                            <controls:WidgetControl WidgetSource="{x:Bind}" />
+                            <controls:WidgetControl WidgetSource="{x:Bind}" 
+                                                    AllowDrop="True" 
+                                                    DragOver="WidgetControl_DragOver"
+                                                    Drop="WidgetControl_Drop" />
                         </DataTemplate>
                     </GridView.ItemTemplate>
                     <GridView.ItemsPanel>
