@@ -158,4 +158,7 @@
     <value>Dashboard Banner</value>
     <comment>Name of the dashboard banner for automation</comment>
   </data>
+  <data name="CustomizeWidgetTitle.Text" xml:space="preserve">
+    <value>Customize widget</value>
+  </data>
 </root>
