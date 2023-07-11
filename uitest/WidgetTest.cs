@@ -19,7 +19,7 @@ public class WidgetTest : DevHomeTestBase
 
         // Act
         var initialWidgetCount = dashboard.DisplayedWidgets.Count;
-        dashboard.ClickAddWidget().AddNetworkUsageWidget();
+        dashboard.ClickAddWidgetButton().AddNetworkUsageWidget();
         var oneWidgetCount = dashboard.DisplayedWidgets.Count;
         dashboard.RemoveAllWidgets();
         var finalWidgetCount = dashboard.DisplayedWidgets.Count;
@@ -52,7 +52,7 @@ public class WidgetTest : DevHomeTestBase
         dashboard.RemoveAllWidgets();
 
         // Act
-        var widgets = widgetTitles.Select(w => widgetMap[w](dashboard.ClickAddWidget())).ToList();
+        var widgets = widgetTitles.Select(w => widgetMap[w](dashboard.ClickAddWidgetButton())).ToList();
 
         // Assert
         Assert.AreEqual(widgetTitles.Length, dashboard.DisplayedWidgets.Count);

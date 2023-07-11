@@ -12,7 +12,7 @@ public abstract class PageDialog<T>
 {
     protected WindowsDriver<WindowsElement> Driver { get; set; }
 
-    protected AppConfiguration Configuration => DevHomeApplication.Configuration;
+    protected AppConfiguration Configuration => DevHomeApplication.Instance.Configuration;
 
     protected T Parent { get; }
 

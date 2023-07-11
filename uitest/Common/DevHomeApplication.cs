@@ -9,20 +9,32 @@ using OpenQA.Selenium.Appium.Windows;
 using OpenQA.Selenium.Support.Extensions;
 
 namespace DevHome.UITest.Common;
-public class DevHomeApplication
+public sealed class DevHomeApplication
 {
-    private readonly DevHomeSession _devHomeSession;
+    private static readonly Lazy<DevHomeApplication> _instance = new (() => new ());
+    private DevHomeSession _devHomeSession;
 
-    public static AppConfiguration Configuration { get; } = LoadConfiguration();
+    public static DevHomeApplication Instance => _instance.Value;
 
-    public Guid SessionId => _devHomeSession.Id;
+    public AppConfiguration Configuration { get; private set; }
 
-    public WindowsDriver<WindowsElement> Driver => _devHomeSession.Session;
+    private WindowsDriver<WindowsElement> Driver => _devHomeSession.Session;
 
     private WindowsElement DashboardNavigationItem => Driver.FindElementByAccessibilityId("DevHome.Dashboard");
 
-    public DevHomeApplication()
+    private DevHomeApplication()
     {
+    }
+
+    public void Initialize(string appSettingsMode)
+    {
+        Configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .AddJsonFile($"appsettings.{appSettingsMode}.json", optional: true)
+            .Build()
+            .Get<AppConfiguration>();
+
         _devHomeSession = new (Configuration.WindowsApplicationDriverUrl, $"{Configuration.PackageFamilyName}!App");
     }
 
@@ -40,22 +52,13 @@ public class DevHomeApplication
         Driver.Manage().Window.Maximize();
     }
 
-    public void TakeScreenshot(string saveFullPath)
-    {
-        Driver.TakeScreenshot().SaveAsFile(saveFullPath, ScreenshotImageFormat.Png);
-    }
-
     public void Stop()
     {
         _devHomeSession.Stop();
     }
 
-    private static AppConfiguration LoadConfiguration()
+    public void TakeScreenshot(string saveFullPath)
     {
-        return new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build()
-            .Get<AppConfiguration>();
+        Driver.TakeScreenshot().SaveAsFile(saveFullPath, ScreenshotImageFormat.Png);
     }
 }

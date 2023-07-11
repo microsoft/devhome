@@ -10,7 +10,7 @@ public class ApplicationPage
 {
     protected WindowsDriver<WindowsElement> Driver { get; set; }
 
-    protected AppConfiguration Configuration => DevHomeApplication.Configuration;
+    protected AppConfiguration Configuration => DevHomeApplication.Instance.Configuration;
 
     public ApplicationPage(WindowsDriver<WindowsElement> driver)
     {

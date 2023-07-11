@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace DevHome.UITest.Common;
 public class DevHomeTestBase
 {
-    protected DevHomeApplication Application { get; set; }
+    protected DevHomeApplication Application => DevHomeApplication.Instance;
 
     /// <summary>
     /// Gets or sets the test context
@@ -14,11 +14,12 @@ public class DevHomeTestBase
     /// <remarks>Property auto populated at runtime for each test method</remarks>
     public TestContext TestContext { get; set; }
 
-    public string TestDeploymentDir => TestContext.Properties[nameof(TestDeploymentDir)].ToString();
+    private string TestDeploymentDir => TestContext.Properties[nameof(TestDeploymentDir)].ToString();
+
+    private string TestRunDirectory => TestContext.Properties[nameof(TestRunDirectory)].ToString();
 
     public void InitializeTestMethod()
     {
-        Application = new ();
         Application.Start();
     }
 
@@ -39,7 +40,7 @@ public class DevHomeTestBase
 
     private void TakeScreenshotOfCurrentTest()
     {
-        var screenshotsPath = Path.Combine(TestDeploymentDir, "Screenshots", Application.SessionId.ToString());
+        var screenshotsPath = Path.Combine(TestRunDirectory, "Screenshots");
         Directory.CreateDirectory(screenshotsPath);
         var fullPath = Path.Combine(screenshotsPath, $"{TestContext.TestName}-{Guid.NewGuid()}.png");
         Application.TakeScreenshot(fullPath);

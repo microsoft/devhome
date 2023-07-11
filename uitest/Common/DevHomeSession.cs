@@ -12,8 +12,6 @@ public sealed class DevHomeSession
     private readonly string _driverUrl;
     private readonly string _appId;
 
-    public Guid Id { get; } = Guid.NewGuid();
-
     public WindowsDriver<WindowsElement> Session { get; private set; }
 
     public DevHomeSession(string driverUrl, string appId)

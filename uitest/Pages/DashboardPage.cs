@@ -24,7 +24,7 @@ public class DashboardPage : ApplicationPage
     {
     }
 
-    public AddWidgetDialog ClickAddWidget()
+    public AddWidgetDialog ClickAddWidgetButton()
     {
         AddWidgetButton.Click();
         return new AddWidgetDialog(Driver, this);
