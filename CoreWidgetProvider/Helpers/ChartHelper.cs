@@ -61,6 +61,10 @@ internal class ChartHelper
 
     private const int MaxChartValues = 30;
 
+    // This is the largest size the StringBuilder could need to be: if every value in ChartValues was 0,
+    // then every Y value in the chart would be 100 (3 characters).
+    private const int StringBuilderLengthMax = 241;
+
     private static readonly object _lock = new ();
 
     public static string CreateImageUrl(List<float> chartValues, ChartType type)
@@ -102,30 +106,31 @@ internal class ChartHelper
         */
 
         // The following code can be uncommented for testing when a static image is desired.
-        /* chartValues.Clear();
+        chartValues.Clear();
         chartValues = new List<float>
         {
             10, 30, 20, 40, 30, 50, 40, 60, 50, 100,
             10, 30, 20, 40, 30, 50, 40, 60, 50, 70,
             0, 30, 20, 40, 30, 50, 40, 60, 50, 70,
-        };*/
+        };
 
-        var chartDoc = new XDocument();
+        var points = StringBuilderCache.Acquire(StringBuilderLengthMax);
+        XElement svgElement;
 
         lock (_lock)
         {
-            var svgElement = CreateBlankSvg(ChartHeight, ChartWidth);
+            svgElement = CreateBlankSvg(ChartHeight, ChartWidth);
 
             // Create the line that will show the points on the graph.
             var lineElement = new XElement(PolylineElement);
-            var points = TransformPointsToLine(chartValues, out var startX, out var finalX);
-            lineElement.SetAttributeValue(PointsAttr, points.ToString());
+            TransformPointsToLine(points, chartValues, out var startX, out var finalX);
+            lineElement.SetAttributeValue(PointsAttr, StringBuilderCache.GetString(points));
             lineElement.SetAttributeValue(StyleAttr, GetLineStyle(type));
 
             // Create the line that will contain the gradient fill.
             TransformPointsToLoop(points, startX, finalX);
             var fillElement = new XElement(PolylineElement);
-            fillElement.SetAttributeValue(PointsAttr, points.ToString());
+            fillElement.SetAttributeValue(PointsAttr, StringBuilderCache.GetStringAndRelease(points));
             fillElement.SetAttributeValue(StyleAttr, FillStyle);
 
             // Add the gradient definition and the three shapes to the svg.
@@ -133,11 +138,9 @@ internal class ChartHelper
             svgElement.Add(fillElement);
             svgElement.Add(lineElement);
             svgElement.Add(CreateBorderBox(ChartHeight, ChartWidth));
-
-            chartDoc.Add(svgElement);
         }
 
-        return chartDoc.ToString();
+        return svgElement.ToString();
     }
 
     private static XElement CreateBlankSvg(int height, int width)
@@ -221,10 +224,8 @@ internal class ChartHelper
         return lineStyle;
     }
 
-    private static StringBuilder TransformPointsToLine(List<float> chartValues, out int startX, out int finalX)
+    private static void TransformPointsToLine(StringBuilder points, List<float> chartValues, out int startX, out int finalX)
     {
-        var points = new StringBuilder();
-
         // The X value where the graph starts must be adjusted so that the graph is right-aligned.
         // The max available width of the widget is 268. Since there is a 1 px border around the chart, the width of the chart's line must be <=266.
         // To create a chart of exactly the right size, we'll have 30 points with 9 pixels in between:
@@ -241,7 +242,9 @@ internal class ChartHelper
         foreach (var origY in chartValues)
         {
             var finalY = ChartHeight - 1 - origY;
-            points.Append(CultureInfo.InvariantCulture, $"{finalX},{finalY} ");
+            ////points.AppendJoin("{finalX},{finalY} ");
+            ////points.AppendJoin(finalX, ',' finalY, ' ');
+            points.Append(finalX).Append(',').Append(finalY).Append(' ');
             finalX += pxBetweenPoints;
         }
 
@@ -251,18 +254,18 @@ internal class ChartHelper
             points.Remove(points.Length - 1, 1);
             finalX -= pxBetweenPoints;
         }
-
-        return points;
     }
 
     private static void TransformPointsToLoop(StringBuilder points, int startX, int finalX)
     {
         // Close the loop.
         // Add a point at the most recent X value that corresponds with y = 0
-        points.Append(CultureInfo.InvariantCulture, $" {finalX},{ChartHeight - 1}");
+        ////points.Append(CultureInfo.InvariantCulture, $" {finalX},{ChartHeight - 1}");
+        points.Append(' ').Append(finalX).Append(',').Append(ChartHeight - 1);
 
         // Add a point at the start of the chart that corresponds with y = 0
-        points.Append(CultureInfo.InvariantCulture, $" {startX},{ChartHeight - 1}");
+        ////points.Append(CultureInfo.InvariantCulture, $" {startX},{ChartHeight - 1}");
+        points.Append(' ').Append(startX).Append(',').Append(ChartHeight - 1);
     }
 
     public static void AddNextChartValue(float value, List<float> chartValues)
