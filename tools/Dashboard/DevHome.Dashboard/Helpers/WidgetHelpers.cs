@@ -17,7 +17,7 @@ internal class WidgetHelpers
     private const double WidgetPxHeightMedium = 304;
     private const double WidgetPxHeightLarge = 462;
 
-    public static WidgetSize GetLargetstCapabilitySize(WidgetCapability[] capabilities)
+    public static WidgetSize GetLargestCapabilitySize(WidgetCapability[] capabilities)
     {
         // Guaranteed to have at least one capability
         var largest = capabilities[0].Size;

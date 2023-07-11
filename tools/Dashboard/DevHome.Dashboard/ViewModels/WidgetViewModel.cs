@@ -87,7 +87,7 @@ public partial class WidgetViewModel : ObservableObject
     public WidgetViewModel(
         Widget widget,
         WidgetSize widgetSize,
-        WidgetDefinition widgetDefintion,
+        WidgetDefinition widgetDefinition,
         AdaptiveCardRenderer renderer,
         Microsoft.UI.Dispatching.DispatcherQueue dispatcher)
     {
@@ -96,7 +96,7 @@ public partial class WidgetViewModel : ObservableObject
 
         Widget = widget;
         WidgetSize = widgetSize;
-        WidgetDefinition = widgetDefintion;
+        WidgetDefinition = widgetDefinition;
     }
 
     public void Render()
@@ -131,7 +131,7 @@ public partial class WidgetViewModel : ObservableObject
         Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
 
         // If we're in the Add or Edit dialog, check the cardData to see if the card is in a configuration state
-        // or if it is pinnable yet. If still configuring, the Pin button will be disabled.
+        // or if it is able to be pinned yet. If still configuring, the Pin button will be disabled.
         if (IsInAddMode || IsInEditMode)
         {
             GetConfiguring(cardData);
