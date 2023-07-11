@@ -18,12 +18,14 @@ public class DevHomeTestBase
 
     private string TestRunDirectory => TestContext.Properties[nameof(TestRunDirectory)].ToString();
 
-    public void InitializeTestMethod()
+    [TestInitialize]
+    public void TestInitialize()
     {
         Application.Start();
     }
 
-    public void CleanupTestMethod()
+    [TestCleanup]
+    public void TestCleanup()
     {
         if (TestContext.CurrentTestOutcome != UnitTestOutcome.Passed)
         {

@@ -58,10 +58,4 @@ public class WidgetTest : DevHomeTestBase
         Assert.AreEqual(widgetTitles.Length, dashboard.DisplayedWidgets.Count);
         CollectionAssert.AreEqual(widgetTitles, widgets.Select(w => w.TitleText).ToList());
     }
-
-    [TestInitialize]
-    public void TestInitialize() => InitializeTestMethod();
-
-    [TestCleanup]
-    public void TestCleanup() => CleanupTestMethod();
 }
