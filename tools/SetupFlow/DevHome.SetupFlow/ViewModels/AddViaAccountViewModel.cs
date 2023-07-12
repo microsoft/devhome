@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -15,6 +16,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Data;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -173,7 +175,7 @@ public partial class AddViaAccountViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void AddOrRemoveRepos()
+    public void AddOrRemoveRepos(object selectedItems)
     {
         /*
         var loginId = (string)AccountsComboBox.SelectedValue;

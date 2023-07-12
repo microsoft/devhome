@@ -333,7 +333,6 @@ public partial class AddRepoViewModel : ObservableObject
     {
         List<int> repoIndeciesToSelect = new ();
 
-        /*
         var onlyRepoNames = AddViaAccountViewModel.Repositories.Select(x => x.RepoName).ToList();
         foreach (var repoToSelect in reposToSelect)
         {
@@ -343,7 +342,7 @@ public partial class AddRepoViewModel : ObservableObject
                 repoIndeciesToSelect.Add(index);
             }
         }
-        */
+
         return repoIndeciesToSelect;
     }
 
