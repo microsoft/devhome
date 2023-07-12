@@ -159,7 +159,7 @@ public sealed partial class WidgetControl : UserControl
                 break;
         }
 
-        MarkSize(_currentSelectedSize);
+        MarkSize(_currentSelectedSize, resourceLoader);
     }
 
     private async void OnMenuItemSizeClick(object sender, RoutedEventArgs e)
@@ -172,6 +172,7 @@ public sealed partial class WidgetControl : UserControl
                 if (_currentSelectedSize is not null)
                 {
                     _currentSelectedSize.Icon = null;
+                    _currentSelectedSize.ClearValue(AutomationProperties.ItemStatusProperty);
                 }
 
                 // Resize widget.
@@ -181,18 +182,20 @@ public sealed partial class WidgetControl : UserControl
 
                 // Set mark on new size.
                 _currentSelectedSize = menuSizeItem;
-                MarkSize(_currentSelectedSize);
+                var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
+                MarkSize(_currentSelectedSize, resourceLoader);
             }
         }
     }
 
-    private void MarkSize(MenuFlyoutItem menuSizeItem)
+    private void MarkSize(MenuFlyoutItem menuSizeItem, ResourceLoader resourceLoader)
     {
         var fontIcon = new FontIcon
         {
             Glyph = "\xE915",
         };
         menuSizeItem.Icon = fontIcon;
+        menuSizeItem.SetValue(AutomationProperties.ItemStatusProperty, resourceLoader.GetString("WidgetSizeSelected"));
     }
 
     private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)

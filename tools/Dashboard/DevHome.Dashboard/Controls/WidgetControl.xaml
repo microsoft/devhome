@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:helpers="using:DevHome.Dashboard.Helpers"
     mc:Ignorable="d"
+    AutomationProperties.ItemStatus="Teste Felipe"
     AutomationProperties.Name="{x:Bind WidgetSource.WidgetDisplayTitle}">
 
     <UserControl.Resources>
