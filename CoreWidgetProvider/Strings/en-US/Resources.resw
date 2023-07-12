@@ -162,4 +162,16 @@
   <data name="CPUUsage_Widget_Template.End_Process" xml:space="preserve">
     <value>End process</value>
   </data>
+  <data name="DiskUsage_Widget_Template.Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="DiskUsage_Widget_Template.Next_Disk" xml:space="preserve">
+    <value>Next Disk</value>
+  </data>
+  <data name="DiskUsage_Widget_Template.Read" xml:space="preserve">
+    <value>Read</value>
+  </data>
+  <data name="DiskUsage_Widget_Template.Write" xml:space="preserve">
+    <value>Write</value>
+  </data>
 </root>

@@ -87,6 +87,10 @@ public static class Resources
             "CPUUsage_Widget_Template/CPU_Speed",
             "CPUUsage_Widget_Template/Processes",
             "CPUUsage_Widget_Template/End_Process",
+            "DiskUsage_Widget_Template/Read",
+            "DiskUsage_Widget_Template/Write",
+            "DiskUsage_Widget_Template/Name",
+            "DiskUsage_Widget_Template/Next_Disk",
         };
     }
 }

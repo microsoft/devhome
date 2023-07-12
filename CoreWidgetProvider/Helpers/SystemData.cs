@@ -13,6 +13,8 @@ internal class SystemData : IDisposable
 
     public static CPUStats CpuStats { get; set; } = new CPUStats();
 
+    public static DiskStats DiskStats { get; set; } = new DiskStats();
+
     public SystemData()
     {
     }
