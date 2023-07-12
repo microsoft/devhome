@@ -7,6 +7,8 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -23,7 +25,7 @@ namespace DevHome.SetupFlow.Models;
 /// Object to hold all information needed to clone a repository.
 /// 1:1 CloningInformation to repository.
 /// </summary>
-public class CloneRepoTask : ISetupTask
+public partial class CloneRepoTask : ObservableObject, ISetupTask
 {
     /// <summary>
     /// Absolute path the user wants to clone their repository to.
@@ -70,6 +72,29 @@ public class CloneRepoTask : ISetupTask
     {
         get; private set;
     }
+
+    [ObservableProperty]
+    private bool _isRepoNameTrimmed;
+
+    [RelayCommand]
+    public void RepoNameTrimmed()
+    {
+        IsRepoNameTrimmed = true;
+    }
+
+    [ObservableProperty]
+    private bool _isClonePathTrimmed;
+
+    [RelayCommand]
+    public void ClonePathTrimmed()
+    {
+        IsClonePathTrimmed = true;
+    }
+
+    /// <summary>
+    /// Gets the repository in a [organization]\[reponame] style
+    /// </summary>
+    public string RepositoryOwnerAndName => Path.Join(RepositoryToClone.OwningAccountName ?? string.Empty, RepositoryToClone.DisplayName);
 
     private TaskMessages _taskMessage;
 

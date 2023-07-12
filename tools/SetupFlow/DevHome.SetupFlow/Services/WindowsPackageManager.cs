@@ -2,17 +2,17 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
+using DevHome.Common.Exceptions;
+using DevHome.Common.Services;
 using DevHome.Services;
 using DevHome.SetupFlow.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
-using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
-using Namotion.Reflection;
-using Windows.Win32;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.Services;
@@ -24,9 +24,11 @@ public class WindowsPackageManager : IWindowsPackageManager
 {
     public const int AppInstallerErrorFacility = 0xA15;
     public const string AppInstallerProductId = "9NBLGGH4NNS1";
+    public const string AppInstallerPackageFamilyName = "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe";
 
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;
+    private readonly IPackageDeploymentService _packageDeploymentService;
 
     // Custom composite catalogs
     private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
@@ -36,16 +38,14 @@ public class WindowsPackageManager : IWindowsPackageManager
     private readonly Lazy<string> _wingetCatalogId;
     private readonly Lazy<string> _msStoreCatalogId;
 
-    // App installer
-    private readonly Lazy<bool> _isCOMServerAvailable;
-    private bool _appInstallerUpdateAvailable;
-
     public WindowsPackageManager(
         WindowsPackageManagerFactory wingetFactory,
-        IAppInstallManagerService appInstallManagerService)
+        IAppInstallManagerService appInstallManagerService,
+        IPackageDeploymentService packageDeploymentService)
     {
         _wingetFactory = wingetFactory;
         _appInstallManagerService = appInstallManagerService;
+        _packageDeploymentService = packageDeploymentService;
 
         // Lazy-initialize custom composite catalogs
         _allCatalogs = new (CreateAllCatalogs);
@@ -54,9 +54,6 @@ public class WindowsPackageManager : IWindowsPackageManager
         // Lazy-initialize predefined catalog ids
         _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
         _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
-
-        // Lazy-initialize COM server availability
-        _isCOMServerAvailable = new (IsCOMServerAvailableInternal);
     }
 
     public string WinGetCatalogId => _wingetCatalogId.Value;
@@ -133,16 +130,14 @@ public class WindowsPackageManager : IWindowsPackageManager
         };
     }
 
-    public bool IsCOMServerAvailable() => _isCOMServerAvailable.Value;
-
     public async Task<bool> IsAppInstallerUpdateAvailableAsync()
     {
         try
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, "Checking if AppInstaller has an update ...");
-            _appInstallerUpdateAvailable = await _appInstallManagerService.IsAppUpdateAvailableAsync(AppInstallerProductId);
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller update available = {_appInstallerUpdateAvailable}");
-            return _appInstallerUpdateAvailable;
+            var appInstallerUpdateAvailable = await _appInstallManagerService.IsAppUpdateAvailableAsync(AppInstallerProductId);
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller update available = {appInstallerUpdateAvailable}");
+            return appInstallerUpdateAvailable;
         }
         catch (Exception e)
         {
@@ -163,6 +158,27 @@ public class WindowsPackageManager : IWindowsPackageManager
         catch (Exception e)
         {
             Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to start AppInstaller update", e);
+            return false;
+        }
+    }
+
+    public async Task<bool> RegisterAppInstallerAsync()
+    {
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting AppInstaller registration ...");
+            await _packageDeploymentService.RegisterPackageForCurrentUserAsync(AppInstallerPackageFamilyName);
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller registered succcessfully");
+            return true;
+        }
+        catch (RegisterPackageException e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to register AppInstaller", e);
+            return false;
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, "An unexpected error occurred when registering AppInstaller", e);
             return false;
         }
     }
@@ -232,18 +248,22 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// dummy out-of-proc object
     /// </summary>
     /// <returns>True if server is available, false otherwise.</returns>
-    private bool IsCOMServerAvailableInternal()
+    public async Task<bool> IsCOMServerAvailableAsync()
     {
         try
         {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to create a dummy out-of-proc {nameof(WindowsPackageManager)} COM object to test if the COM server is available");
-            _wingetFactory.CreatePackageManager();
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"{nameof(WindowsPackageManager)} COM object created successfully");
+            await Task.Run(() =>
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to create a dummy out-of-proc {nameof(PackageManager)} COM object to test if the COM server is available");
+                _wingetFactory.CreatePackageManager();
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"WinGet COM Server is available");
+            });
+
             return true;
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create a {nameof(WindowsPackageManager)} COM object", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create dummy {nameof(PackageManager)} COM object. WinGet COM Server is not available.", e);
             return false;
         }
     }

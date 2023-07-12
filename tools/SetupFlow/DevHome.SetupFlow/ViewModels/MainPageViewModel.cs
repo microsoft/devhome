@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
@@ -67,10 +68,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        // If IsCOMServerAvailable is still being (lazily) evaluated form a
-        // previous call, then await until the thread is unblocked and the
-        // already computed value is returned.
-        EnablePackageInstallerItem = await Task.Run(() => _wpm.IsCOMServerAvailable());
+        EnablePackageInstallerItem = await _wpm.IsCOMServerAvailableAsync();
         if (EnablePackageInstallerItem)
         {
             Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");
@@ -157,10 +155,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async void LaunchDisksAndVolumesSettingsPage()
     {
+        // Critical level approved by subhasan
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
         TelemetryFactory.Get<ITelemetry>().Log(
             "LaunchDisksAndVolumesSettingsPageTriggered",
-            LogLevel.Measure,
+            LogLevel.Critical,
             new DisksAndVolumesSettingsPageTriggeredEvent(source: "MainPageView"));
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }

@@ -1,7 +1,7 @@
 Param(
     [string]$Platform = "x64",
     [string]$Configuration = "Debug",
-    [string]$SDKVersion,
+    [string]$VersionOfSDK,
     [string]$SDKNugetSource,
     [string]$Version,
     [string]$BuildStep = "all",
@@ -45,7 +45,7 @@ $env:Build_RootDirectory = (Split-Path $MyInvocation.MyCommand.Path)
 $env:Build_Platform = $Platform.ToLower()
 $env:Build_Configuration = $Configuration.ToLower()
 $env:msix_version = build\Scripts\CreateBuildInfo.ps1 -Version $Version -IsAzurePipelineBuild $IsAzurePipelineBuild
-$env:sdk_version = build\Scripts\CreateBuildInfo.ps1 -Version $SDKVersion -IsSdkVersion $true -IsAzurePipelineBuild $IsAzurePipelineBuild
+$env:sdk_version = build\Scripts\CreateBuildInfo.ps1 -Version $VersionOfSDK -IsSdkVersion $true -IsAzurePipelineBuild $IsAzurePipelineBuild
 
 $isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')
 
@@ -54,7 +54,7 @@ if ($IsAzurePipelineBuild) {
 }
 
 if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
-  pluginsdk\Build.ps1 -SDKVersion $env:sdk_version -IsAzurePipelineBuild $IsAzurePipelineBuild
+  pluginsdk\Build.ps1 -VersionOfSDK $env:sdk_version -IsAzurePipelineBuild $IsAzurePipelineBuild
 }
 
 $msbuildPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
@@ -67,6 +67,7 @@ if ($IsAzurePipelineBuild) {
 $ErrorActionPreference = "Stop"
 
 # Install NuGet Cred Provider
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Invoke-Expression "& { $(irm https://aka.ms/install-artifacts-credprovider.ps1) } -AddNetfx"
 
 if (-not([string]::IsNullOrWhiteSpace($SDKNugetSource))) {
@@ -180,6 +181,29 @@ Try {
         }
       }
     }
+    $appxmanifest.Save($appxmanifestPath)
+  }
+
+  if (($BuildStep -ieq "stubpackages")) {
+    [Reflection.Assembly]::LoadWithPartialName("System.Xml.Linq")
+    $msbuildArgs = @(
+      ("DevHomeStub\DevHomeStub.sln"),
+      ("/p:Configuration=Release"),
+      ("/restore"),
+      ("/p:AppxPackageSigningEnabled=false")
+      )
+
+    # Update the appxmanifest
+    $xIdentity = [System.Xml.Linq.XName]::Get("{http://schemas.microsoft.com/appx/manifest/foundation/windows10}Identity");
+    $appxmanifestPath = (Join-Path $env:Build_RootDirectory "DevHomeStub\DevHomeStubPackage\Package.appxmanifest")
+    $appxmanifest = [System.Xml.Linq.XDocument]::Load($appxmanifestPath)
+    $versionParts = ($env:msix_version).Split('.')
+    $versionParts[1] = [string]([int]($versionParts[1]) - 1)
+    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = ($versionParts -join '.')
+    $appxmanifest.Save($appxmanifestPath)
+
+    & $msbuildPath  $msbuildArgs
+    $appxmanifest.Root.Element($xIdentity).Attribute("Version").Value = "0.0.0.0"
     $appxmanifest.Save($appxmanifestPath)
   }
 

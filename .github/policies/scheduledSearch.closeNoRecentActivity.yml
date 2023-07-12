@@ -1,0 +1,37 @@
+id: scheduledSearch.closeNoRecentActivity
+name: GitOps.PullRequestIssueManagement
+description: Closes issues that are inactive
+owner: 
+resource: repository
+disabled: false
+where: 
+configuration:
+  resourceManagementConfiguration:
+    scheduledSearches:
+    - description: >-
+          Search for Issues where -
+          * Issue is Open
+          * Issue has the label Needs-Author-Feedback
+          * Issue has the label Status-No recent activity
+          * Issue does not have the label Issue-Feature
+          * Has not had activity in the last 5 days
+          Then -
+          * Close the Issue
+      frequencies:
+      - hourly:
+          hour: 6
+      filters:
+      - isIssue
+      - isOpen
+      - hasLabel:
+          label: Needs-Author-Feedback
+      - hasLabel:
+          label: Status-No recent activity
+      - isNotLabeledWith:
+          label: Issue-Feature
+      - noActivitySince:
+          days: 5
+      actions:
+      - closeIssue
+onFailure: 
+onSuccess: 

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
@@ -69,6 +70,9 @@ public class BaseSetupFlowTest
                 services.AddSingleton<IRestoreInfo>(RestoreInfo.Object);
                 services.AddSingleton<PackageProvider>();
                 services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory());
+                services.AddSingleton<IAppManagementInitializer, AppManagementInitializer>();
+                services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
+                services.AddSingleton<CatalogDataSourceLoacder>();
 
                 // DI factory pattern
                 services.AddSingleton<PackageViewModelFactory>(sp => package => ActivatorUtilities.CreateInstance<PackageViewModel>(sp, package));

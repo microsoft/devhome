@@ -119,7 +119,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private StackPanel BuildWidgetNavItem(WidgetDefinition widgetDefinition)
     {
-        var image = DashboardView.GetWidgetIconForTheme(widgetDefinition, ActualTheme);
+        var image = WidgetIconCache.GetWidgetIconForTheme(widgetDefinition, ActualTheme);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
     }
 
@@ -216,7 +216,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // If the user has selected a widget, show configuration UI. If they selected a provider, leave space blank.
         if (selectedTag as WidgetDefinition is WidgetDefinition selectedWidgetDefinition)
         {
-            var size = WidgetHelpers.GetLargetstCapabilitySize(selectedWidgetDefinition.GetWidgetCapabilities());
+            var size = WidgetHelpers.GetLargestCapabilitySize(selectedWidgetDefinition.GetWidgetCapabilities());
 
             // Create the widget for configuration. We will need to delete it if the user closes the dialog
             // without pinning, or selects a different widget.
