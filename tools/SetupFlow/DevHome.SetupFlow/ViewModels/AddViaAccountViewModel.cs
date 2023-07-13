@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration.Provider;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -14,6 +15,7 @@ using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Data;
@@ -71,6 +73,7 @@ public partial class AddViaAccountViewModel : ObservableObject
     public AddViaAccountViewModel()
     {
         Accounts = new List<DeveloperIdViewModel>();
+        SelectedRepositories = new ObservableCollection<RepoViewListItem>();
         GetPlugins();
 
         var allProviders = Providers.GetAllProviders();
@@ -174,16 +177,15 @@ public partial class AddViaAccountViewModel : ObservableObject
         */
     }
 
-    [RelayCommand]
-    public void AddOrRemoveRepos(object selectedItems)
+    public void AddOrRemoveRepos(IList<object> selectedItems)
     {
-        /*
-        var loginId = (string)AccountsComboBox.SelectedValue;
-        var providerName = (string)RepositoryProviderComboBox.SelectedValue;
+        SelectedRepositories.Clear();
 
-        AddRepoViewModel.AddOrRemoveRepository(providerName, loginId, e.AddedItems, e.RemovedItems);
-        ToggleCloneButton();
-        */
+        foreach (var selectedItem in selectedItems)
+        {
+            var repositoryToAdd = selectedItem as RepoViewListItem;
+            SelectedRepositories.Add(repositoryToAdd);
+        }
     }
 
     /// <summary>

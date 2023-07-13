@@ -7,14 +7,14 @@ using Microsoft.Windows.DevHome.SDK;
 namespace DevHome.SetupFlow.ViewModels;
 public partial class DeveloperIdViewModel : ObservableObject
 {
-    private readonly IDeveloperId _developerId;
+    public IDeveloperId DeveloperId { get; }
 
     [ObservableProperty]
     private string _loginId;
 
     public DeveloperIdViewModel(IDeveloperId developerId)
     {
-        _developerId = developerId;
+        DeveloperId = developerId;
         LoginId = developerId.LoginId();
     }
 }

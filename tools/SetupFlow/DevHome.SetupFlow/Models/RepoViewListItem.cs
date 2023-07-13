@@ -18,12 +18,12 @@ public partial class RepoViewListItem : ObservableObject
     /// Gets a value indicating whether the repo is a private repo.  If changed to "IsPublic" the
     /// values of the converters in the views need to change order.
     /// </summary>
-    public bool IsPrivate { get; }
+    public bool IsPrivate => Repo.IsPrivate;
 
     /// <summary>
     /// Gets the name of the repository
     /// </summary>
-    public string RepoName { get; }
+    public string RepoName => Repo.DisplayName;
 
     [ObservableProperty]
     private bool _isRepoNameTrimmed;
@@ -37,14 +37,14 @@ public partial class RepoViewListItem : ObservableObject
     /// <summary>
     /// Gets the name of the organization that owns this repo.
     /// </summary>
-    public string OwningAccountName { get; }
+    public string OwningAccountName => Repo.OwningAccountName;
 
     public string RepoDisplayName => Path.Join(OwningAccountName, RepoName);
 
+    public IRepository Repo { get; }
+
     public RepoViewListItem(IRepository repo)
     {
-        IsPrivate = repo.IsPrivate;
-        RepoName = repo.DisplayName;
-        OwningAccountName = repo.OwningAccountName;
+        Repo = repo;
     }
 }

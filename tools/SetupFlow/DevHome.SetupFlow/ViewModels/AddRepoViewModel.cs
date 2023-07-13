@@ -200,6 +200,13 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    public void RepoSelectionChanged(IList<object> selectedRepos)
+    {
+        AddViaAccountViewModel.AddOrRemoveRepos(selectedRepos);
+        ToggleCloneButton();
+    }
+
     public AddViaUrlViewModel AddViaUrlViewModel
     {
         get;
@@ -212,7 +219,7 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly EditDevDriveViewModel _editDevDriveViewModel;
 
-    private readonly PageKind _currentPage = PageKind.AddViaUrl;
+    private PageKind _currentPage = PageKind.AddViaUrl;
 
     private string _oldCloneLocation;
 
@@ -321,6 +328,7 @@ public partial class AddRepoViewModel : ObservableObject
         ShouldShowAccountPage = false;
         AddViaAccountViewModel.ChangeAccounts();
         PrimaryButtonContent = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
+        _currentPage = PageKind.Repositories;
     }
 
     /// <summary>
