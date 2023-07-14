@@ -159,7 +159,7 @@ public sealed partial class WidgetControl : UserControl
                 break;
         }
 
-        MarkSize(_currentSelectedSize, resourceLoader);
+        MarkSize(_currentSelectedSize);
     }
 
     private async void OnMenuItemSizeClick(object sender, RoutedEventArgs e)
@@ -182,14 +182,14 @@ public sealed partial class WidgetControl : UserControl
 
                 // Set mark on new size.
                 _currentSelectedSize = menuSizeItem;
-                var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-                MarkSize(_currentSelectedSize, resourceLoader);
+                MarkSize(_currentSelectedSize);
             }
         }
     }
 
-    private void MarkSize(MenuFlyoutItem menuSizeItem, ResourceLoader resourceLoader)
+    private void MarkSize(MenuFlyoutItem menuSizeItem)
     {
+        var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
         var fontIcon = new FontIcon
         {
             Glyph = "\xE915",
