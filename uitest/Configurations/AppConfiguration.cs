@@ -9,7 +9,7 @@ namespace DevHome.UITest.Configurations;
 public class AppConfiguration
 {
     /// <summary>
-    /// Gets or sets the target Dev Home package family name
+    /// Gets or sets the target Dev Home package family name (e.g. Release, Canary, Dev)
     /// </summary>
     public string PackageFamilyName { get; set; }
 

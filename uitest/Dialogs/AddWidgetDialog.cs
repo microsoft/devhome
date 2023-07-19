@@ -13,15 +13,15 @@ namespace DevHome.UITest.Dialogs;
 /// </summary>
 public class AddWidgetDialog : PageDialog<DashboardPage>
 {
-    private WindowsElement SSHNavigationItem => Driver.FindElementByAccessibilityId($"{Configuration.Widget.IdPrefix}!App!!{Configuration.Widget.Provider}!!SSH_Wallet");
+    private WindowsElement SSHNavigationItem => Driver.FindElementByAccessibilityId(GetWidgetNavigationItemId("SSH_Wallet"));
 
-    private WindowsElement MemoryNavigationItem => Driver.FindElementByAccessibilityId($"{Configuration.Widget.IdPrefix}!App!!{Configuration.Widget.Provider}!!System_Memory");
+    private WindowsElement MemoryNavigationItem => Driver.FindElementByAccessibilityId(GetWidgetNavigationItemId("System_Memory"));
 
-    private WindowsElement NetworkUsageNavigationItem => Driver.FindElementByAccessibilityId($"{Configuration.Widget.IdPrefix}!App!!{Configuration.Widget.Provider}!!System_NetworkUsage");
+    private WindowsElement NetworkUsageNavigationItem => Driver.FindElementByAccessibilityId(GetWidgetNavigationItemId("System_NetworkUsage"));
 
-    private WindowsElement GPUUsageNavigationItem => Driver.FindElementByAccessibilityId($"{Configuration.Widget.IdPrefix}!App!!{Configuration.Widget.Provider}!!System_GPUUsage");
+    private WindowsElement GPUUsageNavigationItem => Driver.FindElementByAccessibilityId(GetWidgetNavigationItemId("System_GPUUsage"));
 
-    private WindowsElement CPUUsageNavigationItem => Driver.FindElementByAccessibilityId($"{Configuration.Widget.IdPrefix}!App!!{Configuration.Widget.Provider}!!System_CPUUsage");
+    private WindowsElement CPUUsageNavigationItem => Driver.FindElementByAccessibilityId(GetWidgetNavigationItemId("System_CPUUsage"));
 
     private WindowsElement PinButton => Driver.FindElementByAccessibilityId("PinButton");
 
@@ -57,6 +57,8 @@ public class AddWidgetDialog : PageDialog<DashboardPage>
         });
     }
 
+    private string GetWidgetNavigationItemId(string widgetId) => $"NavViewItem_{Configuration.Widget.IdPrefix}!App!!{Configuration.Widget.Provider}!!{widgetId}";
+
     /// <summary>
     /// Add a widget to the dashboard without any configuration
     /// </summary>
@@ -84,7 +86,7 @@ public class AddWidgetDialog : PageDialog<DashboardPage>
             .RetryUntil(_ =>
             {
                 var widgets = Parent.DisplayedWidgets;
-                return widgets.Count == initialWidgetCount + 1 ? widgets.Last() : null;
+                return widgets.ElementAtOrDefault(initialWidgetCount);
             });
     }
 }

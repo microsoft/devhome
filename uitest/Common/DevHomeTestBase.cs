@@ -42,7 +42,7 @@ public class DevHomeTestBase
     /// <summary>
     /// Gets the absolute path for a test asset file
     /// </summary>
-    /// <param name="path">Asset file path</param>
+    /// <param name="path">Asset file path relative to the TestAssets folder</param>
     /// <returns>Absolute path for the provided test asset</returns>
     public string GetTestAssetPath(string path)
     {

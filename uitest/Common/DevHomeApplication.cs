@@ -87,9 +87,9 @@ public sealed class DevHomeApplication
     /// <summary>
     /// Take a screenshot of the Dev Home application
     /// </summary>
-    /// <param name="saveFullPath">Storage location of the screenshot</param>
-    public void TakeScreenshot(string saveFullPath)
+    /// <param name="targetPath">Storage location of the PNG screenshot</param>
+    public void TakeScreenshot(string targetPath)
     {
-        _devHomeSession.Driver.TakeScreenshot().SaveAsFile(saveFullPath, ScreenshotImageFormat.Png);
+        _devHomeSession.Driver.TakeScreenshot().SaveAsFile(targetPath, ScreenshotImageFormat.Png);
     }
 }

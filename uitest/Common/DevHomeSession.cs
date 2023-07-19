@@ -7,11 +7,18 @@ using OpenQA.Selenium.Appium.Windows;
 
 namespace DevHome.UITest.Common;
 
+/// <summary>
+/// Class for connecting to the Windows Application Driver server and
+/// initializing a Driver client for interacting with a new instance of Dev Home
+/// </summary>
 public sealed class DevHomeSession
 {
     private readonly string _driverUrl;
     private readonly string _appId;
 
+    /// <summary>
+    /// Gets a driver for interacting with Dev Home
+    /// </summary>
     public WindowsDriver<WindowsElement> Driver { get; private set; }
 
     public DevHomeSession(string driverUrl, string appId)
@@ -46,10 +53,7 @@ public sealed class DevHomeSession
     /// </summary>
     public void Stop()
     {
-        if (Driver != null)
-        {
-            Driver.Quit();
-            Driver = null;
-        }
+        Driver?.Quit();
+        Driver = null;
     }
 }

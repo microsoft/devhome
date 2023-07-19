@@ -99,7 +99,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                             Content = subItemContent,
                             IsEnabled = enable,
                         };
-                        subItem.SetValue(AutomationProperties.AutomationIdProperty, widgetDef.Id);
+                        subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
 
                         navItem.MenuItems.Add(subItem);
                     }
