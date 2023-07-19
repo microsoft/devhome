@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Diagnostics;
 using DevHome.UITest.Configurations;
 using DevHome.UITest.Pages;
 using Microsoft.Extensions.Configuration;
@@ -55,6 +56,7 @@ public sealed class DevHomeApplication
 
     public DashboardPage NavigateToDashboardPage()
     {
+        Trace.WriteLine("Navigating to Dashboard");
         DashboardNavigationItem.Click();
         var dashboard = new DashboardPage(_devHomeSession.Driver);
         dashboard.WaitForWidgetsToBeLoaded();
@@ -63,6 +65,7 @@ public sealed class DevHomeApplication
 
     public MachineConfigurationPage NavigateToMachineConfigurationPage()
     {
+        Trace.WriteLine("Navigating to Machine Configuration");
         MachineConfigurationNavigationItem.Click();
         return new (_devHomeSession.Driver);
     }
@@ -72,6 +75,7 @@ public sealed class DevHomeApplication
     /// </summary>
     public void Start()
     {
+        Trace.WriteLine("Starting Dev Home");
         _devHomeSession.Start();
         _devHomeSession.Driver.Manage().Window.Maximize();
     }
@@ -81,6 +85,7 @@ public sealed class DevHomeApplication
     /// </summary>
     public void Stop()
     {
+        Trace.WriteLine("Stopping Dev Home");
         _devHomeSession.Stop();
     }
 
@@ -90,6 +95,7 @@ public sealed class DevHomeApplication
     /// <param name="targetPath">Storage location of the PNG screenshot</param>
     public void TakeScreenshot(string targetPath)
     {
+        Trace.WriteLine($"Taking a screenshot and saving file at '{targetPath}'");
         _devHomeSession.Driver.TakeScreenshot().SaveAsFile(targetPath, ScreenshotImageFormat.Png);
     }
 }

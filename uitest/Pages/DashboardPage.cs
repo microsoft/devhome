@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Diagnostics;
 using DevHome.UITest.Dialogs;
 using DevHome.UITest.Extensions;
 using OpenQA.Selenium.Appium;
@@ -26,6 +27,7 @@ public class DashboardPage : ApplicationPage
 
     public AddWidgetDialog ClickAddWidgetButton()
     {
+        Trace.WriteLine("Clicking add widget button");
         AddWidgetButton.Click();
         return new AddWidgetDialog(Driver, this);
     }
@@ -39,6 +41,7 @@ public class DashboardPage : ApplicationPage
         // top-down because the remove animation could cause the automated
         // cursor to miss the 'more options' button, often requiring two
         // attempts to remove a single widget
+        Trace.WriteLine("Removing all widgets");
         foreach (var widget in DisplayedWidgets.Reverse())
         {
             widget.Remove();
@@ -47,7 +50,7 @@ public class DashboardPage : ApplicationPage
 
     public void WaitForWidgetsToBeLoaded()
     {
-        // Wait for the progress ring to disappear
+        Trace.WriteLine("Waiting for the progress ring to disappear");
         Driver.WaitUntilInvisible(ByWindowsAutomation.AccessibilityId("LoadingWidgetsProgressRing"));
     }
 
@@ -82,6 +85,7 @@ public class DashboardPage : ApplicationPage
             // Note: Because widgets move on the dashboard when added/removed,
             // we want to attempt more than one time to remove a widget in case
             // the click was performed during an animation and missed the button.
+            Trace.WriteLine($"Removing widget '{TitleText}'");
             _driver
                 .RetryUntil(_ =>
                 {

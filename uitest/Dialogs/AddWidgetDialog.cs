@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Diagnostics;
 using DevHome.UITest.Extensions;
 using DevHome.UITest.Pages;
 using OpenQA.Selenium.Appium;
@@ -30,29 +31,33 @@ public class AddWidgetDialog : PageDialog<DashboardPage>
     {
     }
 
-    public DashboardPage.WidgetControl AddMemoryWidget() => QuickAddWidget(MemoryNavigationItem);
+    public DashboardPage.WidgetControl AddMemoryWidget() => QuickAddWidget(MemoryNavigationItem, "Memory");
 
-    public DashboardPage.WidgetControl AddNetworkUsageWidget() => QuickAddWidget(NetworkUsageNavigationItem);
+    public DashboardPage.WidgetControl AddNetworkUsageWidget() => QuickAddWidget(NetworkUsageNavigationItem, "Network");
 
-    public DashboardPage.WidgetControl AddGPUUsageWidget() => QuickAddWidget(GPUUsageNavigationItem);
+    public DashboardPage.WidgetControl AddGPUUsageWidget() => QuickAddWidget(GPUUsageNavigationItem, "GPU");
 
-    public DashboardPage.WidgetControl AddCPUUsageWidget() => QuickAddWidget(CPUUsageNavigationItem);
+    public DashboardPage.WidgetControl AddCPUUsageWidget() => QuickAddWidget(CPUUsageNavigationItem, "CPU");
 
     public DashboardPage.WidgetControl AddSSHWidget(string configFilePath)
     {
         return WaitForWidgetToBeAdded(() =>
         {
+            Trace.WriteLine($"Clicking on SSH navigation item");
             SSHNavigationItem.Click();
 
             // Wait for the widget to be rendered before configuring and
             // pinning it
             // TODO: Can we use AccessibilityId for adaptive cards forms?
+            Trace.WriteLine($"Configuring SSH widget: Adding SSH config file path");
             var container = Driver.WaitUntilVisible(ByWindowsAutomation.ClassName("NamedContainerAutomationPeer"));
             var input = container.FindElementByClassName("TextBox");
             input.Clear();
             input.SendKeys(configFilePath);
             var submit = container.FindElementByClassName("Button");
             submit.Click();
+
+            Trace.WriteLine($"Pinning SSH widget");
             PinButton.Click();
         });
     }
@@ -62,13 +67,17 @@ public class AddWidgetDialog : PageDialog<DashboardPage>
     /// <summary>
     /// Add a widget to the dashboard without any configuration
     /// </summary>
-    /// <param name="element">Widget navigation item</param>
+    /// <param name="navItemElement">Widget navigation item</param>
+    /// <param name="widgetName">Descriptive widget name</param>
     /// <returns>Widget control added to the dashboard</returns>
-    private DashboardPage.WidgetControl QuickAddWidget(WindowsElement element)
+    private DashboardPage.WidgetControl QuickAddWidget(WindowsElement navItemElement, string widgetName)
     {
         return WaitForWidgetToBeAdded(() =>
         {
-            element.Click();
+            Trace.WriteLine($"Clicking on {widgetName} navigation item");
+            navItemElement.Click();
+
+            Trace.WriteLine($"Pinning {widgetName} widget");
             PinButton.Click();
         });
     }
@@ -82,6 +91,8 @@ public class AddWidgetDialog : PageDialog<DashboardPage>
     {
         var initialWidgetCount = Parent.DisplayedWidgets.Count;
         addWidgetAction();
+
+        Trace.WriteLine($"Waiting for widget to appear before proceeding");
         return Driver
             .RetryUntil(_ =>
             {
