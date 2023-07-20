@@ -10,6 +10,7 @@ using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -98,6 +99,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                             Content = subItemContent,
                             IsEnabled = enable,
                         };
+                        subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
 
                         navItem.MenuItems.Add(subItem);
                     }
