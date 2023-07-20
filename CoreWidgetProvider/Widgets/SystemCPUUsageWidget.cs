@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json.Nodes;
 using CoreWidgetProvider.Helpers;
@@ -101,6 +102,10 @@ internal class SystemCPUUsageWidget : CoreWidget, IDisposable
 
             case WidgetAction.CpuKill3:
                 processIndex = 2;
+                break;
+
+            case WidgetAction.OpenTaskManager:
+                Process.Start("taskmgr");
                 break;
 
             case WidgetAction.Unknown:

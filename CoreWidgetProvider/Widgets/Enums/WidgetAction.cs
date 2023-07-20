@@ -43,4 +43,9 @@ public enum WidgetAction
     /// Kill process #3.
     /// </summary>
     CpuKill3,
+
+    /// <summary>
+    /// Open task manager.
+    /// </summary>
+    OpenTaskManager,
 }

@@ -76,7 +76,7 @@
                 {
                   "type": "Action.Execute",
                   "title": "%CPUUsage_Widget_Template/End_Process%",
-                  "verb": "CpuKill1",
+                  "verb": "OpenTaskManager",
                   "horizontalAlignment": "right"
                 }
               ]
@@ -110,7 +110,7 @@
                 {
                   "type": "Action.Execute",
                   "title": "%CPUUsage_Widget_Template/End_Process%",
-                  "verb": "CpuKill2"
+                  "verb": "OpenTaskManager"
                 }
               ]
             }
@@ -143,7 +143,7 @@
                 {
                   "type": "Action.Execute",
                   "title": "%CPUUsage_Widget_Template/End_Process%",
-                  "verb": "CpuKill3"
+                  "verb": "OpenTaskManager"
                 }
               ]
             }

@@ -20,7 +20,7 @@ internal class DataManager : IDisposable
         updateAction = updateWidget;
         dataType = type;
 
-        updateTimer = new Timer(OneSecondInMilliseconds);
+        updateTimer = new Timer(3 * OneSecondInMilliseconds); // Three seconds to update
         updateTimer.Elapsed += UpdateTimer_Elapsed;
         updateTimer.AutoReset = true;
         updateTimer.Enabled = false;
