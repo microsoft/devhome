@@ -211,15 +211,15 @@
     <value>Introducing Dev Home</value>
   </data>
   <data name="WidgetProviderDisplayNameDev" xml:space="preserve">
-    <value>Core (Dev)</value>
+    <value>Dev Home (Dev)</value>
     <comment>The display name for core widgets provider</comment>
   </data>
   <data name="WidgetProviderDisplayNameCanary" xml:space="preserve">
-    <value>Core (Canary)</value>
+    <value>Dev Home (Canary)</value>
     <comment>The display name for core widgets provider</comment>
   </data>
   <data name="WidgetProviderDisplayNameStable" xml:space="preserve">
-    <value>Core (Preview)</value>
+    <value>Dev Home (Preview)</value>
     <comment>The display name for core widgets provider</comment>
   </data>
 </root>
