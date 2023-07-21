@@ -22,7 +22,7 @@
               "type": "TextBlock",
               "size": "large",
               "text": "${cpuUsage}"
-              
+
             }
           ]
         },
@@ -64,24 +64,6 @@
               "type": "TextBlock"
             }
           ]
-        },
-        {
-          "type": "Column",
-          "verticalContentAlignment": "center",
-          "width": "stretch",
-          "items": [
-            {
-              "type": "ActionSet",
-              "actions": [
-                {
-                  "type": "Action.Execute",
-                  "title": "%CPUUsage_Widget_Template/End_Process%",
-                  "verb": "OpenTaskManager",
-                  "horizontalAlignment": "right"
-                }
-              ]
-            }
-          ]
         }
       ]
     },
@@ -96,23 +78,6 @@
               "text": "${cpuProc2}",
               "weight": "bolder",
               "type": "TextBlock"
-            }
-          ]
-        },
-        {
-          "type": "Column",
-          "verticalContentAlignment": "center",
-          "width": "stretch",
-          "items": [
-            {
-              "type": "ActionSet",
-              "actions": [
-                {
-                  "type": "Action.Execute",
-                  "title": "%CPUUsage_Widget_Template/End_Process%",
-                  "verb": "OpenTaskManager"
-                }
-              ]
             }
           ]
         }
@@ -131,23 +96,16 @@
               "type": "TextBlock"
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "type": "ActionSet",
+      "actions": [
         {
-          "type": "Column",
-          "verticalContentAlignment": "center",
-          "width": "stretch",
-          "items": [
-            {
-              "type": "ActionSet",
-              "actions": [
-                {
-                  "type": "Action.Execute",
-                  "title": "%CPUUsage_Widget_Template/End_Process%",
-                  "verb": "OpenTaskManager"
-                }
-              ]
-            }
-          ]
+          "type": "Action.Execute",
+          "title": "%CPUUsage_Widget_Template/Open_Task_Manager%",
+          "verb": "OpenTaskManager"
         }
       ]
     }

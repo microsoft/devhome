@@ -105,7 +105,21 @@ internal class SystemCPUUsageWidget : CoreWidget, IDisposable
                 break;
 
             case WidgetAction.OpenTaskManager:
-                Process.Start("taskmgr");
+                try
+                {
+                    Process p = new Process();
+                    p.StartInfo.FileName = "taskmgr";
+                    p.StartInfo.Verb = "runas";
+                    p.StartInfo.UseShellExecute = true;
+                    p.Start();
+
+                    Log.Logger()?.ReportDebug(Name, ShortId, "Opened task manager");
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger()?.ReportError(ex.Message);
+                }
+
                 break;
 
             case WidgetAction.Unknown:
