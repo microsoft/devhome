@@ -3,12 +3,13 @@
 1. Open Dev Home solution in Visual Studio
 2. Install the version of Dev Home you want to test.
    - Note: For testing a developer build of Dev Home, build and deploy the solution from Visual Studio.
-3. From the command prompt, start the Windows Application Driver service:
+3. Install [Windows Application Driver](https://github.com/microsoft/WinAppDriver/releases/download/v1.2.99/WindowsApplicationDriver-1.2.99-win-x64.exe)
+4. From the command prompt, start the Windows Application Driver service:
 ```cmd
 "C:\Program Files\Windows Application Driver\WinAppDriver.exe"
 ```
-4. From Visual Studio, navigate to the "Test Explorer" tab and locate the `DevHome.UITest` set of tests.
-5. Select a test and run it.
+5. From Visual Studio, navigate to the "Test Explorer" tab and locate the `DevHome.UITest` set of tests.
+6. Select a test and run it.
     - Note: Once the test starts, avoid interacting with your machine (e.g. move mouse, use keyboard) to allow the test to navigate the Dev Home app and execute the test.
 
 ### How to configure the application settings for a Dev Home release
