@@ -33,8 +33,7 @@
         <!-- Widget header: icon, title, menu -->
         <Grid Grid.Row="0" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}">
             <StackPanel Orientation="Horizontal" Margin="15,10,15,5">
-                <Rectangle Width="16" Height="16" Margin="0,0,8,0" x:Name="WidgetHeaderIcon"
-                           Fill="{x:Bind helpers:WidgetIconCache.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme),Mode=OneWay}"/>
+                <Rectangle Width="16" Height="16" Margin="0,0,8,0" x:Name="WidgetHeaderIcon" />
                 <TextBlock AutomationProperties.AutomationId="WidgetTitle"
                            Text="{x:Bind WidgetSource.WidgetDisplayTitle, Mode=OneWay}"
                            VerticalAlignment="Center"

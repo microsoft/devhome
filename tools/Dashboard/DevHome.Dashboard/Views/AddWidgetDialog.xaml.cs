@@ -57,7 +57,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         SelectFirstWidgetByDefault();
     }
 
-    private void FillAvailableWidgets()
+    private async void FillAvailableWidgets()
     {
         AddWidgetNavigationView.MenuItems.Clear();
 
@@ -91,7 +91,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 {
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
-                        var subItemContent = BuildWidgetNavItem(widgetDef);
+                        var subItemContent = await BuildWidgetNavItem(widgetDef);
                         var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef);
                         var subItem = new NavigationViewItem
                         {
@@ -120,9 +120,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
-    private StackPanel BuildWidgetNavItem(WidgetDefinition widgetDefinition)
+    private async Task<StackPanel> BuildWidgetNavItem(WidgetDefinition widgetDefinition)
     {
-        var image = WidgetIconCache.GetWidgetIconForTheme(widgetDefinition, ActualTheme);
+        var image = await WidgetIconCache.GetWidgetIconForTheme(widgetDefinition, ActualTheme);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
     }
 

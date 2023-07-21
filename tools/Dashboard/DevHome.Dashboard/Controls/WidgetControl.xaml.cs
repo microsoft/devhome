@@ -18,20 +18,27 @@ public sealed partial class WidgetControl : UserControl
 {
     private MenuFlyoutItem _currentSelectedSize;
 
+    public WidgetViewModel WidgetSource
+    {
+        get => (WidgetViewModel)GetValue(WidgetSourceProperty);
+        set
+        {
+            SetValue(WidgetSourceProperty, value);
+            if (WidgetSource != null)
+            {
+                UpdateWidgetHeaderIconFill();
+            }
+        }
+    }
+
+    public static readonly DependencyProperty WidgetSourceProperty = DependencyProperty.Register(
+        nameof(WidgetSource), typeof(WidgetViewModel), typeof(WidgetControl), new PropertyMetadata(null));
+
     public WidgetControl()
     {
         this.InitializeComponent();
         ActualThemeChanged += OnActualThemeChanged;
     }
-
-    public WidgetViewModel WidgetSource
-    {
-        get => (WidgetViewModel)GetValue(WidgetSourceProperty);
-        set => SetValue(WidgetSourceProperty, value);
-    }
-
-    public static readonly DependencyProperty WidgetSourceProperty = DependencyProperty.Register(
-        nameof(WidgetSource), typeof(WidgetViewModel), typeof(WidgetControl), new PropertyMetadata(null));
 
     private void OpenWidgetMenu(object sender, RoutedEventArgs e)
     {
@@ -213,8 +220,13 @@ public sealed partial class WidgetControl : UserControl
         }
     }
 
-    private void OnActualThemeChanged(FrameworkElement sender, object args)
+    private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        WidgetHeaderIcon.Fill = WidgetIconCache.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme);
+        WidgetHeaderIcon.Fill = await WidgetIconCache.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme);
+    }
+
+    private async void UpdateWidgetHeaderIconFill()
+    {
+        WidgetHeaderIcon.Fill = await WidgetIconCache.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme);
     }
 }
