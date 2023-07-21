@@ -163,6 +163,6 @@
     <value>End process</value>
   </data>
   <data name="CPUUsage_Widget_Template.Open_Task_Manager" xml:space="preserve">
-    <value>Open Task Manager</value>
+    <value>Task Manager</value>
   </data>
 </root>

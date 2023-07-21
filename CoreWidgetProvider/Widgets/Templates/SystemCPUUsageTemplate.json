@@ -52,30 +52,46 @@
       "wrap": true
     },
     {
-      "text": "${cpuProc1}",
-      "weight": "bolder",
-      "spacing": "small",
-      "type": "TextBlock"
-    },
-    {
-      "text": "${cpuProc2}",
-      "weight": "bolder",
-      "spacing": "small",
-      "type": "TextBlock"
-    },
-    {
-      "text": "${cpuProc3}",
-      "weight": "bolder",
-      "spacing": "small",
-      "type": "TextBlock"
-    },
-    {
-      "type": "ActionSet",
-      "actions": [
+      "type": "ColumnSet",
+      "columns": [
         {
-          "type": "Action.Execute",
-          "title": "%CPUUsage_Widget_Template/Open_Task_Manager%",
-          "verb": "OpenTaskManager"
+          "type": "Column",
+          "items": [
+            {
+              "text": "${cpuProc1}",
+              "weight": "bolder",
+              "spacing": "small",
+              "type": "TextBlock"
+            },
+            {
+              "text": "${cpuProc2}",
+              "weight": "bolder",
+              "spacing": "small",
+              "type": "TextBlock"
+            },
+            {
+              "text": "${cpuProc3}",
+              "weight": "bolder",
+              "spacing": "small",
+              "type": "TextBlock"
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "verticalContentAlignment": "center",
+          "items": [
+            {
+              "type": "ActionSet",
+              "actions": [
+                {
+                  "type": "Action.Execute",
+                  "title": "%CPUUsage_Widget_Template/Open_Task_Manager%",
+                  "verb": "OpenTaskManager"
+                }
+              ]
+            }
+          ]
         }
       ]
     }
