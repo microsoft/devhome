@@ -13,7 +13,8 @@
         <!-- Set Min sizes so that image gets clipped as window narrows, rather than scaling down -->
         <Image Stretch="Uniform" Source="{x:Bind OverlaySource, Mode=OneWay}" 
                AutomationProperties.AccessibilityView="Raw"
-               Margin="0 0 0 0" MinHeight="214" MinWidth="{ThemeResource MaxPageContentWidth}"/>
+               Margin="0 0 0 0" MinHeight="214" MinWidth="{ThemeResource MaxPageContentWidth}"
+               FlowDirection="{x:Bind FlowDirection}" />
 
         <!-- Hide Banner Button -->
         <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
