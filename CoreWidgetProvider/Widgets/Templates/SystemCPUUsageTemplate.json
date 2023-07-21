@@ -52,52 +52,22 @@
       "wrap": true
     },
     {
-      "type": "ColumnSet",
-      "columns": [
-        {
-          "type": "Column",
-          "verticalContentAlignment": "center",
-          "items": [
-            {
-              "text": "${cpuProc1}",
-              "weight": "bolder",
-              "type": "TextBlock"
-            }
-          ]
-        }
-      ]
+      "text": "${cpuProc1}",
+      "weight": "bolder",
+      "spacing": "small",
+      "type": "TextBlock"
     },
     {
-      "type": "ColumnSet",
-      "columns": [
-        {
-          "type": "Column",
-          "verticalContentAlignment": "center",
-          "items": [
-            {
-              "text": "${cpuProc2}",
-              "weight": "bolder",
-              "type": "TextBlock"
-            }
-          ]
-        }
-      ]
+      "text": "${cpuProc2}",
+      "weight": "bolder",
+      "spacing": "small",
+      "type": "TextBlock"
     },
     {
-      "type": "ColumnSet",
-      "columns": [
-        {
-          "type": "Column",
-          "verticalContentAlignment": "center",
-          "items": [
-            {
-              "text": "${cpuProc3}",
-              "weight": "bolder",
-              "type": "TextBlock"
-            }
-          ]
-        }
-      ]
+      "text": "${cpuProc3}",
+      "weight": "bolder",
+      "spacing": "small",
+      "type": "TextBlock"
     },
     {
       "type": "ActionSet",
