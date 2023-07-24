@@ -56,8 +56,8 @@ internal class WidgetIconCache
             try
             {
                 Log.Logger()?.ReportDebug("WidgetIconCache", $"Cache widget icons for {widgetDefId}");
-                var itemLightImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Light).Icon);
-                var itemDarkImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Dark).Icon);
+                var itemLightImage = await WidgetIconToBitmapImageAsync(widgetDef.GetThemeResource(WidgetTheme.Light).Icon);
+                var itemDarkImage = await WidgetIconToBitmapImageAsync(widgetDef.GetThemeResource(WidgetTheme.Dark).Icon);
 
                 // There is a widget bug where Definition update events are being raised as added events.
                 // If we already have an icon for this key, just remove and add again in case the icons changed.
@@ -124,7 +124,7 @@ internal class WidgetIconCache
         return brush;
     }
 
-    private static async Task<BitmapImage> WidgetIconToBitmapImage(IRandomAccessStreamReference iconStreamRef)
+    private static async Task<BitmapImage> WidgetIconToBitmapImageAsync(IRandomAccessStreamReference iconStreamRef)
     {
         var completionSource = new TaskCompletionSource<BitmapImage>();
         _dispatcher.TryEnqueue(async () =>
