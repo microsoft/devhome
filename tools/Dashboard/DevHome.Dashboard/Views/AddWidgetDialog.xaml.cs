@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
@@ -52,12 +53,16 @@ public sealed partial class AddWidgetDialog : ContentDialog
         Application.Current.GetService<WindowEx>().Closed += OnMainWindowClosed;
 
         _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+    }
 
-        FillAvailableWidgets();
+    [RelayCommand]
+    public async Task OnLoadedAsync()
+    {
+        await FillAvailableWidgetsAsync();
         SelectFirstWidgetByDefault();
     }
 
-    private async void FillAvailableWidgets()
+    private async Task FillAvailableWidgetsAsync()
     {
         AddWidgetNavigationView.MenuItems.Clear();
 
