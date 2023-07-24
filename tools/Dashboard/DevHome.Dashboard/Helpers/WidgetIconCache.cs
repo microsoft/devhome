@@ -91,6 +91,8 @@ internal class WidgetIconCache
 
     public static async Task<BitmapImage> GetWidgetIconForThemeAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
     {
+        // Return the WidgetDefinition Id via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
+        // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
         var completionSource = new TaskCompletionSource<string>();
         _dispatcher.TryEnqueue(() =>
         {
@@ -126,6 +128,8 @@ internal class WidgetIconCache
 
     private static async Task<BitmapImage> WidgetIconToBitmapImageAsync(IRandomAccessStreamReference iconStreamRef)
     {
+        // Return the bitmap image via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
+        // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
         var completionSource = new TaskCompletionSource<BitmapImage>();
         _dispatcher.TryEnqueue(async () =>
         {
