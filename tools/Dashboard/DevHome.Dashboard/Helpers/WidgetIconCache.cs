@@ -89,7 +89,7 @@ internal class WidgetIconCache
         _widgetDarkIconCache.Remove(definitionId);
     }
 
-    public static async Task<BitmapImage> GetWidgetIconForTheme(WidgetDefinition widgetDefinition, ElementTheme theme)
+    public static async Task<BitmapImage> GetWidgetIconForThemeAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
     {
         var completionSource = new TaskCompletionSource<string>();
         _dispatcher.TryEnqueue(() =>
@@ -114,7 +114,7 @@ internal class WidgetIconCache
 
     public static async Task<Brush> GetBrushForWidgetIconAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
     {
-        var image = await GetWidgetIconForTheme(widgetDefinition, theme);
+        var image = await GetWidgetIconForThemeAsync(widgetDefinition, theme);
 
         var brush = new ImageBrush
         {

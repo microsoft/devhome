@@ -127,7 +127,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task<StackPanel> BuildWidgetNavItem(WidgetDefinition widgetDefinition)
     {
-        var image = await WidgetIconCache.GetWidgetIconForTheme(widgetDefinition, ActualTheme);
+        var image = await WidgetIconCache.GetWidgetIconForThemeAsync(widgetDefinition, ActualTheme);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
     }
 
