@@ -26,7 +26,7 @@ public sealed partial class WidgetControl : UserControl
             SetValue(WidgetSourceProperty, value);
             if (WidgetSource != null)
             {
-                UpdateWidgetHeaderIconFill();
+                UpdateWidgetHeaderIconFillAsync();
             }
         }
     }
@@ -225,7 +225,7 @@ public sealed partial class WidgetControl : UserControl
         WidgetHeaderIcon.Fill = await WidgetIconCache.GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
     }
 
-    private async void UpdateWidgetHeaderIconFill()
+    private async void UpdateWidgetHeaderIconFillAsync()
     {
         WidgetHeaderIcon.Fill = await WidgetIconCache.GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
     }
