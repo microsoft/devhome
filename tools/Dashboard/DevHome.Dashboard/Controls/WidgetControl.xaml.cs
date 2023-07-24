@@ -222,11 +222,11 @@ public sealed partial class WidgetControl : UserControl
 
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        WidgetHeaderIcon.Fill = await WidgetIconCache.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme);
+        WidgetHeaderIcon.Fill = await WidgetIconCache.GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
     }
 
     private async void UpdateWidgetHeaderIconFill()
     {
-        WidgetHeaderIcon.Fill = await WidgetIconCache.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme);
+        WidgetHeaderIcon.Fill = await WidgetIconCache.GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
     }
 }

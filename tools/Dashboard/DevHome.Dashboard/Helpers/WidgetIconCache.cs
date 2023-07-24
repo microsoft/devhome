@@ -112,7 +112,7 @@ internal class WidgetIconCache
         return image;
     }
 
-    public static async Task<Brush> GetBrushForWidgetIcon(WidgetDefinition widgetDefinition, ElementTheme theme)
+    public static async Task<Brush> GetBrushForWidgetIconAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
     {
         var image = await GetWidgetIconForTheme(widgetDefinition, theme);
 
