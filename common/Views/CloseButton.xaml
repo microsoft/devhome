@@ -11,14 +11,8 @@
     BorderThickness="0"
     Background="Transparent"
     Padding="10">
-    
-    <Button.Resources>
-        <Style TargetType="Button" />
-    </Button.Resources>
-    
-    <Grid>
-        <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}" 
-                   FontSize="{ThemeResource BodyTextBlockFontSize}" 
-                   Text="&#xE711;" />
-    </Grid>
+
+    <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}" 
+                FontSize="{ThemeResource BodyTextBlockFontSize}" 
+                Text="&#xE711;" />
 </Button>
