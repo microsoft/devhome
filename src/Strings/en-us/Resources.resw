@@ -222,4 +222,16 @@
     <value>Core (Preview)</value>
     <comment>The display name for core widgets provider</comment>
   </data>
+  <data name="AppDisplayNameDevAdministrator" xml:space="preserve">
+    <value>Administrator: Dev Home (Dev)</value>
+    <comment>Name of app when run as administrator</comment>
+  </data>
+  <data name="AppDisplayNameCanaryAdministrator" xml:space="preserve">
+    <value>Administrator: Dev Home (Canary)</value>
+    <comment>Name of app when run as administrator</comment>
+  </data>
+  <data name="AppDisplayNameStableAdministrator" xml:space="preserve">
+    <value>Administrator: Dev Home (Preview)</value>
+    <comment>Name of app when run as administrator</comment>
+  </data>
 </root>
