@@ -1,6 +1,6 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(1)] 
+    [contractversion(2)] 
     apicontract DevHomeContract {}
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -15,14 +15,14 @@ namespace Microsoft.Windows.DevHome.SDK
         Notifications = 6
     };
     
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] 
     enum AuthenticationExperienceKind 
     {
         CustomProvider = 0,
         CardSession = 1
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] 
     enum AuthenticationState 
     {
         LoggedIn = 0,
