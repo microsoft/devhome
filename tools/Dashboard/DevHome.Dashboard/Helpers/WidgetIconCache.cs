@@ -37,11 +37,15 @@ internal class WidgetIconCache
     /// </summary>
     public async Task CacheAllWidgetIconsAsync(WidgetCatalog widgetCatalog)
     {
+        var cacheTasks = new List<Task>();
         var widgetDefs = widgetCatalog.GetWidgetDefinitions();
         foreach (var widgetDef in widgetDefs ?? Array.Empty<WidgetDefinition>())
         {
-            await AddIconsToCacheAsync(widgetDef);
+            var task = AddIconsToCacheAsync(widgetDef);
+            cacheTasks.Add(task);
         }
+
+        await Task.WhenAll(cacheTasks);
     }
 
     /// <summary>
