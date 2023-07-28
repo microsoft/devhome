@@ -6,7 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helpers="using:DevHome.Common.Helpers"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
-    xmlns:ui="using:CommunityToolkit.WinUI.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:i="using:Microsoft.Xaml.Interactivity" 
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
@@ -28,7 +27,10 @@
                 ItemsSource="{x:Bind Breadcrumbs}" />
 
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <labs:SettingsCard x:Uid="Settings_Theme" HeaderIcon="{ui:FontIcon Glyph=&#xE790;}">
+                <labs:SettingsCard x:Uid="Settings_Theme">
+                    <labs:SettingsCard.HeaderIcon>
+                        <FontIcon Glyph="&#xE790;" />
+                    </labs:SettingsCard.HeaderIcon>
                     <ComboBox x:Name="ThemeSelectionComboBox"
                                       SelectedIndex="{x:Bind Mode=TwoWay, Path=ViewModel.ElementTheme, Converter={StaticResource EnumToIntConverter}}">
                         <ComboBoxItem x:Uid="Settings_Theme_Default" />
