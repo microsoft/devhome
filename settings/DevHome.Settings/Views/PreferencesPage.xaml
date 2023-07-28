@@ -7,11 +7,12 @@
     xmlns:helpers="using:DevHome.Common.Helpers"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:xaml="using:Microsoft.UI.Xaml"
+    xmlns:i="using:Microsoft.Xaml.Interactivity" 
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
-        <helpers:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
+        <helpers:EnumToIntConverter x:Key="EnumToIntConverter" />
     </Page.Resources>
 
     <ScrollViewer
@@ -32,35 +33,18 @@
                     </labs:SettingsExpander.HeaderIcon>
                     <labs:SettingsExpander.Items>
                         <labs:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
-                            <StackPanel>
-                                <RadioButton
-                                    x:Uid="Settings_Theme_Light"
-                                    Command="{x:Bind ViewModel.SwitchThemeCommand}"
-                                    GroupName="AppTheme"
-                                    IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}">
-                                    <RadioButton.CommandParameter>
-                                        <xaml:ElementTheme>Light</xaml:ElementTheme>
-                                    </RadioButton.CommandParameter>
-                                </RadioButton>
-                                <RadioButton
-                                    x:Uid="Settings_Theme_Dark"
-                                    Command="{x:Bind ViewModel.SwitchThemeCommand}"
-                                    GroupName="AppTheme"
-                                    IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}">
-                                    <RadioButton.CommandParameter>
-                                        <xaml:ElementTheme>Dark</xaml:ElementTheme>
-                                    </RadioButton.CommandParameter>
-                                </RadioButton>
-                                <RadioButton
-                                    x:Uid="Settings_Theme_Default"
-                                    Command="{x:Bind ViewModel.SwitchThemeCommand}"
-                                    GroupName="AppTheme"
-                                    IsChecked="{x:Bind ViewModel.ElementTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Default, Mode=OneWay}">
-                                    <RadioButton.CommandParameter>
-                                        <xaml:ElementTheme>Default</xaml:ElementTheme>
-                                    </RadioButton.CommandParameter>
-                                </RadioButton>
-                            </StackPanel>
+                            <ComboBox x:Name="ThemeSelectionComboBox"
+                                      SelectedIndex="{x:Bind Mode=TwoWay, Path=ViewModel.ElementTheme, Converter={StaticResource EnumToIntConverter}}">
+                                <ComboBoxItem x:Uid="Settings_Theme_Default" />
+                                <ComboBoxItem x:Uid="Settings_Theme_Light" />
+                                <ComboBoxItem x:Uid="Settings_Theme_Dark" />
+                                <i:Interaction.Behaviors>
+                                    <ic:EventTriggerBehavior EventName="SelectionChanged">
+                                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.SwitchThemeCommand}" 
+                                                                CommandParameter="{Binding SelectedIndex, ElementName=ThemeSelectionComboBox}" />
+                                    </ic:EventTriggerBehavior>
+                                </i:Interaction.Behaviors>
+                            </ComboBox>
                         </labs:SettingsCard>
                     </labs:SettingsExpander.Items>
                 </labs:SettingsExpander>
