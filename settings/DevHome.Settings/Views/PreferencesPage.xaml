@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:helpers="using:DevHome.Common.Helpers"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:ui="using:CommunityToolkit.WinUI.UI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:i="using:Microsoft.Xaml.Interactivity" 
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
@@ -27,27 +28,20 @@
                 ItemsSource="{x:Bind Breadcrumbs}" />
 
             <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <labs:SettingsExpander x:Uid="Settings_Theme" IsExpanded="True">
-                    <labs:SettingsExpander.HeaderIcon>
-                        <FontIcon Glyph="&#xE790;" />
-                    </labs:SettingsExpander.HeaderIcon>
-                    <labs:SettingsExpander.Items>
-                        <labs:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
-                            <ComboBox x:Name="ThemeSelectionComboBox"
+                <labs:SettingsCard x:Uid="Settings_Theme" HeaderIcon="{ui:FontIcon Glyph=&#xE790;}">
+                    <ComboBox x:Name="ThemeSelectionComboBox"
                                       SelectedIndex="{x:Bind Mode=TwoWay, Path=ViewModel.ElementTheme, Converter={StaticResource EnumToIntConverter}}">
-                                <ComboBoxItem x:Uid="Settings_Theme_Default" />
-                                <ComboBoxItem x:Uid="Settings_Theme_Light" />
-                                <ComboBoxItem x:Uid="Settings_Theme_Dark" />
-                                <i:Interaction.Behaviors>
-                                    <ic:EventTriggerBehavior EventName="SelectionChanged">
-                                        <ic:InvokeCommandAction Command="{x:Bind ViewModel.SwitchThemeCommand}" 
-                                                                CommandParameter="{Binding SelectedIndex, ElementName=ThemeSelectionComboBox}" />
-                                    </ic:EventTriggerBehavior>
-                                </i:Interaction.Behaviors>
-                            </ComboBox>
-                        </labs:SettingsCard>
-                    </labs:SettingsExpander.Items>
-                </labs:SettingsExpander>
+                        <ComboBoxItem x:Uid="Settings_Theme_Default" />
+                        <ComboBoxItem x:Uid="Settings_Theme_Light" />
+                        <ComboBoxItem x:Uid="Settings_Theme_Dark" />
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="SelectionChanged">
+                                <ic:InvokeCommandAction Command="{x:Bind ViewModel.SwitchThemeCommand}" 
+                                                        CommandParameter="{Binding SelectedIndex, ElementName=ThemeSelectionComboBox}" />
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </ComboBox>
+                </labs:SettingsCard>
             </StackPanel>
         </StackPanel>
     </ScrollViewer>
