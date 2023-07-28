@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
@@ -11,10 +12,13 @@ using DevHome.Dashboard.Helpers;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.Data.Json;
 using Windows.System;
+using WinRT;
 
 namespace DevHome.Dashboard.ViewModels;
 
@@ -24,6 +28,8 @@ public partial class WidgetViewModel : ObservableObject
     private readonly AdaptiveCardRenderer _renderer;
 
     private RenderedAdaptiveCard _renderedCard;
+
+    private string _oldTemplate;
 
     [ObservableProperty]
     private Widget _widget;
@@ -175,11 +181,31 @@ public partial class WidgetViewModel : ObservableObject
         {
             try
             {
+                List<int> focusedElementPath = DoFocusStuff(_renderedCard);
+                Log.Logger()?.ReportDebug("WidgetViewModel", "Path: " + focusedElementPath.ToString());
+                foreach (var el in focusedElementPath)
+                {
+                    Log.Logger()?.ReportDebug("WidgetViewModel", "Olha o ELEMENTO: " + el);
+                }
+
                 _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
                 if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                 {
                     _renderedCard.Action += HandleAdaptiveAction;
                     WidgetFrameworkElement = _renderedCard.FrameworkElement;
+                    if (focusedElementPath.Count > 0)
+                    {
+                        if (_oldTemplate == cardTemplate)
+                        {
+                            KeepFocusOnWidget(focusedElementPath);
+                        }
+                        else
+                        {
+                            WidgetFrameworkElement.Focus(FocusState.Keyboard);
+                        }
+                    }
+
+                    _oldTemplate = cardTemplate;
                 }
                 else
                 {
@@ -296,5 +322,54 @@ public partial class WidgetViewModel : ObservableObject
     {
         Log.Logger()?.ReportDebug("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
         RenderWidgetFrameworkElement();
+    }
+
+    private List<int> DoFocusStuff(RenderedAdaptiveCard rendered)
+    {
+        var pathOnTree = new List<int>();
+
+        if (rendered == null)
+        {
+            return pathOnTree;
+        }
+
+        var focused = FocusManager.GetFocusedElement(rendered.FrameworkElement.XamlRoot) as FrameworkElement;
+        GetPathOnTree(rendered.FrameworkElement, focused, ref pathOnTree);
+
+        pathOnTree.Reverse();
+
+        return pathOnTree;
+    }
+
+    private void GetPathOnTree(FrameworkElement currentElement, FrameworkElement target, ref List<int> result)
+    {
+        var num_children = VisualTreeHelper.GetChildrenCount(currentElement);
+        for (var i = 0; i < num_children; ++i)
+        {
+            var child = VisualTreeHelper.GetChild(currentElement, i) as FrameworkElement;
+            if (child == target)
+            {
+                result.Add(i);
+                return;
+            }
+
+            GetPathOnTree(currentElement, child, ref result);
+            if (result.Count > 0)
+            {
+                result.Add(i);
+                return;
+            }
+        }
+    }
+
+    private void KeepFocusOnWidget(List<int> path)
+    {
+        var element = WidgetFrameworkElement;
+        foreach (var i in path)
+        {
+            element = VisualTreeHelper.GetChild(element, i) as FrameworkElement;
+        }
+
+        element.Focus(FocusState.Keyboard);
     }
 }
