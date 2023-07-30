@@ -134,7 +134,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// Command to re-run all tasks by moving them from _failedTasks to TasksToRun
     /// </summary>
     [RelayCommand]
-    public async void RestartFailedTasks()
+    public async Task RestartFailedTasks()
     {
         TelemetryFactory.Get<ITelemetry>().LogMeasure("Loading_RestartFailedTasks_Event");
         Log.Logger?.ReportInfo(Log.Component.Loading, "Restarting all failed tasks");
