@@ -182,23 +182,25 @@ public partial class WidgetViewModel : ObservableObject
         {
             try
             {
-                List<int> focusedElementPath = DoFocusStuff(_renderedCard);
-                Log.Logger()?.ReportDebug("WidgetViewModel", "Path size: " + focusedElementPath.Count);
-                foreach (var el in focusedElementPath)
-                {
-                    Log.Logger()?.ReportDebug("WidgetViewModel", "Olha o ELEMENTO: " + el);
-                }
+                List<int> focusedElementPath = GetPathToFocusedElement(_renderedCard);
 
                 _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
                 if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                 {
                     _renderedCard.Action += HandleAdaptiveAction;
                     WidgetFrameworkElement = _renderedCard.FrameworkElement;
+
+                    // If the path has elements, the focused control is inside this widget.
+                    // Otherwise, it is outside, so there is nothing else to do here.
                     if (focusedElementPath.Count > 0)
                     {
+                        // If there template didn't chage, the data structure is the same, so we can
+                        // try to keep focus on the element that was in the same position.
+                        // But if the template changed, we just reset the focus to the widget itself as
+                        // the structure of the widget changed.
                         if (_oldTemplate == cardTemplate)
                         {
-                            KeepFocusOnWidget(focusedElementPath);
+                            AttemptToKeepFocus(focusedElementPath);
                         }
                         else
                         {
@@ -325,57 +327,69 @@ public partial class WidgetViewModel : ObservableObject
         RenderWidgetFrameworkElement();
     }
 
-    private List<int> DoFocusStuff(RenderedAdaptiveCard rendered)
+    private List<int> GetPathToFocusedElement(RenderedAdaptiveCard rendered)
     {
         var pathOnTree = new List<int>();
 
+        // Empty path returned if there is no rendered card before
         if (rendered == null)
         {
             return pathOnTree;
         }
 
+        // We get the current focused element. If it is not inside the widget, the path to be returned
+        // will have no elements at all as we will not reach it in our search
         var focused = FocusManager.GetFocusedElement(rendered.FrameworkElement.XamlRoot) as FrameworkElement;
-        Log.Logger()?.ReportDebug("WidgetViewModel", $"Olha o FOCADO: {focused.GetValue(AutomationProperties.NameProperty)}");
 
         if (focused != null)
         {
-            GetPathOnTree(rendered.FrameworkElement, focused, ref pathOnTree);
+            GetPathOnWidgetTree(rendered.FrameworkElement, focused, ref pathOnTree);
         }
 
+        // We build the path recursively, so it is reversed. We reverse it to get the path from root to leaf.
         pathOnTree.Reverse();
 
         return pathOnTree;
     }
 
-    private void GetPathOnTree(FrameworkElement currentElement, FrameworkElement target, ref List<int> result)
+    // This method is a DFS to search the focused element inside the widget descendants
+    private void GetPathOnWidgetTree(FrameworkElement currentElement, FrameworkElement target, ref List<int> path)
     {
         var num_children = VisualTreeHelper.GetChildrenCount(currentElement);
-        Log.Logger()?.ReportDebug("WidgetViewModel", $"No DFS: {currentElement.Name}");
         for (var i = 0; i < num_children; ++i)
         {
             var child = VisualTreeHelper.GetChild(currentElement, i) as FrameworkElement;
+
+            // If we find the focused element, we add its index on the final path we passed by reference
             if (child == target)
             {
-                result.Add(i);
+                path.Add(i);
                 return;
             }
 
-            GetPathOnTree(child, target, ref result);
+            GetPathOnWidgetTree(child, target, ref path);
 
-            if (result.Count > 0)
+            // If after we call the recusrion to a child, the path is not empty,
+            // we fond the target on this subtree. We stop the search and add the child's
+            // index to the answer.
+            if (path.Count > 0)
             {
-                result.Add(i);
+                path.Add(i);
                 return;
             }
         }
     }
 
-    private void KeepFocusOnWidget(List<int> path)
+    private void AttemptToKeepFocus(List<int> path)
     {
         var element = WidgetFrameworkElement;
+
+        // Try to descend the tree until we get to the same position as the control previously focused.
         foreach (var i in path)
         {
-            Log.Logger()?.ReportDebug("WidgetViewModel", "Descendo a árvore: " + element.GetValue(AutomationProperties.NameProperty) + ", " + element.Name);
+            // If for some reason there is not a way to reach a similar control in the same position
+            // because of changes on the size of elements in a list for example, we set the focus
+            // back to the widget as a whole.
             if (i >= VisualTreeHelper.GetChildrenCount(element))
             {
                 WidgetFrameworkElement.Focus(FocusState.Keyboard);
@@ -385,9 +399,7 @@ public partial class WidgetViewModel : ObservableObject
             element = VisualTreeHelper.GetChild(element, i) as FrameworkElement;
         }
 
-        Log.Logger()?.ReportDebug("WidgetViewModel", "Elemento final: " + element.GetValue(AutomationProperties.NameProperty) + ", " + element.Name);
-
-        var res = element.Focus(FocusState.Keyboard);
-        WidgetFrameworkElement.Focus(FocusState.Keyboard);
+        // Set the focus to the object after we reach it.
+        element.Focus(FocusState.Keyboard);
     }
 }
