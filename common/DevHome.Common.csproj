@@ -10,6 +10,8 @@
     <DevHomeSDKVersion Condition="$(DevHomeSDKVersion) == ''">0.100.105</DevHomeSDKVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Views\Banner.xaml" />
+    <None Remove="Views\CloseButton.xaml" />
     <None Remove="Views\HyperlinkTextBlock.xaml" />
   </ItemGroup>
 
@@ -41,6 +43,9 @@
 
   <ItemGroup>
     <Page Update="Views\Banner.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Views\CloseButton.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\HyperlinkTextBlock.xaml">
