@@ -66,6 +66,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ObservableCollection<TaskInformation> _tasksToRun;
 
+    [ObservableProperty]
+    private ObservableCollection<LoadingMessageViewModel> _messages;
+
     /// <summary>
     /// List of all messages that shows up in the "action center" of the loading screen.
     /// </summary>
@@ -181,6 +184,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ShowRetryButton = Visibility.Collapsed;
         _failedTasks = new List<TaskInformation>();
         ActionCenterItems = new ();
+        Messages = new ();
     }
 
     /// <summary>
@@ -200,9 +204,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                     TaskIndex = taskIndex++,
                     TaskToExecute = task,
                     MessageToShow = task.GetLoadingMessages().Executing,
-                    StatusIconGridVisibility = false,
-                    ShouldShowProgressRing = false,
-                    MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"],
                 });
             }
         }
@@ -228,12 +229,15 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// TaskInformation is an ObservableObject inside an ObservableCollection.  Any changes to information
     /// will change the UI.
     /// </remarks>
-    public void ChangeMessage(TaskInformation information, TaskFinishedState taskFinishedState)
+    public void ChangeMessage(TaskInformation information, LoadingMessageViewModel loadingMessage, TaskFinishedState taskFinishedState)
     {
         Log.Logger?.ReportDebug(Log.Component.Loading, $"Updating message for task {information.MessageToShow} with state {taskFinishedState}");
         var stringToReplace = string.Empty;
         BitmapImage statusSymbolIcon = null;
 
+        // Two things to do.
+        // 1. Change the message color and icon in information
+        // 2. Add a new message with the done message.
         if (taskFinishedState == TaskFinishedState.Success)
         {
             if (information.TaskToExecute.RequiresReboot)
@@ -286,16 +290,18 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             TasksFailed++;
 
             Log.Logger?.ReportDebug(Log.Component.Loading, "Adding task to list for retry");
-
-            information.StatusIconGridVisibility = false;
             _failedTasks.Add(information);
         }
 
-        information.StatusIconGridVisibility = true;
-        information.StatusSymbolIcon = statusSymbolIcon;
-        information.MessageToShow = stringToReplace;
-        information.ShouldShowProgressRing = false;
-        information.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
+        loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
+        loadingMessage.ShouldShowProgressRing = false;
+
+        var newLoadingScreenMessage = new LoadingMessageViewModel(stringToReplace);
+        newLoadingScreenMessage.StatusSymbolIcon = statusSymbolIcon;
+        newLoadingScreenMessage.ShouldShowProgressRing = false;
+        newLoadingScreenMessage.ShouldShowStatusSymbolIcon = true;
+
+        Messages.Add(newLoadingScreenMessage);
     }
 
     /// <summary>
@@ -408,12 +414,16 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // Start the task and wait for it to complete.
         try
         {
+            var loadingMessage = new LoadingMessageViewModel(taskInformation.MessageToShow);
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
                 ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
-                taskInformation.ShouldShowProgressRing = true;
-                taskInformation.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+
+                loadingMessage.ShouldShowProgressRing = true;
+                loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+
+                Messages.Add(loadingMessage);
             });
 
             TaskFinishedState taskFinishedState;
@@ -429,7 +439,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
             window.DispatcherQueue.TryEnqueue(() =>
             {
-                ChangeMessage(taskInformation, taskFinishedState);
+                ChangeMessage(taskInformation, loadingMessage, taskFinishedState);
 
                 TasksCompleted++;
                 ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, TasksFailed);
