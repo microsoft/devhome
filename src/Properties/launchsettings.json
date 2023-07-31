@@ -1,11 +1,10 @@
-{
+﻿{
   "profiles": {
     "DevHome (Package)": {
       "commandName": "MsixPackage"
     },
     "DevHome (Unpackaged)": {
-      "commandName": "Project",
-      "hotReloadEnabled": false
+      "commandName": "Project"
     }
   }
 }
