@@ -187,9 +187,6 @@
   <data name="Settings_About_Card.Header" xml:space="preserve">
     <value>Dev Home</value>
   </data>
-  <data name="Settings_About_Card.Description" xml:space="preserve">
-    <value>Made with 💗 by Microsoft and the Dev Home community</value>
-  </data>
   <data name="Settings_About_RelatedLinks.Text" xml:space="preserve">
     <value>Related links</value>
   </data>
