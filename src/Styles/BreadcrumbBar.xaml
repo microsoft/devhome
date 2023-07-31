@@ -11,7 +11,7 @@
     <x:Double x:Key="BreadcrumbBarItemFontSize">20</x:Double>
     <StaticResource x:Key="BreadcrumbBarItemThemeFontSize" ResourceKey="BreadcrumbBarItemFontSize" />
 
-    <FontWeight x:Key="BreadcrumbBarItemFontWeight">Normal</FontWeight>
+    <FontWeight x:Key="BreadcrumbBarItemFontWeight">SemiBold</FontWeight>
 
     <!-- Applies to all items but the last (current) item -->
     <StaticResource x:Key="BreadcrumbBarNormalForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
