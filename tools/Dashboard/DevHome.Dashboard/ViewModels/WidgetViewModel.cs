@@ -11,7 +11,6 @@ using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
@@ -19,7 +18,6 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.Data.Json;
 using Windows.System;
-using WinRT;
 
 namespace DevHome.Dashboard.ViewModels;
 
