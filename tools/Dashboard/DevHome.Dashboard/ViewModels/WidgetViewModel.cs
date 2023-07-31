@@ -11,6 +11,7 @@ using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
@@ -182,7 +183,7 @@ public partial class WidgetViewModel : ObservableObject
             try
             {
                 List<int> focusedElementPath = DoFocusStuff(_renderedCard);
-                Log.Logger()?.ReportDebug("WidgetViewModel", "Path: " + focusedElementPath.ToString());
+                Log.Logger()?.ReportDebug("WidgetViewModel", "Path size: " + focusedElementPath.Count);
                 foreach (var el in focusedElementPath)
                 {
                     Log.Logger()?.ReportDebug("WidgetViewModel", "Olha o ELEMENTO: " + el);
@@ -334,7 +335,12 @@ public partial class WidgetViewModel : ObservableObject
         }
 
         var focused = FocusManager.GetFocusedElement(rendered.FrameworkElement.XamlRoot) as FrameworkElement;
-        GetPathOnTree(rendered.FrameworkElement, focused, ref pathOnTree);
+        Log.Logger()?.ReportDebug("WidgetViewModel", $"Olha o FOCADO: {focused.GetValue(AutomationProperties.NameProperty)}");
+
+        if (focused != null)
+        {
+            GetPathOnTree(rendered.FrameworkElement, focused, ref pathOnTree);
+        }
 
         pathOnTree.Reverse();
 
@@ -344,6 +350,7 @@ public partial class WidgetViewModel : ObservableObject
     private void GetPathOnTree(FrameworkElement currentElement, FrameworkElement target, ref List<int> result)
     {
         var num_children = VisualTreeHelper.GetChildrenCount(currentElement);
+        Log.Logger()?.ReportDebug("WidgetViewModel", $"No DFS: {currentElement.Name}");
         for (var i = 0; i < num_children; ++i)
         {
             var child = VisualTreeHelper.GetChild(currentElement, i) as FrameworkElement;
@@ -353,7 +360,8 @@ public partial class WidgetViewModel : ObservableObject
                 return;
             }
 
-            GetPathOnTree(currentElement, child, ref result);
+            GetPathOnTree(child, target, ref result);
+
             if (result.Count > 0)
             {
                 result.Add(i);
@@ -367,9 +375,19 @@ public partial class WidgetViewModel : ObservableObject
         var element = WidgetFrameworkElement;
         foreach (var i in path)
         {
+            Log.Logger()?.ReportDebug("WidgetViewModel", "Descendo a árvore: " + element.GetValue(AutomationProperties.NameProperty) + ", " + element.Name);
+            if (i >= VisualTreeHelper.GetChildrenCount(element))
+            {
+                WidgetFrameworkElement.Focus(FocusState.Keyboard);
+                return;
+            }
+
             element = VisualTreeHelper.GetChild(element, i) as FrameworkElement;
         }
 
-        element.Focus(FocusState.Keyboard);
+        Log.Logger()?.ReportDebug("WidgetViewModel", "Elemento final: " + element.GetValue(AutomationProperties.NameProperty) + ", " + element.Name);
+
+        var res = element.Focus(FocusState.Keyboard);
+        WidgetFrameworkElement.Focus(FocusState.Keyboard);
     }
 }
