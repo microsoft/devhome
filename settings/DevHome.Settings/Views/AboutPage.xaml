@@ -28,19 +28,27 @@
                 <labs:SettingsExpander.HeaderIcon>
                     <BitmapIcon ShowAsMonochrome="False" UriSource="/Assets/DevHome.ico" />
                 </labs:SettingsExpander.HeaderIcon>
-                <TextBlock
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    IsTextSelectionEnabled="True"
-                    Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" />
                 <labs:SettingsExpander.Items>
                     <labs:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock x:Uid="Settings_About_RelatedLinks" Margin="{StaticResource XSmallTopBottomMargin}" />
-                            <HyperlinkButton x:Uid="SettingsPage_SourceCodeLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
-                            <HyperlinkButton x:Uid="SettingsPage_DocumentationLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
-                            <HyperlinkButton x:Uid="SettingsPage_ReleaseNotesLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
-                            <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Padding="0,0,0,8">
+                            <TextBlock x:Uid="Settings_About_Version" Margin="0,0,50,0" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                IsTextSelectionEnabled="True"
+                                Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}"/>
                         </StackPanel>
+                    </labs:SettingsCard>
+                    <labs:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock x:Uid="Settings_About_RelatedLinks" Margin="0,8,11,8" />
+                            <HyperlinkButton x:Uid="SettingsPage_SourceCodeLink" />
+                            <HyperlinkButton x:Uid="SettingsPage_DocumentationLink" />
+                            <HyperlinkButton x:Uid="SettingsPage_ReleaseNotesLink" />
+                            <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" />
+                        </StackPanel>
+                        <labs:SettingsCard.Resources>
+                            <x:Double x:Key="SettingsCardLeftIndention">-40</x:Double>
+                        </labs:SettingsCard.Resources>
                     </labs:SettingsCard>
                 </labs:SettingsExpander.Items>
             </labs:SettingsExpander>

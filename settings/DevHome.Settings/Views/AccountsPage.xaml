@@ -29,7 +29,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="AccountsViewTemplate" x:DataType="models:Account">
-            <labs:SettingsCard Header="{x:Bind LoginId}" Margin="{StaticResource SettingsCardMargin}">
+            <labs:SettingsCard Header="{x:Bind LoginId}" Description="{x:Bind ProviderName}" Margin="{StaticResource SettingsCardMargin}">
                 <Button Tag="{x:Bind}" x:Uid="Settings_Accounts_LogoutButton" Click="Logout_Click"/>
             </labs:SettingsCard>
         </DataTemplate>
