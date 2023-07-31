@@ -8,9 +8,12 @@
 
     <FontFamily x:Key="ContentControlThemeFontFamily">XamlAutoFontFamily</FontFamily>
 
-    <x:Double x:Key="BreadcrumbBarItemFontSize">28</x:Double>
+    <x:Double x:Key="BreadcrumbBarItemFontSize">20</x:Double>
     <StaticResource x:Key="BreadcrumbBarItemThemeFontSize" ResourceKey="BreadcrumbBarItemFontSize" />
 
-    <FontWeight x:Key="BreadcrumbBarItemFontWeight">SemiBold</FontWeight>
+    <FontWeight x:Key="BreadcrumbBarItemFontWeight">Normal</FontWeight>
+
+    <!-- Applies to all items but the last (current) item -->
+    <StaticResource x:Key="BreadcrumbBarNormalForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
 
 </ResourceDictionary>
