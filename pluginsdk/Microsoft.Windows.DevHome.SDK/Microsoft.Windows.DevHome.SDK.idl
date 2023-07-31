@@ -14,6 +14,20 @@ namespace Microsoft.Windows.DevHome.SDK
         DevDoctor = 5,
         Notifications = 6
     };
+    
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] 
+    enum AuthenticationExperienceKind 
+    {
+        CustomProvider = 0,
+        CardSession = 1
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] 
+    enum AuthenticationState 
+    {
+        LoggedIn = 0,
+        LoggedOut = 1
+    };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface IPlugin 
@@ -75,21 +89,29 @@ namespace Microsoft.Windows.DevHome.SDK
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface IDeveloperIdProvider
     {
+        AuthenticationExperienceKind GetAuthenticationExperienceKind(); 
+
         String GetName();
 
         IIterable<IDeveloperId> GetLoggedInDeveloperIds();
 
+        // This API is deprecated and should not be used. The API will be removed once all callers have been moved over.
         Windows.Foundation.IAsyncOperation<IDeveloperId> LoginNewDeveloperIdAsync();
 
         void LogoutDeveloperId(IDeveloperId developerId);
 
         IPluginAdaptiveCardController GetAdaptiveCardController(String[] args);
 
+        // The below events (LoggedIn, LoggedOut and Updated) are legacy events.
         event Windows.Foundation.EventHandler<IDeveloperId> LoggedIn;
 
         event Windows.Foundation.EventHandler<IDeveloperId> LoggedOut;
 
         event Windows.Foundation.EventHandler<IDeveloperId> Updated;
+
+        event Windows.Foundation.TypedEventHandler<IDeveloperIdProvider, Object> Changed;
+
+        AuthenticationState developerIDState; 
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
