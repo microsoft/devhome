@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:helpers="using:DevHome.Common.Helpers"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
@@ -25,18 +24,25 @@
                 <labs:SettingsExpander.HeaderIcon>
                     <BitmapIcon ShowAsMonochrome="False" UriSource="/Assets/DevHome.ico" />
                 </labs:SettingsExpander.HeaderIcon>
-                <TextBlock
-                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                    IsTextSelectionEnabled="True"
-                    Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" />
                 <labs:SettingsExpander.Items>
                     <labs:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock x:Uid="Settings_About_RelatedLinks" Margin="{StaticResource XSmallTopBottomMargin}" />
-                            <HyperlinkButton x:Uid="SettingsPage_SourceCodeLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
-                            <HyperlinkButton x:Uid="SettingsPage_DocumentationLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
-                            <HyperlinkButton x:Uid="SettingsPage_ReleaseNotesLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
-                            <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Padding="0,0,0,8">
+                            <TextBlock x:Uid="Settings_About_Version" Margin="0,0,50,0" />
+                            <TextBlock
+                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                IsTextSelectionEnabled="True"
+                                Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}"/>
+                        </StackPanel>
+                    </labs:SettingsCard>
+                    <labs:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left"
+                                       Background="{ThemeResource ControlFillColorTertiaryBrush}"
+                                       CornerRadius="0,0,4,4">
+                        <StackPanel Orientation="Horizontal" Margin="-40,0,0,0">
+                            <TextBlock x:Uid="Settings_About_RelatedLinks" Margin="0,8,11,8" />
+                            <HyperlinkButton x:Uid="SettingsPage_SourceCodeLink" />
+                            <HyperlinkButton x:Uid="SettingsPage_DocumentationLink" />
+                            <HyperlinkButton x:Uid="SettingsPage_ReleaseNotesLink" />
+                            <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" />
                         </StackPanel>
                     </labs:SettingsCard>
                 </labs:SettingsExpander.Items>
