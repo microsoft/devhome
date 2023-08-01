@@ -130,7 +130,7 @@ internal class WidgetIconCache
         return brush;
     }
 
-    private static async Task<BitmapImage> WidgetIconToBitmapImageAsync(IRandomAccessStreamReference iconStreamRef)
+    private async Task<BitmapImage> WidgetIconToBitmapImageAsync(IRandomAccessStreamReference iconStreamRef)
     {
         // Return the bitmap image via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
         // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
