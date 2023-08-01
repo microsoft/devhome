@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
-# Reference: https://github.com/dotnet/aspnetcore
+# Reference: https://github.com/dotnet/aspnetcore/blob/main/docs/BuildFromSource.md
 properties:
   resources:
     - resource: Microsoft.WinGet.DSC/WinGetPackage
