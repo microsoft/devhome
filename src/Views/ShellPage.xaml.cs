@@ -6,6 +6,7 @@ using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Markup;
@@ -111,11 +112,18 @@ public sealed partial class ShellPage : Page
         {
             foreach (var tool in group.Tools)
             {
-                var navigationViewItemString = $@"<NavigationViewItem xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:helpers=""using:DevHome.Helpers"" x:Uid=""/{tool.Assembly}/Resources/NavigationPane"" helpers:NavigationHelper.NavigateTo=""{tool.ViewModelFullName}"">
-                                                  <NavigationViewItem.Icon>
-                                                      <FontIcon FontFamily=""{{StaticResource SymbolThemeFontFamily}}"" Glyph=""&#x{tool.Icon};""/>
-                                                  </NavigationViewItem.Icon>
-                                              </NavigationViewItem>";
+                var navigationViewItemString = $@"
+                    <NavigationViewItem
+                        xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+                        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+                        xmlns:helpers=""using:DevHome.Helpers""
+                        x:Uid=""/{tool.Assembly}/Resources/NavigationPane""
+                        helpers:NavigationHelper.NavigateTo=""{tool.ViewModelFullName}""
+                        AutomationProperties.AutomationId=""{tool.Identity}"">
+                        <NavigationViewItem.Icon>
+                            <FontIcon FontFamily=""{{StaticResource SymbolThemeFontFamily}}"" Glyph=""&#x{tool.Icon};""/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>";
                 NavigationViewItem navigationViewItem = (NavigationViewItem)XamlReader.Load(navigationViewItemString);
                 NavigationViewControl.MenuItems.Add(navigationViewItem);
             }

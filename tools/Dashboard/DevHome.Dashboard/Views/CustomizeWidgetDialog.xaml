@@ -7,6 +7,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d"
     Style="{StaticResource DefaultContentDialogStyle}"
@@ -25,12 +26,7 @@
     <StackPanel Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
         <!-- Close button -->
         <Grid x:Name="CustomizeWidgetTitleBar">
-            <Button HorizontalAlignment="Right" Click="CancelButton_Click"
-                    BorderThickness="0" Background="Transparent" Margin="5">
-                <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}" 
-                           FontSize="{ThemeResource BodyTextBlockFontSize}" 
-                           Text="&#xE711;" />
-            </Button>
+            <commonviews:CloseButton Click="CancelButton_Click" />
         </Grid>
 
         <!-- Widget configuration UI -->

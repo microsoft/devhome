@@ -84,6 +84,7 @@
                         <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
                         <Grid Background="Transparent">
                             <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
+                                               AutomationProperties.AutomationId="EndToEndSetupButton"
                                                IsClickEnabled="True"
                                                Command="{x:Bind ViewModel.StartSetupCommand}"
                                                CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
@@ -104,6 +105,7 @@
                             </ToolTipService.ToolTip>
                         </Grid>
                         <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_ConfigurationFile"
+                                           AutomationProperties.AutomationId="DSCConfigurationButton"
                                            IsClickEnabled="True"
                                            Command="{x:Bind ViewModel.StartConfigurationFileCommand}"
                                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
@@ -117,6 +119,7 @@
                     <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
                         <TextBlock Style="{StaticResource SettingsSectionHeaderTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_QuickConfiguration" />
                         <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_CloneRepos"
+                                           AutomationProperties.AutomationId="CloneRepoButton"
                                            IsClickEnabled="True"
                                            Command="{x:Bind ViewModel.StartRepoConfigCommand}"
                                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
@@ -129,6 +132,7 @@
                         <Grid Background="Transparent">
                             <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_InstallApps"
                                                IsClickEnabled="True"
+                                               AutomationProperties.AutomationId="InstallAppsButton"
                                                Command="{x:Bind ViewModel.StartAppManagementCommand}"
                                                CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
                                                IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}"
@@ -148,6 +152,7 @@
                             </ToolTipService.ToolTip>
                         </Grid>
                         <labs:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_DevDrive"
+                                           AutomationProperties.AutomationId="DevDriveButton"
                                            IsClickEnabled="True" Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}" 
                                            Visibility="{x:Bind ViewModel.ShowDevDriveItem, Mode=OneWay}" >
                             <labs:SettingsCard.ActionIcon>

@@ -7,6 +7,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d"
     Style="{StaticResource DefaultContentDialogStyle}"
@@ -27,12 +28,7 @@
         <!-- Title and Close button -->
         <Grid x:Name="AddWidgetTitleBar">
             <TextBlock x:Uid="AddWidgetsTitle" HorizontalAlignment="Left" Margin="16,10,0,0" />
-            <Button HorizontalAlignment="Right" Click="CancelButton_Click"
-                    BorderThickness="0" Background="Transparent" Padding="10">
-                <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}" 
-                           FontSize="{ThemeResource BodyTextBlockFontSize}" 
-                           Text="&#xE711;" />
-            </Button>
+            <commonviews:CloseButton Click="CancelButton_Click" />
         </Grid>
 
         <!-- Widgets available to pin-->
