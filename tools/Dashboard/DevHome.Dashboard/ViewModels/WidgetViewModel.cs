@@ -29,6 +29,8 @@ public partial class WidgetViewModel : ObservableObject
     private RenderedAdaptiveCard _renderedCard;
 
     private string _oldTemplate;
+    private string _currentTemplate;
+    private List<int> focusedElementPath;
 
     [ObservableProperty]
     private Widget _widget;
@@ -86,6 +88,28 @@ public partial class WidgetViewModel : ObservableObject
         if (WidgetFrameworkElement != null && WidgetFrameworkElement is Grid grid)
         {
             WidgetBackground = grid.Background;
+
+            // If the path has elements, the focused control is inside this widget.
+            // Otherwise, it is outside, so there is nothing else to do here.
+            if (focusedElementPath.Count > 0)
+            {
+                // If the template didn't change, the data structure is the same, so we can
+                // try to keep focus on the element that is in the same position.
+                // But if the template changed, we just reset the focus to the widget itself as
+                // the structure of the widget changed too.
+                if (_oldTemplate == _currentTemplate)
+                {
+                    AttemptToKeepFocus(focusedElementPath);
+                }
+                else
+                {
+                    _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => {
+                        WidgetFrameworkElement.Focus(FocusState.Programmatic);
+                    });
+                }
+            }
+
+            _oldTemplate = _currentTemplate;
         }
     }
 
@@ -180,33 +204,14 @@ public partial class WidgetViewModel : ObservableObject
         {
             try
             {
-                List<int> focusedElementPath = GetPathToFocusedElement(_renderedCard);
+                focusedElementPath = GetPathToFocusedElement(_renderedCard);
 
                 _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
                 if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                 {
+                    _currentTemplate = cardTemplate;
                     _renderedCard.Action += HandleAdaptiveAction;
                     WidgetFrameworkElement = _renderedCard.FrameworkElement;
-
-                    // If the path has elements, the focused control is inside this widget.
-                    // Otherwise, it is outside, so there is nothing else to do here.
-                    if (focusedElementPath.Count > 0)
-                    {
-                        // If there template didn't chage, the data structure is the same, so we can
-                        // try to keep focus on the element that was in the same position.
-                        // But if the template changed, we just reset the focus to the widget itself as
-                        // the structure of the widget changed.
-                        if (_oldTemplate == cardTemplate)
-                        {
-                            AttemptToKeepFocus(focusedElementPath);
-                        }
-                        else
-                        {
-                            WidgetFrameworkElement.Focus(FocusState.Keyboard);
-                        }
-                    }
-
-                    _oldTemplate = cardTemplate;
                 }
                 else
                 {
@@ -335,17 +340,24 @@ public partial class WidgetViewModel : ObservableObject
             return pathOnTree;
         }
 
-        // We get the current focused element. If it is not inside the widget, the path to be returned
-        // will have no elements at all as we will not reach it in our search
-        var focused = FocusManager.GetFocusedElement(rendered.FrameworkElement.XamlRoot) as FrameworkElement;
-
-        if (focused != null)
+        try
         {
-            GetPathOnWidgetTree(rendered.FrameworkElement, focused, ref pathOnTree);
-        }
+            // We get the current focused element. If it is not inside the widget, the path to be returned
+            // will have no elements at all as we will not reach it in our search
+            var focused = FocusManager.GetFocusedElement(rendered.FrameworkElement.XamlRoot) as FrameworkElement;
 
-        // We build the path recursively, so it is reversed. We reverse it to get the path from root to leaf.
-        pathOnTree.Reverse();
+            if (focused != null)
+            {
+                GetPathOnWidgetTree(rendered.FrameworkElement, focused, ref pathOnTree);
+            }
+
+            // We build the path recursively, so it is reversed. We reverse it to get the path from root to leaf.
+            pathOnTree.Reverse();
+        }
+        catch (Exception e)
+        {
+            Log.Logger()?.ReportError("WidgetViewModel", e.Message);
+        }
 
         return pathOnTree;
     }
@@ -358,7 +370,8 @@ public partial class WidgetViewModel : ObservableObject
         {
             var child = VisualTreeHelper.GetChild(currentElement, i) as FrameworkElement;
 
-            // If we find the focused element, we add its index on the final path we passed by reference
+            // If we find the focused element, we add its index on the final path we passed by reference.
+            // This is expected to be the first item added.
             if (child == target)
             {
                 path.Add(i);
@@ -398,6 +411,9 @@ public partial class WidgetViewModel : ObservableObject
         }
 
         // Set the focus to the object after we reach it.
-        element.Focus(FocusState.Keyboard);
+        _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+        {
+            element.Focus(FocusState.Programmatic);
+        });
     }
 }
