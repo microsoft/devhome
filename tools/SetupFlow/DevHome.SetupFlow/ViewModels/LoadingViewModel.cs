@@ -50,6 +50,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     private int _retryCount;
 
+    private int _numberOfExecutingTasks;
+
     /// <summary>
     /// Event raised when the execution of all tasks is completed.
     /// </summary>
@@ -176,7 +178,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         _tasksToRun = new ();
 
         // Assuming that the theme can't change while the user is in the loading screen.
-        _currentTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
+        _currentTheme = _host.GetService<IThemeSelectorService>().Theme;
 
         IsStepPage = false;
         IsNavigationBarVisible = false;
@@ -229,7 +231,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// TaskInformation is an ObservableObject inside an ObservableCollection.  Any changes to information
     /// will change the UI.
     /// </remarks>
-    public void ChangeMessage(TaskInformation information, LoadingMessageViewModel loadingMessage, TaskFinishedState taskFinishedState)
+    private void ChangeMessage(TaskInformation information, LoadingMessageViewModel loadingMessage, TaskFinishedState taskFinishedState)
     {
         Log.Logger?.ReportDebug(Log.Component.Loading, $"Updating message for task {information.MessageToShow} with state {taskFinishedState}");
         var stringToReplace = string.Empty;
@@ -293,15 +295,47 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             _failedTasks.Add(information);
         }
 
+        // When a task is done
+        // 1. The executing message needs to be removed from the list of running messages
+        // 2. The executing message needs to look like a done message
+        // 3. The now done message needs to be inserted right before the executing messages
+        //    i.  To keep track of where to insert the done message keep track of running messages to
+        //          count backwards.
+
+        // This message is done.  Remove it from running messages.
+        Messages.Remove(loadingMessage);
+        _numberOfExecutingTasks--;
+
+        var executingMessages = new List<LoadingMessageViewModel>();
+
+        for (var index = 0; index < _numberOfExecutingTasks; index++)
+        {
+            executingMessages.Add(Messages[Messages.Count - 1 - index]);
+        }
+
+        for (var index = 0; index < _numberOfExecutingTasks; index++)
+        {
+            Messages.RemoveAt(Messages.Count - 1);
+        }
+
+        // Modify the message so it looks "done"
         loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
         loadingMessage.ShouldShowProgressRing = false;
 
+        Messages.Insert(Messages.Count - _numberOfExecutingTasks, loadingMessage);
+
+        // add the "Execution finished" message
         var newLoadingScreenMessage = new LoadingMessageViewModel(stringToReplace);
         newLoadingScreenMessage.StatusSymbolIcon = statusSymbolIcon;
         newLoadingScreenMessage.ShouldShowProgressRing = false;
         newLoadingScreenMessage.ShouldShowStatusSymbolIcon = true;
 
         Messages.Add(newLoadingScreenMessage);
+
+        foreach (var message in executingMessages)
+        {
+            Messages.Add(message);
+        }
     }
 
     /// <summary>
@@ -418,11 +452,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
+                _numberOfExecutingTasks++;
                 ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
 
                 loadingMessage.ShouldShowProgressRing = true;
                 loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
-
                 Messages.Add(loadingMessage);
             });
 
