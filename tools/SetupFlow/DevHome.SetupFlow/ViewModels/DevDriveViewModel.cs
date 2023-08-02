@@ -238,7 +238,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// Opens folder picker and adds folder to the drive location, if the user does not cancel the dialog.
     /// </summary>
     [RelayCommand]
-    public async Task ChooseFolderLocation()
+    public async Task ChooseFolderLocationAsync()
     {
         Log.Logger?.ReportInfo(Log.Component.DevDrive, "Opening file picker to select dev drive location");
         var folderPicker = new FolderPicker();
@@ -312,7 +312,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// Opens the Windows settings app and redirects the user to the disks and volumes page.
     /// </summary>
     [RelayCommand]
-    public async Task LaunchDisksAndVolumesSettingsPage()
+    public async Task LaunchDisksAndVolumesSettingsPageAsync()
     {
         // Critical level approved by subhasan
         TelemetryFactory.Get<ITelemetry>().Log(

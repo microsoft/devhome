@@ -113,7 +113,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     /// Method here for telemetry
     /// </summary>
     [RelayCommand]
-    public async Task LearnMore()
+    public async Task LearnMoreAsync()
     {
         TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("LearnMoreAboutDevHome"));
         await Launcher.LaunchUriAsync(new Uri("https://learn.microsoft.com/windows/"));

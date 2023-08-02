@@ -152,7 +152,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// Opens the Windows settings app and redirects the user to the disks and volumes page.
     /// </summary>
     [RelayCommand]
-    private async Task LaunchDisksAndVolumesSettingsPage()
+    private async Task LaunchDisksAndVolumesSettingsPageAsync()
     {
         // Critical level approved by subhasan
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
