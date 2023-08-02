@@ -410,7 +410,7 @@ public partial class WidgetViewModel : ObservableObject
             {
                 _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
                 {
-                    WidgetFrameworkElement.Focus(FocusState.Keyboard);
+                    WidgetFrameworkElement.Focus(FocusState.Programmatic);
                 });
                 return;
             }
