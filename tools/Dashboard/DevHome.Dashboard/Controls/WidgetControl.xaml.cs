@@ -26,6 +26,9 @@ public sealed partial class WidgetControl : UserControl
             SetValue(WidgetSourceProperty, value);
             if (WidgetSource != null)
             {
+                // When the WidgetViewModel is updated, the widget icon must also be also updated.
+                // Since the icon update must happen asynchronously on the UI thread, it must be
+                // called in code rather than binding.
                 UpdateWidgetHeaderIconFillAsync();
             }
         }
