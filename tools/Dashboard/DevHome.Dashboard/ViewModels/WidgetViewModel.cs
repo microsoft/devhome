@@ -83,32 +83,6 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    private void OnWidgetFrameworkElementLoaded(object sender, RoutedEventArgs e)
-    {
-            // If the path has elements, the focused control is inside this widget.
-            // Otherwise, it is outside, so there is nothing else to do here.
-            if (focusedElementPath.Count > 0)
-            {
-                // If the template didn't change, the data structure is the same, so we can
-                // try to keep focus on the element that is in the same position.
-                // But if the template changed, we just reset the focus to the widget itself as
-                // the structure of the widget changed too.
-                if (_oldTemplate == _currentTemplate)
-                {
-                    AttemptToKeepFocus(focusedElementPath);
-                }
-                else
-                {
-                    _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
-                    {
-                        WidgetFrameworkElement.Focus(FocusState.Programmatic);
-                    });
-                }
-            }
-
-            _oldTemplate = _currentTemplate;
-    }
-
     partial void OnWidgetFrameworkElementChanged(FrameworkElement value)
     {
         if (WidgetFrameworkElement != null && WidgetFrameworkElement is Grid grid)
@@ -215,8 +189,34 @@ public partial class WidgetViewModel : ObservableObject
                 {
                     _currentTemplate = cardTemplate;
                     _renderedCard.Action += HandleAdaptiveAction;
+
                     WidgetFrameworkElement = _renderedCard.FrameworkElement;
-                    WidgetFrameworkElement.Loaded += OnWidgetFrameworkElementLoaded;
+
+                    // Ensure the Widget's Layout is updated.
+                    WidgetFrameworkElement.UpdateLayout();
+
+                    // If the path has elements, the focused control is inside this widget.
+                    // Otherwise, it is outside, so there is nothing else to do here.
+                    if (focusedElementPath.Count > 0)
+                    {
+                        // If the template didn't change, the data structure is the same, so we can
+                        // try to keep focus on the element that is in the same position.
+                        // But if the template changed, we just reset the focus to the widget itself as
+                        // the structure of the widget changed too.
+                        if (_oldTemplate == _currentTemplate)
+                        {
+                            AttemptToKeepFocus(focusedElementPath);
+                        }
+                        else
+                        {
+                            _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
+                            {
+                                WidgetFrameworkElement.Focus(FocusState.Programmatic);
+                            });
+                        }
+                    }
+
+                    _oldTemplate = _currentTemplate;
                 }
                 else
                 {
@@ -408,7 +408,10 @@ public partial class WidgetViewModel : ObservableObject
             // back to the widget as a whole.
             if (i >= VisualTreeHelper.GetChildrenCount(element))
             {
-                WidgetFrameworkElement.Focus(FocusState.Keyboard);
+                _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
+                {
+                    WidgetFrameworkElement.Focus(FocusState.Keyboard);
+                });
                 return;
             }
 
@@ -416,7 +419,7 @@ public partial class WidgetViewModel : ObservableObject
         }
 
         // Set the focus to the object after we reach it.
-        _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+        _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
         {
             element.Focus(FocusState.Programmatic);
         });
