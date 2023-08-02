@@ -83,12 +83,8 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    partial void OnWidgetFrameworkElementChanged(FrameworkElement value)
+    private void OnWidgetFrameworkElementLoaded(object sender, RoutedEventArgs e)
     {
-        if (WidgetFrameworkElement != null && WidgetFrameworkElement is Grid grid)
-        {
-            WidgetBackground = grid.Background;
-
             // If the path has elements, the focused control is inside this widget.
             // Otherwise, it is outside, so there is nothing else to do here.
             if (focusedElementPath.Count > 0)
@@ -103,13 +99,21 @@ public partial class WidgetViewModel : ObservableObject
                 }
                 else
                 {
-                    _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => {
+                    _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+                    {
                         WidgetFrameworkElement.Focus(FocusState.Programmatic);
                     });
                 }
             }
 
             _oldTemplate = _currentTemplate;
+    }
+
+    partial void OnWidgetFrameworkElementChanged(FrameworkElement value)
+    {
+        if (WidgetFrameworkElement != null && WidgetFrameworkElement is Grid grid)
+        {
+            WidgetBackground = grid.Background;
         }
     }
 
@@ -212,6 +216,7 @@ public partial class WidgetViewModel : ObservableObject
                     _currentTemplate = cardTemplate;
                     _renderedCard.Action += HandleAdaptiveAction;
                     WidgetFrameworkElement = _renderedCard.FrameworkElement;
+                    WidgetFrameworkElement.Loaded += OnWidgetFrameworkElementLoaded;
                 }
                 else
                 {
