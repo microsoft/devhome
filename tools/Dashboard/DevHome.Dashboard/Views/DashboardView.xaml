@@ -77,12 +77,15 @@
                             <controls:WidgetControl WidgetSource="{x:Bind}"
                                                     AllowDrop="True" 
                                                     DragOver="WidgetControl_DragOver"
+                                                    XYFocusKeyboardNavigation="Disabled"
                                                     Drop="WidgetControl_Drop" />
                         </DataTemplate>
                     </GridView.ItemTemplate>
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <controls:WidgetBoard />
+                            <controls:WidgetBoard XYFocusKeyboardNavigation="Enabled"
+                                                  XYFocusRightNavigationStrategy="RectilinearDistance"
+                                                  XYFocusLeftNavigationStrategy="RectilinearDistance"/>
                         </ItemsPanelTemplate>
                     </GridView.ItemsPanel>
                     <GridView.ItemContainerStyle>
