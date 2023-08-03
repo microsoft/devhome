@@ -89,7 +89,7 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"/>
-                <RowDefinition Height="490"/>
+                <RowDefinition Height="400"/>
             </Grid.RowDefinitions>
             <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
                 <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Style="{StaticResource SemiBoldTextStyle}"/>

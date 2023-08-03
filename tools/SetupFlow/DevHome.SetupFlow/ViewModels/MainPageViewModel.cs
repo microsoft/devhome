@@ -83,7 +83,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void HideBanner()
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("MainPage_HideLearnMoreBanner_Event");
+        TelemetryFactory.Get<ITelemetry>().LogCritical("MainPage_HideLearnMoreBanner_Event");
         ShowBanner = false;
     }
 
@@ -105,7 +105,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         Log.Logger?.ReportInfo($"Starting setup flow with ActivityId={Orchestrator.ActivityId}");
         TelemetryFactory.Get<ITelemetry>().Log(
             "MainPage_StartFlow_Event",
-            LogLevel.Measure,
+            LogLevel.Critical,
             new StartFlowEvent(flowNameForTelemetry),
             relatedActivityId: Orchestrator.ActivityId);
     }

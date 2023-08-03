@@ -141,7 +141,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     [RelayCommand]
     public async void RestartFailedTasks()
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("Loading_RestartFailedTasks_Event");
+        TelemetryFactory.Get<ITelemetry>().LogCritical("Loading_RestartFailedTasks_Event");
         Log.Logger?.ReportInfo(Log.Component.Loading, "Restarting all failed tasks");
 
         // Keep the number of successful tasks and needs attention tasks the same.
@@ -304,19 +304,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
         // This message is done.  Remove it from running messages.
         Messages.Remove(loadingMessage);
-        _numberOfExecutingTasks--;
-
-        var executingMessages = new List<LoadingMessageViewModel>();
-
-        for (var index = 0; index < _numberOfExecutingTasks; index++)
-        {
-            executingMessages.Add(Messages[Messages.Count - 1 - index]);
-        }
-
-        for (var index = 0; index < _numberOfExecutingTasks; index++)
-        {
-            Messages.RemoveAt(Messages.Count - 1);
-        }
 
         // Modify the message so it looks "done"
         loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
@@ -330,12 +317,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         newLoadingScreenMessage.ShouldShowProgressRing = false;
         newLoadingScreenMessage.ShouldShowStatusSymbolIcon = true;
 
-        Messages.Add(newLoadingScreenMessage);
-
-        foreach (var message in executingMessages)
-        {
-            Messages.Add(message);
-        }
+        Messages.Insert(Messages.Count - _numberOfExecutingTasks, newLoadingScreenMessage);
     }
 
     /// <summary>
@@ -433,7 +415,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
         if (_failedTasks.Any())
         {
-            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Measure, new LoadingRetryEvent(_failedTasks.Count));
+            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count));
         }
     }
 
@@ -452,12 +434,12 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
-                _numberOfExecutingTasks++;
                 ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
 
                 loadingMessage.ShouldShowProgressRing = true;
                 loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
                 Messages.Add(loadingMessage);
+                _numberOfExecutingTasks++;
             });
 
             TaskFinishedState taskFinishedState;
@@ -473,8 +455,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
             window.DispatcherQueue.TryEnqueue(() =>
             {
+                _numberOfExecutingTasks--;
                 ChangeMessage(taskInformation, loadingMessage, taskFinishedState);
-
                 TasksCompleted++;
                 ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, TasksFailed);
             });

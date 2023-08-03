@@ -184,9 +184,9 @@ internal class Telemetry : ITelemetry
     /// <param name="eventName">The name of the event to log</param>
     /// <param name="isError">Set to true if an error condition raised this event.</param>
     /// <param name="relatedActivityId">GUID to correlate activities.</param>
-    public void LogMeasure(string eventName, bool isError = false, Guid? relatedActivityId = null)
+    public void LogCritical(string eventName, bool isError = false, Guid? relatedActivityId = null)
     {
-        this.LogInternal(eventName, LogLevel.Measure, new EmptyEvent(), relatedActivityId, isError);
+        this.LogInternal(eventName, LogLevel.Critical, new EmptyEvent(), relatedActivityId, isError);
     }
 
     /// <summary>

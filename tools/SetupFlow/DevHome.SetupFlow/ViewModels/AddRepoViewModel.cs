@@ -271,7 +271,7 @@ public partial class AddRepoViewModel : ObservableObject
         _providers.StartAllPlugins();
 
         ProviderNames = new ObservableCollection<string>(_providers.GetAllProviderNames());
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForProviders_Event", LogLevel.Measure, new ProviderEvent(ProviderNames.Count));
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForProviders_Event", LogLevel.Critical, new ProviderEvent(ProviderNames.Count));
     }
 
     public void ChangeToUrlPage()
@@ -385,7 +385,7 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Measure, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false));
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false));
 
             // Throw away developerId because DevHome allows one account per provider. GetAllLoggedInAccounts is called
             // in anticipation of 1 Provider : N DeveloperIds
@@ -394,7 +394,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
         else
         {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Measure, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: true));
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: true));
         }
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId()));
@@ -507,7 +507,7 @@ public partial class AddRepoViewModel : ObservableObject
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationNotFound);
             ShouldShowUrlError = Visibility.Visible;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, e.ToString());
-            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoDialog_RepoNotFound_Event");
+            TelemetryFactory.Get<ITelemetry>().LogCritical("RepoDialog_RepoNotFound_Event");
             return;
         }
 
@@ -538,7 +538,7 @@ public partial class AddRepoViewModel : ObservableObject
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
             ShouldShowUrlError = Visibility.Visible;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repository has already been added.");
-            TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_RepoAlreadyAdded_Event");
+            TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RepoAlreadyAdded_Event");
             return;
         }
 
@@ -561,10 +561,10 @@ public partial class AddRepoViewModel : ObservableObject
         IsFetchingRepos = true;
         await Task.Run(() =>
         {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllLoggedInAccounts"));
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllLoggedInAccounts"));
             var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
 
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Measure, new RepoToolEvent("GettingAllRepos"));
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllRepos"));
             _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
         });
         IsFetchingRepos = false;
