@@ -43,7 +43,7 @@ public interface ITelemetry
     public void LogTimeTaken(string eventName, uint timeTakenMilliseconds, Guid? relatedActivityId = null);
 
     /// <summary>
-    /// Log an informal event with no additional data.
+    /// Log an event with no additional data.
     /// </summary>
     /// <param name="eventName">The name of the event to log</param>
     /// <param name="isError">Set to true if an error condition raised this event.</param>

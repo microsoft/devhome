@@ -50,6 +50,12 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     private int _retryCount;
 
+    /// <summary>
+    /// A business rule for the loading screen is that all "executing" messages should always appear at the bottom
+    /// of the list of messages.  To enable this behavior all "finished" messages and "executing"-but-done messages
+    /// need to be inserted at the index before the first executing message.
+    /// Keep track this is used to count backwards from Messages.count to get the index to add messages to.
+    /// </summary>
     private int _numberOfExecutingTasks;
 
     /// <summary>
@@ -296,27 +302,24 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         }
 
         // When a task is done
-        // 1. The executing message needs to be removed from the list of running messages
-        // 2. The executing message needs to look like a done message
-        // 3. The now done message needs to be inserted right before the executing messages
-        //    i.  To keep track of where to insert the done message keep track of running messages to
-        //          count backwards.
-
-        // This message is done.  Remove it from running messages.
+        // Following logic is to keep all "executing" messages at the bottom of the list.
+        // Remove the "executing" message from the list.
         Messages.Remove(loadingMessage);
 
-        // Modify the message so it looks "done"
+        // Modify the message so it looks done.
         loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
         loadingMessage.ShouldShowProgressRing = false;
 
+        // Insert the message right before any "executing" messages.
         Messages.Insert(Messages.Count - _numberOfExecutingTasks, loadingMessage);
 
-        // add the "Execution finished" message
+        // Add the "Execution finished" message
         var newLoadingScreenMessage = new LoadingMessageViewModel(stringToReplace);
         newLoadingScreenMessage.StatusSymbolIcon = statusSymbolIcon;
         newLoadingScreenMessage.ShouldShowProgressRing = false;
         newLoadingScreenMessage.ShouldShowStatusSymbolIcon = true;
 
+        // Insert the message right before any "executing" messages.
         Messages.Insert(Messages.Count - _numberOfExecutingTasks, newLoadingScreenMessage);
     }
 
@@ -439,6 +442,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 loadingMessage.ShouldShowProgressRing = true;
                 loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
                 Messages.Add(loadingMessage);
+
+                // Keep incremenet inside TryEnqueue to enforce "locking"
                 _numberOfExecutingTasks++;
             });
 
@@ -455,6 +460,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
             window.DispatcherQueue.TryEnqueue(() =>
             {
+                // Keep decrement inside TryEnqueue to encorce "locking"
                 _numberOfExecutingTasks--;
                 ChangeMessage(taskInformation, loadingMessage, taskFinishedState);
                 TasksCompleted++;

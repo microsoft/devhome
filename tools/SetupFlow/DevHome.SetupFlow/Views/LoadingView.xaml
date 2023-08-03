@@ -20,7 +20,6 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
                 <ResourceDictionary>
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
-                    <converters:BoolNegationConverter x:Key="BoolNegation"/>
                     <converters:BoolToObjectConverter x:Key="BoolToTextBrush" TrueValue="{ThemeResource PrimaryTextStyle}" FalseValue="{ThemeResource SecondaryTextStyle}"/>
                 </ResourceDictionary>
                 <ResourceDictionary>
