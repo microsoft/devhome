@@ -6,6 +6,10 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DevHome.SetupFlow.ViewModels;
+
+/// <summary>
+/// View Model to hold information for each message in the loading screen.
+/// </summary>
 public partial class LoadingMessageViewModel : ObservableObject
 {
     /// <summary>
@@ -19,6 +23,9 @@ public partial class LoadingMessageViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowProgressRing;
 
+    /// <summary>
+    /// The status symbol icon is the red, green, or yellow icon the is next to a task when it is completed.
+    /// </summary>
     [ObservableProperty]
     private bool _shouldShowStatusSymbolIcon;
 

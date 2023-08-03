@@ -443,7 +443,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
                 Messages.Add(loadingMessage);
 
-                // Keep incremenet inside TryEnqueue to enforce "locking"
+                // Keep increment inside TryEnqueue to enforce "locking"
                 _numberOfExecutingTasks++;
             });
 
