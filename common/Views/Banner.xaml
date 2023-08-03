@@ -15,7 +15,7 @@
         <Image Height="{Binding ElementName=BannerGrid, Path=Height}"
                Stretch="Uniform" Source="{x:Bind OverlaySource, Mode=OneWay}"
                AutomationProperties.AccessibilityView="Raw"
-               Margin="0 0 0 0" MinWidth="{ThemeResource MaxPageContentWidth}"
+               MinWidth="{ThemeResource MaxPageContentWidth}"
                FlowDirection="{x:Bind FlowDirection}" />
 
         <!-- Scrollable content -->
