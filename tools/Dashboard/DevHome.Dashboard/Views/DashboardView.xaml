@@ -74,7 +74,7 @@
                           DragItemsStarting="WidgetGridView_DragItemsStarting">
                     <GridView.ItemTemplate>
                         <DataTemplate x:DataType="vm:WidgetViewModel">
-                            <controls:WidgetControl WidgetSource="{x:Bind}" 
+                            <controls:WidgetControl WidgetSource="{x:Bind}"
                                                     AllowDrop="True" 
                                                     DragOver="WidgetControl_DragOver"
                                                     Drop="WidgetControl_Drop" />
