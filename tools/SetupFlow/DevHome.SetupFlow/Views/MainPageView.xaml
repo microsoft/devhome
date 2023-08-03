@@ -90,7 +90,7 @@
                                                CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
                                                IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}"
                                                ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
-                                               AutomationProperties.AccessibilityView="Raw"
+                                               AutomationProperties.AccessibilityView="Control"
                                                ActionIcon="{x:Null}" >
                                 <labs:SettingsCard.HeaderIcon>
                                     <ImageIcon
@@ -112,7 +112,7 @@
                                            Command="{x:Bind ViewModel.StartConfigurationFileCommand}"
                                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
                                            ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
-                                           AutomationProperties.AccessibilityView="Raw"
+                                           AutomationProperties.AccessibilityView="Control"
                                            ActionIcon="{x:Null}" >
                             <labs:SettingsCard.HeaderIcon>
                                 <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_ConfigurationFile.png" />
@@ -128,7 +128,7 @@
                                            Command="{x:Bind ViewModel.StartRepoConfigCommand}"
                                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
                                            ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
-                                           AutomationProperties.AccessibilityView="Raw"
+                                           AutomationProperties.AccessibilityView="Control"
                                            ActionIcon="{x:Null}" >
                             <labs:SettingsCard.HeaderIcon>
                                 <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_RepoConfig.png" />
@@ -143,7 +143,7 @@
                                                CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
                                                IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}"
                                                ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
-                                               AutomationProperties.AccessibilityView="Raw"
+                                               AutomationProperties.AccessibilityView="Control"
                                                ActionIcon="{x:Null}" >
                                 <labs:SettingsCard.HeaderIcon>
                                     <ImageIcon
@@ -163,7 +163,7 @@
                                            AutomationProperties.AutomationId="DevDriveButton"
                                            IsClickEnabled="True" Command="{x:Bind ViewModel.LaunchDisksAndVolumesSettingsPageCommand}" 
                                            ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
-                                           AutomationProperties.AccessibilityView="Raw"
+                                           AutomationProperties.AccessibilityView="Control"
                                            Visibility="{x:Bind ViewModel.ShowDevDriveItem, Mode=OneWay}" >
                             <labs:SettingsCard.ActionIcon>
                                 <!-- The open new window icon -->
