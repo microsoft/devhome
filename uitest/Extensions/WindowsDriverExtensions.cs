@@ -120,6 +120,35 @@ public static class WindowsDriverExtensions
     }
 
     /// <summary>
+    /// Wait until an element is enabled or timeout
+    /// </summary>
+    /// <param name="driver">Driver instance</param>
+    /// <param name="by">Element locator</param>
+    /// <param name="timeoutInMS">Wait timeout in milliseconds</param>
+    /// <param name="pollingIntervalInMS">Action interval in milliseconds</param>
+    public static WindowsElement WaitUntilEnabled(
+        this WindowsDriver<WindowsElement> driver,
+        By by,
+        int timeoutInMS = DefaultTimeoutInMS,
+        int pollingIntervalInMS = DefaultPollingIntervalInMS)
+    {
+        return driver
+            .Wait(timeoutInMS, pollingIntervalInMS)
+            .Until(_ =>
+            {
+                try
+                {
+                    var element = driver.FindElement(by);
+                    return element.Enabled ? element : null;
+                }
+                catch (WebDriverException)
+                {
+                    return null;
+                }
+            });
+    }
+
+    /// <summary>
     /// Retry an action until returning true, an object not null or timeout
     /// </summary>
     /// <param name="driver">Driver instance</param>

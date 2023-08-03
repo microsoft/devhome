@@ -78,7 +78,13 @@ public class AddWidgetDialog : PageDialog<DashboardPage>
             navItemElement.Click();
 
             Trace.WriteLine($"Pinning {widgetName} widget");
-            PinButton.Click();
+            Driver
+                .RetryUntil(_ =>
+                {
+                    PinButton.Click();
+                    return PinButton;
+                })
+                .Click();
         });
     }
 
