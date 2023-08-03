@@ -10,7 +10,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -153,7 +152,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// Opens the Windows settings app and redirects the user to the disks and volumes page.
     /// </summary>
     [RelayCommand]
-    private async void LaunchDisksAndVolumesSettingsPage()
+    private async Task LaunchDisksAndVolumesSettingsPageAsync()
     {
         // Critical level approved by subhasan
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
@@ -161,6 +160,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
             "LaunchDisksAndVolumesSettingsPageTriggered",
             LogLevel.Critical,
             new DisksAndVolumesSettingsPageTriggeredEvent(source: "MainPageView"));
+
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
 
