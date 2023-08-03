@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-      <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
   </ItemGroup>
 
