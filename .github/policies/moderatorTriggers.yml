@@ -99,8 +99,6 @@ configuration:
               If you use Feedback Hub, please paste the URL at the bottom of the report here so we 
               can easily find it. 
       - removeLabel:
-          label: Needs-Triage
-      - removeLabel:
           label: Needs-Team-Response
     #
     # /needinfo
