@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Diagnostics;
 using OpenQA.Selenium.Appium.Windows;
 
 namespace DevHome.UITest.Pages;
@@ -23,5 +24,12 @@ public class MachineConfigurationPage : ApplicationPage
     public MachineConfigurationPage(WindowsDriver<WindowsElement> driver)
         : base(driver)
     {
+    }
+
+    public RepoConfigPage GoToRepoPage()
+    {
+        Trace.WriteLine("Going to repo page");
+        CloneRepoButton.Click();
+        return new RepoConfigPage(Driver);
     }
 }
