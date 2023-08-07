@@ -51,10 +51,10 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private int _retryCount;
 
     /// <summary>
-    /// A business rule for the loading screen is that all "executing" messages should always appear at the bottom
-    /// of the list of messages.  To enable this behavior all "finished" messages and "executing"-but-done messages
+    /// A business rule for the loading screen is  "executing" messages should appear at the bottom
+    /// of the list of messages.  To enable this behavior "finished" messages and "executing-but-done" messages
     /// need to be inserted at the index before the first executing message.
-    /// Keep track this is used to count backwards from Messages.count to get the index to add messages to.
+    /// To keep track of the index this is used to count backwards from Messages.count.
     /// </summary>
     private int _numberOfExecutingTasks;
 
