@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Contracts;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.ViewModels;

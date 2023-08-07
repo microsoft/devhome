@@ -45,7 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dashboard", "Dashboard", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Dashboard", "tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj", "{D2303635-3DD9-4DCA-A38A-F5306D0BB8FE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.SetupFlow.UnitTest", "tools\Dashboard\DevHome.Dashboard.UnitTest\DevHome.SetupFlow.UnitTest.csproj", "{6254ADB1-B6FD-4D74-AF13-40C997919178}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Dashboard.UnitTest", "tools\Dashboard\DevHome.Dashboard.UnitTest\DevHome.Dashboard.UnitTest.csproj", "{6254ADB1-B6FD-4D74-AF13-40C997919178}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevHome.Logging", "logging\DevHome.Logging.csproj", "{DB84FAA0-ACBF-48DA-AF1B-BCCA5053AF8B}"
 EndProject
