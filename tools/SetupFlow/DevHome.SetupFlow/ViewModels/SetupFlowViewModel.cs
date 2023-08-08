@@ -99,7 +99,7 @@ public partial class SetupFlowViewModel : ObservableObject
     {
         // Report this before touching the pages so the current Activity ID can be obtained.
         Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Terminating Setup flow by caller [{callerNameForTelemetry}]. ActivityId={Orchestrator.ActivityId}");
-        TelemetryFactory.Get<ITelemetry>().Log("SetupFlow_Termination", LogLevel.Measure, new EndFlowEvent(callerNameForTelemetry), relatedActivityId: Orchestrator.ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("SetupFlow_Termination", LogLevel.Critical, new EndFlowEvent(callerNameForTelemetry), relatedActivityId: Orchestrator.ActivityId);
 
         Orchestrator.ReleaseRemoteFactory();
         _host.GetService<IDevDriveManager>().RemoveAllDevDrives();

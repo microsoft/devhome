@@ -74,21 +74,25 @@
                           DragItemsStarting="WidgetGridView_DragItemsStarting">
                     <GridView.ItemTemplate>
                         <DataTemplate x:DataType="vm:WidgetViewModel">
-                            <controls:WidgetControl WidgetSource="{x:Bind}" 
+                            <controls:WidgetControl WidgetSource="{x:Bind}"
                                                     AllowDrop="True" 
                                                     DragOver="WidgetControl_DragOver"
+                                                    XYFocusKeyboardNavigation="Disabled"
                                                     Drop="WidgetControl_Drop" />
                         </DataTemplate>
                     </GridView.ItemTemplate>
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <controls:WidgetBoard />
+                            <controls:WidgetBoard XYFocusKeyboardNavigation="Enabled"
+                                                  XYFocusRightNavigationStrategy="RectilinearDistance"
+                                                  XYFocusLeftNavigationStrategy="RectilinearDistance"/>
                         </ItemsPanelTemplate>
                     </GridView.ItemsPanel>
                     <GridView.ItemContainerStyle>
                         <Style TargetType="GridViewItem">
                             <!-- Default margin is "0,0,4,4". Override since margins are set on the WidgetBoard instead. -->
                             <Setter Property="Margin" Value="0,0,0,0"/>
+                            <Setter Property="AutomationProperties.AutomationId" Value="WidgetItem"/>
                         </Style>
                     </GridView.ItemContainerStyle>
                 </GridView>

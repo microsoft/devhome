@@ -80,7 +80,7 @@ internal class MemoryStats : IDisposable
 
     public string CreateMemImageUrl()
     {
-        return ChartHelper.CreateImageUrl(MemChartValues, "mem");
+        return ChartHelper.CreateImageUrl(MemChartValues, ChartHelper.ChartType.Mem);
     }
 
     public void Dispose()

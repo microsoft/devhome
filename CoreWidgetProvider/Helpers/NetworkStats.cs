@@ -90,7 +90,7 @@ internal class NetworkStats : IDisposable
 
     public string CreateNetImageUrl(int netChartIndex)
     {
-        return ChartHelper.CreateImageUrl(NetChartValues.ElementAt(netChartIndex).Value, "net");
+        return ChartHelper.CreateImageUrl(NetChartValues.ElementAt(netChartIndex).Value, ChartHelper.ChartType.Net);
     }
 
     public string GetNetworkName(int networkIndex)

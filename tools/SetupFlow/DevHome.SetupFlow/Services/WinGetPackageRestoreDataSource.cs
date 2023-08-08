@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
@@ -80,7 +81,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
                 result.Add(new PackageCatalog()
                 {
                     Name = _stringResource.GetLocalized(StringResourceKey.RestorePackagesTitle, _restoreDeviceInfo.DisplayName),
-                    Description = _stringResource.GetLocalized(StringResourceKey.RestorePackagesDescription, _restoreDeviceInfo.DisplayName),
+                    Description = GetDescription(),
                     Packages = packages.ToReadOnlyCollection(),
                 });
             }
@@ -129,5 +130,20 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
 
         Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No {theme} icon found for restore package {appInfo.Id}. A default one will be provided.");
         return null;
+    }
+
+    /// <summary>
+    /// Gets the restore catalog description
+    /// </summary>
+    /// <returns>Localized restore catalog description</returns>
+    private string GetDescription()
+    {
+        // Check if last modified time is not available
+        if (_restoreDeviceInfo.LastModifiedTime == DateTime.MinValue)
+        {
+            return _stringResource.GetLocalized(StringResourceKey.RestorePackagesDescription, _restoreDeviceInfo.DisplayName);
+        }
+
+        return _stringResource.GetLocalized(StringResourceKey.RestorePackagesDescriptionWithDate, _restoreDeviceInfo.DisplayName, _restoreDeviceInfo.LastModifiedTime.ToString("d", CultureInfo.CurrentCulture));
     }
 }

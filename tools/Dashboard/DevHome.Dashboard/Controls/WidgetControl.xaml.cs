@@ -7,6 +7,7 @@ using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Dashboard.Views;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Widgets;
@@ -17,20 +18,30 @@ public sealed partial class WidgetControl : UserControl
 {
     private MenuFlyoutItem _currentSelectedSize;
 
+    public WidgetViewModel WidgetSource
+    {
+        get => (WidgetViewModel)GetValue(WidgetSourceProperty);
+        set
+        {
+            SetValue(WidgetSourceProperty, value);
+            if (WidgetSource != null)
+            {
+                // When the WidgetViewModel is updated, the widget icon must also be also updated.
+                // Since the icon update must happen asynchronously on the UI thread, it must be
+                // called in code rather than binding.
+                UpdateWidgetHeaderIconFillAsync();
+            }
+        }
+    }
+
+    public static readonly DependencyProperty WidgetSourceProperty = DependencyProperty.Register(
+        nameof(WidgetSource), typeof(WidgetViewModel), typeof(WidgetControl), new PropertyMetadata(null));
+
     public WidgetControl()
     {
         this.InitializeComponent();
         ActualThemeChanged += OnActualThemeChanged;
     }
-
-    public WidgetViewModel WidgetSource
-    {
-        get => (WidgetViewModel)GetValue(WidgetSourceProperty);
-        set => SetValue(WidgetSourceProperty, value);
-    }
-
-    public static readonly DependencyProperty WidgetSourceProperty = DependencyProperty.Register(
-        nameof(WidgetSource), typeof(WidgetViewModel), typeof(WidgetControl), new PropertyMetadata(null));
 
     private void OpenWidgetMenu(object sender, RoutedEventArgs e)
     {
@@ -68,6 +79,7 @@ public sealed partial class WidgetControl : UserControl
             Icon = icon,
         };
         menuItemClose.Click += OnRemoveWidgetClick;
+        menuItemClose.SetValue(AutomationProperties.AutomationIdProperty, "RemoveWidgetButton");
         widgetMenuFlyout.Items.Add(menuItemClose);
     }
 
@@ -211,8 +223,13 @@ public sealed partial class WidgetControl : UserControl
         }
     }
 
-    private void OnActualThemeChanged(FrameworkElement sender, object args)
+    private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        WidgetHeaderIcon.Fill = WidgetIconCache.GetBrushForWidgetIcon(WidgetSource.WidgetDefinition, ActualTheme);
+        WidgetHeaderIcon.Fill = await WidgetIconCache.GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
+    }
+
+    private async void UpdateWidgetHeaderIconFillAsync()
+    {
+        WidgetHeaderIcon.Fill = await WidgetIconCache.GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
     }
 }

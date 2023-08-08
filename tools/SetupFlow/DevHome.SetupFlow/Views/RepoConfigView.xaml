@@ -149,13 +149,13 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Grid x:Name="NoRepositoryStackPanel" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid x:Name="NoRepositoryGrid" Visibility="{x:Bind ViewModel.RepoReviewItems, Mode=OneWay, Converter={StaticResource CollectionShowWhenEmpty}}" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
-                <HyperlinkButton Grid.Row="1" Click="AddRepoButton_Click" HorizontalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
+                <HyperlinkButton x:Name="AddRepoHyperLinkButton" Grid.Row="1" Click="AddRepoButton_Click" HorizontalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
             </Grid>
         </Grid>
     </setupControls:SetupShell>

@@ -78,7 +78,7 @@ configuration:
       if:
       - payloadType: Issue_Comment
       - commentContains:
-          pattern: '\/logs)'
+          pattern: '\/logs'
           isRegex: True
       - or:
         - activitySenderHasAssociation:
@@ -98,9 +98,6 @@ configuration:
               repo names). Alternatively, you can open a Feedback Hub issue and attach them there. 
               If you use Feedback Hub, please paste the URL at the bottom of the report here so we 
               can easily find it. 
-      - closeIssue
-      - removeLabel:
-          label: Needs-Triage
       - removeLabel:
           label: Needs-Team-Response
     #

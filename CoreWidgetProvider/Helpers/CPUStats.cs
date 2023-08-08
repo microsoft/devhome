@@ -78,7 +78,7 @@ internal class CPUStats : IDisposable
 
     internal string CreateCPUImageUrl()
     {
-        return ChartHelper.CreateImageUrl(CpuChartValues, "cpu");
+        return ChartHelper.CreateImageUrl(CpuChartValues, ChartHelper.ChartType.CPU);
     }
 
     internal string GetCpuProcessText(int cpuProcessIndex)
