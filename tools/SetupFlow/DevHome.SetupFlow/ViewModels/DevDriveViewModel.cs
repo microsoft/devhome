@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +14,6 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -23,7 +21,6 @@ using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.Windows;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Windows.Globalization.NumberFormatting;
 using Windows.Storage.Pickers;
 using Windows.System;
@@ -241,7 +238,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// Opens folder picker and adds folder to the drive location, if the user does not cancel the dialog.
     /// </summary>
     [RelayCommand]
-    public async void ChooseFolderLocation()
+    public async Task ChooseFolderLocationAsync()
     {
         Log.Logger?.ReportInfo(Log.Component.DevDrive, "Opening file picker to select dev drive location");
         var folderPicker = new FolderPicker();
@@ -253,7 +250,6 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         {
             Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Selected Dev Drive location: {location.Path}");
             Location = location.Path;
-            OnPropertyChanged(nameof(Location));
         }
         else
         {
@@ -316,7 +312,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// Opens the Windows settings app and redirects the user to the disks and volumes page.
     /// </summary>
     [RelayCommand]
-    public async void LaunchDisksAndVolumesSettingsPage()
+    public async Task LaunchDisksAndVolumesSettingsPageAsync()
     {
         // Critical level approved by subhasan
         TelemetryFactory.Get<ITelemetry>().Log(
@@ -336,7 +332,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         Log.Logger?.ReportInfo(Log.Component.DevDrive, "Saving changes to Dev Drive");
         ByteUnit driveUnitOfMeasure = (ByteUnit)ComboBoxByteUnit;
-        var tempDrive = new Models.DevDrive()
+        var tempDrive = new DevDrive()
         {
             DriveLetter = ComboBoxDriveLetter.Value,
             DriveSizeInBytes = DevDriveUtil.ConvertToBytes(Size, driveUnitOfMeasure),

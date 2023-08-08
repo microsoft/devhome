@@ -58,10 +58,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="NavigationPane.Content" xml:space="preserve">
-    <value>Dashboard</value>
-    <comment>Navigation pane content</comment>
-  </data>
   <data name="Settings_Preferences_Description" xml:space="preserve">
     <value>Application theme</value>
     <comment>Body text description for a card than when clicked takes the user to the Preferences settings page</comment>
@@ -96,9 +92,6 @@
   </data>
   <data name="Settings_Theme.Header" xml:space="preserve">
     <value>App theme</value>
-  </data>
-  <data name="Settings_Theme.Description" xml:space="preserve">
-    <value>Select which theme to display</value>
   </data>
   <data name="Settings_Theme_Light.Content" xml:space="preserve">
     <value>Light</value>

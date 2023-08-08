@@ -1,22 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
-using DevHome.Dashboard.ViewModels;
 using DevHome.Models;
-using DevHome.Services;
-using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.DevHome.SDK;
 using Windows.System;
 
 namespace DevHome.Views;
