@@ -23,6 +23,8 @@ public class ConfigureTask : ISetupTask
     private readonly StorageFile _file;
     private ConfigurationFileHelper _configurationFileHelper;
 
+    public event ISetupTask.ChangeMessageHandler OnMessageChanged;
+
     // Configuration files can run as either admin or as a regular user
     // depending on the user, make this settable.
     public bool RequiresAdmin { get; set; }
@@ -94,6 +96,11 @@ public class ConfigureTask : ISetupTask
                 UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
                 if (result.Succeeded)
                 {
+                    if (OnMessageChanged != null)
+                    {
+                        OnMessageChanged();
+                    }
+
                     return TaskFinishedState.Success;
                 }
                 else

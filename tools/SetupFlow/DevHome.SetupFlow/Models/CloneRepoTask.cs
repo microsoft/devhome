@@ -110,6 +110,8 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
 
     private readonly IStringResource _stringResource;
 
+    public event ISetupTask.ChangeMessageHandler OnMessageChanged;
+
     public bool DependsOnDevDriveToBeInstalled
     {
         get; set;
@@ -183,6 +185,11 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                 _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, e.HResult.ToString("X", CultureInfo.CurrentCulture));
                 TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_ClouldNotClone_Event", LogLevel.Critical, new ExceptionEvent(e.HResult));
                 return TaskFinishedState.Failure;
+            }
+
+            if (OnMessageChanged != null)
+            {
+                OnMessageChanged();
             }
 
             WasCloningSuccessful = true;

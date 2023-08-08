@@ -32,6 +32,8 @@ public class InstallPackageTask : ISetupTask
     private uint _installerErrorCode;
     private int _extendedErrorCode;
 
+    public event ISetupTask.ChangeMessageHandler OnMessageChanged;
+
     public bool RequiresAdmin => _requiresElevation.Value;
 
     public bool IsFromMSStore => string.Equals(_package.CatalogId, MSStoreCatalogId, StringComparison.Ordinal);
@@ -107,6 +109,11 @@ public class InstallPackageTask : ISetupTask
 
                 // Set the extended error code in case a reboot is required
                 _extendedErrorCode = installResult.ExtendedErrorCode;
+
+                if (OnMessageChanged != null)
+                {
+                    OnMessageChanged();
+                }
 
                 ReportAppInstallSucceededEvent();
                 return TaskFinishedState.Success;

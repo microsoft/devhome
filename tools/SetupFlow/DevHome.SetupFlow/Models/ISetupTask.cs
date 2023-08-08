@@ -91,4 +91,8 @@ public interface ISetupTask
     {
         get;
     }
+
+    public delegate void ChangeMessageHandler();
+
+    public event ChangeMessageHandler OnMessageChanged;
 }

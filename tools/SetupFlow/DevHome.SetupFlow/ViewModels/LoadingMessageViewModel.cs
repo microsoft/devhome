@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.UI;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -25,7 +28,6 @@ public partial class LoadingMessageViewModel : ObservableObject
 
     /// <summary>
     /// The status symbol icon is the red, green, or yellow icon that is next to a task when it has been completed.
-
     /// </summary>
     [ObservableProperty]
     private bool _shouldShowStatusSymbolIcon;
@@ -45,5 +47,7 @@ public partial class LoadingMessageViewModel : ObservableObject
     public LoadingMessageViewModel(string messageToShow)
     {
         MessageToShow = messageToShow;
+        _messageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+        _statusSymbolIcon = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
     }
 }

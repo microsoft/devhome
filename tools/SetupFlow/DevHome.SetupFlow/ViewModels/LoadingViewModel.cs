@@ -174,6 +174,15 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ExecutionFinished.Invoke(null, null);
     }
 
+    public void AddMessage()
+    {
+        /*
+        var message = new LoadingMessageViewModel("Hello");
+
+        Messages.Insert(Messages.Count - _numberOfExecutingTasks, message);
+        */
+    }
+
     public LoadingViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
@@ -207,6 +216,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             foreach (var task in taskGroup.SetupTasks)
             {
+                task.OnMessageChanged += AddMessage;
                 TasksToRun.Add(new TaskInformation
                 {
                     TaskIndex = taskIndex++,
