@@ -159,9 +159,6 @@
   <data name="CPUUsage_Widget_Template.Processes" xml:space="preserve">
     <value>Processes</value>
   </data>
-  <data name="CPUUsage_Widget_Template.End_Process" xml:space="preserve">
-    <value>End process</value>
-  </data>
   <data name="CPUUsage_Widget_Template.Open_Task_Manager" xml:space="preserve">
     <value>Task Manager</value>
   </data>
