@@ -23,7 +23,6 @@
               "type": "TextBlock",
               "size": "large",
               "text": "${cpuUsage}"
-
             }
           ]
         },
