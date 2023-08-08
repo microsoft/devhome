@@ -40,8 +40,10 @@ internal class WidgetServiceHelper
             var version = package.Id.Version;
             var major = version.Major;
             var minor = version.Minor;
+            var build = version.Build;
+            var revision = version.Revision;
 
-            Log.Logger()?.ReportInfo("DashboardView", $"{package.Id.FullName} Version: {major}.{minor}");
+            Log.Logger()?.ReportInfo("WidgetServiceHelper", $"{package.Id.FullName} Version: {major}.{minor}.{build}.{revision}");
 
             // Create System.Version type from PackageVersion to test. System.Version supports CompareTo() for easy comparisons.
             if (!IsVersionSupported(new (major, minor)))
@@ -62,12 +64,14 @@ internal class WidgetServiceHelper
     /// <summary>
     /// Tests whether a version is equal to or above the min, but less than the max.
     /// </summary>
-    private bool IsVersionBetween(Version target, Version min, Version max) => target.CompareTo(min) >= 0 && target.CompareTo(max) < 0;
+    private bool IsVersionBetween(Version target, Version min, Version max) =>
+        target.CompareTo(min) >= 0 && target.CompareTo(max) < 0;
 
     /// <summary>
     /// Tests whether a version is equal to or above the min.
     /// </summary>
     private bool IsVersionAtOrAbove(Version target, Version min) => target.CompareTo(min) >= 0;
 
-    private bool IsVersionSupported(Version target) => IsVersionBetween(target, minSupportedVersion400, version500) || IsVersionAtOrAbove(target, minSupportedVersion500);
+    private bool IsVersionSupported(Version target) =>
+        IsVersionBetween(target, minSupportedVersion400, version500) || IsVersionAtOrAbove(target, minSupportedVersion500);
 }
