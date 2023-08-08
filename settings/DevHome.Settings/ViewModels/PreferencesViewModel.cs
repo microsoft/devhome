@@ -23,8 +23,9 @@ public partial class PreferencesViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task SwitchThemeAsync(int selectedIndex)
+    private async Task SwitchThemeAsync(ElementTheme elementTheme)
     {
-        await _themeSelectorService.SetThemeAsync((ElementTheme)selectedIndex);
+        ElementTheme = elementTheme;
+        await _themeSelectorService.SetThemeAsync(elementTheme);
     }
 }

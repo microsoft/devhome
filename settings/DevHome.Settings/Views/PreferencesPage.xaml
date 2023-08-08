@@ -4,16 +4,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:helpers="using:DevHome.Common.Helpers"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:i="using:Microsoft.Xaml.Interactivity" 
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:xaml="using:Microsoft.UI.Xaml"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
-    mc:Ignorable="d">
-    <Page.Resources>
-        <helpers:EnumToIntConverter x:Key="EnumToIntConverter" />
-    </Page.Resources>
+    mc:Ignorable="d"
+    Loaded="Page_Loaded">
 
     <ScrollViewer
         MaxWidth="{ThemeResource MaxPageContentWidth}"
@@ -31,15 +29,14 @@
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon Glyph="&#xE790;" />
                     </labs:SettingsCard.HeaderIcon>
-                    <ComboBox x:Name="ThemeSelectionComboBox"
-                                      SelectedIndex="{x:Bind Mode=TwoWay, Path=ViewModel.ElementTheme, Converter={StaticResource EnumToIntConverter}}">
-                        <ComboBoxItem x:Uid="Settings_Theme_Default" />
-                        <ComboBoxItem x:Uid="Settings_Theme_Light" />
-                        <ComboBoxItem x:Uid="Settings_Theme_Dark" />
+                    <ComboBox x:Name="ThemeSelectionComboBox">
+                        <ComboBoxItem x:Uid="Settings_Theme_Default" Tag="{x:Bind xaml:ElementTheme.Default}" />
+                        <ComboBoxItem x:Uid="Settings_Theme_Light" Tag="{x:Bind xaml:ElementTheme.Light}" />
+                        <ComboBoxItem x:Uid="Settings_Theme_Dark" Tag="{x:Bind xaml:ElementTheme.Dark}" />
                         <i:Interaction.Behaviors>
                             <ic:EventTriggerBehavior EventName="SelectionChanged">
                                 <ic:InvokeCommandAction Command="{x:Bind ViewModel.SwitchThemeCommand}" 
-                                                        CommandParameter="{Binding SelectedIndex, ElementName=ThemeSelectionComboBox}" />
+                                                        CommandParameter="{x:Bind ((ComboBoxItem)ThemeSelectionComboBox.SelectedItem).Tag, Mode=OneWay}" />
                             </ic:EventTriggerBehavior>
                         </i:Interaction.Behaviors>
                     </ComboBox>
