@@ -2,10 +2,13 @@
 // Licensed under the MIT license.
 
 using System.Diagnostics.CodeAnalysis;
+using DevHome.Common.ResultHelper;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
 using DevHome.Settings.ViewModels;
+using DevHome.Telemetry;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 
@@ -62,6 +65,15 @@ public class NavigationViewService : INavigationViewService
 
     private void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
     {
+        if (args.InvokedItem != null)
+        {
+            var invokedItem = (string)args.InvokedItem;
+            if (invokedItem != null)
+            {
+                TelemetryFactory.Get<ITelemetry>().Log("NavigationView_Clicked", LogLevel.Critical, new NavigationViewItemEvent(invokedItem));
+            }
+        }
+
         if (args.IsSettingsInvoked)
         {
             _navigationService.NavigateTo(typeof(SettingsViewModel).FullName!);
