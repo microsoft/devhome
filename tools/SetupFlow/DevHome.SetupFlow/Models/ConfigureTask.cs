@@ -23,7 +23,7 @@ public class ConfigureTask : ISetupTask
     private readonly StorageFile _file;
     private ConfigurationFileHelper _configurationFileHelper;
 
-    public event ISetupTask.ChangeMessageHandler OnMessageChanged;
+    public event ISetupTask.ChangeMessageHandler AddMessage;
 
     // Configuration files can run as either admin or as a regular user
     // depending on the user, make this settable.
@@ -91,16 +91,12 @@ public class ConfigureTask : ISetupTask
         {
             try
             {
+                AddMessage("Applying configuration");
                 var result = await _configurationFileHelper.ApplyConfigurationAsync();
                 RequiresReboot = result.RequiresReboot;
                 UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
                 if (result.Succeeded)
                 {
-                    if (OnMessageChanged != null)
-                    {
-                        OnMessageChanged();
-                    }
-
                     return TaskFinishedState.Success;
                 }
                 else

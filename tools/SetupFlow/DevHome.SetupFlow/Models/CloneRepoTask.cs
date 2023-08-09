@@ -110,7 +110,10 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
 
     private readonly IStringResource _stringResource;
 
-    public event ISetupTask.ChangeMessageHandler OnMessageChanged;
+    // Disable warning.  Nothing here needs to add an arbitrary message.
+#pragma warning disable 67
+    public event ISetupTask.ChangeMessageHandler AddMessage;
+#pragma warning restore 67
 
     public bool DependsOnDevDriveToBeInstalled
     {
@@ -173,11 +176,6 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     {
         return Task.Run(async () =>
         {
-            if (OnMessageChanged != null)
-            {
-                OnMessageChanged();
-            }
-
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");

@@ -92,7 +92,7 @@ public interface ISetupTask
         get;
     }
 
-    public delegate void ChangeMessageHandler();
+    public delegate void ChangeMessageHandler(string message);
 
-    public event ChangeMessageHandler OnMessageChanged;
+    public event ChangeMessageHandler AddMessage;
 }

@@ -32,7 +32,7 @@ public class InstallPackageTask : ISetupTask
     private uint _installerErrorCode;
     private int _extendedErrorCode;
 
-    public event ISetupTask.ChangeMessageHandler OnMessageChanged;
+    public event ISetupTask.ChangeMessageHandler AddMessage;
 
     public bool RequiresAdmin => _requiresElevation.Value;
 
@@ -103,17 +103,13 @@ public class InstallPackageTask : ISetupTask
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
+                AddMessage($"Starting to install package {_package.Id}");
                 var installResult = await _wpm.InstallPackageAsync(_package);
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
 
                 // Set the extended error code in case a reboot is required
                 _extendedErrorCode = installResult.ExtendedErrorCode;
-
-                if (OnMessageChanged != null)
-                {
-                    OnMessageChanged();
-                }
 
                 ReportAppInstallSucceededEvent();
                 return TaskFinishedState.Success;
@@ -145,6 +141,7 @@ public class InstallPackageTask : ISetupTask
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
                 var elevatedTask = elevatedComponentFactory.CreateElevatedInstallTask();
+                AddMessage($"Starting to install package {_package.Id}");
                 var elevatedResult = await elevatedTask.InstallPackage(_package.Id, _package.CatalogName);
                 WasInstallSuccessful = elevatedResult.TaskSucceeded;
                 RequiresReboot = elevatedResult.RebootRequired;
