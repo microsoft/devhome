@@ -4,6 +4,9 @@
 * text=auto
 
 *.cs text eol=crlf
+*.idl text eol=crlf
+*.h text eol=crlf
+*.cpp text eol=crlf
 *.sln text eol=crlf
 *.props text eol=crlf
 *.targets text eol=crlf
