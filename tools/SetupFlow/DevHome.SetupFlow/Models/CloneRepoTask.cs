@@ -92,7 +92,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     }
 
     /// <summary>
-    /// Gets the repository in a [organization]\[reponame] style
+    /// Gets the repository in a [organization]\[repo_name] style
     /// </summary>
     public string RepositoryOwnerAndName => Path.Join(RepositoryToClone.OwningAccountName ?? string.Empty, RepositoryToClone.DisplayName);
 
@@ -135,8 +135,8 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// Initializes a new instance of the <see cref="CloneRepoTask"/> class.
     /// Task to clone a repository.
     /// </summary>
-    /// <param name="cloneLocation">Repository will be placed here. at _cloneLocation.FullName</param>
-    /// <param name="repositoryToClone">The reposptyr to clone</param>
+    /// <param name="cloneLocation">Repository will be placed here, at _cloneLocation.FullName</param>
+    /// <param name="repositoryToClone">The repository to clone</param>
     public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName)
     {
         _cloneLocation = cloneLocation;
@@ -181,7 +181,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             {
                 Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}", e);
                 _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, e.HResult.ToString("X", CultureInfo.CurrentCulture));
-                TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_ClouldNotClone_Event", LogLevel.Critical, new ExceptionEvent(e.HResult));
+                TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_CouldNotClone_Event", LogLevel.Critical, new ExceptionEvent(e.HResult));
                 return TaskFinishedState.Failure;
             }
 

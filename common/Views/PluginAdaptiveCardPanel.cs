@@ -27,7 +27,7 @@ public class PluginAdaptiveCardPanel : StackPanel
 
         if (Children.Count != 0)
         {
-            throw new ArgumentException("The PluginUI element must be binded to an empty container.");
+            throw new ArgumentException("The PluginUI element must be bound to an empty container.");
         }
 
         var uiDispatcher = DispatcherQueue.GetForCurrentThread();
@@ -37,18 +37,18 @@ public class PluginAdaptiveCardPanel : StackPanel
         {
             uiDispatcher.TryEnqueue(() =>
             {
-                var renderedAdaptivecard = adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
-                renderedAdaptivecard.Action += (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
+                var renderedAdaptiveCard = adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
+                renderedAdaptiveCard.Action += (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
                 {
                     pluginAdaptiveCardController.OnAction(JsonConvert.SerializeObject(args.Action), JsonConvert.SerializeObject(args.Inputs));
                 };
 
                 Children.Clear();
-                Children.Add(renderedAdaptivecard.FrameworkElement);
+                Children.Add(renderedAdaptiveCard.FrameworkElement);
 
                 if (this.UiUpdate != null)
                 {
-                    this.UiUpdate.Invoke(this, renderedAdaptivecard.FrameworkElement);
+                    this.UiUpdate.Invoke(this, renderedAdaptiveCard.FrameworkElement);
                 }
             });
         };

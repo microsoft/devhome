@@ -65,7 +65,7 @@ public partial class SecondaryWindowExtension : WindowEx
             if (_primaryWindow != null)
             {
                 _primaryWindow.Closed -= OnPrimaryWindowClosed;
-                _primaryWindow.VisibilityChanged -= OnPrimaryWindowVisiblityChanged;
+                _primaryWindow.VisibilityChanged -= OnPrimaryWindowVisibilityChanged;
             }
 
             // Set new primary window
@@ -75,7 +75,7 @@ public partial class SecondaryWindowExtension : WindowEx
             {
                 // Connect new primary window
                 _primaryWindow.Closed += OnPrimaryWindowClosed;
-                _primaryWindow.VisibilityChanged += OnPrimaryWindowVisiblityChanged;
+                _primaryWindow.VisibilityChanged += OnPrimaryWindowVisibilityChanged;
             }
         }
     }
@@ -94,9 +94,9 @@ public partial class SecondaryWindowExtension : WindowEx
     {
         if (PrimaryWindow != null)
         {
-            // first get a quarter of the size of the of the current window then get the center point
-            // of the primary window. Substract primary windows Y by a quarter of the secondary windows
-            // Y to move the secondary window upwards. This will show the secondary winddow in the center
+            // First, get a quarter of the size of the of the current window then get the center point
+            // of the primary window. Subtract primary window's Y by a quarter of the secondary window's
+            // Y to move the secondary window upwards. This will show the secondary window in the center
             // of the app, slightly elevated above the content.
             var secondaryY = Height / 4D;
             var primaryX = (double)PrimaryWindow.AppWindow.Position.X;
@@ -139,12 +139,12 @@ public partial class SecondaryWindowExtension : WindowEx
             PrimaryWindow.ZOrderChanged -= OnPrimaryWindowZOrderChanged;
             Closed -= OnSecondaryWindowClosed;
             PrimaryWindow.Closed -= OnPrimaryWindowClosed;
-            PrimaryWindow.VisibilityChanged -= OnPrimaryWindowVisiblityChanged;
+            PrimaryWindow.VisibilityChanged -= OnPrimaryWindowVisibilityChanged;
             UseAppTheme = false;
         }
     }
 
-    public void OnPrimaryWindowVisiblityChanged(object? sender, WindowVisibilityChangedEventArgs args)
+    public void OnPrimaryWindowVisibilityChanged(object? sender, WindowVisibilityChangedEventArgs args)
     {
         // Close secondary window
         if (PrimaryWindow != null && !PrimaryWindow.Visible)

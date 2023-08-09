@@ -2,14 +2,12 @@
 // Licensed under the MIT license.
 
 using System.Diagnostics.CodeAnalysis;
-using DevHome.Common.ResultHelper;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
 using DevHome.Settings.ViewModels;
 using DevHome.Telemetry;
-using DevHome.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Services;
