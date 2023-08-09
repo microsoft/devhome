@@ -12,6 +12,7 @@
         </Grid.Background>
 
         <!-- Background image -->
+        <!-- Set MinWidth so that image gets clipped as window narrows, rather than scaling down -->
         <Image Height="{Binding ElementName=BannerGrid, Path=Height}"
                Stretch="Uniform" Source="{x:Bind OverlaySource, Mode=OneWay}"
                AutomationProperties.AccessibilityView="Raw"

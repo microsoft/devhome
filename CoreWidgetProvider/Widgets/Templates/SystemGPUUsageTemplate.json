@@ -4,8 +4,9 @@
     {
       "type": "Image",
       "url": "${gpuGraphUrl}",
-      "height": "100px",
-      "width": "268px"
+      "height": "${chartHeight}",
+      "width": "${chartWidth}",
+      "horizontalAlignment": "center"
     },
     {
       "type": "ColumnSet",

@@ -9,3 +9,4 @@ StrFormatByteSizeEx
 LocalFree
 FormatMessage
 S_OK
+IsApiSetImplemented

@@ -44,4 +44,18 @@ public sealed partial class PreferencesPage : Page
             crumb.NavigateTo();
         }
     }
+
+    private void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        var selectedTheme = ViewModel.ElementTheme;
+        foreach (var item in ThemeSelectionComboBox.Items)
+        {
+            var comboItem = item as ComboBoxItem;
+            if (comboItem?.Tag is ElementTheme tag && tag == selectedTheme)
+            {
+                ThemeSelectionComboBox.SelectedValue = item;
+                break;
+            }
+        }
+    }
 }
