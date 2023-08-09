@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5934D46A-E416-4600-B711-99A7CAAE8F1B}"
 	ProjectSection(SolutionItems) = preProject
 		src\.editorconfig = src\.editorconfig
+		.gitattributes = .gitattributes
 		.vsconfig = .vsconfig
 		Directory.Build.props = Directory.Build.props
 		Solution.props = Solution.props
