@@ -173,6 +173,11 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     {
         return Task.Run(async () =>
         {
+            if (OnMessageChanged != null)
+            {
+                OnMessageChanged();
+            }
+
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
@@ -185,11 +190,6 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                 _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, e.HResult.ToString("X", CultureInfo.CurrentCulture));
                 TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_ClouldNotClone_Event", LogLevel.Critical, new ExceptionEvent(e.HResult));
                 return TaskFinishedState.Failure;
-            }
-
-            if (OnMessageChanged != null)
-            {
-                OnMessageChanged();
             }
 
             WasCloningSuccessful = true;

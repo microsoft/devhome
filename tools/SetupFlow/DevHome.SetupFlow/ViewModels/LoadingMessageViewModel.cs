@@ -47,7 +47,5 @@ public partial class LoadingMessageViewModel : ObservableObject
     public LoadingMessageViewModel(string messageToShow)
     {
         MessageToShow = messageToShow;
-        _messageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
-        _statusSymbolIcon = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
     }
 }

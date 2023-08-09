@@ -176,11 +176,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     public void AddMessage()
     {
-        /*
         var message = new LoadingMessageViewModel("Hello");
 
         Messages.Insert(Messages.Count - _numberOfExecutingTasks, message);
-        */
     }
 
     public LoadingViewModel(
