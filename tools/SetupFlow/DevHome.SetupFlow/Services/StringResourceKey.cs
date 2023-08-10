@@ -109,7 +109,7 @@ public static class StringResourceKey
     public static readonly string DownloadAppRestart = nameof(DownloadAppRestart);
 
     // Dev drive loading screen messages
-    public static readonly string DevDriveNotAdminError = nameof(DevDriveNotAdminError)
+    public static readonly string DevDriveNotAdminError = nameof(DevDriveNotAdminError);
     public static readonly string DevDriveCreating = nameof(DevDriveCreating);
     public static readonly string DevDriveCreated = nameof(DevDriveCreated);
     public static readonly string DevDriveErrorWithReason = nameof(DevDriveErrorWithReason);
