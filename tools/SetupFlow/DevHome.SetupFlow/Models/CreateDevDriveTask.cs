@@ -70,7 +70,7 @@ internal class CreateDevDriveTask : ISetupTask
     {
         return Task.Run(() =>
         {
-            AddMessage("DevDrives need to run as admin");
+            AddMessage(_stringResource.GetLocalized(StringResourceKey.DevDriveNotAdminError));
             return TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }

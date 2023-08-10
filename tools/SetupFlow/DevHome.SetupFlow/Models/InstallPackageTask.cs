@@ -4,6 +4,7 @@
 extern alias Projection;
 
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
@@ -103,7 +104,7 @@ public class InstallPackageTask : ISetupTask
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
-                AddMessage($"Starting to install package {_package.Id}");
+                AddMessage(string.Format(CultureInfo.CurrentCulture, _stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage), _package.Id));
                 var installResult = await _wpm.InstallPackageAsync(_package);
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
@@ -141,7 +142,7 @@ public class InstallPackageTask : ISetupTask
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
                 var elevatedTask = elevatedComponentFactory.CreateElevatedInstallTask();
-                AddMessage($"Starting to install package {_package.Id}");
+                AddMessage(string.Format(CultureInfo.CurrentCulture, _stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage), _package.Id));
                 var elevatedResult = await elevatedTask.InstallPackage(_package.Id, _package.CatalogName);
                 WasInstallSuccessful = elevatedResult.TaskSucceeded;
                 RequiresReboot = elevatedResult.RebootRequired;
