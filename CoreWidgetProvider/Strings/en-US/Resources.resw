@@ -90,6 +90,15 @@
   <data name="SSH_Widget_Template.ErrorProcessingConfigFile" xml:space="preserve">
     <value>Processing config file failed</value>
   </data>
+  <data name="SSH_Date_Template.Title" xml:space="preserve">
+    <value>SSH remote</value>
+  </data>
+  <data name="SSH_Date_Template.Description" xml:space="preserve">
+    <value>Remote</value>
+  </data>
+  <data name="SSH_Date_Template.Output" xml:space="preserve">
+    <value>Host</value>
+  </data>
   <data name="Memory_Widget_Template.SystemMemory" xml:space="preserve">
     <value>System memory</value>
   </data>

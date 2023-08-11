@@ -102,6 +102,33 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
+                  <Definition Id="SSH_Date" DisplayName="SSH remote" Description="Microsoft SSH remote Widget Description" AllowMultiple="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Widgets\Assets\ssh_remote_icon_light.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Widgets\Assets\ssh_remote_icon_dark.png" />
+                        </Icons>
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
                   <Definition Id="System_Memory" DisplayName="Memory" Description="Microsoft System Memory Widget Description" AllowMultiple="true">
                     <Capabilities>
                       <Capability>
