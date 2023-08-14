@@ -30,6 +30,8 @@ internal class CreateDevDriveTask : ISetupTask
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IHost _host;
 
+    public event ISetupTask.ChangeMessageHandler AddMessage;
+
     public bool RequiresAdmin => true;
 
     public bool RequiresReboot => false;
@@ -68,6 +70,7 @@ internal class CreateDevDriveTask : ISetupTask
     {
         return Task.Run(() =>
         {
+            AddMessage(_stringResource.GetLocalized(StringResourceKey.DevDriveNotAdminError));
             return TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }
@@ -97,6 +100,7 @@ internal class CreateDevDriveTask : ISetupTask
                 var storageOperator = elevatedComponentFactory.CreateDevDriveStorageOperator();
                 var virtDiskPath = Path.Combine(DevDrive.DriveLocation, DevDrive.DriveLabel + ".vhdx");
                 Result.ThrowIfFailed(storageOperator.CreateDevDrive(virtDiskPath, DevDrive.DriveSizeInBytes, DevDrive.DriveLetter, DevDrive.DriveLabel));
+
                 return TaskFinishedState.Success;
             }
             catch (Exception ex)
