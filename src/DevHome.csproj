@@ -20,6 +20,7 @@
         <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
         <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
         <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+        <WidgetServiceVersion>0.2.9</WidgetServiceVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -61,6 +62,17 @@
 
     <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
         <ProjectCapability Include="Msix" />
+    </ItemGroup>
+
+    <ImportGroup>
+        <Import Project="..\widgetService\Microsoft.Windows.Widgets.$(WidgetService)\build\native\Microsoft.Windows.Widgets.targets" Condition="Exists('..\widgetService\Microsoft.Windows.Widgets.$(WidgetService)\build\native\Microsoft.Windows.Widgets.targets')" />
+    </ImportGroup>
+
+    <ItemGroup>
+        <None Include="..\widgetService\Microsoft.Windows.Widgets.WidgetService_Grace.$(WidgetServiceVersion)\lib\uap10.0\Microsoft.Windows.Widgets.winmd" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="..\widgetService\Microsoft.Windows.Widgets.WidgetService_Grace.$(WidgetServiceVersion)\lib\native\Microsoft.Windows.Widgets.Internal.winmd" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="..\widgetService\Microsoft.Windows.Widgets.WidgetService_Grace.$(WidgetServiceVersion)\runtimes\win10-$(Platform)\native\Microsoft.Windows.Widgets.dll" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="..\widgetService\Microsoft.Windows.Widgets.WidgetService_Grace.$(WidgetServiceVersion)\content\win10-$(Platform)\WidgetService.exe" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
