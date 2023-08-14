@@ -51,9 +51,17 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     {
         get
         {
-            var osDrive = new DriveInfo(Path.GetPathRoot(Environment.SystemDirectory));
-            if (!osDrive.IsReady || _minimumAvailableSpaceInBytesForDevDriveAutoCheckbox > (ulong)osDrive.AvailableFreeSpace)
+            try
             {
+                var osDrive = new DriveInfo(Path.GetPathRoot(Environment.SystemDirectory));
+                if (!osDrive.IsReady || _minimumAvailableSpaceInBytesForDevDriveAutoCheckbox > (ulong)osDrive.AvailableFreeSpace)
+                {
+                    _shouldAutoCheckDevDriveCheckbox = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Unable to check if Dev Drive checkbox should be auto checked: {ex.Message}");
                 _shouldAutoCheckDevDriveCheckbox = false;
             }
 
