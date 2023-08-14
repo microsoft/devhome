@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Extensions;
@@ -12,6 +13,7 @@ using DevHome.Common.Views;
 using DevHome.Logging;
 using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
@@ -58,7 +60,24 @@ public sealed partial class AccountsPage : Page
         var numProviders = ViewModel.AccountsProviders.Count;
         if (numProviders == 1)
         {
-            await ShowLoginUIAsync("Settings", this, ViewModel.AccountsProviders[0]);
+            if (ViewModel.AccountsProviders[0].DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CardSession)
+            {
+                await ShowLoginUIAsync("Settings", this, ViewModel.AccountsProviders[0]);
+            }
+            else if (ViewModel.AccountsProviders[0].DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CustomProvider)
+            {
+                IntPtr windowHandle = IntPtr.Zero;
+                foreach (Process activeProcess in Process.GetProcesses())
+                {
+                    if (activeProcess.MainWindowTitle.Contains("Dev Home"))
+                    {
+                        windowHandle = activeProcess.MainWindowHandle;
+                    }
+                }
+
+                WindowId windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
+                await ViewModel.AccountsProviders[0].DeveloperIdProvider.ShowLogonSession(windowPtr);
+            }
         }
         else if (numProviders > 1)
         {
@@ -84,7 +103,24 @@ public sealed partial class AccountsPage : Page
         {
             if (addAccountButton.Tag is AccountsProviderViewModel accountProvider)
             {
-                await ShowLoginUIAsync("Settings", this, accountProvider);
+                if (accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CardSession)
+                {
+                    await ShowLoginUIAsync("Settings", this, accountProvider);
+                }
+                else if (accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CustomProvider)
+                {
+                    IntPtr windowHandle = IntPtr.Zero;
+                    foreach (Process activeProcess in Process.GetProcesses())
+                    {
+                        if (activeProcess.MainWindowTitle.Contains("Dev Home"))
+                        {
+                            windowHandle = activeProcess.MainWindowHandle;
+                        }
+                    }
+
+                    WindowId windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
+                    await accountProvider.DeveloperIdProvider.ShowLogonSession(windowPtr);
+                }
             }
             else
             {
