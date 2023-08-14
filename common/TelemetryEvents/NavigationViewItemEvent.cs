@@ -10,15 +10,18 @@ using Microsoft.Diagnostics.Telemetry.Internal;
 namespace DevHome.Common.TelemetryEvents;
 
 [EventData]
-public class ExceptionEvent : EventBase
+public class NavigationViewItemEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public int HResult { get; }
-
-    public ExceptionEvent(int hresult)
+    public string NavigationViewTitle
     {
-        HResult = hresult;
+        get;
+    }
+
+    public NavigationViewItemEvent(string navigationViewTitle)
+    {
+        NavigationViewTitle = navigationViewTitle;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)

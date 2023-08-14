@@ -3,7 +3,6 @@
 
 using System.Runtime.InteropServices;
 using DevHome.Common.Services;
-using DevHome.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Win32;
 using Windows.Win32.System.Com;
@@ -85,7 +84,7 @@ public class PluginWrapper : IPluginWrapper
             {
                 if (!IsRunning())
                 {
-                    IntPtr pluginPtr = IntPtr.Zero;
+                    var pluginPtr = IntPtr.Zero;
                     try
                     {
                         var hr = PInvoke.CoCreateInstance(Guid.Parse(PluginClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IPlugin).GUID, out var pluginObj);
