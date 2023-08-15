@@ -26,7 +26,7 @@ public class AppInfoService : IAppInfoService
 #if CANARY_BUILD
         return RunningAsAdmin ? "AppDisplayNameCanaryAdministrator".GetLocalized() : "AppDisplayNameCanary".GetLocalized();
 #elif STABLE_BUILD
-        return RunningAsAdmin ? "AppDisplayNameStableAdministrator".GetLocalized() :  "AppDisplayNameStable".GetLocalized();
+        return RunningAsAdmin ? "AppDisplayNameStableAdministrator".GetLocalized() : "AppDisplayNameStable".GetLocalized();
 #else
         return RunningAsAdmin ? "AppDisplayNameDevAdministrator".GetLocalized() : "AppDisplayNameDev".GetLocalized();
 #endif
