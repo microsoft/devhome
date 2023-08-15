@@ -110,7 +110,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
 
     private readonly IStringResource _stringResource;
 
-    // Because AssMessage is defined in ISetupTask every setup task needs to have their own local copy.
+    // Because AddMessage is defined in ISetupTask every setup task needs to have their own local copy.
     // If a task does not need to add any messages, for example, this class, warning 67 pops up stating that
     // AddMessage event is not used and failing compliation.  Adding this pragma supresses the warning.
     // When this task needs to insert messages into the loading screen this pragma can be removed.
