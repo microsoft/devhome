@@ -472,18 +472,18 @@ stages:
             MaxConcurrency: '50'
             MaxRetryAttempts: '5'
 
-      - task: PkgESVPack@12
-        condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
-        displayName: Create and push vpack for app
-        env:
-          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-        inputs:
-          sourceDirectory: AppxBundles\${{ configuration }}
-          description: VPack for DevHome
-          pushPkgName: DevHome.app
-          version: $(MSIXVersion)
-          owner: chriwall
-          provData: true
+        - task: PkgESVPack@12
+          condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
+          displayName: Create and push vpack for app
+          env:
+            SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+          inputs:
+            sourceDirectory: AppxBundles\${{ configuration }}
+            description: VPack for DevHome
+            pushPkgName: DevHome.app
+            version: $(MSIXVersion)
+            owner: chriwall
+            provData: true
 
         - task: PublishBuildArtifacts@1
           condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
