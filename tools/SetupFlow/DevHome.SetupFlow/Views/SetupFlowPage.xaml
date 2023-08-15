@@ -14,7 +14,8 @@
     xmlns:selectors="using:DevHome.SetupFlow.Selectors"
     xmlns:views="using:DevHome.SetupFlow.Views"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:i="using:Microsoft.Xaml.Interactivity" 
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
@@ -104,7 +105,15 @@
                     <!-- Workaround to show a tooltip on a disabled button
                          https://github.com/microsoft/microsoft-ui-xaml/issues/2262-->
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
-                        <Grid ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+                        <Grid>
+                            <i:Interaction.Behaviors>
+                                <ic:EventTriggerBehavior EventName="PointerEntered">
+                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.Orchestrator.StartTeachingTipTimerCommand}"/>
+                                </ic:EventTriggerBehavior>
+                                <ic:EventTriggerBehavior EventName="PointerExited">
+                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.Orchestrator.StopTeachingTipTimerCommand}"/>
+                                </ic:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
                             <TextBlock IsTabStop="False" />
                             <Button
                                 x:Name="MyButton"
@@ -112,9 +121,9 @@
                                 Style="{StaticResource AccentButtonStyle}"
                                 MinWidth="120" Margin="4,0"
                                 Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}">
-                                <ToolTipService.ToolTip>
+                                <!--<ToolTipService.ToolTip>
                                     <ToolTip Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" Placement="Top" IsOpen="{x:Bind ViewModel.Orchestrator.IsToolTipOpen, Mode=TwoWay}" Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowTooltip, Mode=OneWay}"/>
-                                </ToolTipService.ToolTip>
+                                </ToolTipService.ToolTip>-->
                             </Button>
                             <TeachingTip x:Name="MyTeachingTip" Visibility="{x:Bind ViewModel.Orchestrator.IsTeachingTipVisible}" IsOpen="{x:Bind ViewModel.Orchestrator.IsTeachingTipOpen, Mode=OneWay}" Target="{x:Bind MyButton}" PreferredPlacement="TopLeft" Subtitle="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
                             </TeachingTip>

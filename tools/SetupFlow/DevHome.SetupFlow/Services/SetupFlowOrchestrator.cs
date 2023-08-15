@@ -7,24 +7,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation.Provider;
 using Microsoft.UI.Xaml.Controls;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.Services;
 
 /// <summary>
 /// Orchestrator for the Setup Flow, in charge of functionality across multiple pages.
 /// </summary>
-public partial class SetupFlowOrchestrator : ObservableObject
+public partial class SetupFlowOrchestrator : ObservableObject, IDisposable
 {
     private readonly List<SetupPageViewModelBase> _flowPages = new ();
+
+    private readonly Timer _teachingTipVisabilityTimer = new (2000);
 
     /// <summary>
     /// Index for the current page in the <see cref="_flowPages"/>.
@@ -195,6 +202,33 @@ public partial class SetupFlowOrchestrator : ObservableObject
         await SetCurrentPageIndex(_currentPageIndex + 1);
     }
 
+    private void ShowTeachingTip(object sender, ElapsedEventArgs args)
+    {
+        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        {
+            IsTeachingTipOpen = true;
+            IsTeachingTipVisible = true;
+        });
+        _teachingTipVisabilityTimer.Enabled = false;
+    }
+
+    [RelayCommand]
+    public void StartTeachingTipTimer()
+    {
+        _teachingTipVisabilityTimer.Enabled = true;
+    }
+
+    [RelayCommand]
+    public void StopTeachingTipTimer()
+    {
+        _teachingTipVisabilityTimer.Enabled = false;
+    }
+
+    public SetupFlowOrchestrator()
+    {
+        _teachingTipVisabilityTimer.Elapsed += ShowTeachingTip;
+    }
+
     private bool CanGoToNextPage()
     {
         return _currentPageIndex + 1 < _flowPages.Count && CurrentPageViewModel.CanGoToNextPage;
@@ -215,21 +249,22 @@ public partial class SetupFlowOrchestrator : ObservableObject
         // the user the "Done" button.
         ShouldShowDoneButton = _currentPageIndex == FlowPages.Count - 1;
 
-        if (CurrentPageViewModel.IsStepPage && HasLoaded && index == 0)
-        {
-            IsTeachingTipOpen = true;
-            IsTeachingTipVisible = true;
-            ShouldShowTooltip = Visibility.Collapsed;
-            IsToolTipOpen = false;
-        }
-        else
+        if (string.IsNullOrEmpty(CurrentPageViewModel.NextPageButtonToolTipText))
         {
             IsTeachingTipOpen = false;
             IsTeachingTipVisible = false;
-            if (!string.IsNullOrEmpty(CurrentPageViewModel.NextPageButtonToolTipText))
+        }
+        else
+        {
+            if (CurrentPageViewModel.IsStepPage && HasLoaded && index == 0)
             {
-                ShouldShowTooltip = Visibility.Visible;
-                IsToolTipOpen = true;
+                IsTeachingTipOpen = true;
+                IsTeachingTipVisible = true;
+            }
+            else
+            {
+                IsTeachingTipOpen = false;
+                IsTeachingTipVisible = false;
             }
         }
 
@@ -240,5 +275,11 @@ public partial class SetupFlowOrchestrator : ObservableObject
         }
 
         await CurrentPageViewModel?.OnNavigateToAsync();
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        _teachingTipVisabilityTimer.Dispose();
     }
 }
