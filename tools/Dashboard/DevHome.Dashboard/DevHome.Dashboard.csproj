@@ -28,12 +28,12 @@
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
     <ProjectReference Include="..\..\..\logging\DevHome.Logging.csproj" />
     <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Internal.winmd" Link="Microsoft.Windows.Widgets.Internal.winmd" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.Hosts.winmd" Link="Microsoft.Windows.Widgets.Hosts.winmd" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include=".\BuildAssets\Microsoft.Windows.Widgets.winmd" Link="Microsoft.Windows.Widgets.winmd" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.Windows.Widgets.Hosts">
-      <HintPath>BuildAssets\Microsoft.Windows.Widgets.Hosts.winmd</HintPath>
+      <HintPath>BuildAssets\Microsoft.Windows.Widgets.winmd</HintPath>
       <IsWinMDFile>true</IsWinMDFile>
     </Reference>
   </ItemGroup>
