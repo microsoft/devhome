@@ -492,11 +492,11 @@ stages:
             pathtoPublish: $(XES_VPACKMANIFESTDIRECTORY)\$(XES_VPACKMANIFESTNAME)
             artifactName: vpackManifest
     
-            - task: PublishPipelineArtifact@0
-              displayName: Publish MSIX Bundle Artifacts
-              inputs:
-                artifactName: MsixBundle_${{ configuration }}
-                targetPath: AppxBundles\${{ configuration }}
+        - task: PublishPipelineArtifact@0
+          displayName: Publish MSIX Bundle Artifacts
+          inputs:
+            artifactName: MsixBundle_${{ configuration }}
+            targetPath: AppxBundles\${{ configuration }}
 
 - stage: Store_Publish
   dependsOn:
