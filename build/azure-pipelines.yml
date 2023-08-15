@@ -472,11 +472,31 @@ stages:
             MaxConcurrency: '50'
             MaxRetryAttempts: '5'
 
-        - task: PublishPipelineArtifact@0
-          displayName: Publish MSIX Bundle Artifacts
+      - task: PkgESVPack@12
+        condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
+        displayName: Create and push vpack for app
+        env:
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+        inputs:
+          sourceDirectory: AppxBundles\${{ configuration }}
+          description: VPack for DevHome
+          pushPkgName: DevHome.app
+          version: $(MSIXVersion)
+          owner: chriwall
+          provData: true
+
+        - task: PublishBuildArtifacts@1
+          condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
+          displayName: Publish vpack\app artifact with vpack manifest
           inputs:
-            artifactName: MsixBundle_${{ configuration }}
-            targetPath: AppxBundles\${{ configuration }}
+            pathtoPublish: $(XES_VPACKMANIFESTDIRECTORY)\$(XES_VPACKMANIFESTNAME)
+            artifactName: vpackManifest
+    
+            - task: PublishPipelineArtifact@0
+              displayName: Publish MSIX Bundle Artifacts
+              inputs:
+                artifactName: MsixBundle_${{ configuration }}
+                targetPath: AppxBundles\${{ configuration }}
 
 - stage: Store_Publish
   dependsOn:
