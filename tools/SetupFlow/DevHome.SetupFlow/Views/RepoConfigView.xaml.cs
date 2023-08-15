@@ -85,7 +85,7 @@ public sealed partial class RepoConfigView : UserControl
         var dialogName = "RepoDialog";
         var telemetryLogger = TelemetryFactory.Get<ITelemetry>();
 
-        telemetryLogger.Log(EventName, LogLevel.Measure, new DialogEvent("Open", dialogName), relatedActivityId);
+        telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Open", dialogName), relatedActivityId);
 
         // Both the hyperlink button and button call this.
         // disable the button to prevent users from double clicking it.
@@ -190,7 +190,7 @@ public sealed partial class RepoConfigView : UserControl
         {
             TelemetryFactory.Get<ITelemetry>().Log(
                 "RepoDialog_RepoAdded_Event",
-                LogLevel.Measure,
+                LogLevel.Critical,
                 RepoDialogAddRepoEvent.AddWithDevDrive(
                 addKind,
                 addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
@@ -203,7 +203,7 @@ public sealed partial class RepoConfigView : UserControl
         {
             TelemetryFactory.Get<ITelemetry>().Log(
                 "RepoDialog_RepoAdded_Event",
-                LogLevel.Measure,
+                LogLevel.Critical,
                 RepoDialogAddRepoEvent.AddWithLocalPath(
                 addKind,
                 addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
@@ -211,7 +211,7 @@ public sealed partial class RepoConfigView : UserControl
                 relatedActivityId);
         }
 
-        telemetryLogger.Log(EventName, LogLevel.Measure, new DialogEvent("Close", dialogName, result), relatedActivityId);
+        telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Close", dialogName, result), relatedActivityId);
     }
 
     /// <summary>
@@ -225,7 +225,7 @@ public sealed partial class RepoConfigView : UserControl
         var relatedActivityId = Guid.NewGuid();
         var telemetryLogger = TelemetryFactory.Get<ITelemetry>();
 
-        telemetryLogger.Log(EventName, LogLevel.Measure, new DialogEvent("Open", dialogName), relatedActivityId);
+        telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Open", dialogName), relatedActivityId);
 
         var cloningInformation = (sender as Button).DataContext as CloningInformation;
         var oldLocation = cloningInformation.CloningLocation;
@@ -248,7 +248,7 @@ public sealed partial class RepoConfigView : UserControl
             // so decrease the Dev Managers count.
             if (wasCloningToDevDrive && !cloningInformation.CloneToDevDrive)
             {
-                telemetryLogger.Log(EventName, LogLevel.Measure, new SwitchedCloningLocationEvent(CloneLocationKind.LocalPath, devDrive?.State == DevDriveState.New, devDrive?.State == DevDriveState.ExistsOnSystem), relatedActivityId);
+                telemetryLogger.Log(EventName, LogLevel.Critical, new SwitchedCloningLocationEvent(CloneLocationKind.LocalPath, devDrive?.State == DevDriveState.New, devDrive?.State == DevDriveState.ExistsOnSystem), relatedActivityId);
                 ViewModel.DevDriveManager.DecreaseRepositoriesCount();
                 ViewModel.DevDriveManager.CancelChangesToDevDrive();
             }
@@ -260,7 +260,7 @@ public sealed partial class RepoConfigView : UserControl
                 // User switched from local path to Dev Drive
                 if (!wasCloningToDevDrive)
                 {
-                    telemetryLogger.Log(EventName, LogLevel.Measure, new SwitchedCloningLocationEvent(CloneLocationKind.DevDrive), relatedActivityId);
+                    telemetryLogger.Log(EventName, LogLevel.Critical, new SwitchedCloningLocationEvent(CloneLocationKind.DevDrive), relatedActivityId);
                     ViewModel.DevDriveManager.IncreaseRepositoriesCount(1);
                 }
 
@@ -287,7 +287,7 @@ public sealed partial class RepoConfigView : UserControl
             ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(editClonePathDialog.EditDevDriveViewModel.DevDrive);
         }
 
-        telemetryLogger.Log(EventName, LogLevel.Measure, new DialogEvent("Close", dialogName, result), relatedActivityId);
+        telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Close", dialogName, result), relatedActivityId);
     }
 
     /// <summary>
@@ -303,6 +303,6 @@ public sealed partial class RepoConfigView : UserControl
             ViewModel.DevDriveManager.DecreaseRepositoriesCount();
         }
 
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("RepoTool_RemoveRepo_Event");
+        TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RemoveRepo_Event");
     }
 }

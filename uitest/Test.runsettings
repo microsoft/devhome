@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <TestRunParameters>
+      <!--
+        Run settings parameters:
+        * AppSettingsMode:
+            - 'local': Run ui tests using appsettings.json
+            - 'canary': Run ui test using appsettings.json and appsettings.canary.json
+            - 'prod': Run ui test using appsettings.json and appsettings.prod.json
+        -->
+      <Parameter name="AppSettingsMode" value="local" />
+  </TestRunParameters>
+  <MSTest>
+    <MapInconclusiveToFailed>true</MapInconclusiveToFailed>
+    <CaptureTraceOutput>true</CaptureTraceOutput>
+    <DeleteDeploymentDirectoryAfterTestRunIsComplete>false</DeleteDeploymentDirectoryAfterTestRunIsComplete>
+    <DeploymentEnabled>false</DeploymentEnabled>
+  </MSTest>
+</RunSettings>

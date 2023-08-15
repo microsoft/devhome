@@ -51,6 +51,14 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private int _retryCount;
 
     /// <summary>
+    /// A business rule for the loading screen is  "executing" messages should appear at the bottom
+    /// of the list of messages.  To enable this behavior "finished" messages and "executing-but-done" messages
+    /// need to be inserted at the index before the first executing message.
+    /// To keep track of the index this is used to count backwards from Messages.count.
+    /// </summary>
+    private int _numberOfExecutingTasks;
+
+    /// <summary>
     /// Event raised when the execution of all tasks is completed.
     /// </summary>
     public event EventHandler ExecutionFinished;
@@ -65,6 +73,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     [ObservableProperty]
     private ObservableCollection<TaskInformation> _tasksToRun;
+
+    [ObservableProperty]
+    private ObservableCollection<LoadingMessageViewModel> _messages;
 
     /// <summary>
     /// List of all messages that shows up in the "action center" of the loading screen.
@@ -134,9 +145,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// Command to re-run all tasks by moving them from _failedTasks to TasksToRun
     /// </summary>
     [RelayCommand]
-    public async void RestartFailedTasks()
+    public async Task RestartFailedTasksAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("Loading_RestartFailedTasks_Event");
+        TelemetryFactory.Get<ITelemetry>().LogCritical("Loading_RestartFailedTasks_Event");
         Log.Logger?.ReportInfo(Log.Component.Loading, "Restarting all failed tasks");
 
         // Keep the number of successful tasks and needs attention tasks the same.
@@ -163,6 +174,18 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ExecutionFinished.Invoke(null, null);
     }
 
+    public void AddMessage(string message)
+    {
+        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        {
+            var messageToDisplay = new LoadingMessageViewModel(message);
+            messageToDisplay.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
+            messageToDisplay.ShouldShowStatusSymbolIcon = false;
+            messageToDisplay.ShouldShowProgressRing = false;
+            Messages.Insert(Messages.Count - _numberOfExecutingTasks, messageToDisplay);
+        });
+    }
+
     public LoadingViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
@@ -173,7 +196,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         _tasksToRun = new ();
 
         // Assuming that the theme can't change while the user is in the loading screen.
-        _currentTheme = Application.Current.GetService<IThemeSelectorService>().Theme;
+        _currentTheme = _host.GetService<IThemeSelectorService>().Theme;
 
         IsStepPage = false;
         IsNavigationBarVisible = false;
@@ -181,6 +204,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ShowRetryButton = Visibility.Collapsed;
         _failedTasks = new List<TaskInformation>();
         ActionCenterItems = new ();
+        Messages = new ();
     }
 
     /// <summary>
@@ -195,14 +219,12 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             foreach (var task in taskGroup.SetupTasks)
             {
+                task.AddMessage += AddMessage;
                 TasksToRun.Add(new TaskInformation
                 {
                     TaskIndex = taskIndex++,
                     TaskToExecute = task,
                     MessageToShow = task.GetLoadingMessages().Executing,
-                    StatusIconGridVisibility = false,
-                    ShouldShowProgressRing = false,
-                    MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"],
                 });
             }
         }
@@ -228,12 +250,15 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// TaskInformation is an ObservableObject inside an ObservableCollection.  Any changes to information
     /// will change the UI.
     /// </remarks>
-    public void ChangeMessage(TaskInformation information, TaskFinishedState taskFinishedState)
+    private void ChangeMessage(TaskInformation information, LoadingMessageViewModel loadingMessage, TaskFinishedState taskFinishedState)
     {
         Log.Logger?.ReportDebug(Log.Component.Loading, $"Updating message for task {information.MessageToShow} with state {taskFinishedState}");
         var stringToReplace = string.Empty;
         BitmapImage statusSymbolIcon = null;
 
+        // Two things to do.
+        // 1. Change the message color and icon in information
+        // 2. Add a new message with the done message.
         if (taskFinishedState == TaskFinishedState.Success)
         {
             if (information.TaskToExecute.RequiresReboot)
@@ -286,16 +311,29 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             TasksFailed++;
 
             Log.Logger?.ReportDebug(Log.Component.Loading, "Adding task to list for retry");
-
-            information.StatusIconGridVisibility = false;
             _failedTasks.Add(information);
         }
 
-        information.StatusIconGridVisibility = true;
-        information.StatusSymbolIcon = statusSymbolIcon;
-        information.MessageToShow = stringToReplace;
-        information.ShouldShowProgressRing = false;
-        information.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
+        // When a task is done
+        // Following logic is to keep all "executing" messages at the bottom of the list.
+        // Remove the "executing" message from the list.
+        Messages.Remove(loadingMessage);
+
+        // Modify the message so it looks done.
+        loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
+        loadingMessage.ShouldShowProgressRing = false;
+
+        // Insert the message right before any "executing" messages.
+        Messages.Insert(Messages.Count - _numberOfExecutingTasks, loadingMessage);
+
+        // Add the "Execution finished" message
+        var newLoadingScreenMessage = new LoadingMessageViewModel(stringToReplace);
+        newLoadingScreenMessage.StatusSymbolIcon = statusSymbolIcon;
+        newLoadingScreenMessage.ShouldShowProgressRing = false;
+        newLoadingScreenMessage.ShouldShowStatusSymbolIcon = true;
+
+        // Insert the message right before any "executing" messages.
+        Messages.Insert(Messages.Count - _numberOfExecutingTasks, newLoadingScreenMessage);
     }
 
     /// <summary>
@@ -393,7 +431,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
         if (_failedTasks.Any())
         {
-            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Measure, new LoadingRetryEvent(_failedTasks.Count));
+            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count));
         }
     }
 
@@ -408,12 +446,18 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         // Start the task and wait for it to complete.
         try
         {
+            var loadingMessage = new LoadingMessageViewModel(taskInformation.MessageToShow);
             window.DispatcherQueue.TryEnqueue(() =>
             {
                 TasksStarted++;
                 ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
-                taskInformation.ShouldShowProgressRing = true;
-                taskInformation.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+
+                loadingMessage.ShouldShowProgressRing = true;
+                loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+                Messages.Add(loadingMessage);
+
+                // Keep increment inside TryEnqueue to enforce "locking"
+                _numberOfExecutingTasks++;
             });
 
             TaskFinishedState taskFinishedState;
@@ -429,8 +473,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
             window.DispatcherQueue.TryEnqueue(() =>
             {
-                ChangeMessage(taskInformation, taskFinishedState);
-
+                // Keep decrement inside TryEnqueue to encorce "locking"
+                _numberOfExecutingTasks--;
+                ChangeMessage(taskInformation, loadingMessage, taskFinishedState);
                 TasksCompleted++;
                 ActionCenterDisplay = StringResource.GetLocalized(StringResourceKey.ActionCenterDisplay, TasksFailed);
             });

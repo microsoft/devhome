@@ -7,6 +7,8 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -23,7 +25,7 @@ namespace DevHome.SetupFlow.Models;
 /// Object to hold all information needed to clone a repository.
 /// 1:1 CloningInformation to repository.
 /// </summary>
-public class CloneRepoTask : ISetupTask
+public partial class CloneRepoTask : ObservableObject, ISetupTask
 {
     /// <summary>
     /// Absolute path the user wants to clone their repository to.
@@ -71,6 +73,29 @@ public class CloneRepoTask : ISetupTask
         get; private set;
     }
 
+    [ObservableProperty]
+    private bool _isRepoNameTrimmed;
+
+    [RelayCommand]
+    public void RepoNameTrimmed()
+    {
+        IsRepoNameTrimmed = true;
+    }
+
+    [ObservableProperty]
+    private bool _isClonePathTrimmed;
+
+    [RelayCommand]
+    public void ClonePathTrimmed()
+    {
+        IsClonePathTrimmed = true;
+    }
+
+    /// <summary>
+    /// Gets the repository in a [organization]\[repo_name] style
+    /// </summary>
+    public string RepositoryOwnerAndName => Path.Join(RepositoryToClone.OwningAccountName ?? string.Empty, RepositoryToClone.DisplayName);
+
     private TaskMessages _taskMessage;
 
     public TaskMessages GetLoadingMessages() => _taskMessage;
@@ -84,6 +109,14 @@ public class CloneRepoTask : ISetupTask
     public ActionCenterMessages GetRebootMessage() => _needsRebootMessage;
 
     private readonly IStringResource _stringResource;
+
+    // Because AddMessage is defined in ISetupTask every setup task needs to have their own local copy.
+    // If a task does not need to add any messages, for example, this class, warning 67 pops up stating that
+    // AddMessage event is not used and failing compliation.  Adding this pragma supresses the warning.
+    // When this task needs to insert messages into the loading screen this pragma can be removed.
+#pragma warning disable 67
+    public event ISetupTask.ChangeMessageHandler AddMessage;
+#pragma warning restore 67
 
     public bool DependsOnDevDriveToBeInstalled
     {
@@ -110,8 +143,8 @@ public class CloneRepoTask : ISetupTask
     /// Initializes a new instance of the <see cref="CloneRepoTask"/> class.
     /// Task to clone a repository.
     /// </summary>
-    /// <param name="cloneLocation">Repository will be placed here. at _cloneLocation.FullName</param>
-    /// <param name="repositoryToClone">The reposptyr to clone</param>
+    /// <param name="cloneLocation">Repository will be placed here, at _cloneLocation.FullName</param>
+    /// <param name="repositoryToClone">The repository to clone</param>
     public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName)
     {
         _cloneLocation = cloneLocation;
@@ -149,14 +182,14 @@ public class CloneRepoTask : ISetupTask
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
-                TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Measure, new ReposCloneEvent(ProviderName, _developerId));
+                TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Critical, new ReposCloneEvent(ProviderName, _developerId));
                 await RepositoryToClone.CloneRepositoryAsync(_cloneLocation.FullName, _developerId);
             }
             catch (Exception e)
             {
                 Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}", e);
                 _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, e.HResult.ToString("X", CultureInfo.CurrentCulture));
-                TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_ClouldNotClone_Event", LogLevel.Measure, new ExceptionEvent(e.HResult));
+                TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_CouldNotClone_Event", LogLevel.Critical, new ExceptionEvent(e.HResult));
                 return TaskFinishedState.Failure;
             }
 

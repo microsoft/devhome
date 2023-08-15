@@ -158,36 +158,13 @@ public sealed class DevDriveStorageOperator
 
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"Starting AttachVirtualDisk");
 
-        // This is only temporary until the api updates to AttachVirtualDisk have propagated. AttachVirtualDisk will return an invalid argument error (E_INVALIDARG)
-        // when passed an attach virtual disk flag that it does not support. This failure is not a deal breaker as we should still be able to attach the virtual
-        // disk without the AttachVirtualDiskFlagAtBoot flag. Users would just have to manually remount their virtual disk file instead of the system
-        // doing it for them at boot time. Once the api changes have propagated remove the loop and use both flags in a single
-        // call with no fallback. Run 2 attempts, first with the new flag and then a second attempt without the new flag.
-        var numberOfAttemptsToAttachVirtDisk = 0;
-        while (++numberOfAttemptsToAttachVirtDisk <= 2)
-        {
-            var attachFlags = ATTACH_VIRTUAL_DISK_FLAG.ATTACH_VIRTUAL_DISK_FLAG_PERMANENT_LIFETIME;
-            if (numberOfAttemptsToAttachVirtDisk == 1)
-            {
-                attachFlags |= (ATTACH_VIRTUAL_DISK_FLAG)AttachVirtualDiskFlagAtBoot;
-            }
-
-            result = PInvoke.AttachVirtualDisk(
-               tempHandle,
-               (PSECURITY_DESCRIPTOR)null,
-               attachFlags,
-               0,
-               null,
-               null);
-
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreateAndAttachVhdx), $"AttachVirtualDisk Attempt: {numberOfAttemptsToAttachVirtDisk}, result {PInvoke.HRESULT_FROM_WIN32(result):X}, flags 0x{attachFlags:X}");
-
-            // break early if successful.
-            if (result == WIN32_ERROR.NO_ERROR)
-            {
-                break;
-            }
-        }
+        result = PInvoke.AttachVirtualDisk(
+            tempHandle,
+            (PSECURITY_DESCRIPTOR)null,
+            ATTACH_VIRTUAL_DISK_FLAG.ATTACH_VIRTUAL_DISK_FLAG_PERMANENT_LIFETIME | (ATTACH_VIRTUAL_DISK_FLAG)AttachVirtualDiskFlagAtBoot,
+            0,
+            null,
+            null);
 
         if (result != WIN32_ERROR.NO_ERROR)
         {

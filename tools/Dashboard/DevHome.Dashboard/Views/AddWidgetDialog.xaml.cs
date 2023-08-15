@@ -5,11 +5,13 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -51,12 +53,16 @@ public sealed partial class AddWidgetDialog : ContentDialog
         Application.Current.GetService<WindowEx>().Closed += OnMainWindowClosed;
 
         _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+    }
 
-        FillAvailableWidgets();
+    [RelayCommand]
+    public async Task OnLoadedAsync()
+    {
+        await FillAvailableWidgetsAsync();
         SelectFirstWidgetByDefault();
     }
 
-    private void FillAvailableWidgets()
+    private async Task FillAvailableWidgetsAsync()
     {
         AddWidgetNavigationView.MenuItems.Clear();
 
@@ -90,7 +96,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 {
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
-                        var subItemContent = BuildWidgetNavItem(widgetDef);
+                        var subItemContent = await BuildWidgetNavItem(widgetDef);
                         var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef);
                         var subItem = new NavigationViewItem
                         {
@@ -98,6 +104,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
                             Content = subItemContent,
                             IsEnabled = enable,
                         };
+                        subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
+                        subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
 
                         navItem.MenuItems.Add(subItem);
                     }
@@ -117,9 +125,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
-    private StackPanel BuildWidgetNavItem(WidgetDefinition widgetDefinition)
+    private async Task<StackPanel> BuildWidgetNavItem(WidgetDefinition widgetDefinition)
     {
-        var image = WidgetIconCache.GetWidgetIconForTheme(widgetDefinition, ActualTheme);
+        var image = await WidgetIconCache.GetWidgetIconForThemeAsync(widgetDefinition, ActualTheme);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
     }
 
@@ -216,7 +224,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // If the user has selected a widget, show configuration UI. If they selected a provider, leave space blank.
         if (selectedTag as WidgetDefinition is WidgetDefinition selectedWidgetDefinition)
         {
-            var size = WidgetHelpers.GetLargetstCapabilitySize(selectedWidgetDefinition.GetWidgetCapabilities());
+            var size = WidgetHelpers.GetLargestCapabilitySize(selectedWidgetDefinition.GetWidgetCapabilities());
 
             // Create the widget for configuration. We will need to delete it if the user closes the dialog
             // without pinning, or selects a different widget.

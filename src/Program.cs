@@ -6,6 +6,8 @@ using Microsoft.UI.Dispatching;
 namespace DevHome;
 public static class Program
 {
+    private static App? _app;
+
     [STAThread]
     public static void Main(string[] args)
     {
@@ -20,7 +22,7 @@ public static class Program
                 var dispatcherQueue = DispatcherQueue.GetForCurrentThread();
                 var context = new DispatcherQueueSynchronizationContext(dispatcherQueue);
                 SynchronizationContext.SetSynchronizationContext(context);
-                var app = new App();
+                _app = new App();
             });
         }
     }
@@ -30,13 +32,23 @@ public static class Program
         var mainInstance = Microsoft.Windows.AppLifecycle.AppInstance.FindOrRegisterForKey("main");
         var activatedEventArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
 
-        if (!mainInstance.IsCurrent)
+        var isRedirect = false;
+        if (mainInstance.IsCurrent)
+        {
+            mainInstance.Activated += OnActivated;
+        }
+        else
         {
             // Redirect the activation (and args) to the "main" instance, and exit.
             await mainInstance.RedirectActivationToAsync(activatedEventArgs);
-            return true;
+            isRedirect = true;
         }
 
-        return false;
+        return isRedirect;
+    }
+
+    private static void OnActivated(object? sender, Microsoft.Windows.AppLifecycle.AppActivationArguments e)
+    {
+        _app?.ShowMainWindow();
     }
 }

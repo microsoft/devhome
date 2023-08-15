@@ -1,15 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.UI.Xaml.Documents;
 using Microsoft.Windows.DevHome.SDK;
-using WinRT;
 
 namespace DevHome.Common.Services;
 public interface IPluginWrapper
@@ -23,7 +16,7 @@ public interface IPluginWrapper
     }
 
     /// <summary>
-    /// Gets package fullname of the plugin
+    /// Gets PackageFullName of the plugin
     /// </summary>
     string PackageFullName
     {

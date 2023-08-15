@@ -10,6 +10,7 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:models="using:DevHome.SetupFlow.Models"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
     setupFlowBehaviors:SetupFlowNavigationBehavior.NextVisibility="Collapsed"
@@ -65,11 +66,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5">
                     <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequiredButton" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
-                    <Button Command="{x:Bind ViewModel.RemoveRestartGridCommand}" Style="{ThemeResource AlternateCloseButtonStyle}">
-                        <Button.Content>
-                            <SymbolIcon Symbol="Cancel"/>
-                        </Button.Content>
-                    </Button>
+                    <commonviews:CloseButton Command="{x:Bind ViewModel.RemoveRestartGridCommand}" />
                 </StackPanel>
             </Grid>
 

@@ -40,7 +40,7 @@ winget install --id Microsoft.DevHome -e
 
 ## Dev Home roadmap
 
-The plan for Dev Home will be posted shortly and will be updated as the project proceeds.
+The plan for Dev Home can be found in our [roadmap](docs/roadmap.md).
 
 ---
 

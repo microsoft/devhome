@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.Storage;
 using WinUIEx;
@@ -66,12 +68,14 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             task.RequiresAdmin = true;
         }
 
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", LogLevel.Critical, new ConfigureCommandEvent(true), Orchestrator.ActivityId);
         await Orchestrator.GoToNextPage();
     }
 
     [RelayCommand(CanExecute = nameof(ReadAndAgree))]
     public async Task ConfigureAsNonAdminAsync()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", LogLevel.Critical, new ConfigureCommandEvent(false), Orchestrator.ActivityId);
         await Orchestrator.GoToNextPage();
     }
 
