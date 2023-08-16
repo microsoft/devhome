@@ -155,6 +155,7 @@
                 <CheckBox
                         Click="MakeNewDevDriveCheckBox_Click" 
                         IsEnabled="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" 
+                        IsChecked="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxChecked, Mode=TwoWay}" 
                         Grid.Column="0" 
                         Grid.Row="0"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NewDevDriveComboBox"/>
