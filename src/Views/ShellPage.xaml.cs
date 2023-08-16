@@ -77,7 +77,7 @@ public sealed partial class ShellPage : Page
         ShellInfoBar.Margin = new Thickness()
         {
             Left = ShellInfoBar.Margin.Left,
-            Top = sender.DisplayMode == NavigationViewDisplayMode.Minimal ? 50 : 5,
+            Top = sender.DisplayMode == NavigationViewDisplayMode.Minimal ? 50 : 0,
             Right = ShellInfoBar.Margin.Right,
             Bottom = ShellInfoBar.Margin.Bottom,
         };

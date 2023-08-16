@@ -14,7 +14,7 @@
 
     <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{StaticResource ContentPageMargin}">
         <Grid>
-        <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
+            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
             <ContentDialog x:Name="reportBugDialog" x:Uid="Settings_Feedback_ReportBug_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
                 <Grid>
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -79,10 +79,10 @@
             <StackPanel Orientation="Vertical"
                     x:Name="ContentArea" Margin="{StaticResource MediumTopBottomMargin}">
                 <TextBlock Margin="{StaticResource MediumTopBottomMargin}">
-                <Run x:Uid="Settings_Feedback_OpenSource"/>
-                <Hyperlink x:Uid="Settings_Feedback_OpenSource_Link" TextDecorations="None">
-                    <Run x:Uid="Settings_Feedback_OpenSource_LinkText"></Run>
-                </Hyperlink>
+                    <Run x:Uid="Settings_Feedback_OpenSource"/>
+                    <Hyperlink x:Uid="Settings_Feedback_OpenSource_Link" TextDecorations="None">
+                        <Run x:Uid="Settings_Feedback_OpenSource_LinkText" />
+                    </Hyperlink>
                 </TextBlock>
                 <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
                     <labs:SettingsCard x:Uid="Settings_Feedback_ReportBug">

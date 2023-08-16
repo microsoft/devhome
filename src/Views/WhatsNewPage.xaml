@@ -33,7 +33,7 @@
 
     <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Auto" MaxWidth="{ThemeResource MaxPageBackgroundWidth}">
         <RelativePanel>
-            <Grid CornerRadius="8">
+            <Grid>
                 <Image Source="{ThemeResource Background}" MinWidth="{ThemeResource MaxPageBackgroundWidth}" VerticalAlignment="Top" HorizontalAlignment="Center" Stretch="UniformToFill" />
             </Grid>
             <Grid x:Name="ContentArea" Padding="35 0 35 30" HorizontalAlignment="Center">

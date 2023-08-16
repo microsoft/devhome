@@ -41,7 +41,7 @@
 
         <!-- Header - Title and Add Widget button -->
         <Grid Grid.Row="0" Margin="0,0,0,22">
-            <TextBlock x:Uid="DashboardPage_Title" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Left"/>
+            <TextBlock x:Uid="DashboardPage_Title" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Left"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="AddWidgetButton" x:Uid="AddWidget" HorizontalAlignment="Right">
                     <i:Interaction.Behaviors>
