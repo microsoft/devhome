@@ -18,8 +18,12 @@
         Margin="{ThemeResource ContentPageMargin}"
         VerticalScrollBarVisibility="Auto">
         <StackPanel>
-            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
-
+            <BreadcrumbBar
+                x:Name="BreadcrumbBar"
+                Margin="0,0,0,16"
+                ItemClicked="BreadcrumbBar_ItemClicked"
+                ItemsSource="{x:Bind Breadcrumbs}" />
+            
             <ItemsRepeater ItemsSource="{x:Bind ViewModel.SettingsList, Mode=OneWay}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="settings:SettingViewModel">

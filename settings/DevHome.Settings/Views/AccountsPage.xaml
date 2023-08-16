@@ -32,12 +32,17 @@
         </DataTemplate>
     </Page.Resources>
 
-    <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}"
-                  Margin="{ThemeResource ContentPageMargin}"
-                  VerticalScrollBarVisibility="Auto">
+    <ScrollViewer
+        MaxWidth="{ThemeResource MaxPageContentWidth}"
+        Margin="{ThemeResource ContentPageMargin}"
+        VerticalScrollBarVisibility="Auto">
         <StackPanel x:Name="AccountsContentArea">
-            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
-
+            <BreadcrumbBar
+                x:Name="BreadcrumbBar"
+                Margin="0,0,0,16"
+                ItemClicked="BreadcrumbBar_ItemClicked"
+                ItemsSource="{x:Bind Breadcrumbs}" />
+            
             <StackPanel x:Name="AddAccountMainStackPanel" Margin="{StaticResource XSmallTopMargin}">
                 <labs:SettingsCard x:Uid="Settings_Accounts_AddAccount">
                     <labs:SettingsCard.HeaderIcon>

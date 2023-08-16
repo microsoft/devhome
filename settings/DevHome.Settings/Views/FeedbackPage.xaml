@@ -17,7 +17,12 @@
         Margin="{StaticResource ContentPageMargin}"
         VerticalScrollBarVisibility="Auto">
         <Grid>
-            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
+            <BreadcrumbBar
+                x:Name="BreadcrumbBar"
+                Margin="0,0,0,16"
+                ItemClicked="BreadcrumbBar_ItemClicked"
+                ItemsSource="{x:Bind Breadcrumbs}" />
+            
             <ContentDialog x:Name="reportBugDialog" x:Uid="Settings_Feedback_ReportBug_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
                 <Grid>
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
