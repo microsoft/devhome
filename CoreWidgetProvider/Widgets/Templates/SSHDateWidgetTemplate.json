@@ -1,25 +1,51 @@
 {
-  "type": "AdaptiveCard",
-  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-  "version": "1.5",
-  "body": [
-    {
-      "type": "TextBlock",
-      "text": "SSH Date Widget",
-      "weight": "Bolder",
-      "size": "Medium"
-    },
-    {
-      "type": "TextBlock",
-      "text": "${message}",
-      "size": "Medium",
-      "spacing": "Medium"
-    },
-    {
-      "type": "TextBlock",
-      "text": "${error}",
-      "size": "Medium",
-      "spacing": "Medium"
-    }
-  ]
+    "type": "AdaptiveCard",
+    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+    "version": "1.5",
+    "body": [
+        {
+            "type": "TextBlock",
+            "text": "Host: ${Host}",
+            "weight": "Bolder",
+            "size": "Medium",
+            "horizontalAlignment": "Center"
+        },
+        {
+            "type": "TextBlock",
+            "text": "CPU Stats",
+            "weight": "Bolder",
+            "size": "Medium",
+            "spacing": "Medium"
+        },
+        {
+            "type": "Image",
+            "url": "${cpuStatsGraphUrl}",
+            "altText": "CPU Stats Graph"
+        },
+        {
+            "type": "TextBlock",
+            "text": "RAM Usage",
+            "weight": "Bolder",
+            "size": "Medium",
+            "spacing": "Medium"
+        },
+        {
+            "type": "Image",
+            "url": "${ramUsageGraphUrl}",
+            "altText": "RAM Usage Graph"
+        },
+        {
+            "type": "TextBlock",
+            "text": "Uptime",
+            "weight": "Bolder",
+            "size": "Medium",
+            "spacing": "Medium"
+        },
+        {
+            "type": "TextBlock",
+            "text": "System Uptime: ${uptime}",
+            "size": "Medium",
+            "spacing": "None"
+        }
+    ]
 }
