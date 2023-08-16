@@ -12,7 +12,10 @@
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
 
-    <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{StaticResource ContentPageMargin}">
+    <ScrollViewer
+        MaxWidth="{ThemeResource MaxPageContentWidth}"
+        Margin="{StaticResource ContentPageMargin}"
+        VerticalScrollBarVisibility="Auto">
         <Grid>
             <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
             <ContentDialog x:Name="reportBugDialog" x:Uid="Settings_Feedback_ReportBug_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">

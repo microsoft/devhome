@@ -32,7 +32,9 @@
         </DataTemplate>
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+    <ScrollViewer MaxWidth="{ThemeResource MaxPageContentWidth}"
+                  Margin="{ThemeResource ContentPageMargin}"
+                  VerticalScrollBarVisibility="Auto">
         <StackPanel x:Name="AccountsContentArea">
             <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
 
