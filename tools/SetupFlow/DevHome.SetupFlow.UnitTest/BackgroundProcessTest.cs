@@ -27,7 +27,7 @@ public class BackgroundProcessTest
     public void BackgroundProcessIPCSetup()
     {
         (var remoteElevatedFactory, var backgroundProcess) =
-            IPCSetup.CreateOutOfProcessObjectAndGetProcess<IElevatedComponentFactory>(isForTesting: true);
+            IPCSetup.CreateOutOfProcessObjectAndGetProcess<IElevatedComponentFactory>(null, isForTesting: true);
         Assert.IsFalse(backgroundProcess.HasExited, "Process should still be running right after creation");
 
         // Write a random string on the background process

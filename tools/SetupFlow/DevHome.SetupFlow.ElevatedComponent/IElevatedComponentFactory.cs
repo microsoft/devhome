@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Tasks;
+using Windows.Foundation;
 
 namespace DevHome.SetupFlow.ElevatedComponent;
 
@@ -43,4 +45,6 @@ public interface IElevatedComponentFactory
     /// Creates an object that can apply a configuration file.
     /// </summary>
     public ElevatedConfigurationTask CreateElevatedConfigurationTask();
+
+    public IAsyncOperation<ElevatedInstallTaskResult> ExecuteInstallTask(Guid taskId);
 }

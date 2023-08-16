@@ -6,6 +6,7 @@ extern alias Projection;
 using System;
 using System.Threading.Tasks;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
@@ -27,6 +28,7 @@ public class InstallPackageTask : ISetupTask
     private readonly ISetupFlowStringResource _stringResource;
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly Lazy<bool> _requiresElevation;
+    private readonly Guid _id = Guid.NewGuid();
 
     private InstallResultStatus _installResultStatus;
     private uint _installerErrorCode;
@@ -137,8 +139,7 @@ public class InstallPackageTask : ISetupTask
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
-                var elevatedTask = elevatedComponentFactory.CreateElevatedInstallTask();
-                var elevatedResult = await elevatedTask.InstallPackage(_package.Id, _package.CatalogName);
+                var elevatedResult = await elevatedComponentFactory.ExecuteInstallTask(_id);
                 WasInstallSuccessful = elevatedResult.TaskSucceeded;
                 RequiresReboot = elevatedResult.RebootRequired;
                 _installResultStatus = (InstallResultStatus)elevatedResult.Status;
@@ -269,5 +270,15 @@ public class InstallPackageTask : ISetupTask
     private void ReportAppInstallFailedEvent()
     {
         TelemetryFactory.Get<ITelemetry>().LogError("AppInstall_InstallFailed", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId));
+    }
+
+    public ITaskDefinition GetDefinition()
+    {
+        return new InstallTaskDefinition()
+        {
+            TaskId = _id,
+            PackageId = _package.Id,
+            CatalogName = _package.CatalogName,
+        };
     }
 }

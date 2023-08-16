@@ -13,6 +13,7 @@ using DevHome.Common.Models;
 using DevHome.Common.ResultHelper;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
+using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Services;
@@ -116,4 +117,6 @@ internal class CreateDevDriveTask : ISetupTask
             }
         }).AsAsyncOperation();
     }
+
+    public ITaskDefinition GetDefinition() => null;
 }

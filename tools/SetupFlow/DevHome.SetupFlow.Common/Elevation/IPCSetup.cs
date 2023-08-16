@@ -8,7 +8,7 @@ using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using DevHome.Logging;
+using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using Windows.Win32;
 using Windows.Win32.System.Com;
@@ -123,10 +123,10 @@ public static class IPCSetup
     /// app process.
     /// </summary>
     /// <returns>A factory that creates WinRT objects in the background process.</returns>
-    public static async Task<RemoteObject<T>> CreateOutOfProcessObjectAsync<T>()
+    public static async Task<RemoteObject<T>> CreateOutOfProcessObjectAsync<T>(TasksDefinition tasksDefinition)
     {
         // Run this in the background since it may take a while
-        (var remoteObject, _) = await Task.Run(() => CreateOutOfProcessObjectAndGetProcess<T>());
+        (var remoteObject, _) = await Task.Run(() => CreateOutOfProcessObjectAndGetProcess<T>(tasksDefinition));
         return remoteObject;
     }
 
@@ -143,7 +143,7 @@ public static class IPCSetup
     /// A factory that creates WinRT objects in the background process,
     /// and the process object for the background process.
     /// </returns>
-    public static (RemoteObject<T>, Process) CreateOutOfProcessObjectAndGetProcess<T>(bool isForTesting = false)
+    public static (RemoteObject<T>, Process) CreateOutOfProcessObjectAndGetProcess<T>(TasksDefinition tasksDefinition, bool isForTesting = false)
     {
         // The shared memory block, initialization event and completion semaphore all need a name
         // that will be used by the child process to find them. We use new random GUIDs for them.
@@ -152,6 +152,7 @@ public static class IPCSetup
         var mappedFileName = Guid.NewGuid().ToString();
         var initEventName = Guid.NewGuid().ToString();
         var completionSemaphoreName = Guid.NewGuid().ToString();
+        var tasksDefinitionParam = tasksDefinition.ToJsonString();
 
         // Create shared memory block.
         Log.Logger?.ReportInfo(Log.Component.IPCClient, "Creating shared memory block");
@@ -182,7 +183,7 @@ public static class IPCSetup
         {
             // Start the elevated process.
             // Command is: <server>.exe <mapped memory name> <event name> <semaphore name>
-            var serverArgs = $"{mappedFileName} {initEventName} {completionSemaphoreName}";
+            var serverArgs = $"{mappedFileName} {initEventName} {completionSemaphoreName} {tasksDefinitionParam}";
             var serverPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DevHome.SetupFlow.ElevatedServer.exe");
 
             // We need to start the process with ShellExecute to run elevated

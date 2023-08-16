@@ -3,6 +3,7 @@
 
 extern alias Projection;
 
+using DevHome.SetupFlow.Common.Contracts;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
@@ -91,4 +92,6 @@ public interface ISetupTask
     {
         get;
     }
+
+    public ITaskDefinition GetDefinition();
 }
