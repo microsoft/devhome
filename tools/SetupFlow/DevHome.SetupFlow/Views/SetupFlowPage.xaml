@@ -105,7 +105,9 @@
                     <!-- Workaround to show a tooltip on a disabled button
                          https://github.com/microsoft/microsoft-ui-xaml/issues/2262-->
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
-                        <Grid>
+                        <Grid PointerEntered="Grid_PointerEntered" PointerExited="Grid_PointerExited">
+                            <!-- A teaching tip does not have the same show/hide behavior as a tooltip.
+                                 These commands are used to mimic the show/hide behavior of a tooltip.-->
                             <i:Interaction.Behaviors>
                                 <ic:EventTriggerBehavior EventName="PointerEntered">
                                     <ic:InvokeCommandAction Command="{x:Bind ViewModel.Orchestrator.StartTeachingTipTimerCommand}"/>
@@ -115,18 +117,23 @@
                                 </ic:EventTriggerBehavior>
                             </i:Interaction.Behaviors>
                             <TextBlock IsTabStop="False" />
+                            <!-- Using a teaching tip instead of a tooltip to get the tail.-->
+                                <TeachingTip
+                                x:Name="NavigationTeachingTip" 
+                                Visibility="{x:Bind ViewModel.Orchestrator.IsTeachingTipVisible}"
+                                    IsOpen="{x:Bind ViewModel.Orchestrator.IsTeachingTipOpen, Mode=OneWay}"
+                                Target="{x:Bind NavigationNextButton}"
+                                PreferredPlacement="TopLeft"
+                                CloseButtonCommand="{x:Bind ViewModel.Orchestrator.StopTeachingTipTimerCommand, Mode=OneWay}"
+                                Subtitle="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+                            </TeachingTip>
                             <Button
-                                x:Name="MyButton"
+                                x:Name="NavigationNextButton"
                                 Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
                                 Style="{StaticResource AccentButtonStyle}"
                                 MinWidth="120" Margin="4,0"
                                 Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}">
-                                <!--<ToolTipService.ToolTip>
-                                    <ToolTip Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" Placement="Top" IsOpen="{x:Bind ViewModel.Orchestrator.IsToolTipOpen, Mode=TwoWay}" Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowTooltip, Mode=OneWay}"/>
-                                </ToolTipService.ToolTip>-->
                             </Button>
-                            <TeachingTip x:Name="MyTeachingTip" Visibility="{x:Bind ViewModel.Orchestrator.IsTeachingTipVisible}" IsOpen="{x:Bind ViewModel.Orchestrator.IsTeachingTipOpen, Mode=OneWay}" Target="{x:Bind MyButton}" PreferredPlacement="TopLeft" Subtitle="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
-                            </TeachingTip>
                         </Grid>
                     </setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
                 </setupFlowBehaviors:SetupFlowNavigationBehavior>

@@ -31,7 +31,15 @@ public partial class SetupFlowOrchestrator : ObservableObject, IDisposable
 {
     private readonly List<SetupPageViewModelBase> _flowPages = new ();
 
-    private readonly Timer _teachingTipVisabilityTimer = new (2000);
+    /// <summary>
+    /// Timer, that, when elapsed, will show the teaching tip.
+    /// </summary>
+    private readonly Timer _teachingTipVisabilityTimer = new (1500);
+
+    /// <summary>
+    /// Timer, that, when elapsed, will hide the teaching tip.
+    /// </summary>
+    private readonly Timer _teachingTipHidingTimer = new (200);
 
     /// <summary>
     /// Index for the current page in the <see cref="_flowPages"/>.
@@ -179,22 +187,12 @@ public partial class SetupFlowOrchestrator : ObservableObject, IDisposable
         return HasPreviousPage && CurrentPageViewModel.CanGoToPreviousPage;
     }
 
+    // Teaching tip needs to be open and visible to show up.
     [ObservableProperty]
     private bool _isTeachingTipOpen;
 
     [ObservableProperty]
     private bool _isTeachingTipVisible;
-
-    [ObservableProperty]
-    private Visibility _shouldShowTooltip;
-
-    [ObservableProperty]
-    private bool _isToolTipOpen;
-
-    public bool HasLoaded
-    {
-        get; set;
-    }
 
     [RelayCommand(CanExecute = nameof(CanGoToNextPage))]
     public async Task GoToNextPage()
@@ -204,12 +202,24 @@ public partial class SetupFlowOrchestrator : ObservableObject, IDisposable
 
     private void ShowTeachingTip(object sender, ElapsedEventArgs args)
     {
+        _teachingTipVisabilityTimer.Enabled = false;
+        _teachingTipHidingTimer.Enabled = false;
         Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
-            IsTeachingTipOpen = true;
             IsTeachingTipVisible = true;
+            IsTeachingTipOpen = true;
         });
+    }
+
+    private void HideTeachingTip(object sender, ElapsedEventArgs args)
+    {
         _teachingTipVisabilityTimer.Enabled = false;
+        _teachingTipHidingTimer.Enabled = false;
+        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        {
+            IsTeachingTipVisible = false;
+            IsTeachingTipOpen = false;
+        });
     }
 
     [RelayCommand]
@@ -221,12 +231,13 @@ public partial class SetupFlowOrchestrator : ObservableObject, IDisposable
     [RelayCommand]
     public void StopTeachingTipTimer()
     {
-        _teachingTipVisabilityTimer.Enabled = false;
+        _teachingTipHidingTimer.Enabled = true;
     }
 
     public SetupFlowOrchestrator()
     {
         _teachingTipVisabilityTimer.Elapsed += ShowTeachingTip;
+        _teachingTipHidingTimer.Elapsed += HideTeachingTip;
     }
 
     private bool CanGoToNextPage()
@@ -249,22 +260,26 @@ public partial class SetupFlowOrchestrator : ObservableObject, IDisposable
         // the user the "Done" button.
         ShouldShowDoneButton = _currentPageIndex == FlowPages.Count - 1;
 
+        // One change to the teaching tip is that the teaching tip should always show on the first setup page.
         if (string.IsNullOrEmpty(CurrentPageViewModel.NextPageButtonToolTipText))
         {
-            IsTeachingTipOpen = false;
+            // If the setup page does not have tooltip text then don't show the teaching tip.
             IsTeachingTipVisible = false;
+            IsTeachingTipOpen = false;
         }
         else
         {
-            if (CurrentPageViewModel.IsStepPage && HasLoaded && index == 0)
+            if (CurrentPageViewModel.IsStepPage && index == 0)
             {
-                IsTeachingTipOpen = true;
+                // If this page is the first step page, show the teaching tip right away.
                 IsTeachingTipVisible = true;
+                IsTeachingTipOpen = true;
             }
             else
             {
-                IsTeachingTipOpen = false;
+                // Default to normal "Tool tip" behavior.
                 IsTeachingTipVisible = false;
+                IsTeachingTipOpen = false;
             }
         }
 
