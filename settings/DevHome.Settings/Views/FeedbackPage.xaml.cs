@@ -203,7 +203,7 @@ public sealed partial class FeedbackPage : Page
     private string GetAppVersion()
     {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-        IAppInfoService appInfoService = Application.Current.GetService<IAppInfoService>();
+        var appInfoService = Application.Current.GetService<IAppInfoService>();
         var version = appInfoService.GetAppVersion();
 
         return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
@@ -247,9 +247,9 @@ public sealed partial class FeedbackPage : Page
 
     private string GetPhysicalMemory()
     {
-        CultureInfo cultures = new CultureInfo("en-US");
+        var cultures = new CultureInfo("en-US");
 
-        MEMORYSTATUSEX memStatus = default(MEMORYSTATUSEX);
+        MEMORYSTATUSEX memStatus = default;
         memStatus.dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX));
         PInvoke.GlobalMemoryStatusEx(out memStatus);
 
