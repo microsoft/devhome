@@ -471,32 +471,59 @@ stages:
             SessionTimeout: '60'
             MaxConcurrency: '50'
             MaxRetryAttempts: '5'
-
-        - task: PkgESVPack@12
-          condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
-          displayName: Create and push vpack for app
-          env:
-            SYSTEM_ACCESSTOKEN: $(System.AccessToken)
-          inputs:
-            sourceDirectory: AppxBundles\${{ configuration }}
-            description: VPack for DevHome
-            pushPkgName: DevHome.app
-            version: $(MSIXVersion)
-            owner: chriwall
-            provData: true
-
-        - task: PublishBuildArtifacts@1
-          condition: and(eq(variables['BuildingBranch'], 'release'), eq('${{ configuration }}', 'Release'))
-          displayName: Publish vpack\app artifact with vpack manifest
-          inputs:
-            pathtoPublish: $(XES_VPACKMANIFESTDIRECTORY)\$(XES_VPACKMANIFESTNAME)
-            artifactName: vpackManifest
     
         - task: PublishPipelineArtifact@0
           displayName: Publish MSIX Bundle Artifacts
           inputs:
             artifactName: MsixBundle_${{ configuration }}
             targetPath: AppxBundles\${{ configuration }}
+- stage: VPack
+  dependsOn:
+  - SourceAnalysis
+  - Build_MsixBundle
+  condition: |
+    and
+    (
+      in(dependencies.Build_MsixBundle.result, 'Succeeded'),
+      in(dependencies.SourceAnalysis.result, 'Succeeded', 'SucceededWithIssues'),
+      eq(variables['BuildingBranch'], 'release')
+    )
+  jobs:
+  - job: ReleaseVPack
+    steps:
+    - task: DownloadBuildArtifacts@0
+      displayName: Download msixBundleSigned artifact
+      inputs:
+        artifactName: MsixBundle_Release
+
+    - task: CopyFiles@2
+      displayName: Copy signed MsixBundle to vpack staging folder
+      inputs:
+        sourceFolder: $(Build.ArtifactStagingDirectory)\MsixBundle_Release
+        contents: DevHome*_8wekyb3d8bbwe.msixbundle
+        targetFolder: $(Build.ArtifactStagingDirectory)\vpack\appxBundle
+
+    - task: CmdLine@2
+      inputs:
+        script: ren $(Build.ArtifactStagingDirectory)\vpack\appxBundle\*.msixBundle DevHome_8wekyb3d8bbwe.msixBundle
+
+    - task: PkgESVPack@12
+      displayName: Create and push vpack for app
+      env: SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      inputs:
+        sourceDirectory: $(Build.ArtifactStagingDirectory)\vpack\appxBundle
+        description: VPack for DevHome
+        pushPkgName: DevHome.app
+        version: $(MSIXVersion)
+        owner: chriwall
+        provData: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish vpack\app artifact with vpack manifest
+      inputs:
+        pathtoPublish: $(XES_VPACKMANIFESTDIRECTORY)\$(XES_VPACKMANIFESTNAME)
+        artifactName: vpackManifest
+      
 
 - stage: Store_Publish
   dependsOn:
