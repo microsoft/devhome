@@ -70,7 +70,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
             .ToList();
         SelectedReviewTab = ReviewTabs.FirstOrDefault();
 
-        NextPageButtonToolTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
+        NextPageButtonTeachingTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
         UpdateCanGoToNextPage();
         await Task.CompletedTask;
     }

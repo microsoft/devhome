@@ -173,4 +173,17 @@ public class SetupFlowOrchestratorTest : BaseSetupFlowTest
             }
         }
     }
+
+    [TestMethod]
+    public void Orchestrator_TeachingTipCommands()
+    {
+        var orchestrator = new SetupFlowOrchestrator();
+        orchestrator.StartTeachingTipShowTimer().Wait();
+        Assert.IsTrue(orchestrator.IsTeachingTipVisible);
+        Assert.IsTrue(orchestrator.IsTeachingTipOpen);
+
+        orchestrator.StartTeachingTipHideTimer().Wait();
+        Assert.IsFalse(orchestrator.IsTeachingTipVisible);
+        Assert.IsFalse(orchestrator.IsTeachingTipOpen);
+    }
 }

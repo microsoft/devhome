@@ -62,7 +62,7 @@ public partial class SetupPageViewModelBase : ObservableObject
     /// By default this is empty.
     /// </summary>
     [ObservableProperty]
-    private string _nextPageButtonToolTipText;
+    private string _nextPageButtonTeachingTipText;
 
     /// <summary>
     /// Indicates whether this page is one of the steps the user will need to complete before starting the setup.

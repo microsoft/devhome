@@ -48,7 +48,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         LocalStringResource = stringResource;
         RepoDialogCancelled += _devDriveManager.CancelChangesToDevDrive;
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReposConfigPageTitle);
-        NextPageButtonToolTipText = stringResource.GetLocalized(StringResourceKey.RepoToolNextButtonTooltip);
+        NextPageButtonTeachingTipText = stringResource.GetLocalized(StringResourceKey.RepoToolNextButtonTooltip);
     }
 
     /// <summary>

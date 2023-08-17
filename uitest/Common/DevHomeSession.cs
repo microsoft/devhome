@@ -40,6 +40,7 @@ public sealed class DevHomeSession
             options.AddAdditionalCapability("platformName", "Windows");
             options.AddAdditionalCapability("app", _appId);
 
+            // Don't forget to start the server: https://github.com/microsoft/devhome/tree/main/uitest
             Driver = new WindowsDriver<WindowsElement>(new Uri(_driverUrl), options);
             Assert.IsNotNull(Driver);
 

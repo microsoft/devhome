@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Moq;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.UnitTest;
 

@@ -6,6 +6,7 @@ extern alias Projection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -27,19 +28,9 @@ namespace DevHome.SetupFlow.Services;
 /// <summary>
 /// Orchestrator for the Setup Flow, in charge of functionality across multiple pages.
 /// </summary>
-public partial class SetupFlowOrchestrator : ObservableObject, IDisposable
+public partial class SetupFlowOrchestrator : ObservableObject
 {
     private readonly List<SetupPageViewModelBase> _flowPages = new ();
-
-    /// <summary>
-    /// Timer, that, when elapsed, will show the teaching tip.
-    /// </summary>
-    private readonly Timer _teachingTipVisabilityTimer = new (1500);
-
-    /// <summary>
-    /// Timer, that, when elapsed, will hide the teaching tip.
-    /// </summary>
-    private readonly Timer _teachingTipHidingTimer = new (200);
 
     /// <summary>
     /// Index for the current page in the <see cref="_flowPages"/>.
@@ -197,47 +188,41 @@ public partial class SetupFlowOrchestrator : ObservableObject, IDisposable
     [RelayCommand(CanExecute = nameof(CanGoToNextPage))]
     public async Task GoToNextPage()
     {
+        IsTeachingTipVisible = false;
+        IsTeachingTipOpen = false;
         await SetCurrentPageIndex(_currentPageIndex + 1);
     }
 
-    private void ShowTeachingTip(object sender, ElapsedEventArgs args)
-    {
-        _teachingTipVisabilityTimer.Enabled = false;
-        _teachingTipHidingTimer.Enabled = false;
-        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
-        {
-            IsTeachingTipVisible = true;
-            IsTeachingTipOpen = true;
-        });
-    }
-
-    private void HideTeachingTip(object sender, ElapsedEventArgs args)
-    {
-        _teachingTipVisabilityTimer.Enabled = false;
-        _teachingTipHidingTimer.Enabled = false;
-        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
-        {
-            IsTeachingTipVisible = false;
-            IsTeachingTipOpen = false;
-        });
-    }
-
+    /// <summary>
+    /// Mimics the tooltip "show" behavior by waiting on a pointer hover.
+    /// </summary>
+    /// <returns>A task.</returns>
     [RelayCommand]
-    public void StartTeachingTipTimer()
+    public async Task StartTeachingTipShowTimer()
     {
-        _teachingTipVisabilityTimer.Enabled = true;
+        await Task.Delay(1500);
+
+        if (string.IsNullOrEmpty(CurrentPageViewModel.NextPageButtonTeachingTipText))
+        {
+            // This event can fire after the user clicks next and the new page does not have any teaching tip text.
+            // Return after the wait to catch this edge case.
+            return;
+        }
+
+        IsTeachingTipVisible = true;
+        IsTeachingTipOpen = true;
     }
 
+    /// <summary>
+    /// Wait a bit, then hide the teaching tip.
+    /// </summary>
+    /// <returns>A task.</returns>
     [RelayCommand]
-    public void StopTeachingTipTimer()
+    public async Task StartTeachingTipHideTimer()
     {
-        _teachingTipHidingTimer.Enabled = true;
-    }
-
-    public SetupFlowOrchestrator()
-    {
-        _teachingTipVisabilityTimer.Elapsed += ShowTeachingTip;
-        _teachingTipHidingTimer.Elapsed += HideTeachingTip;
+        await Task.Delay(500);
+        IsTeachingTipVisible = false;
+        IsTeachingTipOpen = false;
     }
 
     private bool CanGoToNextPage()
@@ -260,8 +245,8 @@ public partial class SetupFlowOrchestrator : ObservableObject, IDisposable
         // the user the "Done" button.
         ShouldShowDoneButton = _currentPageIndex == FlowPages.Count - 1;
 
-        // One change to the teaching tip is that the teaching tip should always show on the first setup page.
-        if (string.IsNullOrEmpty(CurrentPageViewModel.NextPageButtonToolTipText))
+        // The teaching tip will always pop up on the first setup page, unless the the page has no teaching tip text.
+        if (string.IsNullOrEmpty(CurrentPageViewModel.NextPageButtonTeachingTipText))
         {
             // If the setup page does not have tooltip text then don't show the teaching tip.
             IsTeachingTipVisible = false;
@@ -290,11 +275,5 @@ public partial class SetupFlowOrchestrator : ObservableObject, IDisposable
         }
 
         await CurrentPageViewModel?.OnNavigateToAsync();
-    }
-
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-        _teachingTipVisabilityTimer.Dispose();
     }
 }

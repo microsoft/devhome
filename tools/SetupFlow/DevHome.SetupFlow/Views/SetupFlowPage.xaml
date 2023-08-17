@@ -105,27 +105,30 @@
                     <!-- Workaround to show a tooltip on a disabled button
                          https://github.com/microsoft/microsoft-ui-xaml/issues/2262-->
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
-                        <Grid PointerEntered="Grid_PointerEntered" PointerExited="Grid_PointerExited">
+                        <Grid>
                             <!-- A teaching tip does not have the same show/hide behavior as a tooltip.
                                  These commands are used to mimic the show/hide behavior of a tooltip.-->
                             <i:Interaction.Behaviors>
                                 <ic:EventTriggerBehavior EventName="PointerEntered">
-                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.Orchestrator.StartTeachingTipTimerCommand}"/>
+                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.Orchestrator.StartTeachingTipShowTimerCommand}"/>
                                 </ic:EventTriggerBehavior>
                                 <ic:EventTriggerBehavior EventName="PointerExited">
-                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.Orchestrator.StopTeachingTipTimerCommand}"/>
+                                    <ic:InvokeCommandAction Command="{x:Bind ViewModel.Orchestrator.StartTeachingTipHideTimerCommand}"/>
                                 </ic:EventTriggerBehavior>
                             </i:Interaction.Behaviors>
                             <TextBlock IsTabStop="False" />
                             <!-- Using a teaching tip instead of a tooltip to get the tail.-->
+                            <!-- Please keep the Visibility.Mode at OneTime and IsOpen.Mode at OneWay -->
+                            <!-- Otherwise the teaching tip won't mimic the hide/show behavior of a tooltip-->
                                 <TeachingTip
-                                x:Name="NavigationTeachingTip" 
+                                x:Name="NavigationTeachingTip"
+                                AutomationProperties.AutomationId="NavigationTeachingTip"
                                 Visibility="{x:Bind ViewModel.Orchestrator.IsTeachingTipVisible}"
-                                    IsOpen="{x:Bind ViewModel.Orchestrator.IsTeachingTipOpen, Mode=OneWay}"
+                                IsOpen="{x:Bind ViewModel.Orchestrator.IsTeachingTipOpen, Mode=OneWay}"
                                 Target="{x:Bind NavigationNextButton}"
                                 PreferredPlacement="TopLeft"
-                                CloseButtonCommand="{x:Bind ViewModel.Orchestrator.StopTeachingTipTimerCommand, Mode=OneWay}"
-                                Subtitle="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+                                CloseButtonCommand="{x:Bind ViewModel.Orchestrator.StartTeachingTipHideTimerCommand, Mode=OneWay}"
+                                Subtitle="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonTeachingTipText, Mode=OneWay}">
                             </TeachingTip>
                             <Button
                                 x:Name="NavigationNextButton"
