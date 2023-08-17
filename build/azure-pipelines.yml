@@ -477,6 +477,7 @@ stages:
           inputs:
             artifactName: MsixBundle_${{ configuration }}
             targetPath: AppxBundles\${{ configuration }}
+            
 - stage: VPack
   dependsOn:
   - SourceAnalysis
@@ -492,27 +493,14 @@ stages:
   - job: ReleaseVPack
     steps:
     - task: DownloadBuildArtifacts@0
-      displayName: Download msixBundleSigned artifact
+      displayName: Download MsixBundle_Release artifact
       inputs:
         artifactName: MsixBundle_Release
-
-    - task: CopyFiles@2
-      displayName: Copy signed MsixBundle to vpack staging folder
-      inputs:
-        sourceFolder: $(Build.ArtifactStagingDirectory)\MsixBundle_Release
-        contents: DevHome*_8wekyb3d8bbwe.msixbundle
-        targetFolder: $(Build.ArtifactStagingDirectory)\vpack\appxBundle
+        targetPath: vpack\appxBundle
 
     - task: CmdLine@2
       inputs:
         script: ren $(Build.ArtifactStagingDirectory)\vpack\appxBundle\*.msixBundle DevHome_8wekyb3d8bbwe.msixBundle
-
-    - task: PowerShell@2
-      displayName: GetfullVersion
-      inputs:
-        filePath: 'build\Scripts\CreateBuildInfo.ps1'
-        arguments: -Version $(MSIXVersion) -IsAzurePipelineBuild $true
-      name: FullVersion
 
     - task: PkgESVPack@12
       displayName: Create and push vpack for app
@@ -522,7 +510,7 @@ stages:
         sourceDirectory: $(Build.ArtifactStagingDirectory)\vpack\appxBundle
         description: VPack for DevHome
         pushPkgName: DevHome.app
-        version: $(FullVersion)
+        version: $(MSIXVersion).0
         owner: chriwall
         provData: true
 
