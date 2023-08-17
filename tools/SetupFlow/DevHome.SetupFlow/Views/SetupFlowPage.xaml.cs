@@ -1,14 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Timers;
 using DevHome.Common;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.Views;
 
@@ -24,6 +21,7 @@ public partial class SetupFlowPage : ToolPage
         InitializeComponent();
         this.Loaded += (_, _) =>
         {
+            // To control the teaching tip with observable properties, the XAML root needs to be set.
             NavigationTeachingTip.XamlRoot = XamlRoot;
         };
     }

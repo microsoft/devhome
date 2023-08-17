@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
@@ -10,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Moq;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.UnitTest;
 
