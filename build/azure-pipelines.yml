@@ -507,6 +507,13 @@ stages:
       inputs:
         script: ren $(Build.ArtifactStagingDirectory)\vpack\appxBundle\*.msixBundle DevHome_8wekyb3d8bbwe.msixBundle
 
+    - task: PowerShell@2
+      displayName: GetfullVersion
+      inputs:
+        filePath: 'build\Scripts\CreateBuildInfo.ps1'
+        arguments: -Version $(MSIXVersion) -IsAzurePipelineBuild $true
+      name: FullVersion
+
     - task: PkgESVPack@12
       displayName: Create and push vpack for app
       env: SYSTEM_ACCESSTOKEN: $(System.AccessToken)
@@ -514,7 +521,7 @@ stages:
         sourceDirectory: $(Build.ArtifactStagingDirectory)\vpack\appxBundle
         description: VPack for DevHome
         pushPkgName: DevHome.app
-        version: $(MSIXVersion)
+        version: $(FullVersion)
         owner: chriwall
         provData: true
 
