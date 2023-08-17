@@ -516,7 +516,8 @@ stages:
 
     - task: PkgESVPack@12
       displayName: Create and push vpack for app
-      env: SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      env: 
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       inputs:
         sourceDirectory: $(Build.ArtifactStagingDirectory)\vpack\appxBundle
         description: VPack for DevHome
