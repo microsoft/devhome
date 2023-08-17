@@ -139,7 +139,7 @@ public class InstallPackageTask : ISetupTask
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
-                var elevatedResult = await elevatedComponentFactory.ExecuteInstallTask(_id);
+                var elevatedResult = await elevatedComponentFactory.InstallPackage(_id);
                 WasInstallSuccessful = elevatedResult.TaskSucceeded;
                 RequiresReboot = elevatedResult.RebootRequired;
                 _installResultStatus = (InstallResultStatus)elevatedResult.Status;

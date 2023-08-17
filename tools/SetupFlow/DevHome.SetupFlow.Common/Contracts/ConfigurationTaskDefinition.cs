@@ -12,6 +12,11 @@ public sealed class ConfigurationTaskDefinition : ITaskDefinition
         get; set;
     }
 
+    public string FilePath
+    {
+        get; set;
+    }
+
     public string Content
     {
         get; set;

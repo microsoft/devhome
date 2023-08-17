@@ -46,5 +46,9 @@ public interface IElevatedComponentFactory
     /// </summary>
     public ElevatedConfigurationTask CreateElevatedConfigurationTask();
 
-    public IAsyncOperation<ElevatedInstallTaskResult> ExecuteInstallTask(Guid taskId);
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(Guid taskId);
+
+    public int CreateDevDrive(Guid taskId);
+
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(Guid taskId);
 }

@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using System.Diagnostics;
-using System.Text.Json;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
@@ -21,10 +20,19 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
     public ElevatedComponentFactory(string taskDefinitionString)
     {
         var tasksDefinition = TasksDefinition.FromJsonString(taskDefinitionString) ?? new TasksDefinition();
-        foreach (var task in tasksDefinition.Install)
+        var allTaskDefinitions = new List<ITaskDefinition>();
+        allTaskDefinitions.AddRange(tasksDefinition.Install ?? new List<InstallTaskDefinition>());
+        if (tasksDefinition.Configuration != null)
         {
-            _taskDefinitions.Add(task.TaskId, task);
+            allTaskDefinitions.Add(tasksDefinition.Configuration);
         }
+
+        if (tasksDefinition.DevDrive != null)
+        {
+            allTaskDefinitions.Add(tasksDefinition.DevDrive);
+        }
+
+        _taskDefinitions = allTaskDefinitions.ToDictionary(task => task.TaskId, task => task);
     }
 
     public void WriteToStdOut(string value)
@@ -50,12 +58,31 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
         return new ElevatedConfigurationTask();
     }
 
-    public IAsyncOperation<ElevatedInstallTaskResult> ExecuteInstallTask(Guid taskId)
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(Guid taskId)
     {
         Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated package installer");
-        var installTask = new ElevatedInstallTask();
-        var installTaskDefinition = GetTask<InstallTaskDefinition>(taskId);
-        return installTask.InstallPackage(installTaskDefinition.PackageId, installTaskDefinition.CatalogName);
+        var task = new ElevatedInstallTask();
+        var taskDefinition = GetTask<InstallTaskDefinition>(taskId);
+        return task.InstallPackage(taskDefinition.PackageId, taskDefinition.CatalogName);
+    }
+
+    public int CreateDevDrive(Guid taskId)
+    {
+        Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Dev Drive storage operator");
+        var task = new DevDriveStorageOperator();
+        var taskDefinition = GetTask<DevDriveTaskDefinition>(taskId);
+        return task.CreateDevDrive(taskDefinition.VirtDiskPath, taskDefinition.SizeInBytes, taskDefinition.NewDriveLetter, taskDefinition.DriveLabel);
+    }
+
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(Guid taskId)
+    {
+        return Task.Run(async () =>
+        {
+            Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Configuration File applier");
+            var task = new ElevatedConfigurationTask();
+            var taskDefinition = GetTask<ConfigurationTaskDefinition>(taskId);
+            return await task.ApplyConfiguration(taskDefinition.FilePath, taskDefinition.Content);
+        }).AsAsyncOperation();
     }
 
     private T GetTask<T>(Guid id)

@@ -12,7 +12,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.ResultHelper;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
@@ -30,6 +29,7 @@ internal class CreateDevDriveTask : ISetupTask
     private readonly ActionCenterMessages _actionCenterMessages = new ();
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IHost _host;
+    private readonly Guid _id = Guid.NewGuid();
 
     public bool RequiresAdmin => true;
 
@@ -95,9 +95,7 @@ internal class CreateDevDriveTask : ISetupTask
                     return TaskFinishedState.Failure;
                 }
 
-                var storageOperator = elevatedComponentFactory.CreateDevDriveStorageOperator();
-                var virtDiskPath = Path.Combine(DevDrive.DriveLocation, DevDrive.DriveLabel + ".vhdx");
-                Result.ThrowIfFailed(storageOperator.CreateDevDrive(virtDiskPath, DevDrive.DriveSizeInBytes, DevDrive.DriveLetter, DevDrive.DriveLabel));
+                Result.ThrowIfFailed(elevatedComponentFactory.CreateDevDrive(_id));
                 return TaskFinishedState.Success;
             }
             catch (Exception ex)
@@ -118,5 +116,15 @@ internal class CreateDevDriveTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    public ITaskDefinition GetDefinition() => null;
+    public ITaskDefinition GetDefinition()
+    {
+        return new DevDriveTaskDefinition
+        {
+            TaskId = _id,
+            VirtDiskPath = Path.Combine(DevDrive.DriveLocation, $"{DevDrive.DriveLabel}.vhdx"),
+            SizeInBytes = DevDrive.DriveSizeInBytes,
+            NewDriveLetter = DevDrive.DriveLetter,
+            DriveLabel = DevDrive.DriveLabel,
+        };
+    }
 }
