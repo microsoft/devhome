@@ -194,6 +194,7 @@ public partial class SetupFlowOrchestrator : ObservableObject
     {
         await Task.Delay(1500);
 
+        // In tests, CurrentPageViewModel is null.  Catch that here.
         if (string.IsNullOrEmpty(CurrentPageViewModel.NextPageButtonTeachingTipText))
         {
             // This event can fire after the user clicks next and the new page does not have any teaching tip text.

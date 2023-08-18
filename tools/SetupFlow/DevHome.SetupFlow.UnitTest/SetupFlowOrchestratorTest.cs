@@ -177,7 +177,12 @@ public class SetupFlowOrchestratorTest : BaseSetupFlowTest
     [TestMethod]
     public void Orchestrator_TeachingTipCommands()
     {
-        var orchestrator = new SetupFlowOrchestrator();
+        var (orchestrator, pageMocks) = CreateMockPages(1);
+
+        // Need to set the flow pages to the current view model is not-null
+        var flowPages = pageMocks.Select(mock => mock.Object).ToList();
+        orchestrator.FlowPages = flowPages;
+        orchestrator.FlowPages[0].NextPageButtonTeachingTipText = "This is text and it will be used in this test.";
         orchestrator.StartTeachingTipShowTimer().Wait();
         Assert.IsTrue(orchestrator.IsTeachingTipVisible);
         Assert.IsTrue(orchestrator.IsTeachingTipOpen);
