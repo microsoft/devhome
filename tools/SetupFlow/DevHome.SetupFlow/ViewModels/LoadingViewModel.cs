@@ -175,6 +175,18 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ExecutionFinished.Invoke(null, null);
     }
 
+    public void AddMessage(string message)
+    {
+        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        {
+            var messageToDisplay = new LoadingMessageViewModel(message);
+            messageToDisplay.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
+            messageToDisplay.ShouldShowStatusSymbolIcon = false;
+            messageToDisplay.ShouldShowProgressRing = false;
+            Messages.Insert(Messages.Count - _numberOfExecutingTasks, messageToDisplay);
+        });
+    }
+
     public LoadingViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
@@ -208,6 +220,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             foreach (var task in taskGroup.SetupTasks)
             {
+                task.AddMessage += AddMessage;
                 TasksToRun.Add(new TaskInformation
                 {
                     TaskIndex = taskIndex++,

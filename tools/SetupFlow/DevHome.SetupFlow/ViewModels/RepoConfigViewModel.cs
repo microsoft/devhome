@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
@@ -11,6 +12,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
+using DevHome.SetupFlow.Utilities;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -26,7 +28,48 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
 
     private readonly IDevDriveManager _devDriveManager;
 
+    /// <summary>
+    /// The minimum available space the user should have on the drive that holds their OS, in gigabytes.
+    /// This value is not in bytes.
+    /// </summary>
+    private const double MinimumAvailableSpaceInGbForDevDriveAutoCheckbox = 200D;
+
+    /// <summary>
+    /// The minimum available space the user should have on the drive that holds their OS, in bytes.
+    /// </summary>
+    private readonly ulong _minimumAvailableSpaceInBytesForDevDriveAutoCheckbox = DevDriveUtil.ConvertToBytes(MinimumAvailableSpaceInGbForDevDriveAutoCheckbox, ByteUnit.GB);
+
+    private bool _shouldAutoCheckDevDriveCheckbox = true;
+
     public ISetupFlowStringResource LocalStringResource { get; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the Dev Drive checkbox should be enabled when the user launches the add repository dialog.
+    /// If the user unchecks the checkbox then we respect their choice for that instance of the setup flow.
+    /// </summary>
+    public bool ShouldAutoCheckDevDriveCheckbox
+    {
+        get
+        {
+            try
+            {
+                var osDrive = new DriveInfo(Path.GetPathRoot(Environment.SystemDirectory));
+                if (!osDrive.IsReady || _minimumAvailableSpaceInBytesForDevDriveAutoCheckbox > (ulong)osDrive.AvailableFreeSpace)
+                {
+                    _shouldAutoCheckDevDriveCheckbox = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Unable to check if Dev Drive checkbox should be auto checked: {ex.Message}");
+                _shouldAutoCheckDevDriveCheckbox = false;
+            }
+
+            return _shouldAutoCheckDevDriveCheckbox;
+        }
+
+        set => _shouldAutoCheckDevDriveCheckbox = value;
+    }
 
     /// <summary>
     /// All repositories the user wants to clone.

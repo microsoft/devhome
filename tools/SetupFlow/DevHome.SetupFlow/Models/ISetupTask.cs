@@ -93,5 +93,12 @@ public interface ISetupTask
         get;
     }
 
+    public delegate void ChangeMessageHandler(string message);
+
+    /// <summary>
+    /// Use this event to insert a message into the loading screen.
+    /// </summary>
+    public event ChangeMessageHandler AddMessage;
+
     public ITaskDefinition GetDefinition();
 }

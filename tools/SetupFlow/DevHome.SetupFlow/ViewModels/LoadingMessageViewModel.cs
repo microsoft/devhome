@@ -25,7 +25,6 @@ public partial class LoadingMessageViewModel : ObservableObject
 
     /// <summary>
     /// The status symbol icon is the red, green, or yellow icon that is next to a task when it has been completed.
-
     /// </summary>
     [ObservableProperty]
     private bool _shouldShowStatusSymbolIcon;

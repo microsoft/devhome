@@ -30,6 +30,8 @@ internal class CreateDevDriveTask : ISetupTask
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IHost _host;
 
+    public event ISetupTask.ChangeMessageHandler AddMessage;
+
     public bool RequiresAdmin => true;
 
     public bool RequiresReboot => false;
@@ -68,6 +70,7 @@ internal class CreateDevDriveTask : ISetupTask
     {
         return Task.Run(() =>
         {
+            AddMessage(_stringResource.GetLocalized(StringResourceKey.DevDriveNotAdminError));
             return TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }
