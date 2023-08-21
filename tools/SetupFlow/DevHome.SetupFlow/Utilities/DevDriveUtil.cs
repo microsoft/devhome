@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using CommunityToolkit.Common;
+using DevHome.SetupFlow.Common.Helpers;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
@@ -72,10 +73,10 @@ public static class DevDriveUtil
     }
 
     // Not available in CsWin32, so we need to add this ourselves.
-    [DllImport("api-ms-win-core-sysinfo-l1-2-7.dll")]
+    [DllImport("api-ms-win-core-sysinfo-l1-2-6.dll")]
     private static extern DEVELOPER_DRIVE_ENABLEMENT_STATE GetDeveloperDriveEnablementState();
 
-    private static readonly BOOL IsDevDriveFeaturePresent = PInvoke.IsApiSetImplemented("api-ms-win-core-sysinfo-l1-2-7");
+    private static readonly BOOL IsDevDriveFeaturePresent = PInvoke.IsApiSetImplemented("api-ms-win-core-sysinfo-l1-2-6");
 
     /// <summary>
     /// Gets a value indicating whether the system has the ability to create Dev Drives
@@ -88,12 +89,20 @@ public static class DevDriveUtil
     {
         get
         {
-            if (!IsDevDriveFeaturePresent)
+            try
             {
+                if (!IsDevDriveFeaturePresent)
+                {
+                    return false;
+                }
+
+                return GetDeveloperDriveEnablementState() == DEVELOPER_DRIVE_ENABLEMENT_STATE.DeveloperDriveEnabled;
+            }
+            catch (Exception ex)
+            {
+                Log.Logger?.ReportError($"Unable to query for Dev Drive enablement: {ex.Message}");
                 return false;
             }
-
-            return GetDeveloperDriveEnablementState() == DEVELOPER_DRIVE_ENABLEMENT_STATE.DeveloperDriveEnabled;
         }
     }
 
