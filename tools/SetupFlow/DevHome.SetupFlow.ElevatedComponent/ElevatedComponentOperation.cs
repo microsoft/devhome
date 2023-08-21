@@ -28,8 +28,8 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
 
     public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName)
     {
-        var taskDefinition = _tasksArguments.InstallPackages?.FirstOrDefault(def => def.PackageId == packageId && def.CatalogName == catalogName);
-        if (taskDefinition == null)
+        var taskArgument = _tasksArguments.InstallPackages?.FirstOrDefault(def => def.PackageId == packageId && def.CatalogName == catalogName);
+        if (taskArgument == null)
         {
             Log.Logger?.ReportError(Log.Component.Elevated, $"Failed to install '{packageId}' from '{catalogName}' because it was not found");
             throw new ArgumentException($"Package id {packageId} and/or catalog {catalogName} was not found");
@@ -37,22 +37,22 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
 
         Log.Logger?.ReportInfo(Log.Component.Elevated, $"Installing package elevated: '{packageId}' from '{catalogName}'");
         var task = new ElevatedInstallTask();
-        return task.InstallPackage(taskDefinition.PackageId, taskDefinition.CatalogName);
+        return task.InstallPackage(taskArgument.PackageId, taskArgument.CatalogName);
     }
 
     public int CreateDevDrive()
     {
         Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Dev Drive storage operator");
         var task = new DevDriveStorageOperator();
-        var taskDefinition = _tasksArguments.DevDrive;
-        return task.CreateDevDrive(taskDefinition.VirtDiskPath, taskDefinition.SizeInBytes, taskDefinition.NewDriveLetter, taskDefinition.DriveLabel);
+        var taskArgument = _tasksArguments.DevDrive;
+        return task.CreateDevDrive(taskArgument.VirtDiskPath, taskArgument.SizeInBytes, taskArgument.NewDriveLetter, taskArgument.DriveLabel);
     }
 
     public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfigurationAsync()
     {
         Log.Logger?.ReportInfo(Log.Component.Elevated, "Applying DSC configuration elevated");
         var task = new ElevatedConfigurationTask();
-        var taskDefinition = _tasksArguments.Configuration;
-        return task.ApplyConfiguration(taskDefinition.FilePath, taskDefinition.Content);
+        var taskArgument = _tasksArguments.Configuration;
+        return task.ApplyConfiguration(taskArgument.FilePath, taskArgument.Content);
     }
 }
