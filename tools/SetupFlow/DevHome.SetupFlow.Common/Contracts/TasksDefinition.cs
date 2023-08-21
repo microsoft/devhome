@@ -2,9 +2,9 @@
 // Licensed under the MIT license.
 
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text.Encodings.Web;
-using System.Text.Json;
+using System.Linq;
+using System.Management.Automation;
+using System.Text;
 
 namespace DevHome.SetupFlow.Common.Contracts;
 public sealed class TasksDefinition
@@ -24,29 +24,73 @@ public sealed class TasksDefinition
         get; set;
     }
 
-    public string ToJsonString()
+    public static TasksDefinition FromCliArgument(string[] args, int index)
     {
-        var options = new JsonSerializerOptions
+        TasksDefinition tasksDefinition = new ()
         {
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            Install = new List<InstallTaskDefinition>(),
         };
-        var jsonString = JsonSerializer.Serialize(this, options);
-        return JsonSerializer.Serialize<string>(jsonString, options);
-    }
 
-    public static TasksDefinition FromJsonString(string tasksDefinition)
-    {
-        var options = new JsonSerializerOptions
+        static void TrimArgName(string[] args, int index)
         {
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        };
-        var definition = JsonSerializer.Deserialize<TasksDefinition>(tasksDefinition, options);
-        if (definition?.Configuration != null)
-        {
-            definition.Configuration.FilePath = JsonSerializer.Deserialize<string>($"\"{definition.Configuration.FilePath}\"");
-            definition.Configuration.Content = JsonSerializer.Deserialize<string>($"\"{definition.Configuration.Content}\"");
+            if (index < args.Length)
+            {
+                args[index] = args[index].Replace(System.Environment.NewLine, string.Empty);
+            }
         }
 
-        return definition;
+        while (index < args.Length)
+        {
+            TrimArgName(args, index);
+            var install = InstallTaskDefinition.ReadCliArgument(args, ref index);
+
+            TrimArgName(args, index);
+            var devDrive = DevDriveTaskDefinition.ReadCliArgument(args, ref index);
+
+            TrimArgName(args, index);
+            var config = ConfigurationTaskDefinition.ReadCliArgument(args, ref index);
+
+            if (install != null)
+            {
+                tasksDefinition.Install.Add(install);
+            }
+
+            if (config != null)
+            {
+                tasksDefinition.Configuration = config;
+            }
+
+            if (devDrive != null)
+            {
+                tasksDefinition.DevDrive = devDrive;
+            }
+        }
+
+        return tasksDefinition;
+    }
+
+    public string ToCliArgument()
+    {
+        var newLine = System.Environment.NewLine;
+        StringBuilder str = new ();
+        if (Install != null)
+        {
+            foreach (var task in Install)
+            {
+                str.Append(newLine).Append(task.ToCliArgument());
+            }
+        }
+
+        if (Configuration != null)
+        {
+            str.Append(newLine).Append(Configuration.ToCliArgument());
+        }
+
+        if (DevDrive != null)
+        {
+            str.Append(newLine).Append(DevDrive.ToCliArgument());
+        }
+
+        return str.ToString();
     }
 }

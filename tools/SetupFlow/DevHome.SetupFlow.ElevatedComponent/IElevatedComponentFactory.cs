@@ -2,7 +2,6 @@
 // Licensed under the MIT license.
 
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
-using DevHome.SetupFlow.ElevatedComponent.Tasks;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.ElevatedComponent;
@@ -31,24 +30,9 @@ public interface IElevatedComponentFactory
     /// </remarks>
     public void WriteToStdOut(string value);
 
-    /// <summary>
-    /// Creates an object that can be used to install packages from an elevated context.
-    /// </summary>
-    public ElevatedInstallTask CreateElevatedInstallTask();
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage();
 
-    /// <summary>
-    /// Creates the object that will create the Dev Drive on the users system.
-    /// </summary>
-    public DevDriveStorageOperator CreateDevDriveStorageOperator();
+    public int CreateDevDrive();
 
-    /// <summary>
-    /// Creates an object that can apply a configuration file.
-    /// </summary>
-    public ElevatedConfigurationTask CreateElevatedConfigurationTask();
-
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(Guid taskId);
-
-    public int CreateDevDrive(Guid taskId);
-
-    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(Guid taskId);
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration();
 }

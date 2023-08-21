@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Diagnostics;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
@@ -15,24 +14,11 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 /// </summary>
 public sealed class ElevatedComponentFactory : IElevatedComponentFactory
 {
-    private readonly Dictionary<Guid, ITaskDefinition> _taskDefinitions = new ();
+    private readonly TasksDefinition _tasksDefinition;
 
-    public ElevatedComponentFactory(string taskDefinitionString)
+    public ElevatedComponentFactory(string[] args, int index)
     {
-        var tasksDefinition = TasksDefinition.FromJsonString(taskDefinitionString) ?? new TasksDefinition();
-        var allTaskDefinitions = new List<ITaskDefinition>();
-        allTaskDefinitions.AddRange(tasksDefinition.Install ?? new List<InstallTaskDefinition>());
-        if (tasksDefinition.Configuration != null)
-        {
-            allTaskDefinitions.Add(tasksDefinition.Configuration);
-        }
-
-        if (tasksDefinition.DevDrive != null)
-        {
-            allTaskDefinitions.Add(tasksDefinition.DevDrive);
-        }
-
-        _taskDefinitions = allTaskDefinitions.ToDictionary(task => task.TaskId, task => task);
+        _tasksDefinition = TasksDefinition.FromCliArgument(args, index);
     }
 
     public void WriteToStdOut(string value)
@@ -40,58 +26,30 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
         Console.WriteLine(value);
     }
 
-    public ElevatedInstallTask CreateElevatedInstallTask()
-    {
-        Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated package installer");
-        return new ElevatedInstallTask();
-    }
-
-    public DevDriveStorageOperator CreateDevDriveStorageOperator()
-    {
-        Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Dev Drive storage operator");
-        return new DevDriveStorageOperator();
-    }
-
-    public ElevatedConfigurationTask CreateElevatedConfigurationTask()
-    {
-        Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Configuration File applier");
-        return new ElevatedConfigurationTask();
-    }
-
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(Guid taskId)
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage()
     {
         Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated package installer");
         var task = new ElevatedInstallTask();
-        var taskDefinition = GetTask<InstallTaskDefinition>(taskId);
+        var taskDefinition = _tasksDefinition.Install[0];
         return task.InstallPackage(taskDefinition.PackageId, taskDefinition.CatalogName);
     }
 
-    public int CreateDevDrive(Guid taskId)
+    public int CreateDevDrive()
     {
         Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Dev Drive storage operator");
         var task = new DevDriveStorageOperator();
-        var taskDefinition = GetTask<DevDriveTaskDefinition>(taskId);
+        var taskDefinition = _tasksDefinition.DevDrive;
         return task.CreateDevDrive(taskDefinition.VirtDiskPath, taskDefinition.SizeInBytes, taskDefinition.NewDriveLetter, taskDefinition.DriveLabel);
     }
 
-    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(Guid taskId)
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration()
     {
         return Task.Run(async () =>
         {
             Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Configuration File applier");
             var task = new ElevatedConfigurationTask();
-            var taskDefinition = GetTask<ConfigurationTaskDefinition>(taskId);
+            var taskDefinition = _tasksDefinition.Configuration;
             return await task.ApplyConfiguration(taskDefinition.FilePath, taskDefinition.Content);
         }).AsAsyncOperation();
-    }
-
-    private T GetTask<T>(Guid id)
-    {
-        if (_taskDefinitions.TryGetValue(id, out var task) && task is T tTask)
-        {
-            return tTask;
-        }
-
-        throw new ArgumentException($"{id} of type {typeof(T)} was not found");
     }
 }

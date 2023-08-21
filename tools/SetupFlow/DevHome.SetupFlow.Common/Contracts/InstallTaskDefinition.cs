@@ -1,15 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-
 namespace DevHome.SetupFlow.Common.Contracts;
-public sealed class InstallTaskDefinition : ITaskDefinition
+public sealed class InstallTaskDefinition : TaskDefinition
 {
-    public Guid TaskId
-    {
-        get; set;
-    }
+    private const string _packageIdArg = "--package-id";
+    private const string _packageCatalogArg = "--package-catalog";
 
     public string PackageId
     {
@@ -19,5 +15,29 @@ public sealed class InstallTaskDefinition : ITaskDefinition
     public string CatalogName
     {
         get; set;
+    }
+
+    public static InstallTaskDefinition ReadCliArgument(string[] args, ref int index)
+    {
+        const int length = 4;
+        if (index + length <= args.Length &&
+            args[index] == _packageIdArg &&
+            args[index + 2] == _packageCatalogArg)
+        {
+            var result = new InstallTaskDefinition
+            {
+                PackageId = args[index + 1],
+                CatalogName = args[index + 3],
+            };
+            index += length;
+            return result;
+        }
+
+        return null;
+    }
+
+    public override string ToCliArgument()
+    {
+        return $"{_packageIdArg} \"{PackageId}\" {_packageCatalogArg} \"{CatalogName}\"";
     }
 }

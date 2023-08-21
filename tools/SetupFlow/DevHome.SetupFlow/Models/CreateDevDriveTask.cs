@@ -95,7 +95,7 @@ internal class CreateDevDriveTask : ISetupTask
                     return TaskFinishedState.Failure;
                 }
 
-                Result.ThrowIfFailed(elevatedComponentFactory.CreateDevDrive(_id));
+                Result.ThrowIfFailed(elevatedComponentFactory.CreateDevDrive());
                 return TaskFinishedState.Success;
             }
             catch (Exception ex)
@@ -116,11 +116,10 @@ internal class CreateDevDriveTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    public ITaskDefinition GetDefinition()
+    public TaskDefinition GetDefinition()
     {
         return new DevDriveTaskDefinition
         {
-            TaskId = _id,
             VirtDiskPath = Path.Combine(DevDrive.DriveLocation, $"{DevDrive.DriveLabel}.vhdx"),
             SizeInBytes = DevDrive.DriveSizeInBytes,
             NewDriveLetter = DevDrive.DriveLetter,

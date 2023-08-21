@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Diagnostics;
 using System.Text.Json;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Elevation;
@@ -12,19 +13,10 @@ internal sealed class Program
 {
     public static void Main(string[] args)
     {
-        if (args.Length != 4)
-        {
-            Console.WriteLine("Called with wrong number of arguments");
-            Environment.Exit(1);
-            return;
-        }
-
         var mappedFileName = args[0];
         var initEventName = args[1];
         var completionSemaphoreName = args[2];
-        var tasksDefinition = args[3];
-
-        var factory = new ElevatedComponentFactory(tasksDefinition);
+        var factory = new ElevatedComponentFactory(args, 3);
 
         try
         {

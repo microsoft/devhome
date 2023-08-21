@@ -152,7 +152,7 @@ public static class IPCSetup
         var mappedFileName = Guid.NewGuid().ToString();
         var initEventName = Guid.NewGuid().ToString();
         var completionSemaphoreName = Guid.NewGuid().ToString();
-        var tasksDefinitionParam = tasksDefinition.ToJsonString();
+        var tasksDefinitionParam = tasksDefinition.ToCliArgument();
 
         // Create shared memory block.
         Log.Logger?.ReportInfo(Log.Component.IPCClient, "Creating shared memory block");

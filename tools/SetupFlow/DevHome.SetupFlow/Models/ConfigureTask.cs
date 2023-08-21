@@ -22,7 +22,6 @@ public class ConfigureTask : ISetupTask
 {
     private readonly ISetupFlowStringResource _stringResource;
     private readonly StorageFile _file;
-    private readonly Guid _id = Guid.NewGuid();
     private ConfigurationFileHelper _configurationFileHelper;
 
     // Configuration files can run as either admin or as a regular user
@@ -119,7 +118,7 @@ public class ConfigureTask : ISetupTask
         return Task.Run(async () =>
         {
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file {_file.Path}");
-            var elevatedResult = await elevatedComponentFactory.ApplyConfiguration(_id);
+            var elevatedResult = await elevatedComponentFactory.ApplyConfiguration();
             RequiresReboot = elevatedResult.RebootRequired;
             UnitResults = new List<ConfigurationUnitResult>();
 
@@ -134,12 +133,11 @@ public class ConfigureTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    public ITaskDefinition GetDefinition()
+    public TaskDefinition GetDefinition()
     {
         var fileData = GetFileData();
         return new ConfigurationTaskDefinition
         {
-            TaskId = _id,
             FilePath = fileData.FilePath,
             Content = fileData.Content,
         };
