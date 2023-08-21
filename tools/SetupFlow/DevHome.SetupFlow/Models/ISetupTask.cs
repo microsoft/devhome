@@ -93,5 +93,5 @@ public interface ISetupTask
         get;
     }
 
-    public TaskDefinition GetDefinition();
+    public ITaskDefinition GetDefinition();
 }

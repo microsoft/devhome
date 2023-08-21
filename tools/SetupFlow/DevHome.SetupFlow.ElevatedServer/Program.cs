@@ -13,10 +13,19 @@ internal sealed class Program
 {
     public static void Main(string[] args)
     {
+        if (args.Length <= 3)
+        {
+            Console.WriteLine("Called with wrong number of arguments");
+            Environment.Exit(1);
+            return;
+        }
+
         var mappedFileName = args[0];
         var initEventName = args[1];
         var completionSemaphoreName = args[2];
-        var factory = new ElevatedComponentFactory(args, 3);
+        var tasksDefinitionArgumentList = args.Skip(3).ToList();
+
+        var factory = new ElevatedComponentFactory(tasksDefinitionArgumentList);
 
         try
         {

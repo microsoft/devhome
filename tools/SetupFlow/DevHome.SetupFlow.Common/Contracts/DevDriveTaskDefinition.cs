@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Globalization;
+using System.Collections.Generic;
 
 namespace DevHome.SetupFlow.Common.Contracts;
-public sealed class DevDriveTaskDefinition : TaskDefinition
+public sealed class DevDriveTaskDefinition : ITaskDefinition
 {
     private const string _devDrivePath = "--devdrive-path";
     private const string _devDriveSize = "--devdrive-size";
@@ -31,31 +31,44 @@ public sealed class DevDriveTaskDefinition : TaskDefinition
         get; set;
     }
 
-    public static DevDriveTaskDefinition ReadCliArgument(string[] args, ref int index)
+    public static bool TryReadArguments(IList<string> tasksDefinitionArgumentList, ref int index, out DevDriveTaskDefinition result)
     {
-        const int length = 8;
-        if (index + length <= args.Length &&
-            args[index] == _devDrivePath &&
-            args[index + 2] == _devDriveSize &&
-            args[index + 4] == _devDriveLetter &&
-            args[index + 6] == _devDriveLabel)
+        result = null;
+        const int taskArgListCount = 8;
+        if (index + taskArgListCount <= tasksDefinitionArgumentList.Count &&
+            tasksDefinitionArgumentList[index] == _devDrivePath &&
+            tasksDefinitionArgumentList[index + 2] == _devDriveSize &&
+            tasksDefinitionArgumentList[index + 4] == _devDriveLetter &&
+            tasksDefinitionArgumentList[index + 6] == _devDriveLabel)
         {
-            var result = new DevDriveTaskDefinition
+            if (!ulong.TryParse(tasksDefinitionArgumentList[index + 3], out var sizeInBytes) ||
+                !char.TryParse(tasksDefinitionArgumentList[index + 5], out var letter))
             {
-                VirtDiskPath = args[index + 1],
-                SizeInBytes = ulong.Parse(args[index + 3], CultureInfo.InvariantCulture),
-                NewDriveLetter = char.Parse(args[index + 5]),
-                DriveLabel = args[index + 7],
+                return false;
+            }
+
+            result = new DevDriveTaskDefinition
+            {
+                VirtDiskPath = tasksDefinitionArgumentList[index + 1],
+                SizeInBytes = sizeInBytes,
+                NewDriveLetter = letter,
+                DriveLabel = tasksDefinitionArgumentList[index + 7],
             };
-            index += length;
-            return result;
+            index += taskArgListCount;
+            return true;
         }
 
-        return null;
+        return false;
     }
 
-    public override string ToCliArgument()
+    public List<string> ToArgumentList()
     {
-        return $"{_devDrivePath} \"{VirtDiskPath}\" {_devDriveSize} {SizeInBytes} {_devDriveLetter} {NewDriveLetter} {_devDriveLabel} \"{DriveLabel}\"";
+        return new ()
+        {
+            _devDrivePath, VirtDiskPath,
+            _devDriveSize, $"{SizeInBytes}",
+            _devDriveLetter, $"{NewDriveLetter}",
+            _devDriveLabel, DriveLabel,
+        };
     }
 }

@@ -118,7 +118,7 @@ public class ConfigureTask : ISetupTask
         return Task.Run(async () =>
         {
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file {_file.Path}");
-            var elevatedResult = await elevatedComponentFactory.ApplyConfiguration();
+            var elevatedResult = await elevatedComponentFactory.ApplyConfigurationAsync();
             RequiresReboot = elevatedResult.RebootRequired;
             UnitResults = new List<ConfigurationUnitResult>();
 
@@ -133,7 +133,7 @@ public class ConfigureTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    public TaskDefinition GetDefinition()
+    public ITaskDefinition GetDefinition()
     {
         var fileData = GetFileData();
         return new ConfigurationTaskDefinition

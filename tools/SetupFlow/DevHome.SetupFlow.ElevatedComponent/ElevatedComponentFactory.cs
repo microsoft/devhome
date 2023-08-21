@@ -16,9 +16,9 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
 {
     private readonly TasksDefinition _tasksDefinition;
 
-    public ElevatedComponentFactory(string[] args, int index)
+    public ElevatedComponentFactory(IList<string> tasksDefinitionArgumentList)
     {
-        _tasksDefinition = TasksDefinition.FromCliArgument(args, index);
+        _tasksDefinition = TasksDefinition.FromArgumentList(tasksDefinitionArgumentList);
     }
 
     public void WriteToStdOut(string value)
@@ -26,11 +26,17 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
         Console.WriteLine(value);
     }
 
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage()
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName)
     {
-        Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated package installer");
+        var taskDefinition = _tasksDefinition.Install?.FirstOrDefault(def => def.PackageId == packageId && def.CatalogName == catalogName);
+        if (taskDefinition == null)
+        {
+            Log.Logger?.ReportError(Log.Component.Elevated, $"Failed to install '{packageId}' from '{catalogName}' because it was not found");
+            throw new ArgumentException($"Package id {packageId} and/or catalog {catalogName} was not found");
+        }
+
+        Log.Logger?.ReportInfo(Log.Component.Elevated, $"Installing package elevated: '{packageId}' from '{catalogName}'");
         var task = new ElevatedInstallTask();
-        var taskDefinition = _tasksDefinition.Install[0];
         return task.InstallPackage(taskDefinition.PackageId, taskDefinition.CatalogName);
     }
 
@@ -42,14 +48,11 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
         return task.CreateDevDrive(taskDefinition.VirtDiskPath, taskDefinition.SizeInBytes, taskDefinition.NewDriveLetter, taskDefinition.DriveLabel);
     }
 
-    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration()
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfigurationAsync()
     {
-        return Task.Run(async () =>
-        {
-            Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Configuration File applier");
-            var task = new ElevatedConfigurationTask();
-            var taskDefinition = _tasksDefinition.Configuration;
-            return await task.ApplyConfiguration(taskDefinition.FilePath, taskDefinition.Content);
-        }).AsAsyncOperation();
+        Log.Logger?.ReportInfo(Log.Component.Elevated, "Applying DSC configuration elevated");
+        var task = new ElevatedConfigurationTask();
+        var taskDefinition = _tasksDefinition.Configuration;
+        return task.ApplyConfiguration(taskDefinition.FilePath, taskDefinition.Content);
     }
 }

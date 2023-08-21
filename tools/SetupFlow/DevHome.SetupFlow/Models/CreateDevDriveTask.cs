@@ -29,7 +29,6 @@ internal class CreateDevDriveTask : ISetupTask
     private readonly ActionCenterMessages _actionCenterMessages = new ();
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IHost _host;
-    private readonly Guid _id = Guid.NewGuid();
 
     public bool RequiresAdmin => true;
 
@@ -116,7 +115,7 @@ internal class CreateDevDriveTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    public TaskDefinition GetDefinition()
+    public ITaskDefinition GetDefinition()
     {
         return new DevDriveTaskDefinition
         {

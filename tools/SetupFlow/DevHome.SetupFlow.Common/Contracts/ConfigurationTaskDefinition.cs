@@ -2,10 +2,11 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 
 namespace DevHome.SetupFlow.Common.Contracts;
 
-public sealed class ConfigurationTaskDefinition : TaskDefinition
+public sealed class ConfigurationTaskDefinition : ITaskDefinition
 {
     private const string _configFile = "--config-file";
     private const string _configContent = "--config-content";
@@ -20,27 +21,32 @@ public sealed class ConfigurationTaskDefinition : TaskDefinition
         get; set;
     }
 
-    public static ConfigurationTaskDefinition ReadCliArgument(string[] args, ref int index)
+    public static bool TryReadArguments(IList<string> tasksDefinitionArgumentList, ref int index, out ConfigurationTaskDefinition result)
     {
-        const int length = 4;
-        if (index + length <= args.Length &&
-            args[index] == _configFile &&
-            args[index + 2] == _configContent)
+        result = null;
+        const int taskArgListCount = 4;
+        if (index + taskArgListCount <= tasksDefinitionArgumentList.Count &&
+            tasksDefinitionArgumentList[index] == _configFile &&
+            tasksDefinitionArgumentList[index + 2] == _configContent)
         {
-            var result = new ConfigurationTaskDefinition
+            result = new ConfigurationTaskDefinition
             {
-                FilePath = args[index + 1],
-                Content = args[index + 3],
+                FilePath = tasksDefinitionArgumentList[index + 1],
+                Content = tasksDefinitionArgumentList[index + 3],
             };
-            index += length;
-            return result;
+            index += taskArgListCount;
+            return true;
         }
 
-        return null;
+        return false;
     }
 
-    public override string ToCliArgument()
+    public List<string> ToArgumentList()
     {
-        return $"{_configFile} \"{FilePath}\" {_configContent} \"{Content}\"";
+        return new ()
+        {
+            _configFile, FilePath,
+            _configContent, Content,
+        };
     }
 }

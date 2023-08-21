@@ -1,13 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-namespace DevHome.SetupFlow.Common.Contracts;
-public abstract class TaskDefinition
-{
-    public abstract string ToCliArgument();
+using System.Collections.Generic;
 
-    public string EscapeValue(string value)
-    {
-        return value;
-    }
+namespace DevHome.SetupFlow.Common.Contracts;
+public interface ITaskDefinition
+{
+    public List<string> ToArgumentList();
 }

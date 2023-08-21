@@ -30,9 +30,9 @@ public interface IElevatedComponentFactory
     /// </remarks>
     public void WriteToStdOut(string value);
 
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage();
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName);
 
     public int CreateDevDrive();
 
-    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration();
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfigurationAsync();
 }

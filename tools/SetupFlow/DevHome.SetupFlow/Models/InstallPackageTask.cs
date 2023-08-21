@@ -28,7 +28,6 @@ public class InstallPackageTask : ISetupTask
     private readonly ISetupFlowStringResource _stringResource;
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly Lazy<bool> _requiresElevation;
-    private readonly Guid _id = Guid.NewGuid();
 
     private InstallResultStatus _installResultStatus;
     private uint _installerErrorCode;
@@ -139,7 +138,7 @@ public class InstallPackageTask : ISetupTask
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
-                var elevatedResult = await elevatedComponentFactory.InstallPackage();
+                var elevatedResult = await elevatedComponentFactory.InstallPackageAsync(_package.Id, _package.CatalogName);
                 WasInstallSuccessful = elevatedResult.TaskSucceeded;
                 RequiresReboot = elevatedResult.RebootRequired;
                 _installResultStatus = (InstallResultStatus)elevatedResult.Status;
@@ -272,7 +271,7 @@ public class InstallPackageTask : ISetupTask
         TelemetryFactory.Get<ITelemetry>().LogError("AppInstall_InstallFailed", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId));
     }
 
-    public TaskDefinition GetDefinition()
+    public ITaskDefinition GetDefinition()
     {
         return new InstallTaskDefinition()
         {

@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Collections.Generic;
+
 namespace DevHome.SetupFlow.Common.Contracts;
-public sealed class InstallTaskDefinition : TaskDefinition
+public sealed class InstallTaskDefinition : ITaskDefinition
 {
     private const string _packageIdArg = "--package-id";
     private const string _packageCatalogArg = "--package-catalog";
@@ -17,27 +19,32 @@ public sealed class InstallTaskDefinition : TaskDefinition
         get; set;
     }
 
-    public static InstallTaskDefinition ReadCliArgument(string[] args, ref int index)
+    public static bool TryReadArguments(IList<string> tasksDefinitionArgumentList, ref int index, out InstallTaskDefinition result)
     {
-        const int length = 4;
-        if (index + length <= args.Length &&
-            args[index] == _packageIdArg &&
-            args[index + 2] == _packageCatalogArg)
+        result = null;
+        const int taskArgListCount = 4;
+        if (index + taskArgListCount <= tasksDefinitionArgumentList.Count &&
+            tasksDefinitionArgumentList[index] == _packageIdArg &&
+            tasksDefinitionArgumentList[index + 2] == _packageCatalogArg)
         {
-            var result = new InstallTaskDefinition
+            result = new InstallTaskDefinition
             {
-                PackageId = args[index + 1],
-                CatalogName = args[index + 3],
+                PackageId = tasksDefinitionArgumentList[index + 1],
+                CatalogName = tasksDefinitionArgumentList[index + 3],
             };
-            index += length;
-            return result;
+            index += taskArgListCount;
+            return true;
         }
 
-        return null;
+        return false;
     }
 
-    public override string ToCliArgument()
+    public List<string> ToArgumentList()
     {
-        return $"{_packageIdArg} \"{PackageId}\" {_packageCatalogArg} \"{CatalogName}\"";
+        return new ()
+        {
+            _packageIdArg, PackageId,
+            _packageCatalogArg, CatalogName,
+        };
     }
 }

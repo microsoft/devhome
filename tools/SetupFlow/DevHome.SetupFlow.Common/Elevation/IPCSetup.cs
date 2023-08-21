@@ -152,7 +152,7 @@ public static class IPCSetup
         var mappedFileName = Guid.NewGuid().ToString();
         var initEventName = Guid.NewGuid().ToString();
         var completionSemaphoreName = Guid.NewGuid().ToString();
-        var tasksDefinitionParam = tasksDefinition.ToCliArgument();
+        var tasksDefinitionArgumentLit = tasksDefinition.ToArgumentList();
 
         // Create shared memory block.
         Log.Logger?.ReportInfo(Log.Component.IPCClient, "Creating shared memory block");
@@ -183,18 +183,28 @@ public static class IPCSetup
         {
             // Start the elevated process.
             // Command is: <server>.exe <mapped memory name> <event name> <semaphore name>
-            var serverArgs = $"{mappedFileName} {initEventName} {completionSemaphoreName} {tasksDefinitionParam}";
             var serverPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DevHome.SetupFlow.ElevatedServer.exe");
 
             // We need to start the process with ShellExecute to run elevated
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = serverPath,
-                Arguments = serverArgs,
                 WindowStyle = ProcessWindowStyle.Hidden,
                 UseShellExecute = true,
                 Verb = "runas",
+                ArgumentList =
+                {
+                    mappedFileName,
+                    initEventName,
+                    completionSemaphoreName,
+                },
             };
+
+            // Append tasks definition arguments
+            foreach (var arg in tasksDefinitionArgumentLit)
+            {
+                processStartInfo.ArgumentList.Add(arg);
+            }
 
             if (isForTesting)
             {

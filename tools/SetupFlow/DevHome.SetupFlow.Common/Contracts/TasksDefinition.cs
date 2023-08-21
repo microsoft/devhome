@@ -3,8 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Management.Automation;
-using System.Text;
+using DevHome.SetupFlow.Common.Helpers;
 
 namespace DevHome.SetupFlow.Common.Contracts;
 public sealed class TasksDefinition
@@ -24,73 +23,56 @@ public sealed class TasksDefinition
         get; set;
     }
 
-    public static TasksDefinition FromCliArgument(string[] args, int index)
+    public static TasksDefinition FromArgumentList(IList<string> tasksDefinitionArgumentList)
     {
         TasksDefinition tasksDefinition = new ()
         {
             Install = new List<InstallTaskDefinition>(),
         };
 
-        static void TrimArgName(string[] args, int index)
+        var index = 0;
+        while (index < tasksDefinitionArgumentList.Count)
         {
-            if (index < args.Length)
+            if (InstallTaskDefinition.TryReadArguments(tasksDefinitionArgumentList, ref index, out var installTaskDefinition))
             {
-                args[index] = args[index].Replace(System.Environment.NewLine, string.Empty);
+                tasksDefinition.Install.Add(installTaskDefinition);
             }
-        }
-
-        while (index < args.Length)
-        {
-            TrimArgName(args, index);
-            var install = InstallTaskDefinition.ReadCliArgument(args, ref index);
-
-            TrimArgName(args, index);
-            var devDrive = DevDriveTaskDefinition.ReadCliArgument(args, ref index);
-
-            TrimArgName(args, index);
-            var config = ConfigurationTaskDefinition.ReadCliArgument(args, ref index);
-
-            if (install != null)
+            else if (DevDriveTaskDefinition.TryReadArguments(tasksDefinitionArgumentList, ref index, out var devDriveTaskDefinition))
             {
-                tasksDefinition.Install.Add(install);
+                tasksDefinition.DevDrive = devDriveTaskDefinition;
             }
-
-            if (config != null)
+            else if (ConfigurationTaskDefinition.TryReadArguments(tasksDefinitionArgumentList, ref index, out var configurationTaskDefinition))
             {
-                tasksDefinition.Configuration = config;
+                tasksDefinition.Configuration = configurationTaskDefinition;
             }
-
-            if (devDrive != null)
+            else
             {
-                tasksDefinition.DevDrive = devDrive;
+                Log.Logger.ReportWarn(Log.Component.Elevated, $"Failed to parse input arguments: {string.Join(", ", tasksDefinitionArgumentList.Skip(index))}");
+                break;
             }
         }
 
         return tasksDefinition;
     }
 
-    public string ToCliArgument()
+    public List<string> ToArgumentList()
     {
-        var newLine = System.Environment.NewLine;
-        StringBuilder str = new ();
+        List<string> result = new ();
         if (Install != null)
         {
-            foreach (var task in Install)
-            {
-                str.Append(newLine).Append(task.ToCliArgument());
-            }
+            result.AddRange(Install.SelectMany(def => def.ToArgumentList()));
         }
 
         if (Configuration != null)
         {
-            str.Append(newLine).Append(Configuration.ToCliArgument());
+            result.AddRange(Configuration.ToArgumentList());
         }
 
         if (DevDrive != null)
         {
-            str.Append(newLine).Append(DevDrive.ToCliArgument());
+            result.AddRange(DevDrive.ToArgumentList());
         }
 
-        return str.ToString();
+        return result;
     }
 }
