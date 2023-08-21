@@ -64,6 +64,21 @@ internal class CreateDevDriveTask : ISetupTask
     public ActionCenterMessages GetRebootMessage() => new ();
 
     /// <summary>
+    /// Get the arguments for this task
+    /// </summary>
+    /// <returns>Arguments for this task</returns>
+    public DevDriveTaskArguments GetArguments()
+    {
+        return new DevDriveTaskArguments
+        {
+            VirtDiskPath = Path.Combine(DevDrive.DriveLocation, $"{DevDrive.DriveLabel}.vhdx"),
+            SizeInBytes = DevDrive.DriveSizeInBytes,
+            NewDriveLetter = DevDrive.DriveLetter,
+            DriveLabel = DevDrive.DriveLabel,
+        };
+    }
+
+    /// <summary>
     /// Not used, as Dev Drive creation requires elevation
     /// </summary>
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
@@ -116,16 +131,5 @@ internal class CreateDevDriveTask : ISetupTask
                 TelemetryFactory.Get<ITelemetry>().Log("CreateDevDriveTriggered", LogLevel.Critical, new DevDriveTriggeredEvent(DevDrive, timer.ElapsedTicks, result));
             }
         }).AsAsyncOperation();
-    }
-
-    public ITaskDefinition GetDefinition()
-    {
-        return new DevDriveTaskDefinition
-        {
-            VirtDiskPath = Path.Combine(DevDrive.DriveLocation, $"{DevDrive.DriveLabel}.vhdx"),
-            SizeInBytes = DevDrive.DriveSizeInBytes,
-            NewDriveLetter = DevDrive.DriveLetter,
-            DriveLabel = DevDrive.DriveLabel,
-        };
     }
 }

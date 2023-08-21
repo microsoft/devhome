@@ -14,11 +14,11 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 /// </summary>
 public sealed class ElevatedComponentFactory : IElevatedComponentFactory
 {
-    private readonly TasksDefinition _tasksDefinition;
+    private readonly TasksArguments _tasksArguments;
 
-    public ElevatedComponentFactory(IList<string> tasksDefinitionArgumentList)
+    public ElevatedComponentFactory(IList<string> tasksArgumentList)
     {
-        _tasksDefinition = TasksDefinition.FromArgumentList(tasksDefinitionArgumentList);
+        _tasksArguments = TasksArguments.FromArgumentList(tasksArgumentList);
     }
 
     public void WriteToStdOut(string value)
@@ -28,7 +28,7 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
 
     public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName)
     {
-        var taskDefinition = _tasksDefinition.Install?.FirstOrDefault(def => def.PackageId == packageId && def.CatalogName == catalogName);
+        var taskDefinition = _tasksArguments.InstallPackages?.FirstOrDefault(def => def.PackageId == packageId && def.CatalogName == catalogName);
         if (taskDefinition == null)
         {
             Log.Logger?.ReportError(Log.Component.Elevated, $"Failed to install '{packageId}' from '{catalogName}' because it was not found");
@@ -44,7 +44,7 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
     {
         Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Dev Drive storage operator");
         var task = new DevDriveStorageOperator();
-        var taskDefinition = _tasksDefinition.DevDrive;
+        var taskDefinition = _tasksArguments.DevDrive;
         return task.CreateDevDrive(taskDefinition.VirtDiskPath, taskDefinition.SizeInBytes, taskDefinition.NewDriveLetter, taskDefinition.DriveLabel);
     }
 
@@ -52,7 +52,7 @@ public sealed class ElevatedComponentFactory : IElevatedComponentFactory
     {
         Log.Logger?.ReportInfo(Log.Component.Elevated, "Applying DSC configuration elevated");
         var task = new ElevatedConfigurationTask();
-        var taskDefinition = _tasksDefinition.Configuration;
+        var taskDefinition = _tasksArguments.Configuration;
         return task.ApplyConfiguration(taskDefinition.FilePath, taskDefinition.Content);
     }
 }

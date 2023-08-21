@@ -136,10 +136,14 @@ public class ConfigureTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    public ITaskDefinition GetDefinition()
+    /// <summary>
+    /// Get the arguments for this task
+    /// </summary>
+    /// <returns>Arguments for this task</returns>
+    public ConfigurationTaskArguments GetArguments()
     {
         var fileData = GetFileData();
-        return new ConfigurationTaskDefinition
+        return new ConfigurationTaskArguments
         {
             FilePath = fileData.FilePath,
             Content = fileData.Content,

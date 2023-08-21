@@ -347,11 +347,11 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             try
             {
-                var taskDefinitions = new TasksDefinition()
+                var taskDefinitions = new TasksArguments()
                 {
-                    Install = elevatedTasks.OfType<InstallPackageTask>().Select(task => task.GetDefinition() as InstallTaskDefinition).ToList(),
-                    Configuration = elevatedTasks.OfType<ConfigureTask>().Select(task => task.GetDefinition() as ConfigurationTaskDefinition).FirstOrDefault(),
-                    DevDrive = elevatedTasks.OfType<CreateDevDriveTask>().Select(task => task.GetDefinition() as DevDriveTaskDefinition).FirstOrDefault(),
+                    InstallPackages = elevatedTasks.OfType<InstallPackageTask>().Select(task => task.GetArguments()).ToList(),
+                    Configuration = elevatedTasks.OfType<ConfigureTask>().Select(task => task.GetArguments()).FirstOrDefault(),
+                    DevDrive = elevatedTasks.OfType<CreateDevDriveTask>().Select(task => task.GetArguments()).FirstOrDefault(),
                 };
                 Orchestrator.RemoteElevatedFactory = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentFactory>(taskDefinitions);
             }

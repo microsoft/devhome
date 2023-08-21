@@ -3,7 +3,6 @@
 
 extern alias Projection;
 
-using DevHome.SetupFlow.Common.Contracts;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 
@@ -99,6 +98,4 @@ public interface ISetupTask
     /// Use this event to insert a message into the loading screen.
     /// </summary>
     public event ChangeMessageHandler AddMessage;
-
-    public ITaskDefinition GetDefinition();
 }

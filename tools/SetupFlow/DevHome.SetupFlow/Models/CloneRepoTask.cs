@@ -200,6 +200,4 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     }
 
     IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
-
-    public ITaskDefinition GetDefinition() => null;
 }

@@ -122,11 +122,12 @@ public static class IPCSetup
     /// background process. This is to be called from the (unelevated) main
     /// app process.
     /// </summary>
+    /// <param name="tasksArguments">Tasks arguments</param>
     /// <returns>A factory that creates WinRT objects in the background process.</returns>
-    public static async Task<RemoteObject<T>> CreateOutOfProcessObjectAsync<T>(TasksDefinition tasksDefinition)
+    public static async Task<RemoteObject<T>> CreateOutOfProcessObjectAsync<T>(TasksArguments tasksArguments)
     {
         // Run this in the background since it may take a while
-        (var remoteObject, _) = await Task.Run(() => CreateOutOfProcessObjectAndGetProcess<T>(tasksDefinition));
+        (var remoteObject, _) = await Task.Run(() => CreateOutOfProcessObjectAndGetProcess<T>(tasksArguments));
         return remoteObject;
     }
 
@@ -135,6 +136,7 @@ public static class IPCSetup
     /// background process. This is to be called from the main
     /// app process.
     /// </summary>
+    /// <param name="tasksArguments">Tasks arguments</param>
     /// <remarks>
     /// This is intended to be used for tests. For anything else we
     /// should use <see cref="IPCSetup.CreateOutOfProcessObjectAsync{T}"/>
@@ -143,7 +145,7 @@ public static class IPCSetup
     /// A factory that creates WinRT objects in the background process,
     /// and the process object for the background process.
     /// </returns>
-    public static (RemoteObject<T>, Process) CreateOutOfProcessObjectAndGetProcess<T>(TasksDefinition tasksDefinition, bool isForTesting = false)
+    public static (RemoteObject<T>, Process) CreateOutOfProcessObjectAndGetProcess<T>(TasksArguments tasksArguments, bool isForTesting = false)
     {
         // The shared memory block, initialization event and completion semaphore all need a name
         // that will be used by the child process to find them. We use new random GUIDs for them.
@@ -152,7 +154,7 @@ public static class IPCSetup
         var mappedFileName = Guid.NewGuid().ToString();
         var initEventName = Guid.NewGuid().ToString();
         var completionSemaphoreName = Guid.NewGuid().ToString();
-        var tasksDefinitionArgumentLit = tasksDefinition.ToArgumentList();
+        var tasksArgumentList = tasksArguments.ToArgumentList();
 
         // Create shared memory block.
         Log.Logger?.ReportInfo(Log.Component.IPCClient, "Creating shared memory block");
@@ -200,8 +202,8 @@ public static class IPCSetup
                 },
             };
 
-            // Append tasks definition arguments
-            foreach (var arg in tasksDefinitionArgumentLit)
+            // Append tasks arguments
+            foreach (var arg in tasksArgumentList)
             {
                 processStartInfo.ArgumentList.Add(arg);
             }

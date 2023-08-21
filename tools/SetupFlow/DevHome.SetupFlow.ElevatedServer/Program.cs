@@ -1,9 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Diagnostics;
-using System.Text.Json;
-using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.ElevatedComponent;
 
@@ -23,9 +20,9 @@ internal sealed class Program
         var mappedFileName = args[0];
         var initEventName = args[1];
         var completionSemaphoreName = args[2];
-        var tasksDefinitionArgumentList = args.Skip(3).ToList();
+        var tasksArgumentList = args.Skip(3).ToList();
 
-        var factory = new ElevatedComponentFactory(tasksDefinitionArgumentList);
+        var factory = new ElevatedComponentFactory(tasksArgumentList);
 
         try
         {

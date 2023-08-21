@@ -97,6 +97,19 @@ public class InstallPackageTask : ISetupTask
         };
     }
 
+    /// <summary>
+    /// Get the arguments for this task
+    /// </summary>
+    /// <returns>Arguments for this task</returns>
+    public InstallPackageTaskArguments GetArguments()
+    {
+        return new InstallPackageTaskArguments
+        {
+            PackageId = _package.Id,
+            CatalogName = _package.CatalogName,
+        };
+    }
+
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
     {
         ReportAppSelectedForInstallEvent();
@@ -142,7 +155,7 @@ public class InstallPackageTask : ISetupTask
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
-                AddMessage(string.Format(CultureInfo.CurrentCulture, _stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage), _package.Id));
+                AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id));
                 var elevatedResult = await elevatedComponentFactory.InstallPackageAsync(_package.Id, _package.CatalogName);
                 WasInstallSuccessful = elevatedResult.TaskSucceeded;
                 RequiresReboot = elevatedResult.RebootRequired;
@@ -274,14 +287,5 @@ public class InstallPackageTask : ISetupTask
     private void ReportAppInstallFailedEvent()
     {
         TelemetryFactory.Get<ITelemetry>().LogError("AppInstall_InstallFailed", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId));
-    }
-
-    public ITaskDefinition GetDefinition()
-    {
-        return new InstallTaskDefinition()
-        {
-            PackageId = _package.Id,
-            CatalogName = _package.CatalogName,
-        };
     }
 }
