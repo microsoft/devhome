@@ -3,10 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Common.Helpers;
@@ -67,7 +65,7 @@ public class ConfigurationFileHelper
 
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {file.Path}");
             var parentDir = await file.GetParentAsync();
-            var inputStream = CreateStream(content);
+            var inputStream = StringToStream(content);
             var openResult = _processor.OpenConfigurationSet(inputStream);
             _configSet = openResult.Set;
             if (_configSet == null)
@@ -131,14 +129,18 @@ public class ConfigurationFileHelper
         }
     }
 
-    private IInputStream CreateStream(string contents)
+    /// <summary>
+    /// Convert a string to an input stream
+    /// </summary>
+    /// <param name="str">Target string</param>
+    /// <returns>Input stream</returns>
+    private IInputStream StringToStream(string str)
     {
         InMemoryRandomAccessStream result = new ();
-
         using (DataWriter writer = new (result))
         {
-            writer.UnicodeEncoding = Windows.Storage.Streams.UnicodeEncoding.Utf8;
-            writer.WriteString(contents);
+            writer.UnicodeEncoding = UnicodeEncoding.Utf8;
+            writer.WriteString(str);
             writer.StoreAsync().AsTask().Wait();
             writer.DetachStream();
         }

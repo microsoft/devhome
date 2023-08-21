@@ -353,7 +353,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                     Configuration = elevatedTasks.OfType<ConfigureTask>().Select(task => task.GetArguments()).FirstOrDefault(),
                     DevDrive = elevatedTasks.OfType<CreateDevDriveTask>().Select(task => task.GetArguments()).FirstOrDefault(),
                 };
-                Orchestrator.RemoteElevatedFactory = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentFactory>(taskDefinitions);
+                Orchestrator.RemoteElevatedOperation = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentOperation>(taskDefinitions);
             }
             catch (Exception e)
             {
@@ -468,10 +468,10 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             });
 
             TaskFinishedState taskFinishedState;
-            if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedFactory != null)
+            if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedOperation != null)
             {
                 Log.Logger?.ReportInfo(Log.Component.Loading, "Starting task as admin");
-                taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedFactory.Value);
+                taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedOperation.Value);
             }
             else
             {

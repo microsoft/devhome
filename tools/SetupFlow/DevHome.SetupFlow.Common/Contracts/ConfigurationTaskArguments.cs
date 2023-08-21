@@ -8,7 +8,7 @@ namespace DevHome.SetupFlow.Common.Contracts;
 /// <summary>
 /// Class representing a configuration task arguments
 /// </summary>
-public sealed class ConfigurationTaskArguments
+public class ConfigurationTaskArguments
 {
     private const string _configFile = "--config-file";
     private const string _configContent = "--config-content";
@@ -67,8 +67,8 @@ public sealed class ConfigurationTaskArguments
     {
         return new ()
         {
-            _configFile, FilePath,        // --config-file <file>
-            _configContent, Content,      // --config-content <content>
+            _configFile, FilePath,      // --config-file <file>
+            _configContent, Content,    // --config-content <content>
         };
     }
 }

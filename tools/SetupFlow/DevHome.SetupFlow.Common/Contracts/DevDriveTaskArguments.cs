@@ -8,7 +8,7 @@ namespace DevHome.SetupFlow.Common.Contracts;
 /// <summary>
 /// Class representing a dev drive task arguments
 /// </summary>
-public sealed class DevDriveTaskArguments
+public class DevDriveTaskArguments
 {
     private const string _devDrivePath = "--devdrive-path";
     private const string _devDriveSize = "--devdrive-size";

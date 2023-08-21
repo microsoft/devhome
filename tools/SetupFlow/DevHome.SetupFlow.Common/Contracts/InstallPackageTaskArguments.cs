@@ -8,7 +8,7 @@ namespace DevHome.SetupFlow.Common.Contracts;
 /// <summary>
 /// Class representing an install package task arguments
 /// </summary>
-public sealed class InstallPackageTaskArguments
+public class InstallPackageTaskArguments
 {
     private const string _packageIdArg = "--package-id";
     private const string _packageCatalogArg = "--package-catalog";

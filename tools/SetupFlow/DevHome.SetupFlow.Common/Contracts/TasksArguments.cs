@@ -65,7 +65,7 @@ public class TasksArguments
             }
             else
             {
-                Log.Logger.ReportWarn(Log.Component.Elevated, $"Failed to parse input arguments: {string.Join(", ", argumentList.Skip(index))}");
+                Log.Logger?.ReportWarn(Log.Component.Elevated, $"Failed to parse input arguments: {string.Join(", ", argumentList.Skip(index))}");
                 break;
             }
         }

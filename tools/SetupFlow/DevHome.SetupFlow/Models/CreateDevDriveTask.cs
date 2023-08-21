@@ -90,7 +90,7 @@ internal class CreateDevDriveTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
         return Task.Run(() =>
         {
@@ -112,7 +112,7 @@ internal class CreateDevDriveTask : ISetupTask
                     return TaskFinishedState.Failure;
                 }
 
-                Result.ThrowIfFailed(elevatedComponentFactory.CreateDevDrive());
+                Result.ThrowIfFailed(elevatedComponentOperation.CreateDevDrive());
                 return TaskFinishedState.Success;
             }
             catch (Exception ex)

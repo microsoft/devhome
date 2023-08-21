@@ -22,16 +22,16 @@ internal sealed class Program
         var completionSemaphoreName = args[2];
         var tasksArgumentList = args.Skip(3).ToList();
 
-        var factory = new ElevatedComponentFactory(tasksArgumentList);
+        var operation = new ElevatedComponentOperation(tasksArgumentList);
 
         try
         {
-            IPCSetup.CompleteRemoteObjectInitialization<IElevatedComponentFactory>(0, factory, mappedFileName, initEventName, completionSemaphoreName);
+            IPCSetup.CompleteRemoteObjectInitialization<IElevatedComponentOperation>(0, operation, mappedFileName, initEventName, completionSemaphoreName);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Remote factory initialization failed: {ex}");
-            IPCSetup.CompleteRemoteObjectInitialization<IElevatedComponentFactory>(ex.HResult, null, mappedFileName, initEventName, completionSemaphoreName);
+            IPCSetup.CompleteRemoteObjectInitialization<IElevatedComponentOperation>(ex.HResult, null, mappedFileName, initEventName, completionSemaphoreName);
             throw;
         }
     }
