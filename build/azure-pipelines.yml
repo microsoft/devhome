@@ -500,14 +500,14 @@ stages:
 
     - task: CmdLine@2
       inputs:
-        script: ren $(Build.ArtifactStagingDirectory)\vpack\appxBundle\*.msixBundle DevHome_8wekyb3d8bbwe.msixBundle
+        script: ren vpack\appxBundle\*.msixBundle DevHome_8wekyb3d8bbwe.msixBundle
 
     - task: PkgESVPack@12
       displayName: Create and push vpack for app
       env: 
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       inputs:
-        sourceDirectory: $(Build.ArtifactStagingDirectory)\vpack\appxBundle
+        sourceDirectory: vpack\appxBundle
         description: VPack for DevHome
         pushPkgName: DevHome.app
         version: $(MSIXVersion).0
