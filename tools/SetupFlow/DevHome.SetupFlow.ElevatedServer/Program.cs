@@ -30,7 +30,7 @@ internal sealed class Program
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Remote factory initialization failed: {ex}");
+            Console.WriteLine($"Remote object initialization failed: {ex}");
             IPCSetup.CompleteRemoteObjectInitialization<IElevatedComponentOperation>(ex.HResult, null, mappedFileName, initEventName, completionSemaphoreName);
             throw;
         }

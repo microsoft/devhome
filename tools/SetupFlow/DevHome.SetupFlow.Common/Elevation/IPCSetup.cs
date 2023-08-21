@@ -43,7 +43,7 @@ namespace DevHome.SetupFlow.Common.Elevation;
 //// * We use a MemoryMappedFile to share a block of memory between the
 ////   app process and the background process we start. On this block we
 ////   write, in order: an HResult to report failures, the size of the
-////   marshal information for the factory object, and finally the
+////   marshal information for the remote object, and finally the
 ////   marshaler object itself.
 ////
 //// * To have the main app process wait for the initialization done in the
@@ -53,7 +53,7 @@ namespace DevHome.SetupFlow.Common.Elevation;
 //// * To prevent the background process from terminating right after the
 ////   setup while we still have objects hosted on it, the main app
 ////   process creates and acquires a global mutex and only releases when
-////   the factory object is not needed anymore. The background process
+////   the remote object is not needed anymore. The background process
 ////   waits to acquire the mutex before exiting, ensuring that it only
 ////   terminates when it is no longer needed.
 ////
@@ -74,7 +74,7 @@ public static class IPCSetup
 {
     /// <summary>
     /// Object that is written at the beginning of the shared memory block.
-    /// The marshalled factory object is written immediately after this.
+    /// The marshalled remote object is written immediately after this.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     private struct MappedMemoryValue
@@ -85,7 +85,7 @@ public static class IPCSetup
         public int HResult;
 
         /// <summary>
-        /// Size of the marshaled factory object.
+        /// Size of the marshaled remote object.
         /// </summary>
         public long MarshaledObjectSize;
     }
@@ -93,7 +93,7 @@ public static class IPCSetup
     /// <summary>
     /// Maximum capacity of the shared memory block. Must be at least big
     /// enough to hold a <see cref="MappedMemoryValue"/> and the marshalled
-    /// factory object. Default to 4kb.
+    /// remote object. Default to 4kb.
     /// </summary>
     private const long MappedMemoryCapacityInBytes = 4 << 10;
 
@@ -104,10 +104,10 @@ public static class IPCSetup
     private static readonly long MappedMemoryValueSizeInBytes = Marshal.SizeOf<MappedMemoryValue>();
 
     /// <summary>
-    /// The maximum size that the marshalled factory object can have.
+    /// The maximum size that the marshalled remote object can have.
     /// If this is not big enough, we should increase the maximum capacity.
     /// </summary>
-    private static readonly long MaxFactorySizeInBytes = MappedMemoryCapacityInBytes - MappedMemoryValueSizeInBytes;
+    private static readonly long MaxRemoteObjectSizeInBytes = MappedMemoryCapacityInBytes - MappedMemoryValueSizeInBytes;
 
     /// <summary>
     /// Gets the Interface ID for a type; used for the initial interface being marshalled between the processes.
@@ -118,12 +118,12 @@ public static class IPCSetup
     }
 
     /// <summary>
-    /// Creates a factory for the objects that need to run in the elevated
+    /// Creates a remote object for the operations that need to execute in the elevated
     /// background process. This is to be called from the (unelevated) main
     /// app process.
     /// </summary>
     /// <param name="tasksArguments">Tasks arguments</param>
-    /// <returns>A factory that creates WinRT objects in the background process.</returns>
+    /// <returns>A proxy object that execute operations in the background process.</returns>
     public static async Task<RemoteObject<T>> CreateOutOfProcessObjectAsync<T>(TasksArguments tasksArguments)
     {
         // Run this in the background since it may take a while
@@ -132,19 +132,15 @@ public static class IPCSetup
     }
 
     /// <summary>
-    /// Creates a factory for the objects that need to run in a
-    /// background process. This is to be called from the main
-    /// app process.
+    /// Creates a remote object for the operations that need to execute in the elevated
+    /// background process. This is to be called from the main app process.
     /// </summary>
     /// <param name="tasksArguments">Tasks arguments</param>
     /// <remarks>
     /// This is intended to be used for tests. For anything else we
     /// should use <see cref="IPCSetup.CreateOutOfProcessObjectAsync{T}"/>
     /// </remarks>
-    /// <returns>
-    /// A factory that creates WinRT objects in the background process,
-    /// and the process object for the background process.
-    /// </returns>
+    /// <returns>A proxy object that execute operations in the background process.</returns>
     public static (RemoteObject<T>, Process) CreateOutOfProcessObjectAndGetProcess<T>(TasksArguments tasksArguments, bool isForTesting = false)
     {
         // The shared memory block, initialization event and completion semaphore all need a name
@@ -246,7 +242,7 @@ public static class IPCSetup
                 throw new InvalidOperationException("Background process terminated");
             }
 
-            // Read the initialization result and the factory size
+            // Read the initialization result and the remote object size
             using (var mappedFileAccessor = mappedFile.CreateViewAccessor(0, 0, MemoryMappedFileAccess.Read))
             {
                 mappedFileAccessor.Read(0, out mappedMemoryValue);
@@ -355,7 +351,7 @@ public static class IPCSetup
                     stream.Seek(0, SeekOrigin.Current, &streamSize);
                     mappedMemory.MarshaledObjectSize = (long)streamSize;
 
-                    if (mappedMemory.MarshaledObjectSize > MaxFactorySizeInBytes)
+                    if (mappedMemory.MarshaledObjectSize > MaxRemoteObjectSizeInBytes)
                     {
                         throw new InvalidDataException("Marshaled object is too large for shared memory block");
                     }
@@ -392,7 +388,7 @@ public static class IPCSetup
             mappedMemory.HResult = e.HResult;
         }
 
-        // Write the init result and if needed the factory object size.
+        // Write the init result and if needed the remote object size.
         using (var accessor = mappedFile.CreateViewAccessor())
         {
             Log.Logger?.ReportInfo(Log.Component.IPCServer, $"Writing value into shared memory block");

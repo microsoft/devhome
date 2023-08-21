@@ -10,7 +10,7 @@ using Windows.Foundation;
 namespace DevHome.SetupFlow.ElevatedComponent;
 
 /// <summary>
-/// Factory for objects that run in the elevated background process.
+/// Class for executing operations in the elevated background process.
 /// </summary>
 public sealed class ElevatedComponentOperation : IElevatedComponentOperation
 {
