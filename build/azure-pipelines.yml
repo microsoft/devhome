@@ -492,7 +492,6 @@ stages:
   jobs:
   - job: ReleaseVPack
     steps:
-      path: s
     - task: DownloadBuildArtifacts@2
       displayName: Download MsixBundle_Release artifact
       inputs:
