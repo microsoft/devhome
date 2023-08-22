@@ -32,6 +32,7 @@
             Grid.Row="0"
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
+            IsTabStop="False"
             Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel, Mode=OneWay}">
             <ContentControl.ContentTemplateSelector>
                 <selectors:SetupFlowViewSelector>
