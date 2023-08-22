@@ -8,10 +8,6 @@
         <Setter Property="CornerRadius" Value="7" />
     </Style>
 
-    <Style x:Key="CardGridPrimaryStyle" TargetType="Grid" BasedOn="{StaticResource CardGridStyle}">
-        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefault}" />
-    </Style>
-
     <Style x:Key="CardGridSecondaryStyle" TargetType="Grid" BasedOn="{StaticResource CardGridStyle}">
         <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorSecondaryBrush}" />
     </Style>
