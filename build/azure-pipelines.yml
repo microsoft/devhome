@@ -492,9 +492,11 @@ stages:
   jobs:
   - job: ReleaseVPack
     steps:
-    - task: DownloadBuildArtifacts@0
+      path: s
+    - task: DownloadBuildArtifacts@2
       displayName: Download MsixBundle_Release artifact
       inputs:
+        buildType: 'current'
         artifactName: MsixBundle_Release
         targetPath: $(appxPackageDir)\vpack
 
