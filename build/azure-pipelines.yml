@@ -492,8 +492,7 @@ stages:
   jobs:
   - job: ReleaseVPack
     steps:
-    - task: DownloadBuildArtifacts@2
-      displayName: Download MsixBundle_Release artifact
+    - task: DownloadPipelineArtifact@2
       inputs:
         buildType: 'current'
         artifactName: MsixBundle_Release
