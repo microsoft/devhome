@@ -501,7 +501,7 @@ stages:
 
     - task: CmdLine@2
       inputs:
-      script: ren $(appxPackageDir)\vpack\*.msixbundle DevHome_8wekyb3d8bbwe.msixbundle
+        script: ren $(appxPackageDir)\vpack\*.msixbundle DevHome_8wekyb3d8bbwe.msixbundle
 
     - task: PkgESVPack@12
       displayName: Create and push vpack for app
