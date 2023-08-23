@@ -8,7 +8,8 @@ using DevHome.SetupFlow.Common.Helpers;
 namespace DevHome.SetupFlow.Common.Contracts;
 
 /// <summary>
-/// Class representing all supported tasks arguments
+/// Class representing the set of command line arguments passed to the elevated
+/// process. Includes arguments for all the tasks supported for elevation.
 /// </summary>
 public class TasksArguments
 {

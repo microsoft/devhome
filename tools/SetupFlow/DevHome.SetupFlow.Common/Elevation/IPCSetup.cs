@@ -123,7 +123,7 @@ public static class IPCSetup
     /// app process.
     /// </summary>
     /// <param name="tasksArguments">Tasks arguments</param>
-    /// <returns>A proxy object that execute operations in the background process.</returns>
+    /// <returns>A proxy object that executes operations in the background process.</returns>
     public static async Task<RemoteObject<T>> CreateOutOfProcessObjectAsync<T>(TasksArguments tasksArguments)
     {
         // Run this in the background since it may take a while
@@ -199,10 +199,7 @@ public static class IPCSetup
             };
 
             // Append tasks arguments
-            foreach (var arg in tasksArgumentList)
-            {
-                processStartInfo.ArgumentList.Add(arg);
-            }
+            tasksArgumentList.ForEach(arg => processStartInfo.ArgumentList.Add(arg));
 
             if (isForTesting)
             {
