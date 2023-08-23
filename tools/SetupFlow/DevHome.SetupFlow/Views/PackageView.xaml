@@ -86,6 +86,9 @@
                         <ImageIcon Name="Image" Width="24" VerticalAlignment="Center" Source="{Binding Icon}"/>
 
                         <!-- Select button -->
+                        <!-- Adding a margin prevents FlipView's (overlay) next
+                             button from shadowing this button, and enables keyboard
+                             navigation -->
                         <Button
                             Grid.Column="1"
                             IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
