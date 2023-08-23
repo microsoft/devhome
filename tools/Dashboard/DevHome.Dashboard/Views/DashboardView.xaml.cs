@@ -628,7 +628,7 @@ public partial class DashboardView : ToolPage
             roamingProperties.Remove("HideDashboardBanner");
         }
 
-        ViewModel.ShowDashboardBanner = true;
+        ViewModel.ResetDashboardBanner();
     }
 #endif
 }
