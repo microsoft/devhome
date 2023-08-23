@@ -286,6 +286,22 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperation<GetFeaturedApplicationsGroupsResult> GetFeaturedApplicationsGroupsAsync();
     };
 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface ISetupFlowProvider {
+        String GetName();
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IWidgetProvider {
+        String GetName();
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IDevDoctorProvider {
+        String GetName();
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface INotificationsProvider {
+        String GetName();
+    };
+
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     runtimeclass GetFeaturedApplicationsGroupsResult {
         GetFeaturedApplicationsGroupsResult(IVectorView<IFeaturedApplicationsGroup> featuredApplicationsGroup);

@@ -23,6 +23,7 @@ public class AccountsService : IAccountsService
 
     public async Task InitializeAsync()
     {
+        /*
         (await GetDevIdProviders()).ToList().ForEach((devIdProvider) =>
         {
             var developerIdsResult = devIdProvider.GetLoggedInDeveloperIds();
@@ -38,6 +39,8 @@ public class AccountsService : IAccountsService
 
             devIdProvider.Changed += ChangedEventHandler;
         });
+        */
+        await Task.Delay(2000);
     }
 
     public async Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders()
@@ -83,6 +86,7 @@ public class AccountsService : IAccountsService
 
     public void ChangedEventHandler(object? sender, IDeveloperId developerId)
     {
+        /*
         if (sender is IDeveloperIdProvider devIdProvider)
         {
             var authenticationState = devIdProvider.GetDeveloperIdState(developerId);
@@ -99,5 +103,6 @@ public class AccountsService : IAccountsService
                 TelemetryFactory.Get<ITelemetry>().Log("Logout_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.DisplayName, developerId));
             }
         }
+        */
     }
 }

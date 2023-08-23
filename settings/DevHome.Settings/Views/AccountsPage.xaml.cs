@@ -109,6 +109,8 @@ public sealed partial class AccountsPage : Page
 
     public async Task ShowLoginUIAsync(string loginEntryPoint, Page parentPage, AccountsProviderViewModel accountProvider)
     {
+        await Task.Delay(2000);
+        /*
         try
         {
             var adaptiveCardSessionResult = accountProvider.DeveloperIdProvider.GetLoginAdaptiveCardSession();
@@ -145,6 +147,7 @@ public sealed partial class AccountsPage : Page
         }
 
         accountProvider.RefreshLoggedInAccounts();
+        */
     }
 
     private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer)
