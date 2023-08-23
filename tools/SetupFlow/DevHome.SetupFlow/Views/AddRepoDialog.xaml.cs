@@ -182,7 +182,8 @@ internal partial class AddRepoDialog
                 location = (EditDevDriveViewModel.DevDrive != null) ? EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
             }
 
-            FolderPickerViewModel.CloneLocation = location;
+            // In cases where location is empty don't update the cloneLocation. Only update when there are actual values.
+            FolderPickerViewModel.CloneLocation = string.IsNullOrEmpty(location) ? FolderPickerViewModel.CloneLocation : location;
         }
 
         FolderPickerViewModel.ValidateCloneLocation();
@@ -314,12 +315,7 @@ internal partial class AddRepoDialog
         var isChecked = (sender as CheckBox).IsChecked;
         if (isChecked.Value)
         {
-            EditDevDriveViewModel.MakeDefaultDevDrive();
-            FolderPickerViewModel.DisableBrowseButton();
-            _oldCloneLocation = FolderPickerViewModel.CloneLocation;
-            FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
-            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-            FolderPickerViewModel.InDevDriveScenario = true;
+            UpdateDevDriveInfo();
         }
         else
         {
@@ -404,5 +400,19 @@ internal partial class AddRepoDialog
             AddRepoViewModel.FilterRepositories(FilterTextBox.Text);
             SelectRepositories(AddRepoViewModel.EverythingToClone);
         }
+    }
+
+    /// <summary>
+    /// Update dialog to show Dev Drive information.
+    /// </summary>
+    public void UpdateDevDriveInfo()
+    {
+        EditDevDriveViewModel.MakeDefaultDevDrive();
+        FolderPickerViewModel.DisableBrowseButton();
+        _oldCloneLocation = FolderPickerViewModel.CloneLocation;
+        FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
+        FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+        FolderPickerViewModel.InDevDriveScenario = true;
+        EditDevDriveViewModel.IsDevDriveCheckboxChecked = true;
     }
 }

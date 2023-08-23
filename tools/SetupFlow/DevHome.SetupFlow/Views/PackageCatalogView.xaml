@@ -40,6 +40,11 @@
             Background="Transparent"
             SelectionChanged="PackagesFlipView_SelectionChanged"
             ItemsSource="{x:Bind PackageGroups, Mode=OneWay}">
+            <FlipView.ItemContainerStyle>
+                <Style TargetType="FlipViewItem">
+                    <Setter Property="IsTabStop" Value="False" />
+                </Style>
+            </FlipView.ItemContainerStyle>
             <FlipView.ItemTemplate>
                 <DataTemplate>
                     <!-- Grid added here to help update the FlipView

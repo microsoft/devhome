@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
@@ -104,6 +105,11 @@ public sealed partial class RepoConfigView : UserControl
         // Start
         await getPluginsTask;
         await setupDevDrivesTask;
+        if (addRepoDialog.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
+        {
+            addRepoDialog.UpdateDevDriveInfo();
+        }
+
         var result = await addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
 
         if (senderAsButton != null)
@@ -167,6 +173,13 @@ public sealed partial class RepoConfigView : UserControl
             // 1. Adding repos that haven't been selected, and
             // 2. Removing repos from the pre selected list.
             ViewModel.SaveSetupTaskInformation(everythingToClone);
+
+            // Check if user unchecked the Dev Drive checkbox before closing, to update the the behavior the next time the user launches the dialog. Note we only keep
+            // track of this for the current launch of the setup flow. If the user completes or cancels the setup flow and re enters, we do not keep the unchecked behavior.
+            if (!addRepoDialog.EditDevDriveViewModel.IsDevDriveCheckboxChecked)
+            {
+                ViewModel.ShouldAutoCheckDevDriveCheckbox = false;
+            }
         }
         else
         {

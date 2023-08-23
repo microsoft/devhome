@@ -56,7 +56,14 @@ public partial class EditDevDriveViewModel : ObservableObject
         get; set;
     }
 
-    private bool _canShowDevDriveUI;
+    /// <summary>
+    /// Gets a value indicating whether we should show the Dev Drive Checkbox in the UI.
+    /// The Dev Drive checkbox is only shown when a Dev Drive does not already exist on the system.
+    /// </summary>
+    public bool CanShowDevDriveUI
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Gets a value indicating whether the drive label, location, size or drive letter has changed when the Dev Drive window closes.
@@ -83,6 +90,12 @@ public partial class EditDevDriveViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private bool _isDevDriveCheckboxEnabled;
+
+    /// <summary>
+    /// Boolean to control whether the Dev Drive checkbox is checked or unchecked.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isDevDriveCheckboxChecked;
 
     [ObservableProperty]
     private bool _devDriveValidationError;
@@ -112,7 +125,7 @@ public partial class EditDevDriveViewModel : ObservableObject
 
     public void ShowDevDriveUIIfEnabled()
     {
-        if (_canShowDevDriveUI)
+        if (CanShowDevDriveUI)
         {
             ShowDevDriveInformation = Visibility.Visible;
         }
@@ -211,17 +224,17 @@ public partial class EditDevDriveViewModel : ObservableObject
             {
                 ShowDevDriveInformation = Visibility.Collapsed;
                 DevDrive = existingDevDrives.OrderByDescending(x => x.DriveSizeInBytes).First();
-                _canShowDevDriveUI = false;
+                CanShowDevDriveUI = false;
                 return;
             }
         }
         else
         {
-            _canShowDevDriveUI = false;
+            CanShowDevDriveUI = false;
             return;
         }
 
-        _canShowDevDriveUI = true;
+        CanShowDevDriveUI = true;
     }
 
     public bool IsDevDriveValid()
