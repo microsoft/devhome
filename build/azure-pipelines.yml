@@ -496,7 +496,7 @@ stages:
       inputs:
         buildType: 'current'
         artifactName: MsixBundle_Release
-        itemPattern: *.msixbundle
+        itemPattern: '*.msixbundle'
         targetPath: $(appxPackageDir)\vpack
 
     - task: CmdLine@2
