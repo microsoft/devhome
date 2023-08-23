@@ -497,18 +497,18 @@ stages:
         buildType: 'current'
         artifactName: MsixBundle_Release
         itemPattern: '*.msixbundle'
-        targetPath: $(appxPackageDir)\vpack
+        targetPath: $(Build.ArtifactStagingDirectory)\$(appxPackageDir)\vpack
 
     - task: CmdLine@2
       inputs:
-        script: ren $(appxPackageDir)\vpack\*.msixbundle DevHome_8wekyb3d8bbwe.msixbundle
+        script: ren $(Build.ArtifactStagingDirectory)\$(appxPackageDir)\vpack\*.msixbundle DevHome_8wekyb3d8bbwe.msixbundle
 
     - task: PkgESVPack@12
       displayName: Create and push vpack for app
       env: 
         SYSTEM_ACCESSTOKEN: $(System.AccessToken)
       inputs:
-        sourceDirectory: $(appxPackageDir)\vpack
+        sourceDirectory: $(Build.ArtifactStagingDirectory)\$(appxPackageDir)\vpack
         description: VPack for DevHome
         pushPkgName: DevHome.app
         version: $(MSIXVersion).0
