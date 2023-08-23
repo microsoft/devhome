@@ -36,6 +36,13 @@ public class InitializationViewModel : ObservableObject
         _pluginService = pluginService;
     }
 
+    public void OnPageLoaded()
+    {
+        App.MainWindow.Content = Application.Current.GetService<ShellPage>();
+
+        _themeSelector.SetRequestedTheme();
+    }
+
     public async Task OnPageLoadedAsync()
     {
         try

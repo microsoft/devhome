@@ -35,7 +35,7 @@ public sealed partial class WhatsNewPage : Page
 
     private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstRun, true);
+        await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstRun, false);
 
         var whatsNewCards = FeaturesContainer.Resources
             .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
@@ -60,6 +60,21 @@ public sealed partial class WhatsNewPage : Page
             }
 
             ViewModel.AddCard(card);
+        }
+
+        var whatsNewBigCards = BigFeaturesContainer.Resources
+            .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
+            .Select(card => card.Value as WhatsNewCard)
+            .OrderBy(card => card?.Priority ?? 0);
+
+        foreach (var card in whatsNewBigCards)
+        {
+            if (card is null)
+            {
+                continue;
+            }
+
+            ViewModel.AddBigCard(card);
         }
     }
 
