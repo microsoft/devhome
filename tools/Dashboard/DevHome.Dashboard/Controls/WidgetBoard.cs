@@ -8,6 +8,10 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation;
 
 namespace DevHome.Dashboard.Controls;
+
+/// <summary>
+/// Arranges child elements into a staggered grid pattern where items are added to the column that has used least amount of space.
+/// </summary>
 public sealed class WidgetBoard : Panel
 {
     private double _columnWidth;
@@ -25,8 +29,6 @@ public sealed class WidgetBoard : Panel
     /// This control is based off of the
     /// <see href="https://learn.microsoft.com/dotnet/api/microsoft.toolkit.uwp.ui.controls.staggeredpanel">StaggeredPanel</see>
     /// control from the Windows Community Toolkit.
-    /// Similar to that control, the WidgetBoard will stagger items in a row so there is not a large gap between items in a column.
-    /// However, unlike that control, items will always be added to the next column in sequence.
     /// </remarks>
     public WidgetBoard()
     {
@@ -155,7 +157,7 @@ public sealed class WidgetBoard : Panel
 
         for (var i = 0; i < Children.Count; i++)
         {
-            var columnIndex = i % numColumns;
+            var columnIndex = GetColumnIndex(columnHeights);
 
             var child = Children[i];
             child.Measure(new Size(_columnWidth, availableHeight));
@@ -210,7 +212,7 @@ public sealed class WidgetBoard : Panel
 
         for (var i = 0; i < Children.Count; i++)
         {
-            var columnIndex = i % numColumns;
+            var columnIndex = GetColumnIndex(columnHeights);
 
             var child = Children[i];
             var elementSize = child.DesiredSize;
@@ -250,5 +252,21 @@ public sealed class WidgetBoard : Panel
         }
 
         InvalidateMeasure();
+    }
+
+    private int GetColumnIndex(double[] columnHeights)
+    {
+        var columnIndex = 0;
+        var height = columnHeights[0];
+        for (var j = 1; j < columnHeights.Length; j++)
+        {
+            if (columnHeights[j] < height)
+            {
+                columnIndex = j;
+                height = columnHeights[j];
+            }
+        }
+
+        return columnIndex;
     }
 }
