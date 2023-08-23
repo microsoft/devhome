@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -18,6 +19,11 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 internal class RepositoryProvider
 {
+    /// <summary>
+    /// All the repositories for an account.
+    /// </summary>
+    private readonly Lazy<IEnumerable<IRepository>> _repositories = new ();
+
     /// <summary>
     /// Wrapper for the plugin that is providing a repository and developer id.
     /// </summary>
@@ -36,11 +42,6 @@ internal class RepositoryProvider
     /// Provider used to clone a repsitory.
     /// </summary>
     private IRepositoryProvider _repositoryProvider;
-
-    /// <summary>
-    /// All the repositories for an account.
-    /// </summary>
-    private Lazy<IEnumerable<IRepository>> _repositories = new ();
 
     public RepositoryProvider(IPluginWrapper pluginWrapper)
     {
@@ -72,7 +73,16 @@ internal class RepositoryProvider
     /// </remarks>
     public IRepository ParseRepositoryFromUri(Uri uri)
     {
+        /*
         return _repositoryProvider.ParseRepositoryFromUrlAsync(uri).AsTask().Result;
+        */
+
+        return new GenericRepository(new Uri("Hello"));
+    }
+
+    public RepositoryUriSupportResult IsUriSupported(Uri uri)
+    {
+        return _repositoryProvider.IsUriSupportedAsync(uri).GetResults();
     }
 
     /// <summary>
@@ -80,7 +90,11 @@ internal class RepositoryProvider
     /// </summary>
     public IDeveloperId LogIntoProvider()
     {
+        /*
         return _devIdProvider.LoginNewDeveloperIdAsync().AsTask().Result;
+        */
+
+        return _devIdProvider.GetLoggedInDeveloperIds().DeveloperIds.First();
     }
 
     /// <summary>
@@ -89,7 +103,11 @@ internal class RepositoryProvider
     /// <returns>A list of all accounts.  May be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts()
     {
+        /*
         return _devIdProvider.GetLoggedInDeveloperIds() ?? new List<IDeveloperId>();
+        */
+
+        return _devIdProvider.GetLoggedInDeveloperIds().DeveloperIds;
     }
 
     /// <summary>
@@ -99,6 +117,7 @@ internal class RepositoryProvider
     /// <returns>A collection of repositories.  May be empty</returns>
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
     {
+        /*
         if (!_repositories.IsValueCreated)
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
@@ -108,5 +127,8 @@ internal class RepositoryProvider
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
         return _repositories.Value;
+        */
+
+        return new List<IRepository>();
     }
 }

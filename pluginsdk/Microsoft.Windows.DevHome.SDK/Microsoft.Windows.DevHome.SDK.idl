@@ -2,7 +2,17 @@ namespace Microsoft.Windows.DevHome.SDK
 {
     [contractversion(1)] apicontract DevHomeContract {}
 
-    enum ProviderOperationStatus {
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] enum ProviderType {
+            Repository = 0,
+            DeveloperId = 1,
+            Settings = 2,
+            SetupFlow = 3,
+            Widget = 4,
+            DevDoctor = 5,
+            Notifications = 6
+        };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] enum ProviderOperationStatus {
         Success,
         Failure
     };
@@ -17,7 +27,13 @@ namespace Microsoft.Windows.DevHome.SDK
         LoggedOut = 1
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass ProviderOperationResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IPlugin {
+        IInspectable GetProvider(ProviderType providerType);
+        void Dispose();
+    }
+
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass ProviderOperationResult
+    {
         ProviderOperationResult(ProviderOperationStatus status, HRESULT error, String displayMessage, String diagnosticText);
 
         ProviderOperationStatus Status
@@ -39,8 +55,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass RepositoriesResult
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass RepositoriesResult {
         RepositoriesResult(IIterable<IRepository> repositories);
         RepositoriesResult(HRESULT e, String diagnosticText);
 
@@ -55,7 +70,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass DeveloperIdResult {
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass DeveloperIdResult
+    {
         DeveloperIdResult(IDeveloperId developerId);
 
         DeveloperIdResult(HRESULT e, String diagnosticText);
@@ -71,8 +87,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass DeveloperIdsResult
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass DeveloperIdsResult {
         DeveloperIdsResult(IIterable<IDeveloperId> developerIds);
 
         DeveloperIdsResult(HRESULT e, String diagnosticText);
@@ -88,7 +103,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass AdaptiveCardSessionResult {
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass AdaptiveCardSessionResult
+    {
         AdaptiveCardSessionResult(IIterable<IDeveloperId> developerIds);
         AdaptiveCardSessionResult(HRESULT e, String diagnosticText);
 
@@ -102,8 +118,10 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass RepositoryUriSupportResult
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass RepositoryUriSupportResult {
+        RepositoryUriSupportResult(Boolean isSupported);
+        RepositoryUriSupportResult(HRESULT e, String diagnosticText);
+
         Boolean IsSupported
         {
             get;
@@ -114,7 +132,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass GetFeaturedApplicationGroupResult {
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass GetFeaturedApplicationGroupResult
+    {
         GetFeaturedApplicationGroupResult(IFeaturedApplicationGroup featuredApplicationGroup);
         GetFeaturedApplicationGroupResult(HRESULT e, String diagnosticText);
 
@@ -128,8 +147,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass GetFeaturedApplicationsResult
-    {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass GetFeaturedApplicationsResult {
         GetFeaturedApplicationsResult(IVectorView<String> featuredApplications);
         GetFeaturedApplicationsResult(HRESULT e, String diagnosticText);
 
@@ -143,7 +161,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IRepositoryProvider
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IRepositoryProvider
         requires Windows
         .Foundation.IClosable
     {
@@ -218,6 +236,42 @@ namespace Microsoft.Windows.DevHome.SDK
         ProviderOperationResult Update(String templateJson, String dataJson, String state);
     };
 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface ISettingsProvider
+        requires Windows
+        .Foundation.IClosable
+    {
+        String DisplayName
+        {
+            get;
+        };
+
+        //DevHomeIntegratedCard
+        AdaptiveCardSessionResult GetSettingsAdaptiveCardSession();
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IPluginAdaptiveCardController {
+        void Initialize(IPluginAdaptiveCard pluginUI);
+        void Dispose();
+        void OnAction(String action, String inputs);
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IPluginAdaptiveCard {
+        String TemplateJson
+        {
+            get;
+        };
+        String DataJson
+        {
+            get;
+        };
+        String State
+        {
+            get;
+        };
+
+        void Update(String templateJson, String dataJson, String state);
+    };
+
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IDeveloperIdProvider
         requires Windows
         .Foundation.IClosable
@@ -246,6 +300,22 @@ namespace Microsoft.Windows.DevHome.SDK
         //DevHomeIntegratedCard
 
         AdaptiveCardSessionResult GetLoginAdaptiveCardSession();
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface ISetupFlowProvider {
+        String GetName();
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IWidgetProvider {
+        String GetName();
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IDevDoctorProvider {
+        String GetName();
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface INotificationsProvider {
+        String GetName();
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -283,16 +353,4 @@ namespace Microsoft.Windows.DevHome.SDK
             GetFeaturedApplicationsResult GetApplications();
         };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface ISettingsProvider
-        requires Windows
-        .Foundation.IClosable
-    {
-        String DisplayName
-        {
-            get;
-        };
-
-        //DevHomeIntegratedCard
-        AdaptiveCardSessionResult GetSettingsAdaptiveCardSession();
-    };
 }

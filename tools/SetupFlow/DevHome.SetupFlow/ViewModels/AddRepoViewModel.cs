@@ -397,7 +397,7 @@ public partial class AddRepoViewModel : ObservableObject
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: true));
         }
 
-        Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId()));
+        Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId));
     }
 
     /// <summary>
@@ -422,7 +422,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding and removing repositories");
-        var developerId = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId() == accountName);
+        var developerId = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId == accountName);
         foreach (RepoViewListItem repositoryToRemove in repositoriesToRemove)
         {
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {repositoryToRemove}");
@@ -496,6 +496,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         try
         {
+            var repoUriResult = _providers.CanAnyProviderSupportThisUri(parsedUri);
             providerNameAndRepo = _providers.ParseRepositoryFromUri(parsedUri);
         }
         catch (Exception e)
@@ -562,7 +563,7 @@ public partial class AddRepoViewModel : ObservableObject
         await Task.Run(() =>
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllLoggedInAccounts"));
-            var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId() == loginId);
+            var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
 
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllRepos"));
             _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
@@ -582,7 +583,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
             .Where(x => x.PluginName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
-            && x.OwningAccount.LoginId().Equals(loginId, StringComparison.OrdinalIgnoreCase))
+            && x.OwningAccount.LoginId.Equals(loginId, StringComparison.OrdinalIgnoreCase))
             .Select(x => new RepoViewListItem(x.RepositoryToClone));
     }
 

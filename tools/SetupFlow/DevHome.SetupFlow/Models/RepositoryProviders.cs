@@ -78,6 +78,21 @@ internal class RepositoryProviders
         return (string.Empty, null);
     }
 
+    public RepositoryProvider CanAnyProviderSupportThisUri(Uri uri)
+    {
+        foreach (var provider in _providers)
+        {
+            provider.Value.StartIfNotRunning();
+            var result = provider.Value.IsUriSupported(uri);
+            if (result.Result.Status == ProviderOperationStatus.Success)
+            {
+                return provider.Value;
+            }
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// Logs the user into a certain provider.
     /// </summary>

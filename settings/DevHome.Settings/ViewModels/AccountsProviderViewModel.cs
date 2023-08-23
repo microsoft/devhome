@@ -15,7 +15,7 @@ public partial class AccountsProviderViewModel : ObservableObject
 {
     public IDeveloperIdProvider DeveloperIdProvider { get; }
 
-    public string ProviderName => DeveloperIdProvider.GetName();
+    public string ProviderName => DeveloperIdProvider.DisplayName;
 
     public ObservableCollection<Account> LoggedInAccounts { get; } = new ();
 
@@ -27,15 +27,18 @@ public partial class AccountsProviderViewModel : ObservableObject
 
     public void RefreshLoggedInAccounts()
     {
+        /*
         LoggedInAccounts.Clear();
         DeveloperIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
         {
             LoggedInAccounts.Add(new Account(this, devId));
         });
+        */
     }
 
     public void RemoveAccount(string loginId)
     {
+        /*
         var accountToRemove = LoggedInAccounts.FirstOrDefault(x => x.LoginId == loginId);
         if (accountToRemove != null)
         {
@@ -51,5 +54,6 @@ public partial class AccountsProviderViewModel : ObservableObject
         }
 
         RefreshLoggedInAccounts();
+        */
     }
 }
