@@ -142,11 +142,35 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AdaptiveCardSessionResult.h" />
+    <ClInclude Include="DeveloperIdResult.h" />
+    <ClInclude Include="DeveloperIdsResult.h" />
+    <ClInclude Include="GetFeaturedApplicationGroupResult.h" />
+    <ClInclude Include="GetFeaturedApplicationsResult.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="ProviderOperationResult.h">
+      <DeploymentContent>false</DeploymentContent>
+    </ClInclude>
+    <ClInclude Include="RepositoriesResult.h" />
+    <ClInclude Include="RepositoryUriSupportResult.h">
+      <DeploymentContent>false</DeploymentContent>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AdaptiveCardSessionResult.cpp" />
+    <ClCompile Include="DeveloperIdResult.cpp" />
+    <ClCompile Include="DeveloperIdsResult.cpp" />
+    <ClCompile Include="GetFeaturedApplicationGroupResult.cpp" />
+    <ClCompile Include="GetFeaturedApplicationsResult.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="ProviderOperationResult.cpp">
+      <DeploymentContent>false</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="RepositoriesResult.cpp" />
+    <ClCompile Include="RepositoryUriSupportResult.cpp">
+      <DeploymentContent>false</DeploymentContent>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

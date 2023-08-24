@@ -24,7 +24,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.499.233" />
+    <PackageReference Include="Microsoft.Windows.DevHome.SDK" Version="0.499.234" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230724000" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Internal.Windows.DevHome.Helpers" Version="1.0.20230706-x2201" />
