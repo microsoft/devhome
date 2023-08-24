@@ -4,6 +4,7 @@
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Markup;
 
 namespace DevHome.SetupFlow.Controls;
@@ -57,4 +58,10 @@ public sealed partial class SetupShell : UserControl
     public static readonly DependencyProperty SetupShellContentProperty = DependencyProperty.RegisterAttached(nameof(SetupShellContent), typeof(object), typeof(SetupShell), new PropertyMetadata(null));
     public static readonly DependencyProperty HeaderTemplateProperty = DependencyProperty.RegisterAttached(nameof(HeaderTemplate), typeof(ControlTemplate), typeof(SetupShell), new PropertyMetadata(null));
     public static readonly DependencyProperty OrchestratorProperty = DependencyProperty.RegisterAttached(nameof(Orchestrator), typeof(SetupFlowOrchestrator), typeof(SetupShell), new PropertyMetadata(null));
+
+    private void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // Focus on the first focusable element inside the shell content
+        ShellContent.Focus(FocusState.Programmatic);
+    }
 }
