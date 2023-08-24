@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
+using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
@@ -47,7 +48,7 @@ public partial class DashboardView : ToolPage
 
     public DashboardView()
     {
-        ViewModel = new DashboardViewModel();
+        ViewModel = Application.Current.GetService<DashboardViewModel>();
         _widgetServiceHelper = new WidgetServiceHelper();
         this.InitializeComponent();
 
@@ -627,7 +628,7 @@ public partial class DashboardView : ToolPage
             roamingProperties.Remove("HideDashboardBanner");
         }
 
-        ViewModel.ShowDashboardBanner = true;
+        ViewModel.ResetDashboardBanner();
     }
 #endif
 }

@@ -101,6 +101,9 @@ public partial class App : Application, IApp
 
             // Setup flow
             services.AddSetupFlow(context);
+
+            // Dashboard
+            services.AddDashboard(context);
         }).
         Build();
 

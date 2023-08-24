@@ -47,4 +47,16 @@ public partial class DashboardViewModel : ObservableObject
 
         return show;
     }
+
+#if DEBUG
+    public void ResetDashboardBanner()
+    {
+        ShowDashboardBanner = true;
+        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
+        if (roamingProperties.ContainsKey(_hideDashboardBannerKey))
+        {
+            roamingProperties.Remove(_hideDashboardBannerKey);
+        }
+    }
+#endif
 }
