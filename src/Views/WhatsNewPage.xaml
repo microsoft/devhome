@@ -86,19 +86,28 @@
                 <muxc:ItemsRepeater
                     Name="BigFeaturesContainer"
                     Grid.Row="1"
-                    Margin="35, 5, 45, 45"
+                    Margin="35, 5, 45, 10"
                     animations:Connected.ListItemElementName="itemThumbnail"
                     animations:Connected.ListItemKey="animationKeyContentGrid"
                     ItemsSource="{x:Bind ViewModel.BigSource,Mode=OneWay}">
 
                     <muxc:ItemsRepeater.Resources>
                         <models:WhatsNewCard 
-                            x:Uid="WhatsNewPage_DevDashCard"
-                            x:Key="WhatsNewPage_DevDashCard"
+                            x:Uid="WhatsNewPage_ExtensionsCard"
+                            x:Key="WhatsNewPage_ExtensionsCard"
                             DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DashboardHero.png"
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DashboardHero.png"
-                            PageKey="DevHome.Dashboard.ViewModels.DashboardViewModel"
+                            PageKey="DevHome.Dashboard.ViewModels.ExtensionsViewModel"
                             Priority="0" />
+
+                        <models:WhatsNewCard 
+                            x:Uid="WhatsNewPage_DevIdCard"
+                            x:Key="WhatsNewPage_DevIdCard"
+                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DevIdHero.png"
+                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevIdHero.png"
+                            PageKey="DevHome.Settings.ViewModels.AccountsViewModel"
+                            Priority="1" />
+
                     </muxc:ItemsRepeater.Resources>
 
                     <muxc:ItemsRepeater.Layout>
@@ -110,7 +119,7 @@
                             MinRowSpacing="12" 
                             MinColumnSpacing="12"
                             ItemsStretch="Fill"
-                            MaximumRowsOrColumns="3"
+                            MaximumRowsOrColumns="1"
                             ItemsJustification="Center" />
                     </muxc:ItemsRepeater.Layout>
 
@@ -120,7 +129,6 @@
                                 HorizontalAlignment="Stretch"
                                 Padding="15 15"
                                 CornerRadius="{ThemeResource ControlCornerRadius}"
-                                Margin="0"
                                 Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="{ThemeResource ExpanderBorderThickness}">
@@ -138,12 +146,12 @@
                                 </Grid.Resources>
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="4*" />
+                                    <ColumnDefinition Width="6*" />
                                 </Grid.ColumnDefinitions>
 
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <Image
@@ -153,20 +161,31 @@
                                     MaxHeight="188"
                                     MaxWidth="376"
                                     HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Center"/>
+                                    VerticalAlignment="Top"/>
 
-                                <StackPanel Grid.Column="1" Padding="15 10 15 0" >
+                                <Grid Grid.Column="1" Padding="65 10 15 0">
+
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    
                                     <TextBlock
+                                        Grid.Row="0"
                                         HorizontalAlignment="Left"
                                         Style="{ThemeResource BodyTextStyle}"
                                         Text="{x:Bind Title}" />
 
                                     <TextBlock
-                                        Margin="0 16 0 25"
+                                        Grid.Row="1"
+                                        Margin="0 8 0 10"
                                         TextWrapping="Wrap"
+                                        FontSize="12"
                                         Text="{x:Bind Description}"/>
 
                                     <HyperlinkButton
+                                        Grid.Row="2"
                                         Content="{x:Bind Link}"
                                         Foreground="{ThemeResource LearnMoreForeground}"
                                         NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
@@ -175,16 +194,17 @@
                                         Visibility="{x:Bind ShouldShowLink}"/>
 
                                     <Button 
-                                        Grid.Row="1"
+                                        Grid.Row="3"
                                         Margin="0 0 0 10"
                                         Padding="50 5 50 5"
                                         DataContext="{x:Bind PageKey}"
+                                        FontSize="12"
                                         Click="Button_ClickAsync"
-                                        HorizontalAlignment="Stretch"
+                                        HorizontalAlignment="Left"
                                         VerticalAlignment="Bottom"
                                         Content="{x:Bind Button}" />
 
-                                </StackPanel>
+                                </Grid>
                             </Grid>
                         </DataTemplate>
                     </muxc:ItemsRepeater.ItemTemplate>
