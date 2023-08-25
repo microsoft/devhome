@@ -23,6 +23,9 @@ internal class SSHWalletWidget : CoreWidget
 
     protected static readonly new string Name = nameof(SSHWalletWidget);
 
+    protected static readonly string ConfigurationState = "configurationState";
+    protected static readonly string Configuring = "configuring";
+
     protected string ConfigFile
     {
         get => State();
@@ -45,7 +48,7 @@ internal class SSHWalletWidget : CoreWidget
         // Widget will remain in configuring state, waiting for config file path input.
         if (string.IsNullOrWhiteSpace(ConfigFile))
         {
-            ContentData = new JsonObject { { "configuring", true } }.ToJsonString();
+            ContentData = new JsonObject { { ConfigurationState, Configuring } }.ToJsonString();
             DataState = WidgetDataState.Okay;
             return;
         }
@@ -242,7 +245,11 @@ internal class SSHWalletWidget : CoreWidget
                 { "numOfEntries", numOfEntries.ToString(CultureInfo.InvariantCulture) },
             };
 
-        configurationData.Add("configuring", configuring);
+        if (configuring)
+        {
+            configurationData.Add(ConfigurationState, Configuring);
+        }
+
         configurationData.Add("hasConfiguration", hasConfiguration);
         configurationData.Add("configuration", sshConfigData);
         configurationData.Add("submitIcon", IconLoader.GetIconAsBase64("arrow.png"));
@@ -341,7 +348,7 @@ internal class SSHWalletWidget : CoreWidget
         {
             WidgetPageState.Configure => GetConfiguration(ConfigFile),
             WidgetPageState.Content => ContentData,
-            WidgetPageState.Loading => new JsonObject { { "configuring", true } }.ToJsonString(),
+            WidgetPageState.Loading => new JsonObject { { ConfigurationState, Configuring } }.ToJsonString(),
 
             // In case of unknown state default to empty data
             _ => EmptyJson,

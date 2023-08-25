@@ -201,7 +201,8 @@ public partial class WidgetViewModel : ObservableObject
         var jsonObj = JsonObject.Parse(cardData);
         if (jsonObj != null)
         {
-            var isConfiguring = jsonObj.GetNamedBoolean("configuring", false);
+            var configStr = jsonObj.GetNamedString("configurationState", string.Empty);
+            var isConfiguring = configStr.Equals("configuring", StringComparison.Ordinal);
             _dispatcher.TryEnqueue(() =>
             {
                 Configuring = isConfiguring;
