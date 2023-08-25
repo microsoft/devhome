@@ -25,7 +25,7 @@ public delegate PackageCatalogViewModel PackageCatalogViewModelFactory(PackageCa
 /// </summary>
 public partial class PackageCatalogViewModel : ObservableObject
 {
-    private readonly IAccessibilityService _accessbilityService;
+    private readonly IScreenReaderService _screenReaderService;
     private readonly PackageCatalog _packageCatalog;
 
     [ObservableProperty]
@@ -40,10 +40,10 @@ public partial class PackageCatalogViewModel : ObservableObject
     public PackageCatalogViewModel(
         PackageProvider packageProvider,
         PackageCatalog packageCatalog,
-        IAccessibilityService accessibilityService)
+        IScreenReaderService accessibilityService)
     {
         _packageCatalog = packageCatalog;
-        _accessbilityService = accessibilityService;
+        _screenReaderService = accessibilityService;
         Packages = packageCatalog.Packages
             .Select(p => packageProvider.CreateOrGet(p, cachePermanently: true))
             .OrderBy(p => p.IsInstalled)
@@ -62,7 +62,5 @@ public partial class PackageCatalogViewModel : ObservableObject
                 package.IsSelected = true;
             }
         }
-
-        _accessbilityService.Annouce($"Added all applications in {Name}");
     }
 }

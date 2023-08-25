@@ -48,6 +48,7 @@
                     HorizontalAlignment="Left"
                     Width="400"
                     IsEnabled="{x:Bind ViewModel.SearchBoxEnabled, Mode=OneWay}"
+                    AllowFocusWhenDisabled="True"
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SearchBox">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="TextChanged">

@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.Labs.WinUI"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
-    xmlns:views="using:DevHome.SetupFlow.Views"
+    xmlns:views="using:DevHome.SetupFlow.Views" xmlns:i="using:Microsoft.Xaml.Interactivity" xmlns:behaviors="using:DevHome.Common.Behaviors"
     mc:Ignorable="d">
     <StackPanel>
         <!-- Card header -->
@@ -32,6 +32,9 @@
                 Visibility="{x:Bind Catalog.CanAddAllPackages, Mode=OneWay}"
                 Command="{x:Bind Catalog.AddAllPackagesCommand}">
                 <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AddAll" />
+                <i:Interaction.Behaviors>
+                    <behaviors:ButtonAutomationBehavior x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AddAll_Behavior" />
+                </i:Interaction.Behaviors>
             </HyperlinkButton>
         </controls:SettingsCard>
 

@@ -121,6 +121,10 @@
     <value>Add all</value>
     <comment>Label for adding all items for selection</comment>
   </data>
+  <data name="AddAll_Behavior.InvokeAnnouncementText" xml:space="preserve">
+    <value>Added all applications</value>
+    <comment>Text announced when a button for adding all applications to install is invoked</comment>
+  </data>
   <data name="AddPackagesDescription.Text" xml:space="preserve">
     <value>Select packages to restore from your backup, clone from repository, or search with Windows Package Manager.</value>
     <comment>Description for Add packages page</comment>

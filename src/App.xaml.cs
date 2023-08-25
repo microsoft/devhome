@@ -78,7 +78,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IStringResource, StringResource>();
             services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
             services.AddSingleton<IPackageDeploymentService, PackageDeploymentService>();
-            services.AddSingleton<IAccessibilityService, AccessibilityService>();
+            services.AddSingleton<IScreenReaderService, ScreenReaderService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();

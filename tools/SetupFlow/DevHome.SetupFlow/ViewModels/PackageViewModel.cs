@@ -43,7 +43,7 @@ public partial class PackageViewModel : ObservableObject
     private readonly IWinGetPackage _package;
     private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
-    private readonly IAccessibilityService _accessibilityService;
+    private readonly IScreenReaderService _accessibilityService;
     private readonly WindowsPackageManagerFactory _wingetFactory;
 
     /// <summary>
@@ -62,7 +62,7 @@ public partial class PackageViewModel : ObservableObject
         IWindowsPackageManager wpm,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
-        IAccessibilityService accessibilityService,
+        IScreenReaderService accessibilityService,
         WindowsPackageManagerFactory wingetFactory)
     {
         _stringResource = stringResource;
@@ -163,7 +163,7 @@ public partial class PackageViewModel : ObservableObject
     private void ToggleSelection()
     {
         IsSelected = !IsSelected;
-        _accessibilityService.Annouce($"{(IsSelected ? "Added" : "Removed")} {PackageTitle}");
+        _accessibilityService.Announce($"{(IsSelected ? "Added" : "Removed")} {PackageTitle}");
     }
 
     /// <summary>

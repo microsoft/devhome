@@ -34,7 +34,7 @@
                 Visibility="{x:Bind UseOrchestratorTitle, Mode=OneWay}"
                 Text="{x:Bind Orchestrator.FlowTitle}">
                 <i:Interaction.Behaviors>
-                    <behaviors:TextBlockAutomationBehavior RaiseOnLiveRegionChanged="True" />
+                    <behaviors:TextBlockAutomationBehavior RaiseLiveRegionChangedEvent="True" LiveSetting="Assertive" />
                 </i:Interaction.Behaviors>
             </TextBlock>
             <TextBlock
@@ -43,7 +43,7 @@
                 Visibility="{x:Bind Title, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
                 Text="{x:Bind Title, Mode=OneWay}">
                 <i:Interaction.Behaviors>
-                    <behaviors:TextBlockAutomationBehavior RaiseOnLiveRegionChanged="True" />
+                    <behaviors:TextBlockAutomationBehavior RaiseLiveRegionChangedEvent="True" LiveSetting="Assertive" />
                 </i:Interaction.Behaviors>
             </TextBlock>
         </StackPanel>

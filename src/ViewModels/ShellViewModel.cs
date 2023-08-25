@@ -15,7 +15,7 @@ public partial class ShellViewModel : ObservableObject
     private readonly ILocalSettingsService _localSettingsService;
 
     [ObservableProperty]
-    private string? _annoucementTitle;
+    private string? _announcementTitle;
 
     public INavigationService NavigationService
     {
@@ -37,13 +37,14 @@ public partial class ShellViewModel : ObservableObject
         INavigationService navigationService,
         INavigationViewService navigationViewService,
         ILocalSettingsService localSettingsService,
-        IAccessibilityService accessibilityService)
+        IScreenReaderService accessibilityService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
         _localSettingsService = localSettingsService;
-        accessibilityService.AnnoucementTextChanged += OnAnnoucementTextChanged;
+
+        accessibilityService.AnnouncementTextChanged += OnAnnouncementTextChanged;
     }
 
     public async Task OnLoaded()
@@ -85,5 +86,5 @@ public partial class ShellViewModel : ObservableObject
 #pragma warning restore CA1310 // Specify StringComparison for correctness
     }
 
-    private void OnAnnoucementTextChanged(object? sender, string text) => AnnoucementTitle = text;
+    private void OnAnnouncementTextChanged(object? sender, string text) => AnnouncementTitle = text;
 }
