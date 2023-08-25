@@ -17,7 +17,9 @@ using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.DevHome.SDK;
 using Windows.Storage;
+using WinUIEx;
 
 namespace DevHome.Settings.Views;
 
@@ -60,24 +62,7 @@ public sealed partial class AccountsPage : Page
         var numProviders = ViewModel.AccountsProviders.Count;
         if (numProviders == 1)
         {
-            if (ViewModel.AccountsProviders[0].DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CardSession)
-            {
-                await ShowLoginUIAsync("Settings", this, ViewModel.AccountsProviders[0]);
-            }
-            else if (ViewModel.AccountsProviders[0].DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CustomProvider)
-            {
-                IntPtr windowHandle = IntPtr.Zero;
-                foreach (Process activeProcess in Process.GetProcesses())
-                {
-                    if (activeProcess.MainWindowTitle.Contains("Dev Home"))
-                    {
-                        windowHandle = activeProcess.MainWindowHandle;
-                    }
-                }
-
-                WindowId windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
-                await ViewModel.AccountsProviders[0].DeveloperIdProvider.ShowLogonSession(windowPtr);
-            }
+            await InitiateAddAccountUserExperienceAsync(this, ViewModel.AccountsProviders[0]);
         }
         else if (numProviders > 1)
         {
@@ -103,24 +88,7 @@ public sealed partial class AccountsPage : Page
         {
             if (addAccountButton.Tag is AccountsProviderViewModel accountProvider)
             {
-                if (accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CardSession)
-                {
-                    await ShowLoginUIAsync("Settings", this, accountProvider);
-                }
-                else if (accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CustomProvider)
-                {
-                    IntPtr windowHandle = IntPtr.Zero;
-                    foreach (Process activeProcess in Process.GetProcesses())
-                    {
-                        if (activeProcess.MainWindowTitle.Contains("Dev Home"))
-                        {
-                            windowHandle = activeProcess.MainWindowHandle;
-                        }
-                    }
-
-                    WindowId windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
-                    await accountProvider.DeveloperIdProvider.ShowLogonSession(windowPtr);
-                }
+                await InitiateAddAccountUserExperienceAsync(this, accountProvider);
             }
             else
             {
@@ -235,6 +203,20 @@ public sealed partial class AccountsPage : Page
                 RequestedTheme = ActualTheme,
             };
             _ = await afterLogoutContentDialog.ShowAsync();
+        }
+    }
+
+    private async Task InitiateAddAccountUserExperienceAsync(Page parentPage, AccountsProviderViewModel accountProvider)
+    {
+        if (accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CardSession)
+        {
+            await ShowLoginUIAsync("Settings", parentPage, accountProvider);
+        }
+        else if (accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CustomProvider)
+        {
+            IntPtr windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
+            WindowId windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
+            await accountProvider.DeveloperIdProvider.ShowLogonSession(windowPtr);
         }
     }
 }
