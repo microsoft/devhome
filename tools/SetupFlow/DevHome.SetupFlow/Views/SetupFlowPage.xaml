@@ -83,6 +83,7 @@
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultCancelTemplate>
                         <Grid>
                             <HyperlinkButton
+                                AutomationProperties.AutomationControlType="Button"
                                 Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
                                 MinWidth="120" Margin="4,0"
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel"

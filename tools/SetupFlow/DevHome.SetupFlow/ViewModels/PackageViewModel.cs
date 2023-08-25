@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Models;
@@ -42,6 +43,7 @@ public partial class PackageViewModel : ObservableObject
     private readonly IWinGetPackage _package;
     private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
+    private readonly IAccessibilityService _accessibilityService;
     private readonly WindowsPackageManagerFactory _wingetFactory;
 
     /// <summary>
@@ -60,12 +62,14 @@ public partial class PackageViewModel : ObservableObject
         IWindowsPackageManager wpm,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
+        IAccessibilityService accessibilityService,
         WindowsPackageManagerFactory wingetFactory)
     {
         _stringResource = stringResource;
         _wpm = wpm;
         _package = package;
         _themeSelector = themeSelector;
+        _accessibilityService = accessibilityService;
         _wingetFactory = wingetFactory;
 
         // Initialize package view model properties in the constructor to
@@ -156,7 +160,11 @@ public partial class PackageViewModel : ObservableObject
     /// Toggle package selection
     /// </summary>
     [RelayCommand]
-    private void ToggleSelection() => IsSelected = !IsSelected;
+    private void ToggleSelection()
+    {
+        IsSelected = !IsSelected;
+        _accessibilityService.Annouce($"{(IsSelected ? "Added" : "Removed")} {PackageTitle}");
+    }
 
     /// <summary>
     /// Gets the package icon based on the provided theme

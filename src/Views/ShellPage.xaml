@@ -116,5 +116,12 @@
                     CornerRadius="{ThemeResource OverlayCornerRadius}" />
             </Grid>
         </NavigationView>
+
+        <!-- A hidden TextBlock read by the narrator on value change -->
+        <TextBlock Width="0" Height="0" IsTabStop="False" Text="{x:Bind ViewModel.AnnoucementTitle, Mode=OneWay}">
+            <i:Interaction.Behaviors>
+                <behaviors:TextBlockAutomationBehavior RaiseOnLiveRegionChanged="True" LiveSetting="Polite" />
+            </i:Interaction.Behaviors>
+        </TextBlock>
     </Grid>
 </Page>

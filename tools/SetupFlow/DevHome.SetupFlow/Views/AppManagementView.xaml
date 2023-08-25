@@ -92,7 +92,9 @@
         </controls:SetupShell>
 
         <!-- Right/Side panel -->
-        <Grid Grid.Column="1" RowSpacing="20" Margin="0 0 0 4" Style="{ThemeResource CardGridSecondaryStyle}">
+        <Grid
+            AutomationProperties.Name="{x:Bind SidePanelTitle.Text, Mode=OneWay}"
+            Grid.Column="1" RowSpacing="20" Margin="0 0 0 4" Style="{ThemeResource CardGridSecondaryStyle}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
@@ -100,7 +102,7 @@
 
             <!-- Header text -->
             <StackPanel Grid.Row="0" Padding="5 0" Orientation="Vertical" Spacing="4">
-                <TextBlock Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SelectedPackages" />
+                <TextBlock x:Name="SidePanelTitle" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SelectedPackages" />
                 <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind ViewModel.ApplicationsAddedText,Mode=OneWay}"/>
             </StackPanel>
 
@@ -118,7 +120,7 @@
             <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.SelectedPackages, Mode=OneWay}" SelectionMode="None">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                        <ctControls:SettingsCard Background="Transparent">
+                        <ctControls:SettingsCard Background="Transparent" AutomationProperties.Name="{Binding PackageTitle}">
                             <ctControls:SettingsCard.Resources>
                                 <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
                                 <Thickness x:Key="SettingsCardPadding">0</Thickness>
@@ -162,7 +164,12 @@
                             <ctControls:SettingsCard.ActionIcon>
                                 <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE711;"/>
                             </ctControls:SettingsCard.ActionIcon>
-                            <Button Command="{x:Bind ToggleSelectionCommand, Mode=OneWay}" Padding="10" Background="Transparent" BorderThickness="0">
+                            <Button
+                                AutomationProperties.Name="Remove"
+                                Command="{x:Bind ToggleSelectionCommand, Mode=OneWay}"
+                                Padding="10"
+                                Background="Transparent"
+                                BorderThickness="0">
                                 <FontIcon FontSize="{ThemeResource CaptionTextBlockFontSize}" FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE894;"/>
                             </Button>
                         </ctControls:SettingsCard>

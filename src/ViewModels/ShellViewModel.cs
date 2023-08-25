@@ -14,6 +14,9 @@ public partial class ShellViewModel : ObservableObject
 {
     private readonly ILocalSettingsService _localSettingsService;
 
+    [ObservableProperty]
+    private string? _annoucementTitle;
+
     public INavigationService NavigationService
     {
         get;
@@ -30,12 +33,17 @@ public partial class ShellViewModel : ObservableObject
     [ObservableProperty]
     private InfoBarModel _shellInfoBarModel = new ();
 
-    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, ILocalSettingsService localSettingsService)
+    public ShellViewModel(
+        INavigationService navigationService,
+        INavigationViewService navigationViewService,
+        ILocalSettingsService localSettingsService,
+        IAccessibilityService accessibilityService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
         _localSettingsService = localSettingsService;
+        accessibilityService.AnnoucementTextChanged += OnAnnoucementTextChanged;
     }
 
     public async Task OnLoaded()
@@ -76,4 +84,6 @@ public partial class ShellViewModel : ObservableObject
         return pageType.StartsWith("DevHome.Settings");
 #pragma warning restore CA1310 // Specify StringComparison for correctness
     }
+
+    private void OnAnnoucementTextChanged(object? sender, string text) => AnnoucementTitle = text;
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
@@ -24,6 +25,7 @@ public delegate PackageCatalogViewModel PackageCatalogViewModelFactory(PackageCa
 /// </summary>
 public partial class PackageCatalogViewModel : ObservableObject
 {
+    private readonly IAccessibilityService _accessbilityService;
     private readonly PackageCatalog _packageCatalog;
 
     [ObservableProperty]
@@ -35,9 +37,13 @@ public partial class PackageCatalogViewModel : ObservableObject
 
     public IReadOnlyCollection<PackageViewModel> Packages { get; private set; }
 
-    public PackageCatalogViewModel(PackageProvider packageProvider, PackageCatalog packageCatalog)
+    public PackageCatalogViewModel(
+        PackageProvider packageProvider,
+        PackageCatalog packageCatalog,
+        IAccessibilityService accessibilityService)
     {
         _packageCatalog = packageCatalog;
+        _accessbilityService = accessibilityService;
         Packages = packageCatalog.Packages
             .Select(p => packageProvider.CreateOrGet(p, cachePermanently: true))
             .OrderBy(p => p.IsInstalled)
@@ -56,5 +62,7 @@ public partial class PackageCatalogViewModel : ObservableObject
                 package.IsSelected = true;
             }
         }
+
+        _accessbilityService.Annouce($"Added all applications in {Name}");
     }
 }
