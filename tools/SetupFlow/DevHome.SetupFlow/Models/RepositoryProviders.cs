@@ -81,13 +81,18 @@ internal class RepositoryProviders
         return (string.Empty, null);
     }
 
+    /// <summary>
+    /// Queries each provider to figure out if it can support the URI and can clone from it.
+    /// </summary>
+    /// <param name="uri">The uri that points to a remote repository</param>
+    /// <returns>THe provider that can clone the repo.  Otherwise null.</returns>
     public RepositoryProvider CanAnyProviderSupportThisUri(Uri uri)
     {
         foreach (var provider in _providers)
         {
             provider.Value.StartIfNotRunning();
-            var result = provider.Value.IsUriSupported(uri);
-            if (result.Result.Status == ProviderOperationStatus.Success)
+            var isSupported = provider.Value.IsUriSupported(uri);
+            if (isSupported)
             {
                 return provider.Value;
             }
