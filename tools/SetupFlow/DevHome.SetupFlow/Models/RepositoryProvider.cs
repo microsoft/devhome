@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ABI.System;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
@@ -71,8 +72,18 @@ internal class RepositoryProvider
     /// <remarks>
     /// Can be null if the provider can't parse the Uri.
     /// </remarks>
-    public IRepository ParseRepositoryFromUri(Uri uri)
+    public IRepository GetRepositoryFromUri(Uri uri, IDeveloperId developerId = null)
     {
+        RepositoriesResult getResult;
+        if (developerId == null)
+        {
+            getResult = _repositoryProvider.GetRepositoryFromUriAsync(uri).AsTask().Result;
+        }
+        else
+        {
+            getResult = _repositoryProvider.GetRepositoryFromUriAsync(uri, developerId).AsTask().Result;
+        }
+        _repositoryProvider.GetRepositoryFromUriAsync(uri).AsTask().Result;
         /*
         return _repositoryProvider.ParseRepositoryFromUrlAsync(uri).AsTask().Result;
         */
@@ -80,9 +91,41 @@ internal class RepositoryProvider
         return new GenericRepository(new Uri("Hello"));
     }
 
-    public RepositoryUriSupportResult IsUriSupported(Uri uri)
+    /// <summary>
+    /// Checks with the provider if it understands and can clone a repo via Uri.
+    /// </summary>
+    /// <param name="uri">The uri to the repository</param>
+    /// <returns>A tuple that containes if the provider can parse the uri and the account it can parse with.</returns>
+    /// <remarks>If the provider can't parse the Uri, this will try a second time with any logged in accounts.  If the repo is
+    /// public, the developerid can be null.</remarks>
+    public (bool, IDeveloperId) IsUriSupported(Uri uri)
     {
-        return _repositoryProvider.IsUriSupportedAsync(uri).GetResults();
+        var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
+
+        // Possible that no accounts are loggd in.  Try in case the repo is public.
+        if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
+        {
+            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}", developerIdsResult.Result.ExtendedError);
+            var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
+            if (uriSupportResult.IsSupported)
+            {
+                return (true, null);
+            }
+        }
+        else
+        {
+            foreach (var developerId in developerIdsResult.DeveloperIds)
+            {
+                var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri, developerId).AsTask()).Result;
+                if (uriSupportResult.IsSupported)
+                {
+                    return (true, developerId);
+                }
+            }
+        }
+
+        // no accounts can access this uri or the repo does not exist.
+        return (false, null);
     }
 
     /// <summary>
@@ -103,11 +146,14 @@ internal class RepositoryProvider
     /// <returns>A list of all accounts.  May be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts()
     {
-        /*
-        return _devIdProvider.GetLoggedInDeveloperIds() ?? new List<IDeveloperId>();
-        */
+        var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
+        if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
+        {
+            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}", developerIdsResult.Result.ExtendedError);
+            return new List<IDeveloperId>();
+        }
 
-        return _devIdProvider.GetLoggedInDeveloperIds().DeveloperIds;
+        return developerIdsResult.DeveloperIds;
     }
 
     /// <summary>

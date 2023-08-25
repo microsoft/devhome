@@ -9,7 +9,8 @@ namespace Microsoft.Windows.DevHome.SDK
             SetupFlow = 3,
             Widget = 4,
             DevDoctor = 5,
-            Notifications = 6
+            Notifications = 6,
+            FeaturedApplications = 7
         };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] enum ProviderOperationStatus {
@@ -295,7 +296,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
         //ExtensionProvidedExperience
 
-        Windows.Foundation.IAsyncOperation<DeveloperIdResult> ShowLogonSession(UInt64 windowHandle);
+        Windows.Foundation.IAsyncOperation<DeveloperIdResult> ShowLogonSession(Microsoft.UI.WindowId windowHandle);
 
         //DevHomeIntegratedCard
 

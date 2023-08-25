@@ -490,6 +490,19 @@ public partial class AddRepoViewModel : ObservableObject
             parsedUri = uriBuilder.Uri;
         }
 
+        var providerToCloneRepo = _providers.CanAnyProviderSupportThisUri(parsedUri);
+
+        CloningInformation cloningInformation;
+        if (providerToCloneRepo != null)
+        {
+            // A provider parsed the URL and at least 1 logged in account has access to the repo.
+            var repository = providerNameAndRepo.Item2;
+            cloningInformation = new CloningInformation(repository);
+            cloningInformation.ProviderName = providerNameAndRepo.Item1;
+            cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+        }
+
+        /*
         // If the URL points to a private repo the URL tab has no way of knowing what account has access.
         // Keep owning account null to make github extension try all logged in accounts.
         (string, IRepository) providerNameAndRepo;
@@ -546,6 +559,7 @@ public partial class AddRepoViewModel : ObservableObject
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
 
         EverythingToClone.Add(cloningInformation);
+        */
     }
 
     /// <summary>
