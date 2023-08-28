@@ -17,6 +17,13 @@
             "viewFullName": "DevHome.SetupFlow.Views.SetupFlowPage",
             "viewModelFullName": "DevHome.SetupFlow.ViewModels.SetupFlowViewModel",
             "icon": "f156"
+          },
+          {
+            "identity": "DevHome.ExtensionLibrary",
+            "assembly": "DevHome.ExtensionLibrary",
+            "viewFullName": "DevHome.ExtensionLibrary.Views.ExtensionLibraryView",
+            "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
+            "icon": "ea86"
           }
         ]
       }
