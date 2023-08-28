@@ -60,14 +60,14 @@ internal class RepositoryProviders
     /// <param name="uri">The Uri to parse.</param>
     /// <returns>If a provider was found that can parse the Uri then (providerName, repository) if not
     /// (string.empty, null)</returns>
-    public (string, IRepository) ParseRepositoryFromUri(Uri uri)
+    public (string, IRepository) GetRepositoryFromUri(Uri uri)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Parsing repository from URI {uri}");
         foreach (var provider in _providers)
         {
             provider.Value.StartIfNotRunning();
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Attempting to parse using provider {provider.Key}");
-            var repository = provider.Value.ParseRepositoryFromUri(uri);
+            var repository = provider.Value.GetRepositoryFromUri(uri);
             if (repository != null)
             {
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Repository parsed to {repository.DisplayName} owned by {repository.OwningAccountName}");
@@ -83,19 +83,19 @@ internal class RepositoryProviders
     /// </summary>
     /// <param name="uri">The uri that points to a remote repository</param>
     /// <returns>THe provider that can clone the repo.  Otherwise null.</returns>
-    public RepositoryProvider CanAnyProviderSupportThisUri(Uri uri)
+    public (bool, IDeveloperId, IRepositoryProvider) CanAnyProviderSupportThisUri(Uri uri)
     {
         foreach (var provider in _providers)
         {
             provider.Value.StartIfNotRunning();
             var isSupported = provider.Value.IsUriSupported(uri);
-            if (isSupported)
+            if (isSupported.Item1)
             {
-                return provider.Value;
+                return isSupported;
             }
         }
 
-        return null;
+        return (false, null, null);
     }
 
     /// <summary>

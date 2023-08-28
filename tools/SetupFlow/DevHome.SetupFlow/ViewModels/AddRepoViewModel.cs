@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ABI.System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
@@ -492,52 +493,45 @@ public partial class AddRepoViewModel : ObservableObject
 
         var providerToCloneRepo = _providers.CanAnyProviderSupportThisUri(parsedUri);
 
+        // true not-null can use developer ID to clone repo.
+        // True, null, do not use developer ID to clone the repo
+        // false.  Can't clone the repo.
         CloningInformation cloningInformation;
-        if (providerToCloneRepo != null)
+        if (providerToCloneRepo.Item1)
         {
-            // A provider parsed the URL and at least 1 logged in account has access to the repo.
-            var repository = providerNameAndRepo.Item2;
-            cloningInformation = new CloningInformation(repository);
-            cloningInformation.ProviderName = providerNameAndRepo.Item1;
-            cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-        }
+            if (providerToCloneRepo.Item2 != null)
+            {
+                // A provider parsed the URL and at least 1 logged in account has access to the repo.
+                var repoResult = providerToCloneRepo.Item3.GetRepositoryFromUriAsync(parsedUri, providerToCloneRepo.Item2);
+                if (repoResult.GetResults().Result.Status == ProviderOperationStatus.Failure)
+                {
+                    // something happened.
+                    throw repoResult.GetResults().Result.ExtendedError;
+                }
 
-        /*
-        // If the URL points to a private repo the URL tab has no way of knowing what account has access.
-        // Keep owning account null to make github extension try all logged in accounts.
-        (string, IRepository) providerNameAndRepo;
+                cloningInformation = new CloningInformation(repoResult.GetResults().Repositories.First());
+                cloningInformation.ProviderName = providerToCloneRepo.Item3.DisplayName;
+                cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+                cloningInformation.OwningAccount = providerToCloneRepo.Item2;
+            }
+            else
+            {
+                // A provider parsed the URL and at least 1 logged in account has access to the repo.
+                var repoResult = providerToCloneRepo.Item3.GetRepositoryFromUriAsync(parsedUri);
+                if (repoResult.GetResults().Result.Status == ProviderOperationStatus.Failure)
+                {
+                    // something happened.
+                    throw repoResult.GetResults().Result.ExtendedError;
+                }
 
-        try
-        {
-            var repoUriResult = _providers.CanAnyProviderSupportThisUri(parsedUri);
-            providerNameAndRepo = _providers.ParseRepositoryFromUri(parsedUri);
-        }
-        catch (Exception e)
-        {
-            // Github extension throws if the URL is parsed but the repo can't be found.
-            // This can happen if
-            // 1. Any logged in account does not have access
-            // 2. The repo does not exist.
-            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationNotFound);
-            ShouldShowUrlError = Visibility.Visible;
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, e.ToString());
-            TelemetryFactory.Get<ITelemetry>().LogCritical("RepoDialog_RepoNotFound_Event");
-            return;
-        }
-
-        CloningInformation cloningInformation;
-        if (providerNameAndRepo.Item2 != null)
-        {
-            // A provider parsed the URL and at least 1 logged in account has access to the repo.
-            var repository = providerNameAndRepo.Item2;
-            cloningInformation = new CloningInformation(repository);
-            cloningInformation.ProviderName = providerNameAndRepo.Item1;
-            cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+                cloningInformation = new CloningInformation(repoResult.GetResults().Repositories.First());
+                cloningInformation.ProviderName = providerToCloneRepo.Item3.DisplayName;
+                cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+                cloningInformation.OwningAccount = providerToCloneRepo.Item2;
+            }
         }
         else
         {
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "No providers could parse the Url.  Falling back to internal git provider");
-
             // No providers can parse the Url.
             // Fall back to a git Url.
             cloningInformation = new CloningInformation(new GenericRepository(parsedUri));
@@ -559,7 +553,6 @@ public partial class AddRepoViewModel : ObservableObject
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
 
         EverythingToClone.Add(cloningInformation);
-        */
     }
 
     /// <summary>

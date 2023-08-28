@@ -83,12 +83,13 @@ internal class RepositoryProvider
         {
             getResult = _repositoryProvider.GetRepositoryFromUriAsync(uri, developerId).AsTask().Result;
         }
-        _repositoryProvider.GetRepositoryFromUriAsync(uri).AsTask().Result;
-        /*
-        return _repositoryProvider.ParseRepositoryFromUrlAsync(uri).AsTask().Result;
-        */
 
-        return new GenericRepository(new Uri("Hello"));
+        if (getResult.Result.Status == ProviderOperationStatus.Failure)
+        {
+            throw getResult.Result.ExtendedError;
+        }
+
+        return getResult.Repositories.First();
     }
 
     /// <summary>
@@ -98,7 +99,7 @@ internal class RepositoryProvider
     /// <returns>A tuple that containes if the provider can parse the uri and the account it can parse with.</returns>
     /// <remarks>If the provider can't parse the Uri, this will try a second time with any logged in accounts.  If the repo is
     /// public, the developerid can be null.</remarks>
-    public (bool, IDeveloperId) IsUriSupported(Uri uri)
+    public (bool, IDeveloperId, IRepositoryProvider) IsUriSupported(Uri uri)
     {
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
 
@@ -109,7 +110,7 @@ internal class RepositoryProvider
             var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
             if (uriSupportResult.IsSupported)
             {
-                return (true, null);
+                return (true, null, _repositoryProvider);
             }
         }
         else
@@ -119,13 +120,13 @@ internal class RepositoryProvider
                 var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri, developerId).AsTask()).Result;
                 if (uriSupportResult.IsSupported)
                 {
-                    return (true, developerId);
+                    return (true, developerId, _repositoryProvider);
                 }
             }
         }
 
         // no accounts can access this uri or the repo does not exist.
-        return (false, null);
+        return (false, null, null);
     }
 
     /// <summary>
