@@ -6,12 +6,15 @@ using System.Collections.Generic;
 namespace DevHome.SetupFlow.Common.Contracts;
 
 /// <summary>
-/// Class representing a configuration task arguments
+/// Class representing a configuration task arguments passed to the elevated process.
 /// </summary>
+/// <remarks>
+/// <code>ElevatedProcess.exe --config-file file --config-content content</code>
+/// </remarks>
 public class ConfigurationTaskArguments
 {
-    private const string _configFile = "--config-file";
-    private const string _configContent = "--config-content";
+    private const string ConfigFile = "--config-file";
+    private const string ConfigContent = "--config-content";
 
     /// <summary>
     /// Gets or sets the configuration file path
@@ -41,18 +44,18 @@ public class ConfigurationTaskArguments
         result = null;
 
         // --config-file <file>      --config-content <content>
-        // [index]       [index + 1] [index + 2]      [index + 3]
-        const int taskArgListCount = 4;
-        if (index + taskArgListCount <= argumentList.Count &&
-            argumentList[index] == _configFile &&
-            argumentList[index + 2] == _configContent)
+        // [   index   ] [index + 1] [   index + 2  ] [index + 3]
+        const int TaskArgListCount = 4;
+        if (index + TaskArgListCount <= argumentList.Count &&
+            argumentList[index] == ConfigFile &&
+            argumentList[index + 2] == ConfigContent)
         {
             result = new ConfigurationTaskArguments
             {
                 FilePath = argumentList[index + 1],
                 Content = argumentList[index + 3],
             };
-            index += taskArgListCount;
+            index += TaskArgListCount;
             return true;
         }
 
@@ -67,8 +70,8 @@ public class ConfigurationTaskArguments
     {
         return new ()
         {
-            _configFile, FilePath,      // --config-file <file>
-            _configContent, Content,    // --config-content <content>
+            ConfigFile, FilePath,      // --config-file <file>
+            ConfigContent, Content,    // --config-content <content>
         };
     }
 }

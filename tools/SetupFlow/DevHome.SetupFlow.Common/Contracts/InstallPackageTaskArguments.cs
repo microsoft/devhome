@@ -6,12 +6,15 @@ using System.Collections.Generic;
 namespace DevHome.SetupFlow.Common.Contracts;
 
 /// <summary>
-/// Class representing an install package task arguments
+/// Class representing an install package task's arguments passed to the elevated process.
 /// </summary>
+/// <remarks>
+/// <code>ElevatedProcess.exe --package-id id --package-catalog catalog</code>
+/// </remarks>
 public class InstallPackageTaskArguments
 {
-    private const string _packageIdArg = "--package-id";
-    private const string _packageCatalogArg = "--package-catalog";
+    private const string PackageIdArg = "--package-id";
+    private const string PackageCatalogArg = "--package-catalog";
 
     /// <summary>
     /// Gets or sets the package id
@@ -41,18 +44,18 @@ public class InstallPackageTaskArguments
         result = null;
 
         // --package-id <id>        --package-catalog <catalog>
-        // [index]      [index + 1] [index + 2]       [index + 3]
-        const int taskArgListCount = 4;
-        if (index + taskArgListCount <= argumentList.Count &&
-            argumentList[index] == _packageIdArg &&
-            argumentList[index + 2] == _packageCatalogArg)
+        // [  index   ] [index + 1] [   index + 2   ] [index + 3]
+        const int TaskArgListCount = 4;
+        if (index + TaskArgListCount <= argumentList.Count &&
+            argumentList[index] == PackageIdArg &&
+            argumentList[index + 2] == PackageCatalogArg)
         {
             result = new InstallPackageTaskArguments
             {
                 PackageId = argumentList[index + 1],
                 CatalogName = argumentList[index + 3],
             };
-            index += taskArgListCount;
+            index += TaskArgListCount;
             return true;
         }
 
@@ -67,8 +70,8 @@ public class InstallPackageTaskArguments
     {
         return new ()
         {
-            _packageIdArg, PackageId,         // --package-id <id>
-            _packageCatalogArg, CatalogName,  // --package-catalog <catalog>
+            PackageIdArg, PackageId,         // --package-id <id>
+            PackageCatalogArg, CatalogName,  // --package-catalog <catalog>
         };
     }
 }

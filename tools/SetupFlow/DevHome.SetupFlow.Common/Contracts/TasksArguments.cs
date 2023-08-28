@@ -14,7 +14,7 @@ namespace DevHome.SetupFlow.Common.Contracts;
 public class TasksArguments
 {
     /// <summary>
-    /// Gets or sets the list of install package tasks arguments
+    /// Gets or sets the list of arguments for each of the install package tasks.
     /// </summary>
     public List<InstallPackageTaskArguments> InstallPackages
     {

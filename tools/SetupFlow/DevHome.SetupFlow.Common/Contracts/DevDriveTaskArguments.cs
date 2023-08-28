@@ -6,14 +6,17 @@ using System.Collections.Generic;
 namespace DevHome.SetupFlow.Common.Contracts;
 
 /// <summary>
-/// Class representing a dev drive task arguments
+/// Class representing a dev drive's task arguments passed to the elevated process.
 /// </summary>
+/// <remarks>
+/// <code>ElevatedProcess.exe --devdrive-path path --devdrive-size size --devdrive-letter letter --devdrive-label label</code>
+/// </remarks>
 public class DevDriveTaskArguments
 {
-    private const string _devDrivePath = "--devdrive-path";
-    private const string _devDriveSize = "--devdrive-size";
-    private const string _devDriveLetter = "--devdrive-letter";
-    private const string _devDriveLabel = "--devdrive-label";
+    private const string DevDrivePath = "--devdrive-path";
+    private const string DevDriveSize = "--devdrive-size";
+    private const string DevDriveLetter = "--devdrive-letter";
+    private const string DevDriveLabel = "--devdrive-label";
 
     /// <summary>
     /// Gets or sets the drive's virtual disk path
@@ -59,28 +62,33 @@ public class DevDriveTaskArguments
         result = null;
 
         // --devdrive-path <path>      --devdrive-size <size>      --devdrive-letter <letter>    --devdrive-label <label>
-        // [index]         [index + 1] [index + 2]     [index + 3] [index + 4]       [index + 5] [index + 6]      [index + 7]
-        const int taskArgListCount = 8;
-        if (index + taskArgListCount <= argumentList.Count &&
-            argumentList[index] == _devDrivePath &&
-            argumentList[index + 2] == _devDriveSize &&
-            argumentList[index + 4] == _devDriveLetter &&
-            argumentList[index + 6] == _devDriveLabel)
+        // [    index    ] [index + 1] [  index + 2  ] [index + 3] [   index + 4   ] [index + 5] [   index + 6  ] [index + 7]
+        const int TaskArgListCount = 8;
+        if (index + TaskArgListCount <= argumentList.Count &&
+            argumentList[index] == DevDrivePath &&
+            argumentList[index + 2] == DevDriveSize &&
+            argumentList[index + 4] == DevDriveLetter &&
+            argumentList[index + 6] == DevDriveLabel)
         {
-            if (!ulong.TryParse(argumentList[index + 3], out var sizeInBytes) ||
-                !char.TryParse(argumentList[index + 5], out var letter))
+            var virtDiskPath = argumentList[index + 1];
+            var sizeInBytesStr = argumentList[index + 3];
+            var newDriveLetterStr = argumentList[index + 5];
+            var driveLabel = argumentList[index + 7];
+
+            if (!ulong.TryParse(sizeInBytesStr, out var sizeInBytes) ||
+                !char.TryParse(newDriveLetterStr, out var letter))
             {
                 return false;
             }
 
             result = new DevDriveTaskArguments
             {
-                VirtDiskPath = argumentList[index + 1],
+                VirtDiskPath = virtDiskPath,
                 SizeInBytes = sizeInBytes,
                 NewDriveLetter = letter,
-                DriveLabel = argumentList[index + 7],
+                DriveLabel = driveLabel,
             };
-            index += taskArgListCount;
+            index += TaskArgListCount;
             return true;
         }
 
@@ -95,10 +103,10 @@ public class DevDriveTaskArguments
     {
         return new ()
         {
-            _devDrivePath, VirtDiskPath,            // --devdrive-path <path>
-            _devDriveSize, $"{SizeInBytes}",        // --devdrive-size <size>
-            _devDriveLetter, $"{NewDriveLetter}",   // --devdrive-letter <letter>
-            _devDriveLabel, DriveLabel,             // --devdrive-label <label>
+            DevDrivePath, VirtDiskPath,            // --devdrive-path <path>
+            DevDriveSize, $"{SizeInBytes}",        // --devdrive-size <size>
+            DevDriveLetter, $"{NewDriveLetter}",   // --devdrive-letter <letter>
+            DevDriveLabel, DriveLabel,             // --devdrive-label <label>
         };
     }
 }
