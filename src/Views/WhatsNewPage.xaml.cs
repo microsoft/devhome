@@ -35,7 +35,7 @@ public sealed partial class WhatsNewPage : Page
 
     private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstRun, false);
+        await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstRun, true);
 
         var whatsNewCards = FeaturesContainer.Resources
             .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
