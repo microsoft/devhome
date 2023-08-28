@@ -4,6 +4,7 @@
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.Xaml.Interactivity;
@@ -21,9 +22,16 @@ public class ButtonAutomationBehavior : Behavior<ButtonBase>
         set => SetValue(InvokeAnnouncementTextProperty, value);
     }
 
+    public string Name
+    {
+        get => (string)GetValue(NameProperty);
+        set => SetValue(NameProperty, value);
+    }
+
     protected override void OnAttached()
     {
         AssociatedObject.Click += OnButtonClick;
+        UpdateAutomationName();
 
         base.OnAttached();
     }
@@ -37,6 +45,7 @@ public class ButtonAutomationBehavior : Behavior<ButtonBase>
 
     // Dependency property registration
     public static readonly DependencyProperty InvokeAnnouncementTextProperty = DependencyProperty.Register(nameof(InvokeAnnouncementText), typeof(string), typeof(TextBlockAutomationBehavior), new PropertyMetadata(string.Empty));
+    public static readonly DependencyProperty NameProperty = DependencyProperty.Register(nameof(Name), typeof(string), typeof(TextBlockAutomationBehavior), new PropertyMetadata(string.Empty, (d, e) => ((ButtonAutomationBehavior)d).UpdateAutomationName()));
 
     private void OnButtonClick(object sender, RoutedEventArgs args) => Announce();
 
@@ -48,6 +57,14 @@ public class ButtonAutomationBehavior : Behavior<ButtonBase>
         if (!string.IsNullOrEmpty(InvokeAnnouncementText))
         {
             Application.Current.GetService<IScreenReaderService>().Announce(InvokeAnnouncementText);
+        }
+    }
+
+    private void UpdateAutomationName()
+    {
+        if (AssociatedObject != null)
+        {
+            AutomationProperties.SetName(AssociatedObject, Name);
         }
     }
 }

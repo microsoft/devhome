@@ -15,7 +15,7 @@ public partial class ShellViewModel : ObservableObject
     private readonly ILocalSettingsService _localSettingsService;
 
     [ObservableProperty]
-    private string? _announcementTitle;
+    private string? _announcementText;
 
     public INavigationService NavigationService
     {
@@ -86,5 +86,13 @@ public partial class ShellViewModel : ObservableObject
 #pragma warning restore CA1310 // Specify StringComparison for correctness
     }
 
-    private void OnAnnouncementTextChanged(object? sender, string text) => AnnouncementTitle = text;
+    private void OnAnnouncementTextChanged(object? sender, string text)
+    {
+        // Clear previous value to notify all bindings.
+        // This allows announcing the same text consecutively multiple times.
+        AnnouncementText = string.Empty;
+
+        // Set new announcement title
+        AnnouncementText = text;
+    }
 }

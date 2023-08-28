@@ -55,6 +55,8 @@ public partial class PackageViewModel : ObservableObject
     /// Indicates if a package is selected
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ButtonAutomationName))]
+    [NotifyPropertyChangedFor(nameof(ButtonInvokeAnnouncementText))]
     private bool _isSelected;
 
     public PackageViewModel(
@@ -118,6 +120,10 @@ public partial class PackageViewModel : ObservableObject
 
     public string TooltipPublisher => _stringResource.GetLocalized(StringResourceKey.PackagePublisherNameTooltip, PublisherName);
 
+    public string ButtonAutomationName => IsSelected ? "Remove application" : "Add application";
+
+    public string ButtonInvokeAnnouncementText => IsSelected ? "Removed application" : "Added application";
+
     public InstallPackageTask InstallPackageTask => _installPackageTask.Value;
 
     /// <summary>
@@ -160,11 +166,7 @@ public partial class PackageViewModel : ObservableObject
     /// Toggle package selection
     /// </summary>
     [RelayCommand]
-    private void ToggleSelection()
-    {
-        IsSelected = !IsSelected;
-        _accessibilityService.Announce($"{(IsSelected ? "Added" : "Removed")} {PackageTitle}");
-    }
+    private void ToggleSelection() => IsSelected = !IsSelected;
 
     /// <summary>
     /// Gets the package icon based on the provided theme
