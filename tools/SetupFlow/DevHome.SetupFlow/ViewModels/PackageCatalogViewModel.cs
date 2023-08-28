@@ -26,6 +26,7 @@ public delegate PackageCatalogViewModel PackageCatalogViewModelFactory(PackageCa
 public partial class PackageCatalogViewModel : ObservableObject
 {
     private readonly IScreenReaderService _screenReaderService;
+    private readonly ISetupFlowStringResource _stringResource;
     private readonly PackageCatalog _packageCatalog;
 
     [ObservableProperty]
@@ -40,10 +41,12 @@ public partial class PackageCatalogViewModel : ObservableObject
     public PackageCatalogViewModel(
         PackageProvider packageProvider,
         PackageCatalog packageCatalog,
-        IScreenReaderService accessibilityService)
+        IScreenReaderService accessibilityService,
+        ISetupFlowStringResource stringResource)
     {
         _packageCatalog = packageCatalog;
         _screenReaderService = accessibilityService;
+        _stringResource = stringResource;
         Packages = packageCatalog.Packages
             .Select(p => packageProvider.CreateOrGet(p, cachePermanently: true))
             .OrderBy(p => p.IsInstalled)
@@ -62,5 +65,8 @@ public partial class PackageCatalogViewModel : ObservableObject
                 package.IsSelected = true;
             }
         }
+
+        // TODO Explore option to augment a Button with the option to announce a text when invoked.
+        _screenReaderService.Announce(_stringResource.GetLocalized(StringResourceKey.AddAllApplications));
     }
 }

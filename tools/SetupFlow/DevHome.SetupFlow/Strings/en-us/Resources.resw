@@ -121,9 +121,17 @@
     <value>Add all</value>
     <comment>Label for adding all items for selection</comment>
   </data>
-  <data name="AddAll_Behavior.InvokeAnnouncementText" xml:space="preserve">
+  <data name="AddAllApplications" xml:space="preserve">
     <value>Added all applications</value>
     <comment>Text announced when a button for adding all applications to install is invoked</comment>
+  </data>
+  <data name="AddApplication" xml:space="preserve">
+    <value>Add</value>
+    <comment>Text announced when a button for adding an application got focus</comment>
+  </data>
+  <data name="AddedApplication" xml:space="preserve">
+    <value>Added {0}</value>
+    <comment>{Locked="{0}"}Text announced when a button for adding an application is invoked. {0} is replaced by the application name.</comment>
   </data>
   <data name="AddPackagesDescription.Text" xml:space="preserve">
     <value>Select packages to restore from your backup, clone from repository, or search with Windows Package Manager.</value>
@@ -528,6 +536,14 @@
   <data name="NoSearchResultsFoundDescription.Text" xml:space="preserve">
     <value>Check the spelling or try new keywords.</value>
     <comment>Text displayed when no search results were found</comment>
+  </data>
+  <data name="RemoveApplication" xml:space="preserve">
+    <value>Remove</value>
+    <comment>Text announced when a button for removing an application got focus</comment>
+  </data>
+  <data name="RemovedApplication" xml:space="preserve">
+    <value>Removed {0}</value>
+    <comment>{Locked="{0}"}Text announced when a button for removing an application is invoked. {0} is replaced by the application name.</comment>
   </data>
   <data name="ResultCount" xml:space="preserve">
     <value>{0} Result(s)</value>

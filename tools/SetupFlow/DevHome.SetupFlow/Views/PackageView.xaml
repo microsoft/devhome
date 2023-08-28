@@ -104,6 +104,7 @@
                         <Button
                             Grid.Column="1"
                             x:Name="SelectedButton"
+                            AutomationProperties.Name="{Binding ButtonAutomationName}"
                             IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
                             Background="Transparent"
                             BorderThickness="0"
@@ -116,10 +117,6 @@
                                 Glyph="&#xE710;"
                                 FontSize="{ThemeResource CaptionTextBlockFontSize}"
                                 FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
-
-                            <i:Interaction.Behaviors>
-                                <behaviors:ButtonAutomationBehavior Name="a" InvokeAnnouncementText="{Binding ButtonInvokeAnnouncementText}" />
-                            </i:Interaction.Behaviors>
                         </Button>
                     </Grid>
 

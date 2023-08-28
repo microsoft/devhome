@@ -56,7 +56,6 @@ public partial class PackageViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ButtonAutomationName))]
-    [NotifyPropertyChangedFor(nameof(ButtonInvokeAnnouncementText))]
     private bool _isSelected;
 
     public PackageViewModel(
@@ -120,9 +119,9 @@ public partial class PackageViewModel : ObservableObject
 
     public string TooltipPublisher => _stringResource.GetLocalized(StringResourceKey.PackagePublisherNameTooltip, PublisherName);
 
-    public string ButtonAutomationName => IsSelected ? "Remove application" : "Add application";
-
-    public string ButtonInvokeAnnouncementText => IsSelected ? "Removed application" : "Added application";
+    public string ButtonAutomationName => IsSelected ?
+        _stringResource.GetLocalized(StringResourceKey.RemoveApplication) :
+        _stringResource.GetLocalized(StringResourceKey.AddApplication);
 
     public InstallPackageTask InstallPackageTask => _installPackageTask.Value;
 
@@ -166,7 +165,16 @@ public partial class PackageViewModel : ObservableObject
     /// Toggle package selection
     /// </summary>
     [RelayCommand]
-    private void ToggleSelection() => IsSelected = !IsSelected;
+    private void ToggleSelection()
+    {
+        // TODO Explore option to augment a Button with the option to announce a text when invoked.
+        var announcementText = IsSelected ?
+            _stringResource.GetLocalized(StringResourceKey.RemovedApplication, PackageTitle) :
+            _stringResource.GetLocalized(StringResourceKey.AddedApplication, PackageTitle);
+
+        IsSelected = !IsSelected;
+        _accessibilityService.Announce(announcementText);
+    }
 
     /// <summary>
     /// Gets the package icon based on the provided theme
