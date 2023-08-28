@@ -111,16 +111,11 @@
                     </muxc:ItemsRepeater.Resources>
 
                     <muxc:ItemsRepeater.Layout>
-                        <muxc:UniformGridLayout 
+                        <muxc:StackLayout 
                             x:Name="BigCardGrid"
-                            Orientation="Horizontal" 
-                            MinItemWidth="600"
-                            MinItemHeight="188"
-                            MinRowSpacing="12" 
-                            MinColumnSpacing="12"
-                            ItemsStretch="Fill"
-                            MaximumRowsOrColumns="1"
-                            ItemsJustification="Center" />
+                            Spacing="12"
+                            Orientation="Vertical" >
+                        </muxc:StackLayout>
                     </muxc:ItemsRepeater.Layout>
 
                     <muxc:ItemsRepeater.ItemTemplate>
@@ -163,29 +158,19 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Top"/>
 
-                                <Grid Grid.Column="1" Padding="65 10 15 0">
-
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    
+                                <StackPanel Grid.Column="1" Padding="65 10 15 0">
                                     <TextBlock
-                                        Grid.Row="0"
                                         HorizontalAlignment="Left"
                                         Style="{ThemeResource BodyTextStyle}"
                                         Text="{x:Bind Title}" />
 
                                     <TextBlock
-                                        Grid.Row="1"
                                         Margin="0 8 0 10"
                                         TextWrapping="Wrap"
                                         FontSize="12"
                                         Text="{x:Bind Description}"/>
 
                                     <HyperlinkButton
-                                        Grid.Row="2"
                                         Content="{x:Bind Link}"
                                         Foreground="{ThemeResource LearnMoreForeground}"
                                         NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
@@ -194,7 +179,6 @@
                                         Visibility="{x:Bind ShouldShowLink}"/>
 
                                     <Button 
-                                        Grid.Row="3"
                                         Margin="0 0 0 10"
                                         Padding="50 5 50 5"
                                         DataContext="{x:Bind PageKey}"
@@ -204,7 +188,7 @@
                                         VerticalAlignment="Bottom"
                                         Content="{x:Bind Button}" />
 
-                                </Grid>
+                                </StackPanel>
                             </Grid>
                         </DataTemplate>
                     </muxc:ItemsRepeater.ItemTemplate>
