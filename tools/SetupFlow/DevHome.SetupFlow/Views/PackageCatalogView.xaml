@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:controls="using:CommunityToolkit.Labs.WinUI"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
-    xmlns:views="using:DevHome.SetupFlow.Views" xmlns:i="using:Microsoft.Xaml.Interactivity" xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:views="using:DevHome.SetupFlow.Views"
     mc:Ignorable="d">
     <StackPanel>
         <!-- Card header -->

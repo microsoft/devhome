@@ -37,14 +37,14 @@ public partial class ShellViewModel : ObservableObject
         INavigationService navigationService,
         INavigationViewService navigationViewService,
         ILocalSettingsService localSettingsService,
-        IScreenReaderService accessibilityService)
+        IScreenReaderService screenReaderService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
         _localSettingsService = localSettingsService;
 
-        accessibilityService.AnnouncementTextChanged += OnAnnouncementTextChanged;
+        screenReaderService.AnnouncementTextChanged += OnAnnouncementTextChanged;
     }
 
     public async Task OnLoaded()

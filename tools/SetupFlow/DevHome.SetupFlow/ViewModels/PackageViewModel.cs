@@ -43,7 +43,7 @@ public partial class PackageViewModel : ObservableObject
     private readonly IWinGetPackage _package;
     private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
-    private readonly IScreenReaderService _accessibilityService;
+    private readonly IScreenReaderService _screenReaderService;
     private readonly WindowsPackageManagerFactory _wingetFactory;
 
     /// <summary>
@@ -63,14 +63,14 @@ public partial class PackageViewModel : ObservableObject
         IWindowsPackageManager wpm,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
-        IScreenReaderService accessibilityService,
+        IScreenReaderService screenReaderService,
         WindowsPackageManagerFactory wingetFactory)
     {
         _stringResource = stringResource;
         _wpm = wpm;
         _package = package;
         _themeSelector = themeSelector;
-        _accessibilityService = accessibilityService;
+        _screenReaderService = screenReaderService;
         _wingetFactory = wingetFactory;
 
         // Initialize package view model properties in the constructor to
@@ -173,7 +173,7 @@ public partial class PackageViewModel : ObservableObject
             _stringResource.GetLocalized(StringResourceKey.AddedApplication, PackageTitle);
 
         IsSelected = !IsSelected;
-        _accessibilityService.Announce(announcementText);
+        _screenReaderService.Announce(announcementText);
     }
 
     /// <summary>

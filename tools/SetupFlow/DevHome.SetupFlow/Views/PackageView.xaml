@@ -5,8 +5,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:behaviors="using:DevHome.Common.Behaviors"
     AutomationProperties.Name="{Binding PackageTitle}"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -15,6 +13,7 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <!-- Show `RevToggleKey` icon if a package is selected (TrueValue), otherwise (FalseValue) show 'Add' icon -->
+            <converters:BoolToObjectConverter x:Key="SelectButtonGlyphConverter" TrueValue="&#xE845;" FalseValue="&#xE710;" />
             <converters:BoolNegationConverter x:Key="BoolNegationConverter" />
             <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
 
@@ -43,7 +42,7 @@
                     </Grid.RowDefinitions>
 
                     <VisualStateManager.VisualStateGroups>
-                        <VisualStateGroup x:Name="PackageCardState">
+                        <VisualStateGroup x:Name="CommonStates">
                             <VisualState>
                                 <VisualState.StateTriggers>
                                     <StateTrigger IsActive="{Binding IsInstalled}" />
@@ -53,16 +52,6 @@
                                     <Setter Target="Image.Opacity" Value="0.4"/>
                                     <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
                                     <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
-                                </VisualState.Setters>
-                            </VisualState>
-                        </VisualStateGroup>
-                        <VisualStateGroup x:Name="PackageButtonState">
-                            <VisualState>
-                                <VisualState.StateTriggers>
-                                    <StateTrigger IsActive="{Binding IsSelected}" />
-                                </VisualState.StateTriggers>
-                                <VisualState.Setters>
-                                    <Setter Target="SelectPackageFontIcon.Glyph" Value="&#xE845;"/>
                                 </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>
@@ -103,7 +92,6 @@
                              navigation -->
                         <Button
                             Grid.Column="1"
-                            x:Name="SelectedButton"
                             AutomationProperties.Name="{Binding ButtonAutomationName}"
                             IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
                             Background="Transparent"
@@ -113,8 +101,7 @@
                             Margin="0,0,2,0"
                             Padding="5">
                             <FontIcon
-                                x:Name="SelectPackageFontIcon"
-                                Glyph="&#xE710;"
+                                Glyph="{Binding IsSelected, Converter={StaticResource SelectButtonGlyphConverter}}"
                                 FontSize="{ThemeResource CaptionTextBlockFontSize}"
                                 FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
                         </Button>

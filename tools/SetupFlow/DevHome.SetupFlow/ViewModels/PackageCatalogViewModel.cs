@@ -41,11 +41,11 @@ public partial class PackageCatalogViewModel : ObservableObject
     public PackageCatalogViewModel(
         PackageProvider packageProvider,
         PackageCatalog packageCatalog,
-        IScreenReaderService accessibilityService,
+        IScreenReaderService screenReaderService,
         ISetupFlowStringResource stringResource)
     {
         _packageCatalog = packageCatalog;
-        _screenReaderService = accessibilityService;
+        _screenReaderService = screenReaderService;
         _stringResource = stringResource;
         Packages = packageCatalog.Packages
             .Select(p => packageProvider.CreateOrGet(p, cachePermanently: true))
