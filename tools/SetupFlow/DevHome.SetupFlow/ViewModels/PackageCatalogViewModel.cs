@@ -67,6 +67,7 @@ public partial class PackageCatalogViewModel : ObservableObject
         }
 
         // TODO Explore option to augment a Button with the option to announce a text when invoked.
+        // https://github.com/microsoft/devhome/issues/1451
         _screenReaderService.Announce(_stringResource.GetLocalized(StringResourceKey.AddAllApplications));
     }
 }

@@ -168,6 +168,7 @@ public partial class PackageViewModel : ObservableObject
     private void ToggleSelection()
     {
         // TODO Explore option to augment a Button with the option to announce a text when invoked.
+        // https://github.com/microsoft/devhome/issues/1451
         var announcementText = IsSelected ?
             _stringResource.GetLocalized(StringResourceKey.RemovedApplication, PackageTitle) :
             _stringResource.GetLocalized(StringResourceKey.AddedApplication, PackageTitle);
