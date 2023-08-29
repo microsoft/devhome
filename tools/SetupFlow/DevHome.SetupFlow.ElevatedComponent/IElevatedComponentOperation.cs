@@ -11,7 +11,7 @@ namespace DevHome.SetupFlow.ElevatedComponent;
 /// </summary>
 /// <remarks>
 /// This interface is to be extended for each kind of elevated operation we need to perform.
-/// Each method will execute an operation recognized by the elevated process.
+/// Each method will execute an operation recognized by the elevated process from its input arguments.
 ///
 /// The types here need to be projected using CsWinRT, so there are restrictions on them.
 /// * The types must be `public sealed class` or `public interface`.

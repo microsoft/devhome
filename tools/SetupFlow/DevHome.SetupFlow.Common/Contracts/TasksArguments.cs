@@ -22,9 +22,9 @@ public class TasksArguments
     }
 
     /// <summary>
-    /// Gets or sets the dev drive task arguments
+    /// Gets or sets the dev drive creation task arguments
     /// </summary>
-    public DevDriveTaskArguments DevDrive
+    public DevDriveTaskArguments CreateDevDrive
     {
         get; set;
     }
@@ -32,7 +32,7 @@ public class TasksArguments
     /// <summary>
     /// Gets or sets the configuration task arguments
     /// </summary>
-    public ConfigurationTaskArguments Configuration
+    public ConfigurationTaskArguments Configure
     {
         get; set;
     }
@@ -58,11 +58,11 @@ public class TasksArguments
             }
             else if (DevDriveTaskArguments.TryReadArguments(argumentList, ref index, out var devDriveTaskArguments))
             {
-                tasksArguments.DevDrive = devDriveTaskArguments;
+                tasksArguments.CreateDevDrive = devDriveTaskArguments;
             }
             else if (ConfigurationTaskArguments.TryReadArguments(argumentList, ref index, out var configurationTaskArguments))
             {
-                tasksArguments.Configuration = configurationTaskArguments;
+                tasksArguments.Configure = configurationTaskArguments;
             }
             else
             {
@@ -86,14 +86,14 @@ public class TasksArguments
             result.AddRange(InstallPackages.SelectMany(def => def.ToArgumentList()));
         }
 
-        if (Configuration != null)
+        if (Configure != null)
         {
-            result.AddRange(Configuration.ToArgumentList());
+            result.AddRange(Configure.ToArgumentList());
         }
 
-        if (DevDrive != null)
+        if (CreateDevDrive != null)
         {
-            result.AddRange(DevDrive.ToArgumentList());
+            result.AddRange(CreateDevDrive.ToArgumentList());
         }
 
         return result;
