@@ -113,6 +113,9 @@ public partial class SetupFlowOrchestrator : ObservableObject
     [ObservableProperty]
     private bool _shouldShowDoneButton;
 
+    [ObservableProperty]
+    private bool _shouldShowTooltip;
+
     /// <summary>
     /// Notify all the navigation buttons that the CanExecute property has changed.
     /// </summary>
@@ -196,6 +199,11 @@ public partial class SetupFlowOrchestrator : ObservableObject
         // Last page in the setup flow should always be the summary page. The summary page is the only page where we show
         // the user the "Done" button.
         ShouldShowDoneButton = _currentPageIndex == FlowPages.Count - 1;
+
+        if (CurrentPageViewModel.IsFirstStepPage && !string.IsNullOrEmpty(CurrentPageViewModel.NextPageButtonToolTipText))
+        {
+            ShouldShowTooltip = true;
+        }
 
         // Do post-navigation tasks only when moving forwards, not when going back to a previous page.
         if (movingForward)

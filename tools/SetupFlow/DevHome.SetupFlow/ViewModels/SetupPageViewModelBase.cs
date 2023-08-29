@@ -91,6 +91,8 @@ public partial class SetupPageViewModelBase : ObservableObject
 
     public bool IsLastStepPage => IsStepPage && Orchestrator.SetupStepPages.LastOrDefault() == this;
 
+    public bool IsFirstStepPage => IsStepPage && Orchestrator.SetupStepPages.First() == this;
+
     public bool IsPastPage => Orchestrator.IsPastPage(this);
 
     public bool IsCurrentPage => Orchestrator.IsCurrentPage(this);

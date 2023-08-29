@@ -104,7 +104,10 @@
                     <!-- Workaround to show a tooltip on a disabled button
                          https://github.com/microsoft/microsoft-ui-xaml/issues/2262-->
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
-                        <Grid ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+                        <Grid>
+                            <ToolTipService.ToolTip>
+                                <ToolTip x:Name="MyToolTip" Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowDoneButton, Mode=OneWay}"/>
+                            </ToolTipService.ToolTip>
                             <TextBlock IsTabStop="False" />
                             <Button
                                 Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
