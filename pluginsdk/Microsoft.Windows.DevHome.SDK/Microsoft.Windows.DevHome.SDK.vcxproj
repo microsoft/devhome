@@ -157,6 +157,7 @@
       <DeploymentContent>false</DeploymentContent>
     </ClInclude>
     <ClInclude Include="RepositoriesResult.h" />
+    <ClInclude Include="RepositoryResult.h" />
     <ClInclude Include="RepositoryUriSupportResult.h">
       <DeploymentContent>false</DeploymentContent>
     </ClInclude>
@@ -175,6 +176,7 @@
       <DeploymentContent>false</DeploymentContent>
     </ClCompile>
     <ClCompile Include="RepositoriesResult.cpp" />
+    <ClCompile Include="RepositoryResult.cpp" />
     <ClCompile Include="RepositoryUriSupportResult.cpp">
       <DeploymentContent>false</DeploymentContent>
     </ClCompile>
