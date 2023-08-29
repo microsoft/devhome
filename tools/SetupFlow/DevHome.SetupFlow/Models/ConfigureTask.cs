@@ -21,6 +21,7 @@ public class ConfigureTask : ISetupTask
 {
     private readonly ISetupFlowStringResource _stringResource;
     private readonly StorageFile _file;
+    private readonly Guid _activityId;
     private ConfigurationFileHelper _configurationFileHelper;
 
     public event ISetupTask.ChangeMessageHandler AddMessage;
@@ -38,17 +39,18 @@ public class ConfigureTask : ISetupTask
         get; private set;
     }
 
-    public ConfigureTask(ISetupFlowStringResource stringResource, StorageFile file)
+    public ConfigureTask(ISetupFlowStringResource stringResource, StorageFile file, Guid activityId)
     {
         _stringResource = stringResource;
         _file = file;
+        _activityId = activityId;
     }
 
     public async Task OpenConfigurationSetAsync()
     {
         try
         {
-            _configurationFileHelper = new ConfigurationFileHelper(_file);
+            _configurationFileHelper = new ConfigurationFileHelper(_file, _activityId);
             await _configurationFileHelper.OpenConfigurationSetAsync();
         }
         catch (Exception e)
@@ -120,7 +122,7 @@ public class ConfigureTask : ISetupTask
         {
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file {_file.Path}");
             var elevatedTask = elevatedComponentFactory.CreateElevatedConfigurationTask();
-            var elevatedResult = await elevatedTask.ApplyConfiguration(_file);
+            var elevatedResult = await elevatedTask.ApplyConfiguration(_file, _activityId);
             RequiresReboot = elevatedResult.RebootRequired;
             UnitResults = new List<ConfigurationUnitResult>();
 

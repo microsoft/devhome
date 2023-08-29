@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Exceptions;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Services;
 using DevHome.SetupFlow.Common.Extensions;
@@ -12,6 +13,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Management.Deployment;
 using Windows.Win32.Foundation;
 
@@ -29,6 +31,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;
     private readonly IPackageDeploymentService _packageDeploymentService;
+    private readonly Guid _activityId;
 
     // Custom composite catalogs
     private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
@@ -41,7 +44,8 @@ public class WindowsPackageManager : IWindowsPackageManager
     public WindowsPackageManager(
         WindowsPackageManagerFactory wingetFactory,
         IAppInstallManagerService appInstallManagerService,
-        IPackageDeploymentService packageDeploymentService)
+        IPackageDeploymentService packageDeploymentService,
+        IHost host)
     {
         _wingetFactory = wingetFactory;
         _appInstallManagerService = appInstallManagerService;
@@ -54,6 +58,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         // Lazy-initialize predefined catalog ids
         _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
         _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
+        _activityId = host.GetService<SetupFlowOrchestrator>().ActivityId;
     }
 
     public string WinGetCatalogId => _wingetCatalogId.Value;
@@ -202,7 +207,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// <returns>Catalog composed of all remote and local catalogs</returns>
     private WinGetCompositeCatalog CreateAllCatalogs()
     {
-        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory);
+        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory, _activityId);
         compositeCatalog.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalogs = packageManager.GetPackageCatalogs();
@@ -235,7 +240,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// <returns>Catalog composed of the provided and local catalogs</returns>
     private WinGetCompositeCatalog CreatePredefinedCatalog(PredefinedPackageCatalog predefinedPackageCatalog)
     {
-        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory);
+        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory, _activityId);
         compositeCatalog.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalog = packageManager.GetPredefinedPackageCatalog(predefinedPackageCatalog);

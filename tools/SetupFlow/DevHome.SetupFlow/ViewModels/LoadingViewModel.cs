@@ -431,7 +431,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
         if (_failedTasks.Any())
         {
-            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count));
+            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count), _host.GetService<SetupFlowOrchestrator>().ActivityId);
         }
     }
 

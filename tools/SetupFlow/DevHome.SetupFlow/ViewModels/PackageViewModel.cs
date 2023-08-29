@@ -5,10 +5,12 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
@@ -43,6 +45,7 @@ public partial class PackageViewModel : ObservableObject
     private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
     private readonly WindowsPackageManagerFactory _wingetFactory;
+    private readonly Guid _activityId;
 
     /// <summary>
     /// Occurs after the package selection changes
@@ -60,13 +63,15 @@ public partial class PackageViewModel : ObservableObject
         IWindowsPackageManager wpm,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
-        WindowsPackageManagerFactory wingetFactory)
+        WindowsPackageManagerFactory wingetFactory,
+        IHost host)
     {
         _stringResource = stringResource;
         _wpm = wpm;
         _package = package;
         _themeSelector = themeSelector;
         _wingetFactory = wingetFactory;
+        _activityId = host.GetService<SetupFlowOrchestrator>().ActivityId;
 
         // Initialize package view model properties in the constructor to
         // accelerate fetching the data when bound in the view and to avoid

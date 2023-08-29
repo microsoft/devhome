@@ -20,6 +20,7 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.Windows;
 using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Windows.Globalization.NumberFormatting;
 using Windows.Storage.Pickers;
@@ -34,6 +35,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
 {
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IDevDriveManager _devDriveManager;
+    private readonly IHost _host;
     private readonly string _localizedBrowseButtonText;
     private readonly string _devHomeIconPath = "Assets/DevHome.ico";
     private readonly Dictionary<ByteUnit, string> _byteUnitList;
@@ -104,7 +106,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     public DevDriveViewModel(
         ISetupFlowStringResource stringResource,
         DevDriveTaskGroup taskGroup,
-        IDevDriveManager devDriveManager)
+        IDevDriveManager devDriveManager,
+        IHost host)
     {
         _taskGroup = taskGroup;
         _stringResource = stringResource;
@@ -118,6 +121,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         _devDriveManager.RequestToCloseViewModelWindow += CloseRequestedDevDriveWindow;
         RefreshDriveLetterToSizeMapping();
         PropertyChanged += (_, args) => ValidatePropertyByName(args.PropertyName);
+        _host = host;
     }
 
     /// <summary>
@@ -318,7 +322,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         TelemetryFactory.Get<ITelemetry>().Log(
             "LaunchDisksAndVolumesSettingsPageTriggered",
             LogLevel.Critical,
-            new DisksAndVolumesSettingsPageTriggeredEvent(source: "DevDriveView"));
+            new DisksAndVolumesSettingsPageTriggeredEvent(source: "DevDriveView"),
+            _host.GetService<SetupFlowOrchestrator>().ActivityId);
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
 

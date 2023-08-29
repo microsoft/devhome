@@ -14,7 +14,7 @@ namespace DevHome.SetupFlow.ElevatedComponent.Tasks;
 
 public sealed class ElevatedConfigurationTask
 {
-    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(StorageFile file)
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(StorageFile file, Guid activityId)
     {
         return Task.Run(async () =>
         {
@@ -22,7 +22,7 @@ public sealed class ElevatedConfigurationTask
 
             try
             {
-                var configurationFileHelper = new ConfigurationFileHelper(file);
+                var configurationFileHelper = new ConfigurationFileHelper(file, activityId);
 
                 Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from file: {file.Path}");
                 await configurationFileHelper.OpenConfigurationSetAsync();

@@ -17,6 +17,7 @@ using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Windows.System;
+using WinRT;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -159,7 +160,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         TelemetryFactory.Get<ITelemetry>().Log(
             "LaunchDisksAndVolumesSettingsPageTriggered",
             LogLevel.Critical,
-            new DisksAndVolumesSettingsPageTriggeredEvent(source: "MainPageView"));
+            new DisksAndVolumesSettingsPageTriggeredEvent(source: "MainPageView"),
+            Orchestrator.ActivityId);
 
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }

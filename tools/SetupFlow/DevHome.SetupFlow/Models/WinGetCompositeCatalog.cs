@@ -21,15 +21,17 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly CreateCompositePackageCatalogOptions _compositeCatalogOptions;
     private readonly SemaphoreSlim _connectionLock = new (1, 1);
+    private readonly Guid _activityId;
     private Microsoft.Management.Deployment.PackageCatalog _catalog;
     private bool _disposedValue;
 
     public bool IsConnected => _catalog != null;
 
-    public WinGetCompositeCatalog(WindowsPackageManagerFactory wingetFactory)
+    public WinGetCompositeCatalog(WindowsPackageManagerFactory wingetFactory, Guid activityId)
     {
         _wingetFactory = wingetFactory;
         _compositeCatalogOptions = _wingetFactory.CreateCreateCompositePackageCatalogOptions();
+        _activityId = activityId;
     }
 
     public void AddPackageCatalog(PackageCatalogReference catalog)
@@ -184,7 +186,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         {
             var catalogPackage = findResult.Matches[i].CatalogPackage;
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found [{catalogPackage.Id}]");
-            result.Add(new WinGetPackage(catalogPackage));
+            result.Add(new WinGetPackage(catalogPackage, _activityId));
         }
 
         return result;

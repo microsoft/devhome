@@ -96,7 +96,7 @@ public sealed partial class RepoConfigView : UserControl
             senderAsButton.IsEnabled = false;
         }
 
-        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList());
+        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), ViewModel.Orchestrator.ActivityId);
         var getPluginsTask = addRepoDialog.GetPluginsAsync();
         var setupDevDrivesTask = addRepoDialog.SetupDevDrivesAsync();
         addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
