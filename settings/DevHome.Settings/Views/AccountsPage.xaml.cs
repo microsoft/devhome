@@ -100,7 +100,7 @@ public sealed partial class AccountsPage : Page
         {
             string[] args = { loginEntryPoint };
             var loginUIAdaptiveCardController = accountProvider.DeveloperIdProvider.GetAdaptiveCardController(args);
-            var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
+            var pluginAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
             var renderer = new AdaptiveCardRenderer();
             await ConfigureLoginUIRenderer(renderer);
             renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;

@@ -63,7 +63,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         get; set;
     }
 
-    public string PluginName
+    public string ExtensionName
     {
         get; set;
     }

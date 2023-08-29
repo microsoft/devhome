@@ -26,7 +26,7 @@ public interface IExtensionWrapper
     /// <summary>
     /// Gets class id (GUID) of the plugin class (which implements IExtension) as mentioned in the manifest
     /// </summary>
-    string PluginClassId
+    string ExtensionClassId
     {
         get;
     }
@@ -41,7 +41,7 @@ public interface IExtensionWrapper
     /// Starts the plugin if not running
     /// </summary>
     /// <returns>An awaitable task</returns>
-    Task StartPluginAsync();
+    Task StartExtensionAsync();
 
     /// <summary>
     /// Signals the plugin to dispose itself and removes the reference to the plugin com object
@@ -52,7 +52,7 @@ public interface IExtensionWrapper
     /// Gets the underlying instance of IExtension
     /// </summary>
     /// <returns>Instance of IExtension</returns>
-    IExtension? GetPluginObject();
+    IExtension? GetExtensionObject();
 
     /// <summary>
     /// Tells the wrapper that the plugin implements the given provider

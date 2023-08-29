@@ -17,7 +17,7 @@ namespace DevHome.Common.Views;
 // Use this element where plugin UI is expected to pop up.
 // TODO: Should ideally not allow external children to be added through the `Children` property.
 // https://github.com/microsoft/devhome/issues/610
-public class PluginAdaptiveCardPanel : StackPanel
+public class ExtensionAdaptiveCardPanel : StackPanel
 {
     public event EventHandler<FrameworkElement>? UiUpdate;
 
@@ -27,11 +27,11 @@ public class PluginAdaptiveCardPanel : StackPanel
 
         if (Children.Count != 0)
         {
-            throw new ArgumentException("The PluginUI element must be bound to an empty container.");
+            throw new ArgumentException("The ExtensionUI element must be bound to an empty container.");
         }
 
         var uiDispatcher = DispatcherQueue.GetForCurrentThread();
-        var pluginUI = new PluginAdaptiveCard();
+        var pluginUI = new ExtensionAdaptiveCard();
 
         pluginUI.UiUpdate += (object? sender, AdaptiveCard adaptiveCard) =>
         {

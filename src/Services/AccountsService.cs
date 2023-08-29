@@ -37,7 +37,7 @@ public class AccountsService : IAccountsService
     {
         var devIdProviders = new List<IDeveloperIdProvider>();
         var pluginService = Application.Current.GetService<IExtensionService>();
-        var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
+        var plugins = await pluginService.GetInstalledExtensionsAsync(ProviderType.DeveloperId);
 
         foreach (var plugin in plugins)
         {

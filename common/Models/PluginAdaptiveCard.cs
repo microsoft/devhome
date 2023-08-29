@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace DevHome.Common.Models;
-public class PluginAdaptiveCard : IExtensionAdaptiveCard
+public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 {
     public event EventHandler<AdaptiveCard>? UiUpdate;
 
@@ -21,7 +21,7 @@ public class PluginAdaptiveCard : IExtensionAdaptiveCard
 
     public string TemplateJson { get; private set; }
 
-    public PluginAdaptiveCard()
+    public ExtensionAdaptiveCard()
     {
         TemplateJson = new JsonObject().ToJsonString();
         DataJson = new JsonObject().ToJsonString();
@@ -36,7 +36,7 @@ public class PluginAdaptiveCard : IExtensionAdaptiveCard
 
         if (parseResult.AdaptiveCard is null)
         {
-            GlobalLog.Logger?.ReportError($"PluginAdaptiveCard.Update(): AdaptiveCard is null - templateJson: {templateJson} dataJson: {dataJson} state: {state}");
+            GlobalLog.Logger?.ReportError($"ExtensionAdaptiveCard.Update(): AdaptiveCard is null - templateJson: {templateJson} dataJson: {dataJson} state: {state}");
             return;
         }
 

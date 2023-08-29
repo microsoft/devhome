@@ -97,13 +97,13 @@ public sealed partial class RepoConfigView : UserControl
         }
 
         var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList());
-        var getPluginsTask = addRepoDialog.GetPluginsAsync();
+        var getExtensionsTask = addRepoDialog.GetExtensionsAsync();
         var setupDevDrivesTask = addRepoDialog.SetupDevDrivesAsync();
         addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
         addRepoDialog.RequestedTheme = ActualTheme;
 
         // Start
-        await getPluginsTask;
+        await getExtensionsTask;
         await setupDevDrivesTask;
         if (addRepoDialog.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
         {

@@ -21,6 +21,6 @@ public sealed partial class MainWindow : WindowEx
 
     private void MainWindow_Closed(object sender, Microsoft.UI.Xaml.WindowEventArgs args)
     {
-        Application.Current.GetService<IExtensionService>().SignalStopPluginsAsync();
+        Application.Current.GetService<IExtensionService>().SignalStopExtensionsAsync();
     }
 }

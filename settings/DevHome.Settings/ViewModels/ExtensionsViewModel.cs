@@ -60,8 +60,8 @@ public partial class ExtensionsViewModel : ObservableObject
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         var pluginService = Application.Current.GetService<IExtensionService>();
-        pluginService.OnPluginsChanged -= OnPluginsChanged;
-        pluginService.OnPluginsChanged += OnPluginsChanged;
+        pluginService.OnExtensionsChanged -= OnExtensionsChanged;
+        pluginService.OnExtensionsChanged += OnExtensionsChanged;
 
         DisplaySettings();
     }
@@ -71,7 +71,7 @@ public partial class ExtensionsViewModel : ObservableObject
         var pluginWrappers = Task.Run(async () =>
         {
             var pluginService = Application.Current.GetService<IExtensionService>();
-            return await pluginService.GetInstalledPluginsAsync(true);
+            return await pluginService.GetInstalledExtensionsAsync(true);
         }).Result;
 
         SettingsList.Clear();
@@ -84,19 +84,19 @@ public partial class ExtensionsViewModel : ObservableObject
                 continue;
             }
 
-            var setting = new Setting("Plugins/" + pluginWrapper.PackageFullName, pluginWrapper.PackageFullName, pluginWrapper.Name, string.Empty, string.Empty, true);
+            var setting = new Setting("Extensions/" + pluginWrapper.PackageFullName, pluginWrapper.PackageFullName, pluginWrapper.Name, string.Empty, string.Empty, true);
             SettingsList.Add(new ExtensionViewModel(setting, this));
         }
     }
 
-    private async void OnPluginsChanged(object? sender, EventArgs e)
+    private async void OnExtensionsChanged(object? sender, EventArgs e)
     {
         await _dispatcher.EnqueueAsync(() => { DisplaySettings(); });
     }
 
     public void Navigate(string path)
     {
-        // TODO: Navigate to Plugin's settings Adaptive Card
+        // TODO: Navigate to Extension's settings Adaptive Card
         // https://github.com/microsoft/devhome/issues/608
     }
 }

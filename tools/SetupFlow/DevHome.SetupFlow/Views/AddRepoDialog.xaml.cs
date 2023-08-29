@@ -86,9 +86,9 @@ internal partial class AddRepoDialog
     /// <summary>
     /// Gets all plugins that have a provider type of repository and developerId.
     /// </summary>
-    public async Task GetPluginsAsync()
+    public async Task GetExtensionsAsync()
     {
-        await Task.Run(() => AddRepoViewModel.GetPlugins());
+        await Task.Run(() => AddRepoViewModel.GetExtensions());
     }
 
     /// <summary>

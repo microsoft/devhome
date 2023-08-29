@@ -134,9 +134,9 @@ public sealed partial class FeedbackPage : Page
             }
 
             var pluginsInfo = string.Empty;
-            if (ReportBugIncludePlugins.IsChecked.GetValueOrDefault())
+            if (ReportBugIncludeExtensions.IsChecked.GetValueOrDefault())
             {
-                pluginsInfo = HttpUtility.UrlEncode(GetPlugins());
+                pluginsInfo = HttpUtility.UrlEncode(GetExtensions());
             }
 
             var otherSoftwareText = "OS Build Version: " + GetOSVersion() + "\n.NET Version: " + GetDotNetVersion();
@@ -160,8 +160,8 @@ public sealed partial class FeedbackPage : Page
             reportBugDialog.Hide();
         }
 
-        ReportBugIncludeSystemInfo.IsChecked = ReportBugIncludePlugins.IsChecked = ReportBugIncludeExperimentInfo.IsChecked = true;
-        ReportBugSysInfoExpander.IsExpanded = ReportBugPluginsExpander.IsExpanded = ReportBugExperimentInfoExpander.IsExpanded = false;
+        ReportBugIncludeSystemInfo.IsChecked = ReportBugIncludeExtensions.IsChecked = ReportBugIncludeExperimentInfo.IsChecked = true;
+        ReportBugSysInfoExpander.IsExpanded = ReportBugExtensionsExpander.IsExpanded = ReportBugExperimentInfoExpander.IsExpanded = false;
         ReportBugIssueTitle.Text = ReportBugReproSteps.Text = ReportBugExpectedBehavior.Text = ReportBugActualBehavior.Text = string.Empty;
     }
 
@@ -172,9 +172,9 @@ public sealed partial class FeedbackPage : Page
         CpuID.Text = wmiCPUInfo;
     }
 
-    private void ShowPluginsInfoExpander_Expanding(Expander sender, ExpanderExpandingEventArgs args)
+    private void ShowExtensionsInfoExpander_Expanding(Expander sender, ExpanderExpandingEventArgs args)
     {
-        ReportBugIncludePluginsList.Text = GetPlugins();
+        ReportBugIncludeExtensionsList.Text = GetExtensions();
     }
 
     private async void Reload()
@@ -291,10 +291,10 @@ public sealed partial class FeedbackPage : Page
         return arch;
     }
 
-    private string GetPlugins()
+    private string GetExtensions()
     {
         var pluginService = Application.Current.GetService<IExtensionService>();
-        var plugins = pluginService.GetInstalledPluginsAsync(true).Result;
+        var plugins = pluginService.GetInstalledExtensionsAsync(true).Result;
         var pluginsStr = "Extensions: \n";
         foreach (var plugin in plugins)
         {

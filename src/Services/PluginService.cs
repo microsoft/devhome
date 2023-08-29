@@ -13,19 +13,19 @@ using Windows.Foundation.Collections;
 
 namespace DevHome.Services;
 
-public class PluginService : IExtensionService
+public class ExtensionService : IExtensionService
 {
-    public event EventHandler OnPluginsChanged = (_, _) => { };
+    public event EventHandler OnExtensionsChanged = (_, _) => { };
 
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
     private static readonly object _lock = new ();
 
 #pragma warning disable IDE0044 // Add readonly modifier
-    private static List<IExtensionWrapper> _installedPlugins = new ();
-    private static List<IExtensionWrapper> _enabledPlugins = new ();
+    private static List<IExtensionWrapper> _installedExtensions = new ();
+    private static List<IExtensionWrapper> _enabledExtensions = new ();
 #pragma warning restore IDE0044 // Add readonly modifier
 
-    public PluginService()
+    public ExtensionService()
     {
         _catalog.PackageInstalling += Catalog_PackageInstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
@@ -57,7 +57,7 @@ public class PluginService : IExtensionService
         {
             lock (_lock)
             {
-                foreach (var plugin in _installedPlugins)
+                foreach (var plugin in _installedExtensions)
                 {
                     if (plugin.PackageFullName == args.Package.Id.FullName)
                     {
@@ -90,9 +90,9 @@ public class PluginService : IExtensionService
 
     private void OnPackageChange(Package package)
     {
-        _installedPlugins.Clear();
-        _enabledPlugins.Clear();
-        OnPluginsChanged.Invoke(this, EventArgs.Empty);
+        _installedExtensions.Clear();
+        _enabledExtensions.Clear();
+        OnExtensionsChanged.Invoke(this, EventArgs.Empty);
     }
 
     private async Task<bool> IsValidDevHomeExtension(Package package)
@@ -146,9 +146,9 @@ public class PluginService : IExtensionService
         return await AppExtensionCatalog.Open("com.microsoft.devhome").FindAllAsync();
     }
 
-    public async Task<IEnumerable<IExtensionWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins = false)
+    public async Task<IEnumerable<IExtensionWrapper>> GetInstalledExtensionsAsync(bool includeDisabledExtensions = false)
     {
-        if (_installedPlugins.Count == 0)
+        if (_installedExtensions.Count == 0)
         {
             var extensions = await GetInstalledAppExtensionsAsync();
             foreach (var extension in extensions)
@@ -160,7 +160,7 @@ public class PluginService : IExtensionService
                 }
 
                 var name = extension.DisplayName;
-                var pluginWrapper = new PluginWrapper(name, extension.Package.Id.FullName, classId);
+                var pluginWrapper = new ExtensionWrapper(name, extension.Package.Id.FullName, classId);
 
                 var supportedInterfaces = GetSubPropertySet(devHomeProvider, "SupportedInterfaces");
                 if (supportedInterfaces is not null)
@@ -181,59 +181,59 @@ public class PluginService : IExtensionService
                 }
 
                 var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(extension.Package.Id.FullName + "-ExtensionDisabled");
+                var isExtensionDisabled = await localSettingsService.ReadSettingAsync<bool>(extension.Package.Id.FullName + "-ExtensionDisabled");
 
-                _installedPlugins.Add(pluginWrapper);
-                if (!isPluginDisabled)
+                _installedExtensions.Add(pluginWrapper);
+                if (!isExtensionDisabled)
                 {
-                    _enabledPlugins.Add(pluginWrapper);
+                    _enabledExtensions.Add(pluginWrapper);
                 }
             }
         }
 
-        return includeDisabledPlugins ? _installedPlugins : _enabledPlugins;
+        return includeDisabledExtensions ? _installedExtensions : _enabledExtensions;
     }
 
-    public async Task<IEnumerable<IExtensionWrapper>> StartAllPluginsAsync()
+    public async Task<IEnumerable<IExtensionWrapper>> StartAllExtensionsAsync()
     {
-        var installedPlugins = await GetInstalledPluginsAsync();
-        foreach (var installedPlugin in installedPlugins)
+        var installedExtensions = await GetInstalledExtensionsAsync();
+        foreach (var installedExtension in installedExtensions)
         {
-            if (!installedPlugin.IsRunning())
+            if (!installedExtension.IsRunning())
             {
-                await installedPlugin.StartPluginAsync();
+                await installedExtension.StartExtensionAsync();
             }
         }
 
-        return installedPlugins;
+        return installedExtensions;
     }
 
-    public async Task SignalStopPluginsAsync()
+    public async Task SignalStopExtensionsAsync()
     {
-        var installedPlugins = await GetInstalledPluginsAsync();
-        foreach (var installedPlugin in installedPlugins)
+        var installedExtensions = await GetInstalledExtensionsAsync();
+        foreach (var installedExtension in installedExtensions)
         {
-            if (installedPlugin.IsRunning())
+            if (installedExtension.IsRunning())
             {
-                installedPlugin.SignalDispose();
+                installedExtension.SignalDispose();
             }
         }
     }
 
-    public async Task<IEnumerable<IExtensionWrapper>> GetInstalledPluginsAsync(ProviderType providerType, bool includeDisabledPlugins = false)
+    public async Task<IEnumerable<IExtensionWrapper>> GetInstalledExtensionsAsync(ProviderType providerType, bool includeDisabledExtensions = false)
     {
-        var installedPlugins = await GetInstalledPluginsAsync(includeDisabledPlugins);
+        var installedExtensions = await GetInstalledExtensionsAsync(includeDisabledExtensions);
 
-        List<IExtensionWrapper> filteredPlugins = new ();
-        foreach (var installedPlugin in installedPlugins)
+        List<IExtensionWrapper> filteredExtensions = new ();
+        foreach (var installedExtension in installedExtensions)
         {
-            if (installedPlugin.HasProviderType(providerType))
+            if (installedExtension.HasProviderType(providerType))
             {
-                filteredPlugins.Add(installedPlugin);
+                filteredExtensions.Add(installedExtension);
             }
         }
 
-        return filteredPlugins;
+        return filteredExtensions;
     }
 
     private IPropertySet? GetSubPropertySet(IPropertySet propSet, string name)

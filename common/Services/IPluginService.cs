@@ -9,15 +9,15 @@ using Windows.ApplicationModel.AppExtensions;
 namespace DevHome.Common.Services;
 public interface IExtensionService
 {
-    Task<IEnumerable<IExtensionWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins = false);
+    Task<IEnumerable<IExtensionWrapper>> GetInstalledExtensionsAsync(bool includeDisabledExtensions = false);
 
-    Task<IEnumerable<IExtensionWrapper>> GetInstalledPluginsAsync(Microsoft.Windows.DevHome.SDK.ProviderType providerType, bool includeDisabledPlugins = false);
+    Task<IEnumerable<IExtensionWrapper>> GetInstalledExtensionsAsync(Microsoft.Windows.DevHome.SDK.ProviderType providerType, bool includeDisabledExtensions = false);
 
-    Task<IEnumerable<IExtensionWrapper>> StartAllPluginsAsync();
+    Task<IEnumerable<IExtensionWrapper>> StartAllExtensionsAsync();
 
-    Task SignalStopPluginsAsync();
+    Task SignalStopExtensionsAsync();
 
     Task<IEnumerable<AppExtension>> GetInstalledAppExtensionsAsync();
 
-    public event EventHandler OnPluginsChanged;
+    public event EventHandler OnExtensionsChanged;
 }

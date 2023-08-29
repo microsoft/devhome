@@ -33,7 +33,7 @@ internal class RepositoryProviders
         _providers = pluginWrappers.ToDictionary(pluginWrapper => pluginWrapper.Name, pluginWrapper => new RepositoryProvider(pluginWrapper));
     }
 
-    public void StartAllPlugins()
+    public void StartAllExtensions()
     {
         foreach (var pluginWrapper in _providers.Values)
         {

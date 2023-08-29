@@ -255,11 +255,11 @@ public partial class AddRepoViewModel : ObservableObject
     /// <remarks>
     /// A valid plugin is one that has a repository provider and developerId provider.
     /// </remarks>
-    public void GetPlugins()
+    public void GetExtensions()
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed plugins with Repository and DevId providers");
         var pluginService = Application.Current.GetService<IExtensionService>();
-        var pluginWrappers = pluginService.GetInstalledPluginsAsync().Result;
+        var pluginWrappers = pluginService.GetInstalledExtensionsAsync().Result;
 
         var plugins = pluginWrappers.Where(
             plugin => plugin.HasProviderType(ProviderType.Repository) &&
@@ -268,7 +268,7 @@ public partial class AddRepoViewModel : ObservableObject
         _providers = new RepositoryProviders(plugins);
 
         // Start all plugins to get the DisplayName of each provider.
-        _providers.StartAllPlugins();
+        _providers.StartAllExtensions();
 
         ProviderNames = new ObservableCollection<string>(_providers.GetAllProviderNames());
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForProviders_Event", LogLevel.Critical, new ProviderEvent(ProviderNames.Count));
@@ -435,7 +435,7 @@ public partial class AddRepoViewModel : ObservableObject
 
             var cloningInformation = new CloningInformation(repoToRemove);
             cloningInformation.ProviderName = _providers.DisplayName(providerName);
-            cloningInformation.PluginName = providerName;
+            cloningInformation.ExtensionName = providerName;
             cloningInformation.OwningAccount = developerId;
 
             EverythingToClone.Remove(cloningInformation);
@@ -452,7 +452,7 @@ public partial class AddRepoViewModel : ObservableObject
 
             var cloningInformation = new CloningInformation(repoToAdd);
             cloningInformation.ProviderName = _providers.DisplayName(providerName);
-            cloningInformation.PluginName = providerName;
+            cloningInformation.ExtensionName = providerName;
             cloningInformation.OwningAccount = developerId;
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
@@ -581,7 +581,7 @@ public partial class AddRepoViewModel : ObservableObject
         Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
-            .Where(x => x.PluginName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
+            .Where(x => x.ExtensionName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
             && x.OwningAccount.LoginId().Equals(loginId, StringComparison.OrdinalIgnoreCase))
             .Select(x => new RepoViewListItem(x.RepositoryToClone));
     }

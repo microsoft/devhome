@@ -68,7 +68,7 @@ public partial class App : Application, IApp
             services.AddTransient<INavigationViewService, NavigationViewService>();
 
             services.AddSingleton<IActivationService, ActivationService>();
-            services.AddSingleton<IExtensionService, PluginService>();
+            services.AddSingleton<IExtensionService, ExtensionService>();
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IAccountsService, AccountsService>();
@@ -132,7 +132,7 @@ public partial class App : Application, IApp
         // TODO: Log and handle exceptions as appropriate.
         // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
         // https://github.com/microsoft/devhome/issues/613
-        await GetService<IExtensionService>().SignalStopPluginsAsync();
+        await GetService<IExtensionService>().SignalStopExtensionsAsync();
     }
 
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
