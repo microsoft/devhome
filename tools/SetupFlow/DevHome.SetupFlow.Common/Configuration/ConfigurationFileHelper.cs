@@ -45,6 +45,11 @@ public class ConfigurationFileHelper
     private ConfigurationProcessor _processor;
     private ConfigurationSet _configSet;
 
+    /// <summary>
+    /// Open configuration set from the provided <paramref name="content"/>.
+    /// </summary>
+    /// <param name="filePath">DSC configuration file path</param>
+    /// <param name="content">DSC configuration file content</param>
     public async Task OpenConfigurationSetAsync(string filePath, string content)
     {
         try
@@ -65,6 +70,10 @@ public class ConfigurationFileHelper
 
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {file.Path}");
             var parentDir = await file.GetParentAsync();
+
+            // Instead of reading the file content from the file path, use the
+            // 'content' input parameter to ensure the data has not changed at
+            // runtime (important when running elevated)
             var inputStream = StringToStream(content);
             var openResult = _processor.OpenConfigurationSet(inputStream);
             _configSet = openResult.Set;

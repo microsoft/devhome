@@ -53,6 +53,8 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Dev Drive storage operator");
         var task = new DevDriveStorageOperator();
         var taskArgument = _tasksArguments.CreateDevDrive;
+
+        // Pass the pre-approved DevDrive information as provided to the elevated process
         return task.CreateDevDrive(taskArgument.VirtDiskPath, taskArgument.SizeInBytes, taskArgument.NewDriveLetter, taskArgument.DriveLabel);
     }
 
@@ -61,6 +63,8 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         Log.Logger?.ReportInfo(Log.Component.Elevated, "Applying DSC configuration elevated");
         var task = new ElevatedConfigurationTask();
         var taskArgument = _tasksArguments.Configure;
+
+        // Pass the pre-approved DSC configuration information as provided to the elevated process
         return task.ApplyConfiguration(taskArgument.FilePath, taskArgument.Content);
     }
 }
