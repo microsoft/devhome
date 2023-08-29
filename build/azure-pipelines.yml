@@ -60,7 +60,7 @@ stages:
       displayName: Publish Artifacts
       inputs:
         artifactName: SdkNugetPackage
-        targetPath: pluginsdk\_build
+        targetPath: extensionsdk\_build
 
     - task: PublishSymbols@2
       displayName: Publish Symbols
