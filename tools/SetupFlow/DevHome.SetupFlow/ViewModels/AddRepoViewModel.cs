@@ -258,7 +258,7 @@ public partial class AddRepoViewModel : ObservableObject
     public void GetPlugins()
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed plugins with Repository and DevId providers");
-        var pluginService = Application.Current.GetService<IPluginService>();
+        var pluginService = Application.Current.GetService<IExtensionService>();
         var pluginWrappers = pluginService.GetInstalledPluginsAsync().Result;
 
         var plugins = pluginWrappers.Where(

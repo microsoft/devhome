@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Common.Services;
-public interface IPluginWrapper
+public interface IExtensionWrapper
 {
     /// <summary>
     /// Gets name of the plugin as mentioned in the manifest
@@ -24,7 +24,7 @@ public interface IPluginWrapper
     }
 
     /// <summary>
-    /// Gets class id (GUID) of the plugin class (which implements IPlugin) as mentioned in the manifest
+    /// Gets class id (GUID) of the plugin class (which implements IExtension) as mentioned in the manifest
     /// </summary>
     string PluginClassId
     {
@@ -49,10 +49,10 @@ public interface IPluginWrapper
     void SignalDispose();
 
     /// <summary>
-    /// Gets the underlying instance of IPlugin
+    /// Gets the underlying instance of IExtension
     /// </summary>
-    /// <returns>Instance of IPlugin</returns>
-    IPlugin? GetPluginObject();
+    /// <returns>Instance of IExtension</returns>
+    IExtension? GetPluginObject();
 
     /// <summary>
     /// Tells the wrapper that the plugin implements the given provider
@@ -68,7 +68,7 @@ public interface IPluginWrapper
     bool HasProviderType(ProviderType providerType);
 
     /// <summary>
-    /// Starts the plugin if not running and gets the provider from the underlying IPlugin object
+    /// Starts the plugin if not running and gets the provider from the underlying IExtension object
     /// Can be null if not found
     /// </summary>
     /// <typeparam name="T">The type of provider</typeparam>

@@ -25,7 +25,7 @@ internal class RepositoryProvider
     /// The plugin is not started in the constructor.  It is started when StartIfNotRunningAsync is called.
     /// This is for lazy loading and starting and prevents all plugins from starting all at once.
     /// </remarks>
-    private readonly IPluginWrapper _pluginWrapper;
+    private readonly IExtensionWrapper _pluginWrapper;
 
     /// <summary>
     /// The DeveloperId provider used to log a user into an account.
@@ -42,7 +42,7 @@ internal class RepositoryProvider
     /// </summary>
     private Lazy<IEnumerable<IRepository>> _repositories = new ();
 
-    public RepositoryProvider(IPluginWrapper pluginWrapper)
+    public RepositoryProvider(IExtensionWrapper pluginWrapper)
     {
         _pluginWrapper = pluginWrapper;
     }

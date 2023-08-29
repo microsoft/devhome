@@ -28,9 +28,9 @@ public class InitializationViewModel : ObservableObject
     private const int StoreInstallTimeout = 60_000;
 
     private readonly IThemeSelectorService _themeSelector;
-    private readonly IPluginService _pluginService;
+    private readonly IExtensionService _pluginService;
 
-    public InitializationViewModel(IThemeSelectorService themeSelector, IPluginService pluginService)
+    public InitializationViewModel(IThemeSelectorService themeSelector, IExtensionService pluginService)
     {
         _themeSelector = themeSelector;
         _pluginService = pluginService;

@@ -10,7 +10,7 @@ using WinRT;
 
 namespace DevHome.Models;
 
-public class PluginWrapper : IPluginWrapper
+public class PluginWrapper : IExtensionWrapper
 {
     private const int HResultRpcServerNotRunning = -2147023174;
 
@@ -28,7 +28,7 @@ public class PluginWrapper : IPluginWrapper
         [typeof(ISetupFlowProvider)] = ProviderType.SetupFlow,
     };
 
-    private IPlugin? _pluginObject;
+    private IExtension? _pluginObject;
 
     public PluginWrapper(string name, string packageFullName, string classId)
     {
@@ -87,14 +87,14 @@ public class PluginWrapper : IPluginWrapper
                     var pluginPtr = IntPtr.Zero;
                     try
                     {
-                        var hr = PInvoke.CoCreateInstance(Guid.Parse(PluginClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IPlugin).GUID, out var pluginObj);
+                        var hr = PInvoke.CoCreateInstance(Guid.Parse(PluginClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IExtension).GUID, out var pluginObj);
                         pluginPtr = Marshal.GetIUnknownForObject(pluginObj);
                         if (hr < 0)
                         {
                             Marshal.ThrowExceptionForHR(hr);
                         }
 
-                        _pluginObject = MarshalInterface<IPlugin>.FromAbi(pluginPtr);
+                        _pluginObject = MarshalInterface<IExtension>.FromAbi(pluginPtr);
                     }
                     finally
                     {
@@ -121,7 +121,7 @@ public class PluginWrapper : IPluginWrapper
         }
     }
 
-    public IPlugin? GetPluginObject()
+    public IExtension? GetPluginObject()
     {
         lock (_lock)
         {

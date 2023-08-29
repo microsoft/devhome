@@ -59,7 +59,7 @@ public partial class ExtensionsViewModel : ObservableObject
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
-        var pluginService = Application.Current.GetService<IPluginService>();
+        var pluginService = Application.Current.GetService<IExtensionService>();
         pluginService.OnPluginsChanged -= OnPluginsChanged;
         pluginService.OnPluginsChanged += OnPluginsChanged;
 
@@ -70,7 +70,7 @@ public partial class ExtensionsViewModel : ObservableObject
     {
         var pluginWrappers = Task.Run(async () =>
         {
-            var pluginService = Application.Current.GetService<IPluginService>();
+            var pluginService = Application.Current.GetService<IExtensionService>();
             return await pluginService.GetInstalledPluginsAsync(true);
         }).Result;
 

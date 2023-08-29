@@ -36,7 +36,7 @@ public class AccountsService : IAccountsService
     public async Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders()
     {
         var devIdProviders = new List<IDeveloperIdProvider>();
-        var pluginService = Application.Current.GetService<IPluginService>();
+        var pluginService = Application.Current.GetService<IExtensionService>();
         var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
 
         foreach (var plugin in plugins)
@@ -53,7 +53,7 @@ public class AccountsService : IAccountsService
 
     public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider) => iDevIdProvider.GetLoggedInDeveloperIds().ToList();
 
-    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IPlugin plugin)
+    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IExtension plugin)
     {
         if (plugin.GetProvider(ProviderType.DeveloperId) is IDeveloperIdProvider devIdProvider)
         {

@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.AppExtensions;
 
 namespace DevHome.Common.Services;
-public interface IPluginService
+public interface IExtensionService
 {
-    Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins = false);
+    Task<IEnumerable<IExtensionWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins = false);
 
-    Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(Microsoft.Windows.DevHome.SDK.ProviderType providerType, bool includeDisabledPlugins = false);
+    Task<IEnumerable<IExtensionWrapper>> GetInstalledPluginsAsync(Microsoft.Windows.DevHome.SDK.ProviderType providerType, bool includeDisabledPlugins = false);
 
-    Task<IEnumerable<IPluginWrapper>> StartAllPluginsAsync();
+    Task<IEnumerable<IExtensionWrapper>> StartAllPluginsAsync();
 
     Task SignalStopPluginsAsync();
 

@@ -293,7 +293,7 @@ public sealed partial class FeedbackPage : Page
 
     private string GetPlugins()
     {
-        var pluginService = Application.Current.GetService<IPluginService>();
+        var pluginService = Application.Current.GetService<IExtensionService>();
         var plugins = pluginService.GetInstalledPluginsAsync(true).Result;
         var pluginsStr = "Extensions: \n";
         foreach (var plugin in plugins)
