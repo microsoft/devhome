@@ -28,12 +28,12 @@ public class InitializationViewModel : ObservableObject
     private const int StoreInstallTimeout = 60_000;
 
     private readonly IThemeSelectorService _themeSelector;
-    private readonly IExtensionService _pluginService;
+    private readonly IExtensionService _extensionService;
 
-    public InitializationViewModel(IThemeSelectorService themeSelector, IExtensionService pluginService)
+    public InitializationViewModel(IThemeSelectorService themeSelector, IExtensionService extensionService)
     {
         _themeSelector = themeSelector;
-        _pluginService = pluginService;
+        _extensionService = extensionService;
     }
 
     public async Task OnPageLoadedAsync()
@@ -41,7 +41,7 @@ public class InitializationViewModel : ObservableObject
         try
         {
             if (!string.IsNullOrEmpty(GitHubExtensionStorePackageId) &&
-                !(await _pluginService.GetInstalledAppExtensionsAsync())
+                !(await _extensionService.GetInstalledAppExtensionsAsync())
                 .Any(extension => extension.AppInfo.PackageFamilyName.Equals(GitHubExtensionPackageFamilyName, StringComparison.OrdinalIgnoreCase)))
             {
                 var appInstallTask = InstallStorePackageAsync(GitHubExtensionStorePackageId);

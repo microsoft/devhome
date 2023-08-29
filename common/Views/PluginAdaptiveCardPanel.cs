@@ -13,15 +13,15 @@ using Newtonsoft.Json;
 
 namespace DevHome.Common.Views;
 
-// XAML element to contain a single instance of plugin UI.
-// Use this element where plugin UI is expected to pop up.
+// XAML element to contain a single instance of extension UI.
+// Use this element where extension UI is expected to pop up.
 // TODO: Should ideally not allow external children to be added through the `Children` property.
 // https://github.com/microsoft/devhome/issues/610
 public class ExtensionAdaptiveCardPanel : StackPanel
 {
     public event EventHandler<FrameworkElement>? UiUpdate;
 
-    public void Bind(IExtensionAdaptiveCardController pluginAdaptiveCardController, AdaptiveCardRenderer? customRenderer)
+    public void Bind(IExtensionAdaptiveCardController extensionAdaptiveCardController, AdaptiveCardRenderer? customRenderer)
     {
         var adaptiveCardRenderer = customRenderer ?? new AdaptiveCardRenderer();
 
@@ -31,16 +31,16 @@ public class ExtensionAdaptiveCardPanel : StackPanel
         }
 
         var uiDispatcher = DispatcherQueue.GetForCurrentThread();
-        var pluginUI = new ExtensionAdaptiveCard();
+        var extensionUI = new ExtensionAdaptiveCard();
 
-        pluginUI.UiUpdate += (object? sender, AdaptiveCard adaptiveCard) =>
+        extensionUI.UiUpdate += (object? sender, AdaptiveCard adaptiveCard) =>
         {
             uiDispatcher.TryEnqueue(() =>
             {
                 var renderedAdaptiveCard = adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
                 renderedAdaptiveCard.Action += (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
                 {
-                    pluginAdaptiveCardController.OnAction(JsonConvert.SerializeObject(args.Action), JsonConvert.SerializeObject(args.Inputs));
+                    extensionAdaptiveCardController.OnAction(JsonConvert.SerializeObject(args.Action), JsonConvert.SerializeObject(args.Inputs));
                 };
 
                 Children.Clear();
@@ -53,6 +53,6 @@ public class ExtensionAdaptiveCardPanel : StackPanel
             });
         };
 
-        pluginAdaptiveCardController.Initialize(pluginUI);
+        extensionAdaptiveCardController.Initialize(extensionUI);
     }
 }

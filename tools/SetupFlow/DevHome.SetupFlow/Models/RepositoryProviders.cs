@@ -28,16 +28,16 @@ internal class RepositoryProviders
         return _providers.GetValueOrDefault(providerName)?.DisplayName ?? string.Empty;
     }
 
-    public RepositoryProviders(IEnumerable<IExtensionWrapper> pluginWrappers)
+    public RepositoryProviders(IEnumerable<IExtensionWrapper> extensionWrappers)
     {
-        _providers = pluginWrappers.ToDictionary(pluginWrapper => pluginWrapper.Name, pluginWrapper => new RepositoryProvider(pluginWrapper));
+        _providers = extensionWrappers.ToDictionary(extensionWrapper => extensionWrapper.Name, extensionWrapper => new RepositoryProvider(extensionWrapper));
     }
 
     public void StartAllExtensions()
     {
-        foreach (var pluginWrapper in _providers.Values)
+        foreach (var extensionWrapper in _providers.Values)
         {
-            pluginWrapper.StartIfNotRunning();
+            extensionWrapper.StartIfNotRunning();
         }
     }
 
@@ -81,7 +81,7 @@ internal class RepositoryProviders
     /// <summary>
     /// Logs the user into a certain provider.
     /// </summary>
-    /// <param name="providerName">The provider to log the user into.  Must match display name of the plugin</param>
+    /// <param name="providerName">The provider to log the user into.  Must match display name of the extension</param>
     public IDeveloperId LogInToProvider(string providerName)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Logging in to provider {providerName}");

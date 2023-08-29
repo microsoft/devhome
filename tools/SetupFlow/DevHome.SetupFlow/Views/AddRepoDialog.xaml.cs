@@ -84,7 +84,7 @@ internal partial class AddRepoDialog
     }
 
     /// <summary>
-    /// Gets all plugins that have a provider type of repository and developerId.
+    /// Gets all extensions that have a provider type of repository and developerId.
     /// </summary>
     public async Task GetExtensionsAsync()
     {

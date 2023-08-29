@@ -36,12 +36,12 @@ public class AccountsService : IAccountsService
     public async Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders()
     {
         var devIdProviders = new List<IDeveloperIdProvider>();
-        var pluginService = Application.Current.GetService<IExtensionService>();
-        var plugins = await pluginService.GetInstalledExtensionsAsync(ProviderType.DeveloperId);
+        var extensionService = Application.Current.GetService<IExtensionService>();
+        var extensions = await extensionService.GetInstalledExtensionsAsync(ProviderType.DeveloperId);
 
-        foreach (var plugin in plugins)
+        foreach (var extension in extensions)
         {
-            var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
+            var devIdProvider = await extension.GetProviderAsync<IDeveloperIdProvider>();
             if (devIdProvider is not null)
             {
                 devIdProviders.Add(devIdProvider);
@@ -53,9 +53,9 @@ public class AccountsService : IAccountsService
 
     public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider) => iDevIdProvider.GetLoggedInDeveloperIds().ToList();
 
-    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IExtension plugin)
+    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IExtension extension)
     {
-        if (plugin.GetProvider(ProviderType.DeveloperId) is IDeveloperIdProvider devIdProvider)
+        if (extension.GetProvider(ProviderType.DeveloperId) is IDeveloperIdProvider devIdProvider)
         {
             return GetDeveloperIds(devIdProvider);
         }

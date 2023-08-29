@@ -57,9 +57,9 @@ public class ExtensionService : IExtensionService
         {
             lock (_lock)
             {
-                foreach (var plugin in _installedExtensions)
+                foreach (var extension in _installedExtensions)
                 {
-                    if (plugin.PackageFullName == args.Package.Id.FullName)
+                    if (extension.PackageFullName == args.Package.Id.FullName)
                     {
                         OnPackageChange(args.Package);
                         break;
@@ -160,7 +160,7 @@ public class ExtensionService : IExtensionService
                 }
 
                 var name = extension.DisplayName;
-                var pluginWrapper = new ExtensionWrapper(name, extension.Package.Id.FullName, classId);
+                var extensionWrapper = new ExtensionWrapper(name, extension.Package.Id.FullName, classId);
 
                 var supportedInterfaces = GetSubPropertySet(devHomeProvider, "SupportedInterfaces");
                 if (supportedInterfaces is not null)
@@ -170,11 +170,11 @@ public class ExtensionService : IExtensionService
                         ProviderType pt;
                         if (Enum.TryParse<ProviderType>(supportedInterface.Key, out pt))
                         {
-                            pluginWrapper.AddProviderType(pt);
+                            extensionWrapper.AddProviderType(pt);
                         }
                         else
                         {
-                            // TODO: throw warning or fire notification that plugin declared unsupported plugin interface
+                            // TODO: throw warning or fire notification that extension declared unsupported extension interface
                             // https://github.com/microsoft/devhome/issues/617
                         }
                     }
@@ -183,10 +183,10 @@ public class ExtensionService : IExtensionService
                 var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
                 var isExtensionDisabled = await localSettingsService.ReadSettingAsync<bool>(extension.Package.Id.FullName + "-ExtensionDisabled");
 
-                _installedExtensions.Add(pluginWrapper);
+                _installedExtensions.Add(extensionWrapper);
                 if (!isExtensionDisabled)
                 {
-                    _enabledExtensions.Add(pluginWrapper);
+                    _enabledExtensions.Add(extensionWrapper);
                 }
             }
         }

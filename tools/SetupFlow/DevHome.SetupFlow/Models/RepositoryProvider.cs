@@ -13,19 +13,19 @@ using Microsoft.Windows.DevHome.SDK;
 namespace DevHome.SetupFlow.Models;
 
 /// <summary>
-/// Object that holds a reference to the providers in a plugin.
+/// Object that holds a reference to the providers in an extension.
 /// This needs to be changed to handle multiple accounts per provider.
 /// </summary>
 internal class RepositoryProvider
 {
     /// <summary>
-    /// Wrapper for the plugin that is providing a repository and developer id.
+    /// Wrapper for the extension that is providing a repository and developer id.
     /// </summary>
     /// <remarks>
-    /// The plugin is not started in the constructor.  It is started when StartIfNotRunningAsync is called.
-    /// This is for lazy loading and starting and prevents all plugins from starting all at once.
+    /// The extension is not started in the constructor.  It is started when StartIfNotRunningAsync is called.
+    /// This is for lazy loading and starting and prevents all extensions from starting all at once.
     /// </remarks>
-    private readonly IExtensionWrapper _pluginWrapper;
+    private readonly IExtensionWrapper _extensionWrapper;
 
     /// <summary>
     /// The DeveloperId provider used to log a user into an account.
@@ -42,23 +42,23 @@ internal class RepositoryProvider
     /// </summary>
     private Lazy<IEnumerable<IRepository>> _repositories = new ();
 
-    public RepositoryProvider(IExtensionWrapper pluginWrapper)
+    public RepositoryProvider(IExtensionWrapper extensionWrapper)
     {
-        _pluginWrapper = pluginWrapper;
+        _extensionWrapper = extensionWrapper;
     }
 
     public string DisplayName => _repositoryProvider.DisplayName;
 
     /// <summary>
-    /// Starts the plugin if it isn't running.
+    /// Starts the extension if it isn't running.
     /// </summary>
     public void StartIfNotRunning()
     {
         // The task.run inside GetProvider makes a deadlock when .Result is called.
         // https://stackoverflow.com/a/17248813.  Solution is to wrap in Task.Run().
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider plugins");
-        _devIdProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
-        _repositoryProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider extensions");
+        _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
+        _repositoryProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
         var myName = _repositoryProvider.DisplayName;
     }
 

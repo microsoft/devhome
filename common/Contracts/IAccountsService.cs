@@ -15,5 +15,5 @@ public interface IAccountsService
 
     IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider);
 
-    IReadOnlyList<IDeveloperId> GetDeveloperIds(IExtension plugin);
+    IReadOnlyList<IDeveloperId> GetDeveloperIds(IExtension extension);
 }

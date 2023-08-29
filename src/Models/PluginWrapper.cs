@@ -28,7 +28,7 @@ public class ExtensionWrapper : IExtensionWrapper
         [typeof(ISetupFlowProvider)] = ProviderType.SetupFlow,
     };
 
-    private IExtension? _pluginObject;
+    private IExtension? _extensionObject;
 
     public ExtensionWrapper(string name, string packageFullName, string classId)
     {
@@ -54,14 +54,14 @@ public class ExtensionWrapper : IExtensionWrapper
 
     public bool IsRunning()
     {
-        if (_pluginObject is null)
+        if (_extensionObject is null)
         {
             return false;
         }
 
         try
         {
-            _pluginObject.As<IInspectable>().GetRuntimeClassName();
+            _extensionObject.As<IInspectable>().GetRuntimeClassName();
         }
         catch (COMException e)
         {
@@ -84,23 +84,23 @@ public class ExtensionWrapper : IExtensionWrapper
             {
                 if (!IsRunning())
                 {
-                    var pluginPtr = IntPtr.Zero;
+                    var extensionPtr = IntPtr.Zero;
                     try
                     {
-                        var hr = PInvoke.CoCreateInstance(Guid.Parse(ExtensionClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IExtension).GUID, out var pluginObj);
-                        pluginPtr = Marshal.GetIUnknownForObject(pluginObj);
+                        var hr = PInvoke.CoCreateInstance(Guid.Parse(ExtensionClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IExtension).GUID, out var extensionObj);
+                        extensionPtr = Marshal.GetIUnknownForObject(extensionObj);
                         if (hr < 0)
                         {
                             Marshal.ThrowExceptionForHR(hr);
                         }
 
-                        _pluginObject = MarshalInterface<IExtension>.FromAbi(pluginPtr);
+                        _extensionObject = MarshalInterface<IExtension>.FromAbi(extensionPtr);
                     }
                     finally
                     {
-                        if (pluginPtr != IntPtr.Zero)
+                        if (extensionPtr != IntPtr.Zero)
                         {
-                            Marshal.Release(pluginPtr);
+                            Marshal.Release(extensionPtr);
                         }
                     }
                 }
@@ -114,10 +114,10 @@ public class ExtensionWrapper : IExtensionWrapper
         {
             if (IsRunning())
             {
-                _pluginObject?.Dispose();
+                _extensionObject?.Dispose();
             }
 
-            _pluginObject = null;
+            _extensionObject = null;
         }
     }
 
@@ -127,7 +127,7 @@ public class ExtensionWrapper : IExtensionWrapper
         {
             if (IsRunning())
             {
-                return _pluginObject;
+                return _extensionObject;
             }
             else
             {

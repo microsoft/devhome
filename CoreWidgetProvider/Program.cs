@@ -66,25 +66,25 @@ public sealed class Program
         Log.Logger()?.ReportInfo($"Activating COM Server");
 
         // Register and run COM server
-        // This could be called by either of the COM registrations, we will do them all to avoid deadlock and bind all on the plugin's lifetime.
-        using var pluginServer = new Microsoft.Windows.DevHome.SDK.ExtensionServer();
-        var pluginDisposedEvent = new ManualResetEvent(false);
-        var pluginInstance = new CoreExtension(pluginDisposedEvent);
+        // This could be called by either of the COM registrations, we will do them all to avoid deadlock and bind all on the extension's lifetime.
+        using var extensionServer = new Microsoft.Windows.DevHome.SDK.ExtensionServer();
+        var extensionDisposedEvent = new ManualResetEvent(false);
+        var extensionInstance = new CoreExtension(extensionDisposedEvent);
 
-        // We are instantiating plugin instance once above, and returning it every time the callback in RegisterExtension below is called.
+        // We are instantiating extension instance once above, and returning it every time the callback in RegisterExtension below is called.
         // This makes sure that only one instance of SampleExtension is alive, which is returned every time the host asks for the IExtension object.
         // If you want to instantiate a new instance each time the host asks, create the new instance inside the delegate.
-        pluginServer.RegisterExtension(() => pluginInstance, true);
+        extensionServer.RegisterExtension(() => extensionInstance, true);
 
         // Do Widget COM server registration
-        // We are not using a disposed event for this, as we want the widgets to be disposed when the plugin is disposed.
+        // We are not using a disposed event for this, as we want the widgets to be disposed when the extension is disposed.
         using var widgetServer = new Widgets.WidgetServer();
         var widgetProviderInstance = new Widgets.WidgetProvider();
         widgetServer.RegisterWidget(() => widgetProviderInstance);
 
-        // This will make the main thread wait until the event is signalled by the plugin class.
-        // Since we have single instance of the plugin object, we exit as sooon as it is disposed.
-        pluginDisposedEvent.WaitOne();
+        // This will make the main thread wait until the event is signalled by the extension class.
+        // Since we have single instance of the extension object, we exit as sooon as it is disposed.
+        extensionDisposedEvent.WaitOne();
         Log.Logger()?.ReportInfo($"Extension is disposed.");
     }
 }

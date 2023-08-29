@@ -18,7 +18,7 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloningInformation : ObservableObject, IEquatable<CloningInformation>
 {
-    // TODO: Remove when plugin SDK has the ability to pass an icon to DevHome.
+    // TODO: Remove when extension SDK has the ability to pass an icon to DevHome.
     private static readonly BitmapImage LightGithub = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Light.png"));
 
     private static readonly BitmapImage DarkGithub = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Dark.png"));
