@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 
-namespace SamplePlugin;
+namespace SampleExtension;
 internal class RepositoryProvider : IRepositoryProvider
 {
     public string GetDisplayName() => "Repository Provider";

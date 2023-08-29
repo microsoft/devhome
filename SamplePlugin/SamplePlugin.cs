@@ -20,18 +20,18 @@ using Windows.Storage.Streams;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
-namespace SamplePlugin;
+namespace SampleExtension;
 
 [ComVisible(true)]
 [Guid("BEA53870-57BA-4741-B849-DBC8A3A06CC6")]
-[ComDefaultInterface(typeof(IPlugin))]
-public sealed class SamplePlugin : IPlugin
+[ComDefaultInterface(typeof(IExtension))]
+public sealed class SampleExtension : IExtension
 {
-    private readonly ManualResetEvent _pluginDisposedEvent;
+    private readonly ManualResetEvent _extensionDisposedEvent;
 
-    public SamplePlugin(ManualResetEvent pluginDisposedEvent)
+    public SampleExtension(ManualResetEvent extensionDisposedEvent)
     {
-        this._pluginDisposedEvent = pluginDisposedEvent;
+        this._extensionDisposedEvent = extensionDisposedEvent;
     }
 
     public object GetProvider(ProviderType providerType)
@@ -49,7 +49,7 @@ public sealed class SamplePlugin : IPlugin
 
     public void Dispose()
     {
-        this._pluginDisposedEvent.Set();
+        this._extensionDisposedEvent.Set();
     }
 
 }

@@ -16,7 +16,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel.Background;
 using Windows.Globalization.DateTimeFormatting;
 
-namespace SamplePlugin;
+namespace SampleExtension;
 
 public class Program
 {
@@ -25,22 +25,22 @@ public class Program
     {
         if (args.Length > 0 && args[0] == "-RegisterProcessAsComServer")
         {
-            using var server = new PluginServer();
-            var pluginDisposedEvent = new ManualResetEvent(false);
-            var pluginInstance = new SamplePlugin(pluginDisposedEvent);
+            using var server = new ExtensionServer();
+            var extensionDisposedEvent = new ManualResetEvent(false);
+            var extensionInstance = new SampleExtension(extensionDisposedEvent);
 
-            // We are instantiating plugin instance once above, and returning it every time the callback in RegisterPlugin below is called.
-            // This makes sure that only one instance of SamplePlugin is alive, which is returned every time the host asks for the IPlugin object.
+            // We are instantiating extension instance once above, and returning it every time the callback in RegisterExtension below is called.
+            // This makes sure that only one instance of SampleExtension is alive, which is returned every time the host asks for the IExtension object.
             // If you want to instantiate a new instance each time the host asks, create the new instance inside the delegate.
-            server.RegisterPlugin(() => pluginInstance);
+            server.RegisterExtension(() => extensionInstance);
 
-            // This will make the main thread wait until the event is signalled by the plugin class.
-            // Since we have single instance of the plugin object, we exit as sooon as it is disposed.
-            pluginDisposedEvent.WaitOne();
+            // This will make the main thread wait until the event is signalled by the extension class.
+            // Since we have single instance of the extension object, we exit as sooon as it is disposed.
+            extensionDisposedEvent.WaitOne();
         }
         else
         {
-            Console.WriteLine("Not being launched as a Plugin... exiting.");
+            Console.WriteLine("Not being launched as an Extension... exiting.");
         }
     }
 }

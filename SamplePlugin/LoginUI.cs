@@ -5,16 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace SamplePlugin;
-internal class LoginUI : IPluginAdaptiveCardController
+namespace SampleExtension;
+internal class LoginUI : IExtensionAdaptiveCardController
 {
-    private IPluginAdaptiveCard pluginUI;
+    private IExtensionAdaptiveCard extensionUI;
 
-    public void Initialize(IPluginAdaptiveCard pluginUI)
+    public void Initialize(IExtensionAdaptiveCard extensionUI)
     {
-        this.pluginUI = pluginUI;
+        this.extensionUI = extensionUI;
 
-        pluginUI.Update(
+        extensionUI.Update(
             @"
 {
   ""$schema"": ""http://adaptivecards.io/schemas/adaptive-card.json"",
@@ -23,7 +23,7 @@ internal class LoginUI : IPluginAdaptiveCardController
   ""body"": [
     {
       ""type"": ""TextBlock"",
-      ""text"": ""This is a plugin Adaptive Card! Click Submit!""
+      ""text"": ""This is an extension Adaptive Card! Click Submit!""
     },
     {
       ""type"": ""Input.Text"",
@@ -57,7 +57,7 @@ internal class LoginUI : IPluginAdaptiveCardController
 
     public void OnAction(string actionVerb, string args)
     {
-        pluginUI.Update(
+        extensionUI.Update(
             @"
 {
   ""$schema"": ""http://adaptivecards.io/schemas/adaptive-card.json"",

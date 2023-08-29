@@ -7,9 +7,9 @@
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Dev Home SDK provides support for creating Dev Home plugins on Windows.</description>
+    <description>Dev Home SDK provides support for creating Dev Home extension on Windows.</description>
     <releaseNotes>Release notes are available on the Dev Home repository.</releaseNotes>
-    <tags>Dev Home Windows App Plugin</tags>
+    <tags>Dev Home Windows App Extension</tags>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <!-- TODO : <license type="file">LICENSE</license> -->
     <projectUrl>https://github.com/microsoft/devhome</projectUrl>
@@ -30,7 +30,7 @@
     <file src="..\Microsoft.Windows.DevHome.SDK\bin\x64\Release\Microsoft.Windows.DevHome.SDK.dll" target="runtimes\win10-x64\native\"/>
     <file src="..\Microsoft.Windows.DevHome.SDK\bin\x86\Release\Microsoft.Windows.DevHome.SDK.dll" target="runtimes\win10-x86\native\"/>
     <file src="..\Microsoft.Windows.DevHome.SDK\bin\arm64\Release\Microsoft.Windows.DevHome.SDK.dll" target="runtimes\win10-arm64\native\"/>
-    <!-- Not putting in the following the lib folder because we don't want plugin project to directly reference the winmd -->
+    <!-- Not putting in the following the lib folder because we don't want extension project to directly reference the winmd -->
     <file src="..\Microsoft.Windows.DevHome.SDK\bin\x64\Release\Microsoft.Windows.DevHome.SDK.winmd" target="winmd\"/>
   </files>
 </package>
