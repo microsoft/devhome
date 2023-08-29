@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 
 namespace Microsoft.Windows.DevHome.SDK;
 
-public sealed class PluginServer : IDisposable
+public sealed class ExtensionServer : IDisposable
 {
     private readonly HashSet<int> registrationCookies = new ();
 
-    public void RegisterPlugin<T>(Func<T> createPlugin, bool restrictToMicrosoftPluginHosts = false)
-        where T : IPlugin
+    public void RegisterExtension<T>(Func<T> createExtension, bool restrictToMicrosoftExtensionHosts = false)
+        where T : IExtension
     {
         Trace.WriteLine($"Registering class object:");
         Trace.Indent();
@@ -22,7 +22,7 @@ public sealed class PluginServer : IDisposable
         var clsid = typeof(T).GUID;
         var hr = Ole32.CoRegisterClassObject(
             ref clsid,
-            new PluginInstanceManager<T>(createPlugin, restrictToMicrosoftPluginHosts),
+            new ExtensionInstanceManager<T>(createExtension, restrictToMicrosoftExtensionHosts),
             Ole32.CLSCTX_LOCAL_SERVER,
             Ole32.REGCLS_MULTIPLEUSE | Ole32.REGCLS_SUSPENDED,
             out cookie);

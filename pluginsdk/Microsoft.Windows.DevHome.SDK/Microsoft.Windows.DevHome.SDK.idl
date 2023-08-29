@@ -2,7 +2,7 @@ namespace Microsoft.Windows.DevHome.SDK
 {
     [contractversion(1)] apicontract DevHomeContract {}
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IPlugin {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IExtension {
         IInspectable GetProvider(ProviderType providerType);
         void Dispose();
     };
@@ -177,7 +177,7 @@ namespace Microsoft.Windows.DevHome.SDK
             get;
         };
 
-        // The plugin chooses to support one enum Option. Once defined by the plugin this value cannot be 	// changed by DevHome or the plugin itself.
+        // The extension chooses to support one enum Option. Once defined by the extension this value cannot be 	// changed by DevHome or the extension itself.
         AuthenticationExperienceKind GetAuthenticationExperienceKind();
 
         //ExtensionProvidedExperience
@@ -243,7 +243,7 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IExtensionAdaptiveCardSession {
-        ProviderOperationResult Initialize(IExtensionAdaptiveCard pluginUI);
+        ProviderOperationResult Initialize(IExtensionAdaptiveCard extensionUI);
         void Dispose();
         ProviderOperationResult OnAction(String action, String inputs);
     };
@@ -267,7 +267,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
     // Featured Application Provider
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-        // IFeaturedApplicationProvider interface allows plugins to provide a list of featured application groups
+        // IFeaturedApplicationProvider interface allows extensions to provide a list of featured application groups
         interface IFeaturedApplicationProvider {
             // Get the list of featured application groups
             Windows.Foundation.IAsyncOperation<GetFeaturedApplicationGroupResult>
@@ -312,29 +312,6 @@ namespace Microsoft.Windows.DevHome.SDK
 
         // Get the list of featured application in the group
         GetFeaturedApplicationsResult GetApplications();
-    };
-
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IPluginAdaptiveCardController {
-        void Initialize(IPluginAdaptiveCard pluginUI);
-        void Dispose();
-        void OnAction(String action, String inputs);
-    };
-
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IPluginAdaptiveCard {
-        String TemplateJson
-        {
-            get;
-        };
-        String DataJson
-        {
-            get;
-        };
-        String State
-        {
-            get;
-        };
-
-        void Update(String templateJson, String dataJson, String state);
     };
 
 }

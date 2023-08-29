@@ -15,8 +15,8 @@ using WinRT;
 namespace Microsoft.Windows.DevHome.SDK;
 
 [ComVisible(true)]
-internal class PluginInstanceManager<T> : IClassFactory
-    where T : IPlugin
+internal class ExtensionInstanceManager<T> : IClassFactory
+    where T : IExtension
 {
 #pragma warning disable SA1310 // Field names should not contain underscore
 
@@ -34,11 +34,11 @@ internal class PluginInstanceManager<T> : IClassFactory
 
 #pragma warning restore SA1310 // Field names should not contain underscore
 
-    private readonly Func<T> _createPlugin;
+    private readonly Func<T> _createExtension;
 
     private readonly bool _restrictToMicrosoftPluginHosts;
 
-    public PluginInstanceManager(Func<T> createPlugin, bool restrictToMicrosoftPluginHosts)
+    public ExtensionInstanceManager(Func<T> createPlugin, bool restrictToMicrosoftPluginHosts)
     {
         this._createPlugin = createPlugin;
         this._restrictToMicrosoftPluginHosts = restrictToMicrosoftPluginHosts;
