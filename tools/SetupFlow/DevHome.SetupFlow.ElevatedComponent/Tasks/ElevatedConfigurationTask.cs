@@ -1,14 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Diagnostics;
 using DevHome.SetupFlow.Common.Configuration;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Microsoft.Management.Configuration;
 using Windows.Foundation;
-using Windows.Storage;
-using Windows.Win32;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.ElevatedComponent.Tasks;

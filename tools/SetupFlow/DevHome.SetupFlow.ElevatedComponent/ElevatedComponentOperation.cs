@@ -127,7 +127,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
         var taskArguments = _tasksArguments.CreateDevDrive;
         if (taskArguments == null)
         {
-            Log.Logger?.ReportError(Log.Component.Elevated, $"No dev drive task was found in the process tasks arguments ");
+            Log.Logger?.ReportError(Log.Component.Elevated, $"No 'create dev drive' task was found in the process tasks arguments ");
             throw new ArgumentException($"Failed to create a dev drive because it was not in the pre-approved tasks arguments");
         }
 
