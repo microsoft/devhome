@@ -236,11 +236,14 @@
   </data>
   <data name="WhatsNewPage_ExtensionsCard.Button" xml:space="preserve">
     <value>Explore extensions</value>
+    <comment>Button on extensions card on "whats new" page</comment>
   </data>
   <data name="WhatsNewPage_ExtensionsCard.Description" xml:space="preserve">
     <value>Extensions provide integration into the existing features of Dev Home. These features include the ability to recommend repositories to add when using the Machine Configuration tool and the ability to add additional Dev Home widgets to the dashboard.</value>
+    <comment>Description of extensions card on "whats new" page</comment>
   </data>
   <data name="WhatsNewPage_ExtensionsCard.Title" xml:space="preserve">
     <value>Explore Dev Home extensions</value>
+    <comment>Title of extensions card on "whats new" page</comment>
   </data>
 </root>

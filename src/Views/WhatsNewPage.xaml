@@ -97,17 +97,8 @@
                             x:Key="WhatsNewPage_ExtensionsCard"
                             DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DashboardHero.png"
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DashboardHero.png"
-                            PageKey="DevHome.Dashboard.ViewModels.ExtensionsViewModel"
+                            PageKey="DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel"
                             Priority="0" />
-
-                        <models:WhatsNewCard 
-                            x:Uid="WhatsNewPage_DevIdCard"
-                            x:Key="WhatsNewPage_DevIdCard"
-                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DevIdHero.png"
-                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevIdHero.png"
-                            PageKey="DevHome.Settings.ViewModels.AccountsViewModel"
-                            Priority="1" />
-
                     </muxc:ItemsRepeater.Resources>
 
                     <muxc:ItemsRepeater.Layout>
