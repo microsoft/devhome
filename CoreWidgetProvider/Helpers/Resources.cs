@@ -86,7 +86,6 @@ public static class Resources
             "CPUUsage_Widget_Template/CPU_Usage",
             "CPUUsage_Widget_Template/CPU_Speed",
             "CPUUsage_Widget_Template/Processes",
-            "CPUUsage_Widget_Template/End_Process",
             "CPUUsage_Widget_Template/Open_Task_Manager",
         };
     }
