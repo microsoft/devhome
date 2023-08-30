@@ -92,7 +92,7 @@ internal class CreateDevDriveTask : ISetupTask
 
     IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
-        return Task.Run(() =>
+        return Task.Run(async () =>
         {
             Stopwatch timer = Stopwatch.StartNew();
             var result = 0;
@@ -112,7 +112,7 @@ internal class CreateDevDriveTask : ISetupTask
                     return TaskFinishedState.Failure;
                 }
 
-                Result.ThrowIfFailed(elevatedComponentOperation.CreateDevDrive());
+                Result.ThrowIfFailed(await elevatedComponentOperation.CreateDevDriveAsync());
                 return TaskFinishedState.Success;
             }
             catch (Exception ex)

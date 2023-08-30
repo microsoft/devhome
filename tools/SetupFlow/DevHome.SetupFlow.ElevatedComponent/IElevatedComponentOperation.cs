@@ -41,7 +41,7 @@ public interface IElevatedComponentOperation
     /// Create a dev drive
     /// </summary>
     /// <returns>Create dev drive operation hresult code</returns>
-    public int CreateDevDrive();
+    public IAsyncOperation<int> CreateDevDriveAsync();
 
     /// <summary>
     /// Apply DSC configuration

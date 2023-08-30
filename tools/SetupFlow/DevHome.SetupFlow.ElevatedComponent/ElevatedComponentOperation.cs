@@ -23,13 +23,27 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
     /// </remarks>
     private readonly TasksArguments _tasksArguments;
 
-    private readonly Dictionary<ITaskArguments, Operation> _operations = new ();
+    /// <summary>
+    /// Dictionary of operations state by task arguments.
+    /// </summary>
+    private readonly Dictionary<ITaskArguments, OperationState> _operationsState = new ();
+    private readonly object _operationStateLock = new ();
+
+    // TODO: Share this value with the caller process and make a configurable option
+    // https://github.com/microsoft/devhome/issues/622
     private const int MaxRetryAttempts = 1;
-    private readonly object _lock = new ();
 
     public ElevatedComponentOperation(IList<string> tasksArgumentList)
     {
-        _tasksArguments = TasksArguments.FromArgumentList(tasksArgumentList);
+        try
+        {
+            _tasksArguments = TasksArguments.FromArgumentList(tasksArgumentList);
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.Elevated, $"Failed to parse tasks arguments", e);
+            throw;
+        }
     }
 
     public void WriteToStdOut(string value)
@@ -39,48 +53,48 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
 
     public IAsyncOperation<ElevatedInstallTaskResult> InstallPackageAsync(string packageId, string catalogName)
     {
-        return Task.Run(async () =>
-        {
-            var taskArguments = GetInstallPackageTaskArguments(packageId, catalogName);
-            ValidateAndBeginOperation(taskArguments);
-            Log.Logger?.ReportInfo(Log.Component.Elevated, $"Installing package elevated: '{packageId}' from '{catalogName}'");
-            var task = new ElevatedInstallTask();
-
-            // Pass the pre-approved install package information as provided to the elevated process
-            var result = await task.InstallPackage(taskArguments.PackageId, taskArguments.CatalogName);
-            EndOperation(taskArguments, result.TaskSucceeded);
-            return result;
-        }).AsAsyncOperation();
+        var taskArguments = GetInstallPackageTaskArguments(packageId, catalogName);
+        return ValidateAndExecuteAsync(
+            taskArguments,
+            async () =>
+            {
+                Log.Logger?.ReportInfo(Log.Component.Elevated, $"Installing package elevated: '{packageId}' from '{catalogName}'");
+                var task = new ElevatedInstallTask();
+                return await task.InstallPackage(taskArguments.PackageId, taskArguments.CatalogName);
+            },
+            result => result.TaskSucceeded).AsAsyncOperation();
     }
 
-    public int CreateDevDrive()
+    public IAsyncOperation<int> CreateDevDriveAsync()
     {
         var taskArguments = GetDevDriveTaskArguments();
-        ValidateAndBeginOperation(taskArguments);
-        Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Dev Drive storage operator");
-        var task = new DevDriveStorageOperator();
 
-        // Pass the pre-approved DevDrive information as provided to the elevated process
-        var result = task.CreateDevDrive(taskArguments.VirtDiskPath, taskArguments.SizeInBytes, taskArguments.NewDriveLetter, taskArguments.DriveLabel);
-        EndOperation(taskArguments, result >= 0);
-
-        return result;
+        // TODO: Return a result object instead of a primitive type
+        // https://github.com/microsoft/devhome/issues/622
+        return ValidateAndExecuteAsync(
+            taskArguments,
+            async () =>
+            {
+                Log.Logger?.ReportInfo(Log.Component.Elevated, "Creating elevated Dev Drive storage operator");
+                var task = new DevDriveStorageOperator();
+                var result = task.CreateDevDrive(taskArguments.VirtDiskPath, taskArguments.SizeInBytes, taskArguments.NewDriveLetter, taskArguments.DriveLabel);
+                return await Task.FromResult(result);
+            },
+            result => result >= 0).AsAsyncOperation();
     }
 
     public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfigurationAsync()
     {
-        return Task.Run(async () =>
-        {
-            var taskArguments = GetConfigureTaskArguments();
-            ValidateAndBeginOperation(taskArguments);
-            Log.Logger?.ReportInfo(Log.Component.Elevated, "Applying DSC configuration elevated");
-            var task = new ElevatedConfigurationTask();
-
-            // Pass the pre-approved DSC configuration information as provided to the elevated process
-            var result = await task.ApplyConfiguration(taskArguments.FilePath, taskArguments.Content);
-            EndOperation(taskArguments, result.TaskSucceeded);
-            return result;
-        }).AsAsyncOperation();
+        var taskArguments = GetConfigureTaskArguments();
+        return ValidateAndExecuteAsync(
+            taskArguments,
+            async () =>
+            {
+                Log.Logger?.ReportInfo(Log.Component.Elevated, "Applying DSC configuration elevated");
+                var task = new ElevatedConfigurationTask();
+                return await task.ApplyConfiguration(taskArguments.FilePath, taskArguments.Content);
+            },
+            result => result.TaskSucceeded).AsAsyncOperation();
     }
 
     private InstallPackageTaskArguments GetInstallPackageTaskArguments(string packageId, string catalogName)
@@ -119,34 +133,63 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
     }
 
     /// <summary>
+    /// Validate the execution of the operation with the provided tasks arguments and execute it.
+    /// </summary>
+    /// <param name="taskArguments">Task arguments for the operation to execute</param>
+    /// <param name="executeFunction">Asynchronous execute operation function</param>
+    /// <param name="resultProcessorFunction">Result processor function indicating whether the operation was successful or not</param>
+    /// <returns>Result returned by the operation</returns>
+    private async Task<TResult> ValidateAndExecuteAsync<TTaskArguments, TResult>(
+        TTaskArguments taskArguments,
+        Func<Task<TResult>> executeFunction,
+        Func<TResult, bool> resultProcessorFunction)
+        where TTaskArguments : ITaskArguments
+    {
+        try
+        {
+            ValidateAndBeginOperation(taskArguments);
+            var result = await executeFunction();
+            var success = resultProcessorFunction(result);
+            EndOperation(taskArguments, success);
+            return result;
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.Elevated, $"Failed to validate or execute operation", e);
+            EndOperation(taskArguments, false);
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Validate the execution of the operation with the provided tasks arguments
     /// </summary>
     /// <param name="taskArguments">Task arguments for the operation to execute</param>
     /// <exception cref="InvalidOperationException">Thrown if this operation cannot be performed</exception>
     private void ValidateAndBeginOperation(ITaskArguments taskArguments)
     {
-        lock (_lock)
+        lock (_operationStateLock)
         {
             // Check if this operation has already been attempted before.
-            if (_operations.TryGetValue(taskArguments, out var operation))
+            if (_operationsState.TryGetValue(taskArguments, out var operationState))
             {
-                if (operation.InProgress)
+                if (operationState.InProgress)
                 {
                     throw new InvalidOperationException($"Failed to perform operation because an identical operation is still executing.");
                 }
 
-                if (operation.RemainingAttempts <= 0)
+                if (operationState.RemainingAttempts <= 0)
                 {
-                    throw new InvalidOperationException($"Failed to perform operation because no more retry attempts are remaining.");
+                    throw new InvalidOperationException($"Failed to perform operation because the maximum number of attempts has been reached.");
                 }
 
-                operation.RemainingAttempts--;
-                operation.InProgress = true;
+                operationState.RemainingAttempts--;
+                operationState.InProgress = true;
             }
             else
             {
                 // This is the first time this operation is being executed
-                _operations.Add(taskArguments, new Operation
+                _operationsState.Add(taskArguments, new OperationState
                 {
                     RemainingAttempts = MaxRetryAttempts,
                     InProgress = true,
@@ -162,24 +205,35 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
     /// <param name="isSuccessful">Boolean indicating whether the operation was successful or not</param>
     private void EndOperation(ITaskArguments taskArguments, bool isSuccessful)
     {
-        lock (_lock)
+        lock (_operationStateLock)
         {
-            var operation = _operations[taskArguments];
-            if (isSuccessful)
+            if (_operationsState.TryGetValue(taskArguments, out var operationState))
             {
-                // Since the operation succeeded, prevent further attempts to
-                // execute it again in the lifetime of the elevated process.
-                operation.RemainingAttempts = 0;
-            }
+                if (isSuccessful)
+                {
+                    // Since the operation succeeded, prevent further attempts to
+                    // execute it again in the lifetime of the elevated process.
+                    operationState.RemainingAttempts = 0;
+                }
 
-            operation.InProgress = false;
+                operationState.InProgress = false;
+            }
         }
     }
 
-    private class Operation
+    /// <summary>
+    /// Class for tracking the state of an operation.
+    /// </summary>
+    private class OperationState
     {
+        /// <summary>
+        /// Gets or sets the number of remaining attempts to execute this operation.
+        /// </summary>
         public int RemainingAttempts { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this operation is currently in progress.
+        /// </summary>
         public bool InProgress { get; set; }
     }
 }

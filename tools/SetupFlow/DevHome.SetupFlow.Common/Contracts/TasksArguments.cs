@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DevHome.SetupFlow.Common.Helpers;
@@ -54,14 +55,29 @@ public class TasksArguments
         {
             if (InstallPackageTaskArguments.TryReadArguments(argumentList, ref index, out var installPackageTaskArguments))
             {
+                if (tasksArguments.InstallPackages.Any(p => p.PackageId == installPackageTaskArguments.PackageId && p.CatalogName == installPackageTaskArguments.CatalogName))
+                {
+                    throw new ArgumentException($"Duplicate install package task for package {installPackageTaskArguments.PackageId} in catalog {installPackageTaskArguments.CatalogName}");
+                }
+
                 tasksArguments.InstallPackages.Add(installPackageTaskArguments);
             }
             else if (CreateDevDriveTaskArguments.TryReadArguments(argumentList, ref index, out var devDriveTaskArguments))
             {
+                if (tasksArguments.CreateDevDrive != null)
+                {
+                    throw new ArgumentException("Only one dev drive creation task can be specified");
+                }
+
                 tasksArguments.CreateDevDrive = devDriveTaskArguments;
             }
             else if (ConfigureTaskArguments.TryReadArguments(argumentList, ref index, out var configurationTaskArguments))
             {
+                if (tasksArguments.Configure != null)
+                {
+                    throw new ArgumentException("Only one configuration task can be specified");
+                }
+
                 tasksArguments.Configure = configurationTaskArguments;
             }
             else
