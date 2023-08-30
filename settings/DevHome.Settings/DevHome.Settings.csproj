@@ -19,6 +19,7 @@
   <ItemGroup>
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\AccountsPage.xaml" />
+    <None Remove="Views\ExtensionSettingsPage.xaml" />
     <None Remove="Views\ExtensionsPage.xaml" />
     <None Remove="Views\FeedbackPage.xaml" />
     <None Remove="Views\LoginUIDialog.xaml" />
@@ -60,6 +61,9 @@
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
     <Page Update="Views\ExtensionsPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Views\ExtensionSettingsPage.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>
   </ItemGroup>

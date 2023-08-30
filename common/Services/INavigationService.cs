@@ -15,6 +15,11 @@ public interface INavigationService
         get;
     }
 
+    object? LastParameterUsed
+    {
+        get;
+    }
+
     Frame? Frame
     {
         get; set;

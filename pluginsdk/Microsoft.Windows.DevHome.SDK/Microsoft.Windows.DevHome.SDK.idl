@@ -212,7 +212,6 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    // Developer ID
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface IDeveloperIdProvider
         requires Windows.Foundation.IClosable

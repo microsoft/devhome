@@ -40,7 +40,7 @@ public class PluginAdaptiveCardPanel : StackPanel
                 var renderedAdaptiveCard = adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
                 renderedAdaptiveCard.Action += async (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
                 {
-                    await extensionAdaptiveCardSession.OnAction(JsonConvert.SerializeObject(args.Action), JsonConvert.SerializeObject(args.Inputs));
+                    await pluginAdaptiveCardController.OnAction(args.Action.ToJson().Stringify(), args.Inputs.AsJson().Stringify());
                 };
 
                 Children.Clear();
