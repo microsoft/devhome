@@ -100,7 +100,7 @@ public static class WindowExExtensions
             // To workaround this issue, we instead use the Win32 picking APIs
             // as suggested in the documentation for the FileSavePicker:
             // >> Original code reference: https://learn.microsoft.com/uwp/api/windows.storage.pickers.filesavepicker?view=winrt-22621#in-a-desktop-app-that-requires-elevation
-            // >> Github issue: https://github.com/microsoft/WindowsAppSDK/issues/2504
+            // >> GitHub issue: https://github.com/microsoft/WindowsAppSDK/issues/2504
             // "In a desktop app (which includes WinUI 3 apps), you can use
             // FileSavePicker (and other types from Windows.Storage.Pickers).
             // But if the desktop app requires elevation to run, then you'll

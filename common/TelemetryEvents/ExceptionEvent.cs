@@ -6,7 +6,6 @@ using System.Diagnostics.Tracing;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
-using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Common.TelemetryEvents;
 

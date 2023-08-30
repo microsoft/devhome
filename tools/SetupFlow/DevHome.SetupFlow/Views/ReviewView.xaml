@@ -81,6 +81,7 @@
                                 </NavigationView.MenuItemTemplate>
                                 <Frame MinHeight="100" Padding="12" HorizontalAlignment="Stretch">
                                     <ContentControl Content="{x:Bind ViewModel.SelectedReviewTab, Mode=OneWay}"
+                                                    IsTabStop="False"
                                                     HorizontalContentAlignment="Stretch"
                                                     VerticalContentAlignment="Stretch" >
                                         <ContentControl.ContentTemplateSelector>

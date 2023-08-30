@@ -122,8 +122,6 @@
                                             Text="{x:Bind CloneLocationAlias, Mode=OneWay}" 
                                             IsEnabled="False"
                                             Visibility="{x:Bind CloneToDevDrive, Mode=OneWay}"
-                                            MinWidth="300"
-                                            MaxWidth="300"
                                             Margin="10, 5, 0, 5"/>
                                     <TextBox 
                                             Text="{x:Bind ClonePath}" 
