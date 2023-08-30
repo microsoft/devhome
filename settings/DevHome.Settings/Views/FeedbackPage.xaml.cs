@@ -73,7 +73,10 @@ public sealed partial class FeedbackPage : Page
             var description = HttpUtility.UrlEncode(SuggestFeatureDescription.Text);
             var scenario = HttpUtility.UrlEncode(SuggestFeatureScenario.Text);
             var supportingInfo = HttpUtility.UrlEncode(SuggestFeatureSupportingInfo.Text);
-            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle + "&labels=Issue-Feature&template=Feature_Request.yml&description=" + description + "&scenario=" + scenario + "&supportinginfo=" + supportingInfo;
+            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle +
+                "&labels=Issue-Feature&template=Feature_Request.yml&description=" + description +
+                "&scenario=" + scenario +
+                "&supportinginfo=" + supportingInfo;
 
             // Make sure any changes are consistent with the feature request issue template on GitHub
             await Windows.System.Launcher.LaunchUriAsync(new Uri(gitHubURL));
@@ -94,11 +97,13 @@ public sealed partial class FeedbackPage : Page
             var version = HttpUtility.UrlEncode(GetAppVersion());
             var issueTitle = HttpUtility.UrlEncode(LocalizationIssueTitle.Text);
             var languageAffected = HttpUtility.UrlEncode(LocalizationIssueLanguageAffected.Text);
-            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle + "&labels=Issue-Translation&template=Translation_Issue.yml&version=" + version + "&languageaffected=" + languageAffected;
+            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle +
+                "&labels=Issue-Translation&template=Translation_Issue.yml&version=" + version +
+                "&languageaffected=" + languageAffected;
 
             ReportBugExpectedBehavior.Text = ReportBugActualBehavior.Text = string.Empty;
 
-            // Make sure any changes are consistent with the translation issue template on GitHuba
+            // Make sure any changes are consistent with the translation issue template on GitHub
             await Windows.System.Launcher.LaunchUriAsync(new Uri(gitHubURL));
         }
         else
@@ -137,7 +142,15 @@ public sealed partial class FeedbackPage : Page
             var otherSoftwareText = "OS Build Version: " + GetOSVersion() + "\n.NET Version: " + GetDotNetVersion();
             var otherSoftware = HttpUtility.UrlEncode(otherSoftwareText);
 
-            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle + "&labels=Issue-Bug&template=Bug_Report.yml&version=" + version + "&windowsversion=" + windowsversion + "&repro=" + reproSteps + "&expectedbehavior=" + expectedBehavior + "&actualbehavior=" + actualBehavior + "&includedsysinfo=" + sysInfo + "&includedextensionsinfo=" + pluginsInfo + "&othersoftware=" + otherSoftware;
+            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle +
+                "&labels=Issue-Bug&template=Bug_Report.yml&version=" + version +
+                "&windowsversion=" + windowsversion +
+                "&repro=" + reproSteps +
+                "&expectedbehavior=" + expectedBehavior +
+                "&actualbehavior=" + actualBehavior +
+                "&includedsysinfo=" + sysInfo +
+                "&includedextensionsinfo=" + pluginsInfo +
+                "&othersoftware=" + otherSoftware;
 
             // Make sure any changes are consistent with the report bug issue template on GitHub
             await Windows.System.Launcher.LaunchUriAsync(new Uri(gitHubURL));
@@ -190,7 +203,7 @@ public sealed partial class FeedbackPage : Page
     private string GetAppVersion()
     {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-        IAppInfoService appInfoService = Application.Current.GetService<IAppInfoService>();
+        var appInfoService = Application.Current.GetService<IAppInfoService>();
         var version = appInfoService.GetAppVersion();
 
         return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
@@ -234,9 +247,9 @@ public sealed partial class FeedbackPage : Page
 
     private string GetPhysicalMemory()
     {
-        CultureInfo cultures = new CultureInfo("en-US");
+        var cultures = new CultureInfo("en-US");
 
-        MEMORYSTATUSEX memStatus = default(MEMORYSTATUSEX);
+        MEMORYSTATUSEX memStatus = default;
         memStatus.dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX));
         PInvoke.GlobalMemoryStatusEx(out memStatus);
 

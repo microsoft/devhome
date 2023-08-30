@@ -76,7 +76,7 @@
                     <Grid>
                         <TextBlock
                             Text="{Binding}"
-                            Style="{ThemeResource TitleTextBlockStyle}" />
+                            Style="{ThemeResource SubtitleTextBlockStyle}" />
                     </Grid>
                 </DataTemplate>
             </NavigationView.HeaderTemplate>
@@ -88,7 +88,7 @@
                             <Grid>
                                 <TextBlock
                                     Text="{Binding}"
-                                    Style="{ThemeResource TitleTextBlockStyle}" />
+                                    Style="{ThemeResource SubtitleTextBlockStyle}" />
                             </Grid>
                         </DataTemplate>
                     </behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
@@ -110,9 +110,10 @@
                     Message="{x:Bind ViewModel.ShellInfoBarModel.Description, Mode=TwoWay}" 
                     IsOpen="{x:Bind ViewModel.ShellInfoBarModel.IsOpen, Mode=TwoWay}" 
                     MaxWidth="{ThemeResource MaxPageContentWidth}" />
-                <Grid Grid.Row="1">
-                    <Frame x:Name="NavigationFrame" />
-                </Grid>
+                <Frame
+                    Grid.Row="1"
+                    x:Name="NavigationFrame"
+                    CornerRadius="{ThemeResource OverlayCornerRadius}" />
             </Grid>
         </NavigationView>
     </Grid>

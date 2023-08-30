@@ -95,18 +95,21 @@ public static class StringResourceKey
     public static readonly string CloneRepoRestart = nameof(CloneRepoRestart);
 
     // Configure task loading screen messages
+    public static readonly string ApplyingConfigurationMessage = nameof(ApplyingConfigurationMessage);
     public static readonly string ConfigureTaskCreating = nameof(ConfigureTaskCreating);
     public static readonly string ConfigureTaskCreated = nameof(ConfigureTaskCreated);
     public static readonly string ConfigureTaskError = nameof(ConfigureTaskError);
     public static readonly string ConfigureTaskRestart = nameof(ConfigureTaskRestart);
 
     // App download loading screen messages
+    public static readonly string StartingInstallPackageMessage = nameof(StartingInstallPackageMessage);
     public static readonly string DownloadAppCreating = nameof(DownloadAppCreating);
     public static readonly string DownloadAppCreated = nameof(DownloadAppCreated);
     public static readonly string DownloadAppError = nameof(DownloadAppError);
     public static readonly string DownloadAppRestart = nameof(DownloadAppRestart);
 
     // Dev drive loading screen messages
+    public static readonly string DevDriveNotAdminError = nameof(DevDriveNotAdminError);
     public static readonly string DevDriveCreating = nameof(DevDriveCreating);
     public static readonly string DevDriveCreated = nameof(DevDriveCreated);
     public static readonly string DevDriveErrorWithReason = nameof(DevDriveErrorWithReason);

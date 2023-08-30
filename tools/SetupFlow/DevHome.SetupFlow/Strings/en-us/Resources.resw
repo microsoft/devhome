@@ -1191,4 +1191,16 @@
     <value>SSH connection strings are not allowed</value>
     <comment>Error string when a user enters in an SSH connection string</comment>
   </data>
+  <data name="ApplyingConfigurationMessage" xml:space="preserve">
+    <value>Applying configuration</value>
+    <comment>String letting users know the configuration is being applied</comment>
+  </data>
+  <data name="DevDriveNotAdminError" xml:space="preserve">
+    <value>A DevDrive can only be created when elevated</value>
+    <comment>Error string letting users know why dev drive wasn't installed.</comment>
+  </data>
+  <data name="StartingInstallPackageMessage" xml:space="preserve">
+    <value>Starting to install package {0}</value>
+    <comment>{Locked="{0}"} String letting users know that DevHome has started to install a package. {0} is the package id</comment>
+  </data>
 </root>

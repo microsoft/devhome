@@ -73,7 +73,7 @@ public class DevDriveManager : IDevDriveManager
     public string DefaultDevDriveLocation => _defaultDevDriveLocation;
 
     /// <inheritdoc/>
-    public IList<IDevDrive> DevDrivesMarkedForCreation => _devDrives.ToList();
+    public IList<IDevDrive> DevDrivesMarkedForCreation => RepositoriesUsingDevDrive > 0 ? _devDrives.ToList() : new List<IDevDrive>();
 
     /// <summary>
     /// Gets a view model that will show information related to a Dev Drive we create

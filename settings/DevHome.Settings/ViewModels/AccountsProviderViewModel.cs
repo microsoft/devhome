@@ -7,10 +7,10 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Logging;
 using DevHome.Settings.Models;
-using DevHome.Telemetry;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Settings.ViewModels;
+
 public partial class AccountsProviderViewModel : ObservableObject
 {
     public IDeveloperIdProvider DeveloperIdProvider { get; }
