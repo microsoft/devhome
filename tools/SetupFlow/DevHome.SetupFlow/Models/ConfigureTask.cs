@@ -140,10 +140,10 @@ public class ConfigureTask : ISetupTask
     /// Get the arguments for this task
     /// </summary>
     /// <returns>Arguments for this task</returns>
-    public ConfigurationTaskArguments GetArguments()
+    public ConfigureTaskArguments GetArguments()
     {
         var fileData = GetFileData();
-        return new ConfigurationTaskArguments
+        return new ConfigureTaskArguments
         {
             FilePath = fileData.FilePath,
             Content = fileData.Content,

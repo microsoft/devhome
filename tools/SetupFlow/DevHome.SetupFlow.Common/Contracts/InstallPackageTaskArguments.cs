@@ -11,7 +11,7 @@ namespace DevHome.SetupFlow.Common.Contracts;
 /// <remarks>
 /// <code>ElevatedProcess.exe --package-id id --package-catalog catalog</code>
 /// </remarks>
-public class InstallPackageTaskArguments
+public class InstallPackageTaskArguments : ITaskArguments
 {
     private const string PackageIdArg = "--package-id";
     private const string PackageCatalogArg = "--package-catalog";

@@ -24,7 +24,7 @@ public class TasksArguments
     /// <summary>
     /// Gets or sets the dev drive creation task arguments
     /// </summary>
-    public DevDriveTaskArguments CreateDevDrive
+    public CreateDevDriveTaskArguments CreateDevDrive
     {
         get; set;
     }
@@ -32,7 +32,7 @@ public class TasksArguments
     /// <summary>
     /// Gets or sets the configuration task arguments
     /// </summary>
-    public ConfigurationTaskArguments Configure
+    public ConfigureTaskArguments Configure
     {
         get; set;
     }
@@ -56,11 +56,11 @@ public class TasksArguments
             {
                 tasksArguments.InstallPackages.Add(installPackageTaskArguments);
             }
-            else if (DevDriveTaskArguments.TryReadArguments(argumentList, ref index, out var devDriveTaskArguments))
+            else if (CreateDevDriveTaskArguments.TryReadArguments(argumentList, ref index, out var devDriveTaskArguments))
             {
                 tasksArguments.CreateDevDrive = devDriveTaskArguments;
             }
-            else if (ConfigurationTaskArguments.TryReadArguments(argumentList, ref index, out var configurationTaskArguments))
+            else if (ConfigureTaskArguments.TryReadArguments(argumentList, ref index, out var configurationTaskArguments))
             {
                 tasksArguments.Configure = configurationTaskArguments;
             }

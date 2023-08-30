@@ -67,9 +67,9 @@ internal class CreateDevDriveTask : ISetupTask
     /// Get the arguments for this task
     /// </summary>
     /// <returns>Arguments for this task</returns>
-    public DevDriveTaskArguments GetArguments()
+    public CreateDevDriveTaskArguments GetArguments()
     {
-        return new DevDriveTaskArguments
+        return new CreateDevDriveTaskArguments
         {
             VirtDiskPath = Path.Combine(DevDrive.DriveLocation, $"{DevDrive.DriveLabel}.vhdx"),
             SizeInBytes = DevDrive.DriveSizeInBytes,

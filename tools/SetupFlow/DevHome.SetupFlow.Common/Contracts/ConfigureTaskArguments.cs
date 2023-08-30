@@ -11,7 +11,7 @@ namespace DevHome.SetupFlow.Common.Contracts;
 /// <remarks>
 /// <code>ElevatedProcess.exe --config-file file --config-content content</code>
 /// </remarks>
-public class ConfigurationTaskArguments
+public class ConfigureTaskArguments : ITaskArguments
 {
     private const string ConfigFile = "--config-file";
     private const string ConfigContent = "--config-content";
@@ -39,7 +39,7 @@ public class ConfigurationTaskArguments
     /// <param name="index">Index to start reading arguments from</param>
     /// <param name="result">Output object</param>
     /// <returns>True if reading arguments succeeded. False otherwise.</returns>
-    public static bool TryReadArguments(IList<string> argumentList, ref int index, out ConfigurationTaskArguments result)
+    public static bool TryReadArguments(IList<string> argumentList, ref int index, out ConfigureTaskArguments result)
     {
         result = null;
 
@@ -50,7 +50,7 @@ public class ConfigurationTaskArguments
             argumentList[index] == ConfigFile &&
             argumentList[index + 2] == ConfigContent)
         {
-            result = new ConfigurationTaskArguments
+            result = new ConfigureTaskArguments
             {
                 FilePath = argumentList[index + 1],
                 Content = argumentList[index + 3],

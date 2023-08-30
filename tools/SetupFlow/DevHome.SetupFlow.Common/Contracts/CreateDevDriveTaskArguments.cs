@@ -11,7 +11,7 @@ namespace DevHome.SetupFlow.Common.Contracts;
 /// <remarks>
 /// <code>ElevatedProcess.exe --devdrive-path path --devdrive-size size --devdrive-letter letter --devdrive-label label</code>
 /// </remarks>
-public class DevDriveTaskArguments
+public class CreateDevDriveTaskArguments : ITaskArguments
 {
     private const string DevDrivePath = "--devdrive-path";
     private const string DevDriveSize = "--devdrive-size";
@@ -57,7 +57,7 @@ public class DevDriveTaskArguments
     /// <param name="index">Index to start reading arguments from</param>
     /// <param name="result">Output object</param>
     /// <returns>True if reading arguments succeeded. False otherwise.</returns>
-    public static bool TryReadArguments(IList<string> argumentList, ref int index, out DevDriveTaskArguments result)
+    public static bool TryReadArguments(IList<string> argumentList, ref int index, out CreateDevDriveTaskArguments result)
     {
         result = null;
 
@@ -81,7 +81,7 @@ public class DevDriveTaskArguments
                 return false;
             }
 
-            result = new DevDriveTaskArguments
+            result = new CreateDevDriveTaskArguments
             {
                 VirtDiskPath = virtDiskPath,
                 SizeInBytes = sizeInBytes,
