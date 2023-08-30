@@ -71,4 +71,19 @@ public class InstallPackageTaskArguments : ITaskArguments
             PackageCatalogArg, CatalogName,  // --package-catalog <catalog>
         };
     }
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null || obj is not InstallPackageTaskArguments taskArguments)
+        {
+            return false;
+        }
+
+        return PackageId == taskArguments.PackageId && CatalogName == taskArguments.CatalogName;
+    }
+
+    public override int GetHashCode()
+    {
+        return PackageId.GetHashCode() ^ CatalogName.GetHashCode();
+    }
 }

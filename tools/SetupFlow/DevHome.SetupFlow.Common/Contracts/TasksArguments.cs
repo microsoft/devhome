@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DevHome.SetupFlow.Common.Helpers;
 
 namespace DevHome.SetupFlow.Common.Contracts;
 
@@ -55,7 +54,7 @@ public class TasksArguments
         {
             if (InstallPackageTaskArguments.TryReadArguments(argumentList, ref index, out var installPackageTaskArguments))
             {
-                if (tasksArguments.InstallPackages.Any(p => p.PackageId == installPackageTaskArguments.PackageId && p.CatalogName == installPackageTaskArguments.CatalogName))
+                if (tasksArguments.InstallPackages.Contains(installPackageTaskArguments))
                 {
                     throw new ArgumentException($"Duplicate install package task for package {installPackageTaskArguments.PackageId} in catalog {installPackageTaskArguments.CatalogName}");
                 }
@@ -82,8 +81,7 @@ public class TasksArguments
             }
             else
             {
-                Log.Logger?.ReportWarn(Log.Component.Elevated, $"Failed to parse input arguments: {string.Join(", ", argumentList.Skip(index))}");
-                break;
+                throw new ArgumentException($"Failed to parse input arguments: {string.Join(", ", argumentList.Skip(index))}");
             }
         }
 

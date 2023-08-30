@@ -191,6 +191,9 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
     /// </summary>
     /// <param name="taskArguments">Task arguments for the operation to execute</param>
     /// <exception cref="InvalidOperationException">Thrown if this operation cannot be performed</exception>
+    /// <remarks>Validates that only one operation for the given task arguments
+    /// is executed at a time. Also prevents retrying an operation if no more
+    /// attempts are left</remarks>
     private void ValidateAndBeginOperation(ITaskArguments taskArguments)
     {
         lock (_operationStateLock)
