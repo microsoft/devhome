@@ -39,6 +39,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private readonly string _localizedBrowseButtonText;
     private readonly string _devHomeIconPath = "Assets/DevHome.ico";
     private readonly Dictionary<ByteUnit, string> _byteUnitList;
+    private readonly Guid _activityId;
 
     private Models.DevDrive _concreteDevDrive = new ();
     private DevDriveTaskGroup _taskGroup;
@@ -107,7 +108,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         ISetupFlowStringResource stringResource,
         DevDriveTaskGroup taskGroup,
         IDevDriveManager devDriveManager,
-        IHost host)
+        IHost host,
+        SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _taskGroup = taskGroup;
         _stringResource = stringResource;
@@ -122,6 +124,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         RefreshDriveLetterToSizeMapping();
         PropertyChanged += (_, args) => ValidatePropertyByName(args.PropertyName);
         _host = host;
+        _activityId = setupFlowOrchestrator.ActivityId;
     }
 
     /// <summary>

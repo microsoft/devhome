@@ -27,7 +27,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
 
     private readonly ISetupFlowStringResource _stringResource;
 
-    public RepoConfigTaskGroup(IHost host, ISetupFlowStringResource stringResource)
+    public RepoConfigTaskGroup(IHost host, ISetupFlowStringResource stringResource, SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _host = host;
         _stringResource = stringResource;
@@ -38,7 +38,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         // https://github.com/microsoft/devhome/issues/631
         _repoConfigViewModel = new (() => _host.CreateInstance<RepoConfigViewModel>(this));
         _repoConfigReviewViewModel = new (() => _host.CreateInstance<RepoConfigReviewViewModel>(this));
-        _activityId = _host.GetService<SetupFlowOrchestrator>().ActivityId;
+        _activityId = setupFlowOrchestrator.ActivityId;
     }
 
     /// <summary>

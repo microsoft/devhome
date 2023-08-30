@@ -108,7 +108,7 @@ public class InstallPackageTask : ISetupTask
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
                 AddMessage(string.Format(CultureInfo.CurrentCulture, _stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage), _package.Id));
-                var installResult = await _wpm.InstallPackageAsync(_package);
+                var installResult = await _wpm.InstallPackageAsync(_package, _activityId);
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
 

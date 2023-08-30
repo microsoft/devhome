@@ -31,7 +31,6 @@ public class WindowsPackageManager : IWindowsPackageManager
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;
     private readonly IPackageDeploymentService _packageDeploymentService;
-    private readonly Guid _activityId;
 
     // Custom composite catalogs
     private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
@@ -51,14 +50,15 @@ public class WindowsPackageManager : IWindowsPackageManager
         _appInstallManagerService = appInstallManagerService;
         _packageDeploymentService = packageDeploymentService;
 
+        var activityId = host.GetService<SetupFlowOrchestrator>().ActivityId;
+
         // Lazy-initialize custom composite catalogs
-        _allCatalogs = new (CreateAllCatalogs);
-        _wingetCatalog = new (CreateWinGetCatalog);
+        _allCatalogs = new (CreateAllCatalogs(activityId));
+        _wingetCatalog = new (CreateWinGetCatalog(activityId));
 
         // Lazy-initialize predefined catalog ids
         _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
         _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
-        _activityId = host.GetService<SetupFlowOrchestrator>().ActivityId;
     }
 
     public string WinGetCatalogId => _wingetCatalogId.Value;
@@ -106,7 +106,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs completed");
     }
 
-    public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package)
+    public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package, Guid activityId)
     {
         var packageManager = _wingetFactory.CreatePackageManager();
         var options = _wingetFactory.CreateInstallOptions();
@@ -205,9 +205,9 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// remote and local packages
     /// </summary>
     /// <returns>Catalog composed of all remote and local catalogs</returns>
-    private WinGetCompositeCatalog CreateAllCatalogs()
+    private WinGetCompositeCatalog CreateAllCatalogs(Guid activityId)
     {
-        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory, _activityId);
+        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory, activityId);
         compositeCatalog.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalogs = packageManager.GetPackageCatalogs();
@@ -227,9 +227,9 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// winget and local catalogs
     /// </summary>
     /// <returns>Catalog composed of winget and local catalogs</returns>
-    private WinGetCompositeCatalog CreateWinGetCatalog()
+    private WinGetCompositeCatalog CreateWinGetCatalog(Guid activityId)
     {
-        return CreatePredefinedCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
+        return CreatePredefinedCatalog(PredefinedPackageCatalog.OpenWindowsCatalog, activityId);
     }
 
     /// <summary>
@@ -238,9 +238,9 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// </summary>
     /// <param name="predefinedPackageCatalog">Predefined package catalog</param>
     /// <returns>Catalog composed of the provided and local catalogs</returns>
-    private WinGetCompositeCatalog CreatePredefinedCatalog(PredefinedPackageCatalog predefinedPackageCatalog)
+    private WinGetCompositeCatalog CreatePredefinedCatalog(PredefinedPackageCatalog predefinedPackageCatalog, Guid activityId)
     {
-        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory, _activityId);
+        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory, activityId);
         compositeCatalog.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalog = packageManager.GetPredefinedPackageCatalog(predefinedPackageCatalog);
