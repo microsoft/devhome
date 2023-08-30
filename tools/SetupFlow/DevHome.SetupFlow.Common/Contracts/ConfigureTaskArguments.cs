@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace DevHome.SetupFlow.Common.Contracts;
 
 /// <summary>
-/// Class representing a configuration task arguments passed to the elevated process.
+/// Class representing a configuration task's arguments passed to the elevated process.
 /// </summary>
 /// <remarks>
 /// <code>ElevatedProcess.exe --config-file file --config-content content</code>

@@ -73,7 +73,7 @@ public class ConfigurationFileHelper
 
             // Instead of reading the file content from the file path, use the
             // 'content' input parameter to ensure the data has not changed at
-            // runtime (important when running elevated)
+            // runtime on disk (important when running elevated)
             var inputStream = StringToStream(content);
             var openResult = _processor.OpenConfigurationSet(inputStream);
             _configSet = openResult.Set;
@@ -82,7 +82,9 @@ public class ConfigurationFileHelper
                 throw new OpenConfigurationSetException(openResult.ResultCode, openResult.Field);
             }
 
-            // Set input file path to the configuration set
+            // Set input file path in the configuration set to inform the
+            // processor about the working directory when applying the
+            // configuration
             _configSet.Name = file.Name;
             _configSet.Origin = parentDir.Path;
             _configSet.Path = file.Path;

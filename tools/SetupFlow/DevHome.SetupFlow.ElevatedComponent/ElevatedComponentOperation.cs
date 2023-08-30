@@ -18,7 +18,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
     /// Tasks arguments are passed to the elevated process as input at launch-time.
     /// </summary>
     /// <remarks>
-    /// This object is used to ensures that the operations performed at runtime by the
+    /// This object is used to ensure that the operations performed at runtime by the
     /// caller process were pre-approved.
     /// </remarks>
     private readonly TasksArguments _tasksArguments;
