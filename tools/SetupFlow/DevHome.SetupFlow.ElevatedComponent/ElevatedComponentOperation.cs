@@ -97,6 +97,29 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
             result => result.TaskSucceeded).AsAsyncOperation();
     }
 
+    /// <summary>
+    /// Terminate method to be called when the elevated process is shutting down.
+    /// </summary>
+    public void Terminate()
+    {
+        var allTasksArguments = _tasksArguments.GetAllTasksArguments();
+        if (allTasksArguments.Count == _operationsState.Count)
+        {
+            Log.Logger?.ReportInfo($"All operations for the tasks arguments provided to the elevated process were executed.");
+        }
+        else
+        {
+            // Check if any operation was never executed in the elevated process.
+            foreach (var taskArguments in allTasksArguments)
+            {
+                if (!_operationsState.ContainsKey(taskArguments))
+                {
+                    Log.Logger?.ReportWarn($"Operation for task arguments {string.Join(' ', taskArguments.ToArgumentList())} was provided to the elevated process but was never executed.");
+                }
+            }
+        }
+    }
+
     private InstallPackageTaskArguments GetInstallPackageTaskArguments(string packageId, string catalogName)
     {
         // Ensure the package to install has been pre-approved by checking against the process tasks arguments

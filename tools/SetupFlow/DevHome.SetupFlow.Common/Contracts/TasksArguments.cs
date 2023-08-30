@@ -96,20 +96,31 @@ public class TasksArguments
     /// <returns>List of argument strings from all tasks arguments</returns>
     public List<string> ToArgumentList()
     {
-        List<string> result = new ();
+        return GetAllTasksArguments()
+            .SelectMany(taskArguments => taskArguments.ToArgumentList())
+            .ToList();
+    }
+
+    /// <summary>
+    /// Get all tasks arguments.
+    /// </summary>
+    /// <returns>Returns all tasks arguments in a list format.</returns>
+    public List<ITaskArguments> GetAllTasksArguments()
+    {
+        List<ITaskArguments> result = new ();
         if (InstallPackages != null)
         {
-            result.AddRange(InstallPackages.SelectMany(def => def.ToArgumentList()));
+            result.AddRange(InstallPackages);
         }
 
         if (Configure != null)
         {
-            result.AddRange(Configure.ToArgumentList());
+            result.Add(Configure);
         }
 
         if (CreateDevDrive != null)
         {
-            result.AddRange(CreateDevDrive.ToArgumentList());
+            result.Add(CreateDevDrive);
         }
 
         return result;

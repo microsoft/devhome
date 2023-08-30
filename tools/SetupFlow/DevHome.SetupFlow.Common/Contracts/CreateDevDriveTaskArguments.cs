@@ -95,13 +95,10 @@ public class CreateDevDriveTaskArguments : ITaskArguments
         return false;
     }
 
-    /// <summary>
-    /// Create a list of arguments from this object.
-    /// </summary>
-    /// <returns>List of argument strings from this object</returns>
-    public List<string> ToArgumentList()
+    /// <inheritdoc/>
+    public IList<string> ToArgumentList()
     {
-        return new ()
+        return new List<string>()
         {
             DevDrivePath, VirtDiskPath,            // --devdrive-path <path>
             DevDriveSize, $"{SizeInBytes}",        // --devdrive-size <size>

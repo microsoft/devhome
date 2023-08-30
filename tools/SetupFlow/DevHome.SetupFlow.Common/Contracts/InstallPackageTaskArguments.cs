@@ -62,13 +62,10 @@ public class InstallPackageTaskArguments : ITaskArguments
         return false;
     }
 
-    /// <summary>
-    /// Create a list of arguments from this object.
-    /// </summary>
-    /// <returns>List of argument strings from this object</returns>
-    public List<string> ToArgumentList()
+    /// <inheritdoc/>
+    public IList<string> ToArgumentList()
     {
-        return new ()
+        return new List<string>()
         {
             PackageIdArg, PackageId,         // --package-id <id>
             PackageCatalogArg, CatalogName,  // --package-catalog <catalog>

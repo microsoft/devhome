@@ -34,5 +34,9 @@ internal sealed class Program
             IPCSetup.CompleteRemoteObjectInitialization<IElevatedComponentOperation>(ex.HResult, null, mappedFileName, initEventName, completionSemaphoreName);
             throw;
         }
+        finally
+        {
+            operation.Terminate();
+        }
     }
 }
