@@ -32,11 +32,22 @@
         </DataTemplate>
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-        <StackPanel x:Name="AccountsContentArea">
-            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
+    <Grid
+        MaxWidth="{ThemeResource MaxPageContentWidth}"
+        Margin="{ThemeResource ContentPageMargin}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-            <StackPanel x:Name="AddAccountMainStackPanel" Margin="{StaticResource XSmallTopMargin}">
+        <BreadcrumbBar
+            x:Name="BreadcrumbBar"
+            Margin="0,0,0,16"
+            ItemClicked="BreadcrumbBar_ItemClicked"
+            ItemsSource="{x:Bind Breadcrumbs}" />
+
+        <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
+            <StackPanel>
                 <labs:SettingsCard x:Uid="Settings_Accounts_AddAccount">
                     <labs:SettingsCard.HeaderIcon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8fa;"/>
@@ -59,14 +70,12 @@
                         </Button.Resources>
                     </Button>
                 </labs:SettingsCard>
-            </StackPanel>
                 
-            <StackPanel>
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}"
                                ItemTemplate="{StaticResource AccountsProviderViewTemplate}"
                                HorizontalAlignment="Stretch" VerticalAlignment="Center">
                 </ItemsRepeater>
             </StackPanel>
-        </StackPanel>
-    </ScrollViewer>
+        </ScrollViewer>
+    </Grid>
 </Page>

@@ -13,6 +13,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
+using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
@@ -341,12 +342,18 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     protected async override Task OnFirstNavigateToAsync()
     {
-        var isAdminRequired = Orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresAdmin));
-        if (isAdminRequired)
+        var elevatedTasks = Orchestrator.TaskGroups.SelectMany(taskGroup => taskGroup.SetupTasks.Where(task => task.RequiresAdmin));
+        if (elevatedTasks.Any())
         {
             try
             {
-                Orchestrator.RemoteElevatedFactory = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentFactory>();
+                TasksArguments tasksArguments = new ()
+                {
+                    InstallPackages = elevatedTasks.OfType<InstallPackageTask>().Select(task => task.GetArguments()).ToList(),
+                    Configure = elevatedTasks.OfType<ConfigureTask>().Select(task => task.GetArguments()).FirstOrDefault(),
+                    CreateDevDrive = elevatedTasks.OfType<CreateDevDriveTask>().Select(task => task.GetArguments()).FirstOrDefault(),
+                };
+                Orchestrator.RemoteElevatedOperation = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentOperation>(tasksArguments);
             }
             catch (Exception e)
             {
@@ -461,10 +468,10 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             });
 
             TaskFinishedState taskFinishedState;
-            if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedFactory != null)
+            if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedOperation != null)
             {
                 Log.Logger?.ReportInfo(Log.Component.Loading, "Starting task as admin");
-                taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedFactory.Value);
+                taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedOperation.Value);
             }
             else
             {

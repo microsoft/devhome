@@ -15,8 +15,8 @@ using WinRT;
 namespace Microsoft.Windows.DevHome.SDK;
 
 [ComVisible(true)]
-internal class PluginInstanceManager<T> : IClassFactory
-    where T : IPlugin
+internal class ExtensionInstanceManager<T> : IClassFactory
+    where T : IExtension
 {
 #pragma warning disable SA1310 // Field names should not contain underscore
 
@@ -34,14 +34,14 @@ internal class PluginInstanceManager<T> : IClassFactory
 
 #pragma warning restore SA1310 // Field names should not contain underscore
 
-    private readonly Func<T> _createPlugin;
+    private readonly Func<T> _createExtension;
 
-    private readonly bool _restrictToMicrosoftPluginHosts;
+    private readonly bool _restrictToMicrosoftExtensionHosts;
 
-    public PluginInstanceManager(Func<T> createPlugin, bool restrictToMicrosoftPluginHosts)
+    public ExtensionInstanceManager(Func<T> createExtension, bool restrictToMicrosoftExtensionHosts)
     {
-        this._createPlugin = createPlugin;
-        this._restrictToMicrosoftPluginHosts = restrictToMicrosoftPluginHosts;
+        this._createExtension = createExtension;
+        this._restrictToMicrosoftExtensionHosts = restrictToMicrosoftExtensionHosts;
     }
 
     public void CreateInstance(
@@ -49,7 +49,7 @@ internal class PluginInstanceManager<T> : IClassFactory
         ref Guid riid,
         out IntPtr ppvObject)
     {
-        if (_restrictToMicrosoftPluginHosts && !IsMicrosoftPluginHost())
+        if (_restrictToMicrosoftExtensionHosts && !IsMicrosoftExtensionHost())
         {
             Marshal.ThrowExceptionForHR(E_ACCESSDENIED);
         }
@@ -64,7 +64,7 @@ internal class PluginInstanceManager<T> : IClassFactory
         if (riid == typeof(T).GUID || riid == IID_IUnknown)
         {
             // Create the instance of the .NET object
-            ppvObject = MarshalInspectable<object>.FromManaged(_createPlugin());
+            ppvObject = MarshalInspectable<object>.FromManaged(_createExtension());
         }
         else
         {
@@ -78,7 +78,7 @@ internal class PluginInstanceManager<T> : IClassFactory
     {
     }
 
-    private unsafe bool IsMicrosoftPluginHost()
+    private unsafe bool IsMicrosoftExtensionHost()
     {
         if (PInvoke.CoImpersonateClient() != 0)
         {

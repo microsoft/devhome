@@ -20,7 +20,7 @@ public partial class AboutViewModel : ObservableObject
 
     private static string GetVersionDescription()
     {
-        IAppInfoService appInfoService = Application.Current.GetService<IAppInfoService>();
+        var appInfoService = Application.Current.GetService<IAppInfoService>();
         var version = appInfoService.GetAppVersion();
 
         return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";
