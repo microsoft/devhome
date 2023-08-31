@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ABI.System;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
@@ -74,7 +73,7 @@ internal class RepositoryProvider
     /// </remarks>
     public IRepository GetRepositoryFromUri(Uri uri, IDeveloperId developerId = null)
     {
-        RepositoriesResult getResult;
+        RepositoryResult getResult;
         if (developerId == null)
         {
             getResult = _repositoryProvider.GetRepositoryFromUriAsync(uri).AsTask().Result;
@@ -89,7 +88,7 @@ internal class RepositoryProvider
             throw getResult.Result.ExtendedError;
         }
 
-        return getResult.Repositories.First();
+        return getResult.Repository;
     }
 
     /// <summary>
@@ -101,6 +100,8 @@ internal class RepositoryProvider
     /// public, the developerid can be null.</remarks>
     public (bool, IDeveloperId, IRepositoryProvider) IsUriSupported(Uri uri)
     {
+        return (false, null, null);
+        /*
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
 
         // Possible that no accounts are loggd in.  Try in case the repo is public.
@@ -127,6 +128,7 @@ internal class RepositoryProvider
 
         // no accounts can access this uri or the repo does not exist.
         return (false, null, null);
+        */
     }
 
     /// <summary>
@@ -138,7 +140,11 @@ internal class RepositoryProvider
         return _devIdProvider.LoginNewDeveloperIdAsync().AsTask().Result;
         */
 
+        /*
         return _devIdProvider.GetLoggedInDeveloperIds().DeveloperIds.First();
+        */
+
+        return null;
     }
 
     /// <summary>
@@ -147,6 +153,8 @@ internal class RepositoryProvider
     /// <returns>A list of all accounts.  May be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts()
     {
+        return new List<IDeveloperId>();
+        /*
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
         if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
         {
@@ -155,6 +163,7 @@ internal class RepositoryProvider
         }
 
         return developerIdsResult.DeveloperIds;
+        */
     }
 
     /// <summary>

@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using ABI.System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
@@ -509,7 +508,7 @@ public partial class AddRepoViewModel : ObservableObject
                     throw repoResult.GetResults().Result.ExtendedError;
                 }
 
-                cloningInformation = new CloningInformation(repoResult.GetResults().Repositories.First());
+                cloningInformation = new CloningInformation(repoResult.GetResults().Repository);
                 cloningInformation.ProviderName = providerToCloneRepo.Item3.DisplayName;
                 cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
                 cloningInformation.OwningAccount = providerToCloneRepo.Item2;
@@ -524,7 +523,7 @@ public partial class AddRepoViewModel : ObservableObject
                     throw repoResult.GetResults().Result.ExtendedError;
                 }
 
-                cloningInformation = new CloningInformation(repoResult.GetResults().Repositories.First());
+                cloningInformation = new CloningInformation(repoResult.GetResults().Repository);
                 cloningInformation.ProviderName = providerToCloneRepo.Item3.DisplayName;
                 cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
                 cloningInformation.OwningAccount = providerToCloneRepo.Item2;

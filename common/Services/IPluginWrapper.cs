@@ -52,7 +52,7 @@ public interface IPluginWrapper
     /// Gets the underlying instance of IPlugin
     /// </summary>
     /// <returns>Instance of IPlugin</returns>
-    IPlugin? GetPluginObject();
+    IExtension? GetExtensionObject();
 
     /// <summary>
     /// Tells the wrapper that the plugin implements the given provider
