@@ -51,4 +51,6 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 
         return new ProviderOperationResult(ProviderOperationStatus.Success, null, "IExtensionAdaptiveCard.Update succeeds", "IExtensionAdaptiveCard.Update succeeds");
     }
+
+    ProviderOperationResult IExtensionAdaptiveCard.Update(string templateJson, string dataJson, string state) => throw new NotImplementedException();
 }
