@@ -166,18 +166,16 @@ namespace Microsoft.Windows.DevHome.SDK
             get;
         };
 
-        //DeveloperIdsResult GetLoggedInDeveloperIds();
+        DeveloperIdsResult GetLoggedInDeveloperIds();
 
         ProviderOperationResult LogoutDeveloperId(IDeveloperId developerId);
 
-        event Windows.Foundation.TypedEventHandler<IDeveloperIdProvider, Object> Changed;
+        event Windows.Foundation.TypedEventHandler<IDeveloperIdProvider, IDeveloperId> Changed;
 
-        AuthenticationState DeveloperIdState
-        {
-            get;
-        };
+        AuthenticationState GetDeveloperIdState(IDeveloperId developerId); 
 
-        // The extension chooses to support one enum Option. Once defined by the extension this value cannot be 	// changed by DevHome or the extension itself.
+        // The extension chooses to support one enum Option. Once defined by the extension this value cannot be 	
+        // changed by DevHome or the extension itself.
         AuthenticationExperienceKind GetAuthenticationExperienceKind();
 
         //ExtensionProvidedExperience
