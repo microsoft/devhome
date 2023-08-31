@@ -156,48 +156,6 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    // Developer ID
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass DeveloperIdsResult {
-        DeveloperIdsResult(IIterable<IDeveloperId> developerIds);
-        DeveloperIdsResult(HRESULT e, String diagnosticText);
-
-        IIterable<IDeveloperId> DeveloperIds
-        {
-            get;
-        };
-        ProviderOperationResult Result
-        {
-            get;
-        };
-    };
-
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IDeveloperIdProvider
-        requires Windows
-        .Foundation.IClosable
-    {
-        String DisplayName
-        {
-            get;
-        };
-
-        DeveloperIdsResult GetLoggedInDeveloperIds();
-
-        ProviderOperationResult LogoutDeveloperId(IDeveloperId developerId);
-
-        event Windows.Foundation.TypedEventHandler<IDeveloperIdProvider, IDeveloperId> Changed;
-
-        AuthenticationState GetDeveloperIdState(IDeveloperId developerId);
-
-        // The extension chooses to support one enum Option. Once defined by the extension this value cannot be 	// changed by DevHome or the extension itself.
-        AuthenticationExperienceKind GetAuthenticationExperienceKind();
-
-        //ExtensionProvidedExperience
-        Windows.Foundation.IAsyncOperation<DeveloperIdResult> ShowLogonSession(Microsoft.UI.WindowId windowHandle);
-
-        //DevHomeIntegratedCard
-        AdaptiveCardSessionResult GetLoginAdaptiveCardSession();
-    };
-
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass DeveloperIdResult {
         DeveloperIdResult(IDeveloperId developerId);
         DeveloperIdResult(HRESULT e, String diagnosticText);
@@ -223,6 +181,35 @@ namespace Microsoft.Windows.DevHome.SDK
         {
             get;
         };
+    };
+
+    // Developer ID
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IDeveloperIdProvider
+        requires Windows
+        .Foundation.IClosable
+    {
+        String DisplayName
+        {
+            get;
+        };
+
+        DeveloperIdsResult GetLoggedInDeveloperIds();
+
+        ProviderOperationResult LogoutDeveloperId(IDeveloperId developerId);
+
+        event Windows.Foundation.TypedEventHandler<IDeveloperIdProvider, IDeveloperId> Changed;
+
+        AuthenticationState GetDeveloperIdState(IDeveloperId developerId);
+
+        // The extension chooses to support one enum Option. Once defined by the extension this value cannot be
+        // changed by DevHome or the extension itself.
+        AuthenticationExperienceKind GetAuthenticationExperienceKind();
+
+        //ExtensionProvidedExperience
+        Windows.Foundation.IAsyncOperation<DeveloperIdResult> ShowLogonSession(Microsoft.UI.WindowId windowHandle);
+
+        //DevHomeIntegratedCard
+        AdaptiveCardSessionResult GetLoginAdaptiveCardSession();
     };
 
     // Settings
