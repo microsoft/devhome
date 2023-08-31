@@ -9,8 +9,8 @@ namespace CoreWidgetProvider;
 
 [ComVisible(true)]
 [Guid("426A52D6-8007-4894-A946-CF80F39507F1")]
-[ComDefaultInterface(typeof(IPlugin))]
-public sealed class CorePlugin : IPlugin
+[ComDefaultInterface(typeof(IExtension))]
+public sealed class CorePlugin : IExtension
 {
     private readonly ManualResetEvent _pluginDisposedEvent;
 

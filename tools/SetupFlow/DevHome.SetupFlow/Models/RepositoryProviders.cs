@@ -28,7 +28,7 @@ internal class RepositoryProviders
         return _providers.GetValueOrDefault(providerName)?.DisplayName ?? string.Empty;
     }
 
-    public RepositoryProviders(IEnumerable<IPluginWrapper> pluginWrappers)
+    public RepositoryProviders(IEnumerable<IExtensionWrapper> pluginWrappers)
     {
         _providers = pluginWrappers.ToDictionary(pluginWrapper => pluginWrapper.Name, pluginWrapper => new RepositoryProvider(pluginWrapper));
     }

@@ -22,7 +22,7 @@ internal class RepositoryProvider
     /// <summary>
     /// All the repositories for an account.
     /// </summary>
-    private readonly Lazy<IEnumerable<IRepository>> _repositories = new ();
+    private Lazy<IEnumerable<IRepository>> _repositories = new ();
 
     /// <summary>
     /// Wrapper for the plugin that is providing a repository and developer id.
@@ -31,7 +31,7 @@ internal class RepositoryProvider
     /// The plugin is not started in the constructor.  It is started when StartIfNotRunningAsync is called.
     /// This is for lazy loading and starting and prevents all plugins from starting all at once.
     /// </remarks>
-    private readonly IPluginWrapper _pluginWrapper;
+    private readonly IExtensionWrapper _extensionWrapper;
 
     /// <summary>
     /// The DeveloperId provider used to log a user into an account.
@@ -43,9 +43,9 @@ internal class RepositoryProvider
     /// </summary>
     private IRepositoryProvider _repositoryProvider;
 
-    public RepositoryProvider(IPluginWrapper pluginWrapper)
+    public RepositoryProvider(IExtensionWrapper pluginWrapper)
     {
-        _pluginWrapper = pluginWrapper;
+        _extensionWrapper = pluginWrapper;
     }
 
     public string DisplayName => _repositoryProvider.DisplayName;
@@ -58,8 +58,8 @@ internal class RepositoryProvider
         // The task.run inside GetProvider makes a deadlock when .Result is called.
         // https://stackoverflow.com/a/17248813.  Solution is to wrap in Task.Run().
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider plugins");
-        _devIdProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
-        _repositoryProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
+        _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
+        _repositoryProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
         var myName = _repositoryProvider.DisplayName;
     }
 
@@ -100,8 +100,6 @@ internal class RepositoryProvider
     /// public, the developerid can be null.</remarks>
     public (bool, IDeveloperId, IRepositoryProvider) IsUriSupported(Uri uri)
     {
-        return (false, null, null);
-        /*
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
 
         // Possible that no accounts are loggd in.  Try in case the repo is public.
@@ -128,7 +126,6 @@ internal class RepositoryProvider
 
         // no accounts can access this uri or the repo does not exist.
         return (false, null, null);
-        */
     }
 
     /// <summary>
@@ -136,15 +133,7 @@ internal class RepositoryProvider
     /// </summary>
     public IDeveloperId LogIntoProvider()
     {
-        /*
-        return _devIdProvider.LoginNewDeveloperIdAsync().AsTask().Result;
-        */
-
-        /*
         return _devIdProvider.GetLoggedInDeveloperIds().DeveloperIds.First();
-        */
-
-        return null;
     }
 
     /// <summary>
@@ -153,8 +142,6 @@ internal class RepositoryProvider
     /// <returns>A list of all accounts.  May be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts()
     {
-        return new List<IDeveloperId>();
-        /*
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
         if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
         {
@@ -163,7 +150,6 @@ internal class RepositoryProvider
         }
 
         return developerIdsResult.DeveloperIds;
-        */
     }
 
     /// <summary>
@@ -173,18 +159,14 @@ internal class RepositoryProvider
     /// <returns>A collection of repositories.  May be empty</returns>
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
     {
-        /*
         if (!_repositories.IsValueCreated)
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
-            _repositories = new Lazy<IEnumerable<IRepository>>(_repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result);
+            _repositories = new Lazy<IEnumerable<IRepository>>(_repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result.Repositories);
         }
 
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
         return _repositories.Value;
-        */
-
-        return new List<IRepository>();
     }
 }

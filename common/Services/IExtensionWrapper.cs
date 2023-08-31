@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Common.Services;
-public interface IPluginWrapper
+public interface IExtensionWrapper
 {
     /// <summary>
     /// Gets name of the plugin as mentioned in the manifest
@@ -26,7 +26,7 @@ public interface IPluginWrapper
     /// <summary>
     /// Gets class id (GUID) of the plugin class (which implements IPlugin) as mentioned in the manifest
     /// </summary>
-    string PluginClassId
+    string ExtensionClassId
     {
         get;
     }

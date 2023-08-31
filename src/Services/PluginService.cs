@@ -21,8 +21,8 @@ public class PluginService : IPluginService
     private static readonly object _lock = new ();
 
 #pragma warning disable IDE0044 // Add readonly modifier
-    private static List<IPluginWrapper> _installedPlugins = new ();
-    private static List<IPluginWrapper> _enabledPlugins = new ();
+    private static List<IExtensionWrapper> _installedPlugins = new ();
+    private static List<IExtensionWrapper> _enabledPlugins = new ();
 #pragma warning restore IDE0044 // Add readonly modifier
 
     public PluginService()
@@ -146,7 +146,7 @@ public class PluginService : IPluginService
         return await AppExtensionCatalog.Open("com.microsoft.devhome").FindAllAsync();
     }
 
-    public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins = false)
+    public async Task<IEnumerable<IExtensionWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins = false)
     {
         if (_installedPlugins.Count == 0)
         {
@@ -194,7 +194,7 @@ public class PluginService : IPluginService
         return includeDisabledPlugins ? _installedPlugins : _enabledPlugins;
     }
 
-    public async Task<IEnumerable<IPluginWrapper>> StartAllPluginsAsync()
+    public async Task<IEnumerable<IExtensionWrapper>> StartAllPluginsAsync()
     {
         var installedPlugins = await GetInstalledPluginsAsync();
         foreach (var installedPlugin in installedPlugins)
@@ -220,11 +220,11 @@ public class PluginService : IPluginService
         }
     }
 
-    public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(ProviderType providerType, bool includeDisabledPlugins = false)
+    public async Task<IEnumerable<IExtensionWrapper>> GetInstalledPluginsAsync(ProviderType providerType, bool includeDisabledPlugins = false)
     {
         var installedPlugins = await GetInstalledPluginsAsync(includeDisabledPlugins);
 
-        List<IPluginWrapper> filteredPlugins = new ();
+        List<IExtensionWrapper> filteredPlugins = new ();
         foreach (var installedPlugin in installedPlugins)
         {
             if (installedPlugin.HasProviderType(providerType))

@@ -10,7 +10,7 @@ using WinRT;
 
 namespace DevHome.Models;
 
-public class PluginWrapper : IPluginWrapper
+public class PluginWrapper : IExtensionWrapper
 {
     private const int HResultRpcServerNotRunning = -2147023174;
 
