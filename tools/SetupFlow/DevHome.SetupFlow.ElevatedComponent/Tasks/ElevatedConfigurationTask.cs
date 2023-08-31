@@ -6,15 +6,13 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Microsoft.Management.Configuration;
 using Windows.Foundation;
-using Windows.Storage;
-using Windows.Win32;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.ElevatedComponent.Tasks;
 
 public sealed class ElevatedConfigurationTask
 {
-    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(StorageFile file)
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(string filePath, string content)
     {
         return Task.Run(async () =>
         {
@@ -22,10 +20,10 @@ public sealed class ElevatedConfigurationTask
 
             try
             {
-                var configurationFileHelper = new ConfigurationFileHelper(file);
+                var configurationFileHelper = new ConfigurationFileHelper();
 
-                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from file: {file.Path}");
-                await configurationFileHelper.OpenConfigurationSetAsync();
+                Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from file: {filePath}");
+                await configurationFileHelper.OpenConfigurationSetAsync(filePath, content);
 
                 Log.Logger?.ReportInfo(Log.Component.Configuration, "Starting configuration set application");
                 var result = await configurationFileHelper.ApplyConfigurationAsync();

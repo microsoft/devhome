@@ -177,7 +177,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     protected async override Task OnFirstNavigateToAsync()
     {
         TelemetryFactory.Get<ITelemetry>().LogCritical("Summary_NavigatedTo_Event");
-        _orchestrator.ReleaseRemoteFactory();
+        _orchestrator.ReleaseRemoteOperationObject();
         await ReloadCatalogsAsync();
     }
 

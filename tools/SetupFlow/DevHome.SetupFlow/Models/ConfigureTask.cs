@@ -5,15 +5,16 @@ extern alias Projection;
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Configuration;
+using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
 using Windows.Storage;
-using WinRT;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -48,8 +49,9 @@ public class ConfigureTask : ISetupTask
     {
         try
         {
-            _configurationFileHelper = new ConfigurationFileHelper(_file);
-            await _configurationFileHelper.OpenConfigurationSetAsync();
+            var fileData = GetFileData();
+            _configurationFileHelper = new ConfigurationFileHelper();
+            await _configurationFileHelper.OpenConfigurationSetAsync(fileData.FilePath, fileData.Content);
         }
         catch (Exception e)
         {
@@ -114,13 +116,12 @@ public class ConfigureTask : ISetupTask
 
     /// <inheritdoc/>
     /// <remarks><seealso cref="RequiresAdmin"/></remarks>
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
         return Task.Run(async () =>
         {
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file {_file.Path}");
-            var elevatedTask = elevatedComponentFactory.CreateElevatedConfigurationTask();
-            var elevatedResult = await elevatedTask.ApplyConfiguration(_file);
+            var elevatedResult = await elevatedComponentOperation.ApplyConfigurationAsync();
             RequiresReboot = elevatedResult.RebootRequired;
             UnitResults = new List<ConfigurationUnitResult>();
 
@@ -133,5 +134,25 @@ public class ConfigureTask : ISetupTask
 
             return elevatedResult.TaskSucceeded ? TaskFinishedState.Success : TaskFinishedState.Failure;
         }).AsAsyncOperation();
+    }
+
+    /// <summary>
+    /// Get the arguments for this task
+    /// </summary>
+    /// <returns>Arguments for this task</returns>
+    public ConfigureTaskArguments GetArguments()
+    {
+        var fileData = GetFileData();
+        return new ConfigureTaskArguments
+        {
+            FilePath = fileData.FilePath,
+            Content = fileData.Content,
+        };
+    }
+
+    private (string FilePath, string Content) GetFileData()
+    {
+        var content = File.ReadAllText(_file.Path);
+        return (_file.Path, content);
     }
 }
