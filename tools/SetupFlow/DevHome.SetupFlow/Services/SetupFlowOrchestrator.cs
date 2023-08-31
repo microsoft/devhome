@@ -72,7 +72,7 @@ public partial class SetupFlowOrchestrator : ObservableObject
         get; set;
     }
 
-    public RemoteObject<IElevatedComponentFactory> RemoteElevatedFactory
+    public RemoteObject<IElevatedComponentOperation> RemoteElevatedOperation
     {
         get; set;
     }
@@ -134,13 +134,13 @@ public partial class SetupFlowOrchestrator : ObservableObject
         where T : ISetupTaskGroup => TaskGroups.OfType<T>().FirstOrDefault();
 
     /// <summary>
-    /// Releases the remote factory, terminating the background process.
+    /// Releases the remote operation object, terminating the background process.
     /// </summary>
-    public void ReleaseRemoteFactory()
+    public void ReleaseRemoteOperationObject()
     {
         // Disposing of this object signals the background process to terminate.
-        RemoteElevatedFactory?.Dispose();
-        RemoteElevatedFactory = null;
+        RemoteElevatedOperation?.Dispose();
+        RemoteElevatedOperation = null;
     }
 
     /// <summary>

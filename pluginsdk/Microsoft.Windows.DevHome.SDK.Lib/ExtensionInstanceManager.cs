@@ -36,12 +36,12 @@ internal class ExtensionInstanceManager<T> : IClassFactory
 
     private readonly Func<T> _createExtension;
 
-    private readonly bool _restrictToMicrosoftPluginHosts;
+    private readonly bool _restrictToMicrosoftExtensionHosts;
 
-    public ExtensionInstanceManager(Func<T> createPlugin, bool restrictToMicrosoftPluginHosts)
+    public ExtensionInstanceManager(Func<T> createExtension, bool restrictToMicrosoftExtensionHosts)
     {
-        this._createPlugin = createPlugin;
-        this._restrictToMicrosoftPluginHosts = restrictToMicrosoftPluginHosts;
+        this._createExtension = createExtension;
+        this._restrictToMicrosoftExtensionHosts = restrictToMicrosoftExtensionHosts;
     }
 
     public void CreateInstance(
@@ -49,7 +49,7 @@ internal class ExtensionInstanceManager<T> : IClassFactory
         ref Guid riid,
         out IntPtr ppvObject)
     {
-        if (_restrictToMicrosoftPluginHosts && !IsMicrosoftPluginHost())
+        if (_restrictToMicrosoftExtensionHosts && !IsMicrosoftExtensionHost())
         {
             Marshal.ThrowExceptionForHR(E_ACCESSDENIED);
         }
@@ -64,7 +64,7 @@ internal class ExtensionInstanceManager<T> : IClassFactory
         if (riid == typeof(T).GUID || riid == IID_IUnknown)
         {
             // Create the instance of the .NET object
-            ppvObject = MarshalInspectable<object>.FromManaged(_createPlugin());
+            ppvObject = MarshalInspectable<object>.FromManaged(_createExtension());
         }
         else
         {
@@ -78,7 +78,7 @@ internal class ExtensionInstanceManager<T> : IClassFactory
     {
     }
 
-    private unsafe bool IsMicrosoftPluginHost()
+    private unsafe bool IsMicrosoftExtensionHost()
     {
         if (PInvoke.CoImpersonateClient() != 0)
         {

@@ -145,7 +145,7 @@ Try {
             ("DevHome.sln"),
             ("/p:Platform="+$platform),
             ("/p:Configuration="+$configuration),
-            ("/p:DevHomeSDKVersion="+$env:sdk_version),
+            # ("/p:DevHomeSDKVersion="+$env:sdk_version),
             ("/restore"),
             ("/binaryLogger:DevHome.$platform.$configuration.binlog"),
             ("/p:AppxPackageOutput=$appxPackageDir\DevHome-$platform.msix"),

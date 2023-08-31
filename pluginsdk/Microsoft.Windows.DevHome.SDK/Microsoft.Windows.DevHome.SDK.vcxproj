@@ -75,6 +75,27 @@
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DesktopCompatible>true</DesktopCompatible>
   </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DesktopCompatible>true</DesktopCompatible>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -153,14 +174,10 @@
     <ClInclude Include="GetFeaturedApplicationGroupResult.h" />
     <ClInclude Include="GetFeaturedApplicationsResult.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="ProviderOperationResult.h">
-      <DeploymentContent>false</DeploymentContent>
-    </ClInclude>
+    <ClInclude Include="ProviderOperationResult.h" />
     <ClInclude Include="RepositoriesResult.h" />
     <ClInclude Include="RepositoryResult.h" />
-    <ClInclude Include="RepositoryUriSupportResult.h">
-      <DeploymentContent>false</DeploymentContent>
-    </ClInclude>
+    <ClInclude Include="RepositoryUriSupportResult.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AdaptiveCardSessionResult.cpp" />
@@ -172,21 +189,17 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ProviderOperationResult.cpp">
-      <DeploymentContent>false</DeploymentContent>
-    </ClCompile>
+    <ClCompile Include="ProviderOperationResult.cpp" />
     <ClCompile Include="RepositoriesResult.cpp" />
     <ClCompile Include="RepositoryResult.cpp" />
-    <ClCompile Include="RepositoryUriSupportResult.cpp">
-      <DeploymentContent>false</DeploymentContent>
-    </ClCompile>
+    <ClCompile Include="RepositoryUriSupportResult.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Microsoft.Windows.DevHome.SDK.idl" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Microsoft.Windows.DevHome.SDK.def" />
     <None Include="packages.config" />
+    <None Include="Microsoft.Windows.DevHome.SDK.def" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt">
