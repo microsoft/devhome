@@ -166,7 +166,7 @@ namespace Microsoft.Windows.DevHome.SDK
             get;
         };
 
-        DeveloperIdsResult GetLoggedInDeveloperIds();
+        Windows.Foundation.IAsyncOperation<DeveloperIdsResult> GetLoggedInDeveloperIds();
 
         ProviderOperationResult LogoutDeveloperId(IDeveloperId developerId);
 
