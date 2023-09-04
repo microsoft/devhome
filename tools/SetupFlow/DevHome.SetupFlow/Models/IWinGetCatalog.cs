@@ -46,8 +46,8 @@ public interface IWinGetCatalog
     /// Get packages by id from this catalog.
     /// Equivalent to <c>"winget search --id {packageId} --exact --source {this}"</c>
     /// </summary>
-    /// <param name="packageIdSet">Set of package id</param>
+    /// <param name="packageUriSet">Set of package uri</param>
     /// <returns>List of winget package matches</returns>
     /// <exception cref="FindPackagesException">Exception thrown if the get packages operation failed</exception>
-    public Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<string> packageIdSet);
+    public Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<string> packageUriSet);
 }

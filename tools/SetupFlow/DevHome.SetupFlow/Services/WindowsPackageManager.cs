@@ -25,6 +25,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     public const int AppInstallerErrorFacility = 0xA15;
     public const string AppInstallerProductId = "9NBLGGH4NNS1";
     public const string AppInstallerPackageFamilyName = "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe";
+    public const string Scheme = "x-ms-winget";
 
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;
@@ -181,6 +182,16 @@ public class WindowsPackageManager : IWindowsPackageManager
             Log.Logger?.ReportError(Log.Component.AppManagement, "An unexpected error occurred when registering AppInstaller", e);
             return false;
         }
+    }
+
+    public Uri CreatePackageUri(IWinGetPackage package)
+    {
+        if (package.CatalogId == WinGetCatalogId)
+        {
+            return new Uri($"{Scheme}://winget/{package.Id}");
+        }
+
+        throw new NotSupportedException($"Creating a package uri from catalog '{package.CatalogName}' is not supported");
     }
 
     /// <summary>

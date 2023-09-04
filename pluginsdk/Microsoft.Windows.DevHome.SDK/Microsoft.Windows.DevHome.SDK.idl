@@ -263,20 +263,16 @@ namespace Microsoft.Windows.DevHome.SDK
         ProviderOperationResult Update(String templateJson, String dataJson, String state);
     };
 
-    // Featured Application Provider
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-        // IFeaturedApplicationProvider interface allows extensions to provide a list of featured application groups
-        interface IFeaturedApplicationProvider {
-            // Get the list of featured application groups
-            Windows.Foundation.IAsyncOperation<GetFeaturedApplicationGroupResult>
-            GetFeaturedApplicationGroupsAsync();
-        };
+    // Interface to get the list of featured applications
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IFeaturedApplicationProvider {
+		Windows.Foundation.IAsyncOperation<GetFeaturedApplicationGroupsResult> GetFeaturedApplicationGroupsAsync();
+	};
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass GetFeaturedApplicationGroupResult {
-        GetFeaturedApplicationGroupResult(IFeaturedApplicationGroup featuredApplicationGroup);
-        GetFeaturedApplicationGroupResult(HRESULT e, String diagnosticText);
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass GetFeaturedApplicationGroupsResult {
+        GetFeaturedApplicationGroupsResult(IVectorView<IFeaturedApplicationGroup> featuredApplicationGroup);
+        GetFeaturedApplicationGroupsResult(HRESULT e, String diagnosticText);
 
-        IFeaturedApplicationGroup FeaturedApplicationGroup
+        IVectorView<IFeaturedApplicationGroup> FeaturedApplicationGroups
         {
             get;
         };
@@ -300,8 +296,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-        // IFeaturedApplicationGroup interface represents a group of featured applications
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IFeaturedApplicationGroup {
+    // IFeaturedApplicationGroup interface represents a group of featured applications
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IFeaturedApplicationGroup {
         // Get the localized title of the group
         String GetTitle(String preferredLocale);
 

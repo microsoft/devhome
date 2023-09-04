@@ -13,12 +13,14 @@ using Windows.Foundation.Collections;
 
 namespace DevHome.Services;
 
-public class PluginService : IPluginService
+public class PluginService : IPluginService, IDisposable
 {
     public event EventHandler OnPluginsChanged = (_, _) => { };
 
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
     private static readonly object _lock = new ();
+    private readonly SemaphoreSlim _getInstalledPluginsLock = new (1, 1);
+    private bool _disposedValue;
 
 #pragma warning disable IDE0044 // Add readonly modifier
     private static List<IPluginWrapper> _installedPlugins = new ();
@@ -148,50 +150,58 @@ public class PluginService : IPluginService
 
     public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins = false)
     {
-        if (_installedPlugins.Count == 0)
+        await _getInstalledPluginsLock.WaitAsync();
+        try
         {
-            var extensions = await GetInstalledAppExtensionsAsync();
-            foreach (var extension in extensions)
+            if (_installedPlugins.Count == 0)
             {
-                var (devHomeProvider, classId) = await GetDevHomeExtensionPropertiesAsync(extension);
-                if (devHomeProvider == null || classId == null)
+                var extensions = await GetInstalledAppExtensionsAsync();
+                foreach (var extension in extensions)
                 {
-                    continue;
-                }
-
-                var name = extension.DisplayName;
-                var pluginWrapper = new PluginWrapper(name, extension.Package.Id.FullName, classId);
-
-                var supportedInterfaces = GetSubPropertySet(devHomeProvider, "SupportedInterfaces");
-                if (supportedInterfaces is not null)
-                {
-                    foreach (var supportedInterface in supportedInterfaces)
+                    var (devHomeProvider, classId) = await GetDevHomeExtensionPropertiesAsync(extension);
+                    if (devHomeProvider == null || classId == null)
                     {
-                        ProviderType pt;
-                        if (Enum.TryParse<ProviderType>(supportedInterface.Key, out pt))
+                        continue;
+                    }
+
+                    var name = extension.DisplayName;
+                    var pluginWrapper = new PluginWrapper(name, extension.Package.Id.FullName, classId);
+
+                    var supportedInterfaces = GetSubPropertySet(devHomeProvider, "SupportedInterfaces");
+                    if (supportedInterfaces is not null)
+                    {
+                        foreach (var supportedInterface in supportedInterfaces)
                         {
-                            pluginWrapper.AddProviderType(pt);
-                        }
-                        else
-                        {
-                            // TODO: throw warning or fire notification that plugin declared unsupported plugin interface
-                            // https://github.com/microsoft/devhome/issues/617
+                            ProviderType pt;
+                            if (Enum.TryParse<ProviderType>(supportedInterface.Key, out pt))
+                            {
+                                pluginWrapper.AddProviderType(pt);
+                            }
+                            else
+                            {
+                                // TODO: throw warning or fire notification that plugin declared unsupported plugin interface
+                                // https://github.com/microsoft/devhome/issues/617
+                            }
                         }
                     }
-                }
 
-                var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(extension.Package.Id.FullName + "-ExtensionDisabled");
+                    var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
+                    var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(extension.Package.Id.FullName + "-ExtensionDisabled");
 
-                _installedPlugins.Add(pluginWrapper);
-                if (!isPluginDisabled)
-                {
-                    _enabledPlugins.Add(pluginWrapper);
+                    _installedPlugins.Add(pluginWrapper);
+                    if (!isPluginDisabled)
+                    {
+                        _enabledPlugins.Add(pluginWrapper);
+                    }
                 }
             }
-        }
 
-        return includeDisabledPlugins ? _installedPlugins : _enabledPlugins;
+            return includeDisabledPlugins ? _installedPlugins : _enabledPlugins;
+        }
+        finally
+        {
+            _getInstalledPluginsLock.Release();
+        }
     }
 
     public async Task<IEnumerable<IPluginWrapper>> StartAllPluginsAsync()
@@ -234,6 +244,25 @@ public class PluginService : IPluginService
         }
 
         return filteredPlugins;
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _getInstalledPluginsLock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
     }
 
     private IPropertySet? GetSubPropertySet(IPropertySet propSet, string name)

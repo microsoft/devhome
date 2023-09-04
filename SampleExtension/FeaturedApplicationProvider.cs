@@ -14,9 +14,12 @@ namespace SampleExtension;
 /// </summary>
 public class FeaturedApplicationProvider : IFeaturedApplicationProvider
 {
-    public IAsyncOperation<GetFeaturedApplicationGroupResult> GetFeaturedApplicationGroupsAsync()
+    public IAsyncOperation<GetFeaturedApplicationGroupsResult> GetFeaturedApplicationGroupsAsync()
     {
-        return Task.FromResult(new GetFeaturedApplicationGroupResult(new FeaturedApplicationGroup())).AsAsyncOperation();
+        return Task.FromResult(new GetFeaturedApplicationGroupsResult(new List<IFeaturedApplicationGroup>()
+        {
+            new FeaturedApplicationGroup(),
+        })).AsAsyncOperation();
     }
 
     /// <summary>

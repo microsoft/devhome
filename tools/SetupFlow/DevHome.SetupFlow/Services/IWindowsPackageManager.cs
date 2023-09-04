@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 
@@ -82,4 +83,12 @@ public interface IWindowsPackageManager
     /// </summary>
     /// <returns>True if AppInstaller was registered, false otherwise.</returns>
     public Task<bool> RegisterAppInstallerAsync();
+
+    /// <summary>
+    /// Create a package uri
+    /// </summary>
+    /// <param name="package">Package</param>
+    /// <returns>Package uri</returns>
+    /// <exception cref="NotSupportedException">Throws exception if the package uri cannot be created for a package.</exception>
+    public Uri CreatePackageUri(IWinGetPackage package);
 }

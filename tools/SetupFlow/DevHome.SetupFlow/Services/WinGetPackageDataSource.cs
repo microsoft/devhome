@@ -82,7 +82,19 @@ public abstract class WinGetPackageDataSource
 
         // Get packages from winget catalog
         var unorderedPackages = await _wpm.WinGetCatalog.GetPackagesAsync(items.Select(i => packageIdCallback(i)).ToHashSet());
-        var unorderedPackagesMap = unorderedPackages.ToDictionary(p => p.Id, p => p);
+        var unorderedPackagesMap = new Dictionary<string, IWinGetPackage>();
+        foreach (var package in unorderedPackages)
+        {
+            try
+            {
+                var packageUri = _wpm.CreatePackageUri(package);
+                unorderedPackagesMap.Add(packageUri.ToString(), package);
+            }
+            catch
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Failed to create package uri for [{package.Id}]");
+            }
+        }
 
         // Sort result based on the input
         foreach (var item in items)

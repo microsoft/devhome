@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
+using DevHome.SetupFlow.Services;
 using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.Models;
@@ -101,12 +102,12 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         }
     }
 
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<string> packageIdSet)
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<string> packageUriSet)
     {
         try
         {
             // Skip search if set is empty
-            if (!packageIdSet.Any())
+            if (!packageUriSet.Any())
             {
                 Log.Logger?.ReportWarn(Log.Component.AppManagement, $"{nameof(GetPackagesAsync)} received an empty set of package id. Skipping search.");
                 return new List<IWinGetPackage>();
@@ -114,14 +115,21 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
 
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting package set from catalog {_catalog.Info.Name}");
             var options = _wingetFactory.CreateFindPackagesOptions();
-            foreach (var packageId in packageIdSet)
+            foreach (var packageUri in packageUriSet)
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Adding package [{packageId}] to query");
-                var filter = _wingetFactory.CreatePackageMatchFilter();
-                filter.Field = PackageMatchField.Id;
-                filter.Option = PackageFieldMatchOption.Equals;
-                filter.Value = packageId;
-                options.Selectors.Add(filter);
+                if (TryGetPackageId(packageUri, out var packageId))
+                {
+                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Adding package [{packageId}] to query");
+                    var filter = _wingetFactory.CreatePackageMatchFilter();
+                    filter.Field = PackageMatchField.Id;
+                    filter.Option = PackageFieldMatchOption.Equals;
+                    filter.Value = packageId;
+                    options.Selectors.Add(filter);
+                }
+                else
+                {
+                    Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Skipping package [{packageUri}]");
+                }
             }
 
             Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting search for packages");
@@ -188,5 +196,31 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Try get the package id from a package uri
+    /// </summary>
+    /// <param name="packageUri">Input package uri</param>
+    /// <param name="packageId">Output package id</param>
+    /// <returns>True if the package uri is valid and a package id was identified, false otherwise.</returns>
+    /// <remarks>
+    /// A package uri for winget is of the following form:
+    /// x-ms-winget://[catalog]/[package_id]
+    /// Note: The only supported catalog today is 'winget'
+    /// </remarks>
+    private bool TryGetPackageId(string packageUri, out string packageId)
+    {
+        if (Uri.TryCreate(packageUri, UriKind.Absolute, out var result) &&
+            result.Scheme == WindowsPackageManager.Scheme &&
+            result.Host == "winget" &&
+            result.Segments.Length == 2)
+        {
+            packageId = result.Segments[1];
+            return true;
+        }
+
+        packageId = null;
+        return false;
     }
 }
