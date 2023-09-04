@@ -4,20 +4,26 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    GetFeaturedApplicationGroupsResult::GetFeaturedApplicationGroupsResult(winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::DevHome::SDK::IFeaturedApplicationGroup> const& featuredApplicationGroups)
+	using namespace winrt::Microsoft::Windows::DevHome::SDK;
+	using namespace winrt::Windows::Foundation::Collections;
+
+    GetFeaturedApplicationGroupsResult::GetFeaturedApplicationGroupsResult(IVectorView<IFeaturedApplicationGroup> const& featuredApplicationGroups)
+        : m_featuredApplicationGroups(featuredApplicationGroups), m_result(ProviderOperationStatus::Success, S_OK, hstring{}, hstring{})
     {
-        throw hresult_not_implemented();
     }
-    GetFeaturedApplicationGroupsResult::GetFeaturedApplicationGroupsResult(winrt::hresult const& e, hstring const& diagnosticText)
+
+    GetFeaturedApplicationGroupsResult::GetFeaturedApplicationGroupsResult(hresult const& e, hstring const& diagnosticText)
+        : m_featuredApplicationGroups(nullptr), m_result(ProviderOperationStatus::Failure, e, diagnosticText, diagnosticText)
     {
-        throw hresult_not_implemented();
     }
-    winrt::Windows::Foundation::Collections::IVectorView<winrt::Microsoft::Windows::DevHome::SDK::IFeaturedApplicationGroup> GetFeaturedApplicationGroupsResult::FeaturedApplicationGroups()
+
+    IVectorView<IFeaturedApplicationGroup> GetFeaturedApplicationGroupsResult::FeaturedApplicationGroups()
     {
-        throw hresult_not_implemented();
+        return m_featuredApplicationGroups;
     }
-    winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult GetFeaturedApplicationGroupsResult::Result()
+
+    ProviderOperationResult GetFeaturedApplicationGroupsResult::Result()
     {
-        throw hresult_not_implemented();
+		return m_result;
     }
 }

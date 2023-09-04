@@ -63,6 +63,7 @@
                 <SupportedInterfaces>
                   <Settings />
                   <Widget />
+                  <FeaturedApplications />
                 </SupportedInterfaces>
               </DevHomeProvider>
             </uap3:Properties>
