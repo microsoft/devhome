@@ -25,7 +25,7 @@ public class PluginWrapper : IPluginWrapper
         [typeof(IFeaturedApplicationProvider)] = ProviderType.FeaturedApplications,
     };
 
-    private IExtension? _pluginObject;
+    private IExtension? _extensionObject;
 
     public PluginWrapper(string name, string packageFullName, string classId)
     {
@@ -51,14 +51,14 @@ public class PluginWrapper : IPluginWrapper
 
     public bool IsRunning()
     {
-        if (_pluginObject is null)
+        if (_extensionObject is null)
         {
             return false;
         }
 
         try
         {
-            _pluginObject.As<IInspectable>().GetRuntimeClassName();
+            _extensionObject.As<IInspectable>().GetRuntimeClassName();
         }
         catch (COMException e)
         {
@@ -91,7 +91,7 @@ public class PluginWrapper : IPluginWrapper
                             Marshal.ThrowExceptionForHR(hr);
                         }
 
-                        _pluginObject = MarshalInterface<IExtension>.FromAbi(pluginPtr);
+                        _extensionObject = MarshalInterface<IExtension>.FromAbi(pluginPtr);
                     }
                     finally
                     {
@@ -111,10 +111,10 @@ public class PluginWrapper : IPluginWrapper
         {
             if (IsRunning())
             {
-                _pluginObject?.Dispose();
+                _extensionObject?.Dispose();
             }
 
-            _pluginObject = null;
+            _extensionObject = null;
         }
     }
 
@@ -124,7 +124,7 @@ public class PluginWrapper : IPluginWrapper
         {
             if (IsRunning())
             {
-                return _pluginObject;
+                return _extensionObject;
             }
             else
             {
