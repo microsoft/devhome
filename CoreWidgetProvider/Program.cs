@@ -72,7 +72,7 @@ public sealed class Program
         var pluginInstance = new CorePlugin(pluginDisposedEvent);
 
         // We are instantiating plugin instance once above, and returning it every time the callback in RegisterPlugin below is called.
-        // This makes sure that only one instance of SamplePlugin is alive, which is returned every time the host asks for the IPlugin object.
+        // This makes sure that only one instance of SampleExtension is alive, which is returned every time the host asks for the IPlugin object.
         // If you want to instantiate a new instance each time the host asks, create the new instance inside the delegate.
         pluginServer.RegisterExtension(() => pluginInstance, true);
 
