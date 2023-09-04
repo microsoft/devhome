@@ -28,6 +28,8 @@ public sealed class SampleExtension : IExtension
                 return new DeveloperIdProvider();
             case ProviderType.Repository:
                 return new RepositoryProvider();
+            case ProviderType.FeaturedApplications:
+                return new FeaturedApplicationProvider();
             default:
                 return null;
         }
