@@ -889,7 +889,7 @@
     <comment>Message when a repository is cloning.  Param:Clone Path</comment>
   </data>
   <data name="CloneRepoError" xml:space="preserve">
-    <value>Couldn't clone {0}</value>
+    <value>Couldn't clone {0} because </value>
     <comment>Message when a repository encountered an error when cloning. Param: Repo Name</comment>
   </data>
   <data name="CloneRepoRestart" xml:space="preserve">

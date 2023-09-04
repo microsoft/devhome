@@ -98,8 +98,9 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     public string RepositoryOwnerAndName => Path.Join(RepositoryToClone.OwningAccountName ?? string.Empty, RepositoryToClone.DisplayName);
 
     private TaskMessages _taskMessage;
+    private TaskMessages _processedTaskMessage;
 
-    public TaskMessages GetLoadingMessages() => _taskMessage;
+    public TaskMessages GetLoadingMessages() => _processedTaskMessage;
 
     private ActionCenterMessages _actionCenterErrorMessage;
 
@@ -163,6 +164,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         var errorMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoError, RepositoryToClone.DisplayName);
         var needsRebootMessage = stringResource.GetLocalized(StringResourceKey.CloneRepoRestart, RepositoryToClone.DisplayName);
         _taskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsRebootMessage);
+        _processedTaskMessage = new TaskMessages(executingMessage, finishedMessage, errorMessage, needsRebootMessage);
 
         var actionCenterErrorMessage = new ActionCenterMessages();
         actionCenterErrorMessage.PrimaryMessage = errorMessage;
@@ -188,6 +190,12 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             }
             catch (Exception e)
             {
+                _processedTaskMessage.Error = _taskMessage.Error + e.Message;
+                if (e.HelpLink != null)
+                {
+                    _processedTaskMessage.Error += ", see " + e.HelpLink;
+                }
+
                 Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}", e);
                 _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, e.HResult.ToString("X", CultureInfo.CurrentCulture));
                 TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_CouldNotClone_Event", LogLevel.Critical, new ExceptionEvent(e.HResult));
