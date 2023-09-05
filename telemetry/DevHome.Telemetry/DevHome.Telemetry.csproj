@@ -7,7 +7,4 @@
         <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
         <UseWinUI>true</UseWinUI>
     </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Telemetry.Inbox.Managed" Version="10.0.25148.1001-220626-1600.rs-fun-deploy-dev5" />
-    </ItemGroup>
 </Project>
