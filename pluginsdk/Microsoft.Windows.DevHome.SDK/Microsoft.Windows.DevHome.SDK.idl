@@ -283,8 +283,8 @@ namespace Microsoft.Windows.DevHome.SDK
     // Interface to get the list of featured applications
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface IFeaturedApplicationsProvider {
-		Windows.Foundation.IAsyncOperation<GetFeaturedApplicationsGroupsResult> GetFeaturedApplicationsGroupsAsync();
-	};
+        Windows.Foundation.IAsyncOperation<GetFeaturedApplicationsGroupsResult> GetFeaturedApplicationsGroupsAsync();
+    };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     runtimeclass GetFeaturedApplicationsGroupsResult {

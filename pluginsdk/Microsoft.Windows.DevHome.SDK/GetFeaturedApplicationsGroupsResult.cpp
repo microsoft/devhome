@@ -4,8 +4,8 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-	using namespace winrt::Microsoft::Windows::DevHome::SDK;
-	using namespace winrt::Windows::Foundation::Collections;
+    using namespace winrt::Microsoft::Windows::DevHome::SDK;
+    using namespace winrt::Windows::Foundation::Collections;
 
     GetFeaturedApplicationsGroupsResult::GetFeaturedApplicationsGroupsResult(IVectorView<IFeaturedApplicationsGroup> const& featuredApplicationsGroups)
         : m_featuredApplicationsGroups(featuredApplicationsGroups), m_result(ProviderOperationStatus::Success, S_OK, hstring{}, hstring{})
@@ -24,6 +24,6 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 
     ProviderOperationResult GetFeaturedApplicationsGroupsResult::Result()
     {
-		return m_result;
+	    return m_result;
     }
 }
