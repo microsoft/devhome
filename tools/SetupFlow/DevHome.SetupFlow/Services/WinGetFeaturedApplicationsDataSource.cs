@@ -15,13 +15,13 @@ namespace DevHome.SetupFlow.Services;
 public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
 {
     private readonly IPluginService _pluginService;
-    private readonly IList<IFeaturedApplicationGroup> _groups;
+    private readonly IList<IFeaturedApplicationsGroup> _groups;
 
     public WinGetFeaturedApplicationsDataSource(IWindowsPackageManager wpm, IPluginService pluginService)
         : base(wpm)
     {
         _pluginService = pluginService;
-        _groups = new List<IFeaturedApplicationGroup>();
+        _groups = new List<IFeaturedApplicationsGroup>();
     }
 
     public override int CatalogCount => _groups.Count;
@@ -31,15 +31,15 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
         var plugins = await _pluginService.GetInstalledPluginsAsync(ProviderType.FeaturedApplications);
         foreach (var plugin in plugins)
         {
-            var provider = await plugin.GetProviderAsync<IFeaturedApplicationProvider>();
+            var provider = await plugin.GetProviderAsync<IFeaturedApplicationsProvider>();
             if (provider != null)
             {
-                var groupsResult = await provider.GetFeaturedApplicationGroupsAsync();
+                var groupsResult = await provider.GetFeaturedApplicationsGroupsAsync();
                 if (groupsResult.Result.Status == ProviderOperationStatus.Success)
                 {
-                    for (var i = 0; i < groupsResult.FeaturedApplicationGroups.Count; ++i)
+                    for (var i = 0; i < groupsResult.FeaturedApplicationsGroups.Count; ++i)
                     {
-                        _groups.Add(groupsResult.FeaturedApplicationGroups[i]);
+                        _groups.Add(groupsResult.FeaturedApplicationsGroups[i]);
                     }
                 }
                 else
