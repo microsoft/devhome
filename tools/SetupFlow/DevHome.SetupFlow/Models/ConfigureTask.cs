@@ -123,8 +123,7 @@ public class ConfigureTask : ISetupTask
         return Task.Run(async () =>
         {
             Log.Logger?.ReportInfo(Log.Component.Configuration, $"Starting elevated application of configuration file {_file.Path}");
-            var elevatedTask = elevatedComponentFactory.CreateElevatedConfigurationTask();
-            var elevatedResult = await elevatedTask.ApplyConfiguration(_activityId);
+            var elevatedResult = await elevatedComponentOperation.ApplyConfigurationAsync(_activityId);
             RequiresReboot = elevatedResult.RebootRequired;
             UnitResults = new List<ConfigurationUnitResult>();
 
