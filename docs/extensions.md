@@ -13,13 +13,13 @@ An extension can provide functionality for one or more extensibility points. Cur
 - Developer IDs: Allow developers to sign in and out of a service by implementing the [`IDeveloperIdProvider`](#ideveloperidprovider) interface.
 - Repositories: Allow developers to get available repositories associated with their Developer IDs or parse repositories from URLs and clone them by implementing the [`IRepositoryProvider`](#irepositoryprovider) interface.
 
-Read more about [Provider interfaces](#provider-interfaces) below. Each extension also must have a class that implements `IPlugin`. DevHome needs to create an instance of this class. The GUID of this class must be reflected in the manifest. See [Sample Plugin](../SamplePlugin/SamplePlugin.cs)
+Read more about [Provider interfaces](#provider-interfaces) below. Each extension also must have a class that implements `IExtension`. DevHome needs to create an instance of this class. The GUID of this class must be reflected in the manifest. See [Sample Extension](../SampleExtension/SampleExtension.cs)
 
 ![Extension Flow](./images/extension-flow.png)
 
 ## Extension manifest
 
-The `package.appxmanifest` file must define a COM Server (which includes the class ID of the `Plugin` class) and `AppExtension` properties declaring extension information.
+The `package.appxmanifest` file must define a COM Server (which includes the class ID of the `Extension` class) and `AppExtension` properties declaring extension information.
 
 ```xml
 <Extensions>
@@ -27,7 +27,7 @@ The `package.appxmanifest` file must define a COM Server (which includes the cla
   <com:Extension Category="windows.comServer">
     <com:ComServer>
       <com:ExeServer Executable="ExtensionName.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Sample Extension">
-        <com:Class Id="<Plugin Class GUID>" DisplayName="Sample Plugin" />
+        <com:Class Id="<Extension Class GUID>" DisplayName="Sample Extension" />
       </com:ExeServer>
     </com:ComServer>
   </com:Extension>
@@ -40,7 +40,7 @@ The `package.appxmanifest` file must define a COM Server (which includes the cla
     <uap3:Properties>
       <DevHomeProvider>
         <Activation>
-          <CreateInstance ClassId="<Plugin Class GUID>" />
+          <CreateInstance ClassId="<Extension Class GUID>" />
         </Activation>
         <SupportedInterfaces>
           <DeveloperId />
