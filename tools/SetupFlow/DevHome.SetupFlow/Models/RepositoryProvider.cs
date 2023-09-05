@@ -20,11 +20,6 @@ namespace DevHome.SetupFlow.Models;
 internal class RepositoryProvider
 {
     /// <summary>
-    /// All the repositories for an account.
-    /// </summary>
-    private Lazy<IEnumerable<IRepository>> _repositories = new ();
-
-    /// <summary>
     /// Wrapper for the plugin that is providing a repository and developer id.
     /// </summary>
     /// <remarks>
@@ -32,6 +27,11 @@ internal class RepositoryProvider
     /// This is for lazy loading and starting and prevents all plugins from starting all at once.
     /// </remarks>
     private readonly IExtensionWrapper _extensionWrapper;
+
+    /// <summary>
+    /// All the repositories for an account.
+    /// </summary>
+    private Lazy<IEnumerable<IRepository>> _repositories = new ();
 
     /// <summary>
     /// The DeveloperId provider used to log a user into an account.

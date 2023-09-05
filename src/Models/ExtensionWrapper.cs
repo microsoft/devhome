@@ -10,7 +10,7 @@ using WinRT;
 
 namespace DevHome.Models;
 
-public class PluginWrapper : IExtensionWrapper
+public class ExtensionWrapper : IExtensionWrapper
 {
     private const int HResultRpcServerNotRunning = -2147023174;
 
@@ -21,20 +21,17 @@ public class PluginWrapper : IExtensionWrapper
     {
         [typeof(IDeveloperIdProvider)] = ProviderType.DeveloperId,
         [typeof(IRepositoryProvider)] = ProviderType.Repository,
-        [typeof(INotificationsProvider)] = ProviderType.Notifications,
-        [typeof(IWidgetProvider)] = ProviderType.Widget,
         [typeof(ISettingsProvider)] = ProviderType.Settings,
-        [typeof(IDevDoctorProvider)] = ProviderType.DevDoctor,
-        [typeof(ISetupFlowProvider)] = ProviderType.SetupFlow,
+        [typeof(IFeaturedApplicationProvider)] = ProviderType.FeaturedApplications,
     };
 
-    private IPlugin? _pluginObject;
+    private IExtension? _pluginObject;
 
-    public PluginWrapper(string name, string packageFullName, string classId)
+    public ExtensionWrapper(string name, string packageFullName, string classId)
     {
         Name = name ?? throw new ArgumentNullException(nameof(name));
         PackageFullName = packageFullName ?? throw new ArgumentNullException(nameof(packageFullName));
-        PluginClassId = classId ?? throw new ArgumentNullException(nameof(classId));
+        ExtensionClassId = classId ?? throw new ArgumentNullException(nameof(classId));
     }
 
     public string Name
@@ -47,7 +44,7 @@ public class PluginWrapper : IExtensionWrapper
         get;
     }
 
-    public string PluginClassId
+    public string ExtensionClassId
     {
         get;
     }
@@ -76,7 +73,7 @@ public class PluginWrapper : IExtensionWrapper
         return true;
     }
 
-    public async Task StartPluginAsync()
+    public async Task StartExtensionAsync()
     {
         await Task.Run(() =>
         {
@@ -87,14 +84,14 @@ public class PluginWrapper : IExtensionWrapper
                     var pluginPtr = IntPtr.Zero;
                     try
                     {
-                        var hr = PInvoke.CoCreateInstance(Guid.Parse(PluginClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IPlugin).GUID, out var pluginObj);
+                        var hr = PInvoke.CoCreateInstance(Guid.Parse(ExtensionClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IExtension).GUID, out var pluginObj);
                         pluginPtr = Marshal.GetIUnknownForObject(pluginObj);
                         if (hr < 0)
                         {
                             Marshal.ThrowExceptionForHR(hr);
                         }
 
-                        _pluginObject = MarshalInterface<IPlugin>.FromAbi(pluginPtr);
+                        _pluginObject = MarshalInterface<IExtension>.FromAbi(pluginPtr);
                     }
                     finally
                     {
@@ -121,7 +118,7 @@ public class PluginWrapper : IExtensionWrapper
         }
     }
 
-    public IPlugin? GetPluginObject()
+    public IExtension? GetExtensionObject()
     {
         lock (_lock)
         {
@@ -139,9 +136,9 @@ public class PluginWrapper : IExtensionWrapper
     public async Task<T?> GetProviderAsync<T>()
         where T : class
     {
-        await StartPluginAsync();
+        await StartExtensionAsync();
 
-        return GetPluginObject()?.GetProvider(_providerTypeMap[typeof(T)]) as T;
+        return GetExtensionObject()?.GetProvider(_providerTypeMap[typeof(T)]) as T;
     }
 
     public void AddProviderType(ProviderType providerType)

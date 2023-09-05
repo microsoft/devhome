@@ -160,7 +160,7 @@ public class PluginService : IPluginService
                 }
 
                 var name = extension.DisplayName;
-                var pluginWrapper = new PluginWrapper(name, extension.Package.Id.FullName, classId);
+                var pluginWrapper = new ExtensionWrapper(name, extension.Package.Id.FullName, classId);
 
                 var supportedInterfaces = GetSubPropertySet(devHomeProvider, "SupportedInterfaces");
                 if (supportedInterfaces is not null)
@@ -201,7 +201,7 @@ public class PluginService : IPluginService
         {
             if (!installedPlugin.IsRunning())
             {
-                await installedPlugin.StartPluginAsync();
+                await installedPlugin.StartExtensionAsync();
             }
         }
 

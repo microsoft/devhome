@@ -23,17 +23,13 @@ public sealed class CorePlugin : IExtension
     {
         switch (providerType)
         {
-            case ProviderType.DevDoctor:
-                return new object();
             case ProviderType.DeveloperId:
                 return new object();
             case ProviderType.Repository:
                 return new object();
-            case ProviderType.Notifications:
+            case ProviderType.Settings:
                 return new object();
-            case ProviderType.SetupFlow:
-                return new object();
-            case ProviderType.Widget:
+            case ProviderType.FeaturedApplications:
                 return new object();
             default:
                 Log.Logger()?.ReportInfo("Invalid provider");

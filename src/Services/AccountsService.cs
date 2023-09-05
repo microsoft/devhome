@@ -57,9 +57,9 @@ public class AccountsService : IAccountsService
     public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider) => throw new NotImplementedException();
 
     // public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider) => iDevIdProvider.GetLoggedInDeveloperIds().ToList();
-    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IPlugin plugin)
+    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IExtension iDevIdProvider)
     {
-        if (plugin.GetProvider(ProviderType.DeveloperId) is IDeveloperIdProvider devIdProvider)
+        if (iDevIdProvider.GetProvider(ProviderType.DeveloperId) is IDeveloperIdProvider devIdProvider)
         {
             return GetDeveloperIds(devIdProvider);
         }
