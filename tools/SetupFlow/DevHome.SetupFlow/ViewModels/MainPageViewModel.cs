@@ -16,6 +16,7 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Windows.Storage;
 using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -63,6 +64,17 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
+    }
+
+    public async Task StartFileActivationAsync(StorageFile file)
+    {
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching configuration file flow");
+        var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
+        if (await configFileSetupFlow.LoadFromLocalFileAsync(file))
+        {
+            Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow from file activation");
+            StartSetupFlowForTaskGroups(null, "ConfigurationFile", configFileSetupFlow);
+        }
     }
 
     protected async override Task OnFirstNavigateToAsync()
@@ -168,11 +180,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// Starts a setup flow that only includes configuration file.
     /// </summary>
     [RelayCommand]
-    private async Task StartConfigurationFileAsync()
+    private async Task StartConfigurationFileAsync(string file = null)
     {
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching configuration file flow");
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
-        if (await configFileSetupFlow.PickConfigurationFileAsync())
+        if (file == null && await configFileSetupFlow.PickConfigurationFileAsync())
         {
             Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for Configuration file");
             StartSetupFlowForTaskGroups(null, "ConfigurationFile", configFileSetupFlow);

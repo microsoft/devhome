@@ -79,19 +79,13 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         await Orchestrator.GoToNextPage();
     }
 
-    /// <summary>
-    /// Open file picker to select a YAML configuration file.
-    /// </summary>
-    /// <returns>True if a YAML configuration file was selected, false otherwise</returns>
-    public async Task<bool> PickConfigurationFileAsync()
+    public async Task<bool> LoadFileAsync(StorageFile file)
     {
-        // Get the application root window.
-        var mainWindow = Application.Current.GetService<WindowEx>();
+        return await CheckValidConfigurationFile(file);
+    }
 
-        // Create and configure file picker
-        Log.Logger?.ReportInfo(Log.Component.Configuration, "Launching file picker to select configurationf file");
-        var file = await mainWindow.OpenFilePickerAsync(Log.Logger, ("*.yaml;*.yml", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
-
+    public async Task<bool> CheckValidConfigurationFile(StorageFile file)
+    {
         // Check if a file was selected
         if (file == null)
         {
@@ -111,6 +105,9 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             }
             catch (OpenConfigurationSetException e)
             {
+                // Get the application root window.
+                var mainWindow = Application.Current.GetService<WindowEx>();
+
                 Log.Logger?.ReportError(Log.Component.Configuration, $"Opening configuration set failed.", e);
                 await mainWindow.ShowErrorMessageDialogAsync(
                     StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
@@ -119,6 +116,9 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             }
             catch (Exception e)
             {
+                // Get the application root window.
+                var mainWindow = Application.Current.GetService<WindowEx>();
+
                 Log.Logger?.ReportError(Log.Component.Configuration, $"Unknown error while opening configuration set.", e);
 
                 await mainWindow.ShowErrorMessageDialogAsync(
@@ -129,6 +129,22 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Open file picker to select a YAML configuration file.
+    /// </summary>
+    /// <returns>True if a YAML configuration file was selected, false otherwise</returns>
+    public async Task<bool> PickConfigurationFileAsync()
+    {
+        // Get the application root window.
+        var mainWindow = Application.Current.GetService<WindowEx>();
+
+        // Create and configure file picker
+        Log.Logger?.ReportInfo(Log.Component.Configuration, "Launching file picker to select configurationf file");
+        var file = await mainWindow.OpenFilePickerAsync(Log.Logger, ("*.yaml;*.yml;*.devhome;", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
+
+        return await CheckValidConfigurationFile(file);
     }
 
     private string GetErrorMessage(OpenConfigurationSetException exception)

@@ -61,6 +61,7 @@ public partial class App : Application, IApp
 
             // Other Activation Handlers
             services.AddTransient<IActivationHandler, ProtocolActivationHandler>();
+            services.AddTransient<IActivationHandler, FileActivationHandler>();
 
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
@@ -142,6 +143,13 @@ public partial class App : Application, IApp
             GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data),
             GetService<IAccountsService>().InitializeAsync(),
             GetService<IAppManagementInitializer>().InitializeAsync());
+
+        var activatedEventArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
+        if (activatedEventArgs.Kind == Microsoft.Windows.AppLifecycle.ExtendedActivationKind.File)
+        {
+            var navigationService = Application.Current.GetService<INavigationService>();
+            navigationService.NavigateTo(typeof(DevHome.SetupFlow.ViewModels.SetupFlowViewModel).FullName!);
+        }
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)

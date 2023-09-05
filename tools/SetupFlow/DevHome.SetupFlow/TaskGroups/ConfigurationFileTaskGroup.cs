@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
+using Windows.Storage;
 
 namespace DevHome.SetupFlow.TaskGroups;
 
@@ -19,6 +20,8 @@ public class ConfigurationFileTaskGroup : ISetupTaskGroup
     }
 
     public async Task<bool> PickConfigurationFileAsync() => await _viewModel.PickConfigurationFileAsync();
+
+    public async Task<bool> LoadFromLocalFileAsync(StorageFile file) => await _viewModel.LoadFileAsync(file);
 
     public IEnumerable<ISetupTask> SetupTasks => _viewModel.TaskList;
 

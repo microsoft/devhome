@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
@@ -14,6 +15,7 @@ using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Windows.Storage;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -106,5 +108,10 @@ public partial class SetupFlowViewModel : ObservableObject
         _packageProvider.Clear();
 
         Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };
+    }
+
+    public async Task StartFileActivationFlow(StorageFile file)
+    {
+        await _mainPageViewModel.StartFileActivationAsync(file);
     }
 }
