@@ -26,24 +26,26 @@
     <Grid Width="300" Height="{x:Bind helpers:WidgetHelpers.GetPixelHeightFromWidgetSize(WidgetSource.WidgetSize), Mode=OneWay}" 
           CornerRadius="7" BorderBrush="{ThemeResource WidgetBorderColor}" BorderThickness="1">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="36" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <!-- Widget header: icon, title, menu -->
-        <Grid Grid.Row="0" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}">
-            <StackPanel Orientation="Horizontal" Margin="15,10,15,5">
-                <Rectangle Width="16" Height="16" Margin="0,0,8,0" x:Name="WidgetHeaderIcon" />
+        <Grid Grid.Row="0" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}" CornerRadius="7">
+            <StackPanel Orientation="Horizontal" Margin="16,10,0,0" Spacing="8">
+                <Rectangle Width="16" Height="16" x:Name="WidgetHeaderIcon" />
                 <TextBlock AutomationProperties.AutomationId="WidgetTitle"
                            Text="{x:Bind WidgetSource.WidgetDisplayTitle, Mode=OneWay}"
                            VerticalAlignment="Center"
+                           MaxWidth="212"
+                           TextTrimming="CharacterEllipsis"
                            FontSize="{ThemeResource CaptionTextBlockFontSize}" />
             </StackPanel>
             <Button Tag="{x:Bind}" Content="&#xE712;"
                     x:Uid="WidgetMoreOptionsButton"
                     AutomationProperties.AutomationId="WidgetMoreOptionsButton"
                     FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="{ThemeResource CaptionTextBlockFontSize}"
-                    VerticalAlignment="Top" HorizontalAlignment="Right" Margin="15,10,15,5" BorderThickness="0" Padding="5"
+                    VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,10,16,0" BorderThickness="0" Padding="5"
                     Background="Transparent"
                     Click="OpenWidgetMenu">
                 <Button.Flyout>
@@ -53,12 +55,12 @@
         </Grid>
 
         <!-- Widget content -->
-        <Grid Grid.Row="1" x:Name="ScollBarOffsetGridLeft" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}" Width="5"
+        <Grid Grid.Row="1" x:Name="ScollBarOffsetGridLeft" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}" Width="7"
                       HorizontalAlignment="Left" />
-        <Grid Grid.Row="1" x:Name="ScollBarOffsetGridRight" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}" Width="5"
+        <Grid Grid.Row="1" x:Name="ScollBarOffsetGridRight" Background="{x:Bind WidgetSource.WidgetBackground, Mode=OneWay}" Width="7"
                       HorizontalAlignment="Right" />
         <ScrollViewer Grid.Row="1" x:Name="WidgetScrollViewer" Content="{x:Bind WidgetSource.WidgetFrameworkElement, Mode=OneWay}"
-                      VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled" Padding="5,0" />
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollMode="Disabled" Padding="7,0" />
 
     </Grid>
 </UserControl>
