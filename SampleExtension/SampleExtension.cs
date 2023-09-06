@@ -29,7 +29,7 @@ public sealed class SampleExtension : IExtension
             case ProviderType.Repository:
                 return new RepositoryProvider();
             case ProviderType.FeaturedApplications:
-                return new FeaturedApplicationProvider();
+                return new FeaturedApplicationsProvider();
             default:
                 return null;
         }
