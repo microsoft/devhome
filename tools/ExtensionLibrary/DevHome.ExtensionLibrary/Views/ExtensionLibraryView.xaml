@@ -13,6 +13,7 @@
     xmlns:viewmodels="using:DevHome.ExtensionLibrary.ViewModels"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:commonviews="using:DevHome.Common.Views"
     mc:Ignorable="d">
     <i:Interaction.Behaviors>
         <ic:EventTriggerBehavior EventName="Loaded">
@@ -23,12 +24,31 @@
     <Page.Resources>
         <ResourceDictionary>
             <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <x:String x:Key="ExtensinosBannerFront">ms-appx:///DevHome.Dashboard/Assets/DashboardBannerFrontLight.png</x:String>
+                    <x:String x:Key="ExtensionsBannerBack">ms-appx:///DevHome.Common/Assets/BannerBackgroundLight.png</x:String>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <x:String x:Key="ExtensinosBannerFront">ms-appx:///DevHome.Dashboard/Assets/DashboardBannerFrontDark.png</x:String>
+                    <x:String x:Key="ExtensionsBannerBack">ms-appx:///DevHome.Common/Assets/BannerBackgroundDark.png</x:String>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Page.Resources>
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,22,0,0">
             <StackPanel>
+                <commonviews:Banner TextWidth="450"
+                                    Visibility="{x:Bind ViewModel.ShowExtensionsBanner,Mode=OneWay}"
+                                    HideButtonVisibility="true"
+                                    HideButtonCommand="{x:Bind ViewModel.HideExtensionsBannerButtonCommand,Mode=OneWay}"
+                                    ButtonCommand="{x:Bind ViewModel.ExtensionsBannerButtonCommand,Mode=OneWay}"
+                                    x:Uid="ExtensionsBanner"
+                                    BackgroundSource="{ThemeResource ExtensionsBannerBack}"
+                                    OverlaySource="{ThemeResource ExtensinosBannerFront}"
+                                    Margin="0,0,0,28" />
 
                 <!-- Installed items -->
                 <Grid Margin="{StaticResource SettingsPageSubTitleMargin}">
