@@ -3,14 +3,21 @@
 
 extern alias Projection;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DevHome.SetupFlow.Common.Contracts;
+using DevHome.SetupFlow.Common.Elevation;
+using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using Microsoft.Extensions.Hosting;
+
+using Projection::DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -26,6 +33,10 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private bool _readAndAgree;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SetupCommand))]
+    private bool _canSetup;
 
     public bool HasApplicationsToInstall => Orchestrator.GetTaskGroup<AppManagementTaskGroup>()?.SetupTasks.Any() == true;
 
@@ -57,7 +68,6 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReviewPageTitle);
-        CanGoToNextPage = false;
     }
 
     protected async override Task OnEachNavigateToAsync()
@@ -71,16 +81,15 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         SelectedReviewTab = ReviewTabs.FirstOrDefault();
 
         NextPageButtonToolTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
-        UpdateCanGoToNextPage();
+        UpdateCanSetup();
         await Task.CompletedTask;
     }
 
-    partial void OnReadAndAgreeChanged(bool value) => UpdateCanGoToNextPage();
+    partial void OnReadAndAgreeChanged(bool value) => UpdateCanSetup();
 
-    public void UpdateCanGoToNextPage()
+    public void UpdateCanSetup()
     {
-        CanGoToNextPage = HasTasksToSetUp && IsValidTermsAgreement();
-        Orchestrator.NotifyNavigationCanExecuteChanged();
+        CanSetup = HasTasksToSetUp && IsValidTermsAgreement();
     }
 
     /// <summary>
@@ -91,4 +100,29 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     {
         return !RequiresTermsAgreement || ReadAndAgree;
     }
+
+    [RelayCommand(CanExecute = nameof(CanSetup))]
+    private async Task OnSetupAsync()
+    {
+        var elevatedTasks = Orchestrator.TaskGroups.SelectMany(taskGroup => taskGroup.SetupTasks.Where(task => task.RequiresAdmin));
+        if (elevatedTasks.Any())
+        {
+            try
+            {
+                TasksArguments tasksArguments = new ()
+                {
+                    InstallPackages = elevatedTasks.OfType<InstallPackageTask>().Select(task => task.GetArguments()).ToList(),
+                    Configure = elevatedTasks.OfType<ConfigureTask>().Select(task => task.GetArguments()).FirstOrDefault(),
+                    CreateDevDrive = elevatedTasks.OfType<CreateDevDriveTask>().Select(task => task.GetArguments()).FirstOrDefault(),
+                };
+                Orchestrator.RemoteElevatedOperation = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentOperation>(tasksArguments);
+                await Orchestrator.GoToNextPage();
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process.", e);
+                Log.Logger?.ReportInfo(Log.Component.Loading, "Will continue with setup as best-effort");
+            }
+        }
+   }
 }
