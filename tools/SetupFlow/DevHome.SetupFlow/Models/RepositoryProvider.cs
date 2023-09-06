@@ -63,6 +63,11 @@ internal class RepositoryProvider
         var myName = _repositoryProvider.DisplayName;
     }
 
+    public IRepositoryProvider GetProvider()
+    {
+        return _repositoryProvider;
+    }
+
     /// <summary>
     /// Tries to parse the repo name from the URI and makes a Repository from it.
     /// </summary>
@@ -100,8 +105,6 @@ internal class RepositoryProvider
     /// public, the developerid can be null.</remarks>
     public (bool, IDeveloperId, IRepositoryProvider) IsUriSupported(Uri uri)
     {
-        return (false, null, null);
-        /*
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
 
         // Possible that no accounts are loggd in.  Try in case the repo is public.
@@ -116,19 +119,29 @@ internal class RepositoryProvider
         }
         else
         {
-            foreach (var developerId in developerIdsResult.DeveloperIds)
+            if (developerIdsResult.DeveloperIds.Any())
             {
-                var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri, developerId).AsTask()).Result;
+                foreach (var developerId in developerIdsResult.DeveloperIds)
+                {
+                    var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri, developerId).AsTask()).Result;
+                    if (uriSupportResult.IsSupported)
+                    {
+                        return (true, developerId, _repositoryProvider);
+                    }
+                }
+            }
+            else
+            {
+                var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
                 if (uriSupportResult.IsSupported)
                 {
-                    return (true, developerId, _repositoryProvider);
+                    return (true, null, _repositoryProvider);
                 }
             }
         }
 
         // no accounts can access this uri or the repo does not exist.
         return (false, null, null);
-        */
     }
 
     /// <summary>

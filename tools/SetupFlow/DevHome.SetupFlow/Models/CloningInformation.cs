@@ -172,6 +172,14 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     }
 
     /// <summary>
+    /// Gets or sets the provider to use to clone the repository
+    /// </summary>
+    public IRepositoryProvider RepositoryProvider
+    {
+        get; set;
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="CloningInformation"/> class.
     /// Public constructor for XAML view to construct a CLoningInformation
     /// </summary>

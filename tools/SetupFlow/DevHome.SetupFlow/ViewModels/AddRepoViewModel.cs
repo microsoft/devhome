@@ -451,6 +451,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
 
             var cloningInformation = new CloningInformation(repoToAdd);
+            cloningInformation.RepositoryProvider = _providers.GetProvider(providerName);
             cloningInformation.ProviderName = _providers.DisplayName(providerName);
             cloningInformation.PluginName = providerName;
             cloningInformation.OwningAccount = developerId;
@@ -501,29 +502,31 @@ public partial class AddRepoViewModel : ObservableObject
             if (providerToCloneRepo.Item2 != null)
             {
                 // A provider parsed the URL and at least 1 logged in account has access to the repo.
-                var repoResult = providerToCloneRepo.Item3.GetRepositoryFromUriAsync(parsedUri, providerToCloneRepo.Item2);
-                if (repoResult.GetResults().Result.Status == ProviderOperationStatus.Failure)
+                var repoResult = providerToCloneRepo.Item3.GetRepositoryFromUriAsync(parsedUri, providerToCloneRepo.Item2).AsTask().Result;
+                if (repoResult.Result.Status == ProviderOperationStatus.Failure)
                 {
                     // something happened.
-                    throw repoResult.GetResults().Result.ExtendedError;
+                    throw repoResult.Result.ExtendedError;
                 }
 
-                cloningInformation = new CloningInformation(repoResult.GetResults().Repository);
+                cloningInformation = new CloningInformation(repoResult.Repository);
+                cloningInformation.RepositoryProvider = providerToCloneRepo.Item3;
                 cloningInformation.ProviderName = providerToCloneRepo.Item3.DisplayName;
                 cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
                 cloningInformation.OwningAccount = providerToCloneRepo.Item2;
             }
             else
             {
-                // A provider parsed the URL and at least 1 logged in account has access to the repo.
-                var repoResult = providerToCloneRepo.Item3.GetRepositoryFromUriAsync(parsedUri);
-                if (repoResult.GetResults().Result.Status == ProviderOperationStatus.Failure)
+                // A provider parsed the URL but no logged in accounts can access it (Could be public).
+                var repoResult = providerToCloneRepo.Item3.GetRepositoryFromUriAsync(parsedUri).AsTask().Result;
+                if (repoResult.Result.Status == ProviderOperationStatus.Failure)
                 {
                     // something happened.
-                    throw repoResult.GetResults().Result.ExtendedError;
+                    throw repoResult.Result.ExtendedError;
                 }
 
-                cloningInformation = new CloningInformation(repoResult.GetResults().Repository);
+                cloningInformation = new CloningInformation(repoResult.Repository);
+                cloningInformation.RepositoryProvider = providerToCloneRepo.Item3;
                 cloningInformation.ProviderName = providerToCloneRepo.Item3.DisplayName;
                 cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
                 cloningInformation.OwningAccount = providerToCloneRepo.Item2;
