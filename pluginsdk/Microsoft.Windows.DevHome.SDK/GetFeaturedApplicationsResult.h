@@ -11,6 +11,10 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
         GetFeaturedApplicationsResult(winrt::hresult const& e, hstring const& diagnosticText);
         winrt::Windows::Foundation::Collections::IVectorView<hstring> FeaturedApplications();
         winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult Result();
+
+    private:
+        winrt::Windows::Foundation::Collections::IVectorView<hstring> m_featuredApplications;
+        winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult m_result;
     };
 }
 namespace winrt::Microsoft::Windows::DevHome::SDK::factory_implementation
