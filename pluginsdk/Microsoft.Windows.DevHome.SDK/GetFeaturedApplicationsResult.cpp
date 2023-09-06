@@ -4,20 +4,26 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    GetFeaturedApplicationsResult::GetFeaturedApplicationsResult(winrt::Windows::Foundation::Collections::IVectorView<hstring> const& featuredApplications)
+    using namespace winrt::Windows::Foundation::Collections;
+    using namespace winrt::Microsoft::Windows::DevHome::SDK;
+
+    GetFeaturedApplicationsResult::GetFeaturedApplicationsResult(IVectorView<hstring> const& featuredApplications)
+        : m_featuredApplications(featuredApplications), m_result(ProviderOperationStatus::Success, S_OK, hstring(), hstring())
     {
-        throw hresult_not_implemented();
     }
-    GetFeaturedApplicationsResult::GetFeaturedApplicationsResult(winrt::hresult const& e, hstring const& diagnosticText)
+
+    GetFeaturedApplicationsResult::GetFeaturedApplicationsResult(hresult const& e, hstring const& diagnosticText) :
+        m_featuredApplications(nullptr), m_result(ProviderOperationStatus::Failure, e, diagnosticText, diagnosticText)
     {
-        throw hresult_not_implemented();
     }
-    winrt::Windows::Foundation::Collections::IVectorView<hstring> GetFeaturedApplicationsResult::FeaturedApplications()
+
+    IVectorView<hstring> GetFeaturedApplicationsResult::FeaturedApplications()
     {
-        throw hresult_not_implemented();
+        return m_featuredApplications;
     }
-    winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult GetFeaturedApplicationsResult::Result()
+
+    ProviderOperationResult GetFeaturedApplicationsResult::Result()
     {
-        throw hresult_not_implemented();
+        return m_result;
     }
 }

@@ -4,24 +4,28 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    ProviderOperationResult::ProviderOperationResult(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus const& status, winrt::hresult const& error, hstring const& displayMessage, hstring const& diagnosticText)
+    ProviderOperationResult::ProviderOperationResult(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus const& status, winrt::hresult const& error, hstring const& displayMessage, hstring const& diagnosticText) :
+        _Status(status), _ExtendedError(error), _DisplayMessage(displayMessage), _DiagnosticText(diagnosticText)
     {
-        throw hresult_not_implemented();
     }
+
     winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus ProviderOperationResult::Status()
     {
-        throw hresult_not_implemented();
+        return _Status;
     }
+
     winrt::hresult ProviderOperationResult::ExtendedError()
     {
-        throw hresult_not_implemented();
+        return _ExtendedError;
     }
+
     hstring ProviderOperationResult::DisplayMessage()
     {
-        throw hresult_not_implemented();
+        return _DisplayMessage;
     }
+
     hstring ProviderOperationResult::DiagnosticText()
     {
-        throw hresult_not_implemented();
+        return _DiagnosticText;
     }
 }
