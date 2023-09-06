@@ -38,8 +38,8 @@
       },
       "spacing": "Medium",
       "style": "Url",
-      "placeholder": "${$root.configuration.defaultConfigFile}",
-      "value": "${$root.configuration.defaultConfigFile}"
+      "placeholder": "${$root.configuration.currentOrDefaultConfigFile}",
+      "value": "${$root.configuration.currentOrDefaultConfigFile}"
     },
     {
       "type": "Container",
@@ -53,7 +53,6 @@
       ],
       "$when": "${errorMessage != null}",
       "separator": true,
-      "horizontalAlignment": "Center",
       "verticalContentAlignment": "Center",
       "style": "warning"
     },
@@ -65,13 +64,14 @@
           "text": "%SSH_Widget_Template/ConfigFilePath%",
           "wrap": true,
           "spacing": "Medium",
-          "size": "Small"
+          "size": "Small",
+          "isSubtle": true
         },
         {
           "type": "TextBlock",
           "text": "${configFile}",
           "wrap": true,
-          "weight": "Bolder",
+          "size": "medium",
           "spacing": "None"
         },
         {
@@ -79,20 +79,20 @@
           "text": "%SSH_Widget_Template/NumOfHosts%",
           "wrap": true,
           "spacing": "Medium",
-          "size": "Small"
+          "size": "Small",
+          "isSubtle": true
         },
         {
           "type": "TextBlock",
           "text": "${numOfEntries}",
           "wrap": true,
-          "weight": "Bolder",
+          "size": "medium",
           "spacing": "None"
         }
       ],
       "spacing": "Medium",
       "$data": "${$root.configuration}",
       "$when": "${$root.hasConfiguration}",
-      "horizontalAlignment": "Left",
       "bleed": true
     }
   ]
