@@ -11,7 +11,7 @@
 ```
 5. From Visual Studio, navigate to the "Test Explorer" tab and locate the `DevHome.UITest` set of tests.
 6. Select a test and run it.
-    - Note: Once the test starts, avoid interacting with your machine (e.g. move mouse, use keyboard) to allow the test to navigate the Dev Home app and execute the test.
+    - Note: Once the test starts, avoid interacting with your machine (e.g. move mouse, use keyboard) to allow the test to navigate Dev Home and execute the test.
 
 ### Run tests on a different release of Dev Home (Canary, Prod, Dev)
 #### Option 1: Manually update the Test.runsettings file
