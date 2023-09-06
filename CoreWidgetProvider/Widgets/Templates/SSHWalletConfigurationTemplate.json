@@ -38,8 +38,8 @@
       },
       "spacing": "Medium",
       "style": "Url",
-      "placeholder": "${$root.configuration.defaultOrCurrentConfigFile}",
-      "value": "${$root.configuration.defaultOrCurrentConfigFile}"
+      "placeholder": "${$root.configuration.currentOrDefaultConfigFile}",
+      "value": "${$root.configuration.currentOrDefaultConfigFile}"
     },
     {
       "type": "Container",

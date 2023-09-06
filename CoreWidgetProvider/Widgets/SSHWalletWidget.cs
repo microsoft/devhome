@@ -235,11 +235,11 @@ internal class SSHWalletWidget : CoreWidget
     {
         var configurationData = new JsonObject();
 
-        var defaultOrCurrentConfigFile = string.IsNullOrEmpty(configFile) ? DefaultConfigFile : configFile;
+        var currentOrDefaultConfigFile = string.IsNullOrEmpty(configFile) ? DefaultConfigFile : configFile;
         var sshConfigData = new JsonObject
             {
                 { "configFile", configFile },
-                { "defaultOrCurrentConfigFile", defaultOrCurrentConfigFile },
+                { "currentOrDefaultConfigFile", currentOrDefaultConfigFile },
                 { "numOfEntries", numOfEntries.ToString(CultureInfo.InvariantCulture) },
             };
 
