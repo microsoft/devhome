@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -18,6 +19,11 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 internal class RepositoryProvider
 {
+    /// <summary>
+    /// All the repositories for an account.
+    /// </summary>
+    private readonly Lazy<IEnumerable<IRepository>> _repositories = new ();
+
     /// <summary>
     /// Wrapper for the plugin that is providing a repository and developer id.
     /// </summary>
@@ -36,11 +42,6 @@ internal class RepositoryProvider
     /// Provider used to clone a repsitory.
     /// </summary>
     private IRepositoryProvider _repositoryProvider;
-
-    /// <summary>
-    /// All the repositories for an account.
-    /// </summary>
-    private Lazy<IEnumerable<IRepository>> _repositories = new ();
 
     public RepositoryProvider(IPluginWrapper pluginWrapper)
     {
@@ -70,9 +71,64 @@ internal class RepositoryProvider
     /// <remarks>
     /// Can be null if the provider can't parse the Uri.
     /// </remarks>
-    public IRepository ParseRepositoryFromUri(Uri uri)
+    public IRepository GetRepositoryFromUri(Uri uri, IDeveloperId developerId = null)
     {
-        return _repositoryProvider.ParseRepositoryFromUrlAsync(uri).AsTask().Result;
+        RepositoryResult getResult;
+        if (developerId == null)
+        {
+            getResult = _repositoryProvider.GetRepositoryFromUriAsync(uri).AsTask().Result;
+        }
+        else
+        {
+            getResult = _repositoryProvider.GetRepositoryFromUriAsync(uri, developerId).AsTask().Result;
+        }
+
+        if (getResult.Result.Status == ProviderOperationStatus.Failure)
+        {
+            throw getResult.Result.ExtendedError;
+        }
+
+        return getResult.Repository;
+    }
+
+    /// <summary>
+    /// Checks with the provider if it understands and can clone a repo via Uri.
+    /// </summary>
+    /// <param name="uri">The uri to the repository</param>
+    /// <returns>A tuple that containes if the provider can parse the uri and the account it can parse with.</returns>
+    /// <remarks>If the provider can't parse the Uri, this will try a second time with any logged in accounts.  If the repo is
+    /// public, the developerid can be null.</remarks>
+    public (bool, IDeveloperId, IRepositoryProvider) IsUriSupported(Uri uri)
+    {
+        return (false, null, null);
+        /*
+        var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
+
+        // Possible that no accounts are loggd in.  Try in case the repo is public.
+        if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
+        {
+            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}", developerIdsResult.Result.ExtendedError);
+            var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
+            if (uriSupportResult.IsSupported)
+            {
+                return (true, null, _repositoryProvider);
+            }
+        }
+        else
+        {
+            foreach (var developerId in developerIdsResult.DeveloperIds)
+            {
+                var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri, developerId).AsTask()).Result;
+                if (uriSupportResult.IsSupported)
+                {
+                    return (true, developerId, _repositoryProvider);
+                }
+            }
+        }
+
+        // no accounts can access this uri or the repo does not exist.
+        return (false, null, null);
+        */
     }
 
     /// <summary>
@@ -80,7 +136,15 @@ internal class RepositoryProvider
     /// </summary>
     public IDeveloperId LogIntoProvider()
     {
+        /*
         return _devIdProvider.LoginNewDeveloperIdAsync().AsTask().Result;
+        */
+
+        /*
+        return _devIdProvider.GetLoggedInDeveloperIds().DeveloperIds.First();
+        */
+
+        return null;
     }
 
     /// <summary>
@@ -89,7 +153,17 @@ internal class RepositoryProvider
     /// <returns>A list of all accounts.  May be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts()
     {
-        return _devIdProvider.GetLoggedInDeveloperIds() ?? new List<IDeveloperId>();
+        return new List<IDeveloperId>();
+        /*
+        var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
+        if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
+        {
+            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}", developerIdsResult.Result.ExtendedError);
+            return new List<IDeveloperId>();
+        }
+
+        return developerIdsResult.DeveloperIds;
+        */
     }
 
     /// <summary>
@@ -99,6 +173,7 @@ internal class RepositoryProvider
     /// <returns>A collection of repositories.  May be empty</returns>
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
     {
+        /*
         if (!_repositories.IsValueCreated)
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
@@ -108,5 +183,8 @@ internal class RepositoryProvider
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
         return _repositories.Value;
+        */
+
+        return new List<IRepository>();
     }
 }

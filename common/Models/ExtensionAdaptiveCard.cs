@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace DevHome.Common.Models;
-public class PluginAdaptiveCard : IPluginAdaptiveCard
+public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 {
     public event EventHandler<AdaptiveCard>? UiUpdate;
 
@@ -21,7 +21,7 @@ public class PluginAdaptiveCard : IPluginAdaptiveCard
 
     public string TemplateJson { get; private set; }
 
-    public PluginAdaptiveCard()
+    public ExtensionAdaptiveCard()
     {
         TemplateJson = new JsonObject().ToJsonString();
         DataJson = new JsonObject().ToJsonString();
@@ -49,4 +49,6 @@ public class PluginAdaptiveCard : IPluginAdaptiveCard
             UiUpdate.Invoke(this, parseResult.AdaptiveCard);
         }
     }
+
+    ProviderOperationResult IExtensionAdaptiveCard.Update(string templateJson, string dataJson, string state) => throw new NotImplementedException();
 }

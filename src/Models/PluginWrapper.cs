@@ -21,14 +21,11 @@ public class PluginWrapper : IPluginWrapper
     {
         [typeof(IDeveloperIdProvider)] = ProviderType.DeveloperId,
         [typeof(IRepositoryProvider)] = ProviderType.Repository,
-        [typeof(INotificationsProvider)] = ProviderType.Notifications,
-        [typeof(IWidgetProvider)] = ProviderType.Widget,
         [typeof(ISettingsProvider)] = ProviderType.Settings,
-        [typeof(IDevDoctorProvider)] = ProviderType.DevDoctor,
-        [typeof(ISetupFlowProvider)] = ProviderType.SetupFlow,
+        [typeof(IFeaturedApplicationsProvider)] = ProviderType.FeaturedApplications,
     };
 
-    private IPlugin? _pluginObject;
+    private IExtension? _extensionObject;
 
     public PluginWrapper(string name, string packageFullName, string classId)
     {
@@ -54,14 +51,14 @@ public class PluginWrapper : IPluginWrapper
 
     public bool IsRunning()
     {
-        if (_pluginObject is null)
+        if (_extensionObject is null)
         {
             return false;
         }
 
         try
         {
-            _pluginObject.As<IInspectable>().GetRuntimeClassName();
+            _extensionObject.As<IInspectable>().GetRuntimeClassName();
         }
         catch (COMException e)
         {
@@ -87,14 +84,14 @@ public class PluginWrapper : IPluginWrapper
                     var pluginPtr = IntPtr.Zero;
                     try
                     {
-                        var hr = PInvoke.CoCreateInstance(Guid.Parse(PluginClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IPlugin).GUID, out var pluginObj);
+                        var hr = PInvoke.CoCreateInstance(Guid.Parse(PluginClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IExtension).GUID, out var pluginObj);
                         pluginPtr = Marshal.GetIUnknownForObject(pluginObj);
                         if (hr < 0)
                         {
                             Marshal.ThrowExceptionForHR(hr);
                         }
 
-                        _pluginObject = MarshalInterface<IPlugin>.FromAbi(pluginPtr);
+                        _extensionObject = MarshalInterface<IExtension>.FromAbi(pluginPtr);
                     }
                     finally
                     {
@@ -114,20 +111,20 @@ public class PluginWrapper : IPluginWrapper
         {
             if (IsRunning())
             {
-                _pluginObject?.Dispose();
+                _extensionObject?.Dispose();
             }
 
-            _pluginObject = null;
+            _extensionObject = null;
         }
     }
 
-    public IPlugin? GetPluginObject()
+    public IExtension? GetExtensionObject()
     {
         lock (_lock)
         {
             if (IsRunning())
             {
-                return _pluginObject;
+                return _extensionObject;
             }
             else
             {
@@ -141,7 +138,7 @@ public class PluginWrapper : IPluginWrapper
     {
         await StartPluginAsync();
 
-        return GetPluginObject()?.GetProvider(_providerTypeMap[typeof(T)]) as T;
+        return GetExtensionObject()?.GetProvider(_providerTypeMap[typeof(T)]) as T;
     }
 
     public void AddProviderType(ProviderType providerType)

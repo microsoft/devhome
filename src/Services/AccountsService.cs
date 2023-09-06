@@ -1,16 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Diagnostics;
 using DevHome.Common.Contracts.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
-using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.Win32;
-using Windows.Win32.Foundation;
 
 namespace DevHome.Services;
 
@@ -22,6 +17,7 @@ public class AccountsService : IAccountsService
 
     public async Task InitializeAsync()
     {
+        /*
         (await GetDevIdProviders()).ToList().ForEach((devIdProvider) =>
         {
             var devIds = devIdProvider.GetLoggedInDeveloperIds().ToList();
@@ -31,6 +27,8 @@ public class AccountsService : IAccountsService
             devIdProvider.LoggedIn += LoggedInEventHandler;
             devIdProvider.LoggedOut += LoggedOutEventHandler;
         });
+        */
+        await Task.Delay(2000);
     }
 
     public async Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders()
@@ -51,11 +49,12 @@ public class AccountsService : IAccountsService
         return devIdProviders;
     }
 
-    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider) => iDevIdProvider.GetLoggedInDeveloperIds().ToList();
+    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider) => throw new NotImplementedException();
 
-    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IPlugin plugin)
+    // public IReadOnlyList<IDeveloperId> GetDeveloperIds(IDeveloperIdProvider iDevIdProvider) => iDevIdProvider.GetLoggedInDeveloperIds().ToList();
+    public IReadOnlyList<IDeveloperId> GetDeveloperIds(IExtension extension)
     {
-        if (plugin.GetProvider(ProviderType.DeveloperId) is IDeveloperIdProvider devIdProvider)
+        if (extension.GetProvider(ProviderType.DeveloperId) is IDeveloperIdProvider devIdProvider)
         {
             return GetDeveloperIds(devIdProvider);
         }
@@ -65,6 +64,7 @@ public class AccountsService : IAccountsService
 
     public void LoggedInEventHandler(object? sender, IDeveloperId developerId)
     {
+        /*
         if (sender is IDeveloperIdProvider devIdProvider)
         {
             TelemetryFactory.Get<ITelemetry>().Log("Login_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.GetName(), developerId));
@@ -72,13 +72,16 @@ public class AccountsService : IAccountsService
 
         // Bring focus back to DevHome after login
         _ = PInvoke.SetForegroundWindow((HWND)Process.GetCurrentProcess().MainWindowHandle);
+        */
     }
 
     public void LoggedOutEventHandler(object? sender, IDeveloperId developerId)
     {
+        /*
         if (sender is IDeveloperIdProvider devIdProvider)
         {
             TelemetryFactory.Get<ITelemetry>().Log("Logout_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.GetName(), developerId));
         }
+        */
     }
 }
