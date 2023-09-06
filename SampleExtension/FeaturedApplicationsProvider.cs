@@ -12,17 +12,20 @@ namespace SampleExtension;
 /// <summary>
 /// Sample implementation of IFeaturedApplicationProvider based on a static list of featured applications.
 /// </summary>
-public class FeaturedApplicationProvider : IFeaturedApplicationProvider
+public class FeaturedApplicationsProvider : IFeaturedApplicationsProvider
 {
-    public IAsyncOperation<GetFeaturedApplicationGroupResult> GetFeaturedApplicationGroupsAsync()
+    public IAsyncOperation<GetFeaturedApplicationsGroupsResult> GetFeaturedApplicationsGroupsAsync()
     {
-        return Task.FromResult(new GetFeaturedApplicationGroupResult(new FeaturedApplicationGroup())).AsAsyncOperation();
+        return Task.FromResult(new GetFeaturedApplicationsGroupsResult(new List<IFeaturedApplicationsGroup>()
+        {
+            new FeaturedApplicationsGroup(),
+        })).AsAsyncOperation();
     }
 
     /// <summary>
-    /// Sample implementation of IFeaturedApplicationGroup.
+    /// Sample implementation of IFeaturedApplicationsGroup.
     /// </summary>
-    private class FeaturedApplicationGroup : IFeaturedApplicationGroup
+    private class FeaturedApplicationsGroup : IFeaturedApplicationsGroup
     {
         public GetFeaturedApplicationsResult GetApplications()
         {
@@ -36,8 +39,8 @@ public class FeaturedApplicationProvider : IFeaturedApplicationProvider
             });
         }
 
-        public string GetDescription(string preferredLocale) => $"Sample {nameof(FeaturedApplicationGroup)} description";
+        public string GetDescription(string preferredLocale) => $"Sample {nameof(FeaturedApplicationsGroup)} description";
 
-        public string GetTitle(string preferredLocale) => $"Sample {nameof(FeaturedApplicationGroup)} title";
+        public string GetTitle(string preferredLocale) => $"Sample {nameof(FeaturedApplicationsGroup)} title";
     }
 }
