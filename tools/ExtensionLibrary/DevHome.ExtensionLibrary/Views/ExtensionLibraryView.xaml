@@ -10,6 +10,24 @@
     xmlns:pg="using:DevHome.Common"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,22,0,0">
+            <StackPanel>
+
+                <!-- On your PC items -->
+                <Grid Margin="{StaticResource SettingsPageSubTitleMargin}">
+                    <TextBlock x:Uid="OnYourPcTextBlock" />
+                    <Button x:Uid="GetUpdatesButton"
+                            HorizontalAlignment="Right"
+                            Style="{ThemeResource AccentButtonStyle}" 
+                            Command="{x:Bind ViewModel.GetUpdatesButtonCommand}"/>
+                </Grid>
+
+                <!-- Available items -->
+                <TextBlock x:Uid="AvailableFromStoreTextBlock"
+                           Margin="{StaticResource ExtensionLibrarySubTitleMargin}" />
+
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </pg:ToolPage>
