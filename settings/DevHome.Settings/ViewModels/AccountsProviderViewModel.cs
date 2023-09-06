@@ -15,7 +15,7 @@ public partial class AccountsProviderViewModel : ObservableObject
 {
     public IDeveloperIdProvider DeveloperIdProvider { get; }
 
-    public string ProviderName => DeveloperIdProvider.GetName();
+    public string ProviderName => DeveloperIdProvider.DisplayName;
 
     public ObservableCollection<Account> LoggedInAccounts { get; } = new ();
 
@@ -28,7 +28,13 @@ public partial class AccountsProviderViewModel : ObservableObject
     public void RefreshLoggedInAccounts()
     {
         LoggedInAccounts.Clear();
-        DeveloperIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
+        var developerIdsResult = DeveloperIdProvider.GetLoggedInDeveloperIds();
+        if (developerIdsResult.Result.Status == ProviderOperationStatus.Failure)
+        {
+            GlobalLog.Logger?.ReportError($"{developerIdsResult.Result.DisplayMessage} - {developerIdsResult.Result.DiagnosticText}");
+        }
+
+        developerIdsResult.DeveloperIds.ToList().ForEach((devId) =>
         {
             LoggedInAccounts.Add(new Account(this, devId));
         });
