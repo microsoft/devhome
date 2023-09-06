@@ -45,6 +45,7 @@
 
             <Button Grid.Row="1"
                     x:Name="UpdateWidgetButton" x:Uid="UpdateWidgetButton"
+                    Style="{ThemeResource AccentButtonStyle}"
                     VerticalAlignment="Bottom" HorizontalAlignment="Center"
                     Visibility="Visible"
                     IsEnabled="{x:Bind ViewModel.Configuring, Mode=OneWay, Converter={StaticResource BoolNegation}}"
