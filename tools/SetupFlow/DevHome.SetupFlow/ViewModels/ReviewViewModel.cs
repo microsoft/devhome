@@ -104,25 +104,14 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     [RelayCommand(CanExecute = nameof(CanSetup))]
     private async Task OnSetupAsync()
     {
-        var elevatedTasks = Orchestrator.TaskGroups.SelectMany(taskGroup => taskGroup.SetupTasks.Where(task => task.RequiresAdmin));
-        if (elevatedTasks.Any())
+        try
         {
-            try
-            {
-                TasksArguments tasksArguments = new ()
-                {
-                    InstallPackages = elevatedTasks.OfType<InstallPackageTask>().Select(task => task.GetArguments()).ToList(),
-                    Configure = elevatedTasks.OfType<ConfigureTask>().Select(task => task.GetArguments()).FirstOrDefault(),
-                    CreateDevDrive = elevatedTasks.OfType<CreateDevDriveTask>().Select(task => task.GetArguments()).FirstOrDefault(),
-                };
-                Orchestrator.RemoteElevatedOperation = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentOperation>(tasksArguments);
-                await Orchestrator.GoToNextPage();
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process.", e);
-                Log.Logger?.ReportInfo(Log.Component.Loading, "Will continue with setup as best-effort");
-            }
+            await Orchestrator.InitializeElevatedServerAsync();
+            await Orchestrator.GoToNextPage();
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.Review, $"Failed to initialize elevated process.", e);
         }
    }
 }
