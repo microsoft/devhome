@@ -38,7 +38,8 @@
             </Grid>
             <Grid x:Name="ContentArea" Padding="35 0 35 30" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="330" />
+                    <RowDefinition Height="265" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
@@ -81,10 +82,113 @@
                     </StackPanel>
                 </Grid>
 
+
+                <muxc:ItemsRepeater
+                    Name="BigFeaturesContainer"
+                    Grid.Row="1"
+                    Margin="35, 5, 45, 10"
+                    animations:Connected.ListItemElementName="itemThumbnail"
+                    animations:Connected.ListItemKey="animationKeyContentGrid"
+                    ItemsSource="{x:Bind ViewModel.BigSource,Mode=OneWay}">
+
+                    <muxc:ItemsRepeater.Resources>
+                        <models:WhatsNewCard 
+                            x:Uid="WhatsNewPage_ExtensionsCard"
+                            x:Key="WhatsNewPage_ExtensionsCard"
+                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DashboardHero.png"
+                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DashboardHero.png"
+                            PageKey="DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel"
+                            Priority="0" />
+                    </muxc:ItemsRepeater.Resources>
+
+                    <muxc:ItemsRepeater.Layout>
+                        <muxc:StackLayout 
+                            x:Name="BigCardGrid"
+                            Spacing="12"
+                            Orientation="Vertical" >
+                        </muxc:StackLayout>
+                    </muxc:ItemsRepeater.Layout>
+
+                    <muxc:ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="models:WhatsNewCard">
+                            <Grid
+                                HorizontalAlignment="Stretch"
+                                Padding="15 15"
+                                CornerRadius="{ThemeResource ControlCornerRadius}"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="{ThemeResource ExpanderBorderThickness}">
+                                <Grid.Resources>
+                                    <ResourceDictionary>
+                                        <ResourceDictionary.ThemeDictionaries>
+                                            <ResourceDictionary x:Key="Light">
+                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind LightThemeImage}" />
+                                            </ResourceDictionary>
+                                            <ResourceDictionary x:Key="Dark">
+                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind DarkThemeImage}" />
+                                            </ResourceDictionary>
+                                        </ResourceDictionary.ThemeDictionaries>
+                                    </ResourceDictionary>
+                                </Grid.Resources>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="4*" />
+                                    <ColumnDefinition Width="6*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Image
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Source="{ThemeResource ItemImage}"
+                                    MaxHeight="188"
+                                    MaxWidth="376"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Top"/>
+
+                                <StackPanel Grid.Column="1" Padding="65 10 15 0">
+                                    <TextBlock
+                                        HorizontalAlignment="Left"
+                                        Style="{ThemeResource BodyTextStyle}"
+                                        Text="{x:Bind Title}" />
+
+                                    <TextBlock
+                                        Margin="0 8 0 10"
+                                        TextWrapping="Wrap"
+                                        FontSize="12"
+                                        Text="{x:Bind Description}"/>
+
+                                    <HyperlinkButton
+                                        Content="{x:Bind Link}"
+                                        Foreground="{ThemeResource LearnMoreForeground}"
+                                        NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
+                                        Padding="0"
+                                        Margin="0"
+                                        Visibility="{x:Bind ShouldShowLink}"/>
+
+                                    <Button 
+                                        Margin="0 0 0 10"
+                                        Padding="50 5 50 5"
+                                        DataContext="{x:Bind PageKey}"
+                                        FontSize="12"
+                                        Click="Button_ClickAsync"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Bottom"
+                                        Content="{x:Bind Button}" />
+
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </muxc:ItemsRepeater.ItemTemplate>
+                </muxc:ItemsRepeater>
+
                 <muxc:ItemsRepeater
                     Name="FeaturesContainer"
-                    Grid.Row="1"
-                    Margin="35, 45, 45, 45"
+                    Grid.Row="2"
+                    Margin="35, 5, 45, 45"
                     animations:Connected.ListItemElementName="itemThumbnail"
                     animations:Connected.ListItemKey="animationKeyContentGrid"
                     ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}">

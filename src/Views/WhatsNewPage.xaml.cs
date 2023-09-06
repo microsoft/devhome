@@ -61,6 +61,21 @@ public sealed partial class WhatsNewPage : Page
 
             ViewModel.AddCard(card);
         }
+
+        var whatsNewBigCards = BigFeaturesContainer.Resources
+            .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
+            .Select(card => card.Value as WhatsNewCard)
+            .OrderBy(card => card?.Priority ?? 0);
+
+        foreach (var card in whatsNewBigCards)
+        {
+            if (card is null)
+            {
+                continue;
+            }
+
+            ViewModel.AddBigCard(card);
+        }
     }
 
     private void MachineConfigButton_Click(object sender, RoutedEventArgs e)

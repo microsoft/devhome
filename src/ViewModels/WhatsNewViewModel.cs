@@ -11,14 +11,22 @@ public class WhatsNewViewModel : ObservableObject
 {
     public ObservableCollection<WhatsNewCard> Source { get; } = new ObservableCollection<WhatsNewCard>();
 
+    public ObservableCollection<WhatsNewCard> BigSource { get; } = new ObservableCollection<WhatsNewCard>();
+
     public void AddCard(WhatsNewCard card)
     {
         Source.Add(card);
     }
 
+    public void AddBigCard(WhatsNewCard card)
+    {
+        BigSource.Add(card);
+    }
+
     public void OnNavigatedTo(object parameter)
     {
         Source.Clear();
+        BigSource.Clear();
     }
 
     public void OnNavigatedFrom()
