@@ -43,7 +43,7 @@
     <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
         <Grid Background="Transparent" ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
             <Button
-                Command="{x:Bind ViewModel.SetupCommand, Mode=OneWay}"
+                Command="{x:Bind ViewModel.SetUpCommand, Mode=OneWay}"
                 Style="{StaticResource AccentButtonStyle}"
                 MinWidth="120" Margin="4,0"
                 Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"

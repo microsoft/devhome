@@ -80,6 +80,9 @@
             Visibility="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.IsNavigationBarVisible, Mode=OneWay}">
             <i:Interaction.Behaviors>
                 <setupFlowBehaviors:SetupFlowNavigationBehavior>
+                    <!-- TODO: https://github.com/microsoft/devhome/issues/1494
+                         - DefaultCancelTemplate should not contain multiple elements, instead CancelTemplate should be used to overwrite the default behavior.
+                         - Explore the option to share the style in the setup flow navigation control to eliminate redundancy -->
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultCancelTemplate>
                         <Grid>
                             <HyperlinkButton

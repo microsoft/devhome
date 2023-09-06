@@ -35,8 +35,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     private bool _readAndAgree;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(SetupCommand))]
-    private bool _canSetup;
+    [NotifyCanExecuteChangedFor(nameof(SetUpCommand))]
+    private bool _canSetUp;
 
     public bool HasApplicationsToInstall => Orchestrator.GetTaskGroup<AppManagementTaskGroup>()?.SetupTasks.Any() == true;
 
@@ -81,15 +81,15 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         SelectedReviewTab = ReviewTabs.FirstOrDefault();
 
         NextPageButtonToolTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
-        UpdateCanSetup();
+        UpdateCanSetUp();
         await Task.CompletedTask;
     }
 
-    partial void OnReadAndAgreeChanged(bool value) => UpdateCanSetup();
+    partial void OnReadAndAgreeChanged(bool value) => UpdateCanSetUp();
 
-    public void UpdateCanSetup()
+    public void UpdateCanSetUp()
     {
-        CanSetup = HasTasksToSetUp && IsValidTermsAgreement();
+        CanSetUp = HasTasksToSetUp && IsValidTermsAgreement();
     }
 
     /// <summary>
@@ -101,8 +101,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
         return !RequiresTermsAgreement || ReadAndAgree;
     }
 
-    [RelayCommand(CanExecute = nameof(CanSetup))]
-    private async Task OnSetupAsync()
+    [RelayCommand(CanExecute = nameof(CanSetUp))]
+    private async Task OnSetUpAsync()
     {
         try
         {
