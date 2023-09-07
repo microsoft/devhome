@@ -50,4 +50,9 @@ public class WhatsNewCard
     {
         get; set;
     }
+
+    public bool? IsBig
+    {
+        get; set;
+    }
 }
