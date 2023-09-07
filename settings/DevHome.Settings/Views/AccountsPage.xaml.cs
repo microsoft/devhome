@@ -75,6 +75,7 @@ public sealed partial class AccountsPage : Page
                 Content = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_Content"),
                 PrimaryButtonText = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_PrimaryButtonText"),
                 PrimaryButtonCommand = FindExtensionsCommand,
+                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"],
                 SecondaryButtonText = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_SecondaryButtonText"),
                 XamlRoot = XamlRoot,
             };
