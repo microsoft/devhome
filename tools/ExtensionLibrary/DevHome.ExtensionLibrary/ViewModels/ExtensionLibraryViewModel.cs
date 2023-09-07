@@ -16,7 +16,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public async Task GetUpdatesButton()
+    public async Task GetUpdatesButtonAsync()
     {
         await Launcher.LaunchUriAsync(new ("ms-windows-store://downloadsandupdates"));
     }
