@@ -73,7 +73,6 @@
                       x:Name="PinRow"
                       Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
                     <Button x:Name="PinButton"
-                            Style="{ThemeResource AccentButtonStyle}"
                             VerticalAlignment="Bottom" HorizontalAlignment="Center"
                             Visibility="Collapsed"
                             IsEnabled="{x:Bind ViewModel.Configuring, Mode=OneWay, Converter={StaticResource BoolNegation}}"
