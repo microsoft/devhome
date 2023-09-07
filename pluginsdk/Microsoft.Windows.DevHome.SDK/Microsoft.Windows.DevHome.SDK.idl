@@ -155,7 +155,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     runtimeclass AdaptiveCardSessionResult {
-        AdaptiveCardSessionResult(IIterable<IDeveloperId> developerIds);
+        AdaptiveCardSessionResult(IExtensionAdaptiveCardSession adaptiveCardSession);
         AdaptiveCardSessionResult(HRESULT e, String diagnosticText);
 
         IExtensionAdaptiveCardSession AdaptiveCardSession
