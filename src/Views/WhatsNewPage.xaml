@@ -10,6 +10,7 @@
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="OnLoaded"
+    SizeChanged="OnSizeChanged"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -38,7 +39,7 @@
             </Grid>
             <Grid x:Name="ContentArea" Padding="35 0 35 30" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="265" />
+                    <RowDefinition Height="325" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -92,12 +93,16 @@
                     ItemsSource="{x:Bind ViewModel.BigSource,Mode=OneWay}">
 
                     <muxc:ItemsRepeater.Resources>
+                        <!-- This repeater is responsible for the big cards. To add another here, make sure to assign IsBig as true -->
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_ExtensionsCard"
                             x:Key="WhatsNewPage_ExtensionsCard"
-                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DashboardHero.png"
-                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DashboardHero.png"
+                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/Extensions.png"
+                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/Extensions.png"
+                            DarkThemeImageBig="ms-appx:///Assets/WhatsNewPage/DarkTheme/ExtensionsBig.png"
+                            LightThemeImageBig="ms-appx:///Assets/WhatsNewPage/LightTheme/ExtensionsBig.png"
                             PageKey="DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel"
+                            IsBig="True"
                             Priority="0" />
                     </muxc:ItemsRepeater.Resources>
 
@@ -122,10 +127,10 @@
                                     <ResourceDictionary>
                                         <ResourceDictionary.ThemeDictionaries>
                                             <ResourceDictionary x:Key="Light">
-                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind LightThemeImage}" />
+                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind LightThemeImageBig}" />
                                             </ResourceDictionary>
                                             <ResourceDictionary x:Key="Dark">
-                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind DarkThemeImage}" />
+                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind DarkThemeImageBig}" />
                                             </ResourceDictionary>
                                         </ResourceDictionary.ThemeDictionaries>
                                     </ResourceDictionary>
@@ -147,7 +152,7 @@
                                     MaxHeight="188"
                                     MaxWidth="376"
                                     HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Top"/>
+                                    VerticalAlignment="Center"/>
 
                                 <StackPanel Grid.Column="1" Padding="65 10 15 0">
                                     <TextBlock
@@ -200,7 +205,7 @@
                             DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DashboardHero.png"
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DashboardHero.png"
                             PageKey="DevHome.Dashboard.ViewModels.DashboardViewModel"
-                            Priority="0" />
+                            Priority="1" />
 
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevIdCard"
@@ -208,7 +213,7 @@
                             DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DevIdHero.png"
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevIdHero.png"
                             PageKey="DevHome.Settings.ViewModels.AccountsViewModel"
-                            Priority="1" />
+                            Priority="2" />
 
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_DevDriveCard"
@@ -216,7 +221,7 @@
                             DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DevDriveHero.png"
                             LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DevDriveHero.png"
                             PageKey="ms-settings:disksandvolumes"
-                            Priority="2" />
+                            Priority="3" />
                     </muxc:ItemsRepeater.Resources>
 
                     <muxc:ItemsRepeater.Layout>

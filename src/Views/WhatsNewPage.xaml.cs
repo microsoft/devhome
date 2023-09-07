@@ -76,6 +76,10 @@ public sealed partial class WhatsNewPage : Page
 
             ViewModel.AddBigCard(card);
         }
+
+        ViewModel.NumberOfBigCards = whatsNewBigCards.Count();
+
+        MoveBigCardsIfNeeded(this.ActualWidth);
     }
 
     private void MachineConfigButton_Click(object sender, RoutedEventArgs e)
@@ -108,6 +112,26 @@ public sealed partial class WhatsNewPage : Page
         {
             var navigationService = Application.Current.GetService<INavigationService>();
             navigationService.NavigateTo(pageKey!);
+        }
+    }
+
+    public void OnSizeChanged(object sender, SizeChangedEventArgs args)
+    {
+        if ((Page)sender == this)
+        {
+            MoveBigCardsIfNeeded(args.NewSize.Width);
+        }
+    }
+
+    private void MoveBigCardsIfNeeded(double newWidth)
+    {
+        if (newWidth < 760)
+        {
+            ViewModel.SwitchToSmallerView();
+        }
+        else
+        {
+            ViewModel.SwitchToLargerView();
         }
     }
 
