@@ -385,12 +385,15 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
+            throw new NotImplementedException("Developer ID can not log in users");
+            /*
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false));
 
             // Throw away developerId because DevHome allows one account per provider. GetAllLoggedInAccounts is called
             // in anticipation of 1 Provider : N DeveloperIds
             await Task.Run(() => _providers.LogInToProvider(repositoryProviderName));
             loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
+            */
         }
         else
         {

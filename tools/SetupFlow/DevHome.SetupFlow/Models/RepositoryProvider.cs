@@ -20,11 +20,6 @@ namespace DevHome.SetupFlow.Models;
 internal class RepositoryProvider
 {
     /// <summary>
-    /// All the repositories for an account.
-    /// </summary>
-    private readonly Lazy<IEnumerable<IRepository>> _repositories = new ();
-
-    /// <summary>
     /// Wrapper for the plugin that is providing a repository and developer id.
     /// </summary>
     /// <remarks>
@@ -32,6 +27,11 @@ internal class RepositoryProvider
     /// This is for lazy loading and starting and prevents all plugins from starting all at once.
     /// </remarks>
     private readonly IPluginWrapper _pluginWrapper;
+
+    /// <summary>
+    /// All the repositories for an account.
+    /// </summary>
+    private Lazy<IEnumerable<IRepository>> _repositories = new ();
 
     /// <summary>
     /// The DeveloperId provider used to log a user into an account.
@@ -156,7 +156,6 @@ internal class RepositoryProvider
         /*
         return _devIdProvider.GetLoggedInDeveloperIds().DeveloperIds.First();
         */
-        var authenticationExpirenceKind = _devIdProvider.GetAuthenticationExperienceKind();
 
         return null;
     }
@@ -184,18 +183,23 @@ internal class RepositoryProvider
     /// <returns>A collection of repositories.  May be empty</returns>
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
     {
-        /*
         if (!_repositories.IsValueCreated)
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
-            _repositories = new Lazy<IEnumerable<IRepository>>(_repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result);
+
+            var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+            if (result.Result.Status != ProviderOperationStatus.Success)
+            {
+                _repositories = new Lazy<IEnumerable<IRepository>>(new List<IRepository>());
+            }
+            else
+            {
+                _repositories = new Lazy<IEnumerable<IRepository>>(result.Repositories);
+            }
         }
 
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
         return _repositories.Value;
-        */
-
-        return new List<IRepository>();
     }
 }

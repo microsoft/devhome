@@ -187,15 +187,23 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         {
             try
             {
+                ProviderOperationResult result;
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
                 TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Critical, new ReposCloneEvent(ProviderName, _developerId));
                 if (_developerId == null)
                 {
-                    await _repositoryProvider.CloneRepositoryAsync(RepositoryToClone, _cloneLocation.FullName);
+                    result = await _repositoryProvider.CloneRepositoryAsync(RepositoryToClone, _cloneLocation.FullName);
                 }
                 else
                 {
-                    await _repositoryProvider.CloneRepositoryAsync(RepositoryToClone, _cloneLocation.FullName, _developerId);
+                    result = await _repositoryProvider.CloneRepositoryAsync(RepositoryToClone, _cloneLocation.FullName, _developerId);
+                }
+
+                if (result.Status == ProviderOperationStatus.Failure)
+                {
+                    _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, result.DisplayMessage);
+                    WasCloningSuccessful = false;
+                    return TaskFinishedState.Failure;
                 }
             }
             catch (Exception e)
