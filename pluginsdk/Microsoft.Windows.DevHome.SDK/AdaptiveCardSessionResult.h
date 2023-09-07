@@ -7,7 +7,7 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
     {
         AdaptiveCardSessionResult() = default;
 
-        AdaptiveCardSessionResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IDeveloperId> const& developerIds);
+        AdaptiveCardSessionResult(winrt::Microsoft::Windows::DevHome::SDK::IExtensionAdaptiveCardSession const& adaptiveCardSession);
         AdaptiveCardSessionResult(winrt::hresult const& e, hstring const& diagnosticText);
         winrt::Microsoft::Windows::DevHome::SDK::IExtensionAdaptiveCardSession AdaptiveCardSession();
         winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult Result();
