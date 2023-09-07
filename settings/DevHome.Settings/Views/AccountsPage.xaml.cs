@@ -15,6 +15,7 @@ using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.DevHome.SDK;
 using Windows.Storage;
 
 namespace DevHome.Settings.Views;
@@ -96,10 +97,15 @@ public sealed partial class AccountsPage : Page
 
     public async Task ShowLoginUIAsync(string loginEntryPoint, Page parentPage, AccountsProviderViewModel accountProvider)
     {
-        await Task.Delay(2000);
-        /*
         try
         {
+            var adaptiveCardSessionResult = accountProvider.DeveloperIdProvider.GetLoginAdaptiveCardSession();
+            if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
+            {
+                GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                return;
+            }
+
             string[] args = { loginEntryPoint };
             var loginUIAdaptiveCardController = accountProvider.DeveloperIdProvider.GetAdaptiveCardController(args);
             var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
@@ -128,7 +134,6 @@ public sealed partial class AccountsPage : Page
         }
 
         accountProvider.RefreshLoggedInAccounts();
-        */
     }
 
     private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer)
