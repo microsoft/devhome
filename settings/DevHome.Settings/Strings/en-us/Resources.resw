@@ -165,7 +165,7 @@
     <value>Install a Dev Home extension that uses your developer account, then sign in to add the account.</value>
   </data>
   <data name="Settings_Accounts_NoProvidersContentDialog_PrimaryButtonText" xml:space="preserve">
-    <value>OK</value>
+    <value>Find Extensions</value>
   </data>
   <data name="Settings_Accounts_NoProvidersContentDialog_Title" xml:space="preserve">
     <value>No extensions found</value>
@@ -382,5 +382,8 @@
   <data name="Settings_Feedback_OpenSource_Link.NavigateUri" xml:space="preserve">
     <value>https://go.microsoft.com/fwlink/?linkid=2236981</value>
     <comment>This is the microsoft code of conduct link.</comment>
+  </data>
+  <data name="Settings_Accounts_NoProvidersContentDialog_SecondaryButtonText" xml:space="preserve">
+    <value>Cancel</value>
   </data>
 </root>
