@@ -101,33 +101,35 @@
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xebe8;"/>
                         </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Settings_Feedback_ReportBug_Button" Click="DisplayReportBugDialog" />
+                        <Button x:Uid="Settings_Feedback_ReportBug_Button" Click="DisplayReportBugDialog"/>
                     </labs:SettingsCard>
                     <labs:SettingsCard x:Uid="Settings_Feedback_FeatureImprovement">
                         <labs:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea80;"/>
                         </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Settings_Feedback_FeatureImprovement_Button" Click="DisplaySuggestFeature" />
+                        <Button x:Uid="Settings_Feedback_FeatureImprovement_Button" Click="DisplaySuggestFeature"/>
                     </labs:SettingsCard>
                     <labs:SettingsCard x:Uid="Settings_Feedback_LocalizationIssue">
                         <labs:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xE909;"/>
                         </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Settings_Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog" />
+                        <Button x:Uid="Settings_Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog"/>
                     </labs:SettingsCard>
                     <labs:SettingsCard x:Uid="Settings_Feedback_BuildExtension">
                         <labs:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea86;"/>
                         </labs:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_BuildExtension_Button" Click="BuildExtensionButtonClicked"/>
                     </labs:SettingsCard>
                     <labs:SettingsCard x:Uid="Settings_Feedback_ReportSecurity">
                         <labs:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xf552;"/>
                         </labs:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_ReportSecurity_Button" Click="ReportSecurityButtonClicked"/>
                     </labs:SettingsCard>
                 </StackPanel>
             </StackPanel>
