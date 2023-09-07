@@ -156,6 +156,7 @@ internal class RepositoryProvider
         /*
         return _devIdProvider.GetLoggedInDeveloperIds().DeveloperIds.First();
         */
+        var authenticationExpirenceKind = _devIdProvider.GetAuthenticationExperienceKind();
 
         return null;
     }
@@ -166,8 +167,6 @@ internal class RepositoryProvider
     /// <returns>A list of all accounts.  May be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts()
     {
-        return new List<IDeveloperId>();
-        /*
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
         if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
         {
@@ -176,7 +175,6 @@ internal class RepositoryProvider
         }
 
         return developerIdsResult.DeveloperIds;
-        */
     }
 
     /// <summary>
