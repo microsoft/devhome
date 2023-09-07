@@ -64,6 +64,7 @@ public class BaseSetupFlowTest
                 services.AddTransient<PackageViewModel>();
                 services.AddTransient<PackageCatalogViewModel>();
                 services.AddTransient<SearchViewModel>();
+                services.AddTransient<LoadingViewModel>();
 
                 // App-management services
                 services.AddSingleton<IWindowsPackageManager>(WindowsPackageManager.Object);
