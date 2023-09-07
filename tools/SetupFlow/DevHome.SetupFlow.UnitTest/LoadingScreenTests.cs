@@ -13,7 +13,7 @@ public class LoadingScreenTests : BaseSetupFlowTest
     [TestMethod]
     public void HideRetryBannerTest()
     {
-        var loadingViewModel = new LoadingViewModel(StringResource.Object, TestHost!.GetService<SetupFlowOrchestrator>(), TestHost);
+        var loadingViewModel = TestHost!.GetService<LoadingViewModel>();
 
         loadingViewModel.HideMaxRetryBanner();
 
