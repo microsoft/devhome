@@ -63,12 +63,12 @@
     <comment>Label for "Add widget" button"</comment>
   </data>
   <data name="DashboardBanner.Title" xml:space="preserve">
-    <value>Monitor your GitHub Issues and Pull Requests</value>
-    <comment>Title text of an instruction banner on the widget dashboard. GitHub refers to a website. GitHub should not be localized {StrContains=GitHub}.</comment>
+    <value>Monitor your projects using widgets</value>
+    <comment>Title text of an instruction banner on the widget dashboard</comment>
   </data>
   <data name="DashboardBanner.Description" xml:space="preserve">
-    <value>Copy the URL from GitHub to monitor issues and pull requests at a glance.</value>
-    <comment>Description text of an instruction banner on the widget dashboard. GitHub refers to a website. GitHub should not be localized {StrContains=GitHub}.</comment>
+    <value>Check out available widgets that can help you connect to your developer account and manage your projects.</value>
+    <comment>Description text of an instruction banner on the widget dashboard</comment>
   </data>
   <data name="DashboardBanner.ButtonText" xml:space="preserve">
     <value>Learn more</value>
