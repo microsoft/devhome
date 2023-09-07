@@ -38,4 +38,6 @@
 
     <Thickness x:Key="SettingsCardMargin">0,0,0,4</Thickness>
     <x:Double x:Key="SettingsCardSpacing">4</x:Double>
+
+    <Thickness x:Key="ExtensionLibrarySubTitleMargin">0,32,0,16</Thickness>
 </ResourceDictionary>

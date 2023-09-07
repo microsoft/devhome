@@ -62,4 +62,20 @@
     <value>Extensions</value>
     <comment>Navigation pane content</comment>
   </data>
+  <data name="ExtensionLibraryPage_Title.Text" xml:space="preserve">
+    <value>Extensions</value>
+    <comment>Header text for Extension Library page</comment>
+  </data>
+  <data name="OnYourPcTextBlock.Text" xml:space="preserve">
+    <value>On your PC</value>
+    <comment>Header for the list of packages currently installed on the user's computer</comment>
+  </data>
+  <data name="GetUpdatesButton.Content" xml:space="preserve">
+    <value>Get updates</value>
+    <comment>Button that allows the user to check if the store has updates for current packages</comment>
+  </data>
+  <data name="AvailableFromStoreTextBlock.Text" xml:space="preserve">
+    <value>Available from the Store</value>
+    <comment>Header for the list of packages available for download from the store</comment>
+  </data>
 </root>
