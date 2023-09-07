@@ -115,7 +115,7 @@ public sealed partial class WhatsNewPage : Page
 
     public void OnSizeChanged(object sender, SizeChangedEventArgs args)
     {
-        if ((Page)sender == this && args.NewSize.Width < 720)
+        if ((Page)sender == this && args.NewSize.Width < 740)
         {
             ViewModel.SwitchToSmallerView();
         }

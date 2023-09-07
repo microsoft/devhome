@@ -21,6 +21,12 @@
         <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
         <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
     </PropertyGroup>
+    <ItemGroup>
+      <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
+      <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
+      <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
+      <None Remove="Assets\WhatsNewPage\LightTheme\ExtensionsBig.png" />
+    </ItemGroup>
 
     <ItemGroup>
         <Manifest Include="$(ApplicationManifest)" />

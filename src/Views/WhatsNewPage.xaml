@@ -97,8 +97,10 @@
                         <models:WhatsNewCard 
                             x:Uid="WhatsNewPage_ExtensionsCard"
                             x:Key="WhatsNewPage_ExtensionsCard"
-                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/DashboardHero.png"
-                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/DashboardHero.png"
+                            DarkThemeImage="ms-appx:///Assets/WhatsNewPage/DarkTheme/Extensions.png"
+                            LightThemeImage="ms-appx:///Assets/WhatsNewPage/LightTheme/Extensions.png"
+                            DarkThemeImageBig="ms-appx:///Assets/WhatsNewPage/DarkTheme/ExtensionsBig.png"
+                            LightThemeImageBig="ms-appx:///Assets/WhatsNewPage/LightTheme/ExtensionsBig.png"
                             PageKey="DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel"
                             IsBig="True"
                             Priority="0" />
@@ -125,10 +127,10 @@
                                     <ResourceDictionary>
                                         <ResourceDictionary.ThemeDictionaries>
                                             <ResourceDictionary x:Key="Light">
-                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind LightThemeImage}" />
+                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind LightThemeImageBig}" />
                                             </ResourceDictionary>
                                             <ResourceDictionary x:Key="Dark">
-                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind DarkThemeImage}" />
+                                                <BitmapImage x:Key="ItemImage" UriSource="{x:Bind DarkThemeImageBig}" />
                                             </ResourceDictionary>
                                         </ResourceDictionary.ThemeDictionaries>
                                     </ResourceDictionary>
@@ -150,7 +152,7 @@
                                     MaxHeight="188"
                                     MaxWidth="376"
                                     HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Top"/>
+                                    VerticalAlignment="Center"/>
 
                                 <StackPanel Grid.Column="1" Padding="65 10 15 0">
                                     <TextBlock
