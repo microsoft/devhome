@@ -4,7 +4,7 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    AdaptiveCardSessionResult::AdaptiveCardSessionResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IDeveloperId> const& developerIds)
+    AdaptiveCardSessionResult::AdaptiveCardSessionResult(winrt::Microsoft::Windows::DevHome::SDK::IExtensionAdaptiveCardSession const& adaptiveCardSession)
     {
         throw hresult_not_implemented();
     }
