@@ -106,8 +106,7 @@ public sealed partial class AccountsPage : Page
                 return;
             }
 
-            string[] args = { loginEntryPoint };
-            var loginUIAdaptiveCardController = accountProvider.DeveloperIdProvider.GetAdaptiveCardController(args);
+            var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
             var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
             var renderer = new AdaptiveCardRenderer();
             await ConfigureLoginUIRenderer(renderer);
