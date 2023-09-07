@@ -44,7 +44,7 @@ internal class CreateDevDriveTask : ISetupTask
         get; set;
     }
 
-    public CreateDevDriveTask(IDevDrive devDrive, IHost host, SetupFlowOrchestrator setupFlowOrchestrator, ISetupFlowStringResource stringResource)
+    public CreateDevDriveTask(IDevDrive devDrive, IHost host, Guid activityId, ISetupFlowStringResource stringResource)
     {
         DevDrive = devDrive;
         _stringResource = stringResource;
@@ -55,7 +55,7 @@ internal class CreateDevDriveTask : ISetupTask
             Error = _stringResource.GetLocalized(StringResourceKey.DevDriveUnableToCreateError),
             NeedsReboot = _stringResource.GetLocalized(StringResourceKey.DevDriveRestart),
         };
-        _activityId = setupFlowOrchestrator.ActivityId;
+        _activityId = activityId;
         _host = host;
     }
 

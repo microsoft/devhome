@@ -50,7 +50,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         else
         {
             Log.Logger?.ReportInfo(Log.Component.DevDrive, "Adding new dev drive task");
-            _devDriveTasks.Add(new CreateDevDriveTask(devDrive, _host, _host.GetService<SetupFlowOrchestrator>(), _stringResource));
+            _devDriveTasks.Add(new CreateDevDriveTask(devDrive, _host, _host.GetService<SetupFlowOrchestrator>().ActivityId, _stringResource));
         }
     }
 

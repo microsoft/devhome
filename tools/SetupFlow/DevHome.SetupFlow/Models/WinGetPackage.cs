@@ -21,16 +21,14 @@ public class WinGetPackage : IWinGetPackage
     private readonly Lazy<Uri> _publisherUrl;
     private readonly Lazy<string> _publisherName;
     private readonly PackageUniqueKey _uniqueKey;
-    private readonly Guid _activityId;
 
-    public WinGetPackage(CatalogPackage package, Guid activityId)
+    public WinGetPackage(CatalogPackage package)
     {
         _package = package;
         _packageUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null));
         _publisherUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PublisherUrl), nameof(CatalogPackageMetadata.PublisherUrl), null));
         _publisherName = new (() => GetMetadataValue(metadata => metadata.Publisher, nameof(CatalogPackageMetadata.Publisher), null));
         _uniqueKey = new (Id, CatalogId);
-        _activityId = activityId;
     }
 
     public CatalogPackage CatalogPackage => _package;
@@ -68,7 +66,8 @@ public class WinGetPackage : IWinGetPackage
     public InstallPackageTask CreateInstallTask(
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory) => new (wpm, stringResource, wingetFactory, this, _activityId);
+        WindowsPackageManagerFactory wingetFactory,
+        Guid activityId) => new (wpm, stringResource, wingetFactory, this, activityId);
 
     /// <summary>
     /// Check if the package requires elevation

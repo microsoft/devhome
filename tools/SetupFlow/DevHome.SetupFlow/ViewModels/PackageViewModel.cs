@@ -45,7 +45,6 @@ public partial class PackageViewModel : ObservableObject
     private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
     private readonly WindowsPackageManagerFactory _wingetFactory;
-    private readonly Guid _activityId;
 
     /// <summary>
     /// Occurs after the package selection changes
@@ -71,7 +70,6 @@ public partial class PackageViewModel : ObservableObject
         _package = package;
         _themeSelector = themeSelector;
         _wingetFactory = wingetFactory;
-        _activityId = host.GetService<SetupFlowOrchestrator>().ActivityId;
 
         // Initialize package view model properties in the constructor to
         // accelerate fetching the data when bound in the view and to avoid
@@ -85,7 +83,7 @@ public partial class PackageViewModel : ObservableObject
         // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
-        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask);
+        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
         _packageDescription = new Lazy<string>(GetPackageDescription);
     }
 
@@ -189,9 +187,9 @@ public partial class PackageViewModel : ObservableObject
         return bitmapImage;
     }
 
-    private InstallPackageTask CreateInstallTask()
+    private InstallPackageTask CreateInstallTask(Guid activityId)
     {
-        return _package.CreateInstallTask(_wpm, _stringResource, _wingetFactory);
+        return _package.CreateInstallTask(_wpm, _stringResource, _wingetFactory, activityId);
     }
 
     private string GetPackageDescription()
