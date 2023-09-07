@@ -57,7 +57,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [RelayCommand]
     private async Task ExtensionsBannerButtonAsync()
     {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com"));
+        await Launcher.LaunchUriAsync(new ("https://learn.microsoft.com/en-us/windows/dev-home/extensions"));
     }
 
     [RelayCommand]

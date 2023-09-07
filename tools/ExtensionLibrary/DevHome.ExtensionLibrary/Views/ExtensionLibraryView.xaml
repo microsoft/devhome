@@ -26,11 +26,11 @@
             <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
-                    <x:String x:Key="ExtensinosBannerFront">ms-appx:///DevHome.Dashboard/Assets/DashboardBannerFrontLight.png</x:String>
+                    <x:String x:Key="ExtensinosBannerFront">ms-appx:///DevHome.ExtensionLibrary/Assets/ExtensionsBannerFrontLight.png</x:String>
                     <x:String x:Key="ExtensionsBannerBack">ms-appx:///DevHome.Common/Assets/BannerBackgroundLight.png</x:String>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
-                    <x:String x:Key="ExtensinosBannerFront">ms-appx:///DevHome.Dashboard/Assets/DashboardBannerFrontDark.png</x:String>
+                    <x:String x:Key="ExtensinosBannerFront">ms-appx:///DevHome.ExtensionLibrary/Assets/ExtensionsBannerFrontDark.png</x:String>
                     <x:String x:Key="ExtensionsBannerBack">ms-appx:///DevHome.Common/Assets/BannerBackgroundDark.png</x:String>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
@@ -40,7 +40,7 @@
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,22,0,0">
             <StackPanel>
-                <commonviews:Banner TextWidth="450"
+                <commonviews:Banner TextWidth="350"
                                     Visibility="{x:Bind ViewModel.ShowExtensionsBanner,Mode=OneWay}"
                                     HideButtonVisibility="true"
                                     HideButtonCommand="{x:Bind ViewModel.HideExtensionsBannerButtonCommand,Mode=OneWay}"

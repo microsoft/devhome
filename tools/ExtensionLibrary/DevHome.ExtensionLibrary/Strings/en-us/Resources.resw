@@ -111,11 +111,11 @@
     <comment>A link to a page where the user can submit feedback about a bug</comment>
   </data>
   <data name="ExtensionsBanner.Title" xml:space="preserve">
-    <value>!!!!!!!!!!!!!!!!!!!!</value>
+    <value>Personalize Dev Home with extensions</value>
     <comment>Title text of an instruction banner on the Extensions page</comment>
   </data>
   <data name="ExtensionsBanner.Description" xml:space="preserve">
-    <value>!!!!!!!!!!!!!!!!!!!!</value>
+    <value>Extensions are plugins that tailor Dev Home to your specific workflow</value>
     <comment>Description text of an instruction banner Extensions page</comment>
   </data>
   <data name="ExtensionsBanner.ButtonText" xml:space="preserve">
