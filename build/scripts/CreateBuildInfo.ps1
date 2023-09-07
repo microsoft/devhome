@@ -55,9 +55,7 @@ if ([string]::IsNullOrWhiteSpace($Build)) {
   }
 }
 #
-if ($IsSdkVersion) {
-  $version_dotquad = [int[]]($Major, ($Minor + $Patch), $Elapsed, $Build)
-} else {
-  $version_dotquad = [int[]]($Major, ($Minor + $Patch), $Elapsed, $Build)
-}
+
+$version_dotquad = [int[]]($Major, ($Minor + $Patch), $Elapsed, $Build)
+
 return ($version_dotquad -Join ".")
