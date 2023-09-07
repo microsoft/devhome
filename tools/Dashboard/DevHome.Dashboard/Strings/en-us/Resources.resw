@@ -67,7 +67,7 @@
     <comment>Title text of an instruction banner on the widget dashboard</comment>
   </data>
   <data name="DashboardBanner.Description" xml:space="preserve">
-    <value>Check out available widgets that can help you connect to your developer account and manage your projects.</value>
+    <value>Check out widgets that can help you connect to your developer account and manage your projects.</value>
     <comment>Description text of an instruction banner on the widget dashboard</comment>
   </data>
   <data name="DashboardBanner.ButtonText" xml:space="preserve">
