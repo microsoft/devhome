@@ -10,6 +10,7 @@ using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Dashboard.Helpers;
+using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
 using Windows.Data.Json;
 using Windows.Storage;
@@ -148,5 +149,12 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         }
 
         return Visibility.Collapsed;
+    }
+
+    [RelayCommand]
+    public void SendFeedbackClick()
+    {
+        var navigationService = Application.Current.GetService<INavigationService>();
+        _ = navigationService.NavigateTo(typeof(FeedbackViewModel).FullName!);
     }
 }

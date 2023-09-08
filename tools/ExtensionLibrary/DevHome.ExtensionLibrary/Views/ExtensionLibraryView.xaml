@@ -53,12 +53,16 @@
                            Visibility="{x:Bind ViewModel.GetNoAvailablePackagesVisibility(ViewModel.StorePackagesList.Count, ViewModel.ShouldShowStoreError), Mode=OneWay}"
                            Margin="0,50,0,0"
                            HorizontalAlignment="Center" />
-                <TextBlock x:Uid="StoreErrorMessage"
-                           Foreground="{ThemeResource SystemFillColorCautionBrush}"
-                           Visibility="{x:Bind ViewModel.ShouldShowStoreError, Mode=OneWay}"
-                           Margin="0,50,0,0"
-                           HorizontalAlignment="Center" />
-
+                <StackPanel Visibility="{x:Bind ViewModel.ShouldShowStoreError, Mode=OneWay}" HorizontalAlignment="Center">
+                    <TextBlock x:Uid="StoreErrorMessage"
+                               Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                               Margin="0,50,0,0"
+                               HorizontalAlignment="Center" />
+                    <HyperlinkButton x:Uid="SendFeedback"
+                                     HorizontalAlignment="Center"
+                                     Command="{x:Bind ViewModel.SendFeedbackClickCommand}">
+                    </HyperlinkButton>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
     </Grid>

@@ -83,11 +83,15 @@
     <comment>Text on button that allows user to get the package from the store</comment>
   </data>
   <data name="NoAvailableExtensions.Text" xml:space="preserve">
-    <value>You've already installed all available extensions!</value>
+    <value>No more extensions are available.</value>
     <comment>Message shown when there are no extensions left to install</comment>
   </data>
   <data name="StoreErrorMessage.Text" xml:space="preserve">
-    <value>Dev Home could not retrieve available extensions from the Microsoft Store.</value>
+    <value>Couldn't get extensions right now. Try again later.</value>
     <comment>Message shown when there was an issue getting information about extensions available in the Microsoft Store</comment>
+  </data>
+  <data name="SendFeedback.Content" xml:space="preserve">
+    <value>Send feedback</value>
+    <comment>A link to a page where the user can submit feedback about a bug</comment>
   </data>
 </root>
