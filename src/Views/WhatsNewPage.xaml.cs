@@ -78,6 +78,8 @@ public sealed partial class WhatsNewPage : Page
         }
 
         ViewModel.NumberOfBigCards = whatsNewBigCards.Count();
+
+        MoveBigCardsIfNeeded(this.ActualWidth);
     }
 
     private void MachineConfigButton_Click(object sender, RoutedEventArgs e)
@@ -115,7 +117,15 @@ public sealed partial class WhatsNewPage : Page
 
     public void OnSizeChanged(object sender, SizeChangedEventArgs args)
     {
-        if ((Page)sender == this && args.NewSize.Width < 740)
+        if ((Page)sender == this)
+        {
+            MoveBigCardsIfNeeded(args.NewSize.Width);
+        }
+    }
+
+    private void MoveBigCardsIfNeeded(double newWidth)
+    {
+        if (newWidth < 740)
         {
             ViewModel.SwitchToSmallerView();
         }
