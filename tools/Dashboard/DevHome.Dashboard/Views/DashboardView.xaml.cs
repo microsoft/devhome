@@ -97,7 +97,7 @@ public partial class DashboardView : ToolPage
 
         try
         {
-            // The GUID is this app's Host GUID that Widget Platform will use to identify this host.
+            // The GUID is Dev Home's Host GUID that Widget Platform will use to identify this host.
             _widgetHost = WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031"));
             _widgetCatalog = WidgetCatalog.GetDefault();
 
@@ -129,7 +129,7 @@ public partial class DashboardView : ToolPage
 
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        // The app uses a different host config to render widgets (adaptive cards) in light and dark themes.
+        // A different host config is used to render widgets (adaptive cards) in light and dark themes.
         await ConfigureWidgetRenderer(_renderer);
 
         // Re-render the widgets with the new theme and renderer.
