@@ -117,6 +117,16 @@ internal class RepositoryProviders
         return _providers.Keys;
     }
 
+    public IRepositoryProvider GetProvider(string providerName)
+    {
+        if (_providers.TryGetValue(providerName, out var repoProvider))
+        {
+            return repoProvider.GetProvider();
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// Gets all logged in accounts for a specific provider.
     /// </summary>

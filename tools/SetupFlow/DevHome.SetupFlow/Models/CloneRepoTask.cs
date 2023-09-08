@@ -34,6 +34,8 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// </summary>
     private readonly DirectoryInfo _cloneLocation;
 
+    private readonly IRepositoryProvider _repositoryProvider;
+
     public DirectoryInfo CloneLocation => _cloneLocation;
 
     /// <summary>
@@ -131,7 +133,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// <param name="cloneLocation">Repository will be placed here. at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
     /// <param name="developerId">Credentials needed to clone a private repo</param>
-    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName)
+    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName)
     {
         _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
@@ -139,6 +141,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         SetMessages(stringResource);
         ProviderName = providerName;
         _stringResource = stringResource;
+        _repositoryProvider = repositoryProvider;
     }
 
     /// <summary>
@@ -147,7 +150,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// </summary>
     /// <param name="cloneLocation">Repository will be placed here, at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
-    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName)
+    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName)
     {
         _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
@@ -155,6 +158,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         ProviderName = providerName;
         SetMessages(stringResource);
         _stringResource = stringResource;
+        _repositoryProvider = repositoryProvider;
     }
 
     private void SetMessages(IStringResource stringResource)
@@ -179,14 +183,28 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// <returns>An awaitable operation.</returns>
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
     {
-        /*
         return Task.Run(async () =>
         {
             try
             {
+                ProviderOperationResult result;
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
                 TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Critical, new ReposCloneEvent(ProviderName, _developerId));
-                await RepositoryToClone.CloneRepositoryAsync(_cloneLocation.FullName, _developerId);
+                if (_developerId == null)
+                {
+                    result = await _repositoryProvider.CloneRepositoryAsync(RepositoryToClone, _cloneLocation.FullName);
+                }
+                else
+                {
+                    result = await _repositoryProvider.CloneRepositoryAsync(RepositoryToClone, _cloneLocation.FullName, _developerId);
+                }
+
+                if (result.Status == ProviderOperationStatus.Failure)
+                {
+                    _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, result.DisplayMessage);
+                    WasCloningSuccessful = false;
+                    return TaskFinishedState.Failure;
+                }
             }
             catch (Exception e)
             {
@@ -199,9 +217,6 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             WasCloningSuccessful = true;
             return TaskFinishedState.Success;
         }).AsAsyncOperation();
-        */
-
-        return Task.Run(() => { return TaskFinishedState.Failure; }).AsAsyncOperation();
     }
 
     IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation) => throw new NotImplementedException();
