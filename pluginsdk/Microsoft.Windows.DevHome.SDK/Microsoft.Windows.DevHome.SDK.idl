@@ -259,7 +259,7 @@ namespace Microsoft.Windows.DevHome.SDK
     interface IExtensionAdaptiveCardSession {
         ProviderOperationResult Initialize(IExtensionAdaptiveCard extensionUI);
         void Dispose();
-        ProviderOperationResult OnAction(String action, String inputs);
+        Windows.Foundation.IAsyncOperation<ProviderOperationResult> OnAction(String action, String inputs);
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
