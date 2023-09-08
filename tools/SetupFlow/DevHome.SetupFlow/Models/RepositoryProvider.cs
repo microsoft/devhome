@@ -28,11 +28,6 @@ namespace DevHome.SetupFlow.Models;
 internal class RepositoryProvider
 {
     /// <summary>
-    /// All the repositories for an account.
-    /// </summary>
-    private readonly Lazy<IEnumerable<IRepository>> _repositories = new ();
-
-    /// <summary>
     /// Wrapper for the plugin that is providing a repository and developer id.
     /// </summary>
     /// <remarks>
@@ -245,7 +240,6 @@ internal class RepositoryProvider
     /// <returns>A collection of repositories.  May be empty</returns>
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
     {
-        /*
         if (!_repositories.IsValueCreated)
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
@@ -264,8 +258,5 @@ internal class RepositoryProvider
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
         return _repositories.Value;
-        */
-
-        return new List<IRepository>();
     }
 }
