@@ -4,7 +4,9 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
@@ -72,10 +74,20 @@ public sealed partial class AccountsPage : Page
                 Title = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_Title"),
                 Content = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_Content"),
                 PrimaryButtonText = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_PrimaryButtonText"),
+                PrimaryButtonCommand = FindExtensionsCommand,
+                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"],
+                SecondaryButtonText = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_SecondaryButtonText"),
                 XamlRoot = XamlRoot,
             };
             await noProvidersContentDialog.ShowAsync();
         }
+    }
+
+    [RelayCommand]
+    private void FindExtensions()
+    {
+        var navigationService = Application.Current.GetService<INavigationService>();
+        navigationService.NavigateTo("DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel");
     }
 
     private async void AddDeveloperId_Click(object sender, RoutedEventArgs e)
