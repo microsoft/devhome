@@ -6,18 +6,19 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     AdaptiveCardSessionResult::AdaptiveCardSessionResult(winrt::Microsoft::Windows::DevHome::SDK::IExtensionAdaptiveCardSession const& adaptiveCardSession)
     {
-        throw hresult_not_implemented();
+        _AdaptiveCardSession = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::IExtensionAdaptiveCardSession>(adaptiveCardSession);
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring(""), winrt::to_hstring(""));
     }
     AdaptiveCardSessionResult::AdaptiveCardSessionResult(winrt::hresult const& e, hstring const& diagnosticText)
     {
-        throw hresult_not_implemented();
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), winrt::to_hstring("Something went wrong"), diagnosticText);
     }
     winrt::Microsoft::Windows::DevHome::SDK::IExtensionAdaptiveCardSession AdaptiveCardSessionResult::AdaptiveCardSession()
     {
-        throw hresult_not_implemented();
+        return *_AdaptiveCardSession.get();
     }
     winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult AdaptiveCardSessionResult::Result()
     {
-        throw hresult_not_implemented();
+        return *_Result.get();
     }
 }
