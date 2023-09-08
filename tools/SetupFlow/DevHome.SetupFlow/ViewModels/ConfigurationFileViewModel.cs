@@ -69,7 +69,15 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
 
         TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", LogLevel.Critical, new ConfigureCommandEvent(true), Orchestrator.ActivityId);
-        await Orchestrator.GoToNextPage();
+        try
+        {
+            await Orchestrator.InitializeElevatedServerAsync();
+            await Orchestrator.GoToNextPage();
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to initialize elevated process.", e);
+        }
     }
 
     [RelayCommand(CanExecute = nameof(ReadAndAgree))]

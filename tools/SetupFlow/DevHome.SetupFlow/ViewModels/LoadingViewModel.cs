@@ -345,28 +345,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     protected async override Task OnFirstNavigateToAsync()
     {
-        var elevatedTasks = Orchestrator.TaskGroups.SelectMany(taskGroup => taskGroup.SetupTasks.Where(task => task.RequiresAdmin));
-        if (elevatedTasks.Any())
-        {
-            try
-            {
-                TasksArguments tasksArguments = new ()
-                {
-                    InstallPackages = elevatedTasks.OfType<InstallPackageTask>().Select(task => task.GetArguments()).ToList(),
-                    Configure = elevatedTasks.OfType<ConfigureTask>().Select(task => task.GetArguments()).FirstOrDefault(),
-                    CreateDevDrive = elevatedTasks.OfType<CreateDevDriveTask>().Select(task => task.GetArguments()).FirstOrDefault(),
-                };
-                Orchestrator.RemoteElevatedOperation = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentOperation>(tasksArguments);
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process.", e);
-                Log.Logger?.ReportInfo(Log.Component.Loading, "Will continue with setup as best-effort");
-            }
-        }
-
         FetchTaskInformation();
-
         await StartAllTasks(TasksToRun);
     }
 
