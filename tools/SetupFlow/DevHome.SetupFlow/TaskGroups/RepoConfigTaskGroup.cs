@@ -99,6 +99,5 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         }
 
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AllReposAdded_Event", LogLevel.Critical, new RepoToolFinalReposToAddEvent(allAddedRepos), _activityId);
-
     }
 }
