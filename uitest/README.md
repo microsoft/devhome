@@ -28,12 +28,12 @@ Edit the `Test.runsettings` file and set the appropriate value for `AppSettingsM
       <Parameter name="AppSettingsMode" value="canary" />
   </TestRunParameters>
 ```
-### Option 2: Overwite test parameters from the command line
-Overwrite test parameters when exeucting the test from the command line
+### Option 2: Overwrite test parameters from the command line
+Overwrite test parameters when executing the test from the command line
 ```cmd
 dotnet test DevHome.UITest.csproj -- 'TestRunParameters.Parameter(name=\"AppSettingsMode\", value=\"prod\")'
 ```
-### Option 3: Overwite test parameters from the pipeline YAML file (CI)
+### Option 3: Overwrite test parameters from the pipeline YAML file (CI)
 ```yaml
   - task: VSTest@2
     displayName: Run UI Tests
