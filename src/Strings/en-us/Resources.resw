@@ -235,7 +235,7 @@
     <comment>Name of app when run as administrator</comment>
   </data>
   <data name="WhatsNewPage_ExtensionsCard.Button" xml:space="preserve">
-    <value>Do more with Dev Home extensions</value>
+    <value>Explore Extensions</value>
     <comment>Button on extensions card on "whats new" page</comment>
   </data>
   <data name="WhatsNewPage_ExtensionsCard.Description" xml:space="preserve">
