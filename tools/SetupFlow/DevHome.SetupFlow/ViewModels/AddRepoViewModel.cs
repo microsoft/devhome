@@ -517,6 +517,7 @@ public partial class AddRepoViewModel : ObservableObject
                 cloningInformation.ProviderName = providerToCloneRepo.Item3.DisplayName;
                 cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
                 cloningInformation.OwningAccount = providerToCloneRepo.Item2;
+                cloningInformation.PluginName = providerToCloneRepo.Item3.DisplayName;
             }
             else
             {
@@ -593,7 +594,7 @@ public partial class AddRepoViewModel : ObservableObject
     {
         Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
 
-        return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
+        return _previouslySelectedRepos.Where(x => x.OwningAccount != null && !string.IsNullOrEmpty(x.PluginName))
             .Where(x => x.PluginName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
             && x.OwningAccount.LoginId.Equals(loginId, StringComparison.OrdinalIgnoreCase))
             .Select(x => new RepoViewListItem(x.RepositoryToClone));
