@@ -8,6 +8,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pg="using:DevHome.Common"
+    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:viewmodels="using:DevHome.ExtensionLibrary.ViewModels"
     mc:Ignorable="d">
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
@@ -26,6 +28,36 @@
                 <!-- Available items -->
                 <TextBlock x:Uid="AvailableFromStoreTextBlock"
                            Margin="{StaticResource ExtensionLibrarySubTitleMargin}" />
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.StorePackagesList, Mode=OneWay}">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:StorePackageViewModel">
+                            <labs:SettingsCard Header="{x:Bind Title}"
+                                               Description="{x:Bind Publisher}"
+                                               Margin="{ThemeResource SettingsCardMargin}"
+                                               CornerRadius="3"
+                                               IsClickEnabled="False">
+                                <labs:SettingsCard.HeaderIcon>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
+                                </labs:SettingsCard.HeaderIcon>
+                                <Button x:Uid="GetButton"
+                                        Padding="25 4 25 6"
+                                        MinWidth="118"
+                                        Command="{x:Bind LaunchStoreButtonCommand}"
+                                        CommandParameter="{x:Bind ProductId}" />
+                            </labs:SettingsCard>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+                <!-- No available items messages -->
+                <TextBlock x:Uid="NoAvailableExtensions"
+                           Visibility="{x:Bind ViewModel.GetNoAvailablePackagesVisibility(ViewModel.StorePackagesList.Count, ViewModel.ShouldShowStoreError), Mode=OneWay}"
+                           Margin="0,50,0,0"
+                           HorizontalAlignment="Center" />
+                <TextBlock x:Uid="StoreErrorMessage"
+                           Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                           Visibility="{x:Bind ViewModel.ShouldShowStoreError, Mode=OneWay}"
+                           Margin="0,50,0,0"
+                           HorizontalAlignment="Center" />
 
             </StackPanel>
         </ScrollViewer>
