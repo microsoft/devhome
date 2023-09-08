@@ -34,6 +34,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     private readonly ElementTheme _currentTheme;
 
+    private readonly Guid _activityId;
+
     private static readonly BitmapImage DarkCaution = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
     private static readonly BitmapImage DarkError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
     private static readonly BitmapImage DarkSuccess = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkSuccess.png"));
@@ -206,6 +208,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         _failedTasks = new List<TaskInformation>();
         ActionCenterItems = new ();
         Messages = new ();
+        _activityId = orchestrator.ActivityId;
     }
 
     /// <summary>
@@ -438,7 +441,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
         if (_failedTasks.Any())
         {
-            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count));
+            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count), _activityId);
         }
     }
 

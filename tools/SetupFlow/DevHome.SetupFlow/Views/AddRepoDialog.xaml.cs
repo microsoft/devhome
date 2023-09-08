@@ -58,11 +58,11 @@ internal partial class AddRepoDialog
     /// </summary>
     private string _oldCloneLocation;
 
-    public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
+    public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos, Guid activityId)
     {
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, activityId);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
 

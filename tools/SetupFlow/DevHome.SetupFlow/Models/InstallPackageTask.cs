@@ -29,6 +29,7 @@ public class InstallPackageTask : ISetupTask
     private readonly ISetupFlowStringResource _stringResource;
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly Lazy<bool> _requiresElevation;
+    private readonly Guid _activityId;
 
     private InstallResultStatus _installResultStatus;
     private uint _installerErrorCode;
@@ -59,13 +60,15 @@ public class InstallPackageTask : ISetupTask
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
         WindowsPackageManagerFactory wingetFactory,
-        WinGetPackage package)
+        WinGetPackage package,
+        Guid activityId)
     {
         _wpm = wpm;
         _stringResource = stringResource;
         _wingetFactory = wingetFactory;
         _package = package;
         _requiresElevation = new (RequiresElevation);
+        _activityId = activityId;
     }
 
     public TaskMessages GetLoadingMessages()
@@ -119,7 +122,7 @@ public class InstallPackageTask : ISetupTask
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id));
-                var installResult = await _wpm.InstallPackageAsync(_package);
+                var installResult = await _wpm.InstallPackageAsync(_package, _activityId);
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
 
@@ -276,16 +279,16 @@ public class InstallPackageTask : ISetupTask
 
     private void ReportAppSelectedForInstallEvent()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_AppSelected", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId));
+        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_AppSelected", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId), _activityId);
     }
 
     private void ReportAppInstallSucceededEvent()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_InstallSucceeded", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId));
+        TelemetryFactory.Get<ITelemetry>().Log("AppInstall_InstallSucceeded", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId), _activityId);
     }
 
     private void ReportAppInstallFailedEvent()
     {
-        TelemetryFactory.Get<ITelemetry>().LogError("AppInstall_InstallFailed", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId));
+        TelemetryFactory.Get<ITelemetry>().LogError("AppInstall_InstallFailed", LogLevel.Critical, new AppInstallEvent(_package.Id, _package.CatalogId), _activityId);
     }
 }

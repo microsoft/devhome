@@ -3,6 +3,7 @@
 
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.UnitTest.Helpers;
 using DevHome.SetupFlow.ViewModels;
 using Moq;
@@ -80,7 +81,6 @@ public class SearchViewModelTest : BaseSetupFlowTest
         });
         WindowsPackageManager!.Setup(wpm => wpm.AllCatalogs).Returns(allcatalogs.Object);
         var searchViewModel = TestHost!.GetService<SearchViewModel>();
-
         var (status, packages) = searchViewModel.SearchAsync("mock", new CancellationToken(false)).GetAwaiter().GetResult();
 
         Assert.AreEqual(SearchViewModel.SearchResultStatus.Ok, status);

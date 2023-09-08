@@ -12,7 +12,7 @@ namespace DevHome.SetupFlow.ElevatedComponent.Tasks;
 
 public sealed class ElevatedConfigurationTask
 {
-    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(string filePath, string content)
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(string filePath, string content, Guid activityId)
     {
         return Task.Run(async () =>
         {
@@ -20,7 +20,7 @@ public sealed class ElevatedConfigurationTask
 
             try
             {
-                var configurationFileHelper = new ConfigurationFileHelper();
+                var configurationFileHelper = new ConfigurationFileHelper(activityId);
 
                 Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from file: {filePath}");
                 await configurationFileHelper.OpenConfigurationSetAsync(filePath, content);

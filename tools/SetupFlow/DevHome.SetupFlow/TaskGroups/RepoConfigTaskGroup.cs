@@ -23,10 +23,11 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
     private readonly IHost _host;
     private readonly Lazy<RepoConfigReviewViewModel> _repoConfigReviewViewModel;
     private readonly Lazy<RepoConfigViewModel> _repoConfigViewModel;
+    private readonly Guid _activityId;
 
     private readonly ISetupFlowStringResource _stringResource;
 
-    public RepoConfigTaskGroup(IHost host, ISetupFlowStringResource stringResource)
+    public RepoConfigTaskGroup(IHost host, ISetupFlowStringResource stringResource, SetupFlowOrchestrator setupFlowOrchestrator)
     {
         _host = host;
         _stringResource = stringResource;
@@ -37,6 +38,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         // https://github.com/microsoft/devhome/issues/631
         _repoConfigViewModel = new (() => _host.CreateInstance<RepoConfigViewModel>(this));
         _repoConfigReviewViewModel = new (() => _host.CreateInstance<RepoConfigReviewViewModel>(this));
+        _activityId = setupFlowOrchestrator.ActivityId;
     }
 
     /// <summary>
@@ -70,11 +72,11 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
             CloneRepoTask task;
             if (cloningInformation.OwningAccount == null)
             {
-                task = new CloneRepoTask(new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, _stringResource, cloningInformation.ProviderName);
+                task = new CloneRepoTask(new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, _stringResource, cloningInformation.ProviderName, _activityId);
             }
             else
             {
-                task = new CloneRepoTask(new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.ProviderName);
+                task = new CloneRepoTask(new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.ProviderName, _activityId);
             }
 
             if (cloningInformation.CloneToDevDrive)
@@ -96,6 +98,6 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
             allAddedRepos.Add(new FinalRepoResult(providerName, addKind, cloneLocationKind));
         }
 
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AllReposAdded_Event", LogLevel.Critical, new RepoToolFinalReposToAddEvent(allAddedRepos));
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AllReposAdded_Event", LogLevel.Critical, new RepoToolFinalReposToAddEvent(allAddedRepos), _activityId);
     }
 }
