@@ -185,6 +185,7 @@ public partial class SetupFlowOrchestrator : ObservableObject
 
     public async Task InitializeElevatedServerAsync()
     {
+        Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Initializing elevated server");
         var elevatedTasks = TaskGroups.SelectMany(taskGroup => taskGroup.SetupTasks.Where(task => task.RequiresAdmin));
 
         // If there are no elevated tasks, we don't need to create the remote object.
@@ -197,6 +198,10 @@ public partial class SetupFlowOrchestrator : ObservableObject
                 CreateDevDrive = elevatedTasks.OfType<CreateDevDriveTask>().Select(task => task.GetArguments()).FirstOrDefault(),
             };
             RemoteElevatedOperation = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentOperation>(tasksArguments);
+        }
+        else
+        {
+            Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Skipping elevated process initialization because no elevated tasks were found");
         }
     }
 
