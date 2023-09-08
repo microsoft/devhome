@@ -98,6 +98,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
             allAddedRepos.Add(new FinalRepoResult(providerName, addKind, cloneLocationKind));
         }
 
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AllReposAdded_Event", LogLevel.Critical, new RepoToolFinalReposToAddEvent(allAddedRepos), _host.GetService<SetupFlowOrchestrator>().ActivityId);
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_AllReposAdded_Event", LogLevel.Critical, new RepoToolFinalReposToAddEvent(allAddedRepos), _activityId);
+
     }
 }
