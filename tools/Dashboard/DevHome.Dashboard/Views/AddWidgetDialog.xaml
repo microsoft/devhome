@@ -71,7 +71,7 @@
                                Style="{StaticResource WidgetConfigSubHeaderTextStyle}"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="{StaticResource XXSmallTopMargin}"
-                               HorizontalAlignment="Center">Dev Home (Preview)</TextBlock>
+                               HorizontalAlignment="Center" />
                 </StackPanel>
 
                 <ScrollViewer Grid.Row="1"

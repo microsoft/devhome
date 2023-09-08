@@ -38,8 +38,8 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0"
-                            Margin="{StaticResource MediumTopMargin}"
-                            HorizontalAlignment="Center">
+                        Margin="{StaticResource MediumTopMargin}"
+                        HorizontalAlignment="Center">
                 <TextBlock Text="{x:Bind ViewModel.WidgetDisplayTitle, Mode=OneWay}"
                                Style="{StaticResource WidgetConfigHeaderTextStyle}"
                                HorizontalAlignment="Center" />
@@ -47,7 +47,7 @@
                                Style="{StaticResource WidgetConfigSubHeaderTextStyle}"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                Margin="{StaticResource XXSmallTopMargin}"
-                               HorizontalAlignment="Center">Dev Home (Preview)</TextBlock>
+                               HorizontalAlignment="Center" />
             </StackPanel>
 
             <ScrollViewer Grid.Row="1"
