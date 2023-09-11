@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Exceptions;
 using DevHome.Common.Services;
@@ -184,14 +184,23 @@ public class WindowsPackageManager : IWindowsPackageManager
         }
     }
 
-    public Uri CreatePackageUri(IWinGetPackage package)
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet)
     {
-        if (package.CatalogId == WinGetCatalogId)
+        // TODO Add support for other catalogs (e.g. `msstore` and custom).
+        HashSet<string> wingetPackageIds = new ();
+        foreach (var packageUri in packageUriSet)
         {
-            return new Uri($"{Scheme}://winget/{package.Id}");
+            if (TryGetPackageId(packageUri, out var packageId))
+            {
+                wingetPackageIds.Add(packageId);
+            }
+            else
+            {
+                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package id from uri '{packageUri}'");
+            }
         }
 
-        throw new NotSupportedException($"Creating a package uri from catalog '{package.CatalogName}' is not supported");
+        return await WinGetCatalog.GetPackagesAsync(wingetPackageIds);
     }
 
     /// <summary>
@@ -277,5 +286,27 @@ public class WindowsPackageManager : IWindowsPackageManager
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create dummy {nameof(PackageManager)} COM object. WinGet COM Server is not available.", e);
             return false;
         }
+    }
+
+    /// <summary>
+    /// Try get the package id from a package uri
+    /// </summary>
+    /// <param name="packageUri">Input package uri</param>
+    /// <param name="packageId">Output package id</param>
+    /// <returns>True if the package uri is valid and a package id was identified, false otherwise.</returns>
+    private bool TryGetPackageId(Uri packageUri, out string packageId)
+    {
+        // TODO Add support for other catalogs (e.g. `msstore` and custom).
+        const string wingetCatalogUriName = "winget";
+        if (packageUri.Scheme == Scheme &&
+            packageUri.Host == wingetCatalogUriName &&
+            packageUri.Segments.Length == 2)
+        {
+            packageId = packageUri.Segments[1];
+            return true;
+        }
+
+        packageId = null;
+        return false;
     }
 }

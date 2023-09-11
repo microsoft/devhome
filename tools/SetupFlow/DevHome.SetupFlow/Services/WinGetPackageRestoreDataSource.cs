@@ -68,7 +68,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
             Log.Logger?.ReportInfo(Log.Component.AppManagement, "Finding packages from restore data");
             var packages = await GetPackagesAsync(
                 _restoreDeviceInfo.WinGetApplicationsInfo,
-                appInfo => appInfo.Id,
+                appInfo => new Uri($"x-ms-winget://winget/{appInfo.Id}"),
                 async (package, appInfo) =>
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for restore package {package.Id}");

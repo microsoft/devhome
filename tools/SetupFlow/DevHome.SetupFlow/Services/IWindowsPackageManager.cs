@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 
@@ -85,10 +86,10 @@ public interface IWindowsPackageManager
     public Task<bool> RegisterAppInstallerAsync();
 
     /// <summary>
-    /// Create a package uri
+    /// Get packages by uri from this catalog.
     /// </summary>
-    /// <param name="package">Package</param>
-    /// <returns>Package uri</returns>
-    /// <exception cref="NotSupportedException">Throws exception if the package uri cannot be created for a package.</exception>
-    public Uri CreatePackageUri(IWinGetPackage package);
+    /// <param name="packageUriSet">Set of package uri</param>
+    /// <returns>List of winget package matches</returns>
+    /// <exception cref="FindPackagesException">Exception thrown if the get packages operation failed</exception>
+    public Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet);
 }

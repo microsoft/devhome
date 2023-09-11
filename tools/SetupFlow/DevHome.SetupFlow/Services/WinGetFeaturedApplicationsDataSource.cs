@@ -60,7 +60,7 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
                 var appsResult = group.GetApplications();
                 if (appsResult.Result.Status == ProviderOperationStatus.Success)
                 {
-                    var packages = await GetPackagesAsync(appsResult.FeaturedApplications.ToList(), id => id);
+                    var packages = await GetPackagesAsync(GetPackageUris(appsResult.FeaturedApplications), uri => uri);
                     if (packages.Any())
                     {
                         var locale = CultureInfo.CurrentCulture.Name;
@@ -84,6 +84,29 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
             catch (Exception e)
             {
                 Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget restore catalog.", e);
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Get a list of package URIs from a list of package ids.
+    /// </summary>
+    /// <param name="packageIds">List of package ids</param>
+    /// <returns>List of package URIs</returns>
+    private IList<Uri> GetPackageUris(IReadOnlyList<string> packageIds)
+    {
+        var result = new List<Uri>();
+        foreach (var app in packageIds)
+        {
+            if (Uri.TryCreate(app, UriKind.Absolute, out var uri))
+            {
+                result.Add(uri);
+            }
+            else
+            {
+                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Invalid package uri: {app}");
             }
         }
 

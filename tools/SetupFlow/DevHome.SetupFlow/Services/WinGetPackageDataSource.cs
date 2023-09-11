@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,12 +42,12 @@ public abstract class WinGetPackageDataSource
     public abstract Task<IList<PackageCatalog>> LoadCatalogsAsync();
 
     /// <summary>
-    /// Callback delegate for retrieving the package id
+    /// Callback delegate for retrieving the package Uri
     /// </summary>
     /// <typeparam name="T">Input item type</typeparam>
-    /// <param name="item">Item that can be mapped to a package id</param>
+    /// <param name="item">Item that can be mapped to a package Uri</param>
     /// <returns>Package id</returns>
-    protected delegate string PackageIdCallback<T>(T item);
+    protected delegate Uri PackageUriCallback<T>(T item);
 
     /// <summary>
     /// Callback delegate for processing the package
@@ -63,12 +64,12 @@ public abstract class WinGetPackageDataSource
     /// </summary>
     /// <typeparam name="T">Input type</typeparam>
     /// <param name="items">List of objects that can be mapped to package IDs</param>
-    /// <param name="packageIdCallback">Callback for retrieving the package id</param>
+    /// <param name="packageUriCallback">Callback for retrieving the package uri</param>
     /// <param name="packageProcessorCallback">Callback for processing a package</param>
     /// <returns>List of packages</returns>
     protected async Task<IList<IWinGetPackage>> GetPackagesAsync<T>(
         IList<T> items,
-        PackageIdCallback<T> packageIdCallback,
+        PackageUriCallback<T> packageUriCallback,
         PackageProcessorCallback<T> packageProcessorCallback = null)
     {
         List<IWinGetPackage> result = new ();
@@ -81,25 +82,14 @@ public abstract class WinGetPackageDataSource
         }
 
         // Get packages from winget catalog
-        var unorderedPackages = await _wpm.WinGetCatalog.GetPackagesAsync(items.Select(i => packageIdCallback(i)).ToHashSet());
-        var unorderedPackagesMap = new Dictionary<string, IWinGetPackage>();
-        foreach (var package in unorderedPackages)
-        {
-            try
-            {
-                var packageUri = _wpm.CreatePackageUri(package);
-                unorderedPackagesMap.Add(packageUri.ToString(), package);
-            }
-            catch
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Failed to create package uri for [{package.Id}]");
-            }
-        }
+        var unorderedPackages = await _wpm.GetPackagesAsync(items.Select(i => packageUriCallback(i)).ToHashSet());
+        var unorderedPackagesMap = unorderedPackages.ToDictionary(p => p.Id, p => p);
 
         // Sort result based on the input
         foreach (var item in items)
         {
-            var package = unorderedPackagesMap.GetValueOrDefault(packageIdCallback(item), null);
+            var packageUri = packageUriCallback(item);
+            var package = packageUri.Segments.Length > 1 ? unorderedPackagesMap.GetValueOrDefault(packageUri.Segments[1], null) : null;
             if (package != null)
             {
                 // Process package if a callback was provided
