@@ -82,6 +82,10 @@
     <value>Manage extension</value>
     <comment>Label for the link to that extension's settings</comment>
   </data>
+  <data name="NoExtensionsAdded.Text" xml:space="preserve">
+    <value>No extensions are installed.</value>
+    <comment>Message shown when the user does not have any Dev Home extensions installed</comment>
+  </data>
   <data name="AvailableFromStoreTextBlock.Text" xml:space="preserve">
     <value>Available in the Microsoft Store</value>
     <comment>Header for the list of packages available for download from the store</comment>

@@ -76,7 +76,6 @@
                 </ItemsRepeater>
                 <!-- No extensions message -->
                 <TextBlock x:Uid="NoExtensionsAdded"
-                           Text="No extensions are installed."
                            Visibility="{x:Bind ViewModel.InstalledPackagesList.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}"
                            Margin="0,50" 
                            HorizontalAlignment="Center" />
