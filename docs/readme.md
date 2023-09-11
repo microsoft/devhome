@@ -48,7 +48,7 @@ Alternatively
 
 ### Dev Home framework
 
-The Dev Home project contains the wrapping framework for the Dev Home application.
+The Dev Home project contains the wrapping framework for Dev Home.
 It's responsible for:
 - Loading the individual Dev Home tools.
 - Loading out-of-process extensions.
