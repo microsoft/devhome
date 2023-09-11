@@ -7,6 +7,7 @@ using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.Windows.AppLifecycle;
 
 namespace DevHome.ViewModels;
 
@@ -40,7 +41,13 @@ public partial class ShellViewModel : ObservableObject
 
     public async Task OnLoaded()
     {
-        if (await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun))
+        // Load the Machine Configuration Page if the app is launched via file activation
+        var activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
+        if (activatedEventArgs.Kind == ExtendedActivationKind.File)
+        {
+            NavigationService.NavigateTo(typeof(DevHome.SetupFlow.ViewModels.SetupFlowViewModel).FullName!);
+        }
+        else if (await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun))
         {
             NavigationService.NavigateTo(NavigationService.DefaultPage);
         }

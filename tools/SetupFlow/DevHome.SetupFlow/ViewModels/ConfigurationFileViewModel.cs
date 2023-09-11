@@ -142,7 +142,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
         // Create and configure file picker
         Log.Logger?.ReportInfo(Log.Component.Configuration, "Launching file picker to select configurationf file");
-        var file = await mainWindow.OpenFilePickerAsync(Log.Logger, ("*.yaml;*.yml;*.devhome;", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
+        var file = await mainWindow.OpenFilePickerAsync(Log.Logger, ("*.yaml;*.yml;*.winget;", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
 
         return await CheckValidConfigurationFile(file);
     }

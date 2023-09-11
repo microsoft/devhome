@@ -216,9 +216,9 @@
           </uap3:AppExtension>
         </uap3:Extension>
         <uap:Extension Category="windows.fileTypeAssociation">
-          <uap:FileTypeAssociation Name="devhome">
+          <uap:FileTypeAssociation Name="winget">
             <uap:SupportedFileTypes>
-              <uap:FileType>.devhome</uap:FileType>
+              <uap:FileType>.winget</uap:FileType>
             </uap:SupportedFileTypes>
           </uap:FileTypeAssociation>
         </uap:Extension>

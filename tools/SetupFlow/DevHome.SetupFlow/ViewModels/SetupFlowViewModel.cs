@@ -112,6 +112,9 @@ public partial class SetupFlowViewModel : ObservableObject
 
     public async Task StartFileActivationFlow(StorageFile file)
     {
+        // Cancel whatever existing operations exist in setup flow
+        Orchestrator.FlowPages = new List<SetupPageViewModelBase> { _mainPageViewModel };
+
         await _mainPageViewModel.StartFileActivationAsync(file);
     }
 }

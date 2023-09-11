@@ -139,16 +139,16 @@ public partial class App : Application, IApp
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
         base.OnLaunched(args);
+        var activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
         await Task.WhenAll(
-            GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data),
+            GetService<IActivationService>().ActivateAsync(activatedEventArgs.Data),
             GetService<IAccountsService>().InitializeAsync(),
             GetService<IAppManagementInitializer>().InitializeAsync());
 
-        var activatedEventArgs = Microsoft.Windows.AppLifecycle.AppInstance.GetCurrent().GetActivatedEventArgs();
-        if (activatedEventArgs.Kind == Microsoft.Windows.AppLifecycle.ExtendedActivationKind.File)
+        // Call File Activation Handler after application has been loaded
+        if (activatedEventArgs.Kind == ExtendedActivationKind.File)
         {
-            var navigationService = Application.Current.GetService<INavigationService>();
-            navigationService.NavigateTo(typeof(DevHome.SetupFlow.ViewModels.SetupFlowViewModel).FullName!);
+            await GetService<IActivationService>().ActivateAsync(activatedEventArgs.Data);
         }
     }
 

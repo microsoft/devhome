@@ -8,6 +8,7 @@ using DevHome.Common.Helpers;
 using DevHome.Contracts.Services;
 using DevHome.Views;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppLifecycle;
 
 namespace DevHome.Services;
 
@@ -51,6 +52,13 @@ public class ActivationService : IActivationService
 
             // Execute tasks after activation.
             await StartupAsync();
+
+            // File activation should only be handled after the application is launched
+            var activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
+            if (activatedEventArgs.Kind == ExtendedActivationKind.File)
+            {
+                return;
+            }
         }
 
         // Handle activation via ActivationHandlers.

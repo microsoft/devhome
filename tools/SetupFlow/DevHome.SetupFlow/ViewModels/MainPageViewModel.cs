@@ -180,11 +180,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// Starts a setup flow that only includes configuration file.
     /// </summary>
     [RelayCommand]
-    private async Task StartConfigurationFileAsync(string file = null)
+    private async Task StartConfigurationFileAsync()
     {
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching configuration file flow");
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
-        if (file == null && await configFileSetupFlow.PickConfigurationFileAsync())
+        if (await configFileSetupFlow.PickConfigurationFileAsync())
         {
             Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting flow for Configuration file");
             StartSetupFlowForTaskGroups(null, "ConfigurationFile", configFileSetupFlow);
