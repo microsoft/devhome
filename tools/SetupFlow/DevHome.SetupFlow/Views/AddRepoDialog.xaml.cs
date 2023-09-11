@@ -67,7 +67,7 @@ internal partial class AddRepoDialog
     {
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, elementTheme, LoginUi);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, elementTheme);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
 
