@@ -38,8 +38,6 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly ElementTheme _selectedTheme;
 
-    private readonly StackPanel _loginUi;
-
     /// <summary>
     /// Gets or sets the list that keeps all repositories the user wants to clone.
     /// </summary>
@@ -242,8 +240,7 @@ public partial class AddRepoViewModel : ObservableObject
     public AddRepoViewModel(
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
-        ElementTheme elementTheme,
-        StackPanel uiToShowLogin)
+        ElementTheme elementTheme)
     {
         _stringResource = stringResource;
         ChangeToUrlPage();
@@ -258,7 +255,6 @@ public partial class AddRepoViewModel : ObservableObject
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
         _selectedTheme = elementTheme;
-        _loginUi = uiToShowLogin;
     }
 
     /// <summary>
