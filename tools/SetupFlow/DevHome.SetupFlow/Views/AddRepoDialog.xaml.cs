@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Common.Views;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -58,11 +59,16 @@ internal partial class AddRepoDialog
     /// </summary>
     private string _oldCloneLocation;
 
-    public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos, Guid activityId)
+    public AddRepoDialog(
+        IDevDriveManager devDriveManager,
+        ISetupFlowStringResource stringResource,
+        List<CloningInformation> previouslySelectedRepos,
+        ElementTheme elementTheme,
+        Guid activityId)
     {
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, activityId);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, elementTheme, activityId);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
 
@@ -288,19 +294,16 @@ internal partial class AddRepoDialog
 
     private async void SwitchToRepoPage(string repositoryProviderName)
     {
-        var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
-        AddRepoViewModel.ChangeToRepoPage();
-        FolderPickerViewModel.ShowFolderPicker();
-        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-
-        await getAccountsTask;
+        await AddRepoViewModel.GetAccountsAsync(repositoryProviderName, LoginUIContent);
         if (AddRepoViewModel.Accounts.Any())
         {
+            AddRepoViewModel.ChangeToRepoPage();
+            FolderPickerViewModel.ShowFolderPicker();
+            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
             AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+            IsPrimaryButtonEnabled = false;
         }
-
-        PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-        IsPrimaryButtonEnabled = false;
     }
 
     /// <summary>

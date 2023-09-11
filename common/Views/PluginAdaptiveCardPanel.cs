@@ -21,7 +21,7 @@ public class PluginAdaptiveCardPanel : StackPanel
 {
     public event EventHandler<FrameworkElement>? UiUpdate;
 
-    public void Bind(IPluginAdaptiveCardController pluginAdaptiveCardController, AdaptiveCardRenderer? customRenderer)
+    public void Bind(IExtensionAdaptiveCardSession extensionAdaptiveCardSession, AdaptiveCardRenderer? customRenderer)
     {
         var adaptiveCardRenderer = customRenderer ?? new AdaptiveCardRenderer();
 
@@ -31,16 +31,16 @@ public class PluginAdaptiveCardPanel : StackPanel
         }
 
         var uiDispatcher = DispatcherQueue.GetForCurrentThread();
-        var pluginUI = new PluginAdaptiveCard();
+        var pluginUI = new ExtensionAdaptiveCard();
 
         pluginUI.UiUpdate += (object? sender, AdaptiveCard adaptiveCard) =>
         {
             uiDispatcher.TryEnqueue(() =>
             {
                 var renderedAdaptiveCard = adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
-                renderedAdaptiveCard.Action += (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
+                renderedAdaptiveCard.Action += async (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
                 {
-                    pluginAdaptiveCardController.OnAction(JsonConvert.SerializeObject(args.Action), JsonConvert.SerializeObject(args.Inputs));
+                    await extensionAdaptiveCardSession.OnAction(JsonConvert.SerializeObject(args.Action), JsonConvert.SerializeObject(args.Inputs));
                 };
 
                 Children.Clear();
@@ -53,6 +53,6 @@ public class PluginAdaptiveCardPanel : StackPanel
             });
         };
 
-        pluginAdaptiveCardController.Initialize(pluginUI);
+        extensionAdaptiveCardSession.Initialize(pluginUI);
     }
 }

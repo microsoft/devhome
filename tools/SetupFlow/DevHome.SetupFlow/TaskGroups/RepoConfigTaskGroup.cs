@@ -12,6 +12,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.TaskGroups;
 
@@ -72,11 +73,11 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
             CloneRepoTask task;
             if (cloningInformation.OwningAccount == null)
             {
-                task = new CloneRepoTask(new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, _stringResource, cloningInformation.ProviderName, _activityId);
+                task = new CloneRepoTask(cloningInformation.RepositoryProvider, new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, _stringResource, cloningInformation.ProviderName, _activityId);
             }
             else
             {
-                task = new CloneRepoTask(new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.ProviderName, _activityId);
+                task = new CloneRepoTask(cloningInformation.RepositoryProvider, new DirectoryInfo(cloningInformation.ClonePath), cloningInformation.RepositoryToClone, cloningInformation.OwningAccount, _stringResource, cloningInformation.ProviderName, _activityId);
             }
 
             if (cloningInformation.CloneToDevDrive)

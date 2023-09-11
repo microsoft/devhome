@@ -9,8 +9,8 @@ namespace CoreWidgetProvider;
 
 [ComVisible(true)]
 [Guid("426A52D6-8007-4894-A946-CF80F39507F1")]
-[ComDefaultInterface(typeof(IPlugin))]
-public sealed class CorePlugin : IPlugin
+[ComDefaultInterface(typeof(IExtension))]
+public sealed class CorePlugin : IExtension
 {
     private readonly ManualResetEvent _pluginDisposedEvent;
 
@@ -23,17 +23,11 @@ public sealed class CorePlugin : IPlugin
     {
         switch (providerType)
         {
-            case ProviderType.DevDoctor:
-                return new object();
             case ProviderType.DeveloperId:
                 return new object();
             case ProviderType.Repository:
                 return new object();
-            case ProviderType.Notifications:
-                return new object();
-            case ProviderType.SetupFlow:
-                return new object();
-            case ProviderType.Widget:
+            case ProviderType.FeaturedApplications:
                 return new object();
             default:
                 Log.Logger()?.ReportInfo("Invalid provider");

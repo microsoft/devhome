@@ -63,11 +63,6 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         get; set;
     }
 
-    public string PluginName
-    {
-        get; set;
-    }
-
     /// <summary>
     /// Gets or sets a value indicating whether the repository is to be cloned on a Dev Drive.
     /// </summary>
@@ -167,6 +162,14 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// the name is stored here so it can be set at the time when a unique name can be made.
     /// </summary>
     public string RemoveFromCloningAutomationName
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the provider to use to clone the repository
+    /// </summary>
+    public IRepositoryProvider RepositoryProvider
     {
         get; set;
     }
