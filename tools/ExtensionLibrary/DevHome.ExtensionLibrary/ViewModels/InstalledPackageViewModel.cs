@@ -61,10 +61,7 @@ public partial class InstalledExtensionViewModel : ObservableObject
     [RelayCommand]
     private void NavigateSettings()
     {
-        ////var navigationService = Application.Current.GetService<INavigationService>();
-        ////var segments = path.Split("/");
-        ////navigationService.NavigateTo(typeof(ExtensionSettingsViewModel).FullName!, segments[1]);
-        ////_extensionsViewModel.Navigate(_setting.Path);
+        // TODO: nothing implements ISettingsProvider yet, so this will not be called
     }
 }
 
