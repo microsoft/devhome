@@ -3,8 +3,6 @@
 
 using DevHome.Logging;
 
-#nullable enable
-
 namespace DevHome.Dashboard.Helpers;
 
 public class Log
@@ -13,4 +11,3 @@ public class Log
 
     public static Logger? Logger() => _logger.Logger;
 }
-#nullable disable

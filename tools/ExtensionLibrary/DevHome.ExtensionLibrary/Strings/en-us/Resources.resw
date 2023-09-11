@@ -62,20 +62,28 @@
     <value>Extensions</value>
     <comment>Navigation pane content</comment>
   </data>
-  <data name="ExtensionLibraryPage_Title.Text" xml:space="preserve">
-    <value>Extensions</value>
-    <comment>Header text for Extension Library page</comment>
-  </data>
-  <data name="OnYourPcTextBlock.Text" xml:space="preserve">
-    <value>On your PC</value>
+  <data name="InstalledTextBlock.Text" xml:space="preserve">
+    <value>Installed</value>
     <comment>Header for the list of packages currently installed on the user's computer</comment>
   </data>
   <data name="GetUpdatesButton.Content" xml:space="preserve">
     <value>Get updates</value>
     <comment>Button that allows the user to check if the store has updates for current packages</comment>
   </data>
+  <data name="LastUpdated" xml:space="preserve">
+    <value>Last updated</value>
+    <comment>Text that precedes the date and time a specific package was last updated on the user's computer</comment>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+    <comment>Text that precedes the version number of a specific package</comment>
+  </data>
+  <data name="ManageExtensionCard.Header" xml:space="preserve">
+    <value>Manage extension</value>
+    <comment>Label for the link to that extension's settings</comment>
+  </data>
   <data name="AvailableFromStoreTextBlock.Text" xml:space="preserve">
-    <value>Available from the Store</value>
+    <value>Available in the Microsoft Store</value>
     <comment>Header for the list of packages available for download from the store</comment>
   </data>
   <data name="GetButton.Content" xml:space="preserve">

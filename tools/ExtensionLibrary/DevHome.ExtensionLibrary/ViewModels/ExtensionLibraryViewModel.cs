@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -12,6 +13,7 @@ using DevHome.Common.Services;
 using DevHome.Dashboard.Helpers;
 using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
+using Windows.ApplicationModel;
 using Windows.Data.Json;
 using Windows.Storage;
 using Windows.System;
@@ -28,6 +30,9 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     private ObservableCollection<StorePackageViewModel> _storePackagesList = new ();
 
     [ObservableProperty]
+    private ObservableCollection<InstalledPackageViewModel> _installedPackagesList = new ();
+
+    [ObservableProperty]
     private bool _shouldShowStoreError = false;
 
     public ExtensionLibraryViewModel()
@@ -38,6 +43,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         pluginService.OnPluginsChanged -= OnPluginsChanged;
         pluginService.OnPluginsChanged += OnPluginsChanged;
 
+        GetInstalledExtensions();
         GetAvailablePackages();
     }
 
@@ -52,8 +58,57 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         await _dispatcher.EnqueueAsync(() =>
         {
             ShouldShowStoreError = false;
+            GetInstalledExtensions();
             GetAvailablePackages();
         });
+    }
+
+    private void GetInstalledExtensions()
+    {
+        var extensionWrappers = Task.Run(async () =>
+        {
+            var pluginService = Application.Current.GetService<IPluginService>();
+            return await pluginService.GetInstalledPluginsAsync(true);
+        }).Result;
+
+        InstalledPackagesList.Clear();
+
+        foreach (var extensionWrapper in extensionWrappers)
+        {
+            // Don't show self as an extension.
+            if (Package.Current.Id.FullName == extensionWrapper.PackageFullName)
+            {
+                continue;
+            }
+
+            var extension = new InstalledExtensionViewModel(extensionWrapper.Name, extensionWrapper.PackageFullName, true /*TODO*/);
+
+            // Each extension is shown under the package that contains it. Search to see if we have the package in the
+            // list already and add the extension to that package in the list if we do.
+            var foundPackage = false;
+            foreach (var installedPackage in InstalledPackagesList)
+            {
+                if (installedPackage.PackageFamilyName == extensionWrapper.PackageFamilyName)
+                {
+                    foundPackage = true;
+                    installedPackage.InstalledExtensionsList.Add(extension);
+                    break;
+                }
+            }
+
+            // If the package isn't in the list yet, add it.
+            if (!foundPackage)
+            {
+                var installedPackage = new InstalledPackageViewModel(
+                    extensionWrapper.Name,
+                    extensionWrapper.Publisher,
+                    extensionWrapper.PackageFamilyName,
+                    extensionWrapper.InstalledDate,
+                    extensionWrapper.Version);
+                installedPackage.InstalledExtensionsList.Add(extension);
+                InstalledPackagesList.Add(installedPackage);
+            }
+        }
     }
 
     private async Task<string> GetStoreData()
@@ -132,8 +187,9 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
     private bool IsAlreadyInstalled(string packageFamilyName)
     {
-        // Coming  in next commit.
-        return false;
+        // PackageFullName = Microsoft.Windows.DevHome.Dev_0.0.0.0_x64__8wekyb3d8bbwe
+        // PackageFamilyName = Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe
+        return InstalledPackagesList.Any(package => packageFamilyName == package.PackageFamilyName);
     }
 
     /// <summary>

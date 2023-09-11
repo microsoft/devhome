@@ -4,6 +4,7 @@
 using System.Runtime.InteropServices;
 using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.ApplicationModel;
 using Windows.Win32;
 using Windows.Win32.System.Com;
 using WinRT;
@@ -28,11 +29,22 @@ public class PluginWrapper : IPluginWrapper
 
     private IExtension? _extensionObject;
 
-    public PluginWrapper(string name, string packageFullName, string classId)
+    public PluginWrapper(
+        string name,
+        string packageFullName,
+        string packageFamilyName,
+        string publisher,
+        string classId,
+        DateTimeOffset installedDate,
+        PackageVersion version)
     {
         Name = name ?? throw new ArgumentNullException(nameof(name));
         PackageFullName = packageFullName ?? throw new ArgumentNullException(nameof(packageFullName));
+        PackageFamilyName = packageFamilyName ?? throw new ArgumentNullException(nameof(packageFamilyName));
+        Publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         PluginClassId = classId ?? throw new ArgumentNullException(nameof(classId));
+        InstalledDate = installedDate;
+        Version = version;
     }
 
     public string Name
@@ -45,7 +57,27 @@ public class PluginWrapper : IPluginWrapper
         get;
     }
 
+    public string PackageFamilyName
+    {
+        get;
+    }
+
+    public string Publisher
+    {
+        get;
+    }
+
     public string PluginClassId
+    {
+        get;
+    }
+
+    public DateTimeOffset InstalledDate
+    {
+        get;
+    }
+
+    public PackageVersion Version
     {
         get;
     }

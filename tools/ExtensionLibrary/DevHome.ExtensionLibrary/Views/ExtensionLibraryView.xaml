@@ -8,25 +8,82 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pg="using:DevHome.Common"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:viewmodels="using:DevHome.ExtensionLibrary.ViewModels"
     mc:Ignorable="d">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
+        </ResourceDictionary>
+    </Page.Resources>
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,22,0,0">
             <StackPanel>
 
-                <!-- On your PC items -->
+                <!-- Installed items -->
                 <Grid Margin="{StaticResource SettingsPageSubTitleMargin}">
-                    <TextBlock x:Uid="OnYourPcTextBlock" />
+                    <TextBlock x:Uid="InstalledTextBlock"
+                               Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
+                               VerticalAlignment="Center"/>
                     <Button x:Uid="GetUpdatesButton"
                             HorizontalAlignment="Right"
-                            Style="{ThemeResource AccentButtonStyle}" 
+                            Style="{ThemeResource AccentButtonStyle}"
                             Command="{x:Bind ViewModel.GetUpdatesButtonCommand}"/>
                 </Grid>
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.InstalledPackagesList, Mode=OneWay}">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:InstalledPackageViewModel">
+                            <labs:SettingsExpander Header="{x:Bind Title}"
+                                                   Description="{x:Bind GeneratePackageDetails(Version,Publisher , InstalledDate), Mode=OneWay}"
+                                                   Margin="{ThemeResource SettingsCardMargin}"
+                                                   ItemsSource="{x:Bind InstalledExtensionsList}"
+                                                   IsExpanded="True">
+                                <labs:SettingsExpander.HeaderIcon>
+                                    <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
+                                </labs:SettingsExpander.HeaderIcon>
+                                <Button Content="&#xe712;"
+                                        Height="36" Width="36"
+                                        FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                        Background="Transparent"
+                                        BorderThickness="0">
+                                    <Button.Flyout>
+                                        <MenuFlyout>
+                                            <MenuFlyoutItem
+                                                x:Uid="UninstallItem"
+                                                Command="{x:Bind UninstallButtonCommand}">
+                                            </MenuFlyoutItem>
+                                        </MenuFlyout>
+                                    </Button.Flyout>
+                                </Button>
+                                <labs:SettingsExpander.ItemTemplate>
+                                    <DataTemplate x:DataType="viewmodels:InstalledExtensionViewModel">
+                                        <labs:SettingsCard x:Uid="ManageExtensionCard"
+                                                           CornerRadius="0,0,3,3"
+                                                           IsClickEnabled="{x:Bind HasSettingsProvider}"
+                                                           Command="{x:Bind NavigateSettingsCommand}">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                <ToggleSwitch IsOn="{x:Bind IsExtensionEnabled, Mode=TwoWay}"/>
+                                            </StackPanel>
+                                        </labs:SettingsCard>
+                                    </DataTemplate>
+                                </labs:SettingsExpander.ItemTemplate>
+                            </labs:SettingsExpander>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+                <!-- No extensions message -->
+                <TextBlock x:Uid="NoExtensionsAdded"
+                           Text="No extensions are installed."
+                           Visibility="{x:Bind ViewModel.InstalledPackagesList.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}"
+                           Margin="0,50" 
+                           HorizontalAlignment="Center" />
 
                 <!-- Available items -->
                 <TextBlock x:Uid="AvailableFromStoreTextBlock"
+                           Style="{StaticResource SettingsSectionHeaderTextBlockStyle}"
                            Margin="{StaticResource ExtensionLibrarySubTitleMargin}" />
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.StorePackagesList, Mode=OneWay}">
                     <ItemsRepeater.ItemTemplate>
