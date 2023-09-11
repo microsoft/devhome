@@ -108,16 +108,6 @@ internal class RepositoryProviders
     }
 
     /// <summary>
-    /// Logs the user into a certain provider.
-    /// </summary>
-    /// <param name="providerName">The provider to log the user into.  Must match display name of the plugin</param>
-    public IDeveloperId LogInToProvider(string providerName, ElementTheme elementTheme, StackPanel panelToShowDialogOn)
-    {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Logging in to provider {providerName}");
-        return _providers.GetValueOrDefault(providerName)?.LogIntoProvider(elementTheme, panelToShowDialogOn);
-    }
-
-    /// <summary>
     /// Gets the display names of all providers.
     /// </summary>
     /// <returns>A collection of display names.</returns>

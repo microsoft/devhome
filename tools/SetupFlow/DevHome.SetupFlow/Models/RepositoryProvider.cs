@@ -179,55 +179,6 @@ internal class RepositoryProvider
             GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
         }
 
-        /*
-        return _devIdProvider.LoginNewDeveloperIdAsync().AsTask().Result;
-        */
-
-        /*
-        return _devIdProvider.GetLoggedInDeveloperIds().DeveloperIds.First();
-        */
-
-        return null;
-    }
-
-    /// <summary>
-    /// Logs the current user into this provider
-    /// </summary>
-    public IDeveloperId LogIntoProvider(ElementTheme elementTheme, StackPanel panelToShowDialogOn)
-    {
-        try
-        {
-            var adaptiveCardSessionResult = _devIdProvider.GetLoginAdaptiveCardSession();
-            if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
-            {
-                GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
-                return null;
-            }
-
-            var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
-            var renderer = new AdaptiveCardRenderer();
-            ConfigureLoginUIRenderer(renderer, elementTheme).Wait();
-            renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
-
-            var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
-            pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
-            pluginAdaptiveCardPanel.RequestedTheme = elementTheme;
-
-            pluginAdaptiveCardPanel.XamlRoot = panelToShowDialogOn.XamlRoot;
-        }
-        catch (Exception ex)
-        {
-            GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
-        }
-
-        /*
-        return _devIdProvider.LoginNewDeveloperIdAsync().AsTask().Result;
-        */
-
-        /*
-        return _devIdProvider.GetLoggedInDeveloperIds().DeveloperIds.First();
-        */
-
         return null;
     }
 
