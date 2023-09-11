@@ -12,6 +12,7 @@ using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
+using DevHome.Logging;
 using DevHome.Settings.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -55,11 +56,18 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                 var settingsProvider = Task.Run(() => pluginWrapper.GetProviderAsync<ISettingsProvider>()).Result;
                 if (settingsProvider != null)
                 {
-                    var loginUIAdaptiveCardController = settingsProvider.GetAdaptiveCardController(new List<string>() { string.Empty }.ToArray());
+                    var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
+                    if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
+                    {
+                        GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                        await Task.CompletedTask;
+                    }
+
+                    var adpativeCardSession = adaptiveCardSessionResult.AdaptiveCardSession;
                     var renderer = new AdaptiveCardRenderer();
                     renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
 
-                    pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
+                    pluginAdaptiveCardPanel.Bind(adpativeCardSession, renderer);
                 }
             }
         }
