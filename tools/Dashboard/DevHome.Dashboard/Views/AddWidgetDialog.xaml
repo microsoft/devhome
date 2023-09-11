@@ -56,11 +56,25 @@
             <!-- Widget configuration UI -->
             <Grid x:Name="ConfigurationContentGrid">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
-                <ScrollViewer Grid.Row="0"
+                <StackPanel Grid.Row="0"
+                            Margin="{StaticResource MediumTopMargin}"
+                            HorizontalAlignment="Center">
+                    <TextBlock Text="{x:Bind ViewModel.WidgetDisplayTitle, Mode=OneWay}"
+                               Style="{StaticResource WidgetConfigHeaderTextStyle}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="{x:Bind ViewModel.WidgetProviderDisplayTitle, Mode=OneWay}"
+                               Style="{StaticResource WidgetConfigSubHeaderTextStyle}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Margin="{StaticResource XXSmallTopMargin}"
+                               HorizontalAlignment="Center" />
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="1"
                               x:Name="ConfigurationContentViewer"
                               Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}"
                               VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
@@ -69,7 +83,7 @@
                 </ScrollViewer>
 
                 <!-- Pin button -->
-                <Grid Grid.Row="1"
+                <Grid Grid.Row="2"
                       x:Name="PinRow"
                       Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
                     <Button x:Name="PinButton"

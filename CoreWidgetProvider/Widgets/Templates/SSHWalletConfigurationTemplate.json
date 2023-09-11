@@ -4,29 +4,6 @@
   "version": "1.5",
   "body": [
     {
-      "type": "Container",
-      "items": [
-        {
-          "type": "TextBlock",
-          "text": "%SSH_Widget_Template/Name%",
-          "wrap": true,
-          "horizontalAlignment": "Center",
-          "size": "Large",
-          "weight": "Bolder"
-        },
-        {
-          "type": "TextBlock",
-          "text": "%SSH_Widget_Template/Target%",
-          "wrap": true,
-          "horizontalAlignment": "Center",
-          "spacing": "None",
-          "size": "Small",
-          "isSubtle": true,
-          "weight": "Lighter"
-        }
-      ]
-    },
-    {
       "type": "Input.Text",
       "id": "ConfigFile",
       "label": "%SSH_Widget_Template/ConfigFilePath%",

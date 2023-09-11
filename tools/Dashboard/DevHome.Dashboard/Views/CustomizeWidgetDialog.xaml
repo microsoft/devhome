@@ -33,18 +33,32 @@
         <!-- Widget configuration UI -->
         <Grid x:Name="ConfigurationContentGrid" Margin="40,0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
 
-            <ScrollViewer Grid.Row="0"
+            <StackPanel Grid.Row="0"
+                        Margin="{StaticResource MediumTopMargin}"
+                        HorizontalAlignment="Center">
+                <TextBlock Text="{x:Bind ViewModel.WidgetDisplayTitle, Mode=OneWay}"
+                               Style="{StaticResource WidgetConfigHeaderTextStyle}"
+                               HorizontalAlignment="Center" />
+                <TextBlock Text="{x:Bind ViewModel.WidgetProviderDisplayTitle, Mode=OneWay}"
+                               Style="{StaticResource WidgetConfigSubHeaderTextStyle}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Margin="{StaticResource XXSmallTopMargin}"
+                               HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1"
                           x:Name="ConfigurationContentViewer"
                           VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
-                <Frame x:Name="ConfigurationContentFrame" 
+                <Frame x:Name="ConfigurationContentFrame" Margin="0,44,0,0"
                         Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}" />
             </ScrollViewer>
 
-            <Button Grid.Row="1"
+            <Button Grid.Row="2"
                     x:Name="UpdateWidgetButton" x:Uid="UpdateWidgetButton"
                     Style="{ThemeResource AccentButtonStyle}"
                     VerticalAlignment="Bottom" HorizontalAlignment="Center"
