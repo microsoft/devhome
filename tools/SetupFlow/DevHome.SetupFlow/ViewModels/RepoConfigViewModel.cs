@@ -15,7 +15,6 @@ using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
-using Microsoft.Windows.DevHome.SDK;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 

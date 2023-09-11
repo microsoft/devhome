@@ -24,6 +24,8 @@ namespace DevHome.SetupFlow.Views;
 /// </summary>
 public sealed partial class RepoConfigView : UserControl
 {
+    private readonly IThemeSelectorService _themeSelectorService;
+
     private Guid ActivityId => ViewModel.Orchestrator.ActivityId;
 
     public RepoConfigViewModel ViewModel => (RepoConfigViewModel)this.DataContext;
@@ -31,6 +33,9 @@ public sealed partial class RepoConfigView : UserControl
     public RepoConfigView()
     {
         this.InitializeComponent();
+        ActualThemeChanged += OnActualThemeChanged;
+
+        _themeSelectorService = Application.Current.GetService<IThemeSelectorService>();
     }
 
     public void OnActualThemeChanged(FrameworkElement sender, object args)
@@ -65,7 +70,7 @@ public sealed partial class RepoConfigView : UserControl
             senderAsButton.IsEnabled = false;
         }
 
-        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), _themeSelectorService.Theme, ViewModel.Orchestrator.ActivityId
+        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), _themeSelectorService.Theme, ActivityId);
         var getPluginsTask = addRepoDialog.GetPluginsAsync();
         var setupDevDrivesTask = addRepoDialog.SetupDevDrivesAsync();
         addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;

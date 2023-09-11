@@ -64,7 +64,7 @@ internal partial class AddRepoDialog
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
         ElementTheme elementTheme,
-        Guid actvityId)
+        Guid activityId)
     {
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
