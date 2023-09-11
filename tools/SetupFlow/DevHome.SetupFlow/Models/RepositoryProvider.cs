@@ -5,11 +5,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AdaptiveCards.Rendering.WinUI3;
+using DevHome.Common.Renderers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.Views;
+using DevHome.Logging;
+using DevHome.Settings.Views;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Storage;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -144,11 +152,33 @@ internal class RepositoryProvider
         return (false, null, null);
     }
 
-    /// <summary>
-    /// Logs the current user into this provider
-    /// </summary>
-    public IDeveloperId LogIntoProvider()
+    public PluginAdaptiveCardPanel GetLoginUi(ElementTheme elementTheme)
     {
+        try
+        {
+            var adaptiveCardSessionResult = _devIdProvider.GetLoginAdaptiveCardSession();
+            if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
+            {
+                GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                return null;
+            }
+
+            var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
+            var renderer = new AdaptiveCardRenderer();
+            ConfigureLoginUIRenderer(renderer, elementTheme).Wait();
+            renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+
+            var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
+            pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
+            pluginAdaptiveCardPanel.RequestedTheme = elementTheme;
+
+            return pluginAdaptiveCardPanel;
+        }
+        catch (Exception ex)
+        {
+            GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
+        }
+
         /*
         return _devIdProvider.LoginNewDeveloperIdAsync().AsTask().Result;
         */
@@ -158,6 +188,82 @@ internal class RepositoryProvider
         */
 
         return null;
+    }
+
+    /// <summary>
+    /// Logs the current user into this provider
+    /// </summary>
+    public IDeveloperId LogIntoProvider(ElementTheme elementTheme, StackPanel panelToShowDialogOn)
+    {
+        try
+        {
+            var adaptiveCardSessionResult = _devIdProvider.GetLoginAdaptiveCardSession();
+            if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
+            {
+                GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                return null;
+            }
+
+            var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
+            var renderer = new AdaptiveCardRenderer();
+            ConfigureLoginUIRenderer(renderer, elementTheme).Wait();
+            renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+
+            var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
+            pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
+            pluginAdaptiveCardPanel.RequestedTheme = elementTheme;
+
+            pluginAdaptiveCardPanel.XamlRoot = panelToShowDialogOn.XamlRoot;
+        }
+        catch (Exception ex)
+        {
+            GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
+        }
+
+        /*
+        return _devIdProvider.LoginNewDeveloperIdAsync().AsTask().Result;
+        */
+
+        /*
+        return _devIdProvider.GetLoggedInDeveloperIds().DeveloperIds.First();
+        */
+
+        return null;
+    }
+
+    private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer, ElementTheme elementTheme)
+    {
+        var dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+        // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
+        renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
+
+        var hostConfigContents = string.Empty;
+        var hostConfigFileName = (elementTheme == ElementTheme.Light) ? "LightHostConfig.json" : "DarkHostConfig.json";
+        try
+        {
+            var uri = new Uri($"ms-appx:////DevHome.Settings/Assets/{hostConfigFileName}");
+            var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
+            hostConfigContents = await FileIO.ReadTextAsync(file);
+        }
+        catch (Exception ex)
+        {
+            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file - HostConfigFileName: {hostConfigFileName}.", ex);
+        }
+
+        // Add host config for current theme to renderer
+        dispatcher.TryEnqueue(() =>
+        {
+            if (!string.IsNullOrEmpty(hostConfigContents))
+            {
+                renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+            }
+            else
+            {
+                GlobalLog.Logger?.ReportInfo($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
+            }
+        });
+        return;
     }
 
     /// <summary>

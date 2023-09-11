@@ -12,12 +12,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.Views;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using static DevHome.SetupFlow.Models.Common;
 
@@ -33,6 +35,10 @@ public partial class AddRepoViewModel : ObservableObject
     private readonly ISetupFlowStringResource _stringResource;
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
+
+    private readonly ElementTheme _selectedTheme;
+
+    private readonly StackPanel _loginUi;
 
     /// <summary>
     /// Gets or sets the list that keeps all repositories the user wants to clone.
@@ -233,7 +239,11 @@ public partial class AddRepoViewModel : ObservableObject
         get; set;
     }
 
-    public AddRepoViewModel(ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
+    public AddRepoViewModel(
+        ISetupFlowStringResource stringResource,
+        List<CloningInformation> previouslySelectedRepos,
+        ElementTheme elementTheme,
+        StackPanel uiToShowLogin)
     {
         _stringResource = stringResource;
         ChangeToUrlPage();
@@ -247,6 +257,8 @@ public partial class AddRepoViewModel : ObservableObject
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
+        _selectedTheme = elementTheme;
+        _loginUi = uiToShowLogin;
     }
 
     /// <summary>
@@ -379,21 +391,14 @@ public partial class AddRepoViewModel : ObservableObject
     /// Gets all the accounts for a provider and updates the UI.
     /// </summary>
     /// <param name="repositoryProviderName">The provider the user wants to use.</param>
-    public async Task GetAccountsAsync(string repositoryProviderName)
+    public async Task GetAccountsAsync(string repositoryProviderName, Frame loginFrame)
     {
         await Task.Run(() => _providers.StartIfNotRunning(repositoryProviderName));
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
-            throw new NotImplementedException("Developer ID can not log in users");
-            /*
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false));
-
-            // Throw away developerId because DevHome allows one account per provider. GetAllLoggedInAccounts is called
-            // in anticipation of 1 Provider : N DeveloperIds
-            await Task.Run(() => _providers.LogInToProvider(repositoryProviderName));
-            loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
-            */
+            var loginUi = _providers.GetLoginUi(repositoryProviderName, _selectedTheme);
+            loginFrame.Content = loginUi;
         }
         else
         {

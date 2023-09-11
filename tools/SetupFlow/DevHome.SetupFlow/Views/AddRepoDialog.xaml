@@ -19,7 +19,8 @@
                PrimaryButtonText="{x:Bind AddRepoViewModel.PrimaryButtonText, Mode=OneWay}"
                CornerRadius="8"
                xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-               xmlns:i="using:Microsoft.Xaml.Interactivity">
+               xmlns:i="using:Microsoft.Xaml.Interactivity"
+               xmlns:commonviews="using:DevHome.Common.Views">
     <ContentDialog.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -61,7 +62,16 @@
 
             <!-- Log into account -->
             <ComboBox x:Name="RepositoryProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}" SelectionChanged="RepositoryProviderNamesComboBox_SelectionChanged" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}" Margin="0, 20, 0, 0" />
-
+            <StackPanel x:Name="LoginUi" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}">
+                <!-- Title and Close button -->
+                <Grid x:Name="MyGrid">
+                    <TextBlock x:Uid="LoginUIDialogTitle" HorizontalAlignment="Left"
+                       Style="{ThemeResource SubtitleTextBlockStyle}" 
+                       Margin="16,10,0,0"/>
+                </Grid>
+                <Frame x:Name="LoginUIContent" />
+            </StackPanel>
+            
             <!-- Show Repositories -->
             <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
                 <Grid ColumnSpacing="8">
