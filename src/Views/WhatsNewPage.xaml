@@ -291,7 +291,7 @@
                                         Margin="0 16 0 25"
                                         TextWrapping="Wrap"
                                         VerticalAlignment="Stretch"
-                                        TextTrimming="CharacterEllipsis"
+                                        TextTrimming="WordEllipsis"
                                         Text="{x:Bind Description}"/>
 
                                     <HyperlinkButton
