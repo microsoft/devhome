@@ -12,6 +12,10 @@ using DevHome.SetupFlow.Models;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Services;
+
+/// <summary>
+/// Class to get featured applications from extension providers.
+/// </summary>
 public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
 {
     private readonly IPluginService _pluginService;
@@ -28,24 +32,36 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
 
     public async override Task InitializeAsync()
     {
-        var plugins = await _pluginService.GetInstalledPluginsAsync(ProviderType.FeaturedApplications);
-        foreach (var plugin in plugins)
+        var extensions = await _pluginService.GetInstalledPluginsAsync(ProviderType.FeaturedApplications);
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Initializing featured applications from all extensions");
+        foreach (var extension in extensions)
         {
-            var provider = await plugin.GetProviderAsync<IFeaturedApplicationsProvider>();
-            if (provider != null)
+            var extensionName = extension.Name;
+            try
             {
-                var groupsResult = await provider.GetFeaturedApplicationsGroupsAsync();
-                if (groupsResult.Result.Status == ProviderOperationStatus.Success)
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting featured apps provider from extension '{extensionName}'");
+                var provider = await extension.GetProviderAsync<IFeaturedApplicationsProvider>();
+                if (provider != null)
                 {
-                    for (var i = 0; i < groupsResult.FeaturedApplicationsGroups.Count; ++i)
+                    var groupsResult = await provider.GetFeaturedApplicationsGroupsAsync();
+                    if (groupsResult.Result.Status == ProviderOperationStatus.Success)
                     {
-                        _groups.Add(groupsResult.FeaturedApplicationsGroups[i]);
+                        var groups = groupsResult.FeaturedApplicationsGroups;
+                        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found {groups.Count} groups from extension '{extensionName}'");
+                        for (var i = 0; i < groups.Count; ++i)
+                        {
+                            _groups.Add(groups[i]);
+                        }
+                    }
+                    else
+                    {
+                        Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get featured applications groups from extension '{extensionName}': {groupsResult.Result.DiagnosticText}", groupsResult.Result.ExtendedError);
                     }
                 }
-                else
-                {
-                    Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get featured application groups", groupsResult.Result.ExtendedError);
-                }
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading featured applications from extension {extensionName}", e);
             }
         }
     }
@@ -53,37 +69,38 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
     public async override Task<IList<PackageCatalog>> LoadCatalogsAsync()
     {
         var result = new List<PackageCatalog>();
+        var locale = CultureInfo.CurrentCulture.Name;
         foreach (var group in _groups)
         {
             try
             {
+                var groupTitle = group.GetTitle(locale);
                 var appsResult = group.GetApplications();
                 if (appsResult.Result.Status == ProviderOperationStatus.Success)
                 {
-                    var packages = await GetPackagesAsync(GetPackageUris(appsResult.FeaturedApplications), uri => uri);
+                    var packages = await GetPackagesAsync(ParseURIs(appsResult.FeaturedApplications), uri => uri);
                     if (packages.Any())
                     {
-                        var locale = CultureInfo.CurrentCulture.Name;
                         result.Add(new PackageCatalog()
                         {
-                            Name = group.GetTitle(locale),
+                            Name = groupTitle,
                             Description = group.GetDescription(locale),
                             Packages = packages.ToReadOnlyCollection(),
                         });
                     }
                     else
                     {
-                        Log.Logger?.ReportInfo(Log.Component.AppManagement, "No packages found from feature applications");
+                        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"No packages found in featured applications group '{groupTitle}'");
                     }
                 }
                 else
                 {
-                    Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get featured applications", appsResult.Result.ExtendedError);
+                    Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get featured applications group '{groupTitle}': {appsResult.Result.DiagnosticText}", appsResult.Result.ExtendedError);
                 }
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from winget restore catalog.", e);
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from featured applications group.", e);
             }
         }
 
@@ -91,14 +108,14 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
     }
 
     /// <summary>
-    /// Get a list of package URIs from a list of package ids.
+    /// Parse packages URIs from a list of strings.
     /// </summary>
-    /// <param name="packageIds">List of package ids</param>
+    /// <param name="uriStrings">List of package URI strings</param>
     /// <returns>List of package URIs</returns>
-    private IList<Uri> GetPackageUris(IReadOnlyList<string> packageIds)
+    private IList<Uri> ParseURIs(IReadOnlyList<string> uriStrings)
     {
         var result = new List<Uri>();
-        foreach (var app in packageIds)
+        foreach (var app in uriStrings)
         {
             if (Uri.TryCreate(app, UriKind.Absolute, out var uri))
             {

@@ -86,7 +86,7 @@ public interface IWindowsPackageManager
     public Task<bool> RegisterAppInstallerAsync();
 
     /// <summary>
-    /// Get packages by uri from this catalog.
+    /// Get packages from a set of package uri.
     /// </summary>
     /// <param name="packageUriSet">Set of package uri</param>
     /// <returns>List of winget package matches</returns>

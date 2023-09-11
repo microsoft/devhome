@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
-using DevHome.SetupFlow.Services;
 using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.Models;
