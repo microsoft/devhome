@@ -13,6 +13,7 @@ using DevHome.Common.Services;
 using DevHome.Dashboard.Helpers;
 using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel;
 using Windows.Data.Json;
 using Windows.Storage;
@@ -81,7 +82,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
                 continue;
             }
 
-            var hasSettingsProvider = extensionWrapper.HasProviderType(Microsoft.Windows.DevHome.SDK.ProviderType.Settings);
+            var hasSettingsProvider = extensionWrapper.HasProviderType(ProviderType.Settings);
             var extension = new InstalledExtensionViewModel(extensionWrapper.Name, extensionWrapper.PackageFullName, hasSettingsProvider);
 
             // Each extension is shown under the package that contains it. Check if we have the package in the list
