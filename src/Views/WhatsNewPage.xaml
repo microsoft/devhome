@@ -274,10 +274,6 @@
                                     VerticalAlignment="Top"/>
 
                                 <Grid Grid.Row="1" Padding="15 10 15 0" >
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="*" />
