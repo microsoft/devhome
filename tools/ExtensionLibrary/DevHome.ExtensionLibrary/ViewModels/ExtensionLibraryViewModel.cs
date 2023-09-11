@@ -81,7 +81,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
                 continue;
             }
 
-            var extension = new InstalledExtensionViewModel(extensionWrapper.Name, extensionWrapper.PackageFullName, true /*TODO*/);
+            var hasSettingsProvider = extensionWrapper.HasProviderType(Microsoft.Windows.DevHome.SDK.ProviderType.Settings);
+            var extension = new InstalledExtensionViewModel(extensionWrapper.Name, extensionWrapper.PackageFullName, hasSettingsProvider);
 
             // Each extension is shown under the package that contains it. Search to see if we have the package in the
             // list already and add the extension to that package in the list if we do.
