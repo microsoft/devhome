@@ -28,11 +28,9 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly IPluginService _pluginService;
 
-    [ObservableProperty]
-    private ObservableCollection<StorePackageViewModel> _storePackagesList = new ();
+    public ObservableCollection<StorePackageViewModel> StorePackagesList { get; set; }
 
-    [ObservableProperty]
-    private ObservableCollection<InstalledPackageViewModel> _installedPackagesList = new ();
+    public ObservableCollection<InstalledPackageViewModel> InstalledPackagesList { get; set; }
 
     [ObservableProperty]
     private bool _shouldShowStoreError = false;
@@ -44,6 +42,9 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
         pluginService.OnPluginsChanged -= OnPluginsChanged;
         pluginService.OnPluginsChanged += OnPluginsChanged;
+
+        StorePackagesList = new ();
+        InstalledPackagesList = new ();
 
         GetInstalledExtensions();
         GetAvailablePackages();

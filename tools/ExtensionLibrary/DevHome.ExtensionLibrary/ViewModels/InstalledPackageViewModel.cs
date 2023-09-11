@@ -82,8 +82,7 @@ public partial class InstalledPackageViewModel : ObservableObject
     [ObservableProperty]
     private PackageVersion _version;
 
-    [ObservableProperty]
-    private ObservableCollection<InstalledExtensionViewModel> _installedExtensionsList = new ();
+    public ObservableCollection<InstalledExtensionViewModel> InstalledExtensionsList { get; set; }
 
     public InstalledPackageViewModel(string title, string publisher, string packageFamilyName, DateTimeOffset installedDate, PackageVersion version)
     {
@@ -92,6 +91,7 @@ public partial class InstalledPackageViewModel : ObservableObject
         _packageFamilyName = packageFamilyName;
         _installedDate = installedDate;
         _version = version;
+        InstalledExtensionsList = new ();
     }
 
     [RelayCommand]
