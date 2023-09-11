@@ -26,6 +26,7 @@
     <StackPanel Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
         <!-- Close button -->
         <Grid x:Name="CustomizeWidgetTitleBar">
+            <TextBlock x:Uid="CustomizeWidgetTitle" HorizontalAlignment="Left" Margin="16,10,0,0" />
             <commonviews:CloseButton Click="CancelButton_Click" />
         </Grid>
 

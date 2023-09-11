@@ -158,4 +158,12 @@
     <value>Dashboard Banner</value>
     <comment>Name of the dashboard banner for automation</comment>
   </data>
+  <data name="CustomizeWidgetTitle.Text" xml:space="preserve">
+    <value>Customize widget</value>
+    <comment>Title for "Customize" dialog</comment>
+  </data>
+  <data name="WidgetSizeSelected" xml:space="preserve">
+    <value>Selected</value>
+    <comment>State of selected size for automatiom purposes</comment>
+  </data>
 </root>
