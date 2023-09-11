@@ -82,8 +82,7 @@ public partial class DashboardView : ToolPage
         }
         else
         {
-            // If above initialization failed, there are no widgets, show the message.
-            NoWidgetsStackPanel.Visibility = Visibility.Visible;
+            Log.Logger()?.ReportWarn("DashboardView", $"Initialization failed");
         }
 
 #if DEBUG
@@ -253,7 +252,6 @@ public partial class DashboardView : ToolPage
         else
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
-            NoWidgetsStackPanel.Visibility = Visibility.Visible;
         }
     }
 
@@ -463,8 +461,6 @@ public partial class DashboardView : ToolPage
                 item.PropertyChanged += PinnedWidgetsPropertyChanged;
             }
         }
-
-        NoWidgetsStackPanel.Visibility = (PinnedWidgets.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private async void PinnedWidgetsPropertyChanged(object sender, PropertyChangedEventArgs e)
