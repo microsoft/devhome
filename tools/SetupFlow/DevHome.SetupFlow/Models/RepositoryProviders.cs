@@ -5,7 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DevHome.Common.Services;
+using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Helpers;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -98,14 +101,10 @@ internal class RepositoryProviders
         return (false, null, null);
     }
 
-    /// <summary>
-    /// Logs the user into a certain provider.
-    /// </summary>
-    /// <param name="providerName">The provider to log the user into.  Must match display name of the plugin</param>
-    public IDeveloperId LogInToProvider(string providerName)
+    public PluginAdaptiveCardPanel GetLoginUi(string providerName, ElementTheme elementTheme)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Logging in to provider {providerName}");
-        return _providers.GetValueOrDefault(providerName)?.LogIntoProvider();
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting login UI {providerName}");
+        return _providers.GetValueOrDefault(providerName)?.GetLoginUi(elementTheme);
     }
 
     /// <summary>
