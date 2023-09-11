@@ -159,15 +159,7 @@ public class PluginService : IPluginService
                     continue;
                 }
 
-                var name = extension.DisplayName;
-                var pluginWrapper = new PluginWrapper(
-                    name,
-                    extension.Package.Id.FullName,
-                    extension.Package.Id.FamilyName,
-                    extension.Package.PublisherDisplayName,
-                    classId,
-                    extension.Package.InstalledDate,
-                    extension.Package.Id.Version);
+                var pluginWrapper = new PluginWrapper(extension, classId);
 
                 var supportedInterfaces = GetSubPropertySet(devHomeProvider, "SupportedInterfaces");
                 if (supportedInterfaces is not null)

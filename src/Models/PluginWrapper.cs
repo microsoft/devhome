@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.AppExtensions;
 using Windows.Win32;
 using Windows.Win32.System.Com;
 using WinRT;
@@ -29,22 +30,15 @@ public class PluginWrapper : IPluginWrapper
 
     private IExtension? _extensionObject;
 
-    public PluginWrapper(
-        string name,
-        string packageFullName,
-        string packageFamilyName,
-        string publisher,
-        string classId,
-        DateTimeOffset installedDate,
-        PackageVersion version)
+    public PluginWrapper(AppExtension appExtension, string classId)
     {
-        Name = name ?? throw new ArgumentNullException(nameof(name));
-        PackageFullName = packageFullName ?? throw new ArgumentNullException(nameof(packageFullName));
-        PackageFamilyName = packageFamilyName ?? throw new ArgumentNullException(nameof(packageFamilyName));
-        Publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
+        Name = appExtension.DisplayName;
+        PackageFullName = appExtension.Package.Id.FullName;
+        PackageFamilyName = appExtension.Package.Id.FamilyName;
         PluginClassId = classId ?? throw new ArgumentNullException(nameof(classId));
-        InstalledDate = installedDate;
-        Version = version;
+        Publisher = appExtension.Package.PublisherDisplayName;
+        InstalledDate = appExtension.Package.InstalledDate;
+        Version = appExtension.Package.Id.Version;
     }
 
     public string Name
@@ -62,12 +56,12 @@ public class PluginWrapper : IPluginWrapper
         get;
     }
 
-    public string Publisher
+    public string PluginClassId
     {
         get;
     }
 
-    public string PluginClassId
+    public string Publisher
     {
         get;
     }
