@@ -78,6 +78,10 @@
     <value>Version</value>
     <comment>Text that precedes the version number of a specific package</comment>
   </data>
+  <data name="UninstallItem.Text" xml:space="preserve">
+     <value>Uninstall</value>
+     <comment>Button to uninstall the extension</comment>
+  </data>
   <data name="ManageExtensionCard.Header" xml:space="preserve">
     <value>Manage extension</value>
     <comment>Label for the link to that extension's settings</comment>

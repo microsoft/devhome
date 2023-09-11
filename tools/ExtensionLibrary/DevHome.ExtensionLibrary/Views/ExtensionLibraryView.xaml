@@ -53,6 +53,7 @@
                                         <MenuFlyout>
                                             <MenuFlyoutItem
                                                 x:Uid="UninstallItem"
+                                                HorizontalAlignment="Center"
                                                 Command="{x:Bind UninstallButtonCommand}">
                                             </MenuFlyoutItem>
                                         </MenuFlyout>
