@@ -84,31 +84,22 @@ public partial class ExtensionLibraryViewModel : ObservableObject
             var hasSettingsProvider = extensionWrapper.HasProviderType(Microsoft.Windows.DevHome.SDK.ProviderType.Settings);
             var extension = new InstalledExtensionViewModel(extensionWrapper.Name, extensionWrapper.PackageFullName, hasSettingsProvider);
 
-            // Each extension is shown under the package that contains it. Search to see if we have the package in the
-            // list already and add the extension to that package in the list if we do.
-            var foundPackage = false;
-            foreach (var installedPackage in InstalledPackagesList)
+            // Each extension is shown under the package that contains it. Check if we have the package in the list
+            // already and if not, create it and add it to the list of packages. Then add the extension to that
+            // package's list of extensions.
+            var package = InstalledPackagesList.FirstOrDefault(p => p.PackageFamilyName == extensionWrapper.PackageFamilyName);
+            if (package == null)
             {
-                if (installedPackage.PackageFamilyName == extensionWrapper.PackageFamilyName)
-                {
-                    foundPackage = true;
-                    installedPackage.InstalledExtensionsList.Add(extension);
-                    break;
-                }
-            }
-
-            // If the package isn't in the list yet, add it.
-            if (!foundPackage)
-            {
-                var installedPackage = new InstalledPackageViewModel(
+                package = new InstalledPackageViewModel(
                     extensionWrapper.Name,
                     extensionWrapper.Publisher,
                     extensionWrapper.PackageFamilyName,
                     extensionWrapper.InstalledDate,
                     extensionWrapper.Version);
-                installedPackage.InstalledExtensionsList.Add(extension);
-                InstalledPackagesList.Add(installedPackage);
+                InstalledPackagesList.Add(package);
             }
+
+            package.InstalledExtensionsList.Add(extension);
         }
     }
 
