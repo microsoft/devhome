@@ -25,7 +25,12 @@ public class WindowsPackageManager : IWindowsPackageManager
     public const int AppInstallerErrorFacility = 0xA15;
     public const string AppInstallerProductId = "9NBLGGH4NNS1";
     public const string AppInstallerPackageFamilyName = "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe";
+
+    // Package manager URI constants:
+    // - x-ms-winget: is a custom scheme for WinGet package manager
+    // - winget: is a reserved URI name for the winget catalog
     public const string Scheme = "x-ms-winget";
+    public const string WingetCatalogURIName = "winget";
 
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;
@@ -187,6 +192,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet)
     {
         // TODO Add support for other catalogs (e.g. `msstore` and custom).
+        // https://github.com/microsoft/devhome/issues/1521
         HashSet<string> wingetPackageIds = new ();
         foreach (var packageUri in packageUriSet)
         {
@@ -297,9 +303,9 @@ public class WindowsPackageManager : IWindowsPackageManager
     private bool TryGetPackageId(Uri packageUri, out string packageId)
     {
         // TODO Add support for other catalogs (e.g. `msstore` and custom).
-        const string wingetCatalogUriName = "winget";
+        // https://github.com/microsoft/devhome/issues/1521
         if (packageUri.Scheme == Scheme &&
-            packageUri.Host == wingetCatalogUriName &&
+            packageUri.Host == WingetCatalogURIName &&
             packageUri.Segments.Length == 2)
         {
             packageId = packageUri.Segments[1];
