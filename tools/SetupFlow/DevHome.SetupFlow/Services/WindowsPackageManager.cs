@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Exceptions;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Services;
 using DevHome.SetupFlow.Common.Extensions;
@@ -12,6 +13,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Management.Deployment;
 using Windows.Win32.Foundation;
 
@@ -101,7 +103,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs completed");
     }
 
-    public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package)
+    public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package, Guid activityId)
     {
         var packageManager = _wingetFactory.CreatePackageManager();
         var options = _wingetFactory.CreateInstallOptions();

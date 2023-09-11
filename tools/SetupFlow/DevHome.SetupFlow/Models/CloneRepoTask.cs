@@ -29,6 +29,8 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloneRepoTask : ObservableObject, ISetupTask
 {
+    private readonly Guid _activityId;
+
     /// <summary>
     /// Absolute path the user wants to clone their repository to.
     /// </summary>
@@ -133,7 +135,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// <param name="cloneLocation">Repository will be placed here. at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
     /// <param name="developerId">Credentials needed to clone a private repo</param>
-    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName)
+    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName, Guid activityId)
     {
         _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
@@ -142,6 +144,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         ProviderName = providerName;
         _stringResource = stringResource;
         _repositoryProvider = repositoryProvider;
+        _activityId = activityId;
     }
 
     /// <summary>
@@ -150,7 +153,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// </summary>
     /// <param name="cloneLocation">Repository will be placed here, at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
-    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName)
+    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName, Guid activityId)
     {
         _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
@@ -159,6 +162,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         SetMessages(stringResource);
         _stringResource = stringResource;
         _repositoryProvider = repositoryProvider;
+        _activityId = activityId;
     }
 
     private void SetMessages(IStringResource stringResource)

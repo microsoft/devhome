@@ -7,13 +7,17 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using Microsoft.Windows.DevHome.SDK;
+using Microsoft.Extensions.Hosting;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -28,6 +32,8 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     private readonly RepoConfigTaskGroup _taskGroup;
 
     private readonly IDevDriveManager _devDriveManager;
+
+    private readonly IThemeSelectorService _themeSelectorService;
 
     /// <summary>
     /// The minimum available space the user should have on the drive that holds their OS, in gigabytes.
@@ -84,7 +90,8 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         IDevDriveManager devDriveManager,
-        RepoConfigTaskGroup taskGroup)
+        RepoConfigTaskGroup taskGroup,
+        IHost host)
         : base(stringResource, orchestrator)
     {
         _taskGroup = taskGroup;
@@ -93,6 +100,31 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         RepoDialogCancelled += _devDriveManager.CancelChangesToDevDrive;
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReposConfigPageTitle);
         NextPageButtonToolTipText = stringResource.GetLocalized(StringResourceKey.RepoToolNextButtonTooltip);
+        _themeSelectorService = host.GetService<IThemeSelectorService>();
+        _themeSelectorService.ThemeChanged += OnThemeChanged;
+    }
+
+    private void OnThemeChanged(object sender, ElementTheme e)
+    {
+        ElementTheme themeToSwitchTo = e;
+
+        if (themeToSwitchTo == ElementTheme.Default)
+        {
+            if (_themeSelectorService.IsDarkTheme())
+            {
+                themeToSwitchTo = ElementTheme.Dark;
+            }
+            else
+            {
+                themeToSwitchTo = ElementTheme.Light;
+            }
+        }
+
+        // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
+        foreach (var cloneInformation in RepoReviewItems)
+        {
+            cloneInformation.SetIcon(themeToSwitchTo);
+        }
     }
 
     /// <summary>

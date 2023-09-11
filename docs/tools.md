@@ -1,6 +1,6 @@
 # Tools
 
-Dev Home adds functionality through a set of tools. Each tool provides a page in the Dev Home navigation view. Currently, all tools come from in-app assemblies. Third party or out-of-process tools are not supported at this time.
+Dev Home adds functionality through a set of tools. Each tool provides a page in the Dev Home navigation view. Currently, all tools come from in-package assemblies. Third party or out-of-process tools are not supported at this time.
 
 Tools utilize data and functionality from out-of-process [extensions](./extensions.md). This is done through the Extension SDK API. 
 

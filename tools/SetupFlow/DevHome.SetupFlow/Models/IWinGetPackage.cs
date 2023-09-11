@@ -135,5 +135,6 @@ public interface IWinGetPackage
     InstallPackageTask CreateInstallTask(
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory);
+        WindowsPackageManagerFactory wingetFactory,
+        Guid activityId);
 }

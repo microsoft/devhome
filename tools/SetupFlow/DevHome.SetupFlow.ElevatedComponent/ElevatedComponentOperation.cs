@@ -83,7 +83,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
             result => result >= 0).AsAsyncOperation();
     }
 
-    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfigurationAsync()
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfigurationAsync(Guid activityId)
     {
         var taskArguments = GetConfigureTaskArguments();
         return ValidateAndExecuteAsync(
@@ -92,7 +92,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
             {
                 Log.Logger?.ReportInfo(Log.Component.Elevated, "Applying DSC configuration elevated");
                 var task = new ElevatedConfigurationTask();
-                return await task.ApplyConfiguration(taskArguments.FilePath, taskArguments.Content);
+                return await task.ApplyConfiguration(taskArguments.FilePath, taskArguments.Content, activityId);
             },
             result => result.TaskSucceeded).AsAsyncOperation();
     }

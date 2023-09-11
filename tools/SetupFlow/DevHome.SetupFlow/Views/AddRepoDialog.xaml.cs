@@ -63,11 +63,12 @@ internal partial class AddRepoDialog
         IDevDriveManager devDriveManager,
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
-        ElementTheme elementTheme)
+        ElementTheme elementTheme,
+        Guid actvityId)
     {
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, elementTheme);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, elementTheme, activityId);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
 

@@ -38,6 +38,9 @@ public partial class WidgetViewModel : ObservableObject
     private string _widgetDisplayTitle;
 
     [ObservableProperty]
+    private string _widgetProviderDisplayTitle;
+
+    [ObservableProperty]
     private FrameworkElement _widgetFrameworkElement;
 
     [ObservableProperty]
@@ -73,6 +76,7 @@ public partial class WidgetViewModel : ObservableObject
         if (WidgetDefinition != null)
         {
             WidgetDisplayTitle = WidgetDefinition.DisplayTitle;
+            WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinition.DisplayName;
         }
     }
 

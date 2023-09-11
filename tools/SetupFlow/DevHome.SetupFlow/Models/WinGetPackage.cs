@@ -66,7 +66,8 @@ public class WinGetPackage : IWinGetPackage
     public InstallPackageTask CreateInstallTask(
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory) => new (wpm, stringResource, wingetFactory, this);
+        WindowsPackageManagerFactory wingetFactory,
+        Guid activityId) => new (wpm, stringResource, wingetFactory, this, activityId);
 
     /// <summary>
     /// Check if the package requires elevation
