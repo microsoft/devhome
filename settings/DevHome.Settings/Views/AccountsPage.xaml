@@ -18,8 +18,8 @@
         </DataTemplate>
 
         <DataTemplate x:Key="AccountsProviderViewTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
-            <StackPanel>
-                <TextBlock Text="{x:Bind ProviderName}" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}" Visibility="{x:Bind HasLoggedInAccounts, Mode=OneWay}"/>
+            <StackPanel Visibility="{x:Bind HasLoggedInAccounts, Mode=OneWay}">
+                <TextBlock Text="{x:Bind ProviderName}" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}" />
                 <ItemsRepeater ItemsSource="{x:Bind LoggedInAccounts}" ItemTemplate="{StaticResource AccountsViewTemplate}"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible" />
             </StackPanel>
