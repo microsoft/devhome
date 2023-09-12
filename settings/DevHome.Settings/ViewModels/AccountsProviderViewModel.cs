@@ -19,9 +19,6 @@ public partial class AccountsProviderViewModel : ObservableObject
 
     public ObservableCollection<Account> LoggedInAccounts { get; } = new ();
 
-    [ObservableProperty]
-    private bool _hasLoggedInAccounts;
-
     public AccountsProviderViewModel(IDeveloperIdProvider devIdProvider)
     {
         DeveloperIdProvider = devIdProvider;
@@ -35,7 +32,6 @@ public partial class AccountsProviderViewModel : ObservableObject
         {
             LoggedInAccounts.Add(new Account(this, devId));
         });
-        HasLoggedInAccounts = LoggedInAccounts.Count > 0;
     }
 
     public void RemoveAccount(string loginId)
