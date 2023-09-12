@@ -4,6 +4,8 @@
 using System.Runtime.InteropServices;
 using DevHome.Common.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.AppExtensions;
 using Windows.Win32;
 using Windows.Win32.System.Com;
 using WinRT;
@@ -28,11 +30,16 @@ public class PluginWrapper : IPluginWrapper
 
     private IExtension? _extensionObject;
 
-    public PluginWrapper(string name, string packageFullName, string classId)
+    public PluginWrapper(AppExtension appExtension, string classId)
     {
-        Name = name ?? throw new ArgumentNullException(nameof(name));
-        PackageFullName = packageFullName ?? throw new ArgumentNullException(nameof(packageFullName));
+        Name = appExtension.DisplayName;
+        PackageFullName = appExtension.Package.Id.FullName;
+        PackageFamilyName = appExtension.Package.Id.FamilyName;
         PluginClassId = classId ?? throw new ArgumentNullException(nameof(classId));
+        Publisher = appExtension.Package.PublisherDisplayName;
+        InstalledDate = appExtension.Package.InstalledDate;
+        Version = appExtension.Package.Id.Version;
+        ExtensionUniqueId = appExtension.AppInfo.AppUserModelId + "!" + appExtension.Id;
     }
 
     public string Name
@@ -45,7 +52,41 @@ public class PluginWrapper : IPluginWrapper
         get;
     }
 
+    public string PackageFamilyName
+    {
+        get;
+    }
+
     public string PluginClassId
+    {
+        get;
+    }
+
+    public string Publisher
+    {
+        get;
+    }
+
+    public DateTimeOffset InstalledDate
+    {
+        get;
+    }
+
+    public PackageVersion Version
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the unique id for this Dev Home extension. The unique id is a concatenation of:
+    /// <list type="number">
+    /// <item>The AppUserModelId (AUMID) of the extension's application. The AUMID is the concatenation of the package
+    /// family name and the application id and uniquely identifies the application containing the extension within
+    /// the package.</item>
+    /// <item>The Extension Id. This is the unique identifier of the extension within the application.</item>
+    /// </list>
+    /// </summary>
+    public string ExtensionUniqueId
     {
         get;
     }
