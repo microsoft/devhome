@@ -39,7 +39,7 @@ public class PluginWrapper : IPluginWrapper
         Publisher = appExtension.Package.PublisherDisplayName;
         InstalledDate = appExtension.Package.InstalledDate;
         Version = appExtension.Package.Id.Version;
-        ExtensionUniqueId = appExtension.AppUserModelId + "!" + appExtension.Id;
+        ExtensionUniqueId = appExtension.AppInfo.AppUserModelId + "!" + appExtension.Id;
     }
 
     public string Name
