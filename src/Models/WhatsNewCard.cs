@@ -31,6 +31,16 @@ public class WhatsNewCard
         get; set;
     }
 
+    public string? LightThemeImageBig
+    {
+        get; set;
+    }
+
+    public string? DarkThemeImageBig
+    {
+        get; set;
+    }
+
     public string? Button
     {
         get; set;
@@ -47,6 +57,11 @@ public class WhatsNewCard
     }
 
     public bool? ShouldShowLink
+    {
+        get; set;
+    }
+
+    public bool? IsBig
     {
         get; set;
     }

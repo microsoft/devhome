@@ -84,7 +84,7 @@ public partial class ExtensionsViewModel : ObservableObject
                 continue;
             }
 
-            var setting = new Setting("Plugins/" + pluginWrapper.PackageFullName, pluginWrapper.PackageFullName, pluginWrapper.Name, string.Empty, string.Empty, true);
+            var setting = new Setting("Plugins/" + pluginWrapper.ExtensionUniqueId, pluginWrapper.ExtensionUniqueId, pluginWrapper.Name, string.Empty, string.Empty, true);
             SettingsList.Add(new ExtensionViewModel(setting, this));
         }
     }
