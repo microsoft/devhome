@@ -68,7 +68,10 @@ internal class MemoryStats : IDisposable
             UsedMem = AllMem - availableMem;
 
             MemUsage = (float)UsedMem / AllMem;
-            ChartHelper.AddNextChartValue(MemUsage * 100, MemChartValues);
+            lock (MemChartValues)
+            {
+                ChartHelper.AddNextChartValue(MemUsage * 100, MemChartValues);
+            }
         }
 
         MemCached = (ulong)memCached.NextValue();
