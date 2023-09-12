@@ -61,17 +61,6 @@ public partial class SetupFlowViewModel : ObservableObject
     {
         _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
         List<SetupPageViewModelBase> flowPages = new ();
-        flowPages.AddRange(Orchestrator.TaskGroups.Select(flow => flow.GetSetupPageViewModel()).Where(page => page is not null));
-
-        // Check if the review page should be added as a step
-        if (Orchestrator.TaskGroups.Any(flow => flow.GetReviewTabViewModel() != null))
-        {
-            flowPages.Add(_host.GetService<ReviewViewModel>());
-        }
-        else
-        {
-            Log.Logger?.ReportInfo(Log.Component.Orchestrator, "Review page will be skipped for this flow");
-        }
 
         // The Loading page can advance to the next page
         // without user interaction once it is complete

@@ -161,15 +161,17 @@
                 <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="30">
 
                     <!-- Number of apps and repos cloned.-->
-                    <StackPanel 
+                    <StackPanel
                         BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
                         BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" 
                         HorizontalAlignment="Center" 
                         Padding="30,15,30,0" 
                         MinWidth="250">
-                        <Grid
-                            ColumnDefinitions="Auto, Auto"
-                            HorizontalAlignment="Center">
+                        <Grid HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
                             <Grid
                                 Grid.Column="0"
                                 Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}"
@@ -221,21 +223,22 @@
                     <ContentControl Template="{ThemeResource LinksTemplate}" />
                 </StackPanel>
 
-
                 <!-- Displays the repos cloned and apps downloaded -->
                 <StackPanel Grid.Column="1" Orientation="Vertical">
+
                     <!-- Repos cloned -->
-                    <StackPanel 
-                        Orientation="Vertical" 
-                        Spacing="20" 
-                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
-                        Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}"
-                        Margin="0,0,0,30">
-                        <TextBlock 
-                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" 
-                            Style="{ThemeResource BodyStrongTextBlockStyle}" 
-                            Padding="0, 20, 0, 0"/>
+                    <Grid
+                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                        BorderThickness="0,0,0,1">
+                        <Expander IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="0">
+                            <Expander.Resources>
+                                <StaticResource x:Key="ExpanderHeaderBackground" ResourceKey="ControlFillColorTransparentBrush" />
+                                <StaticResource x:Key="ExpanderContentBackground" ResourceKey="ControlFillColorTransparentBrush" />
+                                <Thickness x:Key="ExpanderHeaderBorderThickness">0</Thickness>
+                            </Expander.Resources>
+                            <Expander.Header>
+                                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0,28"/>
+                            </Expander.Header>
                         <StackPanel>
                             <StackPanel.Resources>
                                 <StackLayout x:Name="LayoutForRepos" Orientation="Vertical" Spacing="10"/>
@@ -259,16 +262,23 @@
                                ItemTemplate="{StaticResource repoTemplate}">
                             </ItemsRepeater>
                         </StackPanel>
-                    </StackPanel>
+                        </Expander>
+                    </Grid>
 
                     <!-- Apps downloaded -->
-                    <StackPanel 
-                        Orientation="Vertical" 
-                        Spacing="20" 
-                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
-                        Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}">
-                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
+                    <Grid
+                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+                        BorderThickness="0,0,0,1">
+                        <Expander IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                            <Expander.Resources>
+                                <StaticResource x:Key="ExpanderHeaderBackground" ResourceKey="ControlFillColorTransparentBrush" />
+                                <StaticResource x:Key="ExpanderContentBackground" ResourceKey="ControlFillColorTransparentBrush" />
+                                <Thickness x:Key="ExpanderHeaderBorderThickness">0</Thickness>
+                                <Thickness x:Key="ExpanderHeaderPadding">0,28</Thickness>
+                            </Expander.Resources>
+                            <Expander.Header>
+                                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0,28"/>
+                            </Expander.Header>
                         <GridView
                             ItemsSource="{x:Bind ViewModel.AppsDownloaded, Mode=OneWay}"
                             SelectionMode="None">
@@ -302,7 +312,37 @@
                                 </DataTemplate>
                             </GridView.ItemTemplate>
                         </GridView>
-                    </StackPanel>
+                        </Expander>
+                    </Grid>
+
+                    <!-- Installation notes -->
+                    <Grid>
+                        <Expander IsExpanded="True" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Padding="0">
+                            <Expander.Resources>
+                                <StaticResource x:Key="ExpanderHeaderBackground" ResourceKey="ControlFillColorTransparentBrush" />
+                                <StaticResource x:Key="ExpanderContentBackground" ResourceKey="ControlFillColorTransparentBrush" />
+                                <Thickness x:Key="ExpanderHeaderBorderThickness">0</Thickness>
+                            </Expander.Resources>
+                            <Expander.Header>
+                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0,28">Installation Notes</TextBlock>
+                            </Expander.Header>
+                            <ListView SelectionMode="None">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,0,0,4" CornerRadius="8" Padding="18,20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                                            <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}">Xbox SDK</TextBlock>
+                                            <TextBlock TextWrapping="WrapWholeWords" Foreground="{ThemeResource TextFillColorSecondaryBrush}">GDK Visual Studio extensions require configuring the target Visual Studio instance with the Game development with C++ workload before.</TextBlock>
+                                            <HyperlinkButton Style="{ThemeResource TextBlockButtonStyle}">View all</HyperlinkButton>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                                <x:String>A</x:String>
+                                <x:String>A</x:String>
+                                <x:String>A</x:String>
+                                <x:String>A</x:String>
+                            </ListView>
+                        </Expander>
+                    </Grid>
                 </StackPanel>
             </Grid>
         </Grid>
