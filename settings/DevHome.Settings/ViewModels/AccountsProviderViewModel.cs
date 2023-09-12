@@ -27,7 +27,6 @@ public partial class AccountsProviderViewModel : ObservableObject
 
     public void RefreshLoggedInAccounts()
     {
-        /*
         LoggedInAccounts.Clear();
         var developerIdsResult = DeveloperIdProvider.GetLoggedInDeveloperIds();
         if (developerIdsResult.Result.Status == ProviderOperationStatus.Failure)
@@ -40,12 +39,10 @@ public partial class AccountsProviderViewModel : ObservableObject
         {
             LoggedInAccounts.Add(new Account(this, devId));
         });
-        */
     }
 
     public void RemoveAccount(string loginId)
     {
-        /*
         var accountToRemove = LoggedInAccounts.FirstOrDefault(x => x.LoginId == loginId);
         if (accountToRemove != null)
         {
@@ -58,6 +55,5 @@ public partial class AccountsProviderViewModel : ObservableObject
         }
 
         RefreshLoggedInAccounts();
-        */
     }
 }

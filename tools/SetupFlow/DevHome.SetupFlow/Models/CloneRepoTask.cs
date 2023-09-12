@@ -187,7 +187,6 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// <returns>An awaitable operation.</returns>
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
     {
-        /*
         return Task.Run(async () =>
         {
             try
@@ -222,9 +221,6 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             WasCloningSuccessful = true;
             return TaskFinishedState.Success;
         }).AsAsyncOperation();
-        */
-
-        return Task.Run(() => { return TaskFinishedState.Failure; }).AsAsyncOperation();
     }
 
     IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation) => throw new NotImplementedException();
