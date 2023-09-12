@@ -29,10 +29,14 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloneRepoTask : ObservableObject, ISetupTask
 {
+    private readonly Guid _activityId;
+
     /// <summary>
     /// Absolute path the user wants to clone their repository to.
     /// </summary>
     private readonly DirectoryInfo _cloneLocation;
+
+    private readonly IRepositoryProvider _repositoryProvider;
 
     public DirectoryInfo CloneLocation => _cloneLocation;
 
@@ -131,7 +135,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// <param name="cloneLocation">Repository will be placed here. at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
     /// <param name="developerId">Credentials needed to clone a private repo</param>
-    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName)
+    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName, Guid activityId)
     {
         _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
@@ -139,6 +143,8 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         SetMessages(stringResource);
         ProviderName = providerName;
         _stringResource = stringResource;
+        _repositoryProvider = repositoryProvider;
+        _activityId = activityId;
     }
 
     /// <summary>
@@ -147,7 +153,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
     /// </summary>
     /// <param name="cloneLocation">Repository will be placed here, at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
-    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName)
+    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName, Guid activityId)
     {
         _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
@@ -155,6 +161,8 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         ProviderName = providerName;
         SetMessages(stringResource);
         _stringResource = stringResource;
+        _repositoryProvider = repositoryProvider;
+        _activityId = activityId;
     }
 
     private void SetMessages(IStringResource stringResource)
@@ -184,9 +192,24 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         {
             try
             {
+                ProviderOperationResult result;
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
                 TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Critical, new ReposCloneEvent(ProviderName, _developerId));
-                await RepositoryToClone.CloneRepositoryAsync(_cloneLocation.FullName, _developerId);
+                if (_developerId == null)
+                {
+                    result = await _repositoryProvider.CloneRepositoryAsync(RepositoryToClone, _cloneLocation.FullName);
+                }
+                else
+                {
+                    result = await _repositoryProvider.CloneRepositoryAsync(RepositoryToClone, _cloneLocation.FullName, _developerId);
+                }
+
+                if (result.Status == ProviderOperationStatus.Failure)
+                {
+                    _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, result.DisplayMessage);
+                    WasCloningSuccessful = false;
+                    return TaskFinishedState.Failure;
+                }
             }
             catch (Exception e)
             {

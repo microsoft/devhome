@@ -5,11 +5,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AdaptiveCards.Rendering.WinUI3;
+using DevHome.Common.Renderers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Common.Views;
+using DevHome.Logging;
+using DevHome.Settings.Views;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Storage;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -20,11 +28,6 @@ namespace DevHome.SetupFlow.Models;
 internal class RepositoryProvider
 {
     /// <summary>
-    /// All the repositories for an account.
-    /// </summary>
-    private readonly Lazy<IEnumerable<IRepository>> _repositories = new ();
-
-    /// <summary>
     /// Wrapper for the plugin that is providing a repository and developer id.
     /// </summary>
     /// <remarks>
@@ -32,6 +35,11 @@ internal class RepositoryProvider
     /// This is for lazy loading and starting and prevents all plugins from starting all at once.
     /// </remarks>
     private readonly IPluginWrapper _pluginWrapper;
+
+    /// <summary>
+    /// All the repositories for an account.
+    /// </summary>
+    private Lazy<IEnumerable<IRepository>> _repositories = new ();
 
     /// <summary>
     /// The DeveloperId provider used to log a user into an account.
@@ -61,6 +69,11 @@ internal class RepositoryProvider
         _devIdProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
         _repositoryProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
         var myName = _repositoryProvider.DisplayName;
+    }
+
+    public IRepositoryProvider GetProvider()
+    {
+        return _repositoryProvider;
     }
 
     /// <summary>
@@ -100,8 +113,6 @@ internal class RepositoryProvider
     /// public, the developerid can be null.</remarks>
     public (bool, IDeveloperId, IRepositoryProvider) IsUriSupported(Uri uri)
     {
-        return (false, null, null);
-        /*
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
 
         // Possible that no accounts are loggd in.  Try in case the repo is public.
@@ -116,35 +127,94 @@ internal class RepositoryProvider
         }
         else
         {
-            foreach (var developerId in developerIdsResult.DeveloperIds)
+            if (developerIdsResult.DeveloperIds.Any())
             {
-                var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri, developerId).AsTask()).Result;
+                foreach (var developerId in developerIdsResult.DeveloperIds)
+                {
+                    var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri, developerId).AsTask()).Result;
+                    if (uriSupportResult.IsSupported)
+                    {
+                        return (true, developerId, _repositoryProvider);
+                    }
+                }
+            }
+            else
+            {
+                var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
                 if (uriSupportResult.IsSupported)
                 {
-                    return (true, developerId, _repositoryProvider);
+                    return (true, null, _repositoryProvider);
                 }
             }
         }
 
         // no accounts can access this uri or the repo does not exist.
         return (false, null, null);
-        */
     }
 
-    /// <summary>
-    /// Logs the current user into this provider
-    /// </summary>
-    public IDeveloperId LogIntoProvider()
+    public PluginAdaptiveCardPanel GetLoginUi(ElementTheme elementTheme)
     {
-        /*
-        return _devIdProvider.LoginNewDeveloperIdAsync().AsTask().Result;
-        */
+        try
+        {
+            var adaptiveCardSessionResult = _devIdProvider.GetLoginAdaptiveCardSession();
+            if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
+            {
+                GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                return null;
+            }
 
-        /*
-        return _devIdProvider.GetLoggedInDeveloperIds().DeveloperIds.First();
-        */
+            var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
+            var renderer = new AdaptiveCardRenderer();
+            ConfigureLoginUIRenderer(renderer, elementTheme).Wait();
+            renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
+
+            var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
+            pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
+            pluginAdaptiveCardPanel.RequestedTheme = elementTheme;
+
+            return pluginAdaptiveCardPanel;
+        }
+        catch (Exception ex)
+        {
+            GlobalLog.Logger?.ReportError($"ShowLoginUIAsync(): loginUIContentDialog failed.", ex);
+        }
 
         return null;
+    }
+
+    private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer, ElementTheme elementTheme)
+    {
+        var dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+        // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
+        renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
+
+        var hostConfigContents = string.Empty;
+        var hostConfigFileName = (elementTheme == ElementTheme.Light) ? "LightHostConfig.json" : "DarkHostConfig.json";
+        try
+        {
+            var uri = new Uri($"ms-appx:////DevHome.Settings/Assets/{hostConfigFileName}");
+            var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
+            hostConfigContents = await FileIO.ReadTextAsync(file);
+        }
+        catch (Exception ex)
+        {
+            GlobalLog.Logger?.ReportError($"Failure occurred while retrieving the HostConfig file - HostConfigFileName: {hostConfigFileName}.", ex);
+        }
+
+        // Add host config for current theme to renderer
+        dispatcher.TryEnqueue(() =>
+        {
+            if (!string.IsNullOrEmpty(hostConfigContents))
+            {
+                renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
+            }
+            else
+            {
+                GlobalLog.Logger?.ReportInfo($"HostConfig file contents are null or empty - HostConfigFileContents: {hostConfigContents}");
+            }
+        });
+        return;
     }
 
     /// <summary>
@@ -153,8 +223,6 @@ internal class RepositoryProvider
     /// <returns>A list of all accounts.  May be empty.</returns>
     public IEnumerable<IDeveloperId> GetAllLoggedInAccounts()
     {
-        return new List<IDeveloperId>();
-        /*
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
         if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
         {
@@ -163,7 +231,6 @@ internal class RepositoryProvider
         }
 
         return developerIdsResult.DeveloperIds;
-        */
     }
 
     /// <summary>
@@ -173,18 +240,23 @@ internal class RepositoryProvider
     /// <returns>A collection of repositories.  May be empty</returns>
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
     {
-        /*
         if (!_repositories.IsValueCreated)
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
-            _repositories = new Lazy<IEnumerable<IRepository>>(_repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result);
+
+            var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+            if (result.Result.Status != ProviderOperationStatus.Success)
+            {
+                _repositories = new Lazy<IEnumerable<IRepository>>(new List<IRepository>());
+            }
+            else
+            {
+                _repositories = new Lazy<IEnumerable<IRepository>>(result.Repositories);
+            }
         }
 
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
         return _repositories.Value;
-        */
-
-        return new List<IRepository>();
     }
 }

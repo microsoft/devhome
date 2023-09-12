@@ -82,8 +82,7 @@ public partial class DashboardView : ToolPage
         }
         else
         {
-            // If above initialization failed, there are no widgets, show the message.
-            NoWidgetsStackPanel.Visibility = Visibility.Visible;
+            Log.Logger()?.ReportWarn("DashboardView", $"Initialization failed");
         }
 
 #if DEBUG
@@ -97,7 +96,7 @@ public partial class DashboardView : ToolPage
 
         try
         {
-            // The GUID is this app's Host GUID that Widget Platform will use to identify this host.
+            // The GUID is Dev Home's Host GUID that Widget Platform will use to identify this host.
             _widgetHost = WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031"));
             _widgetCatalog = WidgetCatalog.GetDefault();
 
@@ -129,7 +128,7 @@ public partial class DashboardView : ToolPage
 
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        // The app uses a different host config to render widgets (adaptive cards) in light and dark themes.
+        // A different host config is used to render widgets (adaptive cards) in light and dark themes.
         await ConfigureWidgetRenderer(_renderer);
 
         // Re-render the widgets with the new theme and renderer.
@@ -253,7 +252,6 @@ public partial class DashboardView : ToolPage
         else
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
-            NoWidgetsStackPanel.Visibility = Visibility.Visible;
         }
     }
 
@@ -463,8 +461,6 @@ public partial class DashboardView : ToolPage
                 item.PropertyChanged += PinnedWidgetsPropertyChanged;
             }
         }
-
-        NoWidgetsStackPanel.Visibility = (PinnedWidgets.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private async void PinnedWidgetsPropertyChanged(object sender, PropertyChangedEventArgs e)

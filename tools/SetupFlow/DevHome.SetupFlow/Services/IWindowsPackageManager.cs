@@ -57,8 +57,9 @@ public interface IWindowsPackageManager
     /// Install a winget package
     /// </summary>
     /// <param name="package">Package to install</param>
+    /// <param name="activityId">Guid to correlate this task to the setupflow activity.</param>
     /// <returns>Install package result</returns>
-    public Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package);
+    public Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package, Guid activityId);
 
     /// <summary>
     /// Checks if AppInstaller has an available update

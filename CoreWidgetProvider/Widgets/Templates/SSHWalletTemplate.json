@@ -34,7 +34,7 @@
             {
               "type": "Image",
               "url": "data:image/png;base64,${icon}",
-              "size": "medium",
+              "size": "small",
               "horizontalAlignment": "left"
             }
           ]

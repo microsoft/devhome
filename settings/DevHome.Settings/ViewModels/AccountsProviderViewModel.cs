@@ -29,7 +29,14 @@ public partial class AccountsProviderViewModel : ObservableObject
     {
         /*
         LoggedInAccounts.Clear();
-        DeveloperIdProvider.GetLoggedInDeveloperIds().ToList().ForEach((devId) =>
+        var developerIdsResult = DeveloperIdProvider.GetLoggedInDeveloperIds();
+        if (developerIdsResult.Result.Status == ProviderOperationStatus.Failure)
+        {
+            GlobalLog.Logger?.ReportError($"{developerIdsResult.Result.DisplayMessage} - {developerIdsResult.Result.DiagnosticText}");
+            return;
+        }
+
+        developerIdsResult.DeveloperIds.ToList().ForEach((devId) =>
         {
             LoggedInAccounts.Add(new Account(this, devId));
         });
@@ -42,14 +49,11 @@ public partial class AccountsProviderViewModel : ObservableObject
         var accountToRemove = LoggedInAccounts.FirstOrDefault(x => x.LoginId == loginId);
         if (accountToRemove != null)
         {
-            try
+            var providerOperationResult = DeveloperIdProvider.LogoutDeveloperId(accountToRemove.GetDevId());
+            if (providerOperationResult.Status == ProviderOperationStatus.Failure)
             {
-                DeveloperIdProvider.LogoutDeveloperId(accountToRemove.GetDevId());
-            }
-            catch (Exception ex)
-            {
-                GlobalLog.Logger?.ReportError($"RemoveAccount() failed - developerId: {loginId}.", ex);
-                throw;
+                GlobalLog.Logger?.ReportError($"{providerOperationResult.DisplayMessage} - {providerOperationResult.DiagnosticText}");
+                return;
             }
         }
 

@@ -237,6 +237,9 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 ViewModel.IsInAddMode = true;
                 PinButton.Visibility = Visibility.Visible;
 
+                var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widget.DefinitionId);
+                ViewModel.WidgetDefinition = widgetDefinition;
+
                 clearWidgetTask.Wait();
             }
             else

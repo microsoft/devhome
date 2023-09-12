@@ -28,7 +28,7 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
         State = string.Empty;
     }
 
-    public void Update(string templateJson, string dataJson, string state)
+    public ProviderOperationResult Update(string templateJson, string dataJson, string state)
     {
         var template = new AdaptiveCardTemplate(templateJson ?? TemplateJson);
         var adaptiveCardString = template.Expand(JsonConvert.DeserializeObject<JObject>(dataJson ?? DataJson));
@@ -37,7 +37,7 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
         if (parseResult.AdaptiveCard is null)
         {
             GlobalLog.Logger?.ReportError($"PluginAdaptiveCard.Update(): AdaptiveCard is null - templateJson: {templateJson} dataJson: {dataJson} state: {state}");
-            return;
+            return new ProviderOperationResult(ProviderOperationStatus.Failure, new ArgumentNullException(null), "AdaptiveCard is null", $"templateJson: {templateJson} dataJson: {dataJson} state: {state}");
         }
 
         TemplateJson = templateJson ?? TemplateJson;
@@ -48,6 +48,8 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
         {
             UiUpdate.Invoke(this, parseResult.AdaptiveCard);
         }
+
+        return new ProviderOperationResult(ProviderOperationStatus.Success, null, "IExtensionAdaptiveCard.Update succeeds", "IExtensionAdaptiveCard.Update succeeds");
     }
 
     ProviderOperationResult IExtensionAdaptiveCard.Update(string templateJson, string dataJson, string state) => throw new NotImplementedException();
