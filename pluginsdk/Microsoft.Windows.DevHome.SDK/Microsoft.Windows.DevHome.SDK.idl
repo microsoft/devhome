@@ -212,6 +212,7 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
+    // Developer ID
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface IDeveloperIdProvider
         requires Windows.Foundation.IClosable
@@ -283,22 +284,6 @@ namespace Microsoft.Windows.DevHome.SDK
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface IFeaturedApplicationsProvider {
         Windows.Foundation.IAsyncOperation<GetFeaturedApplicationsGroupsResult> GetFeaturedApplicationsGroupsAsync();
-    };
-
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface ISetupFlowProvider {
-        String GetName();
-    };
-
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IWidgetProvider {
-        String GetName();
-    };
-
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IDevDoctorProvider {
-        String GetName();
-    };
-
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface INotificationsProvider {
-        String GetName();
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]

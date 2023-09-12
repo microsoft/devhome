@@ -101,26 +101,6 @@ internal class RepositoryProviders
         return (false, null, null);
     }
 
-    /// <summary>
-    /// Queries each provider to figure out if it can support the URI and can clone from it.
-    /// </summary>
-    /// <param name="uri">The uri that points to a remote repository</param>
-    /// <returns>THe provider that can clone the repo.  Otherwise null.</returns>
-    public (bool, IDeveloperId, IRepositoryProvider) CanAnyProviderSupportThisUri(Uri uri)
-    {
-        foreach (var provider in _providers)
-        {
-            provider.Value.StartIfNotRunning();
-            var isSupported = provider.Value.IsUriSupported(uri);
-            if (isSupported.Item1)
-            {
-                return isSupported;
-            }
-        }
-
-        return (false, null, null);
-    }
-
     public PluginAdaptiveCardPanel GetLoginUi(string providerName, ElementTheme elementTheme)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting login UI {providerName}");
