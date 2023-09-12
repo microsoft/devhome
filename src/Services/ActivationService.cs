@@ -53,7 +53,7 @@ public class ActivationService : IActivationService
             // Execute tasks after activation.
             await StartupAsync();
 
-            // File activation should only be handled after the application is launched
+            // File activation should only be handled on launch in OnLaunched() in App.xaml.cs
             var activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
             if (activatedEventArgs.Kind == ExtendedActivationKind.File)
             {
@@ -62,6 +62,11 @@ public class ActivationService : IActivationService
         }
 
         // Handle activation via ActivationHandlers.
+        await HandleActivationAsync(activationArgs);
+    }
+
+    public async Task HandleFileActivationOnLaunched(object activationArgs)
+    {
         await HandleActivationAsync(activationArgs);
     }
 

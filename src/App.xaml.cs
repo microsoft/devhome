@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using CommunityToolkit.WinUI;
 using DevHome.Activation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Contracts.Services;
@@ -141,15 +142,16 @@ public partial class App : Application, IApp
         base.OnLaunched(args);
         var activatedEventArgs = AppInstance.GetCurrent().GetActivatedEventArgs();
         await Task.WhenAll(
-            GetService<IActivationService>().ActivateAsync(activatedEventArgs.Data),
+            Task.Run(async () =>
+            {
+                await _dispatcherQueue.EnqueueAsync(async () =>
+                {
+                    await GetService<IActivationService>().ActivateAsync(activatedEventArgs.Data);
+                    await GetService<IActivationService>().HandleFileActivationOnLaunched(activatedEventArgs.Data);
+                });
+            }),
             GetService<IAccountsService>().InitializeAsync(),
             GetService<IAppManagementInitializer>().InitializeAsync());
-
-        // Call File Activation Handler after application has been loaded
-        if (activatedEventArgs.Kind == ExtendedActivationKind.File)
-        {
-            await GetService<IActivationService>().ActivateAsync(activatedEventArgs.Data);
-        }
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)
