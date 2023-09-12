@@ -19,7 +19,7 @@ public partial class InstalledExtensionViewModel : ObservableObject
     private string _displayName;
 
     [ObservableProperty]
-    private string _packageFullName;
+    private string _extensionUniqueId;
 
     [ObservableProperty]
     private bool _hasSettingsProvider;
@@ -34,15 +34,15 @@ public partial class InstalledExtensionViewModel : ObservableObject
             Task.Run(() =>
             {
                 var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                return localSettingsService.SaveSettingAsync(PackageFullName + "-ExtensionDisabled", !value);
+                return localSettingsService.SaveSettingAsync(ExtensionUniqueId + "-ExtensionDisabled", !value);
             }).Wait();
         }
     }
 
-    public InstalledExtensionViewModel(string displayName, string packageFullName, bool hasSettingsProvider)
+    public InstalledExtensionViewModel(string displayName, string extensionUniqueId, bool hasSettingsProvider)
     {
         _displayName = displayName;
-        _packageFullName = packageFullName;
+        _extensionUniqueId = extensionUniqueId;
         _hasSettingsProvider = hasSettingsProvider;
 
         IsExtensionEnabled = GetIsExtensionEnabled();
@@ -53,7 +53,7 @@ public partial class InstalledExtensionViewModel : ObservableObject
         var isDisabled = Task.Run(() =>
         {
             var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-            return localSettingsService.ReadSettingAsync<bool>(PackageFullName + "-ExtensionDisabled");
+            return localSettingsService.ReadSettingAsync<bool>(ExtensionUniqueId + "-ExtensionDisabled");
         }).Result;
         return !isDisabled;
     }

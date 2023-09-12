@@ -39,6 +39,7 @@ public class PluginWrapper : IPluginWrapper
         Publisher = appExtension.Package.PublisherDisplayName;
         InstalledDate = appExtension.Package.InstalledDate;
         Version = appExtension.Package.Id.Version;
+        ExtensionUniqueId = appExtension.AppUserModelId + "!" + appExtension.Id;
     }
 
     public string Name
@@ -72,6 +73,20 @@ public class PluginWrapper : IPluginWrapper
     }
 
     public PackageVersion Version
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the unique id for this Dev Home extension. The unique id is a concatenation of:
+    /// <list type="number">
+    /// <item>The AppUserModelId (AUMID) of the extension's application. The AUMID is the concatenation of the package
+    /// family name and the application id and uniquely identifies the application containing the extension within
+    /// the package.</item>
+    /// <item>The Extension Id. This is the unique identifier of the extension within the application.</item>
+    /// </list>
+    /// </summary>
+    public string ExtensionUniqueId
     {
         get;
     }

@@ -84,7 +84,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
             }
 
             var hasSettingsProvider = extensionWrapper.HasProviderType(ProviderType.Settings);
-            var extension = new InstalledExtensionViewModel(extensionWrapper.Name, extensionWrapper.PackageFullName, hasSettingsProvider);
+            var extension = new InstalledExtensionViewModel(extensionWrapper.Name, extensionWrapper.ExtensionUniqueId, hasSettingsProvider);
 
             // Each extension is shown under the package that contains it. Check if we have the package in the list
             // already and if not, create it and add it to the list of packages. Then add the extension to that

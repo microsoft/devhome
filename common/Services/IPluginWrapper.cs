@@ -66,6 +66,14 @@ public interface IPluginWrapper
     }
 
     /// <summary>
+    /// Gets the Unique Id for the extension
+    /// </summary>
+    public string ExtensionUniqueId
+    {
+        get;
+    }
+
+    /// <summary>
     /// Checks whether we have a reference to the plugin process and we are able to call methods on the interface.
     /// </summary>
     /// <returns>Whether we have a reference to the plugin process and we are able to call methods on the interface.</returns>
