@@ -26,11 +26,11 @@
             <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
-                    <x:String x:Key="ExtensinosBannerFront">ms-appx:///DevHome.ExtensionLibrary/Assets/ExtensionsBannerFrontLight.png</x:String>
+                    <x:String x:Key="ExtensionsBannerFront">ms-appx:///DevHome.ExtensionLibrary/Assets/ExtensionsBannerFrontLight.png</x:String>
                     <x:String x:Key="ExtensionsBannerBack">ms-appx:///DevHome.Common/Assets/BannerBackgroundLight.png</x:String>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
-                    <x:String x:Key="ExtensinosBannerFront">ms-appx:///DevHome.ExtensionLibrary/Assets/ExtensionsBannerFrontDark.png</x:String>
+                    <x:String x:Key="ExtensionsBannerFront">ms-appx:///DevHome.ExtensionLibrary/Assets/ExtensionsBannerFrontDark.png</x:String>
                     <x:String x:Key="ExtensionsBannerBack">ms-appx:///DevHome.Common/Assets/BannerBackgroundDark.png</x:String>
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
@@ -47,7 +47,7 @@
                                     ButtonCommand="{x:Bind ViewModel.ExtensionsBannerButtonCommand,Mode=OneWay}"
                                     x:Uid="ExtensionsBanner"
                                     BackgroundSource="{ThemeResource ExtensionsBannerBack}"
-                                    OverlaySource="{ThemeResource ExtensinosBannerFront}"
+                                    OverlaySource="{ThemeResource ExtensionsBannerFront}"
                                     Margin="0,0,0,28" />
 
                 <!-- Installed items -->
