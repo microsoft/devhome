@@ -45,9 +45,6 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
         StorePackagesList = new ();
         InstalledPackagesList = new ();
-
-        GetInstalledExtensions();
-        GetAvailablePackages();
     }
 
     [RelayCommand]
@@ -56,22 +53,26 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         await Launcher.LaunchUriAsync(new ("ms-windows-store://downloadsandupdates"));
     }
 
+    [RelayCommand]
+    public async Task LoadedAsync()
+    {
+        await GetInstalledExtensionsAsync();
+        GetAvailablePackages();
+    }
+
     private async void OnPluginsChanged(object? sender, EventArgs e)
     {
-        await _dispatcher.EnqueueAsync(() =>
+        await _dispatcher.EnqueueAsync(async () =>
         {
             ShouldShowStoreError = false;
-            GetInstalledExtensions();
+            await GetInstalledExtensionsAsync();
             GetAvailablePackages();
         });
     }
 
-    private void GetInstalledExtensions()
+    private async Task GetInstalledExtensionsAsync()
     {
-        var extensionWrappers = Task.Run(async () =>
-        {
-            return await _pluginService.GetInstalledPluginsAsync(true);
-        }).Result;
+        var extensionWrappers = await _pluginService.GetInstalledPluginsAsync(true);
 
         InstalledPackagesList.Clear();
 

@@ -11,7 +11,14 @@
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:viewmodels="using:DevHome.ExtensionLibrary.ViewModels"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d">
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
 
     <Page.Resources>
         <ResourceDictionary>
