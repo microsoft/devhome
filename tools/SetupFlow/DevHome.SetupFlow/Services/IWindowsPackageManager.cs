@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 
@@ -84,4 +85,12 @@ public interface IWindowsPackageManager
     /// </summary>
     /// <returns>True if AppInstaller was registered, false otherwise.</returns>
     public Task<bool> RegisterAppInstallerAsync();
+
+    /// <summary>
+    /// Get packages from a set of package uri.
+    /// </summary>
+    /// <param name="packageUriSet">Set of package uri</param>
+    /// <returns>List of winget package matches</returns>
+    /// <exception cref="FindPackagesException">Exception thrown if the get packages operation failed</exception>
+    public Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet);
 }

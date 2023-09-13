@@ -24,8 +24,7 @@ public class PluginWrapper : IPluginWrapper
         [typeof(IDeveloperIdProvider)] = ProviderType.DeveloperId,
         [typeof(IRepositoryProvider)] = ProviderType.Repository,
         [typeof(ISettingsProvider)] = ProviderType.Settings,
-
-        // [typeof(IFeaturedApplicationsProvider)] = ProviderType.FeaturedApplications,
+        [typeof(IFeaturedApplicationsProvider)] = ProviderType.FeaturedApplications,
     };
 
     private IExtension? _extensionObject;
