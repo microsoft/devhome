@@ -127,7 +127,7 @@
   </data>
   <data name="AddApplication" xml:space="preserve">
     <value>Add</value>
-    <comment>Text announced when a button for adding an application got focus</comment>
+    <comment>Text announced when screen readers focus on the 'Add' button. The 'Add' button allows users to add an application to their cart</comment>
   </data>
   <data name="AddedApplication" xml:space="preserve">
     <value>Added {0}</value>
