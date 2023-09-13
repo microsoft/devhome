@@ -19,6 +19,10 @@ internal class ChartHelper
 
     public const int ChartHeight = 86;
     public const int ChartWidth = 264;
+    private const int NumOfYGridlines = 9;
+    private const int YGridlineHeight = 9;
+    private const int NumOfXGridlines = 12;
+    private const int XGridlineHeight = 22;
 
     private const string LightGrayBoxStyle = "fill:none;stroke:lightgrey;stroke-width:1";
 
@@ -132,6 +136,8 @@ internal class ChartHelper
             svgElement.Add(lineElement);
             svgElement.Add(CreateBorderBox(ChartHeight, ChartWidth));
 
+            AddGridLines(svgElement);
+
             chartDoc.Add(svgElement);
         }
 
@@ -203,6 +209,25 @@ internal class ChartHelper
         boxElement.SetAttributeValue(WidthAttr, width);
         boxElement.SetAttributeValue(StyleAttr, LightGrayBoxStyle);
         return boxElement;
+    }
+
+    private static void AddGridLines(XElement chart)
+    {
+        for (var i = 1; i <= NumOfYGridlines; i++)
+        {
+            var lineElement = new XElement(PolylineElement);
+            lineElement.SetAttributeValue(PointsAttr, $"0,{ChartHeight - (i * YGridlineHeight)} {ChartWidth},{ChartHeight - (i * YGridlineHeight)}");
+            lineElement.SetAttributeValue(StyleAttr, LightGrayBoxStyle);
+            chart.Add(lineElement);
+        }
+
+        for (var i = 1; i <= NumOfXGridlines; i++)
+        {
+            var lineElement = new XElement(PolylineElement);
+            lineElement.SetAttributeValue(PointsAttr, $"{i * XGridlineHeight},0 {i * XGridlineHeight},{ChartHeight}");
+            lineElement.SetAttributeValue(StyleAttr, LightGrayBoxStyle);
+            chart.Add(lineElement);
+        }
     }
 
     private static string GetLineStyle(ChartType type)
