@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
@@ -16,6 +15,7 @@ using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.Windows;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Management.Infrastructure;
 using Microsoft.Win32.SafeHandles;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -73,7 +73,7 @@ public class DevDriveManager : IDevDriveManager
     public string DefaultDevDriveLocation => _defaultDevDriveLocation;
 
     /// <inheritdoc/>
-    public IList<IDevDrive> DevDrivesMarkedForCreation => _devDrives.ToList();
+    public IList<IDevDrive> DevDrivesMarkedForCreation => RepositoriesUsingDevDrive > 0 ? _devDrives.ToList() : new List<IDevDrive>();
 
     /// <summary>
     /// Gets a view model that will show information related to a Dev Drive we create
@@ -176,16 +176,14 @@ public class DevDriveManager : IDevDriveManager
     {
         try
         {
+            using var session = CimSession.Create(null);
             var devDrives = new List<IDevDrive>();
-            ManagementObjectSearcher searcher =
-                    new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage", "SELECT * FROM MSFT_Volume");
-
-            foreach (ManagementObject queryObj in searcher.Get())
+            foreach (var queryObj in session.QueryInstances("root\\Microsoft\\Windows\\Storage", "WQL", "SELECT * FROM MSFT_Volume"))
             {
-                var volumePath = queryObj["Path"] as string;
-                var volumeLabel = queryObj["FileSystemLabel"] as string;
-                var volumeSize = queryObj["Size"];
-                var volumeLetter = queryObj["DriveLetter"];
+                var volumePath = queryObj.CimInstanceProperties["Path"].Value as string;
+                var volumeLabel = queryObj.CimInstanceProperties["FileSystemLabel"].Value as string;
+                var volumeSize = queryObj.CimInstanceProperties["Size"].Value;
+                var volumeLetter = queryObj.CimInstanceProperties["DriveLetter"].Value;
                 uint outputSize;
                 var volumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
                 var inputVolumeInfo = new FILE_FS_PERSISTENT_VOLUME_INFORMATION { };
@@ -247,7 +245,7 @@ public class DevDriveManager : IDevDriveManager
         catch (Exception ex)
         {
             // Log then return empty list, don't show the user their existing dev drive. Not catastrophic failure.
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed Get existing Dev Drives. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get existing Dev Drives.", ex);
             return new List<IDevDrive>();
         }
     }
@@ -272,7 +270,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Unable to get available Free Space for {root}: ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Unable to get available Free Space for {root}.", ex);
             validationSuccessful = false;
         }
 
@@ -364,7 +362,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to validate selected Drive letter ({devDrive.DriveLocation.FirstOrDefault()}). ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to validate selected Drive letter ({devDrive.DriveLocation.FirstOrDefault()}).", ex);
             returnSet.Add(DevDriveValidationResult.DriveLetterNotAvailable);
         }
 
@@ -397,7 +395,7 @@ public class DevDriveManager : IDevDriveManager
         }
         catch (Exception ex)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get Available Drive letters. ErrorCode: {ex.HResult}, Msg: {ex.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, $"Failed to get Available Drive letters.", ex);
         }
 
         return driveLetterSet.ToList();

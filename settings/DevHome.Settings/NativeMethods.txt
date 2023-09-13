@@ -1,0 +1,4 @@
+﻿GetPhysicallyInstalledSystemMemory
+GlobalMemoryStatusEx
+GetSystemInfo
+CoCreateInstance

@@ -4,8 +4,9 @@
     {
       "type": "Image",
       "url": "${netGraphUrl}",
-      "height": "100px",
-      "width": "268px"
+      "height": "${chartHeight}",
+      "width": "${chartWidth}",
+      "horizontalAlignment": "center"
     },
     {
       "type": "ColumnSet",
@@ -23,7 +24,8 @@
             {
               "text": "${netSent}",
               "type": "TextBlock",
-              "size": "large"
+              "size": "large",
+              "weight": "bolder"
             }
           ]
         },
@@ -31,10 +33,10 @@
           "type": "Column",
           "items": [
             {
-              "type": "TextBlock",
               "text": "%NetworkUsage_Widget_Template/Received%",
-              "size": "small",
+              "type": "TextBlock",
               "spacing": "none",
+              "size": "small",
               "isSubtle": true,
               "horizontalAlignment": "right"
             },
@@ -42,6 +44,7 @@
               "text": "${netReceived}",
               "type": "TextBlock",
               "size": "large",
+              "weight": "bolder",
               "horizontalAlignment": "right"
             }
           ]
@@ -51,11 +54,13 @@
     {
       "text": "%NetworkUsage_Widget_Template/Network_Name%",
       "type": "TextBlock",
+      "size": "small",
       "isSubtle": true
     },
     {
       "text": "${networkName}",
-      "type": "TextBlock"
+      "type": "TextBlock",
+      "size": "medium"
     }
   ],
   "actions": [

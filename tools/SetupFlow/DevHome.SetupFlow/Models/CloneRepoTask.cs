@@ -6,10 +6,14 @@ extern alias Projection;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Management.Automation;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -23,12 +27,16 @@ namespace DevHome.SetupFlow.Models;
 /// Object to hold all information needed to clone a repository.
 /// 1:1 CloningInformation to repository.
 /// </summary>
-public class CloneRepoTask : ISetupTask
+public partial class CloneRepoTask : ObservableObject, ISetupTask
 {
+    private readonly Guid _activityId;
+
     /// <summary>
     /// Absolute path the user wants to clone their repository to.
     /// </summary>
     private readonly DirectoryInfo _cloneLocation;
+
+    private readonly IRepositoryProvider _repositoryProvider;
 
     public DirectoryInfo CloneLocation => _cloneLocation;
 
@@ -71,6 +79,29 @@ public class CloneRepoTask : ISetupTask
         get; private set;
     }
 
+    [ObservableProperty]
+    private bool _isRepoNameTrimmed;
+
+    [RelayCommand]
+    public void RepoNameTrimmed()
+    {
+        IsRepoNameTrimmed = true;
+    }
+
+    [ObservableProperty]
+    private bool _isClonePathTrimmed;
+
+    [RelayCommand]
+    public void ClonePathTrimmed()
+    {
+        IsClonePathTrimmed = true;
+    }
+
+    /// <summary>
+    /// Gets the repository in a [organization]\[repo_name] style
+    /// </summary>
+    public string RepositoryOwnerAndName => Path.Join(RepositoryToClone.OwningAccountName ?? string.Empty, RepositoryToClone.DisplayName);
+
     private TaskMessages _taskMessage;
 
     public TaskMessages GetLoadingMessages() => _taskMessage;
@@ -85,6 +116,14 @@ public class CloneRepoTask : ISetupTask
 
     private readonly IStringResource _stringResource;
 
+    // Because AddMessage is defined in ISetupTask every setup task needs to have their own local copy.
+    // If a task does not need to add any messages, for example, this class, warning 67 pops up stating that
+    // AddMessage event is not used and failing compliation.  Adding this pragma supresses the warning.
+    // When this task needs to insert messages into the loading screen this pragma can be removed.
+#pragma warning disable 67
+    public event ISetupTask.ChangeMessageHandler AddMessage;
+#pragma warning restore 67
+
     public bool DependsOnDevDriveToBeInstalled
     {
         get; set;
@@ -96,7 +135,7 @@ public class CloneRepoTask : ISetupTask
     /// <param name="cloneLocation">Repository will be placed here. at _cloneLocation.FullName</param>
     /// <param name="repositoryToClone">The repository to clone</param>
     /// <param name="developerId">Credentials needed to clone a private repo</param>
-    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName)
+    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IDeveloperId developerId, IStringResource stringResource, string providerName, Guid activityId)
     {
         _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
@@ -104,15 +143,17 @@ public class CloneRepoTask : ISetupTask
         SetMessages(stringResource);
         ProviderName = providerName;
         _stringResource = stringResource;
+        _repositoryProvider = repositoryProvider;
+        _activityId = activityId;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CloneRepoTask"/> class.
     /// Task to clone a repository.
     /// </summary>
-    /// <param name="cloneLocation">Repository will be placed here. at _cloneLocation.FullName</param>
-    /// <param name="repositoryToClone">The reposptyr to clone</param>
-    public CloneRepoTask(DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName)
+    /// <param name="cloneLocation">Repository will be placed here, at _cloneLocation.FullName</param>
+    /// <param name="repositoryToClone">The repository to clone</param>
+    public CloneRepoTask(IRepositoryProvider repositoryProvider, DirectoryInfo cloneLocation, IRepository repositoryToClone, IStringResource stringResource, string providerName, Guid activityId)
     {
         _cloneLocation = cloneLocation;
         this.RepositoryToClone = repositoryToClone;
@@ -120,6 +161,8 @@ public class CloneRepoTask : ISetupTask
         ProviderName = providerName;
         SetMessages(stringResource);
         _stringResource = stringResource;
+        _repositoryProvider = repositoryProvider;
+        _activityId = activityId;
     }
 
     private void SetMessages(IStringResource stringResource)
@@ -148,15 +191,30 @@ public class CloneRepoTask : ISetupTask
         {
             try
             {
+                ProviderOperationResult result;
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
-                TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Measure, new ReposCloneEvent(ProviderName, _developerId));
-                await RepositoryToClone.CloneRepositoryAsync(_cloneLocation.FullName, _developerId);
+                TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Critical, new ReposCloneEvent(ProviderName, _developerId));
+                if (_developerId == null)
+                {
+                    result = await _repositoryProvider.CloneRepositoryAsync(RepositoryToClone, _cloneLocation.FullName);
+                }
+                else
+                {
+                    result = await _repositoryProvider.CloneRepositoryAsync(RepositoryToClone, _cloneLocation.FullName, _developerId);
+                }
+
+                if (result.Status == ProviderOperationStatus.Failure)
+                {
+                    _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, result.DisplayMessage);
+                    WasCloningSuccessful = false;
+                    return TaskFinishedState.Failure;
+                }
             }
             catch (Exception e)
             {
                 Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not clone {RepositoryToClone.DisplayName}", e);
                 _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, e.HResult.ToString("X", CultureInfo.CurrentCulture));
-                TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_ClouldNotClone_Event", LogLevel.Measure, new ExceptionEvent(e.HResult));
+                TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_CouldNotClone_Event", LogLevel.Critical, new ExceptionEvent(e.HResult));
                 return TaskFinishedState.Failure;
             }
 
@@ -165,5 +223,5 @@ public class CloneRepoTask : ISetupTask
         }).AsAsyncOperation();
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory) => throw new NotImplementedException();
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation) => throw new NotImplementedException();
 }

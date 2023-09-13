@@ -5,12 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using CommunityToolkit.Common;
 using DevHome.SetupFlow.Common.Helpers;
-using Windows.Media.Streaming.Adaptive;
 using Windows.Win32;
+using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
-using ToolKitHelpers = CommunityToolkit.WinUI.Helpers;
 
 namespace DevHome.SetupFlow.Utilities;
 
@@ -64,53 +64,45 @@ public static class DevDriveUtil
 
     public static readonly List<char> InvalidCharactersNotInGetInvalidPathChars = new () { '*', '?', '\"', '<', '>', '|' };
 
-    // Temporary build version values, to use while the API to check for the Dev Drive feature is being created.
-    // Note: The major number and minor number for Windows 11 is still 10 and 0 respectively. Windows 11 build
-    // numbers start at 22000.
-    private const ushort DevDriveMajorVersion = 10;
-    private const ushort DevDriveMinorVersion = 0;
-    private const ushort DevDriveMinBuildForDevChannel = 23466;
-    private const ushort DevDriveMaxBuildForDevChannel = 23999;
-    private const ushort DevDriveMinBuildForCanaryChannel = 25846;
+    private enum DEVELOPER_DRIVE_ENABLEMENT_STATE
+    {
+        DeveloperDriveEnablementStateError = 0,
+        DeveloperDriveEnabled = 1,
+        DeveloperDriveDisabledBySystemPolicy = 2,
+        DeveloperDriveDisabledByGroupPolicy = 3,
+    }
+
+    // Not available in CsWin32, so we need to add this ourselves.
+    [DllImport("api-ms-win-core-sysinfo-l1-2-6.dll")]
+    private static extern DEVELOPER_DRIVE_ENABLEMENT_STATE GetDeveloperDriveEnablementState();
+
+    private static readonly BOOL IsDevDriveFeaturePresent = PInvoke.IsApiSetImplemented("api-ms-win-core-sysinfo-l1-2-6");
 
     /// <summary>
     /// Gets a value indicating whether the system has the ability to create Dev Drives
     /// and whether the ability is enabled. Windows 10 or below machines will not have this ability.
     /// </summary>
-    /// <remarks>
-    /// The body of this function is temporary and will be replaced by an API call once it is created.
-    /// </remarks>
     /// <returns>
-    /// Returns true if Dev Drive creation functionality is present on the machine
+    /// Returns true only if the Dev Drive feature is present and enabled on the machine.
     /// </returns>
     public static bool IsDevDriveFeatureEnabled
     {
         get
         {
-            // Windows Insiders dev channel now uses the 23000 series for its build numbers. The Canary channel
-            // where the feature is enabled start on build number 25846.
-            // The Dev Drive Feature is only be enabled on these builds currently and will eventually go into a full retail
-            // release. The API should be created before the full retail release of the Dev Drive feature
-            // in which case we will not be checking windows build numbers, but will be checking the results of the
-            // API call.
-            var osVersion = ToolKitHelpers.SystemInformation.Instance.OperatingSystemVersion;
-            if (osVersion.Major == DevDriveMajorVersion && osVersion.Minor == DevDriveMinorVersion)
+            try
             {
-                // Check if on an acceptable Windows 11 Dev insider channel
-                if (osVersion.Build >= DevDriveMinBuildForDevChannel && osVersion.Build <= DevDriveMaxBuildForDevChannel)
+                if (!IsDevDriveFeaturePresent)
                 {
-                    return true;
+                    return false;
                 }
 
-                // Check if on an acceptable Windows 11 Canary insider channel that supports Dev Drive.
-                if (osVersion.Build >= DevDriveMinBuildForCanaryChannel)
-                {
-                    return true;
-                }
+                return GetDeveloperDriveEnablementState() == DEVELOPER_DRIVE_ENABLEMENT_STATE.DeveloperDriveEnabled;
             }
-
-            Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Dev Drive feature is not available on this build of Windows: {osVersion}");
-            return false;
+            catch (Exception ex)
+            {
+                Log.Logger?.ReportError($"Unable to query for Dev Drive enablement: {ex.Message}");
+                return false;
+            }
         }
     }
 

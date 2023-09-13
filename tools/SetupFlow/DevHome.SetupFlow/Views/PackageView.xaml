@@ -31,7 +31,7 @@
     </UserControl.Resources>
 
     <!-- Package card -->
-    <ContentControl>
+    <ContentControl IsTabStop="False">
         <ContentControl.Template>
             <ControlTemplate>
                 <Grid Style="{ThemeResource CardGridSecondaryStyle}" Padding="12" RowSpacing="12">
@@ -86,6 +86,9 @@
                         <ImageIcon Name="Image" Width="24" VerticalAlignment="Center" Source="{Binding Icon}"/>
 
                         <!-- Select button -->
+                        <!-- Adding a margin prevents FlipView's (overlay) next
+                             button from shadowing this button, and enables keyboard
+                             navigation -->
                         <Button
                             Grid.Column="1"
                             IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
@@ -93,6 +96,7 @@
                             BorderThickness="0"
                             Command="{Binding ToggleSelectionCommand}"
                             HorizontalAlignment="Right"
+                            Margin="0,0,2,0"
                             Padding="5">
                             <FontIcon
                                 Glyph="{Binding IsSelected, Converter={StaticResource SelectButtonGlyphConverter}}"
@@ -128,6 +132,7 @@
 
                         <!-- Package link / "Installed" -->
                         <ContentControl
+                            IsTabStop="False"
                             Grid.Row="2"
                             Content="{Binding IsInstalled, Converter={StaticResource LearnMoreInstalledConverter}}" />
                     </Grid>

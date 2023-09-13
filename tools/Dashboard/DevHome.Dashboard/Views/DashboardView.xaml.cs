@@ -9,21 +9,19 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
-using CommunityToolkit.WinUI;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
+using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
+using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
-using Windows.Management.Deployment;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.System;
 
 namespace DevHome.Dashboard.Views;
@@ -40,16 +38,18 @@ public partial class DashboardView : ToolPage
     private static AdaptiveCardRenderer _renderer;
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
-    private bool _validatedWebExpPack;
+    private readonly WidgetServiceHelper _widgetServiceHelper;
+    private readonly WidgetIconCache _widgetIconCache;
 
     private static bool _widgetHostInitialized;
 
-    private static SortedDictionary<string, BitmapImage> _widgetLightIconCache;
-    private static SortedDictionary<string, BitmapImage> _widgetDarkIconCache;
+    private const string DraggedWidget = "DraggedWidget";
+    private const string DraggedIndex = "DraggedIndex";
 
     public DashboardView()
     {
-        ViewModel = new DashboardViewModel();
+        ViewModel = Application.Current.GetService<DashboardViewModel>();
+        _widgetServiceHelper = new WidgetServiceHelper();
         this.InitializeComponent();
 
         if (PinnedWidgets != null)
@@ -60,18 +60,17 @@ public partial class DashboardView : ToolPage
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
         PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
 
-        _widgetLightIconCache = new SortedDictionary<string, BitmapImage>();
-        _widgetDarkIconCache = new SortedDictionary<string, BitmapImage>();
-
         _renderer = new AdaptiveCardRenderer();
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+        _widgetIconCache = new WidgetIconCache(_dispatcher);
 
         ActualThemeChanged += OnActualThemeChanged;
 
         // If this is the first time initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
         {
-            if (EnsureWebExperiencePack())
+            if (_widgetServiceHelper.EnsureWebExperiencePack())
             {
                 _widgetHostInitialized = InitializeWidgetHost();
             }
@@ -83,8 +82,7 @@ public partial class DashboardView : ToolPage
         }
         else
         {
-            // If above initialization failed, there are no widgets, show the message.
-            NoWidgetsStackPanel.Visibility = Visibility.Visible;
+            Log.Logger()?.ReportWarn("DashboardView", $"Initialization failed");
         }
 
 #if DEBUG
@@ -98,7 +96,7 @@ public partial class DashboardView : ToolPage
 
         try
         {
-            // The GUID is this app's Host GUID that Widget Platform will use to identify this host.
+            // The GUID is Dev Home's Host GUID that Widget Platform will use to identify this host.
             _widgetHost = WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031"));
             _widgetCatalog = WidgetCatalog.GetDefault();
 
@@ -117,52 +115,9 @@ public partial class DashboardView : ToolPage
         return true;
     }
 
-    private bool EnsureWebExperiencePack()
-    {
-        // If already validated there's a good version, don't check again.
-        if (_validatedWebExpPack)
-        {
-            return true;
-        }
-
-        // Ensure the application is installed, and the version is high enough.
-        const string packageName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
-        const int stableVer = 423;
-        const int stableMin = 3800; // 423.3800.0.0
-        const int stageVer = 523;
-        const int stageMin = 3300; // 523.3300.0.0
-
-        var packageManager = new PackageManager();
-        var packages = packageManager.FindPackagesForUser(string.Empty, packageName);
-        if (packages.Any())
-        {
-            // A user cannot actually have more than one version installed.
-            var package = packages.First();
-
-            var version = package.Id.Version;
-            var major = version.Major;
-            var minor = version.Minor;
-
-            Log.Logger()?.ReportInfo("DashboardView", $"{package.Id.FullName} Version: {major}.{minor}");
-
-            if ((major < stableVer) || (major == stableVer && minor < stableMin) || (major == stageVer && minor < stageMin))
-            {
-                return false;
-            }
-        }
-        else
-        {
-            // If there is no version installed at all.
-            return false;
-        }
-
-        _validatedWebExpPack = true;
-        return _validatedWebExpPack;
-    }
-
     private async Task<AdaptiveCardRenderer> GetConfigurationRendererAsync()
     {
-        // When we render a card in an add or edit dialog, we need to have a different Hostonfig,
+        // When we render a card in an add or edit dialog, we need to have a different HostConfig,
         // so create a new renderer for those situations. We can't just temporarily edit the existing
         // renderer, because a pinned widget might get re-rendered the wrong way while the dialog is open.
         var configRenderer = new AdaptiveCardRenderer();
@@ -173,8 +128,14 @@ public partial class DashboardView : ToolPage
 
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        // The app uses a different host config to render widgets (adaptive cards) in light and dark themes.
+        // A different host config is used to render widgets (adaptive cards) in light and dark themes.
         await ConfigureWidgetRenderer(_renderer);
+
+        // Re-render the widgets with the new theme and renderer.
+        foreach (var widget in PinnedWidgets)
+        {
+            widget.Render();
+        }
     }
 
     private async Task ConfigureWidgetRenderer(AdaptiveCardRenderer renderer)
@@ -214,109 +175,32 @@ public partial class DashboardView : ToolPage
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        // TODO: Ideally there would be some sort of visual loading indicator while the widgets get set up.
-        // https://github.com/microsoft/devhome/issues/640
+        LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
 
         // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
-        await CacheWidgetIcons();
+        await _widgetIconCache.CacheAllWidgetIconsAsync(_widgetCatalog);
 
         await ConfigureWidgetRenderer(_renderer);
 
-        RestorePinnedWidgets(null, null);
+        RestorePinnedWidgets();
+
+        LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
     }
 
-    private async Task CacheWidgetIcons()
-    {
-        var widgetDefs = _widgetCatalog.GetWidgetDefinitions();
-        foreach (var widgetDef in widgetDefs ?? Array.Empty<WidgetDefinition>())
-        {
-            await CacheWidgetIcon(widgetDef);
-        }
-    }
-
-    private async Task CacheWidgetIcon(WidgetDefinition widgetDef)
-    {
-        // Only cache icons for providers that we're including.
-        if (WidgetHelpers.IsIncludedWidgetProvider(widgetDef.ProviderDefinition))
-        {
-            var widgetDefId = widgetDef.Id;
-            try
-            {
-                Log.Logger()?.ReportDebug("DashboardView", $"Cache widget icon for {widgetDefId}");
-                var itemLightImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Light).Icon);
-                var itemDarkImage = await WidgetIconToBitmapImage(widgetDef.GetThemeResource(WidgetTheme.Dark).Icon);
-
-                // There is a widget bug where Definition update events are being raised as added events.
-                // If we already have an icon for this key, just remove and add again.
-                if (_widgetLightIconCache.ContainsKey(widgetDefId))
-                {
-                    _widgetLightIconCache.Remove(widgetDefId);
-                }
-
-                if (_widgetDarkIconCache.ContainsKey(widgetDefId))
-                {
-                    _widgetDarkIconCache.Remove(widgetDefId);
-                }
-
-                _widgetLightIconCache.Add(widgetDefId, itemLightImage);
-                _widgetDarkIconCache.Add(widgetDefId, itemDarkImage);
-            }
-            catch (Exception ex)
-            {
-                Log.Logger()?.ReportError("DashboardView", $"Exception in CacheWidgetIcons:", ex);
-                _widgetLightIconCache.Add(widgetDefId, null);
-                _widgetDarkIconCache.Add(widgetDefId, null);
-            }
-        }
-    }
-
-    public static BitmapImage GetWidgetIconForTheme(WidgetDefinition widgetDefinition, ElementTheme theme)
-    {
-        BitmapImage image;
-        if (theme == ElementTheme.Light)
-        {
-            _widgetLightIconCache.TryGetValue(widgetDefinition.Id, out image);
-        }
-        else
-        {
-            _widgetDarkIconCache.TryGetValue(widgetDefinition.Id, out image);
-        }
-
-        return image;
-    }
-
-    public static Brush GetBrushForWidgetIcon(WidgetDefinition widgetDefinition, ElementTheme theme)
-    {
-        var image = GetWidgetIconForTheme(widgetDefinition, theme);
-
-        var brush = new Microsoft.UI.Xaml.Media.ImageBrush
-        {
-            ImageSource = image,
-        };
-        return brush;
-    }
-
-    public static async Task<BitmapImage> WidgetIconToBitmapImage(IRandomAccessStreamReference iconStreamRef)
-    {
-        var itemImage = await _dispatcher.EnqueueAsync(async () =>
-        {
-            using var bitmapStream = await iconStreamRef.OpenReadAsync();
-            var itemImage = new BitmapImage();
-            await itemImage.SetSourceAsync(bitmapStream);
-            return itemImage;
-        });
-
-        return itemImage;
-    }
-
-    private async void RestorePinnedWidgets(object sender, RoutedEventArgs e)
+    private async void RestorePinnedWidgets()
     {
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
         var pinnedWidgets = _widgetHost.GetWidgets();
         if (pinnedWidgets != null)
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found {pinnedWidgets.Length} widgets for this host");
+            var restoredWidgetsWithPosition = new SortedDictionary<int, Widget>();
+            var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
+            var numUnorderedWidgets = 0;
 
+            // Widgets do not come from the host in a deterministic order, so save their order in each widget's CustomState.
+            // Iterate through all the widgets and put them in order. If a widget does not have a position assigned to it,
+            // append it at the end. If a position is missing, just show the next widget in order.
             foreach (var widget in pinnedWidgets)
             {
                 try
@@ -325,11 +209,25 @@ public partial class DashboardView : ToolPage
                     Log.Logger()?.ReportInfo("DashboardView", $"GetWidgetCustomState: {stateStr}");
                     if (!string.IsNullOrEmpty(stateStr))
                     {
-                        var stateObj = System.Text.Json.JsonSerializer.Deserialize<WidgetCustomState>(stateStr);
+                        var stateObj = System.Text.Json.JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
+
                         if (stateObj.Host == WidgetHelpers.DevHomeHostName)
                         {
-                            var size = await widget.GetSizeAsync();
-                            AddWidgetToPinnedWidgetsAsync(widget, size);
+                            var position = stateObj.Position;
+                            if (position >= 0)
+                            {
+                                if (!restoredWidgetsWithPosition.TryAdd(position, widget))
+                                {
+                                    // If there was an error and a widget with this position is already there,
+                                    // treat this widget as unordered and put it into the unordered map.
+                                    restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
+                                }
+                            }
+                            else
+                            {
+                                // Widgets with no position will get the default of -1. Append these at the end.
+                                restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
+                            }
                         }
                     }
                 }
@@ -338,23 +236,43 @@ public partial class DashboardView : ToolPage
                     Log.Logger()?.ReportError("DashboardView", $"RestorePinnedWidgets(): ", ex);
                 }
             }
+
+            // Now that we've ordered the widgets, put them in their final collection.
+            var finalPlace = 0;
+            foreach (var orderedWidget in restoredWidgetsWithPosition)
+            {
+                await PlaceWidget(orderedWidget, finalPlace++);
+            }
+
+            foreach (var orderedWidget in restoredWidgetsWithoutPosition)
+            {
+                await PlaceWidget(orderedWidget, finalPlace++);
+            }
         }
         else
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
-            NoWidgetsStackPanel.Visibility = Visibility.Visible;
         }
     }
 
-    private async void AddWidget_Click(object sender, RoutedEventArgs e)
+    private async Task PlaceWidget(KeyValuePair<int, Widget> orderedWidget, int finalPlace)
+    {
+        var widget = orderedWidget.Value;
+        var size = await widget.GetSizeAsync();
+        await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace);
+        await WidgetHelpers.SetPositionCustomStateAsync(widget, finalPlace);
+    }
+
+    [RelayCommand]
+    public async Task AddWidgetClickAsync()
     {
         // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
         {
-            if (EnsureWebExperiencePack())
+            if (_widgetServiceHelper.EnsureWebExperiencePack())
             {
                 _widgetHostInitialized = InitializeWidgetHost();
-                await CacheWidgetIcons();
+                await _widgetIconCache.CacheAllWidgetIconsAsync(_widgetCatalog);
                 await ConfigureWidgetRenderer(_renderer);
             }
             else
@@ -394,7 +312,8 @@ public partial class DashboardView : ToolPage
         if (newWidget != null)
         {
             // Set custom state on new widget.
-            var newCustomState = WidgetHelpers.CreateWidgetCustomState();
+            var position = PinnedWidgets.Count;
+            var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
             Log.Logger()?.ReportDebug("DashboardView", $"SetCustomState: {newCustomState}");
             await newWidget.SetCustomStateAsync(newCustomState);
 
@@ -404,22 +323,16 @@ public partial class DashboardView : ToolPage
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
                 await newWidget.SetSizeAsync(size);
-                AddWidgetToPinnedWidgetsAsync(newWidget, size);
+                await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
             }
         }
     }
 
-    private async void AddWidgetToPinnedWidgetsAsync(Widget widget, WidgetSize size)
-    {
-        Log.Logger()?.ReportDebug("DashboardView", $"Add widget to pinned widgets, id = {widget.Id}");
-        await InsertWidgetInPinnedWidgetsAsync(widget, size, PinnedWidgets.Count);
-    }
-
     private async Task InsertWidgetInPinnedWidgetsAsync(Widget widget, WidgetSize size, int index)
     {
-        var widgetDefintionId = widget.DefinitionId;
+        var widgetDefinitionId = widget.DefinitionId;
         var widgetId = widget.Id;
-        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetDefintionId);
+        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetDefinitionId);
 
         if (widgetDefinition != null)
         {
@@ -430,7 +343,7 @@ public partial class DashboardView : ToolPage
         else
         {
             // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
-            Log.Logger()?.ReportInfo("DashboardView", $"No widget defintion '{widgetDefintionId}', delete widget {widgetId} with that definition");
+            Log.Logger()?.ReportInfo("DashboardView", $"No widget definition '{widgetDefinitionId}', delete widget {widgetId} with that definition");
             try
             {
                 await widget.SetCustomStateAsync(string.Empty);
@@ -456,7 +369,7 @@ public partial class DashboardView : ToolPage
     private async void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args)
     {
         Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetDefinitionAdded {args.Definition.Id}");
-        await CacheWidgetIcon(args.Definition);
+        await _widgetIconCache.AddIconsToCacheAsync(args.Definition);
     }
 
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
@@ -527,8 +440,7 @@ public partial class DashboardView : ToolPage
             }
         });
 
-        _widgetLightIconCache.Remove(definitionId);
-        _widgetDarkIconCache.Remove(definitionId);
+        _widgetIconCache.RemoveIconsFromCache(definitionId);
     }
 
     // Listen for widgets being added or removed, so we can add or remove listeners on the WidgetViewModels' properties.
@@ -549,8 +461,6 @@ public partial class DashboardView : ToolPage
                 item.PropertyChanged += PinnedWidgetsPropertyChanged;
             }
         }
-
-        NoWidgetsStackPanel.Visibility = (PinnedWidgets.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private async void PinnedWidgetsPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -605,6 +515,91 @@ public partial class DashboardView : ToolPage
         widgetViewModel.IsInEditMode = false;
     }
 
+    private void WidgetGridView_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
+    {
+        Log.Logger()?.ReportDebug("DashboardView", $"Drag starting");
+
+        // When drag starts, save the WidgetViewModel and the original index of the widget being dragged.
+        var draggedObject = e.Items.FirstOrDefault();
+        var draggedWidgetViewModel = draggedObject as WidgetViewModel;
+        e.Data.Properties.Add(DraggedWidget, draggedWidgetViewModel);
+        e.Data.Properties.Add(DraggedIndex, PinnedWidgets.IndexOf(draggedWidgetViewModel));
+    }
+
+    private void WidgetControl_DragOver(object sender, DragEventArgs e)
+    {
+        // A widget may be dropped on top of another widget, in which case the dropped widget will take the target widget's place.
+        if (e.Data != null)
+        {
+            e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.Move;
+        }
+        else
+        {
+            // If the dragged item doesn't have a DataPackage, don't allow it to be dropped.
+            e.AcceptedOperation = Windows.ApplicationModel.DataTransfer.DataPackageOperation.None;
+        }
+    }
+
+    private async void WidgetControl_Drop(object sender, DragEventArgs e)
+    {
+        Log.Logger()?.ReportDebug("DashboardView", $"Drop starting");
+
+        // If the the thing we're dragging isn't a widget, it might not have a DataPackage and we shouldn't do anything with it.
+        if (e.Data == null)
+        {
+            return;
+        }
+
+        // When drop happens, get the original index of the widget that was dragged and dropped.
+        var result = e.Data.Properties.TryGetValue(DraggedIndex, out var draggedIndexObject);
+        if (!result || draggedIndexObject == null)
+        {
+            return;
+        }
+
+        var draggedIndex = (int)draggedIndexObject;
+
+        // Get the index of the widget that was dropped onto -- the dragged widget will take the place of this one,
+        // and this widget and all subsequent widgets will move over to the right.
+        var droppedControl = sender as WidgetControl;
+        var droppedIndex = WidgetGridView.Items.IndexOf(droppedControl.WidgetSource);
+        Log.Logger()?.ReportInfo("DashboardView", $"Widget dragged from index {draggedIndex} to {droppedIndex}");
+
+        // If the widget is dropped at the position it's already at, there's nothing to do.
+        if (draggedIndex == droppedIndex)
+        {
+            return;
+        }
+
+        result = e.Data.Properties.TryGetValue(DraggedWidget, out var draggedObject);
+        if (!result || draggedObject == null)
+        {
+            return;
+        }
+
+        var draggedWidgetViewModel = draggedObject as WidgetViewModel;
+
+        // Remove the moved widget then insert it back in the collection at the new location. If the dropped widget was
+        // moved from a lower index to a higher one, removing the moved widget before inserting it will ensure that any
+        // widgets between the starting and ending indices move up to replace the removed widget. If the widget was
+        // moved from a higher index to a lower one, then the order of removal and insertion doesn't matter.
+        PinnedWidgets.RemoveAt(draggedIndex);
+        var widgetPair = new KeyValuePair<int, Widget>(droppedIndex, draggedWidgetViewModel.Widget);
+        await PlaceWidget(widgetPair, droppedIndex);
+
+        // Update the CustomState Position of any widgets that were moved.
+        // The widget that has been dropped has already been updated, so don't do it again here.
+        var startIndex = draggedIndex < droppedIndex ? draggedIndex : droppedIndex + 1;
+        var endIndex = draggedIndex < droppedIndex ? droppedIndex : draggedIndex + 1;
+        for (var i = startIndex; i < endIndex; i++)
+        {
+            var widgetToUpdate = PinnedWidgets.ElementAt(i);
+            await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
+        }
+
+        Log.Logger()?.ReportDebug("DashboardView", $"Drop ended");
+    }
+
 #if DEBUG
     private void AddResetButton(object sender, RoutedEventArgs e)
     {
@@ -629,7 +624,7 @@ public partial class DashboardView : ToolPage
             roamingProperties.Remove("HideDashboardBanner");
         }
 
-        ViewModel.ShowDashboardBanner = true;
+        ViewModel.ResetDashboardBanner();
     }
 #endif
 }

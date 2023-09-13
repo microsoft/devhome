@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
@@ -17,6 +17,7 @@ using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Windows.System;
+using WinRT;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -67,10 +68,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        // If IsCOMServerAvailable is still being (lazily) evaluated form a
-        // previous call, then await until the thread is unblocked and the
-        // already computed value is returned.
-        EnablePackageInstallerItem = await Task.Run(() => _wpm.IsCOMServerAvailable());
+        EnablePackageInstallerItem = await _wpm.IsCOMServerAvailableAsync();
         if (EnablePackageInstallerItem)
         {
             Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");
@@ -85,7 +83,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void HideBanner()
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("MainPage_HideLearnMoreBanner_Event");
+        TelemetryFactory.Get<ITelemetry>().LogCritical("MainPage_HideLearnMoreBanner_Event", false, Orchestrator.ActivityId);
         ShowBanner = false;
     }
 
@@ -107,7 +105,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         Log.Logger?.ReportInfo($"Starting setup flow with ActivityId={Orchestrator.ActivityId}");
         TelemetryFactory.Get<ITelemetry>().Log(
             "MainPage_StartFlow_Event",
-            LogLevel.Measure,
+            LogLevel.Critical,
             new StartFlowEvent(flowNameForTelemetry),
             relatedActivityId: Orchestrator.ActivityId);
     }
@@ -155,13 +153,16 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     /// Opens the Windows settings app and redirects the user to the disks and volumes page.
     /// </summary>
     [RelayCommand]
-    private async void LaunchDisksAndVolumesSettingsPage()
+    private async Task LaunchDisksAndVolumesSettingsPageAsync()
     {
+        // Critical level approved by subhasan
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
         TelemetryFactory.Get<ITelemetry>().Log(
             "LaunchDisksAndVolumesSettingsPageTriggered",
-            LogLevel.Measure,
-            new DisksAndVolumesSettingsPageTriggeredEvent(source: "MainPageView"));
+            LogLevel.Critical,
+            new DisksAndVolumesSettingsPageTriggeredEvent(source: "MainPageView"),
+            Orchestrator.ActivityId);
+
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
 
@@ -171,7 +172,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task StartConfigurationFileAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching settings on Disks and Volumes page");
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Launching configuration file flow");
         var configFileSetupFlow = _host.GetService<ConfigurationFileTaskGroup>();
         if (await configFileSetupFlow.PickConfigurationFileAsync())
         {

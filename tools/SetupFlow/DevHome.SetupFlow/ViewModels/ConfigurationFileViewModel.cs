@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.Storage;
 using WinUIEx;
@@ -56,7 +58,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
     /// <summary>
     /// Gets the configuration file content
     /// </summary>
-    public string Content => _configuration.Content;
+    public string Content => Configuration.Content;
 
     [RelayCommand(CanExecute = nameof(ReadAndAgree))]
     public async Task ConfigureAsAdminAsync()
@@ -66,12 +68,22 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             task.RequiresAdmin = true;
         }
 
-        await Orchestrator.GoToNextPage();
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", LogLevel.Critical, new ConfigureCommandEvent(true), Orchestrator.ActivityId);
+        try
+        {
+            await Orchestrator.InitializeElevatedServerAsync();
+            await Orchestrator.GoToNextPage();
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to initialize elevated process.", e);
+        }
     }
 
     [RelayCommand(CanExecute = nameof(ReadAndAgree))]
     public async Task ConfigureAsNonAdminAsync()
     {
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", LogLevel.Critical, new ConfigureCommandEvent(false), Orchestrator.ActivityId);
         await Orchestrator.GoToNextPage();
     }
 
@@ -100,14 +112,14 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
                 Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
                 Configuration = new (file.Path);
                 Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
-                var task = new ConfigureTask(StringResource, file);
+                var task = new ConfigureTask(StringResource, file, Orchestrator.ActivityId);
                 await task.OpenConfigurationSetAsync();
                 TaskList.Add(task);
                 return true;
             }
             catch (OpenConfigurationSetException e)
             {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Opening configuration set failed: {e.Message}");
+                Log.Logger?.ReportError(Log.Component.Configuration, $"Opening configuration set failed.", e);
                 await mainWindow.ShowErrorMessageDialogAsync(
                     StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
                     GetErrorMessage(e),
@@ -115,7 +127,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.Configuration, $"Unknown error while opening configuration set: {e.Message}");
+                Log.Logger?.ReportError(Log.Component.Configuration, $"Unknown error while opening configuration set.", e);
 
                 await mainWindow.ShowErrorMessageDialogAsync(
                     file.Name,

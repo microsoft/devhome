@@ -4,8 +4,9 @@
     {
       "type": "Image",
       "url": "${memGraphUrl}",
-      "height": "100px",
-      "width": "268px"
+      "height": "${chartHeight}",
+      "width": "${chartWidth}",
+      "horizontalAlignment": "center"
     },
     {
       "type": "ColumnSet",
@@ -22,7 +23,8 @@
             {
               "text": "${usedMem}",
               "type": "TextBlock",
-              "size": "large"
+              "size": "large",
+              "weight": "bolder"
             }
           ]
         },
@@ -40,6 +42,7 @@
               "text": "${allMem}",
               "type": "TextBlock",
               "size": "large",
+              "weight": "bolder",
               "horizontalAlignment": "right"
             }
           ]
@@ -99,7 +102,8 @@
             },
             {
               "text": "${pagedPoolMem}",
-              "type": "TextBlock"
+              "type": "TextBlock",
+              "size": "medium"
             }
           ]
         },
@@ -116,6 +120,7 @@
             {
               "text": "${nonPagedPoolMem}",
               "type": "TextBlock",
+              "size": "medium",
               "horizontalAlignment": "right"
             }
           ]

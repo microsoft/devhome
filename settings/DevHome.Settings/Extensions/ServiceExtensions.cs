@@ -12,6 +12,8 @@ public static class ServiceExtensions
     public static IServiceCollection AddSettings(this IServiceCollection services, HostBuilderContext context)
     {
         // Project services
+        services.AddTransient<FeedbackViewModel>();
+        services.AddTransient<FeedbackPage>();
         services.AddTransient<SettingsViewModel>();
         services.AddTransient<SettingsPage>();
         services.AddTransient<AboutViewModel>();
@@ -22,6 +24,8 @@ public static class ServiceExtensions
         services.AddTransient<ExtensionsPage>();
         services.AddTransient<PreferencesViewModel>();
         services.AddTransient<PreferencesPage>();
+        services.AddTransient<ExtensionSettingsViewModel>();
+        services.AddTransient<ExtensionSettingsPage>();
 
         return services;
     }

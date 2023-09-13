@@ -9,32 +9,51 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:settings="using:DevHome.Settings.ViewModels"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
         <ResourceDictionary>
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
+            <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
         </ResourceDictionary>
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
-        <StackPanel x:Name="ContentArea">
-            <BreadcrumbBar x:Name="BreadcrumbBar" ItemsSource="{x:Bind Breadcrumbs}" ItemClicked="BreadcrumbBar_ItemClicked" Margin="0,0,0,16" />
+    <Grid
+        MaxWidth="{ThemeResource MaxPageContentWidth}"
+        Margin="{ThemeResource ContentPageMargin}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-            <ItemsRepeater ItemsSource="{x:Bind ViewModel.SettingsList, Mode=OneWay}">
-                <ItemsRepeater.ItemTemplate>
-                    <DataTemplate x:DataType="settings:ExtensionViewModel">
-                        <labs:SettingsCard Header="{x:Bind Header}"
-                                           Margin="{ThemeResource SettingsCardMargin}"
-                                           IsClickEnabled="False" Command="{x:Bind NavigateSettingsCommand}">
-                            <ToggleSwitch Visibility="{x:Bind HasToggleSwitch, Converter={StaticResource BoolToVisibilityConverter}}"
-                                          IsOn="{x:Bind IsEnabled, Mode=TwoWay}" />
-                        </labs:SettingsCard>
-                    </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
-        </StackPanel>
-    </ScrollViewer>
+        <BreadcrumbBar
+            x:Name="BreadcrumbBar"
+            Margin="0,0,0,16"
+            ItemClicked="BreadcrumbBar_ItemClicked"
+            ItemsSource="{x:Bind Breadcrumbs}" />
+
+        <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
+            <StackPanel>
+                <TextBlock x:Uid="Settings_Extensions_Details"
+                           Margin="{StaticResource MediumBottomMargin}" />
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.SettingsList, Mode=OneWay}">
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="settings:ExtensionViewModel">
+                            <labs:SettingsCard Header="{x:Bind Header}"
+                                               Margin="{ThemeResource SettingsCardMargin}"
+                                               IsClickEnabled="{x:Bind HasSettingsProvider}" Command="{x:Bind NavigateSettingsCommand}">
+                                <ToggleSwitch Visibility="{x:Bind HasToggleSwitch}"
+                                              IsOn="{x:Bind IsEnabled, Mode=TwoWay}" />
+                            </labs:SettingsCard>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+                <TextBlock x:Uid="Settings_Extensions_NoneInstalled"
+                           Visibility="{x:Bind ViewModel.SettingsList.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}"
+                           Margin="0,50" 
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </Page>

@@ -9,9 +9,8 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:BoolToObjectConverter x:Key="StepperBoolToGlyphBrushConverter" TrueValue="{ThemeResource AccentFillColorDisabledBrush}" FalseValue="{ThemeResource AccentFillColorDefaultBrush}" />
-        <converters:BoolToObjectConverter x:Key="BoolToInverseVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+        <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
         <!-- If no custom header template was provided, display a TextBlock -->
         <ControlTemplate x:Name="defaultHeaderTemplate">
             <ContentPresenter />
@@ -27,12 +26,12 @@
         <!-- Title -->
         <StackPanel Grid.Row="0">
             <TextBlock
-                Style="{ThemeResource TitleTextBlockStyle}"
+                Style="{ThemeResource SubtitleTextBlockStyle}"
                 TextWrapping="WrapWholeWords"
-                Visibility="{x:Bind UseOrchestratorTitle, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                Visibility="{x:Bind UseOrchestratorTitle, Mode=OneWay}"
                 Text="{x:Bind Orchestrator.FlowTitle}" />
             <TextBlock
-                Style="{ThemeResource TitleTextBlockStyle}"
+                Style="{ThemeResource SubtitleTextBlockStyle}"
                 TextWrapping="WrapWholeWords"
                 Visibility="{x:Bind Title, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
                 Text="{x:Bind Title, Mode=OneWay}" />
@@ -43,7 +42,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <!-- Stepper showing the progress within the flow -->
-            <StackPanel Visibility="{x:Bind Orchestrator.CurrentPageViewModel.IsStepPage, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+            <StackPanel Margin="0, 20, 0, 0" Visibility="{x:Bind Orchestrator.CurrentPageViewModel.IsStepPage, Mode=OneWay}">
                 <ItemsRepeater ItemsSource="{x:Bind Orchestrator.SetupStepPages, Mode=OneWay}">
                     <ItemsRepeater.Layout>
                         <StackLayout Orientation="Horizontal" Spacing="5"/>
@@ -51,21 +50,21 @@
                     <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:SetupPageViewModelBase">
                             <StackPanel Spacing="8" Orientation="Horizontal"
-                                Visibility="{x:Bind IsStepPage, Converter={StaticResource BoolToVisibilityConverter}}">
+                                Visibility="{x:Bind IsStepPage}">
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"
                                           FontSize="16"
                                           Glyph="&#xEA3B;"
                                           Foreground="{x:Bind IsUpcomingPage, Converter={StaticResource StepperBoolToGlyphBrushConverter}}" />
                                 <TextBlock VerticalAlignment="Center" Text="{x:Bind PageTitle}" />
-                                <StackPanel VerticalAlignment="Center" Visibility="{x:Bind IsLastStepPage, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+                                <StackPanel VerticalAlignment="Center" Visibility="{x:Bind IsLastStepPage, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
                                     <ProgressBar Width="20" Value="100"
-                                                 Visibility="{x:Bind IsPastPage, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                 Visibility="{x:Bind IsPastPage}"
                                                  Background="{ThemeResource AccentFillColorDisabledBrush}" />
                                     <ProgressBar Width="20" Value="50"
-                                                 Visibility="{x:Bind IsCurrentPage, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                 Visibility="{x:Bind IsCurrentPage}"
                                                  Background="{ThemeResource AccentFillColorDisabledBrush}" />
                                     <ProgressBar Width="20" Value="0"
-                                                 Visibility="{x:Bind IsUpcomingPage, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                 Visibility="{x:Bind IsUpcomingPage}"
                                                  Background="{ThemeResource AccentFillColorDisabledBrush}" />
                                 </StackPanel>
                             </StackPanel>
@@ -77,6 +76,7 @@
             <!-- Allow customizing the header (e.g. add buttons, etc... ) -->
             <ContentControl
                 Grid.Column="1"
+                IsTabStop="False"
                 HorizontalAlignment="Right"
                 Template="{x:Bind HeaderTemplate, Mode=OneWay}" />
         </Grid>
@@ -89,6 +89,7 @@
             Text="{x:Bind Description, Mode=OneWay}" />
         <!-- Content -->
         <ContentControl Grid.Row="3" Grid.ColumnSpan="2"
+                        IsTabStop="False"
                         HorizontalContentAlignment="Stretch"
                         VerticalContentAlignment="Stretch"
                         Content="{x:Bind SetupShellContent, Mode=OneWay}" />

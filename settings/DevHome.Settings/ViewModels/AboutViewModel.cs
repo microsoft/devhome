@@ -8,15 +8,10 @@ using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.ViewModels;
 
-public partial class AboutViewModel : ObservableRecipient
+public partial class AboutViewModel : ObservableObject
 {
+    [ObservableProperty]
     private string _versionDescription;
-
-    public string VersionDescription
-    {
-        get => _versionDescription;
-        set => SetProperty(ref _versionDescription, value);
-    }
 
     public AboutViewModel()
     {
@@ -25,7 +20,7 @@ public partial class AboutViewModel : ObservableRecipient
 
     private static string GetVersionDescription()
     {
-        IAppInfoService appInfoService = Application.Current.GetService<IAppInfoService>();
+        var appInfoService = Application.Current.GetService<IAppInfoService>();
         var version = appInfoService.GetAppVersion();
 
         return $"{version.Major}.{version.Minor}.{version.Build}.{version.Revision}";

@@ -56,8 +56,9 @@ public interface IWindowsPackageManager
     /// Install a winget package
     /// </summary>
     /// <param name="package">Package to install</param>
+    /// <param name="activityId">Guid to correlate this task to the setupflow activity.</param>
     /// <returns>Install package result</returns>
-    public Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package);
+    public Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package, Guid activityId);
 
     /// <summary>
     /// Checks if AppInstaller has an available update
@@ -76,5 +77,11 @@ public interface IWindowsPackageManager
     /// out-of-proc COM objects
     /// </summary>
     /// <returns>True if COM Server is available, false otherwise</returns>
-    public bool IsCOMServerAvailable();
+    public Task<bool> IsCOMServerAvailableAsync();
+
+    /// <summary>
+    /// Register AppInstaller
+    /// </summary>
+    /// <returns>True if AppInstaller was registered, false otherwise.</returns>
+    public Task<bool> RegisterAppInstallerAsync();
 }

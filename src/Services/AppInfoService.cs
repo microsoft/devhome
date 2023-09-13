@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System.Reflection;
+using System.Security.Principal;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Helpers;
@@ -10,14 +11,24 @@ using Windows.ApplicationModel;
 namespace DevHome.Services;
 public class AppInfoService : IAppInfoService
 {
+    private static bool RunningAsAdmin
+    {
+        get
+        {
+            using var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+        }
+    }
+
     public string GetAppNameLocalized()
     {
 #if CANARY_BUILD
-        return "AppDisplayNameCanary".GetLocalized();
+        return RunningAsAdmin ? "AppDisplayNameCanaryAdministrator".GetLocalized() : "AppDisplayNameCanary".GetLocalized();
 #elif STABLE_BUILD
-        return "AppDisplayNameStable".GetLocalized();
+        return RunningAsAdmin ? "AppDisplayNameStableAdministrator".GetLocalized() : "AppDisplayNameStable".GetLocalized();
 #else
-        return "AppDisplayNameDev".GetLocalized();
+        return RunningAsAdmin ? "AppDisplayNameDevAdministrator".GetLocalized() : "AppDisplayNameDev".GetLocalized();
 #endif
     }
 

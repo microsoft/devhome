@@ -7,14 +7,15 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     mc:Ignorable="d"
-    Style="{StaticResource DefaultContentDialogStyle}">
+    Style="{StaticResource DefaultContentDialogStyle}"
+    SizeChanged="ContentDialog_SizeChanged">
 
     <!-- ContentDialog Width and Height are not properly hooked up and must be set this way -->
     <ContentDialog.Resources>
         <x:Double x:Key="ContentDialogMinWidth">434</x:Double>
-        <x:Double x:Key="ContentDialogMinHeight">684</x:Double>
         <x:Double x:Key="ContentDialogMaxWidth">434</x:Double>
         <x:Double x:Key="ContentDialogMaxHeight">684</x:Double>
         <Thickness x:Key="ContentDialogTitleMargin">0,0,0,0</Thickness>
@@ -24,35 +25,47 @@
 
     <StackPanel Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
         <!-- Close button -->
-        <Grid>
-            <Button HorizontalAlignment="Right" Click="CancelButton_Click"
-                    BorderThickness="0" Background="Transparent" Margin="5">
-                <TextBlock FontFamily="{ThemeResource SymbolThemeFontFamily}" 
-                           FontSize="{ThemeResource BodyTextBlockFontSize}" 
-                           Text="&#xE711;" />
-            </Button>
+        <Grid x:Name="CustomizeWidgetTitleBar">
+            <TextBlock x:Uid="CustomizeWidgetTitle" HorizontalAlignment="Left" Margin="16,10,0,0" />
+            <commonviews:CloseButton Click="CancelButton_Click" />
         </Grid>
 
         <!-- Widget configuration UI -->
         <Grid x:Name="ConfigurationContentGrid" Margin="40,0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
 
-            <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch" Grid.Row="0"
-                            MinHeight="520" MaxHeight="520">
-                <Frame x:Name="ConfigurationContentFrame" 
+            <StackPanel Grid.Row="0"
+                        Margin="{StaticResource MediumTopMargin}"
+                        HorizontalAlignment="Center">
+                <TextBlock Text="{x:Bind ViewModel.WidgetDisplayTitle, Mode=OneWay}"
+                               Style="{StaticResource WidgetConfigHeaderTextStyle}"
+                               HorizontalAlignment="Center" />
+                <TextBlock Text="{x:Bind ViewModel.WidgetProviderDisplayTitle, Mode=OneWay}"
+                               Style="{StaticResource WidgetConfigSubHeaderTextStyle}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               Margin="{StaticResource XXSmallTopMargin}"
+                               HorizontalAlignment="Center" />
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1"
+                          x:Name="ConfigurationContentViewer"
+                          VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
+                <Frame x:Name="ConfigurationContentFrame" Margin="0,44,0,0"
                         Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}" />
             </ScrollViewer>
 
-            <Button x:Name="UpdateWidgetButton" x:Uid="UpdateWidgetButton"
+            <Button Grid.Row="2"
+                    x:Name="UpdateWidgetButton" x:Uid="UpdateWidgetButton"
+                    Style="{ThemeResource AccentButtonStyle}"
                     VerticalAlignment="Bottom" HorizontalAlignment="Center"
                     Visibility="Visible"
                     IsEnabled="{x:Bind ViewModel.Configuring, Mode=OneWay, Converter={StaticResource BoolNegation}}"
                     Height="32" Width="118"
                     Click="UpdateWidgetButton_Click"
-                    Grid.Row="1"
                     Margin="0,40" />
         </Grid>
     </StackPanel>

@@ -23,6 +23,8 @@ internal class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
 
     public string OwningAccountName => "Unknown";
 
+    public Uri RepoUri => _cloneUri;
+
     private readonly Uri _cloneUri;
 
     public GenericRepository(Uri cloneUri)
@@ -58,7 +60,7 @@ internal class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
                 }
                 catch (NameConflictException nameConflictException)
                 {
-                    Log.Logger?.ReportError("GenericRepository", nameConflictException);
+                    Log.Logger?.ReportError("GenericRepository", string.Empty, nameConflictException);
                     throw;
                 }
                 catch (Exception e)

@@ -3,8 +3,6 @@
 
 using System;
 using System.Diagnostics.Tracing;
-using System.Security.Cryptography;
-using System.Text;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
@@ -36,31 +34,11 @@ public class ReposCloneEvent : EventBase
     {
         ProviderName = providerName;
 
-        DeveloperId = developerId is null ? string.Empty : GetHashedDeveloperId(providerName, developerId);
+        DeveloperId = developerId is null ? string.Empty : DeveloperIdHelper.GetHashedDeveloperId(providerName, developerId);
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
         // The only sensitive strings is the developerID.  GetHashedDeveloperId is used to hash the developerId.
-    }
-
-    private static string GetHashedDeveloperId(string providerName, IDeveloperId devId)
-    {
-        // I understand this is a duplicate from DeveloperIdEvent.
-        // Currently trying to minimize the amount of platform code changes.
-        // TODO: Move this logic to a helper file.
-        // https://github.com/microsoft/devhome/issues/612
-        // TODO: Instead of LoginId, hash a globally unique id of DeveloperId (like url)
-        using var hasher = SHA256.Create();
-        var loginIdBytes = Encoding.ASCII.GetBytes(devId.LoginId());
-        var hashedLoginId = hasher.ComputeHash(loginIdBytes);
-        if (BitConverter.IsLittleEndian)
-        {
-            Array.Reverse(hashedLoginId);
-        }
-
-        var hashedLoginIdString = BitConverter.ToString(hashedLoginId).Replace("-", string.Empty);
-
-        return $"{hashedLoginIdString}_{providerName}";
     }
 }

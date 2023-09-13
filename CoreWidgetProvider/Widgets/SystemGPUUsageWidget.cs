@@ -52,6 +52,8 @@ internal class SystemGPUUsageWidget : CoreWidget, IDisposable
             gpuData.Add("gpuName", gpuName);
             gpuData.Add("gpuTemp", stats.GetGPUTemperature(gpuActiveIndex));
             gpuData.Add("gpuGraphUrl", stats.CreateGPUImageUrl(gpuActiveIndex));
+            gpuData.Add("chartHeight", ChartHelper.ChartHeight + "px");
+            gpuData.Add("chartWidth", ChartHelper.ChartWidth + "px");
 
             DataState = WidgetDataState.Okay;
             ContentData = gpuData.ToJsonString();

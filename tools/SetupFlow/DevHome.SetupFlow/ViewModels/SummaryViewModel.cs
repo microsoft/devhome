@@ -106,30 +106,30 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void RemoveRestartGrid()
     {
-        _showRestartNeeded = Visibility.Collapsed;
+        ShowRestartNeeded = Visibility.Collapsed;
     }
 
     /// <summary>
     /// Method here for telemetry
     /// </summary>
     [RelayCommand]
-    public async void LearnMore()
+    public async Task LearnMoreAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("LearnMoreAboutDevHome"));
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("LearnMoreAboutDevHome"), Orchestrator.ActivityId);
         await Launcher.LaunchUriAsync(new Uri("https://learn.microsoft.com/windows/"));
     }
 
     [RelayCommand]
     public void GoToMainPage()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("MachineConfiguration"));
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("MachineConfiguration"), Orchestrator.ActivityId);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToMainPage");
     }
 
     [RelayCommand]
     public void GoToDashboard()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("Dashboard"));
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("Dashboard"), Orchestrator.ActivityId);
         _host.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToDashboard");
     }
@@ -137,7 +137,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void GoToDevHomeSettings()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("DevHomeSettings"));
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("DevHomeSettings"), Orchestrator.ActivityId);
         _host.GetService<INavigationService>().NavigateTo(typeof(SettingsViewModel).FullName);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToSettings");
     }
@@ -145,7 +145,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void GoToForDevelopersSettingsPage()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Measure, new NavigateFromSummaryEvent("WindowsDeveloperSettings"));
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("WindowsDeveloperSettings"), Orchestrator.ActivityId);
         Task.Run(() => Launcher.LaunchUriAsync(new Uri("ms-settings:developers"))).Wait();
     }
 
@@ -167,15 +167,17 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _wpm = wpm;
         _packageProvider = packageProvider;
         _catalogDataSourceLoacder = catalogDataSourceLoader;
-        IsNavigationBarVisible = true;
         _configurationUnitResults = new (GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
+
+        IsNavigationBarVisible = true;
+        IsStepPage = false;
     }
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().LogMeasure("Summary_NavigatedTo_Event");
-        _orchestrator.ReleaseRemoteFactory();
+        TelemetryFactory.Get<ITelemetry>().LogCritical("Summary_NavigatedTo_Event",  false, Orchestrator.ActivityId);
+        _orchestrator.ReleaseRemoteOperationObject();
         await ReloadCatalogsAsync();
     }
 

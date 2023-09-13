@@ -45,6 +45,8 @@ internal class SystemCPUUsageWidget : CoreWidget, IDisposable
             cpuData.Add("cpuUsage", FloatToPercentString(currentData.CpuUsage));
             cpuData.Add("cpuSpeed", SpeedToString(currentData.CpuSpeed));
             cpuData.Add("cpuGraphUrl", currentData.CreateCPUImageUrl());
+            cpuData.Add("chartHeight", ChartHelper.ChartHeight + "px");
+            cpuData.Add("chartWidth", ChartHelper.ChartWidth + "px");
 
             cpuData.Add("cpuProc1", currentData.GetCpuProcessText(0));
             cpuData.Add("cpuProc2", currentData.GetCpuProcessText(1));

@@ -26,7 +26,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
 
     public CustomizeWidgetDialog(WidgetHost host, WidgetCatalog catalog, AdaptiveCardRenderer renderer, DispatcherQueue dispatcher, WidgetDefinition widgetDefinition)
     {
-        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, renderer, dispatcher);
+        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, widgetDefinition, renderer, dispatcher);
         ViewModel.IsInEditMode = true;
         this.InitializeComponent();
 
@@ -45,7 +45,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
 
     private async void InitializeWidgetCustomization(object sender, RoutedEventArgs e)
     {
-        var size = WidgetHelpers.GetLargetstCapabilitySize(_widgetDefinition.GetWidgetCapabilities());
+        var size = WidgetHelpers.GetLargestCapabilitySize(_widgetDefinition.GetWidgetCapabilities());
 
         // Create the widget for configuration. We will need to delete it if the dialog is closed without updating.
         var widget = await _widgetHost.CreateWidgetAsync(_widgetDefinition.Id, size);
@@ -101,5 +101,15 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
                 this.Hide();
             });
         }
+    }
+
+    private void ContentDialog_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        const int ContentDialogMaxHeight = 684;
+
+        ConfigurationContentGrid.Height = Math.Min(this.ActualHeight, ContentDialogMaxHeight) - CustomizeWidgetTitleBar.ActualHeight;
+
+        // Subtract 80 for the margin around the button.
+        ConfigurationContentViewer.Height = ConfigurationContentGrid.Height - UpdateWidgetButton.ActualHeight - 80;
     }
 }

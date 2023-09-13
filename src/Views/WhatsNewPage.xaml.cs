@@ -1,21 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
-using DevHome.Dashboard.ViewModels;
+using DevHome.Common.TelemetryEvents;
 using DevHome.Models;
-using DevHome.Services;
-using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Windows.DevHome.SDK;
 using Windows.System;
 
 namespace DevHome.Views;
@@ -65,6 +61,25 @@ public sealed partial class WhatsNewPage : Page
 
             ViewModel.AddCard(card);
         }
+
+        var whatsNewBigCards = BigFeaturesContainer.Resources
+            .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
+            .Select(card => card.Value as WhatsNewCard)
+            .OrderBy(card => card?.Priority ?? 0);
+
+        foreach (var card in whatsNewBigCards)
+        {
+            if (card is null)
+            {
+                continue;
+            }
+
+            ViewModel.AddBigCard(card);
+        }
+
+        ViewModel.NumberOfBigCards = whatsNewBigCards.Count();
+
+        MoveBigCardsIfNeeded(this.ActualWidth);
     }
 
     private void MachineConfigButton_Click(object sender, RoutedEventArgs e)
@@ -86,12 +101,37 @@ public sealed partial class WhatsNewPage : Page
         {
             // Only launch the disks and volumes settings page when the Dev Drive feature is enabled.
             // Otherwise redirect the user to the Dev Drive support page to learn more about the feature.
+            // Critical level approved by subhasan
+            TelemetryFactory.Get<ITelemetry>().Log(
+                "LaunchDisksAndVolumesSettingsPageTriggered",
+                LogLevel.Critical,
+                new DisksAndVolumesSettingsPageTriggeredEvent(source: "WhatsNewPageView"));
             await Launcher.LaunchUriAsync(DevDriveUtil.IsDevDriveFeatureEnabled ? _devDrivePageKeyUri : _devDriveLearnMoreLinkUri);
         }
         else
         {
             var navigationService = Application.Current.GetService<INavigationService>();
             navigationService.NavigateTo(pageKey!);
+        }
+    }
+
+    public void OnSizeChanged(object sender, SizeChangedEventArgs args)
+    {
+        if ((Page)sender == this)
+        {
+            MoveBigCardsIfNeeded(args.NewSize.Width);
+        }
+    }
+
+    private void MoveBigCardsIfNeeded(double newWidth)
+    {
+        if (newWidth < 760)
+        {
+            ViewModel.SwitchToSmallerView();
+        }
+        else
+        {
+            ViewModel.SwitchToLargerView();
         }
     }
 

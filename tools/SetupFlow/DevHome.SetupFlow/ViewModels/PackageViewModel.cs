@@ -5,10 +5,12 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
@@ -60,16 +62,28 @@ public partial class PackageViewModel : ObservableObject
         IWindowsPackageManager wpm,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
-        WindowsPackageManagerFactory wingetFactory)
+        WindowsPackageManagerFactory wingetFactory,
+        IHost host)
     {
         _stringResource = stringResource;
         _wpm = wpm;
         _package = package;
         _themeSelector = themeSelector;
         _wingetFactory = wingetFactory;
+
+        // Initialize package view model properties in the constructor to
+        // accelerate fetching the data when bound in the view and to avoid
+        // frequently requesting the values from the proxy COM object
+        Version = _package.Version;
+        Name = _package.Name;
+        IsInstalled = _package.IsInstalled;
+        CatalogName = _package.CatalogName;
+        PublisherName = !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
+
+        // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
-        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask);
+        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
         _packageDescription = new Lazy<string>(GetPackageDescription);
     }
 
@@ -77,17 +91,17 @@ public partial class PackageViewModel : ObservableObject
 
     public IWinGetPackage Package => _package;
 
-    public string Name => _package.Name;
-
     public BitmapImage Icon => _themeSelector.IsDarkTheme() ? _packageDarkThemeIcon.Value : _packageLightThemeIcon.Value;
 
-    public string Version => _package.Version;
+    public string Name { get; }
 
-    public bool IsInstalled => _package.IsInstalled;
+    public string Version { get; }
 
-    public string CatalogName => _package.CatalogName;
+    public bool IsInstalled { get; }
 
-    public string PublisherName => !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
+    public string CatalogName { get; }
+
+    public string PublisherName { get; }
 
     public string PackageTitle => Name;
 
@@ -173,9 +187,9 @@ public partial class PackageViewModel : ObservableObject
         return bitmapImage;
     }
 
-    private InstallPackageTask CreateInstallTask()
+    private InstallPackageTask CreateInstallTask(Guid activityId)
     {
-        return _package.CreateInstallTask(_wpm, _stringResource, _wingetFactory);
+        return _package.CreateInstallTask(_wpm, _stringResource, _wingetFactory, activityId);
     }
 
     private string GetPackageDescription()

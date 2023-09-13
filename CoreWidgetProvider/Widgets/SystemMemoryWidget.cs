@@ -69,6 +69,8 @@ internal class SystemMemoryWidget : CoreWidget, IDisposable
             memoryData.Add("pagedPoolMem", MemUlongToString(currentData.MemPagedPool));
             memoryData.Add("nonPagedPoolMem", MemUlongToString(currentData.MemNonPagedPool));
             memoryData.Add("memGraphUrl", currentData.CreateMemImageUrl());
+            memoryData.Add("chartHeight", ChartHelper.ChartHeight + "px");
+            memoryData.Add("chartWidth", ChartHelper.ChartWidth + "px");
 
             DataState = WidgetDataState.Okay;
             ContentData = memoryData.ToJsonString();

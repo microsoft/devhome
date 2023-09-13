@@ -4,8 +4,8 @@
 
 name: DevHome-CI
 on:
-  push:
   pull_request:
+  push:
     branches: [ "main", "feature*" ]
 
 jobs:
@@ -56,15 +56,10 @@ jobs:
         echo "Using VSDevCmd: ${VSDevCmd}"
         Add-Content $env:GITHUB_ENV "VSDevCmd=$VSDevCmd"
 
-    - name: Restore dependencies
-      run: |
-        dotnet restore pluginsdk\\DevHomeSDK.sln -p:PublishReadyToRun=true
-        dotnet restore DevHome.sln -p:PublishReadyToRun=true
-
     - name: Restore nuget packages
       run: |
-        cmd /c "$env:VSDevCmd" "&" nuget restore pluginsdk\\DevHomeSDK.sln
-        cmd /c "$env:VSDevCmd" "&" nuget restore DevHome.sln
+        cmd /c "$env:VSDevCmd" "&" msbuild -t:restore /m /p:Configuration=Release,Platform=${{ matrix.platform }},RestorePackagesConfig=true pluginsdk\\DevHomeSDK.sln
+        cmd /c "$env:VSDevCmd" "&" msbuild -t:restore /m /p:Configuration=Release,Platform=${{ matrix.platform }} DevHome.sln
 
     - name: Build_SDK
       run: cmd /c "$env:VSDevCmd" "&" msbuild /m /p:Configuration=Release,Platform=${{ matrix.platform }} pluginsdk\\DevHomeSDK.sln
@@ -75,7 +70,7 @@ jobs:
     - name: Find vstest.console.exe
       if: ${{ matrix.platform != 'arm64' }}
       run: |
-        $VSDevTestCmd = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere" -latest -prerelease -products * -find **\TestPlatform\vstest.console.exe
+        $VSDevTestCmd = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere" -latest -prerelease -products * -find Common7\IDE\Extensions\TestPlatform\vstest.console.exe
         if (!$VSDevTestCmd) { exit 1 }
         echo "Using VSDevTestCmd: ${VSDevTestCmd}"
         Add-Content $env:GITHUB_ENV "VSDevTestCmd=$VSDevTestCmd"

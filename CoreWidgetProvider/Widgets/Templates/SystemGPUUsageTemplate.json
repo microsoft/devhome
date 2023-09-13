@@ -4,8 +4,9 @@
     {
       "type": "Image",
       "url": "${gpuGraphUrl}",
-      "height": "100px",
-      "width": "268px"
+      "height": "${chartHeight}",
+      "width": "${chartWidth}",
+      "horizontalAlignment": "center"
     },
     {
       "type": "ColumnSet",
@@ -22,7 +23,8 @@
             {
               "text": "${gpuUsage}",
               "type": "TextBlock",
-              "size": "large"
+              "size": "large",
+              "weight": "bolder"
             }
           ]
         },
@@ -40,6 +42,7 @@
               "text": "${gpuTemp}",
               "type": "TextBlock",
               "size": "large",
+              "weight": "bolder",
               "horizontalAlignment": "right"
             }
           ]
@@ -54,7 +57,8 @@
     },
     {
       "text": "${gpuName}",
-      "type": "TextBlock"
+      "type": "TextBlock",
+      "size": "medium"
     }
   ],
   "actions": [

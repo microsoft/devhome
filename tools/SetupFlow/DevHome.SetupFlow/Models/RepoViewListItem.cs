@@ -3,6 +3,7 @@
 
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -23,6 +24,15 @@ public partial class RepoViewListItem : ObservableObject
     /// Gets the name of the repository
     /// </summary>
     public string RepoName { get; }
+
+    [ObservableProperty]
+    private bool _isRepoNameTrimmed;
+
+    [RelayCommand]
+    public void TextTrimmed()
+    {
+        IsRepoNameTrimmed = true;
+    }
 
     /// <summary>
     /// Gets the name of the organization that owns this repo.

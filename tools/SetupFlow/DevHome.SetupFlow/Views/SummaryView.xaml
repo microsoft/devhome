@@ -10,6 +10,7 @@
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:models="using:DevHome.SetupFlow.Models"
+    xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
     setupFlowBehaviors:SetupFlowNavigationBehavior.NextVisibility="Collapsed"
@@ -20,8 +21,7 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml"/>
                 <ResourceDictionary>
                     <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
-                    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" TrueValue="Visible" FalseValue="Collapsed" />
-                    <converters:BoolToVisibilityConverter x:Key="BoolToInverseVisibilityConverter"  TrueValue="Collapsed" FalseValue="Visible" />
+                    <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter"  TrueValue="Collapsed" FalseValue="Visible" />
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
                     <ControlTemplate x:Key="LinksTemplate">
                         <StackPanel Orientation="Vertical" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
@@ -66,11 +66,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" Spacing="5">
                     <Button x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_RestartRequiredButton" Style="{ThemeResource DefaultButtonStyle}" Width="120"/>
-                    <Button Command="{x:Bind ViewModel.RemoveRestartGridCommand}" Style="{ThemeResource AlternateCloseButtonStyle}">
-                        <Button.Content>
-                            <SymbolIcon Symbol="Cancel"/>
-                        </Button.Content>
-                    </Button>
+                    <commonviews:CloseButton Command="{x:Bind ViewModel.RemoveRestartGridCommand}" />
                 </StackPanel>
             </Grid>
 
@@ -82,15 +78,15 @@
                 <!-- Introduction to the summary page -->
                 <TextBlock
                     Style="{ThemeResource SubtitleTextBlockStyle}"
-                    Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource BoolToInverseVisibilityConverter}}"
+                    Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_Header"/>
                 <TextBlock
                     Style="{ThemeResource SubtitleTextBlockStyle}"
-                    Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Visibility="{x:Bind ViewModel.CompletedWithErrors, Mode=OneWay}"
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_HeaderWithErrors"/>
             </Grid>
 
-            <Grid Grid.Row="2" ColumnSpacing="25" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Grid Grid.Row="2" ColumnSpacing="25" Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1.77*" />
                     <ColumnDefinition Width="*" />
@@ -154,7 +150,7 @@
             <!-- Grid with information on tasks completed-->
             <Grid
                 Grid.Row="2"
-                Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource BoolToInverseVisibilityConverter}}"
+                Visibility="{x:Bind ViewModel.ShowConfigurationUnitResults, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"
                 ColumnSpacing="50">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>

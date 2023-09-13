@@ -6,7 +6,7 @@ Param(
 )
 
 $Major = "0"
-$Minor = "1"
+$Minor = "4"
 $Patch = "99" # default to 99 for local builds
 
 $versionSplit = $Version.Split(".");
@@ -46,13 +46,16 @@ if ([string]::IsNullOrWhiteSpace($Elapsed)) {
 #
 $version_h = $now.Hour
 $version_m = $now.Minute
-if (-not($IsAzurePipelineBuild) -And [string]::IsNullOrWhiteSpace($Build)) {
-  $Build = ($version_h * 100 + $version_m).ToString()
+if ([string]::IsNullOrWhiteSpace($Build)) {
+  if ($IsAzurePipelineBuild) {
+    $Build = "0"
+  }
+  else {
+    $Build = ($version_h * 100 + $version_m).ToString()
+  }
 }
 #
-if ($IsSdkVersion) {
-  $version_dotquad = [int[]]($Major, ($Minor + $Patch), $Elapsed)
-} else {
-  $version_dotquad = [int[]]($Major, ($Minor + $Patch), $Elapsed, $Build)
-}
+
+$version_dotquad = [int[]]($Major, ($Minor + $Patch), $Elapsed, $Build)
+
 return ($version_dotquad -Join ".")

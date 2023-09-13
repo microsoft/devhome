@@ -68,7 +68,10 @@ internal class MemoryStats : IDisposable
             UsedMem = AllMem - availableMem;
 
             MemUsage = (float)UsedMem / AllMem;
-            ChartHelper.AddNextChartValue(MemUsage * 100, MemChartValues);
+            lock (MemChartValues)
+            {
+                ChartHelper.AddNextChartValue(MemUsage * 100, MemChartValues);
+            }
         }
 
         MemCached = (ulong)memCached.NextValue();
@@ -80,7 +83,7 @@ internal class MemoryStats : IDisposable
 
     public string CreateMemImageUrl()
     {
-        return ChartHelper.CreateImageUrl(MemChartValues, "mem");
+        return ChartHelper.CreateImageUrl(MemChartValues, ChartHelper.ChartType.Mem);
     }
 
     public void Dispose()

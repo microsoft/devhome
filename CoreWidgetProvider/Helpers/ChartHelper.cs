@@ -1,136 +1,272 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Drawing;
-using System.Drawing.Drawing2D;
+using System.Globalization;
+using System.Text;
+using System.Xml.Linq;
 
 namespace CoreWidgetProvider.Helpers;
 
 internal class ChartHelper
 {
-    private static readonly Color DarkGrayColor = Color.FromArgb(0, 213, 224, 247);
+    public enum ChartType
+    {
+        CPU,
+        GPU,
+        Mem,
+        Net,
+    }
 
-    private static readonly Pen CPUChartPen = new (Color.FromArgb(255, 57, 184, 227));
-    private static readonly Pen GPUChartPen = new (Color.FromArgb(255, 222, 104, 242));
-    private static readonly Pen MemChartPen = new (Color.FromArgb(255, 92, 158, 250));
-    private static readonly Pen NetChartPen = new (Color.FromArgb(255, 245, 98, 142));
+    public const int ChartHeight = 86;
+    public const int ChartWidth = 264;
 
-    private static readonly Brush CPUBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 57, 184, 227), Color.FromArgb(65, 0, 86, 110));
-    private static readonly Brush CPUBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 57, 184, 227), Color.FromArgb(65, 0, 86, 110));
-    private static readonly Brush CPUBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 57, 184, 227), Color.FromArgb(65, 0, 86, 110));
+    private const string LightGrayBoxStyle = "fill:none;stroke:lightgrey;stroke-width:1";
 
-    private static readonly Brush GPUBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 222, 104, 242), Color.FromArgb(65, 125, 0, 138));
-    private static readonly Brush GPUBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 222, 104, 242), Color.FromArgb(65, 125, 0, 138));
-    private static readonly Brush GPUBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 222, 104, 242), Color.FromArgb(65, 125, 0, 138));
+    private const string CPULineStyle = "fill:none;stroke:rgb(57,184,227);stroke-width:1";
+    private const string GPULineStyle = "fill:none;stroke:rgb(222,104,242);stroke-width:1";
+    private const string MemLineStyle = "fill:none;stroke:rgb(92,158,250);stroke-width:1";
+    private const string NetLineStyle = "fill:none;stroke:rgb(245,98,142);stroke-width:1";
 
-    private static readonly Brush MemBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 92, 158, 250), Color.FromArgb(65, 0, 34, 92));
-    private static readonly Brush MemBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 92, 158, 250), Color.FromArgb(65, 0, 34, 92));
-    private static readonly Brush MemBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 92, 158, 250), Color.FromArgb(65, 0, 34, 92));
+    private const string FillStyle = "fill:url(#gradientId);stroke:transparent";
 
-    private static readonly Brush NetBrush100 = new LinearGradientBrush(new Point(150, 5), new Point(150, 95), Color.FromArgb(105, 245, 98, 142), Color.FromArgb(65, 130, 0, 47));
-    private static readonly Brush NetBrush50 = new LinearGradientBrush(new Point(150, 50), new Point(150, 95), Color.FromArgb(105, 245, 98, 142), Color.FromArgb(65, 130, 0, 47));
-    private static readonly Brush NetBrush20 = new LinearGradientBrush(new Point(150, 77), new Point(150, 95), Color.FromArgb(105, 245, 98, 142), Color.FromArgb(65, 130, 0, 47));
+    private const string CPUBrushStop1Style = "stop-color:rgb(57,184,227);stop-opacity:0.4";
+    private const string CPUBrushStop2Style = "stop-color:rgb(0,86,110);stop-opacity:0.25";
+
+    private const string GPUBrushStop1Style = "stop-color:rgb(222,104,242);stop-opacity:0.4";
+    private const string GPUBrushStop2Style = "stop-color:rgb(125,0,138);stop-opacity:0.25";
+
+    private const string MemBrushStop1Style = "stop-color:rgb(92,158,250);stop-opacity:0.4";
+    private const string MemBrushStop2Style = "stop-color:rgb(0,34,92);stop-opacity:0.25";
+
+    private const string NetBrushStop1Style = "stop-color:rgb(245,98,142);stop-opacity:0.4";
+    private const string NetBrushStop2Style = "stop-color:rgb(130,0,47);stop-opacity:0.25";
+
+    private const string SvgElement = "svg";
+    private const string RectElement = "rect";
+    private const string PolylineElement = "polyline";
+    private const string DefsElement = "defs";
+    private const string LinearGradientElement = "linearGradient";
+    private const string StopElement = "stop";
+
+    private const string HeightAttr = "height";
+    private const string WidthAttr = "width";
+    private const string StyleAttr = "style";
+    private const string PointsAttr = "points";
+    private const string OffsetAttr = "offset";
+    private const string X1Attr = "x1";
+    private const string X2Attr = "x2";
+    private const string Y1Attr = "y1";
+    private const string Y2Attr = "y2";
+    private const string IdAttr = "id";
 
     private const int MaxChartValues = 30;
 
-    private static readonly object _lock = new ();
-
-    public static string CreateImageUrl(List<float> chartValues, string type)
+    public static string CreateImageUrl(List<float> chartValues, ChartType type)
     {
-        var bytes = CreateChart(chartValues, type);
+        var chartStr = CreateChart(chartValues, type);
+        var bytes = Encoding.UTF8.GetBytes(chartStr);
         var b64String = Convert.ToBase64String(bytes);
-        return "data:image/png;base64," + b64String;
+        return "data:image/svg+xml;base64," + b64String;
     }
 
-    public static byte[] CreateChart(List<float> chartValues, string type)
+    /// <summary>
+    /// Creates an SVG image for the chart.
+    /// </summary>
+    /// <param name="chartValues">The values to plot on the chart</param>
+    /// <param name="type">The type of chart. Each chart type uses different colors.</param>
+    /// <remarks>
+    /// The SVG is made of three shapes: <br/>
+    /// 1. A colored line, plotting the points on the graph <br/>
+    /// 2. A transparent line, outlining the gradient under the graph <br/>
+    /// 3. A grey box, outlining the entire image <br/>
+    /// The SVG also contains a definition for the fill gradient.
+    /// </remarks>
+    /// <returns>A string representing the chart as an SVG image.</returns>
+    public static string CreateChart(List<float> chartValues, ChartType type)
     {
-        var width = 268;
-        var height = 100;
-        var bitmap = new Bitmap(width, height);
-        var points = new List<PointF>();
-        var chartPen = CPUChartPen;
-        var brush20 = CPUBrush20;
-        var brush50 = CPUBrush50;
-        var brush100 = CPUBrush100;
+        // The SVG created by this method will look similar to this:
+        /*
+        <svg height="102" width="264">
+            <defs>
+                <linearGradient x1="0%" x2="0%" y1="0%" y2="100%" id="gradientId">
+                    <stop offset="0%" style="stop-color:rgb(222,104,242);stop-opacity:0.4" />
+                    <stop offset="95%" style="stop-color:rgb(125,0,138);stop-opacity:0.25" />
+                </linearGradient>
+            </defs>
+            <polyline points="1,91 10,71 253,51 262,31 262,101 1,101" style="fill:url(#gradientId);stroke:transparent" />
+            <polyline points="1,91 10,71 253,51 262,31" style="fill:none;stroke:rgb(222,104,242);stroke-width:1" />
+            <rect height="102" width="264" style="fill:none;stroke:lightgrey;stroke-width:1" />
+        </svg>
+        */
 
-        using (var g = Graphics.FromImage(bitmap))
+        // The following code can be uncommented for testing when a static image is desired.
+        /* chartValues.Clear();
+        chartValues = new List<float>
         {
-            float minHeight = 95;
-            var startChartX = 5 + ((30 - chartValues.Count) * 10);
+            10, 30, 20, 40, 30, 50, 40, 60, 50, 100,
+            10, 30, 20, 40, 30, 50, 40, 60, 50, 70,
+            0, 30, 20, 40, 30, 50, 40, 60, 50, 70,
+        };*/
 
-            for (var pointIndex = chartValues.Count - 1; pointIndex >= 0; pointIndex--)
-            {
-                points.Add(new PointF(startChartX + (10 * pointIndex), 95 - (chartValues[pointIndex] / 100 * 90)));
-                minHeight = Math.Min(minHeight, 95 - (chartValues[pointIndex] / 100 * 90));
-            }
+        var chartDoc = new XDocument();
 
-            lock (_lock)
-            {
-                using var darkGreyBrush = new SolidBrush(DarkGrayColor);
-                g.FillRectangle(darkGreyBrush, 0, 0, width - 1, height - 1);
-                g.DrawRectangle(Pens.LightGray, 0, 0, width - 1, height - 1);
+        lock (chartValues)
+        {
+            var svgElement = CreateBlankSvg(ChartHeight, ChartWidth);
 
-                if (chartValues.Count >= 2)
-                {
-                    if (type == "gpu")
-                    {
-                        chartPen = GPUChartPen;
-                        brush20 = GPUBrush20;
-                        brush50 = GPUBrush50;
-                        brush100 = GPUBrush100;
-                    }
-                    else if (type == "mem")
-                    {
-                        chartPen = MemChartPen;
-                        brush20 = MemBrush20;
-                        brush50 = MemBrush50;
-                        brush100 = MemBrush100;
-                    }
-                    else if (type == "net")
-                    {
-                        chartPen = NetChartPen;
-                        brush20 = NetBrush20;
-                        brush50 = NetBrush50;
-                        brush100 = NetBrush100;
-                    }
+            // Create the line that will show the points on the graph.
+            var lineElement = new XElement(PolylineElement);
+            var points = TransformPointsToLine(chartValues, out var startX, out var finalX);
+            lineElement.SetAttributeValue(PointsAttr, points.ToString());
+            lineElement.SetAttributeValue(StyleAttr, GetLineStyle(type));
 
-                    points.Add(new PointF(startChartX, 95));
-                    points.Add(new PointF(295, 95));
-                    points.Add(new PointF(295, 95 - (chartValues.Last() / 100 * 90)));
+            // Create the line that will contain the gradient fill.
+            TransformPointsToLoop(points, startX, finalX);
+            var fillElement = new XElement(PolylineElement);
+            fillElement.SetAttributeValue(PointsAttr, points.ToString());
+            fillElement.SetAttributeValue(StyleAttr, FillStyle);
 
-                    if (minHeight >= 77)
-                    {
-                        g.FillPolygon(brush20, points.ToArray());
-                    }
-                    else if (minHeight >= 50)
-                    {
-                        g.FillPolygon(brush50, points.ToArray());
-                    }
-                    else
-                    {
-                        g.FillPolygon(brush100, points.ToArray());
-                    }
+            // Add the gradient definition and the three shapes to the svg.
+            svgElement.Add(CreateGradientDefinition(type));
+            svgElement.Add(fillElement);
+            svgElement.Add(lineElement);
+            svgElement.Add(CreateBorderBox(ChartHeight, ChartWidth));
 
-                    for (var pointIndex = 0; pointIndex < points.Count - 4; pointIndex++)
-                    {
-                        g.DrawLine(chartPen, points[pointIndex].X, points[pointIndex].Y, points[pointIndex + 1].X, points[pointIndex + 1].Y);
-                    }
-                }
-            }
+            chartDoc.Add(svgElement);
         }
 
-        var bytes = BitmapToByteArray(bitmap);
-        bitmap.Dispose();
-        points.Clear();
-        GC.Collect();
-        return bytes;
+        return chartDoc.ToString();
     }
 
-    public static byte[] BitmapToByteArray(Bitmap img)
+    private static XElement CreateBlankSvg(int height, int width)
     {
-        using var stream = new MemoryStream();
-        img.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-        return stream.ToArray();
+        var svgElement = new XElement(SvgElement);
+        svgElement.SetAttributeValue(HeightAttr, height);
+        svgElement.SetAttributeValue(WidthAttr, width);
+        return svgElement;
+    }
+
+    private static XElement CreateGradientDefinition(ChartType type)
+    {
+        var defsElement = new XElement(DefsElement);
+        var gradientElement = new XElement(LinearGradientElement);
+
+        // Vertical gradients are created when x1 and x2 are equal and y1 and y2 differ.
+        gradientElement.SetAttributeValue(X1Attr, "0%");
+        gradientElement.SetAttributeValue(X2Attr, "0%");
+        gradientElement.SetAttributeValue(Y1Attr, "0%");
+        gradientElement.SetAttributeValue(Y2Attr, "100%");
+        gradientElement.SetAttributeValue(IdAttr, "gradientId");
+
+        string stop1Style;
+        string stop2Style;
+        switch (type)
+        {
+            case ChartType.GPU:
+                stop1Style = GPUBrushStop1Style;
+                stop2Style = GPUBrushStop2Style;
+                break;
+            case ChartType.Mem:
+                stop1Style = MemBrushStop1Style;
+                stop2Style = MemBrushStop2Style;
+                break;
+            case ChartType.Net:
+                stop1Style = NetBrushStop1Style;
+                stop2Style = NetBrushStop2Style;
+                break;
+            case ChartType.CPU:
+            default:
+                stop1Style = CPUBrushStop1Style;
+                stop2Style = CPUBrushStop2Style;
+                break;
+        }
+
+        var stop1 = new XElement(StopElement);
+        stop1.SetAttributeValue(OffsetAttr, "0%");
+        stop1.SetAttributeValue(StyleAttr, stop1Style);
+
+        var stop2 = new XElement(StopElement);
+        stop2.SetAttributeValue(OffsetAttr, "95%");
+        stop2.SetAttributeValue(StyleAttr, stop2Style);
+
+        gradientElement.Add(stop1);
+        gradientElement.Add(stop2);
+        defsElement.Add(gradientElement);
+
+        return defsElement;
+    }
+
+    private static XElement CreateBorderBox(int height, int width)
+    {
+        var boxElement = new XElement(RectElement);
+        boxElement.SetAttributeValue(HeightAttr, height);
+        boxElement.SetAttributeValue(WidthAttr, width);
+        boxElement.SetAttributeValue(StyleAttr, LightGrayBoxStyle);
+        return boxElement;
+    }
+
+    private static string GetLineStyle(ChartType type)
+    {
+        var lineStyle = type switch
+        {
+            ChartType.CPU => CPULineStyle,
+            ChartType.GPU => GPULineStyle,
+            ChartType.Mem => MemLineStyle,
+            ChartType.Net => NetLineStyle,
+            _ => CPULineStyle,
+        };
+
+        return lineStyle;
+    }
+
+    private static StringBuilder TransformPointsToLine(List<float> chartValues, out int startX, out int finalX)
+    {
+        var points = new StringBuilder();
+
+        // The X value where the graph starts must be adjusted so that the graph is right-aligned.
+        // The max available width of the widget is 268. Since there is a 1 px border around the chart, the width of the chart's line must be <=266.
+        // To create a chart of exactly the right size, we'll have 30 points with 9 pixels in between:
+        // index 0            1                      2 - 262                          263
+        // 1 px left border + 1 px for first point + 29 segments * 9 px per segment + 1 px right border = 264 pixels total in width.
+        const int pxBetweenPoints = 9;
+
+        // When the chart doesn't have all points yet, move the chart over to the right by increasing the starting X coordinate.
+        // For a chart with only 1 point, the svg will not render a polyline.
+        // For a chart with 2 points, starting X coordinate ==  1 + (30 -  2) * 9 == 1 + 28 * 9 == 1 + 252 == 253
+        // For a chart with 30 points, starting X coordinate == 1 + (30 - 30) * 9 == 1 +  0 * 9 == 1 +   0 ==   1
+        startX = 1 + ((MaxChartValues - chartValues.Count) * pxBetweenPoints);
+        finalX = startX;
+        foreach (var origY in chartValues)
+        {
+            // We receive the height as a number up from the X axis (bottom of the chart), but we have to invert it
+            // since the Y coordinate is relative to the top of the chart.
+            var invertedHeight = 100 - origY;
+
+            // Scale the final Y to whatever the chart height is.
+            var finalY = (invertedHeight * (ChartHeight / 100.0)) - 1;
+
+            points.Append(CultureInfo.InvariantCulture, $"{finalX},{finalY} ");
+            finalX += pxBetweenPoints;
+        }
+
+        // Remove the trailing space.
+        if (points.Length > 0)
+        {
+            points.Remove(points.Length - 1, 1);
+            finalX -= pxBetweenPoints;
+        }
+
+        return points;
+    }
+
+    private static void TransformPointsToLoop(StringBuilder points, int startX, int finalX)
+    {
+        // Close the loop.
+        // Add a point at the most recent X value that corresponds with y = 0
+        points.Append(CultureInfo.InvariantCulture, $" {finalX},{ChartHeight - 1}");
+
+        // Add a point at the start of the chart that corresponds with y = 0
+        points.Append(CultureInfo.InvariantCulture, $" {startX},{ChartHeight - 1}");
     }
 
     public static void AddNextChartValue(float value, List<float> chartValues)

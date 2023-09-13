@@ -2,8 +2,6 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Services;
-using DevHome.Contracts.Services;
-using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.Activation;

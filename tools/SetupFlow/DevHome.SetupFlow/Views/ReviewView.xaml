@@ -28,7 +28,6 @@
                     </Style>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionToVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible" />
             <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionToInverseVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
         </ResourceDictionary>
@@ -37,8 +36,20 @@
     <setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
         <CheckBox
             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_ReadAndAgree"
+            Visibility="{x:Bind ViewModel.RequiresTermsAgreement, Mode=OneWay}"
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
+
+    <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+        <Grid Background="Transparent" ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+            <Button
+                Command="{x:Bind ViewModel.SetUpCommand, Mode=OneWay}"
+                Style="{StaticResource AccentButtonStyle}"
+                MinWidth="120" Margin="4,0"
+                Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
+        </Grid>
+    </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
 
     <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
                          Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
@@ -81,6 +92,7 @@
                                 </NavigationView.MenuItemTemplate>
                                 <Frame MinHeight="100" Padding="12" HorizontalAlignment="Stretch">
                                     <ContentControl Content="{x:Bind ViewModel.SelectedReviewTab, Mode=OneWay}"
+                                                    IsTabStop="False"
                                                     HorizontalContentAlignment="Stretch"
                                                     VerticalContentAlignment="Stretch" >
                                         <ContentControl.ContentTemplateSelector>
@@ -110,13 +122,13 @@
                 </Expander>
 
                 <StackPanel Style="{StaticResource ReviewStackPanelStyle}"
-                            Visibility="{x:Bind ViewModel.HasApplicationsToInstall, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            Visibility="{x:Bind ViewModel.RequiresTermsAgreement, Mode=OneWay}">
                     <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}"
                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_TermsTitle" />
                     <TextBlock Style="{ThemeResource BodyTextBlockStyle}"
                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_Terms" />
                     <commonviews:HyperlinkTextBlock
-                        Visibility="{x:Bind ViewModel.HasMSStoreApplicationsToInstall, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                        Visibility="{x:Bind ViewModel.HasMSStoreApplicationsToInstall, Mode=OneWay}"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_MSStoreTerms" />
                 </StackPanel>
             </StackPanel>

@@ -1,29 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Collections.ObjectModel;
-using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
-using DevHome.Contracts.Services;
-using DevHome.Dashboard.ViewModels;
-using DevHome.Helpers;
-using DevHome.Services;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Markup;
 using Microsoft.UI.Xaml.Media;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Windows.System;
 
 namespace DevHome.Views;
 
-// TODO: Update NavigationViewItem titles and icons in ShellPage.xaml.
-// https://github.com/microsoft/devhome/issues/614
 public sealed partial class ShellPage : Page
 {
     public ShellViewModel ViewModel
@@ -46,16 +37,24 @@ public sealed partial class ShellPage : Page
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.Activated += MainWindow_Activated;
         AppTitleBarText.Text = Application.Current.GetService<IAppInfoService>().GetAppNameLocalized();
+
+        ActualThemeChanged += OnActualThemeChanged;
     }
 
     private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        TitleBarHelper.UpdateTitleBar(App.MainWindow, RequestedTheme);
+        TitleBarHelper.UpdateTitleBar(App.MainWindow, ActualTheme);
 
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
 
         await ViewModel.OnLoaded();
+    }
+
+    private void OnActualThemeChanged(FrameworkElement sender, object args)
+    {
+        // Update the title bar if the system theme changes.
+        TitleBarHelper.UpdateTitleBar(App.MainWindow, ActualTheme);
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
@@ -78,7 +77,7 @@ public sealed partial class ShellPage : Page
         ShellInfoBar.Margin = new Thickness()
         {
             Left = ShellInfoBar.Margin.Left,
-            Top = sender.DisplayMode == NavigationViewDisplayMode.Minimal ? 50 : 5,
+            Top = sender.DisplayMode == NavigationViewDisplayMode.Minimal ? 50 : 0,
             Right = ShellInfoBar.Margin.Right,
             Bottom = ShellInfoBar.Margin.Bottom,
         };
@@ -113,11 +112,18 @@ public sealed partial class ShellPage : Page
         {
             foreach (var tool in group.Tools)
             {
-                var navigationViewItemString = $@"<NavigationViewItem xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" xmlns:helpers=""using:DevHome.Helpers"" x:Uid=""/{tool.Assembly}/Resources/NavigationPane"" helpers:NavigationHelper.NavigateTo=""{tool.ViewModelFullName}"">
-                                                  <NavigationViewItem.Icon>
-                                                      <FontIcon FontFamily=""{{StaticResource SymbolThemeFontFamily}}"" Glyph=""&#x{tool.Icon};""/>
-                                                  </NavigationViewItem.Icon>
-                                              </NavigationViewItem>";
+                var navigationViewItemString = $@"
+                    <NavigationViewItem
+                        xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+                        xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+                        xmlns:helpers=""using:DevHome.Helpers""
+                        x:Uid=""/{tool.Assembly}/Resources/NavigationPane""
+                        helpers:NavigationHelper.NavigateTo=""{tool.ViewModelFullName}""
+                        AutomationProperties.AutomationId=""{tool.Identity}"">
+                        <NavigationViewItem.Icon>
+                            <FontIcon FontFamily=""{{StaticResource SymbolThemeFontFamily}}"" Glyph=""&#x{tool.Icon};""/>
+                        </NavigationViewItem.Icon>
+                    </NavigationViewItem>";
                 NavigationViewItem navigationViewItem = (NavigationViewItem)XamlReader.Load(navigationViewItemString);
                 NavigationViewControl.MenuItems.Add(navigationViewItem);
             }

@@ -75,7 +75,7 @@ public static class WindowExExtensions
         if (window.Content is FrameworkElement rootElement)
         {
             rootElement.RequestedTheme = theme;
-            TitleBarHelper.UpdateTitleBar(window, theme);
+            TitleBarHelper.UpdateTitleBar(window, rootElement.ActualTheme);
         }
     }
 
@@ -100,7 +100,7 @@ public static class WindowExExtensions
             // To workaround this issue, we instead use the Win32 picking APIs
             // as suggested in the documentation for the FileSavePicker:
             // >> Original code reference: https://learn.microsoft.com/uwp/api/windows.storage.pickers.filesavepicker?view=winrt-22621#in-a-desktop-app-that-requires-elevation
-            // >> Github issue: https://github.com/microsoft/WindowsAppSDK/issues/2504
+            // >> GitHub issue: https://github.com/microsoft/WindowsAppSDK/issues/2504
             // "In a desktop app (which includes WinUI 3 apps), you can use
             // FileSavePicker (and other types from Windows.Storage.Pickers).
             // But if the desktop app requires elevation to run, then you'll
@@ -119,20 +119,34 @@ public static class WindowExExtensions
                     out var fsd);
                 Marshal.ThrowExceptionForHR(hr);
 
-                // Set filters (e.g. "*.yaml", "*.yml", etc...)
+                IShellItem ppsi;
                 var extensions = new List<COMDLG_FILTERSPEC>();
-                foreach (var filter in filters)
+
+                try
                 {
-                    COMDLG_FILTERSPEC extension;
-                    extension.pszName = (char*)Marshal.StringToHGlobalUni(filter.Name);
-                    extension.pszSpec = (char*)Marshal.StringToHGlobalUni(filter.Type);
-                    extensions.Add(extension);
+                    // Set filters (e.g. "*.yaml", "*.yml", etc...)
+                    foreach (var filter in filters)
+                    {
+                        COMDLG_FILTERSPEC extension;
+                        extension.pszName = (char*)Marshal.StringToHGlobalUni(filter.Name);
+                        extension.pszSpec = (char*)Marshal.StringToHGlobalUni(filter.Type);
+                        extensions.Add(extension);
+                    }
+
+                    fsd.SetFileTypes(CollectionsMarshal.AsSpan(extensions));
+
+                    fsd.Show(new HWND(hWnd));
+                    fsd.GetResult(out ppsi);
                 }
-
-                fsd.SetFileTypes(extensions.ToArray());
-
-                fsd.Show(new HWND(hWnd));
-                fsd.GetResult(out var ppsi);
+                finally
+                {
+                    // Free all filter names and specs
+                    foreach (var extension in extensions)
+                    {
+                        Marshal.FreeHGlobal((IntPtr)extension.pszName.Value);
+                        Marshal.FreeHGlobal((IntPtr)extension.pszSpec.Value);
+                    }
+                }
 
                 // Get the display name and then manually free it after creating the string.
                 // See https://learn.microsoft.com/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishellitem-getdisplayname:

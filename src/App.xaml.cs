@@ -9,7 +9,6 @@ using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.Helpers;
-using DevHome.Logging;
 using DevHome.Services;
 using DevHome.Settings.Extensions;
 using DevHome.SetupFlow.Extensions;
@@ -78,6 +77,7 @@ public partial class App : Application, IApp
             services.AddSingleton<ITelemetry>(TelemetryFactory.Get<ITelemetry>());
             services.AddSingleton<IStringResource, StringResource>();
             services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
+            services.AddSingleton<IPackageDeploymentService, PackageDeploymentService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -87,8 +87,6 @@ public partial class App : Application, IApp
             services.AddSingleton<WindowEx>(_ => MainWindow);
 
             // Views and ViewModels
-            services.AddTransient<FeedbackViewModel>();
-            services.AddTransient<FeedbackPage>();
             services.AddTransient<ShellPage>();
             services.AddTransient<InitializationPage>();
             services.AddTransient<ShellViewModel>();
@@ -103,11 +101,33 @@ public partial class App : Application, IApp
 
             // Setup flow
             services.AddSetupFlow(context);
+
+            // Dashboard
+            services.AddDashboard(context);
+
+            // ExtensionLibrary
+            services.AddExtensionLibrary(context);
         }).
         Build();
 
         UnhandledException += App_UnhandledException;
         AppInstance.GetCurrent().Activated += OnActivated;
+    }
+
+    public void ShowMainWindow()
+    {
+        _dispatcherQueue.TryEnqueue(() =>
+        {
+            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(MainWindow);
+            if (Windows.Win32.PInvoke.IsIconic(new Windows.Win32.Foundation.HWND(hWnd)))
+            {
+                MainWindow.Restore();
+            }
+            else
+            {
+                MainWindow.SetForegroundWindow();
+            }
+        });
     }
 
     private async void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
@@ -124,40 +144,7 @@ public partial class App : Application, IApp
         await Task.WhenAll(
             GetService<IActivationService>().ActivateAsync(AppInstance.GetCurrent().GetActivatedEventArgs().Data),
             GetService<IAccountsService>().InitializeAsync(),
-            WindowsPackageManagerInitializationAsync());
-    }
-
-    private async Task WindowsPackageManagerInitializationAsync()
-    {
-        GlobalLog.Logger?.ReportInfo($"Checking if {nameof(WindowsPackageManager)} COM Server is available at app launch");
-        var wpm = GetService<IWindowsPackageManager>();
-        var catalogDataSourceLoader = GetService<CatalogDataSourceLoacder>();
-
-        await Task.Run(async () =>
-        {
-            if (wpm.IsCOMServerAvailable())
-            {
-                GlobalLog.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available");
-
-                // Initialize/Load catalogs from all data sources
-                GlobalLog.Logger?.ReportInfo($"Initializing App install catalogs data sources");
-                await catalogDataSourceLoader.InitializeAsync();
-                GlobalLog.Logger?.ReportInfo($"Found a total of {catalogDataSourceLoader.CatalogCount} catalogs");
-
-                GlobalLog.Logger?.ReportInfo($"Calling {nameof(wpm.ConnectToAllCatalogsAsync)} to connect to catalogs");
-                await wpm.ConnectToAllCatalogsAsync();
-
-                GlobalLog.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to reduce the wait time when this information is requested");
-                await foreach (var dataSourceCatalogs in catalogDataSourceLoader.LoadCatalogsAsync())
-                {
-                    GlobalLog.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
-                }
-            }
-            else
-            {
-                GlobalLog.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available");
-            }
-        });
+            GetService<IAppManagementInitializer>().InitializeAsync());
     }
 
     private void OnActivated(object? sender, AppActivationArguments args)

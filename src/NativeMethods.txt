@@ -2,3 +2,5 @@
 GlobalMemoryStatusEx
 GetSystemInfo
 CoCreateInstance
+SetForegroundWindow
+IsIconic

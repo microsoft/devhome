@@ -63,12 +63,12 @@
     <comment>Label for "Add widget" button"</comment>
   </data>
   <data name="DashboardBanner.Title" xml:space="preserve">
-    <value>Monitor your GitHub Issues and Pull Requests</value>
-    <comment>Title text of an instruction banner on the widget dashboard. GitHub refers to a website. GitHub should not be localized {StrContains=GitHub}.</comment>
+    <value>Monitor your projects using widgets</value>
+    <comment>Title text of an instruction banner on the widget dashboard</comment>
   </data>
   <data name="DashboardBanner.Description" xml:space="preserve">
-    <value>Copy the URL from GitHub to monitor issues and pull requests at a glance.</value>
-    <comment>Description text of an instruction banner on the widget dashboard. GitHub refers to a website. GitHub should not be localized {StrContains=GitHub}.</comment>
+    <value>Check out widgets that can help you connect to your developer account and manage your projects.</value>
+    <comment>Description text of an instruction banner on the widget dashboard</comment>
   </data>
   <data name="DashboardBanner.ButtonText" xml:space="preserve">
     <value>Learn more</value>
@@ -144,7 +144,7 @@
   </data>
   <data name="UpdateWebExpContent" xml:space="preserve">
     <value>Please ensure you have the latest version of the Windows Web Experience Pack installed.</value>
-    <comment>Message asking the user to udpate an app from the store.</comment>
+    <comment>Message asking the user to update an app from the store.</comment>
   </data>
   <data name="UpdateWebExpCancel" xml:space="preserve">
     <value>Cancel</value>
@@ -153,5 +153,17 @@
   <data name="UpdateWebExpUpdate" xml:space="preserve">
     <value>Get in Store app</value>
     <comment>Button text to go to store listing</comment>
+  </data>
+  <data name="DashboardBanner.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Dashboard Banner</value>
+    <comment>Name of the dashboard banner for automation</comment>
+  </data>
+  <data name="CustomizeWidgetTitle.Text" xml:space="preserve">
+    <value>Customize widget</value>
+    <comment>Title for "Customize" dialog</comment>
+  </data>
+  <data name="WidgetSizeSelected" xml:space="preserve">
+    <value>Selected</value>
+    <comment>State of selected size for automatiom purposes</comment>
   </data>
 </root>

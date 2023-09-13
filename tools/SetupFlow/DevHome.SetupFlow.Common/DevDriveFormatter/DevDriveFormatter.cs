@@ -1,9 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Linq;
-using System.Management;
 using DevHome.SetupFlow.Common.Helpers;
+using Microsoft.Management.Infrastructure;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 
@@ -18,6 +17,11 @@ namespace DevHome.SetupFlow.Common.DevDriveFormatter;
 public class DevDriveFormatter
 {
     /// <summary>
+    /// Default allocation unit size for Dev Drives created via a virtual hard disk.
+    /// </summary>
+    private const uint FourKb = 4096;
+
+    /// <summary>
     /// Uses WMI to and the storage Api to format the drive as a Dev Drive. Note: the implementation
     /// is subject to change in the future.
     /// </summary>
@@ -26,41 +30,39 @@ public class DevDriveFormatter
     /// <returns>An Hresult as an int that indicates whether the operation succeeded or failed</returns>
     public int FormatPartitionAsDevDrive(char curDriveLetter, string driveLabel)
     {
-        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Creating ManagementObjectSearcher to search for volume whose Drive letter is {curDriveLetter}:");
+        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Creating CimSession and calling QueryInstances to search for volume whose Drive letter is {curDriveLetter}:");
         try
         {
             // Since at the time of this call the unique object ID of the new volume in unknown,
             // iterate through the volumes that exist to find the one that matches our
             // drive letter. Note: the object ID here is different than what is in AssignDriveLetterToPartition.
-            var searcher =
-                new ManagementObjectSearcher("root\\Microsoft\\Windows\\Storage", "SELECT * FROM MSFT_Volume");
-            long fourKb = 4096;
-            foreach (var queryObj in searcher.Get().Cast<ManagementObject>())
+            using var session = CimSession.Create(null);
+            foreach (var queryObj in session.QueryInstances("root\\Microsoft\\Windows\\Storage", "WQL", "SELECT * from MSFT_Volume"))
             {
-                var objectId = queryObj["ObjectId"] as string;
-                var letter = queryObj["DriveLetter"];
+                var objectId = queryObj.CimInstanceProperties["ObjectId"].Value as string;
+                var letter = queryObj.CimInstanceProperties["DriveLetter"].Value;
 
                 if (letter is char foundALetter
                     && curDriveLetter == foundALetter &&
                     !string.IsNullOrEmpty(objectId))
                 {
-                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Starting WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter}, using args: DeveloperVolume: true, FileSystem: ReFS, FileSystemLabel: {driveLabel}, AllocationUnitSize: {fourKb}");
+                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Starting WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter}, using args: DeveloperVolume: true, FileSystem: ReFS, FileSystemLabel: {driveLabel}, AllocationUnitSize: {FourKb}");
 
                     // Obtain in-parameters for the method
-                    var inParams =
-                        queryObj.GetMethodParameters("Format");
-
-                    // Add the default parameters.
-                    inParams["DevDrive"] = true;
-                    inParams["FileSystem"] = "ReFS";
-                    inParams["FileSystemLabel"] = driveLabel;
-                    inParams["AllocationUnitSize"] = fourKb;
+                    var inParams = new CimMethodParametersCollection
+                    {
+                        // Add the default parameters.
+                        CimMethodParameter.Create("DevDrive", true, CimFlags.In),
+                        CimMethodParameter.Create("FileSystem", "ReFS", CimFlags.In),
+                        CimMethodParameter.Create("FileSystemLabel", driveLabel, CimFlags.In),
+                        CimMethodParameter.Create("AllocationUnitSize", FourKb, CimFlags.In),
+                    };
 
                     // Execute the method and obtain the return values.
                     var outParams =
-                        queryObj.InvokeMethod("Format", inParams, new InvokeMethodOptions());
+                        session.InvokeMethod(queryObj, "Format", inParams);
 
-                    var returnValue = (uint)outParams["ReturnValue"];
+                    var returnValue = (uint)outParams.ReturnValue.Value;
                     if (returnValue == 0)
                     {
                         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter} finished Successfully");
@@ -72,7 +74,7 @@ public class DevDriveFormatter
                 }
 
                 var notCorrectDriveLetter = (letter is char ) ? ((char)letter).ToString() : "none";
-                Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"ManagementObjectSearcher found ObjectId: {objectId} but its Driveletter: {notCorrectDriveLetter}: is not correct, continuing search...");
+                Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"CimSession.QueryInstances found ObjectId: {objectId} but its Driveletter: {notCorrectDriveLetter}: is not correct, continuing search...");
             }
 
             // ReturnValue was not successful. Give this a specific error but this will need
@@ -82,9 +84,9 @@ public class DevDriveFormatter
             Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Attempt to format drive as a Dev Drive failed default error: 0x{defaultError:X}");
             return defaultError;
         }
-        catch (ManagementException e)
+        catch (CimException e)
         {
-            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"A management exception occurred while formating Dev Drive Error: 0x{e.HResult:X}, error msg: {e.Message}");
+            Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"A CimException occurred while formatting Dev Drive Error.", e);
             return e.HResult;
         }
     }

@@ -69,6 +69,8 @@ internal class SystemNetworkUsageWidget : CoreWidget, IDisposable
             networkData.Add("netReceived", BytesToBitsPerSecString(networkStats.Received));
             networkData.Add("networkName", netName);
             networkData.Add("netGraphUrl", currentData.CreateNetImageUrl(networkIndex));
+            networkData.Add("chartHeight", ChartHelper.ChartHeight + "px");
+            networkData.Add("chartWidth", ChartHelper.ChartWidth + "px");
 
             DataState = WidgetDataState.Okay;
             ContentData = networkData.ToJsonString();

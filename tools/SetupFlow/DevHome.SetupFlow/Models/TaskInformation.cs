@@ -19,12 +19,11 @@ public partial class TaskInformation : ObservableObject
         get; set;
     }
 
-    [ObservableProperty]
-    private string _messageToShow;
-
-    [ObservableProperty]
-    private bool _statusIconGridVisibility;
-
-    [ObservableProperty]
-    private BitmapImage _statusSymbolIcon;
+    /// <summary>
+    /// The message to display in the loading screen.
+    /// </summary>
+    public string MessageToShow
+    {
+        get; set;
+    }
 }

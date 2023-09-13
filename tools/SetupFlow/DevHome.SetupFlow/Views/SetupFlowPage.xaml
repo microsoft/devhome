@@ -18,8 +18,7 @@
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <converters:BoolToVisibilityConverter x:Key="NegateBoolToVisibility" TrueValue="Collapsed" FalseValue="Visible" />
+        <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
     </Page.Resources>
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
@@ -33,6 +32,7 @@
             Grid.Row="0"
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
+            IsTabStop="False"
             Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel, Mode=OneWay}">
             <ContentControl.ContentTemplateSelector>
                 <selectors:SetupFlowViewSelector>
@@ -77,16 +77,19 @@
 
         <controls:SetupFlowNavigation
             Grid.Row="1"
-            Visibility="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.IsNavigationBarVisible, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+            Visibility="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.IsNavigationBarVisible, Mode=OneWay}">
             <i:Interaction.Behaviors>
                 <setupFlowBehaviors:SetupFlowNavigationBehavior>
+                    <!-- TODO: https://github.com/microsoft/devhome/issues/1494
+                         - DefaultCancelTemplate should not contain multiple elements, instead CancelTemplate should be used to overwrite the default behavior.
+                         - Explore the option to share the style in the setup flow navigation control to eliminate redundancy -->
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultCancelTemplate>
                         <Grid>
                             <HyperlinkButton
                                 Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
                                 MinWidth="120" Margin="4,0"
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel"
-                                Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowDoneButton, Mode=OneWay, Converter={StaticResource NegateBoolToVisibility}}"/>
+                                Visibility="{x:Bind ViewModel.Orchestrator.ShouldShowDoneButton, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
                             <Button
                                 Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
                                 MinWidth="120" Margin="4,0"
@@ -98,14 +101,13 @@
                         <Button
                             Command="{x:Bind ViewModel.Orchestrator.GoToPreviousPageCommand, Mode=OneWay}"
                             MinWidth="120" Margin="4,0"
-                            Visibility="{x:Bind ViewModel.Orchestrator.HasPreviousPage, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
+                            Visibility="{x:Bind ViewModel.Orchestrator.HasPreviousPage, Mode=OneWay}"
                             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Previous" />
                     </setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultPreviousTemplate>
                     <!-- Workaround to show a tooltip on a disabled button
                          https://github.com/microsoft/microsoft-ui-xaml/issues/2262-->
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
-                        <Grid ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
-                            <TextBlock IsTabStop="False" />
+                        <Grid Background="Transparent" ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
                             <Button
                                 Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
                                 Style="{StaticResource AccentButtonStyle}"

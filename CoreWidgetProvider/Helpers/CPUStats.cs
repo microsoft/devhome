@@ -9,7 +9,8 @@ internal class CPUStats : IDisposable
 {
     // CPU counters
     private readonly PerformanceCounter procPerf = new ("Processor Information", "% Processor Utility", "_Total");
-    private readonly PerformanceCounter procSpeed = new ("Processor Information", "Processor Frequency", "_Total");
+    private readonly PerformanceCounter procPerformance = new ("Processor Information", "% Processor Performance", "_Total");
+    private readonly PerformanceCounter procFrequency = new ("Processor Information", "Processor Frequency", "_Total");
     private readonly Dictionary<Process, PerformanceCounter> cpuCounters = new ();
 
     internal class ProcessStats
@@ -48,11 +49,14 @@ internal class CPUStats : IDisposable
     public void GetData()
     {
         CpuUsage = procPerf.NextValue() / 100;
-        CpuSpeed = procSpeed.NextValue();
+        CpuSpeed = procFrequency.NextValue() * (procPerformance.NextValue() / 100);
 
-        ChartHelper.AddNextChartValue(CpuUsage * 100, CpuChartValues);
+        lock (CpuChartValues)
+        {
+            ChartHelper.AddNextChartValue(CpuUsage * 100, CpuChartValues);
+        }
 
-        Dictionary<Process, float> processCPUUsages = new Dictionary<Process, float>();
+        var processCPUUsages = new Dictionary<Process, float>();
 
         foreach (var processCounter in cpuCounters)
         {
@@ -77,7 +81,7 @@ internal class CPUStats : IDisposable
 
     internal string CreateCPUImageUrl()
     {
-        return ChartHelper.CreateImageUrl(CpuChartValues, "cpu");
+        return ChartHelper.CreateImageUrl(CpuChartValues, ChartHelper.ChartType.CPU);
     }
 
     internal string GetCpuProcessText(int cpuProcessIndex)
@@ -103,7 +107,8 @@ internal class CPUStats : IDisposable
     public void Dispose()
     {
         procPerf.Dispose();
-        procSpeed.Dispose();
+        procPerformance.Dispose();
+        procFrequency.Dispose();
 
         foreach (var counter in cpuCounters.Values)
         {

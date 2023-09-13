@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Common.Views;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -58,11 +59,16 @@ internal partial class AddRepoDialog
     /// </summary>
     private string _oldCloneLocation;
 
-    public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
+    public AddRepoDialog(
+        IDevDriveManager devDriveManager,
+        ISetupFlowStringResource stringResource,
+        List<CloningInformation> previouslySelectedRepos,
+        ElementTheme elementTheme,
+        Guid activityId)
     {
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, elementTheme, activityId);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
 
@@ -182,7 +188,8 @@ internal partial class AddRepoDialog
                 location = (EditDevDriveViewModel.DevDrive != null) ? EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
             }
 
-            FolderPickerViewModel.CloneLocation = location;
+            // In cases where location is empty don't update the cloneLocation. Only update when there are actual values.
+            FolderPickerViewModel.CloneLocation = string.IsNullOrEmpty(location) ? FolderPickerViewModel.CloneLocation : location;
         }
 
         FolderPickerViewModel.ValidateCloneLocation();
@@ -197,7 +204,7 @@ internal partial class AddRepoDialog
     /// <remarks>
     /// Fired when a user changes their account on a provider.
     /// </remarks>
-    private void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // This gets fired when events are removed from the account combo box.
         // When the provider combo box is changed all accounts are removed from the account combo box
@@ -208,7 +215,8 @@ internal partial class AddRepoDialog
         {
             var loginId = (string)AccountsComboBox.SelectedValue;
             var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-            SelectRepositories(AddRepoViewModel.GetRepositories(providerName, loginId));
+            await AddRepoViewModel.GetRepositoriesAsync(providerName, loginId);
+            SelectRepositories(AddRepoViewModel.SetRepositories(providerName, loginId));
         }
     }
 
@@ -286,19 +294,16 @@ internal partial class AddRepoDialog
 
     private async void SwitchToRepoPage(string repositoryProviderName)
     {
-        var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
-        AddRepoViewModel.ChangeToRepoPage();
-        FolderPickerViewModel.ShowFolderPicker();
-        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-
-        await getAccountsTask;
+        await AddRepoViewModel.GetAccountsAsync(repositoryProviderName, LoginUIContent);
         if (AddRepoViewModel.Accounts.Any())
         {
+            AddRepoViewModel.ChangeToRepoPage();
+            FolderPickerViewModel.ShowFolderPicker();
+            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
             AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
+            IsPrimaryButtonEnabled = false;
         }
-
-        PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-        IsPrimaryButtonEnabled = false;
     }
 
     /// <summary>
@@ -313,12 +318,7 @@ internal partial class AddRepoDialog
         var isChecked = (sender as CheckBox).IsChecked;
         if (isChecked.Value)
         {
-            EditDevDriveViewModel.MakeDefaultDevDrive();
-            FolderPickerViewModel.DisableBrowseButton();
-            _oldCloneLocation = FolderPickerViewModel.CloneLocation;
-            FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
-            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-            FolderPickerViewModel.InDevDriveScenario = true;
+            UpdateDevDriveInfo();
         }
         else
         {
@@ -403,5 +403,19 @@ internal partial class AddRepoDialog
             AddRepoViewModel.FilterRepositories(FilterTextBox.Text);
             SelectRepositories(AddRepoViewModel.EverythingToClone);
         }
+    }
+
+    /// <summary>
+    /// Update dialog to show Dev Drive information.
+    /// </summary>
+    public void UpdateDevDriveInfo()
+    {
+        EditDevDriveViewModel.MakeDefaultDevDrive();
+        FolderPickerViewModel.DisableBrowseButton();
+        _oldCloneLocation = FolderPickerViewModel.CloneLocation;
+        FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
+        FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+        FolderPickerViewModel.InDevDriveScenario = true;
+        EditDevDriveViewModel.IsDevDriveCheckboxChecked = true;
     }
 }

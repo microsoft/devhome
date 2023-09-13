@@ -38,6 +38,9 @@ public partial class WidgetViewModel : ObservableObject
     private string _widgetDisplayTitle;
 
     [ObservableProperty]
+    private string _widgetProviderDisplayTitle;
+
+    [ObservableProperty]
     private FrameworkElement _widgetFrameworkElement;
 
     [ObservableProperty]
@@ -73,6 +76,7 @@ public partial class WidgetViewModel : ObservableObject
         if (WidgetDefinition != null)
         {
             WidgetDisplayTitle = WidgetDefinition.DisplayTitle;
+            WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinition.DisplayName;
         }
     }
 
@@ -87,7 +91,7 @@ public partial class WidgetViewModel : ObservableObject
     public WidgetViewModel(
         Widget widget,
         WidgetSize widgetSize,
-        WidgetDefinition widgetDefintion,
+        WidgetDefinition widgetDefinition,
         AdaptiveCardRenderer renderer,
         Microsoft.UI.Dispatching.DispatcherQueue dispatcher)
     {
@@ -96,13 +100,16 @@ public partial class WidgetViewModel : ObservableObject
 
         Widget = widget;
         WidgetSize = widgetSize;
-        WidgetDefinition = widgetDefintion;
+        WidgetDefinition = widgetDefinition;
+    }
+
+    public void Render()
+    {
+        RenderWidgetFrameworkElement();
     }
 
     private async void RenderWidgetFrameworkElement()
     {
-        Log.Logger()?.ReportDebug("WidgetViewModel", "RenderWidgetFrameworkElement");
-
         var cardTemplate = await Widget.GetCardTemplateAsync();
         var cardData = await Widget.GetCardDataAsync();
 
@@ -128,7 +135,7 @@ public partial class WidgetViewModel : ObservableObject
         Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
 
         // If we're in the Add or Edit dialog, check the cardData to see if the card is in a configuration state
-        // or if it is pinnable yet. If still configuring, the Pin button will be disabled.
+        // or if it is able to be pinned yet. If still configuring, the Pin button will be disabled.
         if (IsInAddMode || IsInEditMode)
         {
             GetConfiguring(cardData);
@@ -291,7 +298,7 @@ public partial class WidgetViewModel : ObservableObject
 
     private void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
     {
-        Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
+        Log.Logger()?.ReportDebug("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
         RenderWidgetFrameworkElement();
     }
 }

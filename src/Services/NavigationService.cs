@@ -21,6 +21,8 @@ public class NavigationService : INavigationService
     private Frame? _frame;
     private string? _defaultPage;
 
+    public object? LastParameterUsed => _lastParameterUsed;
+
     public event NavigatedEventHandler? Navigated;
 
     public Frame? Frame

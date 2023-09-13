@@ -242,8 +242,8 @@
     <comment>Button text for learning more about setting up a development machine</comment>
   </data>
   <data name="DevDriveWindowByteUnitComboBox" xml:space="preserve">
-    <value>Byte unit of mearsure</value>
-    <comment>Unit of mearsure values that will populate the dropdown. Only gigabyte and terabyte</comment>
+    <value>Byte unit of measure</value>
+    <comment>Unit of measure values that will populate the dropdown. Only gigabyte and terabyte</comment>
   </data>
   <data name="DevDriveWindowByteUnitComboBoxGB" xml:space="preserve">
     <value>GB</value>
@@ -536,6 +536,10 @@
   <data name="RestorePackagesDescription" xml:space="preserve">
     <value>These applications are from {0}. Select the ones to install.</value>
     <comment>{Locked="{0}"} Description text of a section for restoring packages from another device. {0} is replaced by a device name.</comment>
+  </data>
+  <data name="RestorePackagesDescriptionWithDate" xml:space="preserve">
+    <value>These applications are from {0} (last synced on {1}). Select the ones to install.</value>
+    <comment>{Locked="{0}","{1}"} Description text of a section for restoring packages from another device. {0} is replaced by a device name. {1} is replaced by a date.</comment>
   </data>
   <data name="PackagesCount" xml:space="preserve">
     <value>{0} packages</value>
@@ -1148,7 +1152,7 @@
     <comment>Error string to show the user if the drive they want to clone to does not exist.  Should be used if not making a devdrive</comment>
   </data>
   <data name="CloneRepoErrorForActionCenter" xml:space="preserve">
-    <value>Couldn't clone {0} 0x{1}</value>
+    <value>Couldn't clone {0} because {1}</value>
     <comment>{Locked="{0}","{1}"}Action center message to give the hresult as to why the repo could not be cloned {0}: name of repo {1}:Hresult as a hex</comment>
   </data>
   <data name="ClonePathForTextBlock.Text" xml:space="preserve">
@@ -1182,5 +1186,21 @@
   <data name="RepositoryTypeHeader.Text" xml:space="preserve">
     <value>Repository type</value>
     <comment>Header for the repo  grid</comment>
+  </data>
+  <data name="SSHConnectionStringNotAllowed" xml:space="preserve">
+    <value>SSH connection strings are not allowed</value>
+    <comment>Error string when a user enters in an SSH connection string</comment>
+  </data>
+  <data name="ApplyingConfigurationMessage" xml:space="preserve">
+    <value>Applying configuration</value>
+    <comment>String letting users know the configuration is being applied</comment>
+  </data>
+  <data name="DevDriveNotAdminError" xml:space="preserve">
+    <value>A DevDrive can only be created when elevated</value>
+    <comment>Error string letting users know why dev drive wasn't installed.</comment>
+  </data>
+  <data name="StartingInstallPackageMessage" xml:space="preserve">
+    <value>Starting to install package {0}</value>
+    <comment>{Locked="{0}"} String letting users know that DevHome has started to install a package. {0} is the package id</comment>
   </data>
 </root>
