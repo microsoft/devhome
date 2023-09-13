@@ -79,6 +79,7 @@ public partial class PackageViewModel : ObservableObject
         IsInstalled = _package.IsInstalled;
         CatalogName = _package.CatalogName;
         PublisherName = !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
+        InstallationNotes = _package.InstallationNotes;
 
         // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
@@ -102,6 +103,8 @@ public partial class PackageViewModel : ObservableObject
     public string CatalogName { get; }
 
     public string PublisherName { get; }
+
+    public string InstallationNotes { get; }
 
     public string PackageTitle => Name;
 
