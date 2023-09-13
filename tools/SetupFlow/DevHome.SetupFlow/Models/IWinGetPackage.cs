@@ -126,6 +126,14 @@ public interface IWinGetPackage
     }
 
     /// <summary>
+    /// Gets the package installation notes
+    /// </summary>
+    public string InstallationNotes
+    {
+        get;
+    }
+
+    /// <summary>
     /// Create an install task for this package
     /// </summary>
     /// <param name="wpm">Windows package manager service</param>

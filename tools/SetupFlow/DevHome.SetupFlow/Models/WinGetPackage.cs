@@ -20,6 +20,7 @@ public class WinGetPackage : IWinGetPackage
     private readonly Lazy<Uri> _packageUrl;
     private readonly Lazy<Uri> _publisherUrl;
     private readonly Lazy<string> _publisherName;
+    private readonly Lazy<string> _installationNotes;
     private readonly PackageUniqueKey _uniqueKey;
 
     public WinGetPackage(CatalogPackage package)
@@ -28,6 +29,7 @@ public class WinGetPackage : IWinGetPackage
         _packageUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null));
         _publisherUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PublisherUrl), nameof(CatalogPackageMetadata.PublisherUrl), null));
         _publisherName = new (() => GetMetadataValue(metadata => metadata.Publisher, nameof(CatalogPackageMetadata.Publisher), null));
+        _installationNotes = new (() => GetMetadataValue(metadata => metadata.InstallationNotes, nameof(CatalogPackageMetadata.InstallationNotes), null));
         _uniqueKey = new (Id, CatalogId);
     }
 
@@ -62,6 +64,8 @@ public class WinGetPackage : IWinGetPackage
     public Uri PublisherUrl => _publisherUrl.Value;
 
     public string PublisherName => _publisherName.Value;
+
+    public string InstallationNotes => _installationNotes.Value;
 
     public InstallPackageTask CreateInstallTask(
         IWindowsPackageManager wpm,

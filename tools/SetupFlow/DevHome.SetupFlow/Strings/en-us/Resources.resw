@@ -1020,6 +1020,14 @@
     <value>Summary</value>
     <comment>Title for a section in the summary page</comment>
   </data>
+  <data name="SummaryPage_ViewAll.Content" xml:space="preserve">
+    <value>View all</value>
+    <comment>Hyperlink button text for revealing the remainder of a trimmed message</comment>
+  </data>
+  <data name="InstallationNotesTitle" xml:space="preserve">
+    <value>{0} Installation Notes</value>
+    <comment>{Locked="{0}"} Title for a window displaying installation notes for an application. {0} is replaced by the application name.</comment>
+  </data>
   <data name="DevDriveErrorWithReason" xml:space="preserve">
     <value>Dev Drive couldn't be created error: {0}</value>
     <comment>Message when the dev drive could not be created. Param: reason.</comment>
