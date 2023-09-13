@@ -10,6 +10,8 @@ using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Settings.Models;
+using DevHome.Settings.TelemetryEvents;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel;
 
@@ -99,6 +101,8 @@ public partial class ExtensionsViewModel : ObservableObject
 
     public void Navigate(string path)
     {
+        TelemetryFactory.Get<ITelemetry>().Log("ExtensionsSettings_Navigate_Event", LogLevel.Critical, new NavigateToExtensionSettingsEvent("ExtensionsViewModel"));
+
         var navigationService = Application.Current.GetService<INavigationService>();
         var segments = path.Split("/");
         navigationService.NavigateTo(typeof(ExtensionSettingsViewModel).FullName!, segments[1]);
