@@ -539,7 +539,7 @@
   </data>
   <data name="RemoveApplication" xml:space="preserve">
     <value>Remove</value>
-    <comment>Text announced when a button for removing an application got focus</comment>
+    <comment>Text announced when screen readers focus on the 'Remove' button. The 'Remove' button allows users to remove an application from their cart</comment>
   </data>
   <data name="RemovedApplication" xml:space="preserve">
     <value>Removed {0}</value>
