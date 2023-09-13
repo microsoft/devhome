@@ -107,7 +107,7 @@ public class WinGetPackage : IWinGetPackage
 
     /// <summary>
     /// Gets the package metadata from the current culture name (e.g. 'en-US')
-    /// </summaryDescription</TextBlock>>
+    /// </summary>
     /// <typeparam name="T">Type of the return value</typeparam>
     /// <param name="metadataFunction">Function called with the package metadata as input</param>
     /// <param name="metadataFieldName">Name of the metadata field we want to get; used for logging</param>
