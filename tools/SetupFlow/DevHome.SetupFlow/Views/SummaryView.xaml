@@ -226,9 +226,10 @@
                 <!-- Displays the repos cloned and apps downloaded -->
                 <StackPanel Grid.Column="1" Orientation="Vertical" x:Name="TaskGroupSections">
                     <StackPanel.Resources>
-                        <StaticResource x:Key="ExpanderHeaderBackground" ResourceKey="ControlFillColorTransparentBrush" />
-                        <StaticResource x:Key="ExpanderContentBackground" ResourceKey="ControlFillColorTransparentBrush" />
                         <Thickness x:Key="ExpanderHeaderBorderThickness">0</Thickness>
+                        <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="Transparent" />
+                        <SolidColorBrush x:Key="ExpanderContentBackground" Color="Transparent" />
+                        <SolidColorBrush x:Key="ExpanderContentBorderBrush" Color="Transparent" />
                         <Style TargetType="Expander">
                             <Setter Property="IsExpanded" Value="True"/>
                             <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -260,9 +261,11 @@
                                         </Grid>
                                     </DataTemplate>
                                 </StackPanel.Resources>
-                                <ItemsRepeater x:Name="TasksItemsRepeater" ItemsSource="{x:Bind ViewModel.RepositoriesCloned, Mode=OneWay}"
-                                   Layout="{StaticResource LayoutForRepos}" 
-                                   ItemTemplate="{StaticResource repoTemplate}">
+                                <ItemsRepeater
+                                    x:Name="TasksItemsRepeater"
+                                    ItemsSource="{x:Bind ViewModel.RepositoriesCloned, Mode=OneWay}"
+                                    Layout="{StaticResource LayoutForRepos}" 
+                                    ItemTemplate="{StaticResource repoTemplate}">
                                 </ItemsRepeater>
                             </StackPanel>
                         </Expander>

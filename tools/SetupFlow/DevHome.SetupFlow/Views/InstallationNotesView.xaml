@@ -20,7 +20,7 @@
                 HorizontalAlignment="Left"
                 Width="16"
                 Height="20" 
-                Margin="10 5 5 0"/>
+                Margin="15,5,5,0"/>
             <TextBlock x:Name="AppTitleBarText"
                 VerticalAlignment="Center"
                 TextWrapping="NoWrap"
