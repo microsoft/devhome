@@ -10,8 +10,14 @@
     xmlns:labs="using:CommunityToolkit.Labs.WinUI"
     xmlns:settings="using:DevHome.Settings.ViewModels"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
+    <Page.Resources>
+        <ResourceDictionary>
+            <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
+        </ResourceDictionary>
+    </Page.Resources>
 
     <Grid
         MaxWidth="{ThemeResource MaxPageContentWidth}"
@@ -43,6 +49,10 @@
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>
                 </ItemsRepeater>
+                <TextBlock x:Uid="Settings_Extensions_NoneInstalled"
+                           Visibility="{x:Bind ViewModel.SettingsList.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}"
+                           Margin="0,50" 
+                           HorizontalAlignment="Center" />
             </StackPanel>
         </ScrollViewer>
     </Grid>
