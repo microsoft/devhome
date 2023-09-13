@@ -24,10 +24,12 @@ namespace DevHome.Settings.ViewModels;
 public partial class ExtensionSettingsViewModel : ObservableObject
 {
     private readonly IPluginService _pluginService;
+    private readonly INavigationService _navigationService;
 
-    public ExtensionSettingsViewModel(IPluginService pluginService)
+    public ExtensionSettingsViewModel(IPluginService pluginService, INavigationService navigationService)
     {
         _pluginService = pluginService;
+        _navigationService = navigationService;
 
         Breadcrumbs = new ObservableCollection<Breadcrumb> { };
     }
@@ -42,11 +44,10 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     {
         var pluginWrappers = await _pluginService.GetInstalledPluginsAsync(true);
 
-        var navigationService = Application.Current.GetService<INavigationService>();
         foreach (var pluginWrapper in pluginWrappers)
         {
-            if ((navigationService.LastParameterUsed != null) &&
-                ((string)navigationService.LastParameterUsed == pluginWrapper.ExtensionUniqueId))
+            if ((_navigationService.LastParameterUsed != null) &&
+                ((string)_navigationService.LastParameterUsed == pluginWrapper.ExtensionUniqueId))
             {
                 var stringResource = new StringResource("DevHome.Settings/Resources");
                 Breadcrumbs.Add(new Breadcrumb(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!));
