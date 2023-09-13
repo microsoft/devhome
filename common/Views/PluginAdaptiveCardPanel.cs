@@ -15,7 +15,6 @@ namespace DevHome.Common.Views;
 
 // XAML element to contain a single instance of plugin UI.
 // Use this element where plugin UI is expected to pop up.
-// TODO: Should ideally not allow external children to be added through the `Children` property.
 // https://github.com/microsoft/devhome/issues/610
 public class PluginAdaptiveCardPanel : StackPanel
 {
@@ -40,7 +39,7 @@ public class PluginAdaptiveCardPanel : StackPanel
                 var renderedAdaptiveCard = adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
                 renderedAdaptiveCard.Action += async (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
                 {
-                    await extensionAdaptiveCardSession.OnAction(JsonConvert.SerializeObject(args.Action), JsonConvert.SerializeObject(args.Inputs));
+                    await extensionAdaptiveCardSession.OnAction(args.Action.ToJson().Stringify(), args.Inputs.AsJson().Stringify());
                 };
 
                 Children.Clear();

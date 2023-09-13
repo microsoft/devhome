@@ -11,8 +11,6 @@ public class Setting
 {
     private bool _isExtensionEnabled;
 
-    private bool _isNotificationsEnabled;
-
     public string Path { get; }
 
     public string FullName { get; }
@@ -24,6 +22,8 @@ public class Setting
     public string Glyph { get; }
 
     public bool HasToggleSwitch { get; }
+
+    public bool HasSettingsProvider { get; }
 
     public bool IsExtensionEnabled
     {
@@ -44,26 +44,7 @@ public class Setting
         }
     }
 
-    public bool IsNotificationsEnabled
-    {
-        get => _isNotificationsEnabled;
-
-        set
-        {
-            if (_isNotificationsEnabled != value)
-            {
-                Task.Run(() =>
-                {
-                    var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                    return localSettingsService.SaveSettingAsync(FullName + "-NotificationsDisabled", !value);
-                }).Wait();
-
-                _isNotificationsEnabled = value;
-            }
-        }
-    }
-
-    public Setting(string path, string fullName, string header, string description, string glyph, bool hasToggleSwitch)
+    public Setting(string path, string fullName, string header, string description, string glyph, bool hasToggleSwitch, bool hasSettingsProvider)
     {
         Path = path;
         FullName = fullName;
@@ -71,9 +52,9 @@ public class Setting
         Description = description;
         Glyph = glyph;
         HasToggleSwitch = hasToggleSwitch;
+        HasSettingsProvider = hasSettingsProvider;
 
         _isExtensionEnabled = GetIsExtensionEnabled();
-        _isNotificationsEnabled = GetIsNotificationsEnabled();
     }
 
     private bool GetIsExtensionEnabled()
@@ -82,16 +63,6 @@ public class Setting
         {
             var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
             return localSettingsService.ReadSettingAsync<bool>(FullName + "-ExtensionDisabled");
-        }).Result;
-        return !isDisabled;
-    }
-
-    private bool GetIsNotificationsEnabled()
-    {
-        var isDisabled = Task.Run(() =>
-        {
-            var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-            return localSettingsService.ReadSettingAsync<bool>(FullName + "-NotificationsDisabled");
         }).Result;
         return !isDisabled;
     }
