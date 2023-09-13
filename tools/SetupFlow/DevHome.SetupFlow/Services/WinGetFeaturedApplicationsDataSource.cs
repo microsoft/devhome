@@ -48,6 +48,9 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
                     {
                         var groups = groupsResult.FeaturedApplicationsGroups;
                         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found {groups.Count} groups from extension '{extensionName}'");
+
+                        // Cannot use foreach or LINQ for out-of-process IVector
+                        // Bug: https://github.com/microsoft/CsWinRT/issues/1205
                         for (var i = 0; i < groups.Count; ++i)
                         {
                             _groups.Add(groups[i]);
