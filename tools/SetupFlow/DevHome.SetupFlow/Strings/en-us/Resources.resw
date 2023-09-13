@@ -121,6 +121,10 @@
     <value>Add all</value>
     <comment>Label for adding all items for selection</comment>
   </data>
+  <data name="AddAllAnnouncement" xml:space="preserve">
+    <value>Selections added to "{0}" pane</value>
+    <comment>{Locked="{0}"} Screen reader announcement for adding all items for selection</comment>
+  </data>
   <data name="AddPackagesDescription.Text" xml:space="preserve">
     <value>Select packages to restore from your backup, clone from repository, or search with Windows Package Manager.</value>
     <comment>Description for Add packages page</comment>
@@ -632,6 +636,10 @@
   <data name="SelectedPackages.Text" xml:space="preserve">
     <value>Applications to install</value>
     <comment>Label for applications to install</comment>
+  </data>
+  <data name="SelectedPackagesText" xml:space="preserve">
+    <value>Applications to install</value>
+    <comment>Label for applications to install. Should match "SelectedPackages.Text" resource</comment>
   </data>
   <data name="SetupButton" xml:space="preserve">
     <value>Set up</value>

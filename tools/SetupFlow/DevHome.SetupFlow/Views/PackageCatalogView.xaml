@@ -29,7 +29,7 @@
             <HyperlinkButton
                 Grid.Column="1"
                 Visibility="{x:Bind Catalog.CanAddAllPackages, Mode=OneWay}"
-                Command="{x:Bind Catalog.AddAllPackagesCommand}">
+                Click="{x:Bind AddAllPackages}">
                 <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AddAll" />
             </HyperlinkButton>
         </controls:SettingsCard>

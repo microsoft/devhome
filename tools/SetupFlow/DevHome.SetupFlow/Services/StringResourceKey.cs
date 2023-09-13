@@ -11,6 +11,7 @@ namespace DevHome.SetupFlow.Services;
 public static class StringResourceKey
 {
     // Keys in this file should be a subset of the ones found in the .resw file.
+    public static readonly string AddAllAnnouncement = nameof(AddAllAnnouncement);
     public static readonly string ApplicationsAddedPlural = nameof(ApplicationsAddedPlural);
     public static readonly string ApplicationsAddedSingular = nameof(ApplicationsAddedSingular);
     public static readonly string Applications = nameof(Applications);
@@ -72,6 +73,7 @@ public static class StringResourceKey
     public static readonly string RestorePackagesDescriptionWithDate = nameof(RestorePackagesDescriptionWithDate);
     public static readonly string Repository = nameof(Repository);
     public static readonly string ReviewNothingToSetUpToolTip = nameof(ReviewNothingToSetUpToolTip);
+    public static readonly string SelectedPackagesText = nameof(SelectedPackagesText);
     public static readonly string SelectedPackagesCount = nameof(SelectedPackagesCount);
     public static readonly string SetUpButton = nameof(SetUpButton);
     public static readonly string SizeWithColon = nameof(SizeWithColon);

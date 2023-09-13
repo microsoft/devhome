@@ -6,9 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.Views;
@@ -55,6 +58,27 @@ public sealed partial class PackageCatalogView : UserControl
     public PackageCatalogView()
     {
         this.InitializeComponent();
+    }
+
+    protected override AutomationPeer OnCreateAutomationPeer()
+    {
+        return new FrameworkElementAutomationPeer(this);
+    }
+
+    public void AddAllPackages()
+    {
+        var autoPeer = FrameworkElementAutomationPeer.FromElement(this);
+        if (autoPeer is not null)
+        {
+            var stringResource = new StringResource("DevHome.SetupFlow/Resources");
+            autoPeer.RaiseNotificationEvent(
+                AutomationNotificationKind.ActionCompleted,
+                AutomationNotificationProcessing.ImportantMostRecent,
+                stringResource.GetLocalized(StringResourceKey.AddAllAnnouncement, StringResourceKey.SelectedPackagesText),
+                "AddAllAnnouncement");
+        }
+
+        Catalog.AddAllPackagesCommand.Execute(null);
     }
 
     /// <summary>
