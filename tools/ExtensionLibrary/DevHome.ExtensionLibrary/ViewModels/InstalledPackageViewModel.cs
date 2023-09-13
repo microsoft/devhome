@@ -8,6 +8,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
+using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel;
 using Windows.System;
@@ -61,7 +63,8 @@ public partial class InstalledExtensionViewModel : ObservableObject
     [RelayCommand]
     private void NavigateSettings()
     {
-        // TODO: nothing implements ISettingsProvider yet, so this will not be called
+        var navigationService = Application.Current.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(ExtensionSettingsViewModel).FullName!, ExtensionUniqueId);
     }
 }
 
