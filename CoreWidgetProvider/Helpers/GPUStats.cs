@@ -104,7 +104,10 @@ internal class GPUStats : IDisposable
                     // NextValue() can throw an InvalidOperationException if the counter is no longer there.
                     var sum = counters?.Sum(x => x.NextValue()) ?? 0;
                     gpu.Usage = sum / 100;
-                    ChartHelper.AddNextChartValue(sum, gpu.GpuChartValues);
+                    lock (gpu.GpuChartValues)
+                    {
+                        ChartHelper.AddNextChartValue(sum, gpu.GpuChartValues);
+                    }
                 }
                 catch (InvalidOperationException ex)
                 {

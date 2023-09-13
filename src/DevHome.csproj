@@ -21,6 +21,12 @@
         <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
         <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
     </PropertyGroup>
+    <ItemGroup>
+      <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
+      <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
+      <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
+      <None Remove="Assets\WhatsNewPage\LightTheme\ExtensionsBig.png" />
+    </ItemGroup>
 
     <ItemGroup>
         <Manifest Include="$(ApplicationManifest)" />
@@ -46,6 +52,7 @@
         <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
         <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
         <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
+        <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
     </ItemGroup>
     <ItemGroup>
         <None Update="appsettings.json">

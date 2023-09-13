@@ -23,6 +23,8 @@ internal class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
 
     public string OwningAccountName => "Unknown";
 
+    public Uri RepoUri => _cloneUri;
+
     private readonly Uri _cloneUri;
 
     public GenericRepository(Uri cloneUri)

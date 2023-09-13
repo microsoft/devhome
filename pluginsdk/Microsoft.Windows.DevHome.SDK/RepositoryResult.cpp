@@ -6,18 +6,19 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     RepositoryResult::RepositoryResult(winrt::Microsoft::Windows::DevHome::SDK::IRepository const& repository)
     {
-        throw hresult_not_implemented();
+        _Repository = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::IRepository>(repository);
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring(""), winrt::to_hstring(""));
     }
     RepositoryResult::RepositoryResult(winrt::hresult const& e, hstring const& diagnosticText)
     {
-        throw hresult_not_implemented();
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), winrt::to_hstring("Something went wrong"), diagnosticText);
     }
     winrt::Microsoft::Windows::DevHome::SDK::IRepository RepositoryResult::Repository()
     {
-        throw hresult_not_implemented();
+        return *_Repository.get();
     }
     winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult RepositoryResult::Result()
     {
-        throw hresult_not_implemented();
+        return *_Result.get();
     }
 }

@@ -46,7 +46,7 @@ public class AppManagementInitializer : IAppManagementInitializer
     /// </summary>
     private async Task LoadCatalogsAsync()
     {
-        Log.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to reduce the wait time when this information is requested");
+        Log.Logger?.ReportInfo($"Loading catalogs from all data sources at launch time to reduce the wait time when this information is requested");
         await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
         {
             Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");

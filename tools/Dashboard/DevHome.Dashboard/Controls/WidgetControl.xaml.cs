@@ -172,6 +172,7 @@ public sealed partial class WidgetControl : UserControl
                 if (_currentSelectedSize is not null)
                 {
                     _currentSelectedSize.Icon = null;
+                    _currentSelectedSize.ClearValue(AutomationProperties.ItemStatusProperty);
                 }
 
                 // Resize widget.
@@ -188,11 +189,13 @@ public sealed partial class WidgetControl : UserControl
 
     private void MarkSize(MenuFlyoutItem menuSizeItem)
     {
+        var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
         var fontIcon = new FontIcon
         {
             Glyph = "\xE915",
         };
         menuSizeItem.Icon = fontIcon;
+        menuSizeItem.SetValue(AutomationProperties.ItemStatusProperty, resourceLoader.GetString("WidgetSizeSelected"));
     }
 
     private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)

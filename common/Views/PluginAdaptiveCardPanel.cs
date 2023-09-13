@@ -15,13 +15,12 @@ namespace DevHome.Common.Views;
 
 // XAML element to contain a single instance of plugin UI.
 // Use this element where plugin UI is expected to pop up.
-// TODO: Should ideally not allow external children to be added through the `Children` property.
 // https://github.com/microsoft/devhome/issues/610
 public class PluginAdaptiveCardPanel : StackPanel
 {
     public event EventHandler<FrameworkElement>? UiUpdate;
 
-    public void Bind(IPluginAdaptiveCardController pluginAdaptiveCardController, AdaptiveCardRenderer? customRenderer)
+    public void Bind(IExtensionAdaptiveCardSession extensionAdaptiveCardSession, AdaptiveCardRenderer? customRenderer)
     {
         var adaptiveCardRenderer = customRenderer ?? new AdaptiveCardRenderer();
 
@@ -31,16 +30,16 @@ public class PluginAdaptiveCardPanel : StackPanel
         }
 
         var uiDispatcher = DispatcherQueue.GetForCurrentThread();
-        var pluginUI = new PluginAdaptiveCard();
+        var pluginUI = new ExtensionAdaptiveCard();
 
         pluginUI.UiUpdate += (object? sender, AdaptiveCard adaptiveCard) =>
         {
             uiDispatcher.TryEnqueue(() =>
             {
                 var renderedAdaptiveCard = adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
-                renderedAdaptiveCard.Action += (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
+                renderedAdaptiveCard.Action += async (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
                 {
-                    pluginAdaptiveCardController.OnAction(JsonConvert.SerializeObject(args.Action), JsonConvert.SerializeObject(args.Inputs));
+                    await extensionAdaptiveCardSession.OnAction(args.Action.ToJson().Stringify(), args.Inputs.AsJson().Stringify());
                 };
 
                 Children.Clear();
@@ -53,6 +52,6 @@ public class PluginAdaptiveCardPanel : StackPanel
             });
         };
 
-        pluginAdaptiveCardController.Initialize(pluginUI);
+        extensionAdaptiveCardSession.Initialize(pluginUI);
     }
 }

@@ -6,18 +6,23 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     RepositoryUriSupportResult::RepositoryUriSupportResult(bool isSupported)
     {
-        throw hresult_not_implemented();
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring(""), winrt::to_hstring(""));
+        _IsSupported = isSupported;
     }
+
     RepositoryUriSupportResult::RepositoryUriSupportResult(winrt::hresult const& e, hstring const& diagnosticText)
     {
-        throw hresult_not_implemented();
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), winrt::to_hstring("Something went wrong"), diagnosticText);
+        _IsSupported = false;
     }
+
     bool RepositoryUriSupportResult::IsSupported()
     {
-        throw hresult_not_implemented();
+        return _IsSupported;
     }
+
     winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult RepositoryUriSupportResult::Result()
     {
-        throw hresult_not_implemented();
+        return *_Result.get();
     }
 }

@@ -105,6 +105,9 @@ public partial class App : Application, IApp
 
             // Dashboard
             services.AddDashboard(context);
+
+            // ExtensionLibrary
+            services.AddExtensionLibrary(context);
         }).
         Build();
 

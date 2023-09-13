@@ -35,6 +35,8 @@ public partial class ExtensionViewModel : ObservableObject
 
     public bool HasToggleSwitch => _setting.HasToggleSwitch;
 
+    public bool HasSettingsProvider => _setting.HasSettingsProvider;
+
     public bool IsEnabled
     {
         get => _setting.IsExtensionEnabled;
@@ -84,7 +86,8 @@ public partial class ExtensionsViewModel : ObservableObject
                 continue;
             }
 
-            var setting = new Setting("Plugins/" + pluginWrapper.PackageFullName, pluginWrapper.PackageFullName, pluginWrapper.Name, string.Empty, string.Empty, true);
+            var hasSettingsProvider = pluginWrapper.HasProviderType(Microsoft.Windows.DevHome.SDK.ProviderType.Settings);
+            var setting = new Setting("Plugins/" + pluginWrapper.ExtensionUniqueId, pluginWrapper.ExtensionUniqueId, pluginWrapper.Name, string.Empty, string.Empty, true, hasSettingsProvider);
             SettingsList.Add(new ExtensionViewModel(setting, this));
         }
     }
@@ -96,7 +99,8 @@ public partial class ExtensionsViewModel : ObservableObject
 
     public void Navigate(string path)
     {
-        // TODO: Navigate to Plugin's settings Adaptive Card
-        // https://github.com/microsoft/devhome/issues/608
+        var navigationService = Application.Current.GetService<INavigationService>();
+        var segments = path.Split("/");
+        navigationService.NavigateTo(typeof(ExtensionSettingsViewModel).FullName!, segments[1]);
     }
 }

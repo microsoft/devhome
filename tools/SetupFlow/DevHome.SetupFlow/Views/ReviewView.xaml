@@ -40,6 +40,17 @@
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
 
+    <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+        <Grid Background="Transparent" ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+            <Button
+                Command="{x:Bind ViewModel.SetUpCommand, Mode=OneWay}"
+                Style="{StaticResource AccentButtonStyle}"
+                MinWidth="120" Margin="4,0"
+                Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
+        </Grid>
+    </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+
     <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
                          Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
         <ScrollViewer VerticalScrollBarVisibility="Auto">

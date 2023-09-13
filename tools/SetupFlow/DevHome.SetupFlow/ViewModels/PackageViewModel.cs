@@ -5,11 +5,13 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
@@ -64,7 +66,8 @@ public partial class PackageViewModel : ObservableObject
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
         IScreenReaderService screenReaderService,
-        WindowsPackageManagerFactory wingetFactory)
+        WindowsPackageManagerFactory wingetFactory,
+        IHost host)
     {
         _stringResource = stringResource;
         _wpm = wpm;
@@ -85,7 +88,7 @@ public partial class PackageViewModel : ObservableObject
         // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
-        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask);
+        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
         _packageDescription = new Lazy<string>(GetPackageDescription);
     }
 
@@ -203,9 +206,9 @@ public partial class PackageViewModel : ObservableObject
         return bitmapImage;
     }
 
-    private InstallPackageTask CreateInstallTask()
+    private InstallPackageTask CreateInstallTask(Guid activityId)
     {
-        return _package.CreateInstallTask(_wpm, _stringResource, _wingetFactory);
+        return _package.CreateInstallTask(_wpm, _stringResource, _wingetFactory, activityId);
     }
 
     private string GetPackageDescription()
