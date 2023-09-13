@@ -123,7 +123,7 @@
   </data>
   <data name="AddAllApplications" xml:space="preserve">
     <value>Added all applications</value>
-    <comment>Text announced when a button for adding all applications to install is invoked</comment>
+    <comment>Text announced by screen readers when the 'Add all' button is invoked. The 'Add all' button allows users to add all applications to their cart</comment>
   </data>
   <data name="AddApplication" xml:space="preserve">
     <value>Add</value>
