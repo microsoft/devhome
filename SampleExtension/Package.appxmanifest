@@ -62,7 +62,6 @@
                 </Activation>
                 <SupportedInterfaces>
                   <Settings />
-                  <Widget />
                   <FeaturedApplications />
                 </SupportedInterfaces>
               </DevHomeProvider>
