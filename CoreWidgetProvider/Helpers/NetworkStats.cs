@@ -74,7 +74,10 @@ internal class NetworkStats : IDisposable
                 NetworkUsages[name].Usage = usage;
 
                 List<float> chartValues = NetChartValues[name];
-                ChartHelper.AddNextChartValue(usage * 100, chartValues);
+                lock (chartValues)
+                {
+                    ChartHelper.AddNextChartValue(usage * 100, chartValues);
+                }
 
                 if (usage > maxUsage)
                 {

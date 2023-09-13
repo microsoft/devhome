@@ -51,9 +51,12 @@ internal class CPUStats : IDisposable
         CpuUsage = procPerf.NextValue() / 100;
         CpuSpeed = procFrequency.NextValue() * (procPerformance.NextValue() / 100);
 
-        ChartHelper.AddNextChartValue(CpuUsage * 100, CpuChartValues);
+        lock (CpuChartValues)
+        {
+            ChartHelper.AddNextChartValue(CpuUsage * 100, CpuChartValues);
+        }
 
-        Dictionary<Process, float> processCPUUsages = new Dictionary<Process, float>();
+        var processCPUUsages = new Dictionary<Process, float>();
 
         foreach (var processCounter in cpuCounters)
         {
