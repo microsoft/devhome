@@ -70,6 +70,7 @@ public static class ServiceExtensions
             var dataSourceFullPath = Path.Combine(AppContext.BaseDirectory, dataSourcePath);
             return ActivatorUtilities.CreateInstance<WinGetPackageJsonDataSource>(sp, dataSourceFullPath);
         });
+        services.AddSingleton<WinGetPackageDataSource, WinGetFeaturedApplicationsDataSource>();
 
         // DI factory pattern for creating instances with certain parameters
         // determined at runtime

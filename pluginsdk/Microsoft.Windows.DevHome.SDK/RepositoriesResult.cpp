@@ -6,18 +6,22 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
     RepositoriesResult::RepositoriesResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository> const& repositories)
     {
-        throw hresult_not_implemented();
+        _Repositories = std::make_shared<winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository>>(repositories);
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring(""), winrt::to_hstring(""));
     }
+
     RepositoriesResult::RepositoriesResult(winrt::hresult const& e, hstring const& diagnosticText)
     {
-        throw hresult_not_implemented();
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), winrt::to_hstring("Something went wrong"), diagnosticText);
     }
+
     winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IRepository> RepositoriesResult::Repositories()
     {
-        throw hresult_not_implemented();
+        return *_Repositories.get();
     }
+
     winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult RepositoriesResult::Result()
     {
-        throw hresult_not_implemented();
+        return *_Result.get();
     }
 }

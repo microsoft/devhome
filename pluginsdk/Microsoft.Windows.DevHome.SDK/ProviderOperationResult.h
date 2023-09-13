@@ -12,6 +12,12 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
         winrt::hresult ExtendedError();
         hstring DisplayMessage();
         hstring DiagnosticText();
+
+    private:
+        const winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus _Status;
+        const winrt::hresult _ExtendedError;
+        const hstring _DisplayMessage;
+        const hstring _DiagnosticText;
     };
 }
 namespace winrt::Microsoft::Windows::DevHome::SDK::factory_implementation

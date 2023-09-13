@@ -4,20 +4,25 @@
 
 namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 {
-    DeveloperIdsResult::DeveloperIdsResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IDeveloperId> const& developerIds)
+    DeveloperIdsResult::DeveloperIdsResult(winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IDeveloperId> const& developerIds) :
+        _DeveloperIds(developerIds)
     {
-        throw hresult_not_implemented();
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Success, winrt::hresult(S_OK), winrt::to_hstring("Operation successful"), winrt::to_hstring("Operation Successful"));
     }
+
     DeveloperIdsResult::DeveloperIdsResult(winrt::hresult const& e, hstring const& diagnosticText)
     {
-        throw hresult_not_implemented();
+        _Result = std::make_shared<winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult>(winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationStatus::Failure, winrt::hresult(e), winrt::to_hstring("Could not get developer ids."), diagnosticText);
+        _DeveloperIds = winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IDeveloperId>{ nullptr };
     }
+
     winrt::Windows::Foundation::Collections::IIterable<winrt::Microsoft::Windows::DevHome::SDK::IDeveloperId> DeveloperIdsResult::DeveloperIds()
     {
-        throw hresult_not_implemented();
+        return _DeveloperIds;
     }
+
     winrt::Microsoft::Windows::DevHome::SDK::ProviderOperationResult DeveloperIdsResult::Result()
     {
-        throw hresult_not_implemented();
+        return *_Result.get();
     }
 }

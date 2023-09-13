@@ -1,13 +1,16 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(1)] apicontract DevHomeContract {}
+    [contractversion(1)]
+    apicontract DevHomeContract {}
 
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IExtension {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    interface IExtension {
         IInspectable GetProvider(ProviderType providerType);
         void Dispose();
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] enum ProviderType {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    enum ProviderType {
         Repository = 0,
         DeveloperId = 1,
         Settings = 2,
@@ -15,12 +18,14 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // Definitions for exceptions.
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] enum ProviderOperationStatus {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    enum ProviderOperationStatus {
         Success,
         Failure
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass ProviderOperationResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    runtimeclass ProviderOperationResult {
         ProviderOperationResult(ProviderOperationStatus status, HRESULT error, String displayMessage, String diagnosticText);
 
         ProviderOperationStatus Status
@@ -42,9 +47,9 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // Repository Provider
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IRepositoryProvider
-        requires Windows
-        .Foundation.IClosable
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    interface IRepositoryProvider
+        requires Windows.Foundation.IClosable
     {
         String DisplayName
         {
@@ -67,7 +72,8 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination, IDeveloperId developerId);
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass RepositoryResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    runtimeclass RepositoryResult {
         RepositoryResult(IRepository repository);
         RepositoryResult(HRESULT e, String diagnosticText);
 
@@ -81,7 +87,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass RepositoriesResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    runtimeclass RepositoriesResult {
         RepositoriesResult(IIterable<IRepository> repositories);
         RepositoriesResult(HRESULT e, String diagnosticText);
 
@@ -95,7 +102,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass RepositoryUriSupportResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    runtimeclass RepositoryUriSupportResult {
         RepositoryUriSupportResult(Boolean isSupported);
         RepositoryUriSupportResult(HRESULT e, String diagnosticText);
 
@@ -109,7 +117,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IRepository {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    interface IRepository {
         String DisplayName
         {
             get;
@@ -132,18 +141,21 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] enum AuthenticationState {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    enum AuthenticationState {
         LoggedIn = 0,
         LoggedOut = 1
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] enum AuthenticationExperienceKind {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    enum AuthenticationExperienceKind {
         CustomProvider = 0,
         CardSession = 1
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass AdaptiveCardSessionResult {
-        AdaptiveCardSessionResult(IIterable<IDeveloperId> developerIds);
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    runtimeclass AdaptiveCardSessionResult {
+        AdaptiveCardSessionResult(IExtensionAdaptiveCardSession adaptiveCardSession);
         AdaptiveCardSessionResult(HRESULT e, String diagnosticText);
 
         IExtensionAdaptiveCardSession AdaptiveCardSession
@@ -156,38 +168,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    // Developer ID
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IDeveloperIdProvider
-        requires Windows
-        .Foundation.IClosable
-    {
-        String DisplayName
-        {
-            get;
-        };
-
-        //DeveloperIdsResult GetLoggedInDeveloperIds();
-
-        ProviderOperationResult LogoutDeveloperId(IDeveloperId developerId);
-
-        event Windows.Foundation.TypedEventHandler<IDeveloperIdProvider, Object> Changed;
-
-        AuthenticationState DeveloperIdState
-        {
-            get;
-        };
-
-        // The extension chooses to support one enum Option. Once defined by the extension this value cannot be 	// changed by DevHome or the extension itself.
-        AuthenticationExperienceKind GetAuthenticationExperienceKind();
-
-        //ExtensionProvidedExperience
-        Windows.Foundation.IAsyncOperation<DeveloperIdResult> ShowLogonSession(Microsoft.UI.WindowId windowHandle);
-
-        //DevHomeIntegratedCard
-        AdaptiveCardSessionResult GetLoginAdaptiveCardSession();
-    };
-
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass DeveloperIdResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    runtimeclass DeveloperIdResult {
         DeveloperIdResult(IDeveloperId developerId);
         DeveloperIdResult(HRESULT e, String diagnosticText);
 
@@ -201,7 +183,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass DeveloperIdsResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    runtimeclass DeveloperIdsResult {
         DeveloperIdsResult(IIterable<IDeveloperId> developerIds);
         DeveloperIdsResult(HRESULT e, String diagnosticText);
 
@@ -216,7 +199,8 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     // IDeveloperId is the basic interface for DeveloperId corresponding to each logged in user, used by the Dev Home Core app
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IDeveloperId {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    interface IDeveloperId {
         String LoginId
         {
             get;
@@ -228,10 +212,39 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
+    // Developer ID
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    interface IDeveloperIdProvider
+        requires Windows.Foundation.IClosable
+    {
+        String DisplayName
+        {
+            get;
+        };
+
+        DeveloperIdsResult GetLoggedInDeveloperIds();
+
+        ProviderOperationResult LogoutDeveloperId(IDeveloperId developerId);
+
+        event Windows.Foundation.TypedEventHandler<IDeveloperIdProvider, IDeveloperId> Changed;
+
+        AuthenticationState GetDeveloperIdState(IDeveloperId developerId);
+
+        // The extension chooses to support one enum Option. Once defined by the extension this value cannot be
+        // changed by DevHome or the extension itself.
+        AuthenticationExperienceKind GetAuthenticationExperienceKind();
+
+        //ExtensionProvidedExperience
+        Windows.Foundation.IAsyncOperation<DeveloperIdResult> ShowLogonSession(Microsoft.UI.WindowId windowHandle);
+
+        //DevHomeIntegratedCard
+        AdaptiveCardSessionResult GetLoginAdaptiveCardSession();
+    };
+
     // Settings
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface ISettingsProvider
-        requires Windows
-        .Foundation.IClosable
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    interface ISettingsProvider
+        requires Windows.Foundation.IClosable
     {
         String DisplayName
         {
@@ -242,13 +255,15 @@ namespace Microsoft.Windows.DevHome.SDK
         AdaptiveCardSessionResult GetSettingsAdaptiveCardSession();
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IExtensionAdaptiveCardSession {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    interface IExtensionAdaptiveCardSession {
         ProviderOperationResult Initialize(IExtensionAdaptiveCard extensionUI);
         void Dispose();
-        ProviderOperationResult OnAction(String action, String inputs);
+        Windows.Foundation.IAsyncOperation<ProviderOperationResult> OnAction(String action, String inputs);
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IExtensionAdaptiveCard {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    interface IExtensionAdaptiveCard {
         String TemplateJson
         {
             get;
@@ -265,20 +280,18 @@ namespace Microsoft.Windows.DevHome.SDK
         ProviderOperationResult Update(String templateJson, String dataJson, String state);
     };
 
-    // Featured Application Provider
+    // Interface to get the list of featured applications
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
-        // IFeaturedApplicationProvider interface allows extensions to provide a list of featured application groups
-        interface IFeaturedApplicationProvider {
-            // Get the list of featured application groups
-            Windows.Foundation.IAsyncOperation<GetFeaturedApplicationGroupResult>
-            GetFeaturedApplicationGroupsAsync();
-        };
+    interface IFeaturedApplicationsProvider {
+        Windows.Foundation.IAsyncOperation<GetFeaturedApplicationsGroupsResult> GetFeaturedApplicationsGroupsAsync();
+    };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass GetFeaturedApplicationGroupResult {
-        GetFeaturedApplicationGroupResult(IFeaturedApplicationGroup featuredApplicationGroup);
-        GetFeaturedApplicationGroupResult(HRESULT e, String diagnosticText);
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    runtimeclass GetFeaturedApplicationsGroupsResult {
+        GetFeaturedApplicationsGroupsResult(IVectorView<IFeaturedApplicationsGroup> featuredApplicationsGroup);
+        GetFeaturedApplicationsGroupsResult(HRESULT e, String diagnosticText);
 
-        IFeaturedApplicationGroup FeaturedApplicationGroup
+        IVectorView<IFeaturedApplicationsGroup> FeaturedApplicationsGroups
         {
             get;
         };
@@ -288,7 +301,8 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] runtimeclass GetFeaturedApplicationsResult {
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    runtimeclass GetFeaturedApplicationsResult {
         GetFeaturedApplicationsResult(IVectorView<String> featuredApplications);
         GetFeaturedApplicationsResult(HRESULT e, String diagnosticText);
 
@@ -302,15 +316,10 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     }
 
-        // IFeaturedApplicationGroup interface represents a group of featured applications
-        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] interface IFeaturedApplicationGroup {
-        // Get the localized title of the group
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    interface IFeaturedApplicationsGroup {
         String GetTitle(String preferredLocale);
-
-        // Get the localized descritpion of the group
         String GetDescription(String preferredLocale);
-
-        // Get the list of featured application in the group
         GetFeaturedApplicationsResult GetApplications();
     };
 }

@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace DevHome.Common.Models;
-public class PluginAdaptiveCard : IPluginAdaptiveCard
+public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 {
     public event EventHandler<AdaptiveCard>? UiUpdate;
 
@@ -21,14 +21,14 @@ public class PluginAdaptiveCard : IPluginAdaptiveCard
 
     public string TemplateJson { get; private set; }
 
-    public PluginAdaptiveCard()
+    public ExtensionAdaptiveCard()
     {
         TemplateJson = new JsonObject().ToJsonString();
         DataJson = new JsonObject().ToJsonString();
         State = string.Empty;
     }
 
-    public void Update(string templateJson, string dataJson, string state)
+    public ProviderOperationResult Update(string templateJson, string dataJson, string state)
     {
         var template = new AdaptiveCardTemplate(templateJson ?? TemplateJson);
         var adaptiveCardString = template.Expand(JsonConvert.DeserializeObject<JObject>(dataJson ?? DataJson));
@@ -37,7 +37,7 @@ public class PluginAdaptiveCard : IPluginAdaptiveCard
         if (parseResult.AdaptiveCard is null)
         {
             GlobalLog.Logger?.ReportError($"PluginAdaptiveCard.Update(): AdaptiveCard is null - templateJson: {templateJson} dataJson: {dataJson} state: {state}");
-            return;
+            return new ProviderOperationResult(ProviderOperationStatus.Failure, new ArgumentNullException(null), "AdaptiveCard is null", $"templateJson: {templateJson} dataJson: {dataJson} state: {state}");
         }
 
         TemplateJson = templateJson ?? TemplateJson;
@@ -48,5 +48,7 @@ public class PluginAdaptiveCard : IPluginAdaptiveCard
         {
             UiUpdate.Invoke(this, parseResult.AdaptiveCard);
         }
+
+        return new ProviderOperationResult(ProviderOperationStatus.Success, null, "IExtensionAdaptiveCard.Update succeeds", "IExtensionAdaptiveCard.Update succeeds");
     }
 }

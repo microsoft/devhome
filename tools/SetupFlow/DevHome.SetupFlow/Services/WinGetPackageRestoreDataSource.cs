@@ -68,7 +68,7 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
             Log.Logger?.ReportInfo(Log.Component.AppManagement, "Finding packages from restore data");
             var packages = await GetPackagesAsync(
                 _restoreDeviceInfo.WinGetApplicationsInfo,
-                appInfo => appInfo.Id,
+                appInfo => GetPackageUri(appInfo),
                 async (package, appInfo) =>
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for restore package {package.Id}");
@@ -146,4 +146,15 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
 
         return _stringResource.GetLocalized(StringResourceKey.RestorePackagesDescriptionWithDate, _restoreDeviceInfo.DisplayName, _restoreDeviceInfo.LastModifiedTime.ToString("d", CultureInfo.CurrentCulture));
     }
+
+    /// <summary>
+    /// Gets the package URI for a restore application
+    /// </summary>
+    /// <param name="appInfo">Application information</param>
+    /// <returns>Package URI</returns>
+    /// <remarks>All restored applications are from winget catalog</remarks>
+    private Uri GetPackageUri(IRestoreApplicationInfo appInfo)
+    {
+       return new Uri($"{WindowsPackageManager.Scheme}://{WindowsPackageManager.WingetCatalogURIName}/{appInfo.Id}");
+   }
 }

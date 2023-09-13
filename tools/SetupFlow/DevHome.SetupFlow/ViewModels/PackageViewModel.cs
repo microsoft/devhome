@@ -5,10 +5,13 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
@@ -42,6 +45,7 @@ public partial class PackageViewModel : ObservableObject
     private readonly IWinGetPackage _package;
     private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
+    private readonly IScreenReaderService _screenReaderService;
     private readonly WindowsPackageManagerFactory _wingetFactory;
 
     /// <summary>
@@ -53,6 +57,7 @@ public partial class PackageViewModel : ObservableObject
     /// Indicates if a package is selected
     /// </summary>
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ButtonAutomationName))]
     private bool _isSelected;
 
     public PackageViewModel(
@@ -60,12 +65,15 @@ public partial class PackageViewModel : ObservableObject
         IWindowsPackageManager wpm,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
-        WindowsPackageManagerFactory wingetFactory)
+        IScreenReaderService screenReaderService,
+        WindowsPackageManagerFactory wingetFactory,
+        IHost host)
     {
         _stringResource = stringResource;
         _wpm = wpm;
         _package = package;
         _themeSelector = themeSelector;
+        _screenReaderService = screenReaderService;
         _wingetFactory = wingetFactory;
 
         // Initialize package view model properties in the constructor to
@@ -76,11 +84,12 @@ public partial class PackageViewModel : ObservableObject
         IsInstalled = _package.IsInstalled;
         CatalogName = _package.CatalogName;
         PublisherName = !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
+        InstallationNotes = _package.InstallationNotes;
 
         // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
-        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask);
+        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
         _packageDescription = new Lazy<string>(GetPackageDescription);
     }
 
@@ -100,6 +109,8 @@ public partial class PackageViewModel : ObservableObject
 
     public string PublisherName { get; }
 
+    public string InstallationNotes { get; }
+
     public string PackageTitle => Name;
 
     public string PackageDescription => _packageDescription.Value;
@@ -113,6 +124,10 @@ public partial class PackageViewModel : ObservableObject
     public string TooltipSource => _stringResource.GetLocalized(StringResourceKey.PackageSourceTooltip, CatalogName);
 
     public string TooltipPublisher => _stringResource.GetLocalized(StringResourceKey.PackagePublisherNameTooltip, PublisherName);
+
+    public string ButtonAutomationName => IsSelected ?
+        _stringResource.GetLocalized(StringResourceKey.RemoveApplication) :
+        _stringResource.GetLocalized(StringResourceKey.AddApplication);
 
     public InstallPackageTask InstallPackageTask => _installPackageTask.Value;
 
@@ -156,7 +171,17 @@ public partial class PackageViewModel : ObservableObject
     /// Toggle package selection
     /// </summary>
     [RelayCommand]
-    private void ToggleSelection() => IsSelected = !IsSelected;
+    private void ToggleSelection()
+    {
+        // TODO Explore option to augment a Button with the option to announce a text when invoked.
+        // https://github.com/microsoft/devhome/issues/1451
+        var announcementText = IsSelected ?
+            _stringResource.GetLocalized(StringResourceKey.RemovedApplication, PackageTitle) :
+            _stringResource.GetLocalized(StringResourceKey.AddedApplication, PackageTitle);
+
+        IsSelected = !IsSelected;
+        _screenReaderService.Announce(announcementText);
+    }
 
     /// <summary>
     /// Gets the package icon based on the provided theme
@@ -184,9 +209,9 @@ public partial class PackageViewModel : ObservableObject
         return bitmapImage;
     }
 
-    private InstallPackageTask CreateInstallTask()
+    private InstallPackageTask CreateInstallTask(Guid activityId)
     {
-        return _package.CreateInstallTask(_wpm, _stringResource, _wingetFactory);
+        return _package.CreateInstallTask(_wpm, _stringResource, _wingetFactory, activityId);
     }
 
     private string GetPackageDescription()

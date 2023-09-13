@@ -8,6 +8,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
 using DevHome.Services;
 using DevHome.Settings.Extensions;
@@ -78,6 +79,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IStringResource, StringResource>();
             services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
             services.AddSingleton<IPackageDeploymentService, PackageDeploymentService>();
+            services.AddSingleton<IScreenReaderService, ScreenReaderService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -104,6 +106,9 @@ public partial class App : Application, IApp
 
             // Dashboard
             services.AddDashboard(context);
+
+            // ExtensionLibrary
+            services.AddExtensionLibrary(context);
         }).
         Build();
 

@@ -25,7 +25,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     /// </summary>
     private class JsonWinGetPackage
     {
-        public string Id { get; set; }
+        public Uri Uri { get; set; }
 
         public string Icon { get; set; }
     }
@@ -98,7 +98,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         {
             var packages = await GetPackagesAsync(
                 jsonCatalog.WinGetPackages,
-                package => package.Id,
+                package => package.Uri,
                 async (package, appInfo) =>
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for JSON package {package.Id}");
@@ -147,10 +147,10 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get icon for JSON package {package.Id}.", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get icon for JSON package {package.Uri}.", e);
         }
 
-        Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No icon found for JSON package {package.Id}. A default one will be provided.");
+        Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No icon found for JSON package {package.Uri}. A default one will be provided.");
         return null;
     }
 }

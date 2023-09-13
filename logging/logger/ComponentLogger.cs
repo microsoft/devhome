@@ -6,8 +6,7 @@ using Windows.Storage;
 namespace DevHome.Logging;
 
 /// <summary>
-/// A logger for an individual component of the app;
-/// each component's logs go to a different file.
+/// A logger for an individual component; each component's logs go to a different file.
 /// </summary>
 public class ComponentLogger : IDisposable
 {

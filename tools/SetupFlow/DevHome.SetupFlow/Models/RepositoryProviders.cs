@@ -5,7 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DevHome.Common.Services;
+using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Helpers;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -60,14 +63,14 @@ internal class RepositoryProviders
     /// <param name="uri">The Uri to parse.</param>
     /// <returns>If a provider was found that can parse the Uri then (providerName, repository) if not
     /// (string.empty, null)</returns>
-    public (string, IRepository) ParseRepositoryFromUri(Uri uri)
+    public (string, IRepository) GetRepositoryFromUri(Uri uri)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Parsing repository from URI {uri}");
         foreach (var provider in _providers)
         {
             provider.Value.StartIfNotRunning();
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Attempting to parse using provider {provider.Key}");
-            var repository = provider.Value.ParseRepositoryFromUri(uri);
+            var repository = provider.Value.GetRepositoryFromUri(uri);
             if (repository != null)
             {
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Repository parsed to {repository.DisplayName} owned by {repository.OwningAccountName}");
@@ -79,13 +82,29 @@ internal class RepositoryProviders
     }
 
     /// <summary>
-    /// Logs the user into a certain provider.
+    /// Queries each provider to figure out if it can support the URI and can clone from it.
     /// </summary>
-    /// <param name="providerName">The provider to log the user into.  Must match display name of the plugin</param>
-    public IDeveloperId LogInToProvider(string providerName)
+    /// <param name="uri">The uri that points to a remote repository</param>
+    /// <returns>THe provider that can clone the repo.  Otherwise null.</returns>
+    public (bool, IDeveloperId, IRepositoryProvider) CanAnyProviderSupportThisUri(Uri uri)
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Logging in to provider {providerName}");
-        return _providers.GetValueOrDefault(providerName)?.LogIntoProvider();
+        foreach (var provider in _providers)
+        {
+            provider.Value.StartIfNotRunning();
+            var isSupported = provider.Value.IsUriSupported(uri);
+            if (isSupported.Item1)
+            {
+                return isSupported;
+            }
+        }
+
+        return (false, null, null);
+    }
+
+    public PluginAdaptiveCardPanel GetLoginUi(string providerName, ElementTheme elementTheme)
+    {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting login UI {providerName}");
+        return _providers.GetValueOrDefault(providerName)?.GetLoginUi(elementTheme);
     }
 
     /// <summary>
@@ -95,6 +114,16 @@ internal class RepositoryProviders
     public IEnumerable<string> GetAllProviderNames()
     {
         return _providers.Keys;
+    }
+
+    public IRepositoryProvider GetProvider(string providerName)
+    {
+        if (_providers.TryGetValue(providerName, out var repoProvider))
+        {
+            return repoProvider.GetProvider();
+        }
+
+        return null;
     }
 
     /// <summary>

@@ -6,6 +6,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    Loaded="OnLoaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
@@ -16,7 +19,7 @@
             <ContentPresenter />
         </ControlTemplate>
     </UserControl.Resources>
-    <Grid RowSpacing="6">
+    <Grid RowSpacing="6" x:Name="ShellContent">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -29,12 +32,20 @@
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 TextWrapping="WrapWholeWords"
                 Visibility="{x:Bind UseOrchestratorTitle, Mode=OneWay}"
-                Text="{x:Bind Orchestrator.FlowTitle}" />
+                Text="{x:Bind Orchestrator.FlowTitle}">
+                <i:Interaction.Behaviors>
+                    <behaviors:TextBlockAutomationBehavior RaiseLiveRegionChangedEvent="True" LiveSetting="Assertive" />
+                </i:Interaction.Behaviors>
+            </TextBlock>
             <TextBlock
                 Style="{ThemeResource SubtitleTextBlockStyle}"
                 TextWrapping="WrapWholeWords"
                 Visibility="{x:Bind Title, Mode=OneWay, Converter={StaticResource StringVisibilityConverter}}"
-                Text="{x:Bind Title, Mode=OneWay}" />
+                Text="{x:Bind Title, Mode=OneWay}">
+                <i:Interaction.Behaviors>
+                    <behaviors:TextBlockAutomationBehavior RaiseLiveRegionChangedEvent="True" LiveSetting="Assertive" />
+                </i:Interaction.Behaviors>
+            </TextBlock>
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -58,12 +69,15 @@
                                 <TextBlock VerticalAlignment="Center" Text="{x:Bind PageTitle}" />
                                 <StackPanel VerticalAlignment="Center" Visibility="{x:Bind IsLastStepPage, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
                                     <ProgressBar Width="20" Value="100"
+                                                 AutomationProperties.Name="{x:Bind PageTitle}"
                                                  Visibility="{x:Bind IsPastPage}"
                                                  Background="{ThemeResource AccentFillColorDisabledBrush}" />
                                     <ProgressBar Width="20" Value="50"
+                                                 AutomationProperties.Name="{x:Bind PageTitle}"
                                                  Visibility="{x:Bind IsCurrentPage}"
                                                  Background="{ThemeResource AccentFillColorDisabledBrush}" />
                                     <ProgressBar Width="20" Value="0"
+                                                 AutomationProperties.Name="{x:Bind PageTitle}"
                                                  Visibility="{x:Bind IsUpcomingPage}"
                                                  Background="{ThemeResource AccentFillColorDisabledBrush}" />
                                 </StackPanel>
