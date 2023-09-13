@@ -14,6 +14,9 @@ public partial class ShellViewModel : ObservableObject
 {
     private readonly ILocalSettingsService _localSettingsService;
 
+    [ObservableProperty]
+    private string? _announcementText;
+
     public INavigationService NavigationService
     {
         get;
@@ -30,12 +33,18 @@ public partial class ShellViewModel : ObservableObject
     [ObservableProperty]
     private InfoBarModel _shellInfoBarModel = new ();
 
-    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, ILocalSettingsService localSettingsService)
+    public ShellViewModel(
+        INavigationService navigationService,
+        INavigationViewService navigationViewService,
+        ILocalSettingsService localSettingsService,
+        IScreenReaderService screenReaderService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
         _localSettingsService = localSettingsService;
+
+        screenReaderService.AnnouncementTextChanged += OnAnnouncementTextChanged;
     }
 
     public async Task OnLoaded()
@@ -89,5 +98,15 @@ public partial class ShellViewModel : ObservableObject
         }
 
         return pageType.StartsWith("DevHome.Settings", StringComparison.Ordinal);
+    }
+
+    private void OnAnnouncementTextChanged(object? sender, string text)
+    {
+        // Clear previous value to notify all bindings.
+        // This allows announcing the same text consecutively multiple times.
+        AnnouncementText = string.Empty;
+
+        // Set new announcement title
+        AnnouncementText = text;
     }
 }
