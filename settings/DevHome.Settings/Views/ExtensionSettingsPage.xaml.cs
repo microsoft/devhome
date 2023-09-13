@@ -1,12 +1,9 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
-using System.Collections.ObjectModel;
-using AdaptiveCards.Rendering.WinUI3;
-using DevHome.Common.Services;
-using DevHome.Common.Views;
-using DevHome.Settings.Models;
+using DevHome.Common.Extensions;
 using DevHome.Settings.ViewModels;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Settings.Views;
@@ -20,7 +17,7 @@ public sealed partial class ExtensionSettingsPage : Page
 
     public ExtensionSettingsPage()
     {
-        ViewModel = new ExtensionSettingsViewModel();
+        ViewModel = Application.Current.GetService<ExtensionSettingsViewModel>();
         this.InitializeComponent();
     }
 

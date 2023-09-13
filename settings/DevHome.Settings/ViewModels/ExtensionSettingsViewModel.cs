@@ -23,8 +23,12 @@ namespace DevHome.Settings.ViewModels;
 
 public partial class ExtensionSettingsViewModel : ObservableObject
 {
-    public ExtensionSettingsViewModel()
+    private readonly IPluginService _pluginService;
+
+    public ExtensionSettingsViewModel(IPluginService pluginService)
     {
+        _pluginService = pluginService;
+
         Breadcrumbs = new ObservableCollection<Breadcrumb> { };
     }
 
@@ -36,17 +40,13 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     [RelayCommand]
     private async Task OnSettingsContentLoadedAsync(PluginAdaptiveCardPanel pluginAdaptiveCardPanel)
     {
-        var pluginWrappers = Task.Run(async () =>
-        {
-            var pluginService = Application.Current.GetService<IPluginService>();
-            return await pluginService.GetInstalledPluginsAsync(true);
-        }).Result;
+        var pluginWrappers = await _pluginService.GetInstalledPluginsAsync(true);
 
         var navigationService = Application.Current.GetService<INavigationService>();
         foreach (var pluginWrapper in pluginWrappers)
         {
             if ((navigationService.LastParameterUsed != null) &&
-                ((string)navigationService.LastParameterUsed == pluginWrapper.PackageFullName))
+                ((string)navigationService.LastParameterUsed == pluginWrapper.ExtensionUniqueId))
             {
                 var stringResource = new StringResource("DevHome.Settings/Resources");
                 Breadcrumbs.Add(new Breadcrumb(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!));
@@ -63,11 +63,11 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                         await Task.CompletedTask;
                     }
 
-                    var adpativeCardSession = adaptiveCardSessionResult.AdaptiveCardSession;
+                    var adaptiveCardSession = adaptiveCardSessionResult.AdaptiveCardSession;
                     var renderer = new AdaptiveCardRenderer();
                     renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
 
-                    pluginAdaptiveCardPanel.Bind(adpativeCardSession, renderer);
+                    pluginAdaptiveCardPanel.Bind(adaptiveCardSession, renderer);
                 }
             }
         }
