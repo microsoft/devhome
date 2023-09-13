@@ -5,7 +5,7 @@ using DevHome.ExtensionLibrary.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace DevHome.Settings.Extensions;
+namespace DevHome.ExtensionLibrary.Extensions;
 public static class ServiceExtensions
 {
     public static IServiceCollection AddExtensionLibrary(this IServiceCollection services, HostBuilderContext context)

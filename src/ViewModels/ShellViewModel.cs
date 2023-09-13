@@ -52,7 +52,13 @@ public partial class ShellViewModel : ObservableObject
 
     private void OnNavigated(object sender, NavigationEventArgs e)
     {
-        if (IsSettingsPage(e.SourcePageType.FullName))
+        if (IsExtensionSettingsPage(e.SourcePageType.FullName))
+        {
+            // If we navigate to the L3 settings page for an extension, leave the selected NavigationView item as it
+            // was, since we might be coming from Settings or Extensions.
+            return;
+        }
+        else if (IsSettingsPage(e.SourcePageType.FullName))
         {
             Selected = NavigationViewService.SettingsItem;
             return;
@@ -65,6 +71,16 @@ public partial class ShellViewModel : ObservableObject
         }
     }
 
+    private bool IsExtensionSettingsPage(string? pageType)
+    {
+        if (string.IsNullOrEmpty(pageType))
+        {
+            return false;
+        }
+
+        return pageType.StartsWith("DevHome.Settings.Views.ExtensionSettingsPage", StringComparison.Ordinal);
+    }
+
     private bool IsSettingsPage(string? pageType)
     {
         if (string.IsNullOrEmpty(pageType))
@@ -72,8 +88,6 @@ public partial class ShellViewModel : ObservableObject
             return false;
         }
 
-#pragma warning disable CA1310 // Specify StringComparison for correctness
-        return pageType.StartsWith("DevHome.Settings");
-#pragma warning restore CA1310 // Specify StringComparison for correctness
+        return pageType.StartsWith("DevHome.Settings", StringComparison.Ordinal);
     }
 }

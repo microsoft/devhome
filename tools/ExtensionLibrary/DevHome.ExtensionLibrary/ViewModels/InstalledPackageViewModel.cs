@@ -8,6 +8,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
+using DevHome.Settings.TelemetryEvents;
+using DevHome.Settings.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel;
 using Windows.System;
@@ -61,7 +65,10 @@ public partial class InstalledExtensionViewModel : ObservableObject
     [RelayCommand]
     private void NavigateSettings()
     {
-        // TODO: nothing implements ISettingsProvider yet, so this will not be called
+        TelemetryFactory.Get<ITelemetry>().Log("ExtensionsSettings_Navigate_Event", LogLevel.Critical, new NavigateToExtensionSettingsEvent("InstalledExtensionViewModel"));
+
+        var navigationService = Application.Current.GetService<INavigationService>();
+        navigationService.NavigateTo(typeof(ExtensionSettingsViewModel).FullName!, ExtensionUniqueId);
     }
 }
 

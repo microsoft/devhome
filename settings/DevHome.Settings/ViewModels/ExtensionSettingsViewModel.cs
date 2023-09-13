@@ -1,23 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.WinUI;
-using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.Views;
 using DevHome.Logging;
 using DevHome.Settings.Models;
-using Microsoft.UI.Xaml;
+using DevHome.Settings.Views;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.ApplicationModel;
 
 namespace DevHome.Settings.ViewModels;
 
@@ -49,10 +45,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
             if ((_navigationService.LastParameterUsed != null) &&
                 ((string)_navigationService.LastParameterUsed == pluginWrapper.ExtensionUniqueId))
             {
-                var stringResource = new StringResource("DevHome.Settings/Resources");
-                Breadcrumbs.Add(new Breadcrumb(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!));
-                Breadcrumbs.Add(new Breadcrumb(stringResource.GetLocalized("Settings_Extensions_Header"), typeof(ExtensionsViewModel).FullName!));
-                Breadcrumbs.Add(new Breadcrumb(pluginWrapper.Name, typeof(ExtensionSettingsViewModel).FullName!));
+                FillBreadcrumbBar(pluginWrapper.Name);
 
                 var settingsProvider = Task.Run(() => pluginWrapper.GetProviderAsync<ISettingsProvider>()).Result;
                 if (settingsProvider != null)
@@ -60,7 +53,8 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                     var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
                     if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
                     {
-                        GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                        GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage}" +
+                            $" - {adaptiveCardSessionResult.Result.DiagnosticText}");
                         await Task.CompletedTask;
                     }
 
@@ -74,6 +68,31 @@ public partial class ExtensionSettingsViewModel : ObservableObject
         }
 
         await Task.CompletedTask;
+    }
+
+    public void FillBreadcrumbBar(string lastCrumbName)
+    {
+        var stringResource = new StringResource("DevHome.Settings/Resources");
+        var navigationHistory = _navigationService.Frame?.BackStack;
+        var lastPageType = navigationHistory?.Last().SourcePageType;
+
+        if (lastPageType == typeof(ExtensionsPage))
+        {
+            // If the last page we came from was Settings > Extensions, add those crumbs.
+            Breadcrumbs.Add(new Breadcrumb(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!));
+            Breadcrumbs.Add(new Breadcrumb(stringResource.GetLocalized("Settings_Extensions_Header"), typeof(ExtensionsViewModel).FullName!));
+        }
+        else
+        {
+            // If the last page we came from was the Extension page, add that crumb.
+            // The ViewModel name is referenced as a string because using the type directly would create a circular
+            // reference between Settings and ExtensionLibrary projects.
+            Breadcrumbs.Add(new Breadcrumb(
+                stringResource.GetLocalized("Settings_Extensions_Header"),
+                "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel"));
+        }
+
+        Breadcrumbs.Add(new Breadcrumb(lastCrumbName, typeof(ExtensionSettingsViewModel).FullName!));
     }
 
     public void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
