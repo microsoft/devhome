@@ -9,6 +9,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Dashboard.Helpers;
 using DevHome.Settings.TelemetryEvents;
 using DevHome.Settings.ViewModels;
 using DevHome.Telemetry;
@@ -33,6 +34,7 @@ public partial class InstalledExtensionViewModel : ObservableObject
 
     partial void OnIsExtensionEnabledChanging(bool value)
     {
+        Log.Logger()?.ReportInfo("InstalledExtensionViewModel", $"Start OnIsExtensionEnabledChanging");
         if (IsExtensionEnabled != value)
         {
             Task.Run(() =>
@@ -41,30 +43,37 @@ public partial class InstalledExtensionViewModel : ObservableObject
                 return localSettingsService.SaveSettingAsync(ExtensionUniqueId + "-ExtensionDisabled", !value);
             }).Wait();
         }
+
+        Log.Logger()?.ReportInfo("InstalledExtensionViewModel", $"End OnIsExtensionEnabledChanging");
     }
 
     public InstalledExtensionViewModel(string displayName, string extensionUniqueId, bool hasSettingsProvider)
     {
+        Log.Logger()?.ReportInfo("InstalledExtensionViewModel", $"Start of constructor");
         _displayName = displayName;
         _extensionUniqueId = extensionUniqueId;
         _hasSettingsProvider = hasSettingsProvider;
 
         IsExtensionEnabled = GetIsExtensionEnabled();
+        Log.Logger()?.ReportInfo("InstalledExtensionViewModel", $"End of constructor");
     }
 
     private bool GetIsExtensionEnabled()
     {
+        Log.Logger()?.ReportInfo("InstalledExtensionViewModel", $"Start GetIsExtensionEnabled");
         var isDisabled = Task.Run(() =>
         {
             var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
             return localSettingsService.ReadSettingAsync<bool>(ExtensionUniqueId + "-ExtensionDisabled");
         }).Result;
+        Log.Logger()?.ReportInfo("InstalledExtensionViewModel", $"End GetIsExtensionEnabled");
         return !isDisabled;
     }
 
     [RelayCommand]
     private void NavigateSettings()
     {
+        Log.Logger()?.ReportInfo("InstalledExtensionViewModel", $"NavigateSettings");
         TelemetryFactory.Get<ITelemetry>().Log("ExtensionsSettings_Navigate_Event", LogLevel.Critical, new NavigateToExtensionSettingsEvent("InstalledExtensionViewModel"));
 
         var navigationService = Application.Current.GetService<INavigationService>();
@@ -93,12 +102,14 @@ public partial class InstalledPackageViewModel : ObservableObject
 
     public InstalledPackageViewModel(string title, string publisher, string packageFamilyName, DateTimeOffset installedDate, PackageVersion version)
     {
+        Log.Logger()?.ReportInfo("InstalledPackageViewModel", $"Start of constructor");
         _title = title;
         _publisher = publisher;
         _packageFamilyName = packageFamilyName;
         _installedDate = installedDate;
         _version = version;
         InstalledExtensionsList = new ();
+        Log.Logger()?.ReportInfo("InstalledPackageViewModel", $"End of constructor");
     }
 
     [RelayCommand]

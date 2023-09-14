@@ -10,7 +10,7 @@
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     xmlns:commonModels="using:DevHome.SetupFlow.Models"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     setupFlowBehaviors:SetupFlowNavigationBehavior.CancelVisibility="Collapsed"
     setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
     mc:Ignorable="d">
