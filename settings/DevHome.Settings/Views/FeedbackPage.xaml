@@ -7,7 +7,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors" 
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
@@ -96,51 +96,51 @@
                     </Hyperlink>
                 </TextBlock>
                 <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                    <labs:SettingsCard x:Uid="Settings_Feedback_ReportBug">
-                        <labs:SettingsCard.HeaderIcon>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_ReportBug">
+                        <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xebe8;"/>
-                        </labs:SettingsCard.HeaderIcon>
+                        </ctControls:SettingsCard.HeaderIcon>
                         <Button x:Uid="Settings_Feedback_ReportBug_Button" Click="DisplayReportBugDialog" MinWidth="150" />
-                    </labs:SettingsCard>
-                    <labs:SettingsCard x:Uid="Settings_Feedback_FeatureImprovement">
-                        <labs:SettingsCard.HeaderIcon>
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_FeatureImprovement">
+                        <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea80;"/>
-                        </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Settings_Feedback_FeatureImprovement_Button" Click="DisplaySuggestFeature"  MinWidth="150" />
-                    </labs:SettingsCard>
-                    <labs:SettingsCard x:Uid="Settings_Feedback_LocalizationIssue">
-                        <labs:SettingsCard.HeaderIcon>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_FeatureImprovement_Button" Click="DisplaySuggestFeature" MinWidth="150" />
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_LocalizationIssue">
+                        <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xE909;"/>
-                        </labs:SettingsCard.HeaderIcon>
-                        <Button x:Uid="Settings_Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog"  MinWidth="150" />
-                    </labs:SettingsCard>
-                    <labs:SettingsCard x:Uid="Settings_Feedback_BuildExtension">
-                        <labs:SettingsCard.HeaderIcon>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog" MinWidth="150" />
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_BuildExtension">
+                        <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea86;"/>
-                        </labs:SettingsCard.HeaderIcon>
+                        </ctControls:SettingsCard.HeaderIcon>
                         <Button Click="BuildExtensionButtonClicked" MinWidth="150">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <TextBlock x:Uid="Settings_Feedback_BuildExtension_Button" />
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE8A7;" FontSize="12" />
                             </StackPanel>
                         </Button>
-                    </labs:SettingsCard>
-                    <labs:SettingsCard x:Uid="Settings_Feedback_ReportSecurity">
-                        <labs:SettingsCard.HeaderIcon>
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_ReportSecurity">
+                        <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xf552;"/>
-                        </labs:SettingsCard.HeaderIcon>
+                        </ctControls:SettingsCard.HeaderIcon>
                         <Button Click="ReportSecurityButtonClicked" MinWidth="150">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <TextBlock x:Uid="Settings_Feedback_ReportSecurity_Button" />
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE8A7;" FontSize="12" />
                             </StackPanel>
                         </Button>
-                    </labs:SettingsCard>
+                    </ctControls:SettingsCard>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
