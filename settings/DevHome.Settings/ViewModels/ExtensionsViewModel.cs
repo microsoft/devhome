@@ -89,7 +89,7 @@ public partial class ExtensionsViewModel : ObservableObject
             }
 
             var hasSettingsProvider = pluginWrapper.HasProviderType(Microsoft.Windows.DevHome.SDK.ProviderType.Settings);
-            var setting = new Setting("Plugins/" + pluginWrapper.ExtensionUniqueId, pluginWrapper.ExtensionUniqueId, pluginWrapper.Name, string.Empty, string.Empty, true, hasSettingsProvider);
+            var setting = new Setting("Extensions/" + pluginWrapper.ExtensionUniqueId, pluginWrapper.ExtensionUniqueId, pluginWrapper.Name, string.Empty, string.Empty, true, hasSettingsProvider);
             SettingsList.Add(new ExtensionViewModel(setting, this));
         }
     }

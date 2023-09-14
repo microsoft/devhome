@@ -185,7 +185,8 @@ public class PluginService : IPluginService, IDisposable
                     }
 
                     var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                    var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(extension.Package.Id.FullName + "-ExtensionDisabled");
+                    var extensionUniqueId = extension.AppInfo.AppUserModelId + "!" + extension.Id;
+                    var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(extensionUniqueId + "-ExtensionDisabled");
 
                     _installedPlugins.Add(pluginWrapper);
                     if (!isPluginDisabled)
@@ -272,5 +273,17 @@ public class PluginService : IPluginService, IDisposable
     private string? GetProperty(IPropertySet propSet, string name)
     {
         return propSet[name] as string;
+    }
+
+    public void EnableExtension(string extensionUniqueId)
+    {
+        var extension = _installedPlugins.Where(plugin => plugin.ExtensionUniqueId == extensionUniqueId);
+        _enabledPlugins.Add(extension.First());
+    }
+
+    public void DisableExtension(string extensionUniqueId)
+    {
+        var extension = _enabledPlugins.Where(plugin => plugin.ExtensionUniqueId == extensionUniqueId);
+        _enabledPlugins.Remove(extension.First());
     }
 }
