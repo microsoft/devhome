@@ -8,7 +8,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     mc:Ignorable="d">

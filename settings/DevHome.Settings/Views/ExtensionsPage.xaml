@@ -10,7 +10,7 @@
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:settings="using:DevHome.Settings.ViewModels"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
