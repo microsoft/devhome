@@ -19,12 +19,13 @@ internal class ChartHelper
 
     public const int ChartHeight = 86;
     public const int ChartWidth = 264;
-    private const int NumOfYGridlines = 9;
-    private const int YGridlineHeight = 9;
-    private const int NumOfXGridlines = 12;
-    private const int XGridlineHeight = 22;
+    private const int NumOfYGridlines = 4;
+    private const int YGridlineHeight = 21;
+    private const int NumOfXGridlines = 9;
+    private const int XGridlineHeight = 29;
 
     private const string LightGrayBoxStyle = "fill:none;stroke:lightgrey;stroke-width:1";
+    private const string GridlinesStyle = "fill:none;stroke:rgb(255,255,255);stroke-width:1;opacity:0.15";
 
     private const string CPULineStyle = "fill:none;stroke:rgb(57,184,227);stroke-width:1";
     private const string GPULineStyle = "fill:none;stroke:rgb(222,104,242);stroke-width:1";
@@ -217,7 +218,7 @@ internal class ChartHelper
         {
             var lineElement = new XElement(PolylineElement);
             lineElement.SetAttributeValue(PointsAttr, $"0,{ChartHeight - (i * YGridlineHeight)} {ChartWidth},{ChartHeight - (i * YGridlineHeight)}");
-            lineElement.SetAttributeValue(StyleAttr, LightGrayBoxStyle);
+            lineElement.SetAttributeValue(StyleAttr, GridlinesStyle);
             chart.Add(lineElement);
         }
 
@@ -225,7 +226,7 @@ internal class ChartHelper
         {
             var lineElement = new XElement(PolylineElement);
             lineElement.SetAttributeValue(PointsAttr, $"{i * XGridlineHeight},0 {i * XGridlineHeight},{ChartHeight}");
-            lineElement.SetAttributeValue(StyleAttr, LightGrayBoxStyle);
+            lineElement.SetAttributeValue(StyleAttr, GridlinesStyle);
             chart.Add(lineElement);
         }
     }
