@@ -4,10 +4,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:viewmodels="using:DevHome.Settings.ViewModels"
     xmlns:models="using:DevHome.Settings.Models"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
@@ -29,9 +29,9 @@
         </DataTemplate>
 
         <DataTemplate x:Key="AccountsViewTemplate" x:DataType="models:Account">
-            <labs:SettingsCard Header="{x:Bind LoginId}" Margin="{StaticResource SettingsCardMargin}">
+            <ctControls:SettingsCard Header="{x:Bind LoginId}" Margin="{StaticResource SettingsCardMargin}">
                 <Button Tag="{x:Bind}" x:Uid="Settings_Accounts_LogoutButton" Click="Logout_Click"/>
-            </labs:SettingsCard>
+            </ctControls:SettingsCard>
         </DataTemplate>
     </Page.Resources>
 
@@ -51,10 +51,10 @@
 
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
             <StackPanel>
-                <labs:SettingsCard x:Uid="Settings_Accounts_AddAccount">
-                    <labs:SettingsCard.HeaderIcon>
+                <ctControls:SettingsCard x:Uid="Settings_Accounts_AddAccount">
+                    <ctControls:SettingsCard.HeaderIcon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8fa;"/>
-                    </labs:SettingsCard.HeaderIcon>
+                    </ctControls:SettingsCard.HeaderIcon>
                     <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right" Click="AddAccountButton_Click">
                         <Button.Resources>
                             <Flyout x:Name="AccountsProvidersFlyout" Placement="Bottom">
@@ -72,7 +72,7 @@
                             </Flyout>
                         </Button.Resources>
                     </Button>
-                </labs:SettingsCard>
+                </ctControls:SettingsCard>
                 
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}"
                                ItemTemplate="{StaticResource AccountsProviderViewTemplate}"

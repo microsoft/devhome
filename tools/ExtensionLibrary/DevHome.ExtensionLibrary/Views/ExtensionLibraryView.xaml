@@ -8,8 +8,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pg="using:DevHome.Common"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:viewmodels="using:DevHome.ExtensionLibrary.ViewModels"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
@@ -63,14 +63,14 @@
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.InstalledPackagesList, Mode=OneWay}">
                     <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:InstalledPackageViewModel">
-                            <labs:SettingsExpander Header="{x:Bind Title}"
+                            <ctControls:SettingsExpander Header="{x:Bind Title}"
                                                    Description="{x:Bind GeneratePackageDetails(Version,Publisher , InstalledDate), Mode=OneWay}"
                                                    Margin="{ThemeResource SettingsCardMargin}"
                                                    ItemsSource="{x:Bind InstalledExtensionsList}"
                                                    IsExpanded="True">
-                                <labs:SettingsExpander.HeaderIcon>
+                                <ctControls:SettingsExpander.HeaderIcon>
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
-                                </labs:SettingsExpander.HeaderIcon>
+                                </ctControls:SettingsExpander.HeaderIcon>
                                 <Button Content="&#xe712;"
                                         Height="36" Width="36"
                                         FontFamily="{StaticResource SymbolThemeFontFamily}" 
@@ -86,19 +86,19 @@
                                         </MenuFlyout>
                                     </Button.Flyout>
                                 </Button>
-                                <labs:SettingsExpander.ItemTemplate>
+                                <ctControls:SettingsExpander.ItemTemplate>
                                     <DataTemplate x:DataType="viewmodels:InstalledExtensionViewModel">
-                                        <labs:SettingsCard x:Uid="ManageExtensionCard"
+                                        <ctControls:SettingsCard x:Uid="ManageExtensionCard"
                                                            CornerRadius="0,0,3,3"
                                                            IsClickEnabled="{x:Bind HasSettingsProvider}"
                                                            Command="{x:Bind NavigateSettingsCommand}">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                                 <ToggleSwitch IsOn="{x:Bind IsExtensionEnabled, Mode=TwoWay}"/>
                                             </StackPanel>
-                                        </labs:SettingsCard>
+                                        </ctControls:SettingsCard>
                                     </DataTemplate>
-                                </labs:SettingsExpander.ItemTemplate>
-                            </labs:SettingsExpander>
+                                </ctControls:SettingsExpander.ItemTemplate>
+                            </ctControls:SettingsExpander>
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>
                 </ItemsRepeater>
@@ -115,20 +115,20 @@
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.StorePackagesList, Mode=OneWay}">
                     <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="viewmodels:StorePackageViewModel">
-                            <labs:SettingsCard Header="{x:Bind Title}"
+                            <ctControls:SettingsCard Header="{x:Bind Title}"
                                                Description="{x:Bind Publisher}"
                                                Margin="{ThemeResource SettingsCardMargin}"
                                                CornerRadius="3"
                                                IsClickEnabled="False">
-                                <labs:SettingsCard.HeaderIcon>
+                                <ctControls:SettingsCard.HeaderIcon>
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
-                                </labs:SettingsCard.HeaderIcon>
+                                </ctControls:SettingsCard.HeaderIcon>
                                 <Button x:Uid="GetButton"
                                         Padding="25 4 25 6"
                                         MinWidth="118"
                                         Command="{x:Bind LaunchStoreButtonCommand}"
                                         CommandParameter="{x:Bind ProductId}" />
-                            </labs:SettingsCard>
+                            </ctControls:SettingsCard>
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>
                 </ItemsRepeater>
