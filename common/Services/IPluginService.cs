@@ -20,4 +20,8 @@ public interface IPluginService
     Task<IEnumerable<AppExtension>> GetInstalledAppExtensionsAsync();
 
     public event EventHandler OnPluginsChanged;
+
+    public void EnableExtension(string extensionUniqueId);
+
+    public void DisableExtension(string extensionUniqueId);
 }

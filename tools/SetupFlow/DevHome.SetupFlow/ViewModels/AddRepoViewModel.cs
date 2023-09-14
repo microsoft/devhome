@@ -269,7 +269,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// </remarks>
     public void GetPlugins()
     {
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed plugins with Repository and DevId providers");
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed extensions with Repository and DevId providers");
         var pluginService = Application.Current.GetService<IPluginService>();
         var pluginWrappers = pluginService.GetInstalledPluginsAsync().Result;
 
@@ -310,6 +310,8 @@ public partial class AddRepoViewModel : ObservableObject
         CurrentPage = PageKind.AddViaAccount;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoAccountPagePrimaryButtonText);
 
+        // List of extensions needs to be refreshed before accessing
+        GetPlugins();
         if (ProviderNames.Count == 1)
         {
             _providers.StartIfNotRunning(ProviderNames[0]);
