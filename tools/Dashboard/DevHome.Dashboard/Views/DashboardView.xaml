@@ -107,7 +107,7 @@
 
                 <!-- Widget grid empty message -->
                 <StackPanel x:Name="NoWidgetsStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0"
-                            Visibility="{x:Bind views:DashboardView.PinnedWidgets.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}">
+                            Visibility="{x:Bind ViewModel.GetNoWidgetMessageVisibility(views:DashboardView.PinnedWidgets.Count, ViewModel.IsLoading), Mode=OneWay}">
                     <TextBlock x:Uid="NoWidgetsAdded" HorizontalAlignment="Center" />
                     <HyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" HorizontalAlignment="Center">
                         <i:Interaction.Behaviors>
