@@ -47,6 +47,11 @@
                                 <SolidColorBrush Color="{ThemeResource SystemAccentColor}"/>
                             </Setter.Value>
                         </Setter>
+                        <Setter Property="Foreground">
+                            <Setter.Value>
+                                <SolidColorBrush Color="White"/>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </ResourceDictionary>
             </StackPanel.Resources>
