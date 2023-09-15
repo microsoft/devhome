@@ -29,7 +29,9 @@
         </DataTemplate>
 
         <DataTemplate x:Key="AccountsViewTemplate" x:DataType="models:Account">
-            <ctControls:SettingsCard Header="{x:Bind LoginId}" Margin="{StaticResource SettingsCardMargin}">
+            <ctControls:SettingsCard Header="{x:Bind LoginId}"
+                                     Margin="{StaticResource SettingsCardMargin}"
+                                     CornerRadius="{StaticResource SettingsCardCornerRadius}">
                 <Button Tag="{x:Bind}" x:Uid="Settings_Accounts_LogoutButton" Click="Logout_Click"/>
             </ctControls:SettingsCard>
         </DataTemplate>
@@ -51,7 +53,7 @@
 
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
             <StackPanel>
-                <ctControls:SettingsCard x:Uid="Settings_Accounts_AddAccount">
+                <ctControls:SettingsCard x:Uid="Settings_Accounts_AddAccount" CornerRadius="{StaticResource SettingsCardCornerRadius}">
                     <ctControls:SettingsCard.HeaderIcon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8fa;"/>
                     </ctControls:SettingsCard.HeaderIcon>

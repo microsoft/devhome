@@ -68,6 +68,7 @@
                             <ctControls:SettingsExpander Header="{x:Bind Title}"
                                                    Description="{x:Bind GeneratePackageDetails(Version,Publisher , InstalledDate), Mode=OneWay}"
                                                    Margin="{ThemeResource SettingsCardMargin}"
+                                                   CornerRadius="{StaticResource SettingsCardCornerRadius}"
                                                    ItemsSource="{x:Bind InstalledExtensionsList}"
                                                    IsExpanded="True">
                                 <ctControls:SettingsExpander.HeaderIcon>
@@ -120,7 +121,7 @@
                             <ctControls:SettingsCard Header="{x:Bind Title}"
                                                Description="{x:Bind Publisher}"
                                                Margin="{ThemeResource SettingsCardMargin}"
-                                               CornerRadius="3"
+                                               CornerRadius="{StaticResource SettingsCardCornerRadius}"
                                                IsClickEnabled="False">
                                 <ctControls:SettingsCard.HeaderIcon>
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>

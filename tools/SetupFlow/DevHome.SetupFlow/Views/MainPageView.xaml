@@ -84,14 +84,15 @@
                         <!-- Transparent Grid wrapper for displaying tooltip on disabled settings card -->
                         <Grid Background="Transparent">
                             <ctControls:SettingsCard x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow"
-                                               AutomationProperties.AutomationId="EndToEndSetupButton"
-                                               IsClickEnabled="True"
-                                               Command="{x:Bind ViewModel.StartSetupCommand}"
-                                               CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
-                                               IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}"
-                                               ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
-                                               AutomationProperties.AccessibilityView="Control"
-                                               ActionIcon="{x:Null}" >
+                                                     AutomationProperties.AutomationId="EndToEndSetupButton"
+                                                     CornerRadius="3,3,3,3"
+                                                     IsClickEnabled="True"
+                                                     Command="{x:Bind ViewModel.StartSetupCommand}"
+                                                     CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Header}"
+                                                     IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay}"
+                                                     ActionIconToolTip="{Binding Header, RelativeSource={RelativeSource Mode=Self}}"
+                                                     AutomationProperties.AccessibilityView="Control"
+                                                     ActionIcon="{x:Null}">
                                 <ctControls:SettingsCard.HeaderIcon>
                                     <ImageIcon
                                         Opacity="{x:Bind ViewModel.EnablePackageInstallerItem, Mode=OneWay, Converter={StaticResource BoolToOpacityConverter}}"

@@ -28,7 +28,7 @@
             ItemsSource="{x:Bind Breadcrumbs}" />
 
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
-            <ctControls:SettingsCard x:Uid="Settings_Theme">
+            <ctControls:SettingsCard x:Uid="Settings_Theme" CornerRadius="{StaticResource SettingsCardCornerRadius}">
                 <ctControls:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xE790;" />
                 </ctControls:SettingsCard.HeaderIcon>

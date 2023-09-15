@@ -96,28 +96,28 @@
                     </Hyperlink>
                 </TextBlock>
                 <StackPanel Spacing="{StaticResource SettingsCardSpacing}">
-                    <ctControls:SettingsCard x:Uid="Settings_Feedback_ReportBug">
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_ReportBug" CornerRadius="{StaticResource SettingsCardCornerRadius}">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xebe8;"/>
                         </ctControls:SettingsCard.HeaderIcon>
                         <Button x:Uid="Settings_Feedback_ReportBug_Button" Click="DisplayReportBugDialog" MinWidth="150" />
                     </ctControls:SettingsCard>
-                    <ctControls:SettingsCard x:Uid="Settings_Feedback_FeatureImprovement">
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_FeatureImprovement" CornerRadius="{StaticResource SettingsCardCornerRadius}">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea80;"/>
                         </ctControls:SettingsCard.HeaderIcon>
                         <Button x:Uid="Settings_Feedback_FeatureImprovement_Button" Click="DisplaySuggestFeature" MinWidth="150" />
                     </ctControls:SettingsCard>
-                    <ctControls:SettingsCard x:Uid="Settings_Feedback_LocalizationIssue">
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_LocalizationIssue" CornerRadius="{StaticResource SettingsCardCornerRadius}">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xE909;"/>
                         </ctControls:SettingsCard.HeaderIcon>
                         <Button x:Uid="Settings_Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog" MinWidth="150" />
                     </ctControls:SettingsCard>
-                    <ctControls:SettingsCard x:Uid="Settings_Feedback_BuildExtension">
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_BuildExtension" CornerRadius="{StaticResource SettingsCardCornerRadius}">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea86;"/>
@@ -129,7 +129,7 @@
                             </StackPanel>
                         </Button>
                     </ctControls:SettingsCard>
-                    <ctControls:SettingsCard x:Uid="Settings_Feedback_ReportSecurity">
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_ReportSecurity" CornerRadius="{StaticResource SettingsCardCornerRadius}">
                         <ctControls:SettingsCard.HeaderIcon>
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xf552;"/>

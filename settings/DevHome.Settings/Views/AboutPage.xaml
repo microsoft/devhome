@@ -24,7 +24,7 @@
             ItemsSource="{x:Bind Breadcrumbs}" />
 
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
-            <ctControls:SettingsExpander x:Uid="Settings_About_Card" IsExpanded="True">
+            <ctControls:SettingsExpander x:Uid="Settings_About_Card" IsExpanded="True" CornerRadius="{StaticResource SettingsCardCornerRadius}">
                 <ctControls:SettingsExpander.HeaderIcon>
                     <BitmapIcon ShowAsMonochrome="False" UriSource="/Assets/DevHome.ico" />
                 </ctControls:SettingsExpander.HeaderIcon>
