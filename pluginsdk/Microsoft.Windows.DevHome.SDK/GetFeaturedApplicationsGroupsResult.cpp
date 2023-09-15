@@ -24,6 +24,6 @@ namespace winrt::Microsoft::Windows::DevHome::SDK::implementation
 
     ProviderOperationResult GetFeaturedApplicationsGroupsResult::Result()
     {
-	    return m_result;
+        return m_result;
     }
 }
