@@ -56,12 +56,12 @@ public class WindowsPackageManager : IWindowsPackageManager
         _packageDeploymentService = packageDeploymentService;
 
         // Lazy-initialize custom composite catalogs
-        _allCatalogs = new (CreateAllCatalogs);
-        _wingetCatalog = new (CreateWinGetCatalog);
+        _allCatalogs = new(CreateAllCatalogs);
+        _wingetCatalog = new(CreateWinGetCatalog);
 
         // Lazy-initialize predefined catalog ids
-        _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
-        _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
+        _wingetCatalogId = new(() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
+        _msStoreCatalogId = new(() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
     }
 
     public string WinGetCatalogId => _wingetCatalogId.Value;
@@ -131,7 +131,7 @@ public class WindowsPackageManager : IWindowsPackageManager
             throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
         }
 
-        return new ()
+        return new()
         {
             ExtendedErrorCode = extendedErrorCode,
             RebootRequired = installResult.RebootRequired,
@@ -195,7 +195,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     {
         // TODO Add support for other catalogs (e.g. `msstore` and custom).
         // https://github.com/microsoft/devhome/issues/1521
-        HashSet<string> wingetPackageIds = new ();
+        HashSet<string> wingetPackageIds = new();
         foreach (var packageUri in packageUriSet)
         {
             if (TryGetPackageId(packageUri, out var packageId))

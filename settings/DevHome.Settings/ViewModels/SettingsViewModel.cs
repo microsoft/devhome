@@ -43,7 +43,7 @@ public partial class SettingViewModel : ObservableObject
 public partial class SettingsViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<SettingViewModel> _settingsList = new ();
+    private ObservableCollection<SettingViewModel> _settingsList = new();
 
     public SettingsViewModel()
     {

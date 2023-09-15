@@ -18,7 +18,7 @@ public sealed partial class PackageCatalogView : UserControl
     /// <summary>
     /// List of package groups of size <see cref="GroupSize"/>
     /// </summary>
-    private List<PackageViewModel[]> _packageGroupsCache = new ();
+    private List<PackageViewModel[]> _packageGroupsCache = new();
 
     /// <summary>
     /// Gets the list of package groups of size <see cref="GroupSize"/>

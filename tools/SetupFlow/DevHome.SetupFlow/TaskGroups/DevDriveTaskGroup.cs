@@ -29,7 +29,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         // group is a registered type. This requires updating dependent classes
         // correspondingly.
         // https://github.com/microsoft/devhome/issues/631
-        _devDriveReviewViewModel = new (() => _host.CreateInstance<DevDriveReviewViewModel>(this));
+        _devDriveReviewViewModel = new(() => _host.CreateInstance<DevDriveReviewViewModel>(this));
         _stringResource = stringResource;
     }
 

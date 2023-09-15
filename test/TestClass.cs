@@ -51,7 +51,7 @@ public class TestClass
     [TestMethod]
     public void TestHelpersIngestion()
     {
-        Microsoft.Internal.Windows.DevHome.Helpers.Helpers helpers = new ();
+        Microsoft.Internal.Windows.DevHome.Helpers.Helpers helpers = new();
         Assert.AreEqual("This is a test", helpers.Test());
     }
 }

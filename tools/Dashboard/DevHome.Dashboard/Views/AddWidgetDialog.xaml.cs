@@ -20,6 +20,7 @@ using Microsoft.Windows.Widgets.Hosts;
 using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
+
 public sealed partial class AddWidgetDialog : ContentDialog
 {
     private readonly WidgetHost _widgetHost;

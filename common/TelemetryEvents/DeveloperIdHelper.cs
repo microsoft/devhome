@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Common.TelemetryEvents;
+
 public static class DeveloperIdHelper
 {
     public static string GetHashedDeveloperId(string providerName, IDeveloperId devId)

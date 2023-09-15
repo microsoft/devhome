@@ -28,7 +28,7 @@ internal class CoreWidget : WidgetImpl
         get; set;
     }
 
-    protected Dictionary<WidgetPageState, string> Template { get; set; } = new ();
+    protected Dictionary<WidgetPageState, string> Template { get; set; } = new();
 
     public CoreWidget()
     {
@@ -100,7 +100,7 @@ internal class CoreWidget : WidgetImpl
     {
         LoadContentData();
 
-        WidgetUpdateRequestOptions updateOptions = new (Id)
+        WidgetUpdateRequestOptions updateOptions = new(Id)
         {
             Data = GetData(Page),
             Template = GetTemplateForPage(Page),

@@ -4,6 +4,7 @@
 using System.Text.Json.Serialization;
 
 namespace DevHome.Dashboard.Helpers;
+
 internal sealed class WidgetCustomState
 {
     [JsonPropertyName("host")]

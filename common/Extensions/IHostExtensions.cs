@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.Common.Extensions;
+
 public static class IHostExtensions
 {
     /// <summary>

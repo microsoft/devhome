@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 namespace DevHome.Logging.Helpers;
+
 public class FileSystem
 {
     public static string BuildOutputFilename(string filename, string outputFolder, bool createPathIfNecessary = true)

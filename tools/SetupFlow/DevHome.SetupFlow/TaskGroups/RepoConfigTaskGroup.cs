@@ -37,8 +37,8 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         // group is a registered type. This requires updating dependent classes
         // correspondingly.
         // https://github.com/microsoft/devhome/issues/631
-        _repoConfigViewModel = new (() => _host.CreateInstance<RepoConfigViewModel>(this));
-        _repoConfigReviewViewModel = new (() => _host.CreateInstance<RepoConfigReviewViewModel>(this));
+        _repoConfigViewModel = new(() => _host.CreateInstance<RepoConfigViewModel>(this));
+        _repoConfigReviewViewModel = new(() => _host.CreateInstance<RepoConfigReviewViewModel>(this));
         _activityId = setupFlowOrchestrator.ActivityId;
     }
 
@@ -65,7 +65,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Saving cloning information to task group");
         CloneTasks.Clear();
 
-        List<FinalRepoResult> allAddedRepos = new ();
+        List<FinalRepoResult> allAddedRepos = new();
 
         foreach (var cloningInformation in cloningInformations)
         {

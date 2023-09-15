@@ -37,7 +37,7 @@ public class AppInfoService : IAppInfoService
         if (RuntimeHelper.IsMSIX)
         {
             var packageVersion = Package.Current.Id.Version;
-            return new (packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
+            return new(packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
         }
         else
         {

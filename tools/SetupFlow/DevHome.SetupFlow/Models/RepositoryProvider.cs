@@ -39,7 +39,7 @@ internal class RepositoryProvider
     /// <summary>
     /// All the repositories for an account.
     /// </summary>
-    private Lazy<IEnumerable<IRepository>> _repositories = new ();
+    private Lazy<IEnumerable<IRepository>> _repositories = new();
 
     /// <summary>
     /// The DeveloperId provider used to log a user into an account.

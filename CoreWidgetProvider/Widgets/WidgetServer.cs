@@ -11,9 +11,10 @@ using Windows.Win32;
 using Windows.Win32.System.Com;
 
 namespace CoreWidgetProvider.Widgets;
+
 public sealed class WidgetServer : IDisposable
 {
-    private readonly HashSet<uint> registrationCookies = new ();
+    private readonly HashSet<uint> registrationCookies = new();
 
     [UnconditionalSuppressMessage(
         "ReflectionAnalysis",

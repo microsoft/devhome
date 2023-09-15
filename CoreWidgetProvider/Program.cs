@@ -6,6 +6,7 @@ using Microsoft.Windows.AppLifecycle;
 using Windows.ApplicationModel.Activation;
 
 namespace CoreWidgetProvider;
+
 public sealed class Program
 {
     [MTAThread]

@@ -18,7 +18,7 @@ public class Configuration
     public Configuration(string filePath)
     {
         _fileInfo = new FileInfo(filePath);
-        _lazyContent = new (LoadContent);
+        _lazyContent = new(LoadContent);
     }
 
     /// <summary>

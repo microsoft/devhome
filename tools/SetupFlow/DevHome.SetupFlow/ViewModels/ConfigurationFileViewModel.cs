@@ -110,7 +110,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
-                Configuration = new (file.Path);
+                Configuration = new(file.Path);
                 Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
                 var task = new ConfigureTask(StringResource, file, Orchestrator.ActivityId);
                 await task.OpenConfigurationSetAsync();

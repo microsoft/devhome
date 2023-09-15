@@ -9,9 +9,10 @@ using CoreWidgetProvider.Widgets.Enums;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
+
 internal class SystemGPUUsageWidget : CoreWidget, IDisposable
 {
-    private static Dictionary<string, string> Templates { get; set; } = new ();
+    private static Dictionary<string, string> Templates { get; set; } = new();
 
     protected static readonly new string Name = nameof(SystemGPUUsageWidget);
 
@@ -24,7 +25,7 @@ internal class SystemGPUUsageWidget : CoreWidget, IDisposable
     public SystemGPUUsageWidget()
         : base()
     {
-        dataManager = new (DataType.GPU, UpdateWidget);
+        dataManager = new(DataType.GPU, UpdateWidget);
     }
 
     private string SpeedToString(float cpuSpeed)

@@ -4,6 +4,7 @@
 using System.Globalization;
 
 namespace DevHome.Logging.Listeners;
+
 public class StdoutListener : ListenerBase
 {
     private static readonly ConsoleColor CDefaultColor = ConsoleColor.White;

@@ -10,9 +10,9 @@ namespace CoreWidgetProvider.Helpers;
 internal class GPUStats : IDisposable
 {
     // GPU counters
-    private readonly Dictionary<int, List<PerformanceCounter>> gpuCounters = new ();
+    private readonly Dictionary<int, List<PerformanceCounter>> gpuCounters = new();
 
-    private readonly List<Data> stats = new ();
+    private readonly List<Data> stats = new();
 
     public class Data
     {
@@ -81,7 +81,7 @@ internal class GPUStats : IDisposable
 
                     if (!gpuCounters.ContainsKey(phys))
                     {
-                        gpuCounters.Add(phys, new ());
+                        gpuCounters.Add(phys, new());
                     }
 
                     gpuCounters[phys].Add(counter);

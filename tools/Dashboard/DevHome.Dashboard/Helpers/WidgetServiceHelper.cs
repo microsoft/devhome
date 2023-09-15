@@ -6,11 +6,12 @@ using System.Linq;
 using Windows.Management.Deployment;
 
 namespace DevHome.Dashboard.Helpers;
+
 internal class WidgetServiceHelper
 {
-    private readonly Version minSupportedVersion400 = new (423, 3800);
-    private readonly Version minSupportedVersion500 = new (523, 3300);
-    private readonly Version version500 = new (500, 0);
+    private readonly Version minSupportedVersion400 = new(423, 3800);
+    private readonly Version minSupportedVersion500 = new(523, 3300);
+    private readonly Version version500 = new(500, 0);
 
     private bool _validatedWebExpPack;
 
@@ -44,7 +45,7 @@ internal class WidgetServiceHelper
             Log.Logger()?.ReportInfo("DashboardView", $"{package.Id.FullName} Version: {major}.{minor}");
 
             // Create System.Version type from PackageVersion to test. System.Version supports CompareTo() for easy comparisons.
-            if (!IsVersionSupported(new (major, minor)))
+            if (!IsVersionSupported(new(major, minor)))
             {
                 return false;
             }

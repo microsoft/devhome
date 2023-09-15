@@ -18,13 +18,13 @@ public class PluginService : IPluginService, IDisposable
     public event EventHandler OnPluginsChanged = (_, _) => { };
 
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
-    private static readonly object _lock = new ();
-    private readonly SemaphoreSlim _getInstalledPluginsLock = new (1, 1);
+    private static readonly object _lock = new();
+    private readonly SemaphoreSlim _getInstalledPluginsLock = new(1, 1);
     private bool _disposedValue;
 
 #pragma warning disable IDE0044 // Add readonly modifier
-    private static List<IPluginWrapper> _installedPlugins = new ();
-    private static List<IPluginWrapper> _enabledPlugins = new ();
+    private static List<IPluginWrapper> _installedPlugins = new();
+    private static List<IPluginWrapper> _enabledPlugins = new();
 #pragma warning restore IDE0044 // Add readonly modifier
 
     public PluginService()
@@ -234,7 +234,7 @@ public class PluginService : IPluginService, IDisposable
     {
         var installedPlugins = await GetInstalledPluginsAsync(includeDisabledPlugins);
 
-        List<IPluginWrapper> filteredPlugins = new ();
+        List<IPluginWrapper> filteredPlugins = new();
         foreach (var installedPlugin in installedPlugins)
         {
             if (installedPlugin.HasProviderType(providerType))

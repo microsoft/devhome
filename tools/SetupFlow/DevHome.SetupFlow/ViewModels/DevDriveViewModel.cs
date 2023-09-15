@@ -41,7 +41,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     private readonly Dictionary<ByteUnit, string> _byteUnitList;
     private readonly Guid _activityId;
 
-    private Models.DevDrive _concreteDevDrive = new ();
+    private Models.DevDrive _concreteDevDrive = new();
     private DevDriveTaskGroup _taskGroup;
 
     /// <summary>
@@ -184,7 +184,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// Gets or sets the drive letters available on the system and is not already in use by a Dev Drive
     /// that the Dev Drive manager is holding in memory.
     /// </summary>
-    public List<char> DriveLetters { get; set; } = new ();
+    public List<char> DriveLetters { get; set; } = new();
 
     /// <summary>
     /// Gets the maximum size allowed in the Number box based
@@ -229,7 +229,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <summary>
     /// Gets or sets a Dictionary where the keys are current drive letters in use by the system and the values are the free space in bytes the drives have available.
     /// </summary>
-    public Dictionary<char, ulong> DriveLetterToSizeMapping { get; set; } = new ();
+    public Dictionary<char, ulong> DriveLetterToSizeMapping { get; set; } = new();
 
     /// <summary>
     /// Gets the localized Browse button text for the browse button.
@@ -239,7 +239,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// <summary>
     /// Gets the list of DevDriveValidationResults that will be converted to localized text and shown in error info bars in the UI.
     /// </summary>
-    public ObservableCollection<DevDriveValidationResult> FileNameAndSizeErrorList { get; } = new ();
+    public ObservableCollection<DevDriveValidationResult> FileNameAndSizeErrorList { get; } = new();
 
     /// <summary>
     /// Opens folder picker and adds folder to the drive location, if the user does not cancel the dialog.
@@ -389,7 +389,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         Log.Logger?.ReportInfo(Log.Component.DevDrive, "Launching window to set up Dev Drive");
         ResetErrors();
-        DevDriveWindowContainer = new (this);
+        DevDriveWindowContainer = new(this);
         DevDriveWindowContainer.CenterOnWindow();
         DevDriveWindowContainer.Closed += ViewContainerClosed;
         DevDriveWindowContainer.Activate();

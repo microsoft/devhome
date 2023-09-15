@@ -48,8 +48,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         pluginService.OnPluginsChanged -= OnPluginsChanged;
         pluginService.OnPluginsChanged += OnPluginsChanged;
 
-        StorePackagesList = new ();
-        InstalledPackagesList = new ();
+        StorePackagesList = new();
+        InstalledPackagesList = new();
 
         ShowExtensionsBanner = ShouldShowExtensionsBanner();
     }
@@ -57,7 +57,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [RelayCommand]
     private async Task ExtensionsBannerButtonAsync()
     {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2247301"));
+        await Launcher.LaunchUriAsync(new("https://go.microsoft.com/fwlink/?linkid=2247301"));
     }
 
     [RelayCommand]
@@ -83,7 +83,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [RelayCommand]
     public async Task GetUpdatesButtonAsync()
     {
-        await Launcher.LaunchUriAsync(new ("ms-windows-store://downloadsandupdates"));
+        await Launcher.LaunchUriAsync(new("ms-windows-store://downloadsandupdates"));
     }
 
     [RelayCommand]

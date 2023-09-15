@@ -184,7 +184,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private async Task BannerButtonAsync()
     {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2235076"));
+        await Launcher.LaunchUriAsync(new("https://go.microsoft.com/fwlink/?linkid=2235076"));
     }
 
     [RelayCommand]

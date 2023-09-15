@@ -25,6 +25,7 @@ using Windows.Storage;
 using Windows.System;
 
 namespace DevHome.Dashboard.Views;
+
 public partial class DashboardView : ToolPage
 {
     public override string ShortName => "Dashboard";
@@ -290,7 +291,7 @@ public partial class DashboardView : ToolPage
                 };
                 errorDialog.PrimaryButtonClick += async (ContentDialog sender, ContentDialogButtonClickEventArgs args) =>
                 {
-                    await Launcher.LaunchUriAsync(new ("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
+                    await Launcher.LaunchUriAsync(new("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
                     sender.Hide();
                 };
                 _ = await errorDialog.ShowAsync();

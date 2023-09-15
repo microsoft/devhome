@@ -28,7 +28,7 @@ internal partial class AddRepoDialog
 {
     private readonly string _defaultClonePath;
 
-    private readonly List<CloningInformation> _previouslySelectedRepos = new ();
+    private readonly List<CloningInformation> _previouslySelectedRepos = new();
 
     /// <summary>
     /// Gets or sets the view model to handle selecting and de-selecting repositories.

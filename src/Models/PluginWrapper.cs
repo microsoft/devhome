@@ -16,10 +16,10 @@ public class PluginWrapper : IPluginWrapper
 {
     private const int HResultRpcServerNotRunning = -2147023174;
 
-    private readonly object _lock = new ();
-    private readonly List<ProviderType> _providerTypes = new ();
+    private readonly object _lock = new();
+    private readonly List<ProviderType> _providerTypes = new();
 
-    private readonly Dictionary<Type, ProviderType> _providerTypeMap = new ()
+    private readonly Dictionary<Type, ProviderType> _providerTypeMap = new()
     {
         [typeof(IDeveloperIdProvider)] = ProviderType.DeveloperId,
         [typeof(IRepositoryProvider)] = ProviderType.Repository,

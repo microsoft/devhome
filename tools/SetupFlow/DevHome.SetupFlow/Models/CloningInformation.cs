@@ -19,13 +19,13 @@ namespace DevHome.SetupFlow.Models;
 public partial class CloningInformation : ObservableObject, IEquatable<CloningInformation>
 {
     // TODO: Remove when plugin SDK has the ability to pass an icon to DevHome.
-    private static readonly BitmapImage LightGithub = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Light.png"));
+    private static readonly BitmapImage LightGithub = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Light.png"));
 
-    private static readonly BitmapImage DarkGithub = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Dark.png"));
+    private static readonly BitmapImage DarkGithub = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Dark.png"));
 
-    private static readonly BitmapImage LightGit = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitLight.png"));
+    private static readonly BitmapImage LightGit = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitLight.png"));
 
-    private static readonly BitmapImage DarkGit = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitDark.png"));
+    private static readonly BitmapImage DarkGit = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitDark.png"));
 
     /// <summary>
     /// Gets a value indicating whether the repo is a private repo.  If changed to "IsPublic" the

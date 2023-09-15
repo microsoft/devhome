@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Common.Views;
+
 public sealed partial class Banner : UserControl
 {
     /// <summary>

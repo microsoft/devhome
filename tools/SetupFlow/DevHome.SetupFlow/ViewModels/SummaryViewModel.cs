@@ -51,7 +51,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 {
                     if (task is CloneRepoTask repoTask && repoTask.WasCloningSuccessful)
                     {
-                        repositoriesCloned.Add(new (repoTask.RepositoryToClone));
+                        repositoriesCloned.Add(new(repoTask.RepositoryToClone));
                     }
                 }
             }
@@ -165,7 +165,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _wpm = wpm;
         _packageProvider = packageProvider;
         _catalogDataSourceLoacder = catalogDataSourceLoader;
-        _configurationUnitResults = new (GetConfigurationUnitResults);
+        _configurationUnitResults = new(GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
 
         IsNavigationBarVisible = true;
@@ -208,7 +208,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     /// <returns>List of configuration unit result</returns>
     private IList<ConfigurationUnitResultViewModel> GetConfigurationUnitResults()
     {
-        List<ConfigurationUnitResultViewModel> unitResults = new ();
+        List<ConfigurationUnitResultViewModel> unitResults = new();
         var configTaskGroup = _orchestrator.GetTaskGroup<ConfigurationFileTaskGroup>();
         if (configTaskGroup?.ConfigureTask?.UnitResults != null)
         {

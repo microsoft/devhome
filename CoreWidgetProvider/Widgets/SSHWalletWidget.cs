@@ -17,7 +17,7 @@ internal class SSHWalletWidget : CoreWidget
 {
     protected static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
 
-    private static readonly Regex HostRegex = new (@"^Host\s+(\S*)\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+    private static readonly Regex HostRegex = new(@"^Host\s+(\S*)\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
     private FileSystemWatcher? FileWatcher { get; set; }
 
@@ -314,7 +314,7 @@ internal class SSHWalletWidget : CoreWidget
 
     public override void UpdateWidget()
     {
-        WidgetUpdateRequestOptions updateOptions = new (Id)
+        WidgetUpdateRequestOptions updateOptions = new(Id)
         {
             Data = GetData(Page),
             Template = GetTemplateForPage(Page),

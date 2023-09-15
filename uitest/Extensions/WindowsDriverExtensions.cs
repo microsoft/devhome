@@ -23,7 +23,7 @@ public static class WindowsDriverExtensions
         TimeSpan timeout,
         TimeSpan pollingInterval)
     {
-        return new (driver)
+        return new(driver)
         {
             Timeout = timeout,
             PollingInterval = pollingInterval,

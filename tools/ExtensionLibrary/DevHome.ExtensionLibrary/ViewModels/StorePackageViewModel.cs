@@ -34,6 +34,6 @@ public partial class StorePackageViewModel : ObservableObject
     public async Task LaunchStoreButton(string packageId)
     {
         var linkString = $"ms-windows-store://pdp/?ProductId={packageId}&mode=mini";
-        await Launcher.LaunchUriAsync(new (linkString));
+        await Launcher.LaunchUriAsync(new(linkString));
     }
 }

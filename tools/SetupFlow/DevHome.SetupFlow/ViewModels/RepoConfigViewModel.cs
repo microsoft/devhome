@@ -81,7 +81,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// All repositories the user wants to clone.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<CloningInformation> _repoReviewItems = new ();
+    private ObservableCollection<CloningInformation> _repoReviewItems = new();
 
     public IDevDriveManager DevDriveManager => _devDriveManager;
 

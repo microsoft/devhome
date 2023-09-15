@@ -46,7 +46,7 @@ public class DevDriveManager : IDevDriveManager
     /// <summary>
     /// Set that holds Dev Drives that have been created through the Dev Drive manager.
     /// </summary>
-    private readonly HashSet<IDevDrive> _devDrives = new ();
+    private readonly HashSet<IDevDrive> _devDrives = new();
 
     private DevDriveViewModel _devDriveViewModel;
 

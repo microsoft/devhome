@@ -8,10 +8,10 @@ namespace CoreWidgetProvider.Helpers;
 internal class CPUStats : IDisposable
 {
     // CPU counters
-    private readonly PerformanceCounter procPerf = new ("Processor Information", "% Processor Utility", "_Total");
-    private readonly PerformanceCounter procPerformance = new ("Processor Information", "% Processor Performance", "_Total");
-    private readonly PerformanceCounter procFrequency = new ("Processor Information", "Processor Frequency", "_Total");
-    private readonly Dictionary<Process, PerformanceCounter> cpuCounters = new ();
+    private readonly PerformanceCounter procPerf = new("Processor Information", "% Processor Utility", "_Total");
+    private readonly PerformanceCounter procPerformance = new("Processor Information", "% Processor Performance", "_Total");
+    private readonly PerformanceCounter procFrequency = new("Processor Information", "Processor Frequency", "_Total");
+    private readonly Dictionary<Process, PerformanceCounter> cpuCounters = new();
 
     internal class ProcessStats
     {

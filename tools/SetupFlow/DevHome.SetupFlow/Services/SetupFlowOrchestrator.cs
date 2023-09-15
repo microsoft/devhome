@@ -24,7 +24,7 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public partial class SetupFlowOrchestrator : ObservableObject
 {
-    private readonly List<SetupPageViewModelBase> _flowPages = new ();
+    private readonly List<SetupPageViewModelBase> _flowPages = new();
 
     /// <summary>
     /// Index for the current page in the <see cref="_flowPages"/>.
@@ -191,7 +191,7 @@ public partial class SetupFlowOrchestrator : ObservableObject
         // If there are no elevated tasks, we don't need to create the remote object.
         if (elevatedTasks.Any())
         {
-            TasksArguments tasksArguments = new ()
+            TasksArguments tasksArguments = new()
             {
                 InstallPackages = elevatedTasks.OfType<InstallPackageTask>().Select(task => task.GetArguments()).ToList(),
                 Configure = elevatedTasks.OfType<ConfigureTask>().Select(task => task.GetArguments()).FirstOrDefault(),

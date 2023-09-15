@@ -10,7 +10,7 @@ namespace CoreWidgetProvider.Widgets;
 
 internal class SystemMemoryWidget : CoreWidget, IDisposable
 {
-    private static Dictionary<string, string> Templates { get; set; } = new ();
+    private static Dictionary<string, string> Templates { get; set; } = new();
 
     protected static readonly new string Name = nameof(SystemMemoryWidget);
 
@@ -19,7 +19,7 @@ internal class SystemMemoryWidget : CoreWidget, IDisposable
     public SystemMemoryWidget()
         : base()
     {
-        dataManager = new (DataType.Memory, UpdateWidget);
+        dataManager = new(DataType.Memory, UpdateWidget);
     }
 
     private string FloatToPercentString(float value)

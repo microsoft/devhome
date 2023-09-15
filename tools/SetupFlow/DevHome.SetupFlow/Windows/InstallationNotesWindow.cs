@@ -22,7 +22,7 @@ public sealed partial class InstallationNotesWindow : SecondaryWindowExtension
         var title = stringResource.GetLocalized(StringResourceKey.InstallationNotesTitle, packageTitle);
 
         // Populate content
-        _installationNotesView = new (title, installationNotes);
+        _installationNotesView = new(title, installationNotes);
         Title = title;
         Content = _installationNotesView;
 

@@ -4,6 +4,7 @@
 using System.Globalization;
 
 namespace DevHome.Logging.Helpers;
+
 public static class StringExtensions
 {
     public static string ToStringInvariant<T>(this T value) => Convert.ToString(value, CultureInfo.InvariantCulture)!;

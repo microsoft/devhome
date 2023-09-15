@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 
 namespace DevHome.Common.Extensions;
+
 public static class IEnumerableExtensions
 {
     /// <summary>

@@ -26,8 +26,8 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
     /// <summary>
     /// Dictionary of operations state by task arguments.
     /// </summary>
-    private readonly Dictionary<ITaskArguments, OperationState> _operationsState = new ();
-    private readonly object _operationStateLock = new ();
+    private readonly Dictionary<ITaskArguments, OperationState> _operationsState = new();
+    private readonly object _operationStateLock = new();
 
     // TODO: Share this value with the caller process and make a configurable option
     // https://github.com/microsoft/devhome/issues/622

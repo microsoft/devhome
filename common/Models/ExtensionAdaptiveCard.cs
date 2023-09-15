@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace DevHome.Common.Models;
+
 public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 {
     public event EventHandler<AdaptiveCard>? UiUpdate;

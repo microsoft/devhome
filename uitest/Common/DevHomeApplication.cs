@@ -16,7 +16,7 @@ namespace DevHome.UITest.Common;
 /// </summary>
 public sealed class DevHomeApplication
 {
-    private static readonly Lazy<DevHomeApplication> _instance = new (() => new ());
+    private static readonly Lazy<DevHomeApplication> _instance = new(() => new());
     private DevHomeSession _devHomeSession;
 
     /// <summary>
@@ -51,7 +51,7 @@ public sealed class DevHomeApplication
             .Build()
             .Get<AppConfiguration>();
 
-        _devHomeSession = new (Configuration.WindowsApplicationDriverUrl, $"{Configuration.PackageFamilyName}!App");
+        _devHomeSession = new(Configuration.WindowsApplicationDriverUrl, $"{Configuration.PackageFamilyName}!App");
     }
 
     public DashboardPage NavigateToDashboardPage()
@@ -67,7 +67,7 @@ public sealed class DevHomeApplication
     {
         Trace.WriteLine("Navigating to Machine Configuration");
         MachineConfigurationNavigationItem.Click();
-        return new (_devHomeSession.Driver);
+        return new(_devHomeSession.Driver);
     }
 
     /// <summary>

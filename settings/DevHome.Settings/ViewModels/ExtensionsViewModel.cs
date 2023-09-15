@@ -57,7 +57,7 @@ public partial class ExtensionsViewModel : ObservableObject
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     [ObservableProperty]
-    private ObservableCollection<ExtensionViewModel> _settingsList = new ();
+    private ObservableCollection<ExtensionViewModel> _settingsList = new();
 
     public ExtensionsViewModel()
     {

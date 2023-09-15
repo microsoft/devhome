@@ -40,7 +40,7 @@ public class WidgetTest : DevHomeTestBase
     public void AddWidgetsTest(string[] widgetTitles)
     {
         // Arrange
-        Dictionary<string, Func<AddWidgetDialog, DashboardPage.WidgetControl>> widgetMap = new ()
+        Dictionary<string, Func<AddWidgetDialog, DashboardPage.WidgetControl>> widgetMap = new()
         {
             ["GPU"] = dialog => dialog.AddGPUUsageWidget(),
             ["CPU"] = dialog => dialog.AddCPUUsageWidget(),

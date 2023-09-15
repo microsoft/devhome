@@ -11,7 +11,7 @@ namespace DevHome.Common.Services;
 
 public class PackageDeploymentService : IPackageDeploymentService
 {
-    private readonly PackageManager _packageManager = new ();
+    private readonly PackageManager _packageManager = new();
 
     /// <inheritdoc />
     public async Task RegisterPackageForCurrentUserAsync(string packageFamilyName, RegisterPackageOptions? options = null)
