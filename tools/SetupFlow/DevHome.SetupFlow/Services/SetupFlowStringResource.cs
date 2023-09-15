@@ -10,6 +10,7 @@ using Windows.Win32.Foundation;
 using Windows.Win32.System.Diagnostics.Debug;
 
 namespace DevHome.SetupFlow.Services;
+
 public class SetupFlowStringResource : StringResource, ISetupFlowStringResource
 {
     public SetupFlowStringResource(IOptions<SetupFlowOptions> setupFlowOptions)

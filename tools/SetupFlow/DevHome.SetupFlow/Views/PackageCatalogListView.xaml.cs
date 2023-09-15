@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media;
 using Windows.UI;
 
 namespace DevHome.SetupFlow.Views;
+
 public sealed partial class PackageCatalogListView : UserControl
 {
     public PackageCatalogListViewModel ViewModel => (PackageCatalogListViewModel)DataContext;

@@ -4,6 +4,7 @@
 using DevHome.Common.Services;
 
 namespace DevHome.SetupFlow.Services;
+
 public interface ISetupFlowStringResource : IStringResource
 {
     /// <summary>

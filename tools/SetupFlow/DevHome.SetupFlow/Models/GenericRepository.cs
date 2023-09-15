@@ -11,6 +11,7 @@ using Windows.Win32.Storage.FileSystem;
 using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace DevHome.SetupFlow.Models;
+
 internal class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
 {
     private readonly string _displayName;

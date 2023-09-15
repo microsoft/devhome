@@ -9,11 +9,11 @@ namespace CoreWidgetProvider.Helpers;
 
 internal class MemoryStats : IDisposable
 {
-    private readonly PerformanceCounter memCommitted = new ("Memory", "Committed Bytes", string.Empty);
-    private readonly PerformanceCounter memCached = new ("Memory", "Cache Bytes", string.Empty);
-    private readonly PerformanceCounter memCommittedLimit = new ("Memory", "Commit Limit", string.Empty);
-    private readonly PerformanceCounter memPoolPaged = new ("Memory", "Pool Paged Bytes", string.Empty);
-    private readonly PerformanceCounter memPoolNonPaged = new ("Memory", "Pool Nonpaged Bytes", string.Empty);
+    private readonly PerformanceCounter memCommitted = new("Memory", "Committed Bytes", string.Empty);
+    private readonly PerformanceCounter memCached = new("Memory", "Cache Bytes", string.Empty);
+    private readonly PerformanceCounter memCommittedLimit = new("Memory", "Commit Limit", string.Empty);
+    private readonly PerformanceCounter memPoolPaged = new("Memory", "Pool Paged Bytes", string.Empty);
+    private readonly PerformanceCounter memPoolNonPaged = new("Memory", "Pool Nonpaged Bytes", string.Empty);
 
     public float MemUsage
     {

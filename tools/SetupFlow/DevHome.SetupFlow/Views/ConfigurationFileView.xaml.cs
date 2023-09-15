@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.Views;
+
 public sealed partial class ConfigurationFileView : UserControl
 {
     public ConfigurationFileViewModel ViewModel => (ConfigurationFileViewModel)DataContext;

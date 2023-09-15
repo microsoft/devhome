@@ -8,6 +8,7 @@ using Projection::DevHome.SetupFlow.ElevatedComponent.Helpers;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.Models;
+
 public class ConfigurationUnitResult
 {
     public ConfigurationUnitResult(ApplyConfigurationUnitResult result)

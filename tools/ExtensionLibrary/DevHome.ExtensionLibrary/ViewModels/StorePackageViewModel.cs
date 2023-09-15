@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using Windows.System;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
+
 public partial class StorePackageViewModel : ObservableObject
 {
     [ObservableProperty]

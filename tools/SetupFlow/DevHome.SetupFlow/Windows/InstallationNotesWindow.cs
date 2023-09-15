@@ -9,6 +9,7 @@ using Microsoft.UI.Xaml;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.Windows;
+
 public sealed partial class InstallationNotesWindow : SecondaryWindowExtension
 {
     private readonly InstallationNotesView _installationNotesView;

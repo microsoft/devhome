@@ -17,6 +17,7 @@ using Windows.ApplicationModel;
 using Windows.System;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
+
 public partial class InstalledExtensionViewModel : ObservableObject
 {
     [ObservableProperty]

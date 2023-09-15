@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 namespace DevHome.SetupFlow.Models;
+
 internal class Common
 {
     /// <summary>
