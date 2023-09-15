@@ -59,9 +59,7 @@ internal class MemoryStats : IDisposable
 
     public void GetData()
     {
-        Windows.Win32.System.SystemInformation.MEMORYSTATUSEX memStatus = new ();
-        memStatus.dwLength = (uint)Marshal.SizeOf(typeof(Windows.Win32.System.SystemInformation.MEMORYSTATUSEX));
-        if (PInvoke.GlobalMemoryStatusEx(out memStatus))
+        if (PInvoke.GlobalMemoryStatusEx(out var memStatus))
         {
             AllMem = memStatus.ullTotalPhys;
             var availableMem = memStatus.ullAvailPhys;
