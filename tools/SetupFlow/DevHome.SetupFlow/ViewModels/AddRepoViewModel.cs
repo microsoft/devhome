@@ -549,7 +549,6 @@ public partial class AddRepoViewModel : ObservableObject
         {
             // No providers can parse the Url.
             // Fall back to a git Url.
-            var repoProvider = new GenericRepository(parsedUri);
             cloningInformation = new CloningInformation(new GenericRepository(parsedUri));
             cloningInformation.ProviderName = "git";
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
