@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
@@ -67,7 +68,7 @@ public partial class WidgetViewModel : ObservableObject
         if (Widget != null)
         {
             Widget.WidgetUpdated += HandleWidgetUpdated;
-            RenderWidgetFrameworkElement();
+            _ = RenderWidgetFrameworkElementAsync();
         }
     }
 
@@ -103,99 +104,102 @@ public partial class WidgetViewModel : ObservableObject
         WidgetDefinition = widgetDefinition;
     }
 
-    public void Render()
+    public async Task RenderAsync()
     {
-        RenderWidgetFrameworkElement();
+        await RenderWidgetFrameworkElementAsync();
     }
 
-    private async void RenderWidgetFrameworkElement()
+    private async Task RenderWidgetFrameworkElementAsync()
     {
-        var cardTemplate = await Widget.GetCardTemplateAsync();
-        var cardData = await Widget.GetCardDataAsync();
-
-        if (string.IsNullOrEmpty(cardTemplate))
+        await Task.Run(async () =>
         {
-            // TODO CreateWidgetAsync doesn't always seem to be "done", and returns blank templates and data.
-            // Put in small wait to avoid this.
-            // https://github.com/microsoft/devhome/issues/643
-            Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardTemplateAsync returned empty, try wait");
-            await System.Threading.Tasks.Task.Delay(100);
-            cardTemplate = await Widget.GetCardTemplateAsync();
-            cardData = await Widget.GetCardDataAsync();
-        }
+            var cardTemplate = await Widget.GetCardTemplateAsync();
+            var cardData = await Widget.GetCardDataAsync();
 
-        if (string.IsNullOrEmpty(cardData))
-        {
-            Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
-            ShowErrorCard("WidgetErrorCardDisplayText");
-            return;
-        }
+            if (string.IsNullOrEmpty(cardTemplate))
+            {
+                // TODO CreateWidgetAsync doesn't always seem to be "done", and returns blank templates and data.
+                // Put in small wait to avoid this.
+                // https://github.com/microsoft/devhome/issues/643
+                Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardTemplateAsync returned empty, try wait");
+                await System.Threading.Tasks.Task.Delay(100);
+                cardTemplate = await Widget.GetCardTemplateAsync();
+                cardData = await Widget.GetCardDataAsync();
+            }
 
-        Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
-        Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
+            if (string.IsNullOrEmpty(cardData))
+            {
+                Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
+                ShowErrorCard("WidgetErrorCardDisplayText");
+                return;
+            }
 
-        // If we're in the Add or Edit dialog, check the cardData to see if the card is in a configuration state
-        // or if it is able to be pinned yet. If still configuring, the Pin button will be disabled.
-        if (IsInAddMode || IsInEditMode)
-        {
-            GetConfiguring(cardData);
-        }
+            Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
+            Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
 
-        // Use the data to fill in the template.
-        AdaptiveCardParseResult card;
-        try
-        {
-            var template = new AdaptiveCardTemplate(cardTemplate);
-            var json = template.Expand(cardData);
+            // If we're in the Add or Edit dialog, check the cardData to see if the card is in a configuration state
+            // or if it is able to be pinned yet. If still configuring, the Pin button will be disabled.
+            if (IsInAddMode || IsInEditMode)
+            {
+                GetConfiguring(cardData);
+            }
 
-            // Use custom parser.
-            var elementParser = new AdaptiveElementParserRegistration();
-            elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
-
-            // Create adaptive card.
-            card = AdaptiveCard.FromJsonString(json, elementParser, new AdaptiveActionParserRegistration());
-        }
-        catch (Exception ex)
-        {
-            Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
-            ShowErrorCard("WidgetErrorCardDisplayText");
-            return;
-        }
-
-        if (_renderedCard != null)
-        {
-            _renderedCard.Action -= HandleAdaptiveAction;
-        }
-
-        if (card == null || card.AdaptiveCard == null)
-        {
-            Log.Logger()?.ReportError("WidgetViewModel", "Error in AdaptiveCardParseResult");
-            ShowErrorCard("WidgetErrorCardDisplayText");
-            return;
-        }
-
-        // Render card on the UI thread.
-        _dispatcher.TryEnqueue(() =>
-        {
+            // Use the data to fill in the template.
+            AdaptiveCardParseResult card;
             try
             {
-                _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
-                if (_renderedCard != null && _renderedCard.FrameworkElement != null)
-                {
-                    _renderedCard.Action += HandleAdaptiveAction;
-                    WidgetFrameworkElement = _renderedCard.FrameworkElement;
-                }
-                else
-                {
-                    Log.Logger()?.ReportError("WidgetViewModel", "Error in RenderedAdaptiveCard");
-                    WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
-                }
+                var template = new AdaptiveCardTemplate(cardTemplate);
+                var json = template.Expand(cardData);
+
+                // Use custom parser.
+                var elementParser = new AdaptiveElementParserRegistration();
+                elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
+
+                // Create adaptive card.
+                card = AdaptiveCard.FromJsonString(json, elementParser, new AdaptiveActionParserRegistration());
             }
             catch (Exception ex)
             {
-                Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card: ", ex);
-                WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
+                Log.Logger()?.ReportWarn("WidgetViewModel", "There was an error expanding the Widget template with data: ", ex);
+                ShowErrorCard("WidgetErrorCardDisplayText");
+                return;
             }
+
+            if (_renderedCard != null)
+            {
+                _renderedCard.Action -= HandleAdaptiveAction;
+            }
+
+            if (card == null || card.AdaptiveCard == null)
+            {
+                Log.Logger()?.ReportError("WidgetViewModel", "Error in AdaptiveCardParseResult");
+                ShowErrorCard("WidgetErrorCardDisplayText");
+                return;
+            }
+
+            // Render card on the UI thread.
+            _dispatcher.TryEnqueue(() =>
+            {
+                try
+                {
+                    _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
+                    if (_renderedCard != null && _renderedCard.FrameworkElement != null)
+                    {
+                        _renderedCard.Action += HandleAdaptiveAction;
+                        WidgetFrameworkElement = _renderedCard.FrameworkElement;
+                    }
+                    else
+                    {
+                        Log.Logger()?.ReportError("WidgetViewModel", "Error in RenderedAdaptiveCard");
+                        WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger()?.ReportError("WidgetViewModel", "Error rendering widget card: ", ex);
+                    WidgetFrameworkElement = GetErrorCard("WidgetErrorCardDisplayText");
+                }
+            });
         });
     }
 
@@ -296,9 +300,9 @@ public partial class WidgetViewModel : ObservableObject
         // https://github.com/microsoft/devhome/issues/644
     }
 
-    private void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
+    private async void HandleWidgetUpdated(Widget sender, WidgetUpdatedEventArgs args)
     {
         Log.Logger()?.ReportDebug("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
-        RenderWidgetFrameworkElement();
+        await RenderWidgetFrameworkElementAsync();
     }
 }

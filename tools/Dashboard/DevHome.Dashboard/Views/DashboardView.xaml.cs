@@ -134,7 +134,7 @@ public partial class DashboardView : ToolPage
         // Re-render the widgets with the new theme and renderer.
         foreach (var widget in PinnedWidgets)
         {
-            widget.Render();
+            await widget.RenderAsync();
         }
     }
 
@@ -182,12 +182,12 @@ public partial class DashboardView : ToolPage
 
         await ConfigureWidgetRenderer(_renderer);
 
-        RestorePinnedWidgets();
+        await RestorePinnedWidgetsAsync();
 
         LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
     }
 
-    private async void RestorePinnedWidgets()
+    private async Task RestorePinnedWidgetsAsync()
     {
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
         var pinnedWidgets = _widgetHost.GetWidgets();
@@ -330,30 +330,42 @@ public partial class DashboardView : ToolPage
 
     private async Task InsertWidgetInPinnedWidgetsAsync(Widget widget, WidgetSize size, int index)
     {
-        var widgetDefinitionId = widget.DefinitionId;
-        var widgetId = widget.Id;
-        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetDefinitionId);
+        await Task.Run(async () =>
+        {
+            var widgetDefinitionId = widget.DefinitionId;
+            var widgetId = widget.Id;
+            var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetDefinitionId);
 
-        if (widgetDefinition != null)
-        {
-            Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
-            var wvm = new WidgetViewModel(widget, size, widgetDefinition, _renderer, _dispatcher);
-            PinnedWidgets.Insert(index, wvm);
-        }
-        else
-        {
-            // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
-            Log.Logger()?.ReportInfo("DashboardView", $"No widget definition '{widgetDefinitionId}', delete widget {widgetId} with that definition");
-            try
+            if (widgetDefinition != null)
             {
-                await widget.SetCustomStateAsync(string.Empty);
-                await widget.DeleteAsync();
+                Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
+                var wvm = new WidgetViewModel(widget, size, widgetDefinition, _renderer, _dispatcher);
+                _dispatcher.TryEnqueue(() =>
+                {
+                    try
+                    {
+                        PinnedWidgets.Insert(index, wvm);
+                    }
+                    catch
+                    {
+                    }
+                });
             }
-            catch (Exception ex)
+            else
             {
-                Log.Logger()?.ReportInfo("DashboardView", $"Error deleting widget", ex);
+                // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
+                Log.Logger()?.ReportInfo("DashboardView", $"No widget definition '{widgetDefinitionId}', delete widget {widgetId} with that definition");
+                try
+                {
+                    await widget.SetCustomStateAsync(string.Empty);
+                    await widget.DeleteAsync();
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger()?.ReportInfo("DashboardView", $"Error deleting widget", ex);
+                }
             }
-        }
+        });
     }
 
     private void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args)
