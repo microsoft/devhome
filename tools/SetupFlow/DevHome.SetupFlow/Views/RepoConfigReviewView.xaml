@@ -8,7 +8,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ctControls="using:CommunityToolkit.Labs.WinUI"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:models="using:DevHome.SetupFlow.Models"
