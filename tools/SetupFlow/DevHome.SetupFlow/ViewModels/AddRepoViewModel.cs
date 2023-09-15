@@ -118,6 +118,9 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private bool? _isAccountToggleButtonChecked;
 
+    [ObservableProperty]
+    private bool _isAccountButtonEnabled;
+
     /// <summary>
     /// Keeps track if the URL button is checked.  Used to switch UIs
     /// </summary>
@@ -253,7 +256,6 @@ public partial class AddRepoViewModel : ObservableObject
         ShouldShowUrlError = Visibility.Collapsed;
         ShouldPrimaryButtonBeEnabled = false;
         ShowErrorTextBox = Visibility.Collapsed;
-        EverythingToClone = new ();
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
@@ -284,6 +286,8 @@ public partial class AddRepoViewModel : ObservableObject
 
         ProviderNames = new ObservableCollection<string>(_providers.GetAllProviderNames());
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForProviders_Event", LogLevel.Critical, new ProviderEvent(ProviderNames.Count), _activityId);
+
+        IsAccountButtonEnabled = plugins.Any();
     }
 
     public void ChangeToUrlPage()

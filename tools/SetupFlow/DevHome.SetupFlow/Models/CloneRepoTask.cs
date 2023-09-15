@@ -194,6 +194,15 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                 ProviderOperationResult result;
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
                 TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Critical, new ReposCloneEvent(ProviderName, _developerId));
+
+                if (RepositoryToClone.GetType() == typeof(GenericRepository))
+                {
+                    await (RepositoryToClone as GenericRepository).CloneRepositoryAsync(_cloneLocation.FullName, null);
+
+                    WasCloningSuccessful = true;
+                    return TaskFinishedState.Success;
+                }
+
                 if (_developerId == null)
                 {
                     result = await _repositoryProvider.CloneRepositoryAsync(RepositoryToClone, _cloneLocation.FullName);

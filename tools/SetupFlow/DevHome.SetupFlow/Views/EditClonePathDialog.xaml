@@ -41,7 +41,7 @@
             MinWidth="500">
             <StackPanel.Resources>
                 <ResourceDictionary>
-                    <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+                    <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource AccentButtonStyle}">
                         <Setter Property="Background">
                             <Setter.Value>
                                 <SolidColorBrush Color="{ThemeResource SystemAccentColor}"/>
