@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
@@ -11,6 +12,8 @@ using DevHome.Dashboard.Helpers;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.Data.Json;
@@ -24,6 +27,10 @@ public partial class WidgetViewModel : ObservableObject
     private readonly AdaptiveCardRenderer _renderer;
 
     private RenderedAdaptiveCard _renderedCard;
+
+    private string _oldTemplate;
+    private string _currentTemplate;
+    private List<int> focusedElementPath;
 
     [ObservableProperty]
     private Widget _widget;
@@ -179,11 +186,41 @@ public partial class WidgetViewModel : ObservableObject
         {
             try
             {
+                focusedElementPath = GetPathToFocusedElement(_renderedCard);
+
                 _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
                 if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                 {
+                    _currentTemplate = cardTemplate;
                     _renderedCard.Action += HandleAdaptiveAction;
+
                     WidgetFrameworkElement = _renderedCard.FrameworkElement;
+
+                    // Ensure the Widget's Layout is updated.
+                    WidgetFrameworkElement.UpdateLayout();
+
+                    // If the path has elements, the focused control is inside this widget.
+                    // Otherwise, it is outside, so there is nothing else to do here.
+                    if (focusedElementPath.Count > 0)
+                    {
+                        // If the template didn't change, the data structure is the same, so we can
+                        // try to keep focus on the element that is in the same position.
+                        // But if the template changed, we just reset the focus to the widget itself as
+                        // the structure of the widget changed too.
+                        if (_oldTemplate == _currentTemplate)
+                        {
+                            AttemptToKeepFocus(focusedElementPath);
+                        }
+                        else
+                        {
+                            _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
+                            {
+                                WidgetFrameworkElement.Focus(FocusState.Programmatic);
+                            });
+                        }
+                    }
+
+                    _oldTemplate = _currentTemplate;
                 }
                 else
                 {
@@ -300,5 +337,95 @@ public partial class WidgetViewModel : ObservableObject
     {
         Log.Logger()?.ReportDebug("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
         RenderWidgetFrameworkElement();
+    }
+
+    private List<int> GetPathToFocusedElement(RenderedAdaptiveCard rendered)
+    {
+        var pathOnTree = new List<int>();
+
+        // Empty path returned if there is no rendered card before
+        if (rendered == null)
+        {
+            return pathOnTree;
+        }
+
+        try
+        {
+            // We get the current focused element. If it is not inside the widget, the path to be returned
+            // will have no elements at all as we will not reach it in our search
+            var focused = FocusManager.GetFocusedElement(rendered.FrameworkElement.XamlRoot) as FrameworkElement;
+
+            if (focused != null)
+            {
+                GetPathOnWidgetTree(rendered.FrameworkElement, focused, ref pathOnTree);
+            }
+
+            // We build the path recursively, so it is reversed. We reverse it to get the path from root to leaf.
+            pathOnTree.Reverse();
+        }
+        catch (Exception e)
+        {
+            Log.Logger()?.ReportError("WidgetViewModel", e.Message);
+        }
+
+        return pathOnTree;
+    }
+
+    // This method is a DFS to search the focused element inside the widget descendants
+    private void GetPathOnWidgetTree(FrameworkElement currentElement, FrameworkElement target, ref List<int> path)
+    {
+        var num_children = VisualTreeHelper.GetChildrenCount(currentElement);
+        for (var i = 0; i < num_children; ++i)
+        {
+            var child = VisualTreeHelper.GetChild(currentElement, i) as FrameworkElement;
+
+            // If we find the focused element, we add its index on the final path we passed by reference.
+            // This is expected to be the first item added.
+            if (child == target)
+            {
+                path.Add(i);
+                return;
+            }
+
+            GetPathOnWidgetTree(child, target, ref path);
+
+            // If after we call the recusrion to a child, the path is not empty,
+            // we fond the target on this subtree. We stop the search and add the child's
+            // index to the answer.
+            if (path.Count > 0)
+            {
+                path.Add(i);
+                return;
+            }
+        }
+    }
+
+    private void AttemptToKeepFocus(List<int> path)
+    {
+        var element = WidgetFrameworkElement;
+
+        // Try to descend the tree until we get to the same position as the control previously focused.
+        foreach (var i in path)
+        {
+            // If for some reason there is not a way to reach a similar control in the same position
+            // because of changes on the size of elements in a list for example, we set the focus
+            // back to the widget as a whole.
+            if (i >= VisualTreeHelper.GetChildrenCount(element))
+            {
+                _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
+                {
+                    WidgetFrameworkElement.Focus(FocusState.Programmatic);
+                });
+                return;
+            }
+
+            element = VisualTreeHelper.GetChild(element, i) as FrameworkElement;
+        }
+
+        // Set the focus to the object after we reach it.
+        _dispatcher.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.High, () =>
+        {
+            element.Focus(FocusState.Programmatic);
+        });
     }
 }
