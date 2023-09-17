@@ -124,7 +124,7 @@ public partial class WidgetViewModel : ObservableObject
             cardData = await Widget.GetCardDataAsync();
         }
 
-        if (string.IsNullOrEmpty(cardData))
+        if (string.IsNullOrEmpty(cardData) || string.IsNullOrEmpty(cardTemplate))
         {
             Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
             ShowErrorCard("WidgetErrorCardDisplayText");

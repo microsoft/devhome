@@ -46,7 +46,7 @@
                 </ResourceDictionary>
             </StackPanel.Resources>
             <labs:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single" SelectionChanged="Segmented_SelectionChanged">
-                <labs:SegmentedItem x:Name="AddViaAccountSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton"/>
+                <labs:SegmentedItem x:Name="AddViaAccountSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton" IsEnabled="{x:Bind AddRepoViewModel.IsAccountButtonEnabled, Mode=OneWay}"/>
                 <labs:SegmentedItem x:Name="AddViaUrlSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" />
             </labs:Segmented>
 

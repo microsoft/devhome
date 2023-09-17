@@ -176,6 +176,7 @@ public partial class DashboardView : ToolPage
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
+        ViewModel.IsLoading = true;
 
         // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
         await _widgetIconCache.CacheAllWidgetIconsAsync(_widgetCatalog);
@@ -185,6 +186,7 @@ public partial class DashboardView : ToolPage
         RestorePinnedWidgets();
 
         LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
+        ViewModel.IsLoading = false;
     }
 
     private async void RestorePinnedWidgets()
