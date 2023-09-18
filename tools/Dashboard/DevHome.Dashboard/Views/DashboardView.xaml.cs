@@ -348,8 +348,11 @@ public partial class DashboardView : ToolPage
                     {
                         PinnedWidgets.Insert(index, wvm);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        // TODO Support concurrency in dashboard. Today concurrent async execution can cause insertion errors.
+                        // https://github.com/microsoft/devhome/issues/1215
+                        Log.Logger()?.ReportWarn("DashboardView", $"Couldn't insert pinned widget", ex);
                     }
                 });
             }
