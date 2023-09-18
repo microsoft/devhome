@@ -499,9 +499,19 @@ public partial class AddRepoViewModel : ObservableObject
         // absolute Uri.  UriBuilder prepends the https scheme
         if (!parsedUri.IsAbsoluteUri)
         {
-            var uriBuilder = new UriBuilder(parsedUri.OriginalString);
-            uriBuilder.Port = -1;
-            parsedUri = uriBuilder.Uri;
+            try
+            {
+                var uriBuilder = new UriBuilder(parsedUri.OriginalString);
+                uriBuilder.Port = -1;
+                parsedUri = uriBuilder.Uri;
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Invalid URL {parsedUri.OriginalString}", e);
+                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
+                ShouldShowUrlError = Visibility.Visible;
+                return;
+            }
         }
 
         var providerToCloneRepo = _providers.CanAnyProviderSupportThisUri(parsedUri);
