@@ -24,6 +24,7 @@
     <Page.Resources>
         <ResourceDictionary>
             <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed" />
+            <converters:DoubleToVisibilityConverter x:Key="InverseCountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible" />
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="ExtensionsBannerFront">ms-appx:///DevHome.ExtensionLibrary/Assets/ExtensionsBannerFrontLight.png</x:String>
@@ -58,6 +59,7 @@
                     <Button x:Uid="GetUpdatesButton"
                             HorizontalAlignment="Right"
                             Style="{ThemeResource AccentButtonStyle}"
+                            Visibility="{x:Bind ViewModel.InstalledPackagesList.Count, Converter={StaticResource InverseCountToVisibilityConverter}, Mode=OneWay}"
                             Command="{x:Bind ViewModel.GetUpdatesButtonCommand}"/>
                 </Grid>
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.InstalledPackagesList, Mode=OneWay}">
