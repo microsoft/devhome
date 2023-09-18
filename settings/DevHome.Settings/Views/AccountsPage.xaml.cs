@@ -221,7 +221,13 @@ public sealed partial class AccountsPage : Page
         {
             IntPtr windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
             WindowId windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
-            await accountProvider.DeveloperIdProvider.ShowLogonSession(windowPtr);
+            var developerIdResult = await accountProvider.DeveloperIdProvider.ShowLogonSession(windowPtr);
+            if (developerIdResult.Result.Status == ProviderOperationStatus.Failure)
+            {
+                GlobalLog.Logger?.ReportError($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
+                return;
+            }
+
             accountProvider.RefreshLoggedInAccounts();
         }
     }
