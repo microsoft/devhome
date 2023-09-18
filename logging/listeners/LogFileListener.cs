@@ -16,7 +16,7 @@ public class LogFileListener : ListenerBase, IDisposable
         // And fail silently if we can't write for whatever reason.
         try
         {
-            writer = new StreamWriter(filename, true);
+            writer = TextWriter.Synchronized(new StreamWriter(filename, true));
         }
         catch (IOException)
         {
