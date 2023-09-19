@@ -214,11 +214,11 @@ public sealed partial class AccountsPage : Page
     private async Task InitiateAddAccountUserExperienceAsync(Page parentPage, AccountsProviderViewModel accountProvider)
     {
         var authenticationFlow = accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind();
-        if (authenticationFlow == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CardSession)
+        if (authenticationFlow == AuthenticationExperienceKind.CardSession)
         {
             await ShowLoginUIAsync("Settings", parentPage, accountProvider);
         }
-        else if (authenticationFlow == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CustomProvider)
+        else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
         {
             IntPtr windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
             WindowId windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
@@ -233,7 +233,7 @@ public sealed partial class AccountsPage : Page
             }
             catch (Exception ex)
             {
-                GlobalLog.Logger?.ReportError($"Exception thrown while calling DeveloperIdProvider.ShowLogonSession: ", ex);
+                GlobalLog.Logger?.ReportError($"Exception thrown while calling {nameof(accountProvider.DeveloperIdProvider)}.{nameof(accountProvider.DeveloperIdProvider.ShowLogonSession)}: ", ex);
             }
 
             accountProvider.RefreshLoggedInAccounts();
