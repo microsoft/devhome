@@ -4,6 +4,7 @@
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Common.Windows;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
@@ -128,5 +129,11 @@ public sealed partial class ShellPage : Page
                 NavigationViewControl.MenuItems.Add(navigationViewItem);
             }
         }
+    }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        var example = new Example2();
+        example.Activate();
     }
 }

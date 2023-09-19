@@ -115,6 +115,8 @@
             </Grid>
         </NavigationView>
 
+        <Button Click="Button_Click">Testing</Button>
+
         <!-- A "hidden" TextBlock read by the narrator on value change.
              Setting the visibility to Collapsed prevents the screen reader
              from reading the control value. -->

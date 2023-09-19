@@ -1,0 +1,13 @@
+<local:SecondaryWindow
+    x:Class="DevHome.Common.Windows.Example2"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DevHome.Common.Windows"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    IsModal="False"
+    mc:Ignorable="d">
+    <Grid>
+        <TextBlock>Hello fsafsa fsa fslka</TextBlock>
+    </Grid>
+</local:SecondaryWindow>

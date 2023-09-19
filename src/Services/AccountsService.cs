@@ -43,16 +43,22 @@ public class AccountsService : IAccountsService
     public async Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders()
     {
         var devIdProviders = new List<IDeveloperIdProvider>();
-        var pluginService = Application.Current.GetService<IPluginService>();
-        var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
-
-        foreach (var plugin in plugins)
+        try
         {
-            var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
-            if (devIdProvider is not null)
+            var pluginService = Application.Current.GetService<IPluginService>();
+            var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
+
+            foreach (var plugin in plugins)
             {
-                devIdProviders.Add(devIdProvider);
+                var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
+                if (devIdProvider is not null)
+                {
+                    devIdProviders.Add(devIdProvider);
+                }
             }
+        }
+        catch
+        {
         }
 
         return devIdProviders;

@@ -13,6 +13,8 @@
     <None Remove="Views\Banner.xaml" />
     <None Remove="Views\CloseButton.xaml" />
     <None Remove="Views\HyperlinkTextBlock.xaml" />
+    <None Remove="Windows\Example2.xaml" />
+    <None Remove="Windows\WindowTemplate.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,6 +53,9 @@
     <Page Update="Views\HyperlinkTextBlock.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Update="Windows\*.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>
@@ -64,5 +69,11 @@
     <Content Update="Assets\BannerBackgroundLight.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Windows\Example2.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>
