@@ -15,9 +15,9 @@ namespace DevHome.SetupFlow.Models;
 /// A package id is unique in a catalog, but not across catalogs. To globally
 /// identify a package, use a composite key of package id and catalog id.
 /// </remarks>
-/// <param name="packageId">Package id</param>
-/// <param name="catalogId">Catalog id</param>
-public record class PackageUniqueKey(string packageId, string catalogId);
+/// <param name="PackageId">Package id</param>
+/// <param name="CatalogId">Catalog id</param>
+public record class PackageUniqueKey(string PackageId, string CatalogId);
 
 /// <summary>
 /// Interface for a winget package.

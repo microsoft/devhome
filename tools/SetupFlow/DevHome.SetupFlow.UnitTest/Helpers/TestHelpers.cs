@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 namespace DevHome.SetupFlow.UnitTest.Helpers;
+
 public class TestHelpers
 {
     public static string GetTestFilePath(string fileName)

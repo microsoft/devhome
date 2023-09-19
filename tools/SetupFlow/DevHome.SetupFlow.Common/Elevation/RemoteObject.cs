@@ -6,6 +6,10 @@ using System.Threading;
 
 namespace DevHome.SetupFlow.Common.Elevation;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "StyleCop.CSharp.DocumentationRules",
+    "SA1649:File name should match first type name",
+    Justification = "A tick mark in a file name would be annoying.")]
 public class RemoteObject<T> : IDisposable
 {
     private readonly Semaphore _completionSemaphore;

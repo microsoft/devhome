@@ -7,6 +7,7 @@ using DevHome.UITest.Pages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DevHome.Tests.UITest;
+
 [TestClass]
 public class WidgetTest : DevHomeTestBase
 {

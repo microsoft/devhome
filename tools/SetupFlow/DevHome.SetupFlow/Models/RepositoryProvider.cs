@@ -105,13 +105,13 @@ internal class RepositoryProvider
     }
 
     /// <summary>
-    /// Checks with the provider if it understands and can clone a repo via Uri.
+    /// Checks whether the provider understands and can clone a repo via Uri.
     /// </summary>
     /// <param name="uri">The uri to the repository</param>
-    /// <returns>A tuple that containes if the provider can parse the uri and the account it can parse with.</returns>
-    /// <remarks>If the provider can't parse the Uri, this will try a second time with any logged in accounts.  If the repo is
+    /// <returns>A tuple that contains whether the provider can parse the uri and the account it can parse with.</returns>
+    /// <remarks>If the provider can't parse the Uri, this will try a second time with any logged in accounts. If the repo is
     /// public, the developerid can be null.</remarks>
-    public (bool, IDeveloperId, IRepositoryProvider) IsUriSupported(Uri uri)
+    public (bool CanParseUri, IDeveloperId DeveloperId, IRepositoryProvider) IsUriSupported(Uri uri)
     {
         var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
 

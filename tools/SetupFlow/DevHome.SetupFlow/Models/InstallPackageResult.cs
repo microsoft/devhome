@@ -11,7 +11,7 @@ public class InstallPackageResult
     /// </summary>
     public bool RebootRequired
     {
-        init; get;
+        get; init;
     }
 
     /// <summary>
@@ -22,6 +22,6 @@ public class InstallPackageResult
     /// </remarks>
     public int ExtendedErrorCode
     {
-        init; get;
+        get; init;
     }
 }

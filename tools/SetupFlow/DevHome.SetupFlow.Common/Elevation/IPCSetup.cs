@@ -141,7 +141,7 @@ public static class IPCSetup
     /// should use <see cref="IPCSetup.CreateOutOfProcessObjectAsync{T}"/>
     /// </remarks>
     /// <returns>A proxy object that execute operations in the background process.</returns>
-    public static (RemoteObject<T>, Process) CreateOutOfProcessObjectAndGetProcess<T>(TasksArguments tasksArguments, bool isForTesting = false)
+    public static (RemoteObject<T> RemoteObject, Process Process) CreateOutOfProcessObjectAndGetProcess<T>(TasksArguments tasksArguments, bool isForTesting = false)
     {
         // The shared memory block, initialization event and completion semaphore all need a name
         // that will be used by the child process to find them. We use new random GUIDs for them.

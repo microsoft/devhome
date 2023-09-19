@@ -26,7 +26,7 @@ namespace DevHome.SetupFlow.Models;
 internal class CreateDevDriveTask : ISetupTask
 {
     private readonly TaskMessages _taskMessages;
-    private readonly ActionCenterMessages _actionCenterMessages = new ();
+    private readonly ActionCenterMessages _actionCenterMessages = new();
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IHost _host;
     private readonly Guid _activityId;
@@ -63,7 +63,7 @@ internal class CreateDevDriveTask : ISetupTask
 
     public TaskMessages GetLoadingMessages() => _taskMessages;
 
-    public ActionCenterMessages GetRebootMessage() => new ();
+    public ActionCenterMessages GetRebootMessage() => new();
 
     /// <summary>
     /// Get the arguments for this task
@@ -114,7 +114,7 @@ internal class CreateDevDriveTask : ISetupTask
                     return TaskFinishedState.Failure;
                 }
 
-                Result.ThrowIfFailed(await elevatedComponentOperation.CreateDevDriveAsync());
+                ResultHelper.ThrowIfFailed(await elevatedComponentOperation.CreateDevDriveAsync());
                 return TaskFinishedState.Success;
             }
             catch (Exception ex)

@@ -75,7 +75,7 @@ public partial class SearchViewModel : ObservableObject
     /// <param name="text">Text search query</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Search status and result</returns>
-    public async Task<(SearchResultStatus, List<PackageViewModel>)> SearchAsync(string text, CancellationToken cancellationToken)
+    public async Task<(SearchResultStatus SearchResultStatus, List<PackageViewModel> PackageViewModels)> SearchAsync(string text, CancellationToken cancellationToken)
     {
         // Skip search if text is empty
         if (string.IsNullOrWhiteSpace(text))

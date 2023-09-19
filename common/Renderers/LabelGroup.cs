@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
 
 namespace DevHome.Common.Renderers;
+
 public class LabelGroup : IAdaptiveCardElement
 {
     public LabelGroup()
@@ -17,7 +18,7 @@ public class LabelGroup : IAdaptiveCardElement
         Labels = new List<(string, string)>();
     }
 
-    public List<(string, string)> Labels { get; set; }
+    public List<(string Text, string Color)> Labels { get; set; }
 
     public bool RoundedCorners { get; set; } = true;
 
@@ -51,6 +52,10 @@ public class LabelGroup : IAdaptiveCardElement
     IList<AdaptiveRequirement>? IAdaptiveCardElement.Requirements { get; }
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "StyleCop.CSharp.MaintainabilityRules",
+    "SA1402:File may only contain a single type",
+    Justification = "Keep pieces of the custom renderer together.")]
 public class LabelGroupParser : IAdaptiveElementParser
 {
     public IAdaptiveCardElement FromJson(
@@ -85,6 +90,10 @@ public class LabelGroupParser : IAdaptiveElementParser
     }
 }
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "StyleCop.CSharp.MaintainabilityRules",
+    "SA1402:File may only contain a single type",
+    Justification = "Keep pieces of the custom renderer together.")]
 public class LabelGroupRenderer : IAdaptiveElementRenderer
 {
     public UIElement Render(IAdaptiveCardElement element, AdaptiveRenderContext context, AdaptiveRenderArgs renderArgs)
@@ -104,7 +113,7 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
             {
                 var grid = new Grid
                 {
-                    Background = GetBrushFromColor(label.Item2, 0.4),
+                    Background = GetBrushFromColor(label.Color, 0.4),
                     Padding = new Thickness(7, 2, 7, 2),
                     Margin = new Thickness(0, 0, 10, 0),
                 };
@@ -115,7 +124,7 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
 
                 var tb = new TextBlock
                 {
-                    Text = label.Item1,
+                    Text = label.Text,
                     VerticalAlignment = VerticalAlignment.Center,
                     FontSize = 12,
                 };

@@ -178,7 +178,7 @@ public static class DevDriveUtil
     /// The double representation of the newly converted value and its byte unit to tell the caller if its
     /// in gigabytes or terabytes.
     /// </returns>
-    public static (double, ByteUnit) ConvertFromBytes(double value)
+    public static (double NewValue, ByteUnit ByteUnit) ConvertFromBytes(double value)
     {
         if (value.CompareTo(0.0d) <= 0)
         {

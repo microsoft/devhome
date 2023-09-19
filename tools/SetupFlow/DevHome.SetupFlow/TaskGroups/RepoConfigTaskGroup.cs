@@ -13,6 +13,7 @@ using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
+using static DevHome.Common.TelemetryEvents.SetupFlow.RepoToolFinalReposToAddEvent;
 
 namespace DevHome.SetupFlow.TaskGroups;
 

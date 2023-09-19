@@ -5,6 +5,11 @@ using CoreWidgetProvider.Helpers;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "StyleCop.CSharp.DocumentationRules",
+    "SA1649:File name should match first type name",
+    Justification = "It would be annoying to have a tick mark in a file name.")]
 internal class WidgetImplFactory<T> : IWidgetImplFactory
     where T : WidgetImpl, new()
 {

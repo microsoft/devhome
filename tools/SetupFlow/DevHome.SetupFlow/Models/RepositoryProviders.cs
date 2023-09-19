@@ -63,7 +63,7 @@ internal class RepositoryProviders
     /// <param name="uri">The Uri to parse.</param>
     /// <returns>If a provider was found that can parse the Uri then (providerName, repository) if not
     /// (string.empty, null)</returns>
-    public (string, IRepository) GetRepositoryFromUri(Uri uri)
+    public (string ProviderName, IRepository Repository) GetRepositoryFromUri(Uri uri)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Parsing repository from URI {uri}");
         foreach (var provider in _providers)
@@ -85,7 +85,7 @@ internal class RepositoryProviders
     /// Queries each provider to figure out if it can support the URI and can clone from it.
     /// </summary>
     /// <param name="uri">The uri that points to a remote repository</param>
-    /// <returns>THe provider that can clone the repo.  Otherwise null.</returns>
+    /// <returns>The provider that can clone the repo. Otherwise null.</returns>
     public (bool, IDeveloperId, IRepositoryProvider) CanAnyProviderSupportThisUri(Uri uri)
     {
         foreach (var provider in _providers)
