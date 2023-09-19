@@ -67,7 +67,7 @@ public class AppManagementInitializer : IAppManagementInitializer
             return true;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "WinGet COM Server is not availbale. AppInstaller might be staged but not registered, attempting to register it to fix the issue");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, "WinGet COM Server is not available. AppInstaller might be staged but not registered, attempting to register it to fix the issue");
         if (await _wpm.RegisterAppInstallerAsync())
         {
             if (await _wpm.IsCOMServerAvailableAsync())

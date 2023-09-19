@@ -97,7 +97,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         var mainWindow = Application.Current.GetService<WindowEx>();
 
         // Create and configure file picker
-        Log.Logger?.ReportInfo(Log.Component.Configuration, "Launching file picker to select configurationf file");
+        Log.Logger?.ReportInfo(Log.Component.Configuration, "Launching file picker to select configuration file");
         var file = await mainWindow.OpenFilePickerAsync(Log.Logger, ("*.yaml;*.yml", StringResource.GetLocalized(StringResourceKey.FilePickerFileTypeOption, "YAML")));
 
         // Check if a file was selected
