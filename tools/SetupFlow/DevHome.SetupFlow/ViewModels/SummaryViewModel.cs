@@ -33,7 +33,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
     private readonly IWindowsPackageManager _wpm;
     private readonly PackageProvider _packageProvider;
-    private readonly CatalogDataSourceLoacder _catalogDataSourceLoacder;
+    private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -155,7 +155,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory,
         IWindowsPackageManager wpm,
         PackageProvider packageProvider,
-        CatalogDataSourceLoacder catalogDataSourceLoader)
+        CatalogDataSourceLoader catalogDataSourceLoader)
         : base(stringResource, orchestrator)
     {
         _orchestrator = orchestrator;
@@ -164,7 +164,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
         _wpm = wpm;
         _packageProvider = packageProvider;
-        _catalogDataSourceLoacder = catalogDataSourceLoader;
+        _catalogDataSourceLoader = catalogDataSourceLoader;
         _configurationUnitResults = new (GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
 
@@ -192,8 +192,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 await _wpm.ConnectToAllCatalogsAsync(force: true);
 
                 Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloading catalogs from all data sources");
-                _catalogDataSourceLoacder.Clear();
-                await foreach (var dataSourceCatalogs in _catalogDataSourceLoacder.LoadCatalogsAsync())
+                _catalogDataSourceLoader.Clear();
+                await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
                 {
                     Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloaded {dataSourceCatalogs.Count} catalog(s)");
                 }

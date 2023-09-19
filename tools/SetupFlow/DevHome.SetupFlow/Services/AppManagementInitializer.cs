@@ -8,11 +8,11 @@ namespace DevHome.SetupFlow.Services;
 public class AppManagementInitializer : IAppManagementInitializer
 {
     private readonly IWindowsPackageManager _wpm;
-    private readonly CatalogDataSourceLoacder _catalogDataSourceLoader;
+    private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
 
     public AppManagementInitializer(
         IWindowsPackageManager wpm,
-        CatalogDataSourceLoacder catalogDataSourceLoader)
+        CatalogDataSourceLoader catalogDataSourceLoader)
     {
         _wpm = wpm;
         _catalogDataSourceLoader = catalogDataSourceLoader;
