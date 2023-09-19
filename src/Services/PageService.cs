@@ -1,18 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common;
 using DevHome.Contracts.Services;
-using DevHome.Helpers;
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
 using DevHome.ViewModels;
 using DevHome.Views;
 using Microsoft.UI.Xaml.Controls;
-using Newtonsoft.Json;
-using WinRT;
 
 namespace DevHome.Services;
 
@@ -29,6 +24,7 @@ public class PageService : IPageService
         Configure<AboutViewModel, AboutPage>();
         Configure<FeedbackViewModel, FeedbackPage>();
         Configure<WhatsNewViewModel, WhatsNewPage>();
+        Configure<ExtensionSettingsViewModel, ExtensionSettingsPage>();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var group in App.NavConfig.NavMenu.Groups)

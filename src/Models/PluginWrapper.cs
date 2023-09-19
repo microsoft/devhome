@@ -3,8 +3,9 @@
 
 using System.Runtime.InteropServices;
 using DevHome.Common.Services;
-using DevHome.Services;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.AppExtensions;
 using Windows.Win32;
 using Windows.Win32.System.Com;
 using WinRT;
@@ -22,20 +23,22 @@ public class PluginWrapper : IPluginWrapper
     {
         [typeof(IDeveloperIdProvider)] = ProviderType.DeveloperId,
         [typeof(IRepositoryProvider)] = ProviderType.Repository,
-        [typeof(INotificationsProvider)] = ProviderType.Notifications,
-        [typeof(IWidgetProvider)] = ProviderType.Widget,
         [typeof(ISettingsProvider)] = ProviderType.Settings,
-        [typeof(IDevDoctorProvider)] = ProviderType.DevDoctor,
-        [typeof(ISetupFlowProvider)] = ProviderType.SetupFlow,
+        [typeof(IFeaturedApplicationsProvider)] = ProviderType.FeaturedApplications,
     };
 
-    private IPlugin? _pluginObject;
+    private IExtension? _extensionObject;
 
-    public PluginWrapper(string name, string packageFullName, string classId)
+    public PluginWrapper(AppExtension appExtension, string classId)
     {
-        Name = name ?? throw new ArgumentNullException(nameof(name));
-        PackageFullName = packageFullName ?? throw new ArgumentNullException(nameof(packageFullName));
+        Name = appExtension.DisplayName;
+        PackageFullName = appExtension.Package.Id.FullName;
+        PackageFamilyName = appExtension.Package.Id.FamilyName;
         PluginClassId = classId ?? throw new ArgumentNullException(nameof(classId));
+        Publisher = appExtension.Package.PublisherDisplayName;
+        InstalledDate = appExtension.Package.InstalledDate;
+        Version = appExtension.Package.Id.Version;
+        ExtensionUniqueId = appExtension.AppInfo.AppUserModelId + "!" + appExtension.Id;
     }
 
     public string Name
@@ -48,21 +51,55 @@ public class PluginWrapper : IPluginWrapper
         get;
     }
 
+    public string PackageFamilyName
+    {
+        get;
+    }
+
     public string PluginClassId
+    {
+        get;
+    }
+
+    public string Publisher
+    {
+        get;
+    }
+
+    public DateTimeOffset InstalledDate
+    {
+        get;
+    }
+
+    public PackageVersion Version
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the unique id for this Dev Home extension. The unique id is a concatenation of:
+    /// <list type="number">
+    /// <item>The AppUserModelId (AUMID) of the extension's application. The AUMID is the concatenation of the package
+    /// family name and the application id and uniquely identifies the application containing the extension within
+    /// the package.</item>
+    /// <item>The Extension Id. This is the unique identifier of the extension within the application.</item>
+    /// </list>
+    /// </summary>
+    public string ExtensionUniqueId
     {
         get;
     }
 
     public bool IsRunning()
     {
-        if (_pluginObject is null)
+        if (_extensionObject is null)
         {
             return false;
         }
 
         try
         {
-            _pluginObject.As<IInspectable>().GetRuntimeClassName();
+            _extensionObject.As<IInspectable>().GetRuntimeClassName();
         }
         catch (COMException e)
         {
@@ -85,17 +122,17 @@ public class PluginWrapper : IPluginWrapper
             {
                 if (!IsRunning())
                 {
-                    IntPtr pluginPtr = IntPtr.Zero;
+                    var pluginPtr = IntPtr.Zero;
                     try
                     {
-                        var hr = PInvoke.CoCreateInstance(Guid.Parse(PluginClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IPlugin).GUID, out var pluginObj);
+                        var hr = PInvoke.CoCreateInstance(Guid.Parse(PluginClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IExtension).GUID, out var pluginObj);
                         pluginPtr = Marshal.GetIUnknownForObject(pluginObj);
                         if (hr < 0)
                         {
                             Marshal.ThrowExceptionForHR(hr);
                         }
 
-                        _pluginObject = MarshalInterface<IPlugin>.FromAbi(pluginPtr);
+                        _extensionObject = MarshalInterface<IExtension>.FromAbi(pluginPtr);
                     }
                     finally
                     {
@@ -115,20 +152,20 @@ public class PluginWrapper : IPluginWrapper
         {
             if (IsRunning())
             {
-                _pluginObject?.Dispose();
+                _extensionObject?.Dispose();
             }
 
-            _pluginObject = null;
+            _extensionObject = null;
         }
     }
 
-    public IPlugin? GetPluginObject()
+    public IExtension? GetExtensionObject()
     {
         lock (_lock)
         {
             if (IsRunning())
             {
-                return _pluginObject;
+                return _extensionObject;
             }
             else
             {
@@ -142,7 +179,7 @@ public class PluginWrapper : IPluginWrapper
     {
         await StartPluginAsync();
 
-        return GetPluginObject()?.GetProvider(_providerTypeMap[typeof(T)]) as T;
+        return GetExtensionObject()?.GetProvider(_providerTypeMap[typeof(T)]) as T;
     }
 
     public void AddProviderType(ProviderType providerType)

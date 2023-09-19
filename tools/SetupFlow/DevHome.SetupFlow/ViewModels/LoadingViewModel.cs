@@ -13,6 +13,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
+using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
@@ -32,6 +33,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private readonly IHost _host;
 
     private readonly ElementTheme _currentTheme;
+
+    private readonly Guid _activityId;
 
     private static readonly BitmapImage DarkCaution = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
     private static readonly BitmapImage DarkError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
@@ -174,6 +177,18 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ExecutionFinished.Invoke(null, null);
     }
 
+    public void AddMessage(string message)
+    {
+        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        {
+            var messageToDisplay = new LoadingMessageViewModel(message);
+            messageToDisplay.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
+            messageToDisplay.ShouldShowStatusSymbolIcon = false;
+            messageToDisplay.ShouldShowProgressRing = false;
+            Messages.Insert(Messages.Count - _numberOfExecutingTasks, messageToDisplay);
+        });
+    }
+
     public LoadingViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
@@ -193,6 +208,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         _failedTasks = new List<TaskInformation>();
         ActionCenterItems = new ();
         Messages = new ();
+        _activityId = orchestrator.ActivityId;
     }
 
     /// <summary>
@@ -207,6 +223,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         {
             foreach (var task in taskGroup.SetupTasks)
             {
+                task.AddMessage += AddMessage;
                 TasksToRun.Add(new TaskInformation
                 {
                     TaskIndex = taskIndex++,
@@ -328,22 +345,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     protected async override Task OnFirstNavigateToAsync()
     {
-        var isAdminRequired = Orchestrator.TaskGroups.Any(taskGroup => taskGroup.SetupTasks.Any(task => task.RequiresAdmin));
-        if (isAdminRequired)
-        {
-            try
-            {
-                Orchestrator.RemoteElevatedFactory = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentFactory>();
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process.", e);
-                Log.Logger?.ReportInfo(Log.Component.Loading, "Will continue with setup as best-effort");
-            }
-        }
-
         FetchTaskInformation();
-
         await StartAllTasks(TasksToRun);
     }
 
@@ -418,7 +420,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
         if (_failedTasks.Any())
         {
-            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count));
+            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count), _activityId);
         }
     }
 
@@ -448,10 +450,10 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             });
 
             TaskFinishedState taskFinishedState;
-            if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedFactory != null)
+            if (taskInformation.TaskToExecute.RequiresAdmin && Orchestrator.RemoteElevatedOperation != null)
             {
                 Log.Logger?.ReportInfo(Log.Component.Loading, "Starting task as admin");
-                taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedFactory.Value);
+                taskFinishedState = await taskInformation.TaskToExecute.ExecuteAsAdmin(Orchestrator.RemoteElevatedOperation.Value);
             }
             else
             {

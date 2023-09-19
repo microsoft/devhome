@@ -106,7 +106,7 @@ public sealed partial class Banner : UserControl
     /// </summary>
     /// <remarks>
     /// Use this control to put a banner at the top of your Dev Home page. It can optionally be dismissed and not shown
-    /// again on subsequent app launches.
+    /// again on subsequent launches.
     /// </remarks>
     public Banner()
     {

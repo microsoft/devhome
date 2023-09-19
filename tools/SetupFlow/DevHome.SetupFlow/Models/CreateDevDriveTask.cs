@@ -12,7 +12,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.ResultHelper;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
+using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.SetupFlow.Services;
@@ -29,6 +29,9 @@ internal class CreateDevDriveTask : ISetupTask
     private readonly ActionCenterMessages _actionCenterMessages = new ();
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IHost _host;
+    private readonly Guid _activityId;
+
+    public event ISetupTask.ChangeMessageHandler AddMessage;
 
     public bool RequiresAdmin => true;
 
@@ -41,7 +44,7 @@ internal class CreateDevDriveTask : ISetupTask
         get; set;
     }
 
-    public CreateDevDriveTask(IDevDrive devDrive, IHost host, ISetupFlowStringResource stringResource)
+    public CreateDevDriveTask(IDevDrive devDrive, IHost host, Guid activityId, ISetupFlowStringResource stringResource)
     {
         DevDrive = devDrive;
         _stringResource = stringResource;
@@ -52,6 +55,7 @@ internal class CreateDevDriveTask : ISetupTask
             Error = _stringResource.GetLocalized(StringResourceKey.DevDriveUnableToCreateError),
             NeedsReboot = _stringResource.GetLocalized(StringResourceKey.DevDriveRestart),
         };
+        _activityId = activityId;
         _host = host;
     }
 
@@ -62,19 +66,35 @@ internal class CreateDevDriveTask : ISetupTask
     public ActionCenterMessages GetRebootMessage() => new ();
 
     /// <summary>
+    /// Get the arguments for this task
+    /// </summary>
+    /// <returns>Arguments for this task</returns>
+    public CreateDevDriveTaskArguments GetArguments()
+    {
+        return new CreateDevDriveTaskArguments
+        {
+            VirtDiskPath = Path.Combine(DevDrive.DriveLocation, $"{DevDrive.DriveLabel}.vhdx"),
+            SizeInBytes = DevDrive.DriveSizeInBytes,
+            NewDriveLetter = DevDrive.DriveLetter,
+            DriveLabel = DevDrive.DriveLabel,
+        };
+    }
+
+    /// <summary>
     /// Not used, as Dev Drive creation requires elevation
     /// </summary>
     IAsyncOperation<TaskFinishedState> ISetupTask.Execute()
     {
         return Task.Run(() =>
         {
+            AddMessage(_stringResource.GetLocalized(StringResourceKey.DevDriveNotAdminError));
             return TaskFinishedState.Failure;
         }).AsAsyncOperation();
     }
 
-    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory)
+    IAsyncOperation<TaskFinishedState> ISetupTask.ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation)
     {
-        return Task.Run(() =>
+        return Task.Run(async () =>
         {
             Stopwatch timer = Stopwatch.StartNew();
             var result = 0;
@@ -82,7 +102,7 @@ internal class CreateDevDriveTask : ISetupTask
             try
             {
                 // Critical level approved by subhasan
-                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDrive_CreatingDevDrive_Event", LogLevel.Critical, new EmptyEvent());
+                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDrive_CreatingDevDrive_Event", LogLevel.Critical, new EmptyEvent(), _activityId);
                 var manager = _host.GetService<IDevDriveManager>();
                 var validation = manager.GetDevDriveValidationResults(DevDrive);
                 manager.RemoveAllDevDrives();
@@ -94,9 +114,7 @@ internal class CreateDevDriveTask : ISetupTask
                     return TaskFinishedState.Failure;
                 }
 
-                var storageOperator = elevatedComponentFactory.CreateDevDriveStorageOperator();
-                var virtDiskPath = Path.Combine(DevDrive.DriveLocation, DevDrive.DriveLabel + ".vhdx");
-                Result.ThrowIfFailed(storageOperator.CreateDevDrive(virtDiskPath, DevDrive.DriveSizeInBytes, DevDrive.DriveLetter, DevDrive.DriveLabel));
+                Result.ThrowIfFailed(await elevatedComponentOperation.CreateDevDriveAsync());
                 return TaskFinishedState.Success;
             }
             catch (Exception ex)
@@ -112,7 +130,7 @@ internal class CreateDevDriveTask : ISetupTask
                 timer.Stop();
 
                 // Critical level approved by subhasan
-                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDriveTriggered", LogLevel.Critical, new DevDriveTriggeredEvent(DevDrive, timer.ElapsedTicks, result));
+                TelemetryFactory.Get<ITelemetry>().Log("CreateDevDriveTriggered", LogLevel.Critical, new DevDriveTriggeredEvent(DevDrive, timer.ElapsedTicks, result), _activityId);
             }
         }).AsAsyncOperation();
     }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
@@ -57,11 +58,13 @@ public class BaseSetupFlowTest
                 // Common services
                 services.AddSingleton<IThemeSelectorService>(ThemeSelectorService!.Object);
                 services.AddSingleton<ISetupFlowStringResource>(StringResource.Object);
+                services.AddSingleton<SetupFlowOrchestrator>(new SetupFlowOrchestrator());
 
                 // App-management view models
                 services.AddTransient<PackageViewModel>();
                 services.AddTransient<PackageCatalogViewModel>();
                 services.AddTransient<SearchViewModel>();
+                services.AddTransient<LoadingViewModel>();
 
                 // App-management services
                 services.AddSingleton<IWindowsPackageManager>(WindowsPackageManager.Object);
@@ -73,6 +76,7 @@ public class BaseSetupFlowTest
                 services.AddSingleton<IAppManagementInitializer, AppManagementInitializer>();
                 services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
                 services.AddSingleton<CatalogDataSourceLoacder>();
+                services.AddSingleton<IScreenReaderService>(new Mock<IScreenReaderService>().Object);
 
                 // DI factory pattern
                 services.AddSingleton<PackageViewModelFactory>(sp => package => ActivatorUtilities.CreateInstance<PackageViewModel>(sp, package));

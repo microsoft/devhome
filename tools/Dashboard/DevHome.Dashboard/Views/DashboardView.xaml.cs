@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
+using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
@@ -47,7 +48,7 @@ public partial class DashboardView : ToolPage
 
     public DashboardView()
     {
-        ViewModel = new DashboardViewModel();
+        ViewModel = Application.Current.GetService<DashboardViewModel>();
         _widgetServiceHelper = new WidgetServiceHelper();
         this.InitializeComponent();
 
@@ -81,8 +82,7 @@ public partial class DashboardView : ToolPage
         }
         else
         {
-            // If above initialization failed, there are no widgets, show the message.
-            NoWidgetsStackPanel.Visibility = Visibility.Visible;
+            Log.Logger()?.ReportWarn("DashboardView", $"Initialization failed");
         }
 
 #if DEBUG
@@ -96,7 +96,7 @@ public partial class DashboardView : ToolPage
 
         try
         {
-            // The GUID is this app's Host GUID that Widget Platform will use to identify this host.
+            // The GUID is Dev Home's Host GUID that Widget Platform will use to identify this host.
             _widgetHost = WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031"));
             _widgetCatalog = WidgetCatalog.GetDefault();
 
@@ -128,13 +128,13 @@ public partial class DashboardView : ToolPage
 
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        // The app uses a different host config to render widgets (adaptive cards) in light and dark themes.
+        // A different host config is used to render widgets (adaptive cards) in light and dark themes.
         await ConfigureWidgetRenderer(_renderer);
 
         // Re-render the widgets with the new theme and renderer.
         foreach (var widget in PinnedWidgets)
         {
-            widget.Render();
+            await widget.RenderAsync();
         }
     }
 
@@ -176,18 +176,20 @@ public partial class DashboardView : ToolPage
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
+        ViewModel.IsLoading = true;
 
         // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
         await _widgetIconCache.CacheAllWidgetIconsAsync(_widgetCatalog);
 
         await ConfigureWidgetRenderer(_renderer);
 
-        RestorePinnedWidgets();
+        await RestorePinnedWidgetsAsync();
 
         LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
+        ViewModel.IsLoading = false;
     }
 
-    private async void RestorePinnedWidgets()
+    private async Task RestorePinnedWidgetsAsync()
     {
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
         var pinnedWidgets = _widgetHost.GetWidgets();
@@ -252,7 +254,6 @@ public partial class DashboardView : ToolPage
         else
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
-            NoWidgetsStackPanel.Visibility = Visibility.Visible;
         }
     }
 
@@ -331,30 +332,45 @@ public partial class DashboardView : ToolPage
 
     private async Task InsertWidgetInPinnedWidgetsAsync(Widget widget, WidgetSize size, int index)
     {
-        var widgetDefinitionId = widget.DefinitionId;
-        var widgetId = widget.Id;
-        var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetDefinitionId);
+        await Task.Run(async () =>
+        {
+            var widgetDefinitionId = widget.DefinitionId;
+            var widgetId = widget.Id;
+            var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetDefinitionId);
 
-        if (widgetDefinition != null)
-        {
-            Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
-            var wvm = new WidgetViewModel(widget, size, widgetDefinition, _renderer, _dispatcher);
-            PinnedWidgets.Insert(index, wvm);
-        }
-        else
-        {
-            // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
-            Log.Logger()?.ReportInfo("DashboardView", $"No widget definition '{widgetDefinitionId}', delete widget {widgetId} with that definition");
-            try
+            if (widgetDefinition != null)
             {
-                await widget.SetCustomStateAsync(string.Empty);
-                await widget.DeleteAsync();
+                Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
+                var wvm = new WidgetViewModel(widget, size, widgetDefinition, _renderer, _dispatcher);
+                _dispatcher.TryEnqueue(() =>
+                {
+                    try
+                    {
+                        PinnedWidgets.Insert(index, wvm);
+                    }
+                    catch (Exception ex)
+                    {
+                        // TODO Support concurrency in dashboard. Today concurrent async execution can cause insertion errors.
+                        // https://github.com/microsoft/devhome/issues/1215
+                        Log.Logger()?.ReportWarn("DashboardView", $"Couldn't insert pinned widget", ex);
+                    }
+                });
             }
-            catch (Exception ex)
+            else
             {
-                Log.Logger()?.ReportInfo("DashboardView", $"Error deleting widget", ex);
+                // If the widget provider was uninstalled while we weren't running, the catalog won't have the definition so delete the widget.
+                Log.Logger()?.ReportInfo("DashboardView", $"No widget definition '{widgetDefinitionId}', delete widget {widgetId} with that definition");
+                try
+                {
+                    await widget.SetCustomStateAsync(string.Empty);
+                    await widget.DeleteAsync();
+                }
+                catch (Exception ex)
+                {
+                    Log.Logger()?.ReportInfo("DashboardView", $"Error deleting widget", ex);
+                }
             }
-        }
+        });
     }
 
     private void WidgetCatalog_WidgetProviderDefinitionAdded(WidgetCatalog sender, WidgetProviderDefinitionAddedEventArgs args)
@@ -462,8 +478,6 @@ public partial class DashboardView : ToolPage
                 item.PropertyChanged += PinnedWidgetsPropertyChanged;
             }
         }
-
-        NoWidgetsStackPanel.Visibility = (PinnedWidgets.Count > 0) ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private async void PinnedWidgetsPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -627,7 +641,7 @@ public partial class DashboardView : ToolPage
             roamingProperties.Remove("HideDashboardBanner");
         }
 
-        ViewModel.ShowDashboardBanner = true;
+        ViewModel.ResetDashboardBanner();
     }
 #endif
 }

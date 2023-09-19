@@ -4,33 +4,36 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:helpers="using:DevHome.Common.Helpers"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
 
-    <ScrollViewer
+    <Grid
         MaxWidth="{ThemeResource MaxPageContentWidth}"
-        Margin="{ThemeResource ContentPageMargin}"
-        VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="{StaticResource XSmallTopMargin}">
-            <BreadcrumbBar
-                x:Name="BreadcrumbBar"
-                Margin="0,0,0,16"
-                ItemClicked="BreadcrumbBar_ItemClicked"
-                ItemsSource="{x:Bind Breadcrumbs}" />
+        Margin="{ThemeResource ContentPageMargin}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-            <labs:SettingsExpander x:Uid="Settings_About_Card" IsExpanded="True">
-                <labs:SettingsExpander.HeaderIcon>
+        <BreadcrumbBar
+            x:Name="BreadcrumbBar"
+            Margin="0,0,0,16"
+            ItemClicked="BreadcrumbBar_ItemClicked"
+            ItemsSource="{x:Bind Breadcrumbs}" />
+
+        <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
+            <ctControls:SettingsExpander x:Uid="Settings_About_Card" IsExpanded="True">
+                <ctControls:SettingsExpander.HeaderIcon>
                     <BitmapIcon ShowAsMonochrome="False" UriSource="/Assets/DevHome.ico" />
-                </labs:SettingsExpander.HeaderIcon>
+                </ctControls:SettingsExpander.HeaderIcon>
                 <TextBlock
                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                     IsTextSelectionEnabled="True"
                     Text="{x:Bind ViewModel.VersionDescription, Mode=OneWay}" />
-                <labs:SettingsExpander.Items>
-                    <labs:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
+                <ctControls:SettingsExpander.Items>
+                    <ctControls:SettingsCard HorizontalContentAlignment="Left" ContentAlignment="Left">
                         <StackPanel Orientation="Vertical">
                             <TextBlock x:Uid="Settings_About_RelatedLinks" Margin="{StaticResource XSmallTopBottomMargin}" />
                             <HyperlinkButton x:Uid="SettingsPage_SourceCodeLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
@@ -38,9 +41,9 @@
                             <HyperlinkButton x:Uid="SettingsPage_ReleaseNotesLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
                             <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
                         </StackPanel>
-                    </labs:SettingsCard>
-                </labs:SettingsExpander.Items>
-            </labs:SettingsExpander>
-        </StackPanel>
-    </ScrollViewer>
+                    </ctControls:SettingsCard>
+                </ctControls:SettingsExpander.Items>
+            </ctControls:SettingsExpander>
+        </ScrollViewer>
+    </Grid>
 </Page>

@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:util="using:DevHome.SetupFlow.Utilities"
     xmlns:services="using:DevHome.Common.Services"
     mc:Ignorable="d"
@@ -35,7 +35,7 @@
                     HorizontalAlignment="Left"
                     Width="16"
                     Height="20" 
-                    Margin="10 5 5 0"/>
+                    Margin="15,5,5,0"/>
                 <TextBlock x:Name="AppTitleBarText"
                     VerticalAlignment="Center"
                     TextWrapping="NoWrap"

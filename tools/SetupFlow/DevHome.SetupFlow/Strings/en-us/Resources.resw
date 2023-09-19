@@ -121,6 +121,18 @@
     <value>Add all</value>
     <comment>Label for adding all items for selection</comment>
   </data>
+  <data name="AddAllApplications" xml:space="preserve">
+    <value>Added all applications</value>
+    <comment>Text announced by screen readers when the 'Add all' button is invoked. The 'Add all' button allows users to add all applications to their cart</comment>
+  </data>
+  <data name="AddApplication" xml:space="preserve">
+    <value>Add</value>
+    <comment>Text announced when screen readers focus on the 'Add' button. The 'Add' button allows users to add an application to their cart</comment>
+  </data>
+  <data name="AddedApplication" xml:space="preserve">
+    <value>Added {0}</value>
+    <comment>{Locked="{0}"}Text announced when a button for adding an application is invoked. {0} is replaced by the application name.</comment>
+  </data>
   <data name="AddPackagesDescription.Text" xml:space="preserve">
     <value>Select packages to restore from your backup, clone from repository, or search with Windows Package Manager.</value>
     <comment>Description for Add packages page</comment>
@@ -524,6 +536,14 @@
   <data name="NoSearchResultsFoundDescription.Text" xml:space="preserve">
     <value>Check the spelling or try new keywords.</value>
     <comment>Text displayed when no search results were found</comment>
+  </data>
+  <data name="RemoveApplication" xml:space="preserve">
+    <value>Remove</value>
+    <comment>Text announced when screen readers focus on the 'Remove' button. The 'Remove' button allows users to remove an application from their cart</comment>
+  </data>
+  <data name="RemovedApplication" xml:space="preserve">
+    <value>Removed {0}</value>
+    <comment>{Locked="{0}"}Text announced when a button for removing an application is invoked. {0} is replaced by the application name.</comment>
   </data>
   <data name="ResultCount" xml:space="preserve">
     <value>{0} Result(s)</value>
@@ -1020,6 +1040,14 @@
     <value>Summary</value>
     <comment>Title for a section in the summary page</comment>
   </data>
+  <data name="SummaryPage_ViewAll.Content" xml:space="preserve">
+    <value>View all</value>
+    <comment>Hyperlink button text for revealing the remainder of a trimmed message</comment>
+  </data>
+  <data name="InstallationNotesTitle" xml:space="preserve">
+    <value>{0} Installation Notes</value>
+    <comment>{Locked="{0}"} Title for a window displaying installation notes for an application. {0} is replaced by the application name.</comment>
+  </data>
   <data name="DevDriveErrorWithReason" xml:space="preserve">
     <value>Dev Drive couldn't be created error: {0}</value>
     <comment>Message when the dev drive could not be created. Param: reason.</comment>
@@ -1152,7 +1180,7 @@
     <comment>Error string to show the user if the drive they want to clone to does not exist.  Should be used if not making a devdrive</comment>
   </data>
   <data name="CloneRepoErrorForActionCenter" xml:space="preserve">
-    <value>Couldn't clone {0} 0x{1}</value>
+    <value>Couldn't clone {0} because {1}</value>
     <comment>{Locked="{0}","{1}"}Action center message to give the hresult as to why the repo could not be cloned {0}: name of repo {1}:Hresult as a hex</comment>
   </data>
   <data name="ClonePathForTextBlock.Text" xml:space="preserve">
@@ -1190,5 +1218,17 @@
   <data name="SSHConnectionStringNotAllowed" xml:space="preserve">
     <value>SSH connection strings are not allowed</value>
     <comment>Error string when a user enters in an SSH connection string</comment>
+  </data>
+  <data name="ApplyingConfigurationMessage" xml:space="preserve">
+    <value>Applying configuration</value>
+    <comment>String letting users know the configuration is being applied</comment>
+  </data>
+  <data name="DevDriveNotAdminError" xml:space="preserve">
+    <value>A DevDrive can only be created when elevated</value>
+    <comment>Error string letting users know why dev drive wasn't installed.</comment>
+  </data>
+  <data name="StartingInstallPackageMessage" xml:space="preserve">
+    <value>Starting to install package {0}</value>
+    <comment>{Locked="{0}"} String letting users know that DevHome has started to install a package. {0} is the package id</comment>
   </data>
 </root>

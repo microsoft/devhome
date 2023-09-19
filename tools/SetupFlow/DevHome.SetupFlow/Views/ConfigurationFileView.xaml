@@ -17,8 +17,10 @@
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
     <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
         <ToggleSplitButton
+            x:Name="SetUpButton"
             IsEnabled="{x:Bind ViewModel.ReadAndAgree, Mode=OneWay}"
-            IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=OneWay}"
+            IsEnabledChanged="SetUpButton_IsEnabledChanged"
+            IsCheckedChanged="SetUpButton_IsCheckedChanged"
             Command="{x:Bind ViewModel.ConfigureAsAdminCommand, Mode=OneWay}"
             x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetUpAsAdmin">
             <SplitButton.Flyout>

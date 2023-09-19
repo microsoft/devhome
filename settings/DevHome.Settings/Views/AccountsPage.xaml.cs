@@ -4,7 +4,9 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using AdaptiveCards.Rendering.WinUI3;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
@@ -15,6 +17,7 @@ using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
+using Microsoft.Windows.DevHome.SDK;
 using Windows.Storage;
 
 namespace DevHome.Settings.Views;
@@ -72,10 +75,20 @@ public sealed partial class AccountsPage : Page
                 Title = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_Title"),
                 Content = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_Content"),
                 PrimaryButtonText = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_PrimaryButtonText"),
+                PrimaryButtonCommand = FindExtensionsCommand,
+                PrimaryButtonStyle = (Style)Application.Current.Resources["AccentButtonStyle"],
+                SecondaryButtonText = resourceLoader.GetString("Settings_Accounts_NoProvidersContentDialog_SecondaryButtonText"),
                 XamlRoot = XamlRoot,
             };
             await noProvidersContentDialog.ShowAsync();
         }
+    }
+
+    [RelayCommand]
+    private void FindExtensions()
+    {
+        var navigationService = Application.Current.GetService<INavigationService>();
+        navigationService.NavigateTo("DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel");
     }
 
     private async void AddDeveloperId_Click(object sender, RoutedEventArgs e)
@@ -98,8 +111,14 @@ public sealed partial class AccountsPage : Page
     {
         try
         {
-            string[] args = { loginEntryPoint };
-            var loginUIAdaptiveCardController = accountProvider.DeveloperIdProvider.GetAdaptiveCardController(args);
+            var adaptiveCardSessionResult = accountProvider.DeveloperIdProvider.GetLoginAdaptiveCardSession();
+            if (adaptiveCardSessionResult.Result.Status == ProviderOperationStatus.Failure)
+            {
+                GlobalLog.Logger?.ReportError($"{adaptiveCardSessionResult.Result.DisplayMessage} - {adaptiveCardSessionResult.Result.DiagnosticText}");
+                return;
+            }
+
+            var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
             var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
             var renderer = new AdaptiveCardRenderer();
             await ConfigureLoginUIRenderer(renderer);
@@ -130,7 +149,7 @@ public sealed partial class AccountsPage : Page
 
     private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer)
     {
-        Microsoft.UI.Dispatching.DispatcherQueue dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        var dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         // Add custom Adaptive Card renderer for LoginUI as done for Widgets.
         renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());

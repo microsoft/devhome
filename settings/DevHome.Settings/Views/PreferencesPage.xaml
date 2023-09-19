@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:i="using:Microsoft.Xaml.Interactivity" 
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
@@ -13,35 +13,37 @@
     mc:Ignorable="d"
     Loaded="Page_Loaded">
 
-    <ScrollViewer
+    <Grid
         MaxWidth="{ThemeResource MaxPageContentWidth}"
-        Margin="{ThemeResource ContentPageMargin}"
-        VerticalScrollBarVisibility="Auto">
-        <StackPanel x:Name="ContentArea">
-            <BreadcrumbBar
-                x:Name="BreadcrumbBar"
-                Margin="0,0,0,16"
-                ItemClicked="BreadcrumbBar_ItemClicked"
-                ItemsSource="{x:Bind Breadcrumbs}" />
+        Margin="{ThemeResource ContentPageMargin}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-            <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
-                <labs:SettingsCard x:Uid="Settings_Theme">
-                    <labs:SettingsCard.HeaderIcon>
-                        <FontIcon Glyph="&#xE790;" />
-                    </labs:SettingsCard.HeaderIcon>
-                    <ComboBox x:Name="ThemeSelectionComboBox">
-                        <ComboBoxItem x:Uid="Settings_Theme_Default" Tag="{x:Bind xaml:ElementTheme.Default}" />
-                        <ComboBoxItem x:Uid="Settings_Theme_Light" Tag="{x:Bind xaml:ElementTheme.Light}" />
-                        <ComboBoxItem x:Uid="Settings_Theme_Dark" Tag="{x:Bind xaml:ElementTheme.Dark}" />
-                        <i:Interaction.Behaviors>
-                            <ic:EventTriggerBehavior EventName="SelectionChanged">
-                                <ic:InvokeCommandAction Command="{x:Bind ViewModel.SwitchThemeCommand}" 
-                                                        CommandParameter="{x:Bind ((ComboBoxItem)ThemeSelectionComboBox.SelectedItem).Tag, Mode=OneWay}" />
-                            </ic:EventTriggerBehavior>
-                        </i:Interaction.Behaviors>
-                    </ComboBox>
-                </labs:SettingsCard>
-            </StackPanel>
-        </StackPanel>
-    </ScrollViewer>
+        <BreadcrumbBar
+            x:Name="BreadcrumbBar"
+            Margin="0,0,0,16"
+            ItemClicked="BreadcrumbBar_ItemClicked"
+            ItemsSource="{x:Bind Breadcrumbs}" />
+
+        <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
+            <ctControls:SettingsCard x:Uid="Settings_Theme">
+                <ctControls:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xE790;" />
+                </ctControls:SettingsCard.HeaderIcon>
+                <ComboBox x:Name="ThemeSelectionComboBox">
+                    <ComboBoxItem x:Uid="Settings_Theme_Default" Tag="{x:Bind xaml:ElementTheme.Default}" />
+                    <ComboBoxItem x:Uid="Settings_Theme_Light" Tag="{x:Bind xaml:ElementTheme.Light}" />
+                    <ComboBoxItem x:Uid="Settings_Theme_Dark" Tag="{x:Bind xaml:ElementTheme.Dark}" />
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="SelectionChanged">
+                            <ic:InvokeCommandAction Command="{x:Bind ViewModel.SwitchThemeCommand}" 
+                                                    CommandParameter="{x:Bind ((ComboBoxItem)ThemeSelectionComboBox.SelectedItem).Tag, Mode=OneWay}" />
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
+                </ComboBox>
+            </ctControls:SettingsCard>
+        </ScrollViewer>
+    </Grid>
 </Page>

@@ -2,14 +2,9 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.UI.Xaml.Documents;
 using Microsoft.Windows.DevHome.SDK;
-using WinRT;
+using Windows.ApplicationModel;
 
 namespace DevHome.Common.Services;
 public interface IPluginWrapper
@@ -23,9 +18,25 @@ public interface IPluginWrapper
     }
 
     /// <summary>
-    /// Gets package fullname of the plugin
+    /// Gets PackageFullName of the plugin
     /// </summary>
     string PackageFullName
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets PackageFamilyName of the extension
+    /// </summary>
+    string PackageFamilyName
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets Publisher of the extension
+    /// </summary>
+    string Publisher
     {
         get;
     }
@@ -34,6 +45,30 @@ public interface IPluginWrapper
     /// Gets class id (GUID) of the plugin class (which implements IPlugin) as mentioned in the manifest
     /// </summary>
     string PluginClassId
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the date on which the application package was installed or last updated.
+    /// </summary>
+    DateTimeOffset InstalledDate
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the PackageVersion of the extension
+    /// </summary>
+    PackageVersion Version
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the Unique Id for the extension
+    /// </summary>
+    public string ExtensionUniqueId
     {
         get;
     }
@@ -59,7 +94,7 @@ public interface IPluginWrapper
     /// Gets the underlying instance of IPlugin
     /// </summary>
     /// <returns>Instance of IPlugin</returns>
-    IPlugin? GetPluginObject();
+    IExtension? GetExtensionObject();
 
     /// <summary>
     /// Tells the wrapper that the plugin implements the given provider

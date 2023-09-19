@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
@@ -72,7 +73,7 @@ public partial class SetupFlowOrchestrator : ObservableObject
         get; set;
     }
 
-    public RemoteObject<IElevatedComponentFactory> RemoteElevatedFactory
+    public RemoteObject<IElevatedComponentOperation> RemoteElevatedOperation
     {
         get; set;
     }
@@ -134,13 +135,13 @@ public partial class SetupFlowOrchestrator : ObservableObject
         where T : ISetupTaskGroup => TaskGroups.OfType<T>().FirstOrDefault();
 
     /// <summary>
-    /// Releases the remote factory, terminating the background process.
+    /// Releases the remote operation object, terminating the background process.
     /// </summary>
-    public void ReleaseRemoteFactory()
+    public void ReleaseRemoteOperationObject()
     {
         // Disposing of this object signals the background process to terminate.
-        RemoteElevatedFactory?.Dispose();
-        RemoteElevatedFactory = null;
+        RemoteElevatedOperation?.Dispose();
+        RemoteElevatedOperation = null;
     }
 
     /// <summary>
@@ -180,6 +181,28 @@ public partial class SetupFlowOrchestrator : ObservableObject
     private bool CanGoToNextPage()
     {
         return _currentPageIndex + 1 < _flowPages.Count && CurrentPageViewModel.CanGoToNextPage;
+    }
+
+    public async Task InitializeElevatedServerAsync()
+    {
+        Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Initializing elevated server");
+        var elevatedTasks = TaskGroups.SelectMany(taskGroup => taskGroup.SetupTasks.Where(task => task.RequiresAdmin));
+
+        // If there are no elevated tasks, we don't need to create the remote object.
+        if (elevatedTasks.Any())
+        {
+            TasksArguments tasksArguments = new ()
+            {
+                InstallPackages = elevatedTasks.OfType<InstallPackageTask>().Select(task => task.GetArguments()).ToList(),
+                Configure = elevatedTasks.OfType<ConfigureTask>().Select(task => task.GetArguments()).FirstOrDefault(),
+                CreateDevDrive = elevatedTasks.OfType<CreateDevDriveTask>().Select(task => task.GetArguments()).FirstOrDefault(),
+            };
+            RemoteElevatedOperation = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentOperation>(tasksArguments);
+        }
+        else
+        {
+            Log.Logger?.ReportInfo(Log.Component.Orchestrator, $"Skipping elevated process initialization because no elevated tasks were found");
+        }
     }
 
     private async Task SetCurrentPageIndex(int index)

@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:pg="using:DevHome.Common"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
@@ -32,6 +32,7 @@
             Grid.Row="0"
             HorizontalContentAlignment="Stretch"
             VerticalContentAlignment="Stretch"
+            IsTabStop="False"
             Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel, Mode=OneWay}">
             <ContentControl.ContentTemplateSelector>
                 <selectors:SetupFlowViewSelector>
@@ -79,9 +80,13 @@
             Visibility="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.IsNavigationBarVisible, Mode=OneWay}">
             <i:Interaction.Behaviors>
                 <setupFlowBehaviors:SetupFlowNavigationBehavior>
+                    <!-- TODO: https://github.com/microsoft/devhome/issues/1494
+                         - DefaultCancelTemplate should not contain multiple elements, instead CancelTemplate should be used to overwrite the default behavior.
+                         - Explore the option to share the style in the setup flow navigation control to eliminate redundancy -->
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultCancelTemplate>
                         <Grid>
                             <HyperlinkButton
+                                AutomationProperties.AutomationControlType="Button"
                                 Command="{x:Bind ViewModel.CancelCommand, Mode=OneWay}"
                                 MinWidth="120" Margin="4,0"
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Cancel"
@@ -103,8 +108,7 @@
                     <!-- Workaround to show a tooltip on a disabled button
                          https://github.com/microsoft/microsoft-ui-xaml/issues/2262-->
                     <setupFlowBehaviors:SetupFlowNavigationBehavior.DefaultNextTemplate>
-                        <Grid ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
-                            <TextBlock IsTabStop="False" />
+                        <Grid Background="Transparent" ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
                             <Button
                                 Command="{x:Bind ViewModel.Orchestrator.GoToNextPageCommand, Mode=OneWay}"
                                 Style="{StaticResource AccentButtonStyle}"

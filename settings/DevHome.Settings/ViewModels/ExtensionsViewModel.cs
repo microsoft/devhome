@@ -10,6 +10,8 @@ using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Settings.Models;
+using DevHome.Settings.TelemetryEvents;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel;
 
@@ -34,6 +36,8 @@ public partial class ExtensionViewModel : ObservableObject
     public string Description => _setting.Description;
 
     public bool HasToggleSwitch => _setting.HasToggleSwitch;
+
+    public bool HasSettingsProvider => _setting.HasSettingsProvider;
 
     public bool IsEnabled
     {
@@ -84,7 +88,8 @@ public partial class ExtensionsViewModel : ObservableObject
                 continue;
             }
 
-            var setting = new Setting("Plugins/" + pluginWrapper.PackageFullName, pluginWrapper.PackageFullName, pluginWrapper.Name, string.Empty, string.Empty, true);
+            var hasSettingsProvider = pluginWrapper.HasProviderType(Microsoft.Windows.DevHome.SDK.ProviderType.Settings);
+            var setting = new Setting("Extensions/" + pluginWrapper.ExtensionUniqueId, pluginWrapper.ExtensionUniqueId, pluginWrapper.Name, string.Empty, string.Empty, true, hasSettingsProvider);
             SettingsList.Add(new ExtensionViewModel(setting, this));
         }
     }
@@ -96,7 +101,10 @@ public partial class ExtensionsViewModel : ObservableObject
 
     public void Navigate(string path)
     {
-        // TODO: Navigate to Plugin's settings Adaptive Card
-        // https://github.com/microsoft/devhome/issues/608
+        TelemetryFactory.Get<ITelemetry>().Log("ExtensionsSettings_Navigate_Event", LogLevel.Critical, new NavigateToExtensionSettingsEvent("ExtensionsViewModel"));
+
+        var navigationService = Application.Current.GetService<INavigationService>();
+        var segments = path.Split("/");
+        navigationService.NavigateTo(typeof(ExtensionSettingsViewModel).FullName!, segments[1]);
     }
 }

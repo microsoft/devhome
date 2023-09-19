@@ -21,7 +21,9 @@ internal class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
 
     public DateTimeOffset LastUpdated => DateTime.UtcNow;
 
-    public string OwningAccountName => "Unknown";
+    public string OwningAccountName => string.Empty;
+
+    public Uri RepoUri => _cloneUri;
 
     private readonly Uri _cloneUri;
 

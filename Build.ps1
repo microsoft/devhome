@@ -145,7 +145,6 @@ Try {
             ("DevHome.sln"),
             ("/p:Platform="+$platform),
             ("/p:Configuration="+$configuration),
-            ("/p:DevHomeSDKVersion="+$env:sdk_version),
             ("/restore"),
             ("/binaryLogger:DevHome.$platform.$configuration.binlog"),
             ("/p:AppxPackageOutput=$appxPackageDir\DevHome-$platform.msix"),
@@ -153,6 +152,9 @@ Try {
             ("/p:GenerateAppxPackageOnBuild=true"),
             ("/p:BuildRing=$buildRing")
         )
+        if (-not([string]::IsNullOrWhiteSpace($VersionOfSDK))) {
+          $msbuildArgs += ("/p:DevHomeSDKVersion="+$env:sdk_version)
+        }
 
         & $msbuildPath $msbuildArgs
         if (-not($IsAzurePipelineBuild) -And $isAdmin) {

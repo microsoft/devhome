@@ -15,6 +15,12 @@ public interface INavigationService
         get;
     }
 
+    // Used to pass data between view models during a navigation
+    object? LastParameterUsed
+    {
+        get;
+    }
+
     Frame? Frame
     {
         get; set;

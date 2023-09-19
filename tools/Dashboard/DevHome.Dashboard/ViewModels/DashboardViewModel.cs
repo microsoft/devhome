@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.UI.Xaml;
 using Windows.Storage;
 using Windows.System;
 
@@ -16,6 +17,9 @@ public partial class DashboardViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _showDashboardBanner;
+
+    [ObservableProperty]
+    private bool _isLoading;
 
     public DashboardViewModel()
     {
@@ -47,4 +51,26 @@ public partial class DashboardViewModel : ObservableObject
 
         return show;
     }
+
+    public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
+    {
+        if (widgetCount == 0 && !isLoading)
+        {
+            return Visibility.Visible;
+        }
+
+        return Visibility.Collapsed;
+    }
+
+#if DEBUG
+    public void ResetDashboardBanner()
+    {
+        ShowDashboardBanner = true;
+        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
+        if (roamingProperties.ContainsKey(_hideDashboardBannerKey))
+        {
+            roamingProperties.Remove(_hideDashboardBannerKey);
+        }
+    }
+#endif
 }

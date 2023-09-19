@@ -56,11 +56,11 @@ public interface ISetupTask
     /// <summary>
     /// Executes this setup task as admin.
     /// </summary>
-    /// <param name="elevatedComponentFactory">Helper object to create the needed objects on the elevated process.</param>
+    /// <param name="elevatedComponentOperation">Helper object to execute operation on the elevated process.</param>
     /// <returns>
     /// The async operation that executes this task. The value returned indicates whether the task completed successfully.
     /// </returns>
-    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(IElevatedComponentFactory elevatedComponentFactory);
+    public IAsyncOperation<TaskFinishedState> ExecuteAsAdmin(IElevatedComponentOperation elevatedComponentOperation);
 
     /// <summary>
     /// Gets the object used to display all messages in the loading screen.
@@ -91,4 +91,11 @@ public interface ISetupTask
     {
         get;
     }
+
+    public delegate void ChangeMessageHandler(string message);
+
+    /// <summary>
+    /// Use this event to insert a message into the loading screen.
+    /// </summary>
+    public event ChangeMessageHandler AddMessage;
 }

@@ -6,7 +6,7 @@
                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-               xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+               xmlns:converters="using:CommunityToolkit.WinUI.Converters"
                xmlns:labs="using:CommunityToolkit.Labs.WinUI"
                xmlns:models="using:DevHome.SetupFlow.Models"
                mc:Ignorable="d"
@@ -46,7 +46,7 @@
                 </ResourceDictionary>
             </StackPanel.Resources>
             <labs:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single" SelectionChanged="Segmented_SelectionChanged">
-                <labs:SegmentedItem x:Name="AddViaAccountSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton"/>
+                <labs:SegmentedItem x:Name="AddViaAccountSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton" IsEnabled="{x:Bind AddRepoViewModel.IsAccountButtonEnabled, Mode=OneWay}"/>
                 <labs:SegmentedItem x:Name="AddViaUrlSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" />
             </labs:Segmented>
 
@@ -61,7 +61,16 @@
 
             <!-- Log into account -->
             <ComboBox x:Name="RepositoryProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}" SelectionChanged="RepositoryProviderNamesComboBox_SelectionChanged" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}" Margin="0, 20, 0, 0" />
-
+            <StackPanel x:Name="LoginUi" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}">
+                <!-- Title and Close button -->
+                <Grid x:Name="MyGrid">
+                    <TextBlock x:Uid="LoginUIDialogTitle" HorizontalAlignment="Left"
+                       Style="{ThemeResource SubtitleTextBlockStyle}" 
+                       Margin="16,10,0,0"/>
+                </Grid>
+                <Frame x:Name="LoginUIContent" />
+            </StackPanel>
+            
             <!-- Show Repositories -->
             <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
                 <Grid ColumnSpacing="8">
@@ -155,6 +164,7 @@
                 <CheckBox
                         Click="MakeNewDevDriveCheckBox_Click" 
                         IsEnabled="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" 
+                        IsChecked="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxChecked, Mode=TwoWay}" 
                         Grid.Column="0" 
                         Grid.Row="0"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NewDevDriveComboBox"/>

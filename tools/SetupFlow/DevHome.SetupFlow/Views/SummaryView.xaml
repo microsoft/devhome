@@ -4,8 +4,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ctControls="using:CommunityToolkit.Labs.WinUI"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
@@ -161,15 +161,17 @@
                 <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="30">
 
                     <!-- Number of apps and repos cloned.-->
-                    <StackPanel 
+                    <StackPanel
                         BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
                         BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}" 
                         HorizontalAlignment="Center" 
                         Padding="30,15,30,0" 
                         MinWidth="250">
-                        <Grid
-                            ColumnDefinitions="Auto, Auto"
-                            HorizontalAlignment="Center">
+                        <Grid HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
                             <Grid
                                 Grid.Column="0"
                                 Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}"
@@ -221,88 +223,134 @@
                     <ContentControl Template="{ThemeResource LinksTemplate}" />
                 </StackPanel>
 
-
                 <!-- Displays the repos cloned and apps downloaded -->
-                <StackPanel Grid.Column="1" Orientation="Vertical">
+                <StackPanel Grid.Column="1" Orientation="Vertical" x:Name="TaskGroupSections">
+                    <StackPanel.Resources>
+                        <Thickness x:Key="ExpanderHeaderBorderThickness">0</Thickness>
+                        <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="Transparent" />
+                        <SolidColorBrush x:Key="ExpanderContentBackground" Color="Transparent" />
+                        <SolidColorBrush x:Key="ExpanderContentBorderBrush" Color="Transparent" />
+                        <Style TargetType="Expander">
+                            <Setter Property="IsExpanded" Value="True"/>
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </StackPanel.Resources>
+
                     <!-- Repos cloned -->
-                    <StackPanel 
-                        Orientation="Vertical" 
-                        Spacing="20" 
-                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
-                        Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}"
-                        Margin="0,0,0,30">
-                        <TextBlock 
-                            x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" 
-                            Style="{ThemeResource BodyStrongTextBlockStyle}" 
-                            Padding="0, 20, 0, 0"/>
-                        <StackPanel>
-                            <StackPanel.Resources>
-                                <StackLayout x:Name="LayoutForRepos" Orientation="Vertical" Spacing="10"/>
-                                <DataTemplate x:Key="repoTemplate" x:DataType="models:RepoViewListItem">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <FontIcon Grid.Column="0"  Margin="3 0 5 0" FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
-                                        <TextBlock 
-                                            Grid.Column="1"
-                                            Text="{x:Bind RepoName}"
-                                            Margin="5 0 0 0"
-                                            TextWrapping="Wrap"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </StackPanel.Resources>
-                            <ItemsRepeater x:Name="TasksItemsRepeater" ItemsSource="{x:Bind ViewModel.RepositoriesCloned, Mode=OneWay}"
-                               Layout="{StaticResource LayoutForRepos}" 
-                               ItemTemplate="{StaticResource repoTemplate}">
-                            </ItemsRepeater>
-                        </StackPanel>
-                    </StackPanel>
+                    <Grid Padding="0,12" Visibility="{x:Bind ViewModel.RepositoriesCloned, Converter={StaticResource CollectionVisibilityConverter}}">
+                        <Expander>
+                            <Expander.Header>
+                                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ReposClonedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0,12"/>
+                            </Expander.Header>
+                            <StackPanel>
+                                <StackPanel.Resources>
+                                    <StackLayout x:Name="LayoutForRepos" Orientation="Vertical" Spacing="10"/>
+                                    <DataTemplate x:Key="repoTemplate" x:DataType="models:RepoViewListItem">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <FontIcon Grid.Column="0"  Margin="3 0 5 0" FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
+                                            <TextBlock 
+                                                Grid.Column="1"
+                                                Text="{x:Bind RepoName}"
+                                                Margin="5 0 0 0"
+                                                TextWrapping="Wrap"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </StackPanel.Resources>
+                                <ItemsRepeater
+                                    x:Name="TasksItemsRepeater"
+                                    ItemsSource="{x:Bind ViewModel.RepositoriesCloned, Mode=OneWay}"
+                                    Layout="{StaticResource LayoutForRepos}" 
+                                    ItemTemplate="{StaticResource repoTemplate}">
+                                </ItemsRepeater>
+                            </StackPanel>
+                        </Expander>
+                    </Grid>
 
                     <!-- Apps downloaded -->
-                    <StackPanel 
-                        Orientation="Vertical" 
-                        Spacing="20" 
-                        BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
-                        BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}"
-                        Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}">
-                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0, 20, 0, 0"/>
-                        <GridView
-                            ItemsSource="{x:Bind ViewModel.AppsDownloaded, Mode=OneWay}"
-                            SelectionMode="None">
-                            <GridView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </GridView.ItemsPanel>
-                            <GridView.ItemTemplate>
-                                <DataTemplate x:DataType="viewModels:PackageViewModel">
-                                    <ctControls:SettingsCard Width="250" Padding="5" Background="Transparent">
-                                        <ctControls:SettingsCard.Resources>
-                                            <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
-                                            <Thickness x:Key="SettingsCardPadding">0</Thickness>
-                                            <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
-                                            <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
-                                            <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
-                                            <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-                                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
-                                        </ctControls:SettingsCard.Resources>
-                                        <ctControls:SettingsCard.Header>
-                                            <TextBlock Text="{x:Bind Name, Mode=OneWay}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
-                                        </ctControls:SettingsCard.Header>
-                                        <ctControls:SettingsCard.Description>
-                                            <TextBlock Text="{x:Bind Version, Mode=OneWay}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
-                                        </ctControls:SettingsCard.Description>
-                                        <ctControls:SettingsCard.HeaderIcon>
-                                            <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
-                                        </ctControls:SettingsCard.HeaderIcon>
-                                    </ctControls:SettingsCard>
-                                </DataTemplate>
-                            </GridView.ItemTemplate>
-                        </GridView>
-                    </StackPanel>
+                    <Grid Padding="0,12" Visibility="{x:Bind ViewModel.AppsDownloaded, Converter={StaticResource CollectionVisibilityConverter}}">
+                        <Expander>
+                            <Expander.Header>
+                                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_AppsDownlodedDisplay" Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0,12"/>
+                            </Expander.Header>
+                            <GridView ItemsSource="{x:Bind ViewModel.AppsDownloaded, Mode=OneWay}" SelectionMode="None">
+                                <GridView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </GridView.ItemsPanel>
+                                <GridView.ItemTemplate>
+                                    <DataTemplate x:DataType="viewModels:PackageViewModel">
+                                        <ctControls:SettingsCard Width="250" Padding="5" Background="Transparent">
+                                            <ctControls:SettingsCard.Resources>
+                                                <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
+                                                <Thickness x:Key="SettingsCardPadding">0</Thickness>
+                                                <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
+                                                <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
+                                                <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
+                                                <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
+                                                <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
+                                            </ctControls:SettingsCard.Resources>
+                                            <ctControls:SettingsCard.Header>
+                                                <TextBlock Text="{x:Bind Name, Mode=OneWay}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                                            </ctControls:SettingsCard.Header>
+                                            <ctControls:SettingsCard.Description>
+                                                <TextBlock Text="{x:Bind Version, Mode=OneWay}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                                            </ctControls:SettingsCard.Description>
+                                            <ctControls:SettingsCard.HeaderIcon>
+                                                <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
+                                            </ctControls:SettingsCard.HeaderIcon>
+                                        </ctControls:SettingsCard>
+                                    </DataTemplate>
+                                </GridView.ItemTemplate>
+                            </GridView>
+                        </Expander>
+                    </Grid>
+
+                    <!-- Installation notes -->
+                    <Grid Padding="0,12" Visibility="{x:Bind ViewModel.AppsDownloadedInstallationNotes, Converter={StaticResource CollectionVisibilityConverter}}">
+                        <Expander>
+                            <Expander.Header>
+                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Padding="0,12">Installation Notes</TextBlock>
+                            </Expander.Header>
+                            <ListView SelectionMode="None" ItemsSource="{x:Bind ViewModel.AppsDownloadedInstallationNotes}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="viewModels:PackageViewModel">
+                                        <Grid ColumnSpacing="12" Margin="0,0,0,4" CornerRadius="8" Padding="18,20" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <ImageIcon Width="24" VerticalAlignment="Top" Source="{x:Bind Icon}"/>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" Text="{x:Bind PackageTitle}"/>
+                                                <TextBlock
+                                                    MaxLines="2"
+                                                    IsTextSelectionEnabled="True"
+                                                    TextWrapping="WrapWholeWords"
+                                                    TextTrimming="WordEllipsis"
+                                                    IsTextTrimmedChanged="InstallationNotes_IsTextTrimmedChanged"
+                                                    Tag="{Binding ElementName=ViewAllButton}"
+                                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                    Text="{x:Bind InstallationNotes}"/>
+                                                <HyperlinkButton
+                                                    Name="ViewAllButton"
+                                                    Visibility="Collapsed"
+                                                    Click="ViewAllButton_Click"
+                                                    Style="{ThemeResource TextBlockButtonStyle}"
+                                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ViewAll"
+                                                    Tag="{x:Bind}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Expander>
+                    </Grid>
                 </StackPanel>
             </Grid>
         </Grid>

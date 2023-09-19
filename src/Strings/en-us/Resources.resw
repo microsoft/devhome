@@ -130,7 +130,7 @@
     <comment>Text for a dropdown option in a file picker dialog to show all files in a directory</comment>
   </data>
   <data name="WhatsNewPage_DevIdCard.Description" xml:space="preserve">
-    <value>Sign in to your developer account to clone repositories and get notifications for them.</value>
+    <value>After you install an extension that connects one of your developer accounts to Dev Home, sign in to that account.</value>
   </data>
   <data name="WhatsNew.Content" xml:space="preserve">
     <value>Introducing Dev Home</value>
@@ -151,7 +151,7 @@
     <value>Monitor projects in your dashboard</value>
   </data>
   <data name="WhatsNewPage_DevIdCard.Title" xml:space="preserve">
-    <value>Connect to GitHub</value>
+    <value>Connect your developer account</value>
   </data>
   <data name="WhatsNewPage_NotifCard.Description" xml:space="preserve">
     <value>Keep up with pull requests, checks, merges, and more.</value>
@@ -181,7 +181,7 @@
     <value>Dev Home is getting things ready for you...</value>
   </data>
   <data name="WhatsNewPage_Title.Text" xml:space="preserve">
-    <value>Setup your dev environment</value>
+    <value>Set up your dev environment</value>
   </data>
   <data name="Feedback_Title.Text" xml:space="preserve">
     <value>Feedback</value>
@@ -233,5 +233,17 @@
   <data name="AppDisplayNameStableAdministrator" xml:space="preserve">
     <value>Administrator: Dev Home (Preview)</value>
     <comment>Name of app when run as administrator</comment>
+  </data>
+  <data name="WhatsNewPage_ExtensionsCard.Button" xml:space="preserve">
+    <value>Explore extensions</value>
+    <comment>Button on extensions card on "whats new" page</comment>
+  </data>
+  <data name="WhatsNewPage_ExtensionsCard.Description" xml:space="preserve">
+    <value>Extensions help you get more out of Dev Home. For example, get recommendations for other repositories to add when setting up your machine in Dev Home and add other widgets to your dashboard.</value>
+    <comment>Description of extensions card on "whats new" page</comment>
+  </data>
+  <data name="WhatsNewPage_ExtensionsCard.Title" xml:space="preserve">
+    <value>Explore Dev Home extensions</value>
+    <comment>Title of extensions card on "whats new" page</comment>
   </data>
 </root>

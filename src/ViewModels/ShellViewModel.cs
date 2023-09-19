@@ -14,6 +14,9 @@ public partial class ShellViewModel : ObservableObject
 {
     private readonly ILocalSettingsService _localSettingsService;
 
+    [ObservableProperty]
+    private string? _announcementText;
+
     public INavigationService NavigationService
     {
         get;
@@ -30,12 +33,18 @@ public partial class ShellViewModel : ObservableObject
     [ObservableProperty]
     private InfoBarModel _shellInfoBarModel = new ();
 
-    public ShellViewModel(INavigationService navigationService, INavigationViewService navigationViewService, ILocalSettingsService localSettingsService)
+    public ShellViewModel(
+        INavigationService navigationService,
+        INavigationViewService navigationViewService,
+        ILocalSettingsService localSettingsService,
+        IScreenReaderService screenReaderService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
         _localSettingsService = localSettingsService;
+
+        screenReaderService.AnnouncementTextChanged += OnAnnouncementTextChanged;
     }
 
     public async Task OnLoaded()
@@ -52,7 +61,13 @@ public partial class ShellViewModel : ObservableObject
 
     private void OnNavigated(object sender, NavigationEventArgs e)
     {
-        if (IsSettingsPage(e.SourcePageType.FullName))
+        if (IsExtensionSettingsPage(e.SourcePageType.FullName))
+        {
+            // If we navigate to the L3 settings page for an extension, leave the selected NavigationView item as it
+            // was, since we might be coming from Settings or Extensions.
+            return;
+        }
+        else if (IsSettingsPage(e.SourcePageType.FullName))
         {
             Selected = NavigationViewService.SettingsItem;
             return;
@@ -65,6 +80,16 @@ public partial class ShellViewModel : ObservableObject
         }
     }
 
+    private bool IsExtensionSettingsPage(string? pageType)
+    {
+        if (string.IsNullOrEmpty(pageType))
+        {
+            return false;
+        }
+
+        return pageType.StartsWith("DevHome.Settings.Views.ExtensionSettingsPage", StringComparison.Ordinal);
+    }
+
     private bool IsSettingsPage(string? pageType)
     {
         if (string.IsNullOrEmpty(pageType))
@@ -72,8 +97,16 @@ public partial class ShellViewModel : ObservableObject
             return false;
         }
 
-#pragma warning disable CA1310 // Specify StringComparison for correctness
-        return pageType.StartsWith("DevHome.Settings");
-#pragma warning restore CA1310 // Specify StringComparison for correctness
+        return pageType.StartsWith("DevHome.Settings", StringComparison.Ordinal);
+    }
+
+    private void OnAnnouncementTextChanged(object? sender, string text)
+    {
+        // Clear previous value to notify all bindings.
+        // This allows announcing the same text consecutively multiple times.
+        AnnouncementText = string.Empty;
+
+        // Set new announcement title
+        AnnouncementText = text;
     }
 }

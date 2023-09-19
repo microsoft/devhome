@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
@@ -39,6 +39,17 @@
             Visibility="{x:Bind ViewModel.RequiresTermsAgreement, Mode=OneWay}"
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
+
+    <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+        <Grid Background="Transparent" ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+            <Button
+                Command="{x:Bind ViewModel.SetUpCommand, Mode=OneWay}"
+                Style="{StaticResource AccentButtonStyle}"
+                MinWidth="120" Margin="4,0"
+                Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
+        </Grid>
+    </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
 
     <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
                          Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
@@ -81,6 +92,7 @@
                                 </NavigationView.MenuItemTemplate>
                                 <Frame MinHeight="100" Padding="12" HorizontalAlignment="Stretch">
                                     <ContentControl Content="{x:Bind ViewModel.SelectedReviewTab, Mode=OneWay}"
+                                                    IsTabStop="False"
                                                     HorizontalContentAlignment="Stretch"
                                                     VerticalContentAlignment="Stretch" >
                                         <ContentControl.ContentTemplateSelector>

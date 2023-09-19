@@ -11,6 +11,9 @@ namespace DevHome.SetupFlow.Services;
 public static class StringResourceKey
 {
     // Keys in this file should be a subset of the ones found in the .resw file.
+    public static readonly string AddAllApplications = nameof(AddAllApplications);
+    public static readonly string AddApplication = nameof(AddApplication);
+    public static readonly string AddedApplication = nameof(AddedApplication);
     public static readonly string ApplicationsAddedPlural = nameof(ApplicationsAddedPlural);
     public static readonly string ApplicationsAddedSingular = nameof(ApplicationsAddedSingular);
     public static readonly string Applications = nameof(Applications);
@@ -55,6 +58,7 @@ public static class StringResourceKey
     public static readonly string InstalledPackage = nameof(InstalledPackage);
     public static readonly string InstalledPackageReboot = nameof(InstalledPackageReboot);
     public static readonly string InstallingPackage = nameof(InstallingPackage);
+    public static readonly string InstallationNotesTitle = nameof(InstallationNotesTitle);
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
     public static readonly string PackagesCount = nameof(PackagesCount);
@@ -66,6 +70,8 @@ public static class StringResourceKey
     public static readonly string PackageSourceTooltip = nameof(PackageSourceTooltip);
     public static readonly string PackageVersionTooltip = nameof(PackageVersionTooltip);
     public static readonly string PathWithColon = nameof(PathWithColon);
+    public static readonly string RemoveApplication = nameof(RemoveApplication);
+    public static readonly string RemovedApplication = nameof(RemovedApplication);
     public static readonly string ResultCount = nameof(ResultCount);
     public static readonly string RestorePackagesTitle = nameof(RestorePackagesTitle);
     public static readonly string RestorePackagesDescription = nameof(RestorePackagesDescription);
@@ -95,18 +101,21 @@ public static class StringResourceKey
     public static readonly string CloneRepoRestart = nameof(CloneRepoRestart);
 
     // Configure task loading screen messages
+    public static readonly string ApplyingConfigurationMessage = nameof(ApplyingConfigurationMessage);
     public static readonly string ConfigureTaskCreating = nameof(ConfigureTaskCreating);
     public static readonly string ConfigureTaskCreated = nameof(ConfigureTaskCreated);
     public static readonly string ConfigureTaskError = nameof(ConfigureTaskError);
     public static readonly string ConfigureTaskRestart = nameof(ConfigureTaskRestart);
 
     // App download loading screen messages
+    public static readonly string StartingInstallPackageMessage = nameof(StartingInstallPackageMessage);
     public static readonly string DownloadAppCreating = nameof(DownloadAppCreating);
     public static readonly string DownloadAppCreated = nameof(DownloadAppCreated);
     public static readonly string DownloadAppError = nameof(DownloadAppError);
     public static readonly string DownloadAppRestart = nameof(DownloadAppRestart);
 
     // Dev drive loading screen messages
+    public static readonly string DevDriveNotAdminError = nameof(DevDriveNotAdminError);
     public static readonly string DevDriveCreating = nameof(DevDriveCreating);
     public static readonly string DevDriveCreated = nameof(DevDriveCreated);
     public static readonly string DevDriveErrorWithReason = nameof(DevDriveErrorWithReason);

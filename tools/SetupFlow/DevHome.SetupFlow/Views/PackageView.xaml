@@ -4,7 +4,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    AutomationProperties.Name="{Binding PackageTitle}"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -31,7 +32,7 @@
     </UserControl.Resources>
 
     <!-- Package card -->
-    <ContentControl>
+    <ContentControl IsTabStop="False">
         <ContentControl.Template>
             <ControlTemplate>
                 <Grid Style="{ThemeResource CardGridSecondaryStyle}" Padding="12" RowSpacing="12">
@@ -86,13 +87,18 @@
                         <ImageIcon Name="Image" Width="24" VerticalAlignment="Center" Source="{Binding Icon}"/>
 
                         <!-- Select button -->
+                        <!-- Adding a margin prevents FlipView's (overlay) next
+                             button from shadowing this button, and enables keyboard
+                             navigation -->
                         <Button
                             Grid.Column="1"
+                            AutomationProperties.Name="{Binding ButtonAutomationName}"
                             IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
                             Background="Transparent"
                             BorderThickness="0"
                             Command="{Binding ToggleSelectionCommand}"
                             HorizontalAlignment="Right"
+                            Margin="0,0,2,0"
                             Padding="5">
                             <FontIcon
                                 Glyph="{Binding IsSelected, Converter={StaticResource SelectButtonGlyphConverter}}"
@@ -128,6 +134,7 @@
 
                         <!-- Package link / "Installed" -->
                         <ContentControl
+                            IsTabStop="False"
                             Grid.Row="2"
                             Content="{Binding IsInstalled, Converter={StaticResource LearnMoreInstalledConverter}}" />
                     </Grid>

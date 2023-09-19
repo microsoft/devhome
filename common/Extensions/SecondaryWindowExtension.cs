@@ -8,8 +8,10 @@ using DevHome.Common.Services;
 using DevHome.Common.Views;
 using DevHome.Contracts.Services;
 using Microsoft.UI;
+using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using WinUIEx;
@@ -65,7 +67,7 @@ public partial class SecondaryWindowExtension : WindowEx
             if (_primaryWindow != null)
             {
                 _primaryWindow.Closed -= OnPrimaryWindowClosed;
-                _primaryWindow.VisibilityChanged -= OnPrimaryWindowVisiblityChanged;
+                _primaryWindow.VisibilityChanged -= OnPrimaryWindowVisibilityChanged;
             }
 
             // Set new primary window
@@ -75,7 +77,7 @@ public partial class SecondaryWindowExtension : WindowEx
             {
                 // Connect new primary window
                 _primaryWindow.Closed += OnPrimaryWindowClosed;
-                _primaryWindow.VisibilityChanged += OnPrimaryWindowVisiblityChanged;
+                _primaryWindow.VisibilityChanged += OnPrimaryWindowVisibilityChanged;
             }
         }
     }
@@ -87,23 +89,30 @@ public partial class SecondaryWindowExtension : WindowEx
         Backdrop = PrimaryWindow.Backdrop;
         Closed += OnSecondaryWindowClosed;
         Activated += OnSecondaryWindowActivated;
-        CenterAndElevateWindow();
     }
 
-    public void CenterAndElevateWindow()
+    public void CenterOnWindow()
     {
         if (PrimaryWindow != null)
         {
-            // first get a quarter of the size of the of the current window then get the center point
-            // of the primary window. Substract primary windows Y by a quarter of the secondary windows
-            // Y to move the secondary window upwards. This will show the secondary winddow in the center
-            // of the app, slightly elevated above the content.
-            var secondaryY = Height / 4D;
-            var primaryX = (double)PrimaryWindow.AppWindow.Position.X;
-            var primaryY = (double)PrimaryWindow.AppWindow.Position.Y;
-            primaryX += PrimaryWindow.Width / 2D;
-            primaryY += PrimaryWindow.Height / 2D;
-            this.MoveAndResize(primaryX, primaryY - secondaryY, Width, Height);
+            // Get DPI for primary widow
+            const float defaultDPI = 96f;
+            var dpi = HwndExtensions.GetDpiForWindow(PrimaryWindow.GetWindowHandle()) / defaultDPI;
+
+            // Extract primary window dimensions
+            var primaryWindowLeftOffset = PrimaryWindow.AppWindow.Position.X;
+            var primaryWindowTopOffset = PrimaryWindow.AppWindow.Position.Y;
+            var primaryWindowHalfWidth = (PrimaryWindow.Width * dpi) / 2;
+            var primaryWindowHalfHeight = (PrimaryWindow.Height * dpi) / 2;
+
+            // Derive secondary window dimensions
+            var secondaryWindowHalfWidth = (Width * dpi) / 2;
+            var secondaryWindowHalfHeight = (Height * dpi) / 2;
+            var secondaryWindowLeftOffset = primaryWindowLeftOffset + primaryWindowHalfWidth - secondaryWindowHalfWidth;
+            var secondaryWindowTopOffset = primaryWindowTopOffset + primaryWindowHalfHeight - secondaryWindowHalfHeight;
+
+            // Move and resize secondary window
+            this.MoveAndResize(secondaryWindowLeftOffset, secondaryWindowTopOffset, Width, Height);
         }
     }
 
@@ -139,12 +148,12 @@ public partial class SecondaryWindowExtension : WindowEx
             PrimaryWindow.ZOrderChanged -= OnPrimaryWindowZOrderChanged;
             Closed -= OnSecondaryWindowClosed;
             PrimaryWindow.Closed -= OnPrimaryWindowClosed;
-            PrimaryWindow.VisibilityChanged -= OnPrimaryWindowVisiblityChanged;
+            PrimaryWindow.VisibilityChanged -= OnPrimaryWindowVisibilityChanged;
             UseAppTheme = false;
         }
     }
 
-    public void OnPrimaryWindowVisiblityChanged(object? sender, WindowVisibilityChangedEventArgs args)
+    public void OnPrimaryWindowVisibilityChanged(object? sender, WindowVisibilityChangedEventArgs args)
     {
         // Close secondary window
         if (PrimaryWindow != null && !PrimaryWindow.Visible)
