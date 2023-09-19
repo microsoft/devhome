@@ -14,8 +14,7 @@ public class ConfigurationUnitResult
     {
         UnitName = result.Unit.UnitName;
         Id = result.Unit.Identifier;
-        object descriptionObj;
-        result.Unit.Directives.TryGetValue("description", out descriptionObj);
+        result.Unit.Directives.TryGetValue("description", out var descriptionObj);
         Description = descriptionObj?.ToString() ?? string.Empty;
         Intent = result.Unit.Intent.ToString();
         IsSkipped = result.State == ConfigurationUnitState.Skipped;
