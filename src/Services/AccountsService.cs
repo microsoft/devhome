@@ -17,8 +17,11 @@ namespace DevHome.Services;
 
 public class AccountsService : IAccountsService
 {
-    public AccountsService()
+    private readonly IPluginService _pluginService;
+
+    public AccountsService(IPluginService pluginService)
     {
+        _pluginService = pluginService;
     }
 
     public async Task InitializeAsync()
@@ -43,16 +46,30 @@ public class AccountsService : IAccountsService
     public async Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders()
     {
         var devIdProviders = new List<IDeveloperIdProvider>();
-        var pluginService = Application.Current.GetService<IPluginService>();
-        var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
 
-        foreach (var plugin in plugins)
+        try
         {
-            var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
-            if (devIdProvider is not null)
+            var plugins = await _pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
+
+            foreach (var plugin in plugins)
             {
-                devIdProviders.Add(devIdProvider);
+                try
+                {
+                    var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
+                    if (devIdProvider is not null)
+                    {
+                        devIdProviders.Add(devIdProvider);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GlobalLog.Logger?.ReportError($"Failed to get {nameof(IDeveloperIdProvider)} provider from '{plugin.Name}'", ex);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            GlobalLog.Logger?.ReportError($"Failed to get installed plugins", ex);
         }
 
         return devIdProviders;
