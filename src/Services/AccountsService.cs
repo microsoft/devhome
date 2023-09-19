@@ -46,30 +46,21 @@ public class AccountsService : IAccountsService
     public async Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders()
     {
         var devIdProviders = new List<IDeveloperIdProvider>();
-
-        try
+        var plugins = await _pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
+        foreach (var plugin in plugins)
         {
-            var plugins = await _pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
-
-            foreach (var plugin in plugins)
+            try
             {
-                try
+                var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
+                if (devIdProvider is not null)
                 {
-                    var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
-                    if (devIdProvider is not null)
-                    {
-                        devIdProviders.Add(devIdProvider);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    GlobalLog.Logger?.ReportError($"Failed to get {nameof(IDeveloperIdProvider)} provider from '{plugin.Name}'", ex);
+                    devIdProviders.Add(devIdProvider);
                 }
             }
-        }
-        catch (Exception ex)
-        {
-            GlobalLog.Logger?.ReportError($"Failed to get installed plugins", ex);
+            catch (Exception ex)
+            {
+                GlobalLog.Logger?.ReportError($"Failed to get {nameof(IDeveloperIdProvider)} provider from '{plugin.Name}'", ex);
+            }
         }
 
         return devIdProviders;
