@@ -30,9 +30,9 @@
             <StackPanel>
                 <ContentDialog x:Name="reportBugDialog" x:Uid="Settings_Feedback_ReportBug_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
                     <Grid>
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{StaticResource FeedbackScrollViewerMargin}">
-                            <StackPanel Margin="{StaticResource FeedbackScrollViewerContentMargin}">
-                                <TextBox x:Name="ReportBugIssueTitle" x:Uid="Settings_Feedback_ReportBug_IssueTitle" AcceptsReturn="True"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBox x:Name="ReportBugIssueTitle" x:Uid="Settings_Feedback_ReportBug_IssueTitle" AcceptsReturn="True" />
                                 <TextBox x:Name="ReportBugReproSteps" x:Uid="Settings_Feedback_ReportBug_ReproSteps" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
                                 <TextBox x:Name="ReportBugExpectedBehavior" x:Uid="Settings_Feedback_ReportBug_ExpectedBehavior" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
                                 <TextBox x:Name="ReportBugActualBehavior" x:Uid="Settings_Feedback_ReportBug_ActualBehavior" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
@@ -69,8 +69,8 @@
                 </ContentDialog>
                 <ContentDialog x:Name="LocalizationIssueDialog" x:Uid="Settings_Feedback_LocalizationIssue_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
                     <Grid>
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{StaticResource FeedbackScrollViewerMargin}">
-                            <StackPanel Margin="{StaticResource FeedbackScrollViewerContentMargin}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
                                 <TextBox x:Name="LocalizationIssueTitle" x:Uid="Settings_Feedback_LocalizationIssue_IssueTitle" AcceptsReturn="True"/>
                                 <TextBox x:Name="LocalizationIssueLanguageAffected" x:Uid="Settings_Feedback_LocalizationIssue_LanguageAffected" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
                             </StackPanel>
@@ -79,8 +79,8 @@
                 </ContentDialog>
                 <ContentDialog x:Name="suggestFeatureDialog" x:Uid="Settings_Feedback_SuggestFeature_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
                     <Grid>
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="{StaticResource FeedbackScrollViewerMargin}">
-                            <StackPanel Margin="{StaticResource FeedbackScrollViewerContentMargin}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
                                 <TextBox x:Name="SuggestFeatureTitle" x:Uid="Settings_Feedback_SuggestFeature_IssueTitle" AcceptsReturn="True"/>
                                 <TextBox x:Name="SuggestFeatureDescription" x:Uid="Settings_Feedback_SuggestFeature_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
                                 <TextBox x:Name="SuggestFeatureScenario" x:Uid="Settings_Feedback_SuggestFeature_Scenario" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
