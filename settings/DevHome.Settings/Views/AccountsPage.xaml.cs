@@ -222,11 +222,18 @@ public sealed partial class AccountsPage : Page
         {
             IntPtr windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
             WindowId windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
-            var developerIdResult = await accountProvider.DeveloperIdProvider.ShowLogonSession(windowPtr);
-            if (developerIdResult.Result.Status == ProviderOperationStatus.Failure)
+            try
             {
-                GlobalLog.Logger?.ReportError($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
-                return;
+                var developerIdResult = await accountProvider.DeveloperIdProvider.ShowLogonSession(windowPtr);
+                if (developerIdResult.Result.Status == ProviderOperationStatus.Failure)
+                {
+                    GlobalLog.Logger?.ReportError($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                GlobalLog.Logger?.ReportError($"Exception thrown while calling DeveloperIdProvider.ShowLogonSession: ", ex);
             }
 
             accountProvider.RefreshLoggedInAccounts();
