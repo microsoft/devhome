@@ -213,11 +213,12 @@ public sealed partial class AccountsPage : Page
 
     private async Task InitiateAddAccountUserExperienceAsync(Page parentPage, AccountsProviderViewModel accountProvider)
     {
-        if (accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CardSession)
+        var authenticationFlow = accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind();
+        if (authenticationFlow == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CardSession)
         {
             await ShowLoginUIAsync("Settings", parentPage, accountProvider);
         }
-        else if (accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind() == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CustomProvider)
+        else if (authenticationFlow == Microsoft.Windows.DevHome.SDK.AuthenticationExperienceKind.CustomProvider)
         {
             IntPtr windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
             WindowId windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
