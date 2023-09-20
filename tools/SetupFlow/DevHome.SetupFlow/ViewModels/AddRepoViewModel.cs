@@ -264,30 +264,30 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Gets all the plugins the DevHome can see.
+    /// Gets all the extensions the DevHome can see.
     /// </summary>
     /// <remarks>
-    /// A valid plugin is one that has a repository provider and developerId provider.
+    /// A valid extension is one that has a repository provider and developerId provider.
     /// </remarks>
-    public void GetPlugins()
+    public void GetExtensions()
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Getting installed extensions with Repository and DevId providers");
-        var pluginService = Application.Current.GetService<IPluginService>();
-        var pluginWrappers = pluginService.GetInstalledPluginsAsync().Result;
+        var extensionService = Application.Current.GetService<IExtensionService>();
+        var extensionWrappers = extensionService.GetInstalledExtensionsAsync().Result;
 
-        var plugins = pluginWrappers.Where(
-            plugin => plugin.HasProviderType(ProviderType.Repository) &&
-            plugin.HasProviderType(ProviderType.DeveloperId));
+        var extensions = extensionWrappers.Where(
+            extension => extension.HasProviderType(ProviderType.Repository) &&
+            extension.HasProviderType(ProviderType.DeveloperId));
 
-        _providers = new RepositoryProviders(plugins);
+        _providers = new RepositoryProviders(extensions);
 
-        // Start all plugins to get the DisplayName of each provider.
-        _providers.StartAllPlugins();
+        // Start all extensions to get the DisplayName of each provider.
+        _providers.StartAllExtensions();
 
         ProviderNames = new ObservableCollection<string>(_providers.GetAllProviderNames());
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForProviders_Event", LogLevel.Critical, new ProviderEvent(ProviderNames.Count), _activityId);
 
-        IsAccountButtonEnabled = plugins.Any();
+        IsAccountButtonEnabled = extensions.Any();
     }
 
     public void ChangeToUrlPage()
@@ -315,7 +315,7 @@ public partial class AddRepoViewModel : ObservableObject
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoAccountPagePrimaryButtonText);
 
         // List of extensions needs to be refreshed before accessing
-        GetPlugins();
+        GetExtensions();
         if (ProviderNames.Count == 1)
         {
             _providers.StartIfNotRunning(ProviderNames[0]);
@@ -586,7 +586,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <remarks>
     /// The side effect of this method is _repositoriesForAccount is populated with repositories.
     /// </remarks>
-    /// <param name="repositoryProvider">The provider.  This should match the display name of the plugin</param>
+    /// <param name="repositoryProvider">The provider.  This should match the display name of the extension</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
     public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
     {

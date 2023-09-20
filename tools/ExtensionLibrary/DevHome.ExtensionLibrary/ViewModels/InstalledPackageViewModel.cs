@@ -47,14 +47,14 @@ public partial class InstalledExtensionViewModel : ObservableObject
 
                 _isExtensionEnabled = value;
 
-                var pluginService = Application.Current.GetService<IPluginService>();
+                var extensionService = Application.Current.GetService<IExtensionService>();
                 if (_isExtensionEnabled)
                 {
-                    pluginService.EnableExtension(ExtensionUniqueId);
+                    extensionService.EnableExtension(ExtensionUniqueId);
                 }
                 else
                 {
-                    pluginService.DisableExtension(ExtensionUniqueId);
+                    extensionService.DisableExtension(ExtensionUniqueId);
                 }
             }
         }

@@ -42,14 +42,14 @@ public class Setting
 
                 _isExtensionEnabled = value;
 
-                var pluginService = Application.Current.GetService<IPluginService>();
+                var extensionService = Application.Current.GetService<IExtensionService>();
                 if (_isExtensionEnabled)
                 {
-                    pluginService.EnableExtension(UniqueId);
+                    extensionService.EnableExtension(UniqueId);
                 }
                 else
                 {
-                    pluginService.DisableExtension(UniqueId);
+                    extensionService.DisableExtension(UniqueId);
                 }
             }
         }

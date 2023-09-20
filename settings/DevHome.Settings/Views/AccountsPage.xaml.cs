@@ -119,15 +119,15 @@ public sealed partial class AccountsPage : Page
             }
 
             var loginUIAdaptiveCardController = adaptiveCardSessionResult.AdaptiveCardSession;
-            var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
+            var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
             var renderer = new AdaptiveCardRenderer();
             await ConfigureLoginUIRenderer(renderer);
             renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
 
-            pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
-            pluginAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
+            extensionAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
+            extensionAdaptiveCardPanel.RequestedTheme = parentPage.ActualTheme;
 
-            var loginUIContentDialog = new LoginUIDialog(pluginAdaptiveCardPanel)
+            var loginUIContentDialog = new LoginUIDialog(extensionAdaptiveCardPanel)
             {
                 XamlRoot = parentPage.XamlRoot,
                 RequestedTheme = parentPage.ActualTheme,

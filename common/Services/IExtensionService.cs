@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.AppExtensions;
 
 namespace DevHome.Common.Services;
-public interface IPluginService
+public interface IExtensionService
 {
-    Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins = false);
+    Task<IEnumerable<IExtensionWrapper>> GetInstalledExtensionsAsync(bool includeDisabledExtensions = false);
 
-    Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(Microsoft.Windows.DevHome.SDK.ProviderType providerType, bool includeDisabledPlugins = false);
+    Task<IEnumerable<IExtensionWrapper>> GetInstalledExtensionsAsync(Microsoft.Windows.DevHome.SDK.ProviderType providerType, bool includeDisabledExtensions = false);
 
-    Task<IEnumerable<IPluginWrapper>> StartAllPluginsAsync();
+    Task<IEnumerable<IExtensionWrapper>> GetAllExtensionsAsync();
 
-    Task SignalStopPluginsAsync();
+    Task SignalStopExtensionsAsync();
 
     Task<IEnumerable<AppExtension>> GetInstalledAppExtensionsAsync();
 
-    public event EventHandler OnPluginsChanged;
+    public event EventHandler OnExtensionsChanged;
 
     public void EnableExtension(string extensionUniqueId);
 
