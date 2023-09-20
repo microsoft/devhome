@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 
@@ -40,6 +41,15 @@ public partial class LoadingMessageViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private SolidColorBrush _messageForeground;
+
+    [ObservableProperty]
+    private bool _isRepoNameTrimmed;
+
+    [RelayCommand]
+    public void TextTrimmed()
+    {
+        IsRepoNameTrimmed = true;
+    }
 
     public LoadingMessageViewModel(string messageToShow)
     {

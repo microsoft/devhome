@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -20,7 +22,9 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Windows.Storage.Pickers;
 using Windows.System;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -36,7 +40,22 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly CatalogDataSourceLoacder _catalogDataSourceLoacder;
 
     [ObservableProperty]
+    private IList<LoadingMessageViewModel> _failedTasks = new List<LoadingMessageViewModel>();
+
+    [ObservableProperty]
     private Visibility _showRestartNeeded;
+
+    [RelayCommand]
+    public void ShowLogFiles()
+    {
+        var folderToOpen = Log.Logger.Options.LogFileFolderPath;
+        var startInfo = new ProcessStartInfo();
+        startInfo.UseShellExecute = true;
+        startInfo.FileName = folderToOpen;
+        var explorerWindow = new Process();
+        explorerWindow.StartInfo = startInfo;
+        explorerWindow.Start();
+    }
 
     public ObservableCollection<RepoViewListItem> RepositoriesCloned
     {
@@ -174,7 +193,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().LogCritical("Summary_NavigatedTo_Event",  false, Orchestrator.ActivityId);
+        // Loading screen always shows up before the summary screen.
+        FailedTasks = (_orchestrator.FlowPages[_orchestrator.FlowPages.Count - 2] as LoadingViewModel).FailedTasks;
+        TelemetryFactory.Get<ITelemetry>().LogCritical("Summary_NavigatedTo_Event", false, Orchestrator.ActivityId);
         _orchestrator.ReleaseRemoteOperationObject();
         await ReloadCatalogsAsync();
     }

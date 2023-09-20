@@ -21,6 +21,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
@@ -79,6 +80,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private ObservableCollection<LoadingMessageViewModel> _messages;
+
+    public IList<LoadingMessageViewModel> FailedTasks => Messages.Where(x => x.StatusSymbolIcon == DarkError || x.StatusSymbolIcon == LightError).ToList();
 
     /// <summary>
     /// List of all messages that shows up in the "action center" of the loading screen.

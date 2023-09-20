@@ -14,17 +14,6 @@ public sealed partial class SummaryView : UserControl
     public SummaryView()
     {
         this.InitializeComponent();
-
-        // Add separator dynamically between task group sections
-        var sections = TaskGroupSections.Children;
-        for (var i = 0; i < sections.Count - 1; ++i)
-        {
-            if (sections[i] is Grid sectionGrid)
-            {
-                sectionGrid.BorderBrush = (SolidColorBrush)Application.Current.Resources["DividerStrokeColorDefaultBrush"];
-                sectionGrid.BorderThickness = new Thickness(0, 0, 0, 1);
-            }
-        }
     }
 
     public SummaryViewModel ViewModel => (SummaryViewModel)this.DataContext;
