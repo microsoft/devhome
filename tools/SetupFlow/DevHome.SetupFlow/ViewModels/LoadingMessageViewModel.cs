@@ -42,6 +42,7 @@ public partial class LoadingMessageViewModel : ObservableObject
     [ObservableProperty]
     private SolidColorBrush _messageForeground;
 
+    // This and TextTrimmed() are used to enable the UI to show a tooltip
     [ObservableProperty]
     private bool _isRepoNameTrimmed;
 

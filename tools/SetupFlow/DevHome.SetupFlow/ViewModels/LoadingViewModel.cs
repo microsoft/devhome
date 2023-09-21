@@ -72,6 +72,9 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     private readonly IList<TaskInformation> _failedTasks;
 
+    // Failed tasks have the failed symbol.
+    public IList<TaskInformation> FailedTasks => _failedTasks;
+
     /// <summary>
     /// All the tasks that will be executed.
     /// </summary>
@@ -80,8 +83,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private ObservableCollection<LoadingMessageViewModel> _messages;
-
-    public IList<LoadingMessageViewModel> FailedTasks => Messages.Where(x => x.StatusSymbolIcon == DarkError || x.StatusSymbolIcon == LightError).ToList();
 
     /// <summary>
     /// List of all messages that shows up in the "action center" of the loading screen.

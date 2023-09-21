@@ -13,6 +13,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Contracts.Services;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Common.Helpers;
@@ -22,6 +23,7 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Pickers;
 using Windows.System;
 using WinUIEx;
@@ -30,6 +32,9 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class SummaryViewModel : SetupPageViewModelBase
 {
+    private static readonly BitmapImage DarkError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
+    private static readonly BitmapImage LightError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
+
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly SetupFlowViewModel _setupFlowViewModel;
     private readonly IHost _host;
@@ -40,21 +45,24 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly CatalogDataSourceLoacder _catalogDataSourceLoacder;
 
     [ObservableProperty]
-    private IList<LoadingMessageViewModel> _failedTasks = new List<LoadingMessageViewModel>();
+    private List<SummaryMessageViewModel> _failedTasks = new ();
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
 
     [RelayCommand]
-    public void ShowLogFiles()
+    public async Task ShowLogFiles()
     {
-        var folderToOpen = Log.Logger.Options.LogFileFolderPath;
-        var startInfo = new ProcessStartInfo();
-        startInfo.UseShellExecute = true;
-        startInfo.FileName = folderToOpen;
-        var explorerWindow = new Process();
-        explorerWindow.StartInfo = startInfo;
-        explorerWindow.Start();
+        await Task.Run(() =>
+        {
+            var folderToOpen = Log.Logger.Options.LogFileFolderPath;
+            var startInfo = new ProcessStartInfo();
+            startInfo.UseShellExecute = true;
+            startInfo.FileName = folderToOpen;
+            var explorerWindow = new Process();
+            explorerWindow.StartInfo = startInfo;
+            explorerWindow.Start();
+        });
     }
 
     public ObservableCollection<RepoViewListItem> RepositoriesCloned
@@ -193,8 +201,35 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
+        IList<TaskInformation> failedTasks = new List<TaskInformation>();
+
         // Loading screen always shows up before the summary screen.
-        FailedTasks = (_orchestrator.FlowPages[_orchestrator.FlowPages.Count - 2] as LoadingViewModel).FailedTasks;
+        foreach (var flowPage in _orchestrator.FlowPages)
+        {
+            if (flowPage is LoadingViewModel loadingViewModel)
+            {
+                failedTasks = loadingViewModel.FailedTasks;
+            }
+        }
+
+        BitmapImage statusSymbol;
+        if (_host.GetService<IThemeSelectorService>().Theme == ElementTheme.Dark)
+        {
+            statusSymbol = DarkError;
+        }
+        else
+        {
+            statusSymbol = LightError;
+        }
+
+        foreach (var failedTask in failedTasks)
+        {
+            var summaryMessageViewModel = new SummaryMessageViewModel();
+            summaryMessageViewModel.MessageToShow = failedTask.MessageToShow;
+            summaryMessageViewModel.StatusSymbolIcon = statusSymbol;
+            FailedTasks.Add(summaryMessageViewModel);
+        }
+
         TelemetryFactory.Get<ITelemetry>().LogCritical("Summary_NavigatedTo_Event", false, Orchestrator.ActivityId);
         _orchestrator.ReleaseRemoteOperationObject();
         await ReloadCatalogsAsync();

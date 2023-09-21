@@ -58,7 +58,7 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            
+
             <!-- Display if the user has tasks need the machine to restart.-->
             <Grid Visibility="{x:Bind ViewModel.ShowRestartNeeded}"  Background="{ThemeResource ComboBoxItemBackgroundPressed}" CornerRadius="5" Height="55" Padding="10" >
                 <Grid.ColumnDefinitions>
@@ -180,7 +180,7 @@
                     <!-- Clone repos list and apps downloaded list-->
                     <ColumnDefinition Width="1.77*"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <!-- Numbers of tasks ran and next steps.-->
                 <!-- Or, if any tasks failed, failed tasks and next steps.-->
                 <Grid>
@@ -191,8 +191,8 @@
 
                     <!-- Show any failed tasks if the loading screen has any failed tasks-->
                     <Grid Grid.Row="0" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource CollectionVisibilityConverter}}"
-                        HorizontalAlignment="Center" 
-                        Padding="30,15,30,30"
+                        HorizontalAlignment="Stretch" 
+                        Padding="0,15,0,30"
                         BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
                         BorderThickness="{ThemeResource TopNavigationViewContentGridBorderThickness}">
                         <Grid>
@@ -219,7 +219,7 @@
                             <HyperlinkButton Content="View log" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{x:Bind ViewModel.ShowLogFilesCommand, Mode=OneWay}"/>
                             <ListView Grid.Row="1" Grid.ColumnSpan="2" SelectionMode="None" ItemsSource="{x:Bind ViewModel.FailedTasks, Mode=OneWay}" ItemContainerStyle="{ThemeResource ListViewItemStretchStyle}">
                                 <ListView.ItemTemplate>
-                                    <DataTemplate x:DataType="viewModels:LoadingMessageViewModel">
+                                    <DataTemplate x:DataType="viewModels:SummaryMessageViewModel">
                                         <Grid ColumnSpacing="5" Margin="0">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="18"/>
@@ -229,7 +229,7 @@
                                                  Source="{x:Bind StatusSymbolIcon, Mode=OneWay}" Grid.Column="0"/>
                                             <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Grid.Column="1" TextTrimming="CharacterEllipsis" Foreground="{StaticResource SystemErrorTextColor}">
                                                 <ToolTipService.ToolTip>
-                                                    <ToolTip IsEnabled="{x:Bind IsRepoNameTrimmed, Mode=OneWay}" Content="{x:Bind MessageToShow}"/>
+                                                    <ToolTip IsEnabled="{x:Bind IsMessageTrimmed, Mode=OneWay}" Content="{x:Bind MessageToShow}"/>
                                                 </ToolTipService.ToolTip>
                                                 <i:Interaction.Behaviors>
                                                     <ic:EventTriggerBehavior EventName="IsTextTrimmedChanged">
