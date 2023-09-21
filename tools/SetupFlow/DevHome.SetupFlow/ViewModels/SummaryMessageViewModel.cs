@@ -6,10 +6,14 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DevHome.SetupFlow.ViewModels;
-public partial class SummaryMessageViewModel : ObservableObject
+
+/// <summary>
+/// ViewModel for displaying errors on the summary page.
+/// </summary>
+public partial class SummaryErrorMessageViewModel : ObservableObject
 {
     /// <summary>
-    /// Gets or sets the message to display in the loading screen.
+    /// Gets or sets the message to display in the error section of the summary screen.
     /// </summary>
     public string MessageToShow
     {
@@ -17,7 +21,7 @@ public partial class SummaryMessageViewModel : ObservableObject
     }
 
     /// <summary>
-    /// The icon to display in the loading screen after a task is finished.
+    /// The icon to display.
     /// </summary>
     [ObservableProperty]
     private BitmapImage _statusSymbolIcon;

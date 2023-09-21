@@ -45,7 +45,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly CatalogDataSourceLoacder _catalogDataSourceLoacder;
 
     [ObservableProperty]
-    private List<SummaryMessageViewModel> _failedTasks = new ();
+    private List<SummaryErrorMessageViewModel> _failedTasks = new ();
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -203,7 +203,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     {
         IList<TaskInformation> failedTasks = new List<TaskInformation>();
 
-        // Loading screen always shows up before the summary screen.
+        // Find the loading view model.
         foreach (var flowPage in _orchestrator.FlowPages)
         {
             if (flowPage is LoadingViewModel loadingViewModel)
@@ -224,7 +224,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
         foreach (var failedTask in failedTasks)
         {
-            var summaryMessageViewModel = new SummaryMessageViewModel();
+            var summaryMessageViewModel = new SummaryErrorMessageViewModel();
             summaryMessageViewModel.MessageToShow = failedTask.MessageToShow;
             summaryMessageViewModel.StatusSymbolIcon = statusSymbol;
             FailedTasks.Add(summaryMessageViewModel);

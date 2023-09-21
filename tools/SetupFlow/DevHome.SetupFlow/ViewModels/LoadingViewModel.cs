@@ -72,7 +72,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     private readonly IList<TaskInformation> _failedTasks;
 
-    // Failed tasks have the failed symbol.
     public IList<TaskInformation> FailedTasks => _failedTasks;
 
     /// <summary>
