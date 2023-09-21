@@ -14,11 +14,13 @@ using DevHome.Common.Views;
 using DevHome.Logging;
 using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Storage;
+using WinUIEx;
 
 namespace DevHome.Settings.Views;
 
@@ -61,7 +63,7 @@ public sealed partial class AccountsPage : Page
         var numProviders = ViewModel.AccountsProviders.Count;
         if (numProviders == 1)
         {
-            await ShowLoginUIAsync("Settings", this, ViewModel.AccountsProviders[0]);
+            await InitiateAddAccountUserExperienceAsync(this, ViewModel.AccountsProviders[0]);
         }
         else if (numProviders > 1)
         {
@@ -97,7 +99,7 @@ public sealed partial class AccountsPage : Page
         {
             if (addAccountButton.Tag is AccountsProviderViewModel accountProvider)
             {
-                await ShowLoginUIAsync("Settings", this, accountProvider);
+                await InitiateAddAccountUserExperienceAsync(this, accountProvider);
             }
             else
             {
@@ -218,6 +220,35 @@ public sealed partial class AccountsPage : Page
                 RequestedTheme = ActualTheme,
             };
             _ = await afterLogoutContentDialog.ShowAsync();
+        }
+    }
+
+    private async Task InitiateAddAccountUserExperienceAsync(Page parentPage, AccountsProviderViewModel accountProvider)
+    {
+        var authenticationFlow = accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind();
+        if (authenticationFlow == AuthenticationExperienceKind.CardSession)
+        {
+            await ShowLoginUIAsync("Settings", parentPage, accountProvider);
+        }
+        else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
+        {
+            IntPtr windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
+            WindowId windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
+            try
+            {
+                var developerIdResult = await accountProvider.DeveloperIdProvider.ShowLogonSession(windowPtr);
+                if (developerIdResult.Result.Status == ProviderOperationStatus.Failure)
+                {
+                    GlobalLog.Logger?.ReportError($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                GlobalLog.Logger?.ReportError($"Exception thrown while calling {nameof(accountProvider.DeveloperIdProvider)}.{nameof(accountProvider.DeveloperIdProvider.ShowLogonSession)}: ", ex);
+            }
+
+            accountProvider.RefreshLoggedInAccounts();
         }
     }
 }
