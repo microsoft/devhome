@@ -69,7 +69,7 @@ public sealed class Program
         // This could be called by either of the COM registrations, we will do them all to avoid deadlock and bind all on the extension's lifetime.
         using var extensionServer = new Microsoft.Windows.DevHome.SDK.ExtensionServer();
         var extensionDisposedEvent = new ManualResetEvent(false);
-        var extensionInstance = new CorePlugin(extensionDisposedEvent);
+        var extensionInstance = new CoreExtension(extensionDisposedEvent);
 
         // We are instantiating extension instance once above, and returning it every time the callback in RegisterExtension below is called.
         // This makes sure that only one instance of SampleExtension is alive, which is returned every time the host asks for the IExtension object.

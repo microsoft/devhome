@@ -28,7 +28,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     private readonly string devHomeProductId = "9N8MHTPHNGVV";
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-    private readonly IPluginService _pluginService;
+    private readonly IExtensionService _extensionService;
 
     public ObservableCollection<StorePackageViewModel> StorePackagesList { get; set; }
 
@@ -40,13 +40,13 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowStoreError = false;
 
-    public ExtensionLibraryViewModel(IPluginService pluginService)
+    public ExtensionLibraryViewModel(IExtensionService extensionService)
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-        _pluginService = pluginService;
+        _extensionService = extensionService;
 
-        pluginService.OnPluginsChanged -= OnPluginsChanged;
-        pluginService.OnPluginsChanged += OnPluginsChanged;
+        extensionService.OnExtensionsChanged -= OnExtensionsChanged;
+        extensionService.OnExtensionsChanged += OnExtensionsChanged;
 
         StorePackagesList = new ();
         InstalledPackagesList = new ();
@@ -93,7 +93,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         GetAvailablePackages();
     }
 
-    private async void OnPluginsChanged(object? sender, EventArgs e)
+    private async void OnExtensionsChanged(object? sender, EventArgs e)
     {
         await _dispatcher.EnqueueAsync(async () =>
         {
@@ -105,7 +105,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
     private async Task GetInstalledExtensionsAsync()
     {
-        var extensionWrappers = await _pluginService.GetInstalledPluginsAsync(true);
+        var extensionWrappers = await _extensionService.GetInstalledExtensionsAsync(true);
 
         InstalledPackagesList.Clear();
 
