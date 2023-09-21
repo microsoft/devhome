@@ -16,19 +16,26 @@ public class SecondaryWindow : WindowEx
     private WindowEx? _primaryWindow;
     private bool _useAppTheme;
     private bool _isModal;
+    private bool _isAlwaysOnTopOfPrimary;
 
     // Main Dev Home window
     private WindowEx MainWindow => Application.Current.GetService<WindowEx>();
 
     private IThemeSelectorService ThemeSelector => Application.Current.GetService<IThemeSelectorService>();
 
+    public WindowTitleBar? WindowTitleBar
+    {
+        get => (WindowTitleBar)_windowTemplate.WindowTitleBarControl.Content;
+        set => _windowTemplate.WindowTitleBarControl.Content = value;
+    }
+
     /// <summary>
     /// Gets or sets the window content in the customized layout.
     /// </summary>
     public new object WindowContent
     {
-        get => _windowTemplate.PageContent;
-        set => _windowTemplate.PageContent = value;
+        get => _windowTemplate.WindowContentControl.Content;
+        set => _windowTemplate.WindowContentControl.Content = value;
     }
 
     /// <summary>
@@ -40,19 +47,22 @@ public class SecondaryWindow : WindowEx
         get => _useAppTheme;
         set
         {
-            _useAppTheme = value;
-            if (_useAppTheme)
+            if (_useAppTheme != value)
             {
-                // Update the current theme for the window
-                this.SetRequestedTheme(ThemeSelector.Theme);
+                _useAppTheme = value;
+                if (value)
+                {
+                    // Update the current theme for the window
+                    this.SetRequestedTheme(ThemeSelector.Theme);
 
-                // Subscribe window to theme changes, and unsubscribe on window close
-                ThemeSelector.ThemeChanged += OnThemeChanged;
-                Closed += (_, _) => ThemeSelector.ThemeChanged -= OnThemeChanged;
-            }
-            else
-            {
-                ThemeSelector.ThemeChanged -= OnThemeChanged;
+                    // Subscribe window to theme changes, and unsubscribe on window close
+                    ThemeSelector.ThemeChanged += OnThemeChanged;
+                    Closed += (_, _) => ThemeSelector.ThemeChanged -= OnThemeChanged;
+                }
+                else
+                {
+                    ThemeSelector.ThemeChanged -= OnThemeChanged;
+                }
             }
         }
     }
@@ -65,11 +75,37 @@ public class SecondaryWindow : WindowEx
         get => _isModal;
         set
         {
-            _isModal = value;
-            if (PrimaryWindow != null)
+            if (_isModal != value)
             {
-                var hwnd = (HWND)PrimaryWindow.GetWindowHandle();
-                PInvoke.EnableWindow(hwnd, !_isModal);
+                _isModal = value;
+                if (PrimaryWindow != null)
+                {
+                    var hwnd = (HWND)PrimaryWindow.GetWindowHandle();
+                    PInvoke.EnableWindow(hwnd, !value);
+                }
+            }
+        }
+    }
+
+    public bool IsAlwaysOnTopOfPrimary
+    {
+        get => _isAlwaysOnTopOfPrimary;
+        set
+        {
+            if (_isAlwaysOnTopOfPrimary != value)
+            {
+                _isAlwaysOnTopOfPrimary = value;
+                if (PrimaryWindow != null)
+                {
+                    if (value)
+                    {
+                        PrimaryWindow.ZOrderChanged += OnPrimaryWindowZOrderChanged;
+                    }
+                    else
+                    {
+                        PrimaryWindow.ZOrderChanged -= OnPrimaryWindowZOrderChanged;
+                    }
+                }
             }
         }
     }
@@ -156,14 +192,10 @@ public class SecondaryWindow : WindowEx
 
     private void OnSecondaryWindowActivated(object? sender, WindowActivatedEventArgs args)
     {
-        if (PrimaryWindow != null)
+        if (this.WindowTitleBar != null)
         {
-            // Keep secondary window in front
-            PrimaryWindow.ZOrderChanged += OnPrimaryWindowZOrderChanged;
+            this.WindowTitleBar.IsActive = args.WindowActivationState != WindowActivationState.Deactivated;
         }
-
-        // Activated is called several times on different WindowActivationState
-        Activated -= OnSecondaryWindowActivated;
     }
 
     private void OnSecondaryWindowClosed(object? sender, WindowEventArgs args)
@@ -199,21 +231,5 @@ public class SecondaryWindow : WindowEx
     {
         // Update the window theme
         this.SetRequestedTheme(theme);
-    }
-
-    private void EnableWindow(bool enable)
-    {
-        if (PrimaryWindow != null)
-        {
-            try
-            {
-                var hwnd = (HWND)PrimaryWindow.GetWindowHandle();
-                PInvoke.EnableWindow(hwnd, !_isModal);
-            }
-            catch
-            {
-                PrimaryWindow.ToString();
-            }
-        }
     }
 }

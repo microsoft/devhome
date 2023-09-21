@@ -13,9 +13,14 @@ namespace DevHome.ViewModels;
 public partial class ShellViewModel : ObservableObject
 {
     private readonly ILocalSettingsService _localSettingsService;
+    private readonly IAppInfoService _appInfoService;
 
     [ObservableProperty]
     private string? _announcementText;
+
+    public string Title => _appInfoService.GetAppNameLocalized();
+
+    public string IconPath => _appInfoService.IconPath;
 
     public INavigationService NavigationService
     {
@@ -37,12 +42,14 @@ public partial class ShellViewModel : ObservableObject
         INavigationService navigationService,
         INavigationViewService navigationViewService,
         ILocalSettingsService localSettingsService,
-        IScreenReaderService screenReaderService)
+        IScreenReaderService screenReaderService,
+        IAppInfoService appInfoService)
     {
         NavigationService = navigationService;
         NavigationService.Navigated += OnNavigated;
         NavigationViewService = navigationViewService;
         _localSettingsService = localSettingsService;
+        _appInfoService = appInfoService;
 
         screenReaderService.AnnouncementTextChanged += OnAnnouncementTextChanged;
     }

@@ -7,11 +7,9 @@ using DevHome.Common.Services;
 using DevHome.Common.Windows;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Markup;
-using Microsoft.UI.Xaml.Media;
 using Windows.System;
 
 namespace DevHome.Views;
@@ -37,7 +35,6 @@ public sealed partial class ShellPage : Page
         App.MainWindow.ExtendsContentIntoTitleBar = true;
         App.MainWindow.SetTitleBar(AppTitleBar);
         App.MainWindow.Activated += MainWindow_Activated;
-        AppTitleBarText.Text = Application.Current.GetService<IAppInfoService>().GetAppNameLocalized();
 
         ActualThemeChanged += OnActualThemeChanged;
     }
@@ -60,9 +57,7 @@ public sealed partial class ShellPage : Page
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
     {
-        var resource = args.WindowActivationState == WindowActivationState.Deactivated ? "WindowCaptionForegroundDisabled" : "WindowCaptionForeground";
-
-        AppTitleBarText.Foreground = (SolidColorBrush)App.Current.Resources[resource];
+        AppTitleBar.IsActive = args.WindowActivationState != WindowActivationState.Deactivated;
     }
 
     private void NavigationViewControl_DisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)

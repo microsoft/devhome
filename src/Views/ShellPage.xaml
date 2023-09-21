@@ -5,24 +5,15 @@
     xmlns:helpers="using:DevHome.Helpers"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:windows="using:DevHome.Common.Windows"
     Loaded="OnLoaded">
 
     <Grid>
-        <Grid x:Name="AppTitleBar"
-              Canvas.ZIndex="1"
-              Height="{Binding ElementName=NavigationViewControl, Path=CompactPaneLength}"
-              IsHitTestVisible="True"
-              VerticalAlignment="Top">
-            <Image Source="/Assets/DevHome.ico"
-                   HorizontalAlignment="Left"
-                   Width="16"
-                   Height="16" />
-            <TextBlock x:Name="AppTitleBarText"
-                       VerticalAlignment="Center"
-                       TextWrapping="NoWrap"
-                       Style="{StaticResource CaptionTextBlockStyle}"
-                       Margin="28,0,0,0"/>
-        </Grid>
+        <windows:WindowTitleBar
+            x:Name="AppTitleBar"
+            Title="{x:Bind ViewModel.Title}"
+            Height="{x:Bind NavigationViewControl.CompactPaneLength}" />
+
         <NavigationView
             x:Name="NavigationViewControl"
             Canvas.ZIndex="0"

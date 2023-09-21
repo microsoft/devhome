@@ -15,12 +15,14 @@
     <None Remove="Views\HyperlinkTextBlock.xaml" />
     <None Remove="Windows\Example2.xaml" />
     <None Remove="Windows\WindowTemplate.xaml" />
+    <None Remove="Windows\WindowTitleBar.xaml" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.0.230907" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.230907" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.206-beta">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -69,6 +71,12 @@
     <Content Update="Assets\BannerBackgroundLight.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Windows\WindowTitleBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>

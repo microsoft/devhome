@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:DevHome.Common.Windows"
     Loaded="OnLoaded"
     mc:Ignorable="d">
     <Grid>
@@ -11,16 +12,28 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid x:Name="WindowTitleBar" Canvas.ZIndex="1" Height="30" IsHitTestVisible="True" VerticalAlignment="Top">
-            <Image Source="/Assets/DevHome.ico" HorizontalAlignment="Left" Width="16" Height="16" />
-            <TextBlock x:Name="WindowTitleBarText" Text="Hello world" VerticalAlignment="Center" TextWrapping="NoWrap" Style="{StaticResource CaptionTextBlockStyle}" Margin="28,0,0,0"/>
-        </Grid>
+        
+        <!-- Window title bar -->
+        <ContentControl
+            x:Name="WindowTitleBar"
+            IsTabStop="False"
+            HorizontalContentAlignment="Stretch"
+            VerticalContentAlignment="Stretch">
+            <ContentControl.Resources>
+                <ResourceDictionary>
+                    <Style TargetType="local:WindowTitleBar">
+                        <Setter Property="Margin" Value="15" />
+                    </Style>
+                </ResourceDictionary>
+            </ContentControl.Resources>
+        </ContentControl>
+
+        <!-- Window content -->
         <ContentControl
             Grid.Row="1"
             x:Name="WindowContent"
             IsTabStop="False"
             HorizontalContentAlignment="Stretch"
-            VerticalContentAlignment="Stretch"
-            Content="{x:Bind PageContent, Mode=OneWay}" />
+            VerticalContentAlignment="Stretch" />
     </Grid>
 </UserControl>

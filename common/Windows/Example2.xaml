@@ -5,9 +5,14 @@
     xmlns:local="using:DevHome.Common.Windows"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    IsModal="False"
+    IsModal="True"
+    IsAlwaysOnTopOfPrimary="True"
     mc:Ignorable="d">
+    <local:SecondaryWindow.WindowTitleBar>
+        <local:WindowTitleBar Title="Hello world" HideIcon="True" />
+    </local:SecondaryWindow.WindowTitleBar>
+
     <Grid>
-        <TextBlock>Hello fsafsa fsa fslka</TextBlock>
+        <TextBlock>Hello world</TextBlock>
     </Grid>
 </local:SecondaryWindow>
