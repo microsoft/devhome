@@ -112,6 +112,11 @@ public partial class WidgetViewModel : ObservableObject
     {
         var cardTemplate = await Widget.GetCardTemplateAsync();
         var cardData = await Widget.GetCardDataAsync();
+        var hostData = new JsonObject
+        {
+            // TODO Add support to host theme in hostData
+            { "widgetSize", JsonValue.CreateStringValue(WidgetSize.ToString().ToLowerInvariant()) }, // "small", "medium" or "large"
+        }.ToString();
 
         if (string.IsNullOrEmpty(cardTemplate))
         {
@@ -146,7 +151,8 @@ public partial class WidgetViewModel : ObservableObject
         try
         {
             var template = new AdaptiveCardTemplate(cardTemplate);
-            var json = template.Expand(cardData);
+            var context = new EvaluationContext(cardData, hostData);
+            var json = template.Expand(context);
 
             // Use custom parser.
             var elementParser = new AdaptiveElementParserRegistration();
