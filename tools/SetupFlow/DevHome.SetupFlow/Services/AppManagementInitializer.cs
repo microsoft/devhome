@@ -8,11 +8,11 @@ namespace DevHome.SetupFlow.Services;
 public class AppManagementInitializer : IAppManagementInitializer
 {
     private readonly IWindowsPackageManager _wpm;
-    private readonly CatalogDataSourceLoacder _catalogDataSourceLoader;
+    private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
 
     public AppManagementInitializer(
         IWindowsPackageManager wpm,
-        CatalogDataSourceLoacder catalogDataSourceLoader)
+        CatalogDataSourceLoader catalogDataSourceLoader)
     {
         _wpm = wpm;
         _catalogDataSourceLoader = catalogDataSourceLoader;
@@ -67,7 +67,7 @@ public class AppManagementInitializer : IAppManagementInitializer
             return true;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "WinGet COM Server is not availbale. AppInstaller might be staged but not registered, attempting to register it to fix the issue");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, "WinGet COM Server is not available. AppInstaller might be staged but not registered, attempting to register it to fix the issue");
         if (await _wpm.RegisterAppInstallerAsync())
         {
             if (await _wpm.IsCOMServerAvailableAsync())

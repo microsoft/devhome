@@ -27,7 +27,7 @@ public class DevDriveFormatter
     /// </summary>
     /// <param name="curDriveLetter">The drive letter the method will use when attempting to find a volume and format it</param>
     /// <param name="driveLabel">The new drive label the Dev Drive will have after formatting completes.</param>
-    /// <returns>An Hresult as an int that indicates whether the operation succeeded or failed</returns>
+    /// <returns>An HRESULT as an int that indicates whether the operation succeeded or failed</returns>
     public int FormatPartitionAsDevDrive(char curDriveLetter, string driveLabel)
     {
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Creating CimSession and calling QueryInstances to search for volume whose Drive letter is {curDriveLetter}:");
@@ -46,7 +46,7 @@ public class DevDriveFormatter
                     && curDriveLetter == foundALetter &&
                     !string.IsNullOrEmpty(objectId))
                 {
-                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Starting WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter}, using args: DeveloperVolume: true, FileSystem: ReFS, FileSystemLabel: {driveLabel}, AllocationUnitSize: {FourKb}");
+                    Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Starting WMI Storage API Format on ObjectId: {objectId} with DriveLetter: {curDriveLetter}, using args: DeveloperVolume: true, FileSystem: ReFS, FileSystemLabel: {driveLabel}, AllocationUnitSize: {FourKb}");
 
                     // Obtain in-parameters for the method
                     var inParams = new CimMethodParametersCollection
@@ -65,16 +65,16 @@ public class DevDriveFormatter
                     var returnValue = (uint)outParams.ReturnValue.Value;
                     if (returnValue == 0)
                     {
-                        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter} finished Successfully");
+                        Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"WMI Storage API Format on ObjectId: {objectId} with DriveLetter: {curDriveLetter} finished Successfully");
                         return 0;
                     }
 
-                    Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"WMI Storage API Format on ObjectId: {objectId} with Driveletter: {curDriveLetter}, failed with wmi error: {returnValue}");
+                    Log.Logger?.ReportError(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"WMI Storage API Format on ObjectId: {objectId} with DriveLetter: {curDriveLetter}, failed with wmi error: {returnValue}");
                     break;
                 }
 
                 var notCorrectDriveLetter = (letter is char ) ? ((char)letter).ToString() : "none";
-                Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"CimSession.QueryInstances found ObjectId: {objectId} but its Driveletter: {notCorrectDriveLetter}: is not correct, continuing search...");
+                Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"CimSession.QueryInstances found ObjectId: {objectId} but its DriveLetter: {notCorrectDriveLetter}: is not correct, continuing search...");
             }
 
             // ReturnValue was not successful. Give this a specific error but this will need
