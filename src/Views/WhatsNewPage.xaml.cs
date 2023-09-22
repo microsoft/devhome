@@ -125,7 +125,7 @@ public sealed partial class WhatsNewPage : Page
 
     private void MoveBigCardsIfNeeded(double newWidth)
     {
-        if (newWidth < 786)
+        if (newWidth < 760)
         {
             ViewModel.SwitchToSmallerView();
         }

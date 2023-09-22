@@ -137,8 +137,8 @@
                                 </Grid.Resources>
 
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="4*" />
+                                    <ColumnDefinition Width="6*" />
                                 </Grid.ColumnDefinitions>
 
                                 <Grid.RowDefinitions>
@@ -151,10 +151,10 @@
                                     Source="{ThemeResource ItemImage}"
                                     MaxHeight="188"
                                     MaxWidth="376"
-                                    HorizontalAlignment="Left"
+                                    HorizontalAlignment="Stretch"
                                     VerticalAlignment="Center"/>
 
-                                <StackPanel Grid.Column="1" Padding="25 10 15 0">
+                                <StackPanel Grid.Column="1" Padding="65 10 15 0">
                                     <TextBlock
                                         HorizontalAlignment="Left"
                                         Style="{ThemeResource BodyTextStyle}"
@@ -163,9 +163,7 @@
                                     <TextBlock
                                         Margin="0 8 0 10"
                                         TextWrapping="Wrap"
-                                        MaxWidth="400"
                                         FontSize="12"
-                                        HorizontalAlignment="Left"
                                         Text="{x:Bind Description}"/>
 
                                     <HyperlinkButton
