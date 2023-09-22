@@ -24,10 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.230907" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Page Update="Views\ExtensionLibraryView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
