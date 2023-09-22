@@ -75,7 +75,7 @@ public class SecondaryWindow : WindowEx
                 _useAppTheme = value;
                 if (value)
                 {
-                    this.SetRequestedTheme(ThemeSelector.Theme);
+                    OnThemeChanged(null, ThemeSelector.Theme);
                     ThemeSelector.ThemeChanged += OnThemeChanged;
                 }
                 else
@@ -180,7 +180,10 @@ public class SecondaryWindow : WindowEx
     /// If the primary window is set, center the secondary window on the
     /// primary window. Otherwise, center the secondary window on the screen.
     /// </summary>
-    /// <remarks>See also: <seealso cref="WindowExtensions.CenterOnScreen"/></remarks>
+    /// <remarks>
+    /// <para>This method should be called after the secondary window is shown.</para>
+    /// <para>See also: <seealso cref="WindowExtensions.CenterOnScreen"/></para>
+    /// </remarks>
     public void CenterOnWindow()
     {
         if (PrimaryWindow == null)
@@ -274,6 +277,13 @@ public class SecondaryWindow : WindowEx
 
     private void OnSecondaryWindowTitleChanged(object? sender, string? title)
     {
+        // Window title in taskbar
         Title = string.IsNullOrEmpty(title) ? AppInfo.GetAppNameLocalized() : title;
+
+        // Window title bar text
+        if (WindowTitleBar != null)
+        {
+            WindowTitleBar.Title = Title;
+        }
     }
 }
