@@ -39,7 +39,6 @@ public partial class PackageViewModel : ObservableObject
     private readonly Lazy<BitmapImage> _packageDarkThemeIcon;
     private readonly Lazy<BitmapImage> _packageLightThemeIcon;
     private readonly Lazy<InstallPackageTask> _installPackageTask;
-    private readonly Lazy<string> _packageDescription;
 
     private readonly ISetupFlowStringResource _stringResource;
     private readonly IWinGetPackage _package;
@@ -85,12 +84,12 @@ public partial class PackageViewModel : ObservableObject
         CatalogName = _package.CatalogName;
         PublisherName = !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
         InstallationNotes = _package.InstallationNotes;
+        PackageDescription = GetPackageDescription();
 
         // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
         _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
-        _packageDescription = new Lazy<string>(GetPackageDescription);
     }
 
     public PackageUniqueKey UniqueKey => _package.UniqueKey;
@@ -111,9 +110,9 @@ public partial class PackageViewModel : ObservableObject
 
     public string InstallationNotes { get; }
 
-    public string PackageTitle => Name;
+    public string PackageDescription { get; }
 
-    public string PackageDescription => _packageDescription.Value;
+    public string PackageTitle => Name;
 
     public string TooltipName => _stringResource.GetLocalized(StringResourceKey.PackageNameTooltip, Name);
 

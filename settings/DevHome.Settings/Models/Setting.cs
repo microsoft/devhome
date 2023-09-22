@@ -4,6 +4,7 @@
 using System.Threading.Tasks;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.Models;
@@ -13,7 +14,7 @@ public class Setting
 
     public string Path { get; }
 
-    public string FullName { get; }
+    public string UniqueId { get; }
 
     public string Header { get; }
 
@@ -36,18 +37,28 @@ public class Setting
                 Task.Run(() =>
                 {
                     var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                    return localSettingsService.SaveSettingAsync(FullName + "-ExtensionDisabled", !value);
+                    return localSettingsService.SaveSettingAsync(UniqueId + "-ExtensionDisabled", !value);
                 }).Wait();
 
                 _isExtensionEnabled = value;
+
+                var extensionService = Application.Current.GetService<IExtensionService>();
+                if (_isExtensionEnabled)
+                {
+                    extensionService.EnableExtension(UniqueId);
+                }
+                else
+                {
+                    extensionService.DisableExtension(UniqueId);
+                }
             }
         }
     }
 
-    public Setting(string path, string fullName, string header, string description, string glyph, bool hasToggleSwitch, bool hasSettingsProvider)
+    public Setting(string path, string uniqueId, string header, string description, string glyph, bool hasToggleSwitch, bool hasSettingsProvider)
     {
         Path = path;
-        FullName = fullName;
+        UniqueId = uniqueId;
         Header = header;
         Description = description;
         Glyph = glyph;
@@ -62,7 +73,7 @@ public class Setting
         var isDisabled = Task.Run(() =>
         {
             var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-            return localSettingsService.ReadSettingAsync<bool>(FullName + "-ExtensionDisabled");
+            return localSettingsService.ReadSettingAsync<bool>(UniqueId + "-ExtensionDisabled");
         }).Result;
         return !isDisabled;
     }

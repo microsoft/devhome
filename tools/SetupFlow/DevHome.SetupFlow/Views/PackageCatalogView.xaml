@@ -4,28 +4,28 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:controls="using:CommunityToolkit.Labs.WinUI"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     xmlns:views="using:DevHome.SetupFlow.Views"
     mc:Ignorable="d">
     <StackPanel>
         <!-- Card header -->
-        <controls:SettingsCard
+        <ctControls:SettingsCard
             SizeChanged="SettingsCard_SizeChanged"
             Background="Transparent"
             Header="{x:Bind Catalog.Name}"
             Description="{x:Bind Catalog.Description}">
-            <controls:SettingsCard.Resources>
+            <ctControls:SettingsCard.Resources>
                 <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
                 <Thickness x:Key="SettingsCardPadding">0,0,0,15</Thickness>
                 <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
                 <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
                 <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
                 <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-            </controls:SettingsCard.Resources>
-            <controls:SettingsCard.ActionIcon>
+            </ctControls:SettingsCard.Resources>
+            <ctControls:SettingsCard.ActionIcon>
                 <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE711;"/>
-            </controls:SettingsCard.ActionIcon>
+            </ctControls:SettingsCard.ActionIcon>
             <HyperlinkButton
                 Grid.Column="1"
                 AutomationProperties.AutomationControlType="Button"
@@ -33,7 +33,7 @@
                 Command="{x:Bind Catalog.AddAllPackagesCommand}">
                 <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AddAll" />
             </HyperlinkButton>
-        </controls:SettingsCard>
+        </ctControls:SettingsCard>
 
         <!-- Packages flip view -->
         <FlipView

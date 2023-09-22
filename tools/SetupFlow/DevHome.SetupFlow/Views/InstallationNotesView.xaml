@@ -16,7 +16,7 @@
               IsHitTestVisible="True"
               VerticalAlignment="Top">
             <Image 
-                Source="{x:Bind DevHomeIconPath, Mode=OneWay}"
+                Source="{x:Bind DevHomeIconPath, Mode=OneTime}"
                 HorizontalAlignment="Left"
                 Width="16"
                 Height="20" 
@@ -25,7 +25,7 @@
                 VerticalAlignment="Center"
                 TextWrapping="NoWrap"
                 Style="{StaticResource CaptionTextBlockStyle}"
-                Text="{x:Bind PackageTitle, Mode=OneWay}"
+                Text="{x:Bind PackageTitle, Mode=OneTime}"
                 Margin="35,5,5,0"/>
         </Grid>
         <Grid Margin="0,48,0,0">

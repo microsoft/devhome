@@ -118,7 +118,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
 
     // Because AddMessage is defined in ISetupTask every setup task needs to have their own local copy.
     // If a task does not need to add any messages, for example, this class, warning 67 pops up stating that
-    // AddMessage event is not used and failing compliation.  Adding this pragma supresses the warning.
+    // AddMessage event is not used and failing compilation. Adding this pragma suppresses the warning.
     // When this task needs to insert messages into the loading screen this pragma can be removed.
 #pragma warning disable 67
     public event ISetupTask.ChangeMessageHandler AddMessage;
@@ -194,6 +194,15 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                 ProviderOperationResult result;
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
                 TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Critical, new ReposCloneEvent(ProviderName, _developerId));
+
+                if (RepositoryToClone.GetType() == typeof(GenericRepository))
+                {
+                    await (RepositoryToClone as GenericRepository).CloneRepositoryAsync(_cloneLocation.FullName, null);
+
+                    WasCloningSuccessful = true;
+                    return TaskFinishedState.Success;
+                }
+
                 if (_developerId == null)
                 {
                     result = await _repositoryProvider.CloneRepositoryAsync(RepositoryToClone, _cloneLocation.FullName);

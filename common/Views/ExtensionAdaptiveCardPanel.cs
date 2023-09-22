@@ -13,10 +13,10 @@ using Newtonsoft.Json;
 
 namespace DevHome.Common.Views;
 
-// XAML element to contain a single instance of plugin UI.
-// Use this element where plugin UI is expected to pop up.
+// XAML element to contain a single instance of extension UI.
+// Use this element where extension UI is expected to pop up.
 // https://github.com/microsoft/devhome/issues/610
-public class PluginAdaptiveCardPanel : StackPanel
+public class ExtensionAdaptiveCardPanel : StackPanel
 {
     public event EventHandler<FrameworkElement>? UiUpdate;
 
@@ -26,13 +26,13 @@ public class PluginAdaptiveCardPanel : StackPanel
 
         if (Children.Count != 0)
         {
-            throw new ArgumentException("The PluginUI element must be bound to an empty container.");
+            throw new ArgumentException("The ExtensionUI element must be bound to an empty container.");
         }
 
         var uiDispatcher = DispatcherQueue.GetForCurrentThread();
-        var pluginUI = new ExtensionAdaptiveCard();
+        var extensionUI = new ExtensionAdaptiveCard();
 
-        pluginUI.UiUpdate += (object? sender, AdaptiveCard adaptiveCard) =>
+        extensionUI.UiUpdate += (object? sender, AdaptiveCard adaptiveCard) =>
         {
             uiDispatcher.TryEnqueue(() =>
             {
@@ -52,6 +52,6 @@ public class PluginAdaptiveCardPanel : StackPanel
             });
         };
 
-        extensionAdaptiveCardSession.Initialize(pluginUI);
+        extensionAdaptiveCardSession.Initialize(extensionUI);
     }
 }

@@ -15,7 +15,7 @@
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
 
@@ -107,7 +107,7 @@
 
                 <!-- Widget grid empty message -->
                 <StackPanel x:Name="NoWidgetsStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0"
-                            Visibility="{x:Bind views:DashboardView.PinnedWidgets.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}">
+                            Visibility="{x:Bind ViewModel.GetNoWidgetMessageVisibility(views:DashboardView.PinnedWidgets.Count, ViewModel.IsLoading), Mode=OneWay}">
                     <TextBlock x:Uid="NoWidgetsAdded" HorizontalAlignment="Center" />
                     <HyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" HorizontalAlignment="Center">
                         <i:Interaction.Behaviors>

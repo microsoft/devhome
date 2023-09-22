@@ -4,6 +4,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Xml;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;
@@ -28,18 +29,34 @@ public partial class InstalledExtensionViewModel : ObservableObject
     [ObservableProperty]
     private bool _hasSettingsProvider;
 
-    [ObservableProperty]
     private bool _isExtensionEnabled;
 
-    partial void OnIsExtensionEnabledChanging(bool value)
+    public bool IsExtensionEnabled
     {
-        if (IsExtensionEnabled != value)
+        get => _isExtensionEnabled;
+
+        set
         {
-            Task.Run(() =>
+            if (_isExtensionEnabled != value)
             {
-                var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
-                return localSettingsService.SaveSettingAsync(ExtensionUniqueId + "-ExtensionDisabled", !value);
-            }).Wait();
+                Task.Run(() =>
+                {
+                    var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
+                    return localSettingsService.SaveSettingAsync(ExtensionUniqueId + "-ExtensionDisabled", !value);
+                }).Wait();
+
+                _isExtensionEnabled = value;
+
+                var extensionService = Application.Current.GetService<IExtensionService>();
+                if (_isExtensionEnabled)
+                {
+                    extensionService.EnableExtension(ExtensionUniqueId);
+                }
+                else
+                {
+                    extensionService.DisableExtension(ExtensionUniqueId);
+                }
+            }
         }
     }
 
@@ -49,7 +66,7 @@ public partial class InstalledExtensionViewModel : ObservableObject
         _extensionUniqueId = extensionUniqueId;
         _hasSettingsProvider = hasSettingsProvider;
 
-        IsExtensionEnabled = GetIsExtensionEnabled();
+        _isExtensionEnabled = GetIsExtensionEnabled();
     }
 
     private bool GetIsExtensionEnabled()

@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:i="using:Microsoft.Xaml.Interactivity" 
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
@@ -28,10 +28,10 @@
             ItemsSource="{x:Bind Breadcrumbs}" />
 
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
-            <labs:SettingsCard x:Uid="Settings_Theme">
-                <labs:SettingsCard.HeaderIcon>
+            <ctControls:SettingsCard x:Uid="Settings_Theme">
+                <ctControls:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xE790;" />
-                </labs:SettingsCard.HeaderIcon>
+                </ctControls:SettingsCard.HeaderIcon>
                 <ComboBox x:Name="ThemeSelectionComboBox">
                     <ComboBoxItem x:Uid="Settings_Theme_Default" Tag="{x:Bind xaml:ElementTheme.Default}" />
                     <ComboBoxItem x:Uid="Settings_Theme_Light" Tag="{x:Bind xaml:ElementTheme.Light}" />
@@ -43,7 +43,7 @@
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
                 </ComboBox>
-            </labs:SettingsCard>
+            </ctControls:SettingsCard>
         </ScrollViewer>
     </Grid>
 </Page>

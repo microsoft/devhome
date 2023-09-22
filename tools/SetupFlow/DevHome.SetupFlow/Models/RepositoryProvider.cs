@@ -22,19 +22,19 @@ using Windows.Storage;
 namespace DevHome.SetupFlow.Models;
 
 /// <summary>
-/// Object that holds a reference to the providers in a plugin.
+/// Object that holds a reference to the providers in a extension.
 /// This needs to be changed to handle multiple accounts per provider.
 /// </summary>
 internal class RepositoryProvider
 {
     /// <summary>
-    /// Wrapper for the plugin that is providing a repository and developer id.
+    /// Wrapper for the extension that is providing a repository and developer id.
     /// </summary>
     /// <remarks>
-    /// The plugin is not started in the constructor.  It is started when StartIfNotRunningAsync is called.
-    /// This is for lazy loading and starting and prevents all plugins from starting all at once.
+    /// The extension is not started in the constructor.  It is started when StartIfNotRunningAsync is called.
+    /// This is for lazy loading and starting and prevents all extensions from starting all at once.
     /// </remarks>
-    private readonly IPluginWrapper _pluginWrapper;
+    private readonly IExtensionWrapper _extensionWrapper;
 
     /// <summary>
     /// All the repositories for an account.
@@ -51,23 +51,23 @@ internal class RepositoryProvider
     /// </summary>
     private IRepositoryProvider _repositoryProvider;
 
-    public RepositoryProvider(IPluginWrapper pluginWrapper)
+    public RepositoryProvider(IExtensionWrapper extensionWrapper)
     {
-        _pluginWrapper = pluginWrapper;
+        _extensionWrapper = extensionWrapper;
     }
 
     public string DisplayName => _repositoryProvider.DisplayName;
 
     /// <summary>
-    /// Starts the plugin if it isn't running.
+    /// Starts the extension if it isn't running.
     /// </summary>
     public void StartIfNotRunning()
     {
         // The task.run inside GetProvider makes a deadlock when .Result is called.
         // https://stackoverflow.com/a/17248813.  Solution is to wrap in Task.Run().
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider plugins");
-        _devIdProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
-        _repositoryProvider = Task.Run(() => _pluginWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider extensions");
+        _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
+        _repositoryProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
         var myName = _repositoryProvider.DisplayName;
     }
 
@@ -152,7 +152,7 @@ internal class RepositoryProvider
         return (false, null, null);
     }
 
-    public PluginAdaptiveCardPanel GetLoginUi(ElementTheme elementTheme)
+    public ExtensionAdaptiveCardPanel GetLoginUi(ElementTheme elementTheme)
     {
         try
         {
@@ -168,11 +168,11 @@ internal class RepositoryProvider
             ConfigureLoginUIRenderer(renderer, elementTheme).Wait();
             renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
 
-            var pluginAdaptiveCardPanel = new PluginAdaptiveCardPanel();
-            pluginAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
-            pluginAdaptiveCardPanel.RequestedTheme = elementTheme;
+            var extensionAdaptiveCardPanel = new ExtensionAdaptiveCardPanel();
+            extensionAdaptiveCardPanel.Bind(loginUIAdaptiveCardController, renderer);
+            extensionAdaptiveCardPanel.RequestedTheme = elementTheme;
 
-            return pluginAdaptiveCardPanel;
+            return extensionAdaptiveCardPanel;
         }
         catch (Exception ex)
         {

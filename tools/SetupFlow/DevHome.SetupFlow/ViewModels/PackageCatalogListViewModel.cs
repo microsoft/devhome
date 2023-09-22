@@ -13,7 +13,7 @@ namespace DevHome.SetupFlow.ViewModels;
 public partial class PackageCatalogListViewModel : ObservableObject
 {
     private readonly IWindowsPackageManager _wpm;
-    private readonly CatalogDataSourceLoacder _catalogDataSourceLoacder;
+    private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
     private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
     private bool _initialized;
 
@@ -29,11 +29,11 @@ public partial class PackageCatalogListViewModel : ObservableObject
     public ObservableCollection<int> PackageCatalogShimmers { get; } = new ();
 
     public PackageCatalogListViewModel(
-        CatalogDataSourceLoacder catalogDataSourceLoacder,
+        CatalogDataSourceLoader catalogDataSourceLoader,
         IWindowsPackageManager wpm,
         PackageCatalogViewModelFactory packageCatalogViewModelFactory)
     {
-        _catalogDataSourceLoacder = catalogDataSourceLoacder;
+        _catalogDataSourceLoader = catalogDataSourceLoader;
         _wpm = wpm;
         _packageCatalogViewModelFactory = packageCatalogViewModelFactory;
     }
@@ -46,11 +46,11 @@ public partial class PackageCatalogListViewModel : ObservableObject
         if (!_initialized)
         {
             _initialized = true;
-            AddShimmers(_catalogDataSourceLoacder.CatalogCount);
+            AddShimmers(_catalogDataSourceLoader.CatalogCount);
             try
             {
                 await Task.Run(async () => await _wpm.WinGetCatalog.ConnectAsync());
-                await foreach (var dataSourceCatalogs in _catalogDataSourceLoacder.LoadCatalogsAsync())
+                await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
                 {
                     foreach (var catalog in dataSourceCatalogs)
                     {
@@ -70,7 +70,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
             // Remove any remaining shimmers:
             // This can happen if for example a catalog was detected but not
             // displayed (e.g. catalog with no packages to display)
-            RemoveShimmers(_catalogDataSourceLoacder.CatalogCount);
+            RemoveShimmers(_catalogDataSourceLoader.CatalogCount);
         }
     }
 

@@ -26,6 +26,6 @@ public class NavigationViewItemEvent : EventBase
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // Only storing Hresult.  No sensitive information.
+        // Only storing HRESULT. No sensitive information.
     }
 }

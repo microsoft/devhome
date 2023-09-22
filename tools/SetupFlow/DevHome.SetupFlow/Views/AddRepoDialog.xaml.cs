@@ -3,20 +3,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration.Provider;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Common.Views;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
-using Windows.Security.Authentication.Identity.Provider;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.Views;
@@ -90,11 +87,11 @@ internal partial class AddRepoDialog
     }
 
     /// <summary>
-    /// Gets all plugins that have a provider type of repository and developerId.
+    /// Gets all extensions that have a provider type of repository and developerId.
     /// </summary>
-    public async Task GetPluginsAsync()
+    public async Task GetExtensionsAsync()
     {
-        await Task.Run(() => AddRepoViewModel.GetPlugins());
+        await Task.Run(() => AddRepoViewModel.GetExtensions());
     }
 
     /// <summary>
