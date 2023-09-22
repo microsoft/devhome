@@ -9,9 +9,17 @@ public sealed partial class WindowTemplate : UserControl
 {
     private readonly Window _window;
 
-    public ContentControl WindowTitleBarControl => this.WindowTitleBar;
+    public WindowTitleBar? TitleBar
+    {
+        get => this.WindowTitleBar.Content as WindowTitleBar;
+        set => this.WindowTitleBar.Content = value;
+    }
 
-    public ContentControl WindowContentControl => this.WindowContent;
+    public object MainContent
+    {
+        get => this.WindowContent.Content;
+        set => this.WindowContent.Content = value;
+    }
 
     public WindowTemplate(Window window)
     {

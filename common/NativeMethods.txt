@@ -4,3 +4,7 @@ FileOpenDialog
 IFileOpenDialog
 SHCreateItemFromParsingName
 GetCurrentPackageFullName
+SetWindowLongPtr
+SetWindowLong
+GetWindowLong
+WINDOW_EX_STYLE

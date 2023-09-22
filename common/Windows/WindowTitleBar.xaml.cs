@@ -1,20 +1,19 @@
 // Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Common.Windows;
 
-[INotifyPropertyChanged]
 public sealed partial class WindowTitleBar : UserControl
 {
-    private string TitleString { get; set; } = string.Empty;
+    public event EventHandler<string>? TitleChanged;
 
-    public object Title
+    public string Title
     {
-        get => GetValue(TitleProperty);
+        get => (string)GetValue(TitleProperty);
         set => SetValue(TitleProperty, value);
     }
 
@@ -41,18 +40,9 @@ public sealed partial class WindowTitleBar : UserControl
         this.InitializeComponent();
     }
 
-    private static void OnTitleChanged(WindowTitleBar windowTitleBar, object newValue)
+    private static void OnTitleChanged(WindowTitleBar windowTitleBar, string newValue)
     {
-        if (newValue is string title)
-        {
-            windowTitleBar.TitleString = title;
-            windowTitleBar.OnPropertyChanged(nameof(windowTitleBar.TitleString));
-            windowTitleBar.TitleControl.Content = windowTitleBar.DefaultTitleContent;
-        }
-        else
-        {
-            windowTitleBar.TitleControl.Content = newValue;
-        }
+        windowTitleBar.TitleChanged?.Invoke(windowTitleBar, newValue);
     }
 
     private static void OnIconChanged(WindowTitleBar windowTitleBar, IconElement newValue)
@@ -60,7 +50,7 @@ public sealed partial class WindowTitleBar : UserControl
         windowTitleBar.IconControl.Content = newValue ?? windowTitleBar.DefaultIconContent;
     }
 
-    private static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(object), typeof(WindowTitleBar), new PropertyMetadata(null, (s, a) => OnTitleChanged((WindowTitleBar)s, a.NewValue)));
+    private static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(WindowTitleBar), new PropertyMetadata(null, (s, e) => OnTitleChanged((WindowTitleBar)s, (string)e.NewValue)));
     private static readonly DependencyProperty IconProperty = DependencyProperty.Register(nameof(Icon), typeof(IconElement), typeof(WindowTitleBar), new PropertyMetadata(null, (s, a) => OnIconChanged((WindowTitleBar)s, (IconElement)a.NewValue)));
     private static readonly DependencyProperty HideIconProperty = DependencyProperty.Register(nameof(HideIcon), typeof(bool), typeof(WindowTitleBar), new PropertyMetadata(false));
     private static readonly DependencyProperty IsActiveProperty = DependencyProperty.Register(nameof(IsActive), typeof(bool), typeof(WindowTitleBar), new PropertyMetadata(true));

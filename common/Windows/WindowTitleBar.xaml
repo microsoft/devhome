@@ -53,23 +53,14 @@
             </ContentControl.Content>
         </ContentControl>
 
-        <!-- Content -->
-        <ContentControl
+        <!-- Title -->
+        <TextBlock
             Grid.Column="1"
-            x:Name="TitleControl"
-            HorizontalContentAlignment="Stretch"
-            VerticalContentAlignment="Stretch"
-            IsTabStop="False">
-            <ContentControl.Content>
-                <TextBlock
-                    x:Name="DefaultTitleContent"
-                    Foreground="{x:Bind IsActive, Mode=OneWay, Converter={StaticResource ActiveTitleForegroundConverter}}"
-                    Text="{x:Bind TitleString, Mode=OneWay}"
-                    Style="{ThemeResource CaptionTextBlockStyle}"
-                    VerticalAlignment="Center"
-                    TextTrimming="CharacterEllipsis"
-                    TextWrapping="NoWrap" />
-            </ContentControl.Content>
-        </ContentControl>
+            Foreground="{x:Bind IsActive, Mode=OneWay, Converter={StaticResource ActiveTitleForegroundConverter}}"
+            Text="{x:Bind Title, Mode=OneWay}"
+            Style="{ThemeResource CaptionTextBlockStyle}"
+            VerticalAlignment="Center"
+            TextTrimming="CharacterEllipsis"
+            TextWrapping="NoWrap" />
     </Grid>
 </UserControl>

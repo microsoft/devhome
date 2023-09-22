@@ -2,10 +2,12 @@
 // Licensed under the MIT license.
 
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 using WinUIEx;
 
 namespace DevHome.Common.Windows;
@@ -16,26 +18,47 @@ public class SecondaryWindow : WindowEx
     private WindowEx? _primaryWindow;
     private bool _useAppTheme;
     private bool _isModal;
-    private bool _isAlwaysOnTopOfPrimary;
+    private bool _hasOwner;
 
-    // Main Dev Home window
     private WindowEx MainWindow => Application.Current.GetService<WindowEx>();
 
     private IThemeSelectorService ThemeSelector => Application.Current.GetService<IThemeSelectorService>();
 
+    private IAppInfoService AppInfo => Application.Current.GetService<IAppInfoService>();
+
     public WindowTitleBar? WindowTitleBar
     {
-        get => (WindowTitleBar)_windowTemplate.WindowTitleBarControl.Content;
-        set => _windowTemplate.WindowTitleBarControl.Content = value;
+        get => _windowTemplate.TitleBar;
+        set
+        {
+            if (WindowTitleBar != value)
+            {
+                // Remove title changed event handler from previous title bar
+                if (WindowTitleBar != null)
+                {
+                    WindowTitleBar.TitleChanged -= OnSecondaryWindowTitleChanged;
+                }
+
+                // Set new title bar and update window title
+                _windowTemplate.TitleBar = value;
+                OnSecondaryWindowTitleChanged(null, value?.Title);
+
+                // Add title changed event handler to new title bar
+                if (value != null)
+                {
+                    value.TitleChanged += OnSecondaryWindowTitleChanged;
+                }
+            }
+        }
     }
 
     /// <summary>
-    /// Gets or sets the window content in the customized layout.
+    /// Gets or sets the window content in the custom layout.
     /// </summary>
     public new object WindowContent
     {
-        get => _windowTemplate.WindowContentControl.Content;
-        set => _windowTemplate.WindowContentControl.Content = value;
+        get => _windowTemplate.MainContent;
+        set => _windowTemplate.MainContent = value;
     }
 
     /// <summary>
@@ -52,12 +75,8 @@ public class SecondaryWindow : WindowEx
                 _useAppTheme = value;
                 if (value)
                 {
-                    // Update the current theme for the window
                     this.SetRequestedTheme(ThemeSelector.Theme);
-
-                    // Subscribe window to theme changes, and unsubscribe on window close
                     ThemeSelector.ThemeChanged += OnThemeChanged;
-                    Closed += (_, _) => ThemeSelector.ThemeChanged -= OnThemeChanged;
                 }
                 else
                 {
@@ -70,6 +89,7 @@ public class SecondaryWindow : WindowEx
     /// <summary>
     /// Gets or sets a value indicating whether the window should be modal.
     /// </summary>
+    /// <remarks>Setting this property to true will disable interaction on the primary window.</remarks>
     public bool IsModal
     {
         get => _isModal;
@@ -80,32 +100,30 @@ public class SecondaryWindow : WindowEx
                 _isModal = value;
                 if (PrimaryWindow != null)
                 {
-                    var hwnd = (HWND)PrimaryWindow.GetWindowHandle();
-                    PInvoke.EnableWindow(hwnd, !value);
+                    PInvoke.EnableWindow((HWND)PrimaryWindow.GetWindowHandle(), !value);
                 }
             }
         }
     }
 
-    public bool IsAlwaysOnTopOfPrimary
+    /// <summary>
+    /// Gets or sets a value indicating whether the <see cref="PrimaryWindow"/>
+    /// should be the owner of the secondary window.
+    /// </summary>
+    /// <remarks>Setting this property to true will keep the secondary window on top of the primary window.</remarks>
+    public bool HasOwner
     {
-        get => _isAlwaysOnTopOfPrimary;
+        get => _hasOwner;
         set
         {
-            if (_isAlwaysOnTopOfPrimary != value)
+            if (_hasOwner != value)
             {
-                _isAlwaysOnTopOfPrimary = value;
-                if (PrimaryWindow != null)
-                {
-                    if (value)
-                    {
-                        PrimaryWindow.ZOrderChanged += OnPrimaryWindowZOrderChanged;
-                    }
-                    else
-                    {
-                        PrimaryWindow.ZOrderChanged -= OnPrimaryWindowZOrderChanged;
-                    }
-                }
+                _hasOwner = value;
+
+                // Set primary window as owner of secondary window
+                var child = (HWND)this.GetWindowHandle();
+                var parent = (HWND?)PrimaryWindow?.GetWindowHandle() ?? HWND.Null;
+                PInvoke.SetWindowLongPtr(child, WINDOW_LONG_PTR_INDEX.GWL_HWNDPARENT, value ? parent : HWND.Null);
             }
         }
     }
@@ -118,44 +136,58 @@ public class SecondaryWindow : WindowEx
         get => _primaryWindow;
         set
         {
-            // If a previous primary window was connected, disconnect it
-            if (_primaryWindow != null)
+            if (_primaryWindow != value)
             {
-                _primaryWindow.Closed -= OnPrimaryWindowClosed;
-                _primaryWindow.VisibilityChanged -= OnPrimaryWindowVisibilityChanged;
-            }
+                // If a previous primary window was connected, disconnect it
+                if (_primaryWindow != null)
+                {
+                    _primaryWindow.Closed -= OnPrimaryWindowClosed;
+                }
 
-            // Set new primary window
-            _primaryWindow = value;
+                // Set new primary window
+                _primaryWindow = value;
 
-            if (_primaryWindow != null)
-            {
-                // Connect new primary window
-                _primaryWindow.Closed += OnPrimaryWindowClosed;
-                _primaryWindow.VisibilityChanged += OnPrimaryWindowVisibilityChanged;
+                // If a primary window is set, connect it
+                if (_primaryWindow != null)
+                {
+                    _primaryWindow.Closed += OnPrimaryWindowClosed;
+                }
             }
         }
     }
 
     public SecondaryWindow()
     {
+        // Initialize window content template
         _windowTemplate = new (this);
-
-        // By default, set the primary window as the main window
         Content = _windowTemplate;
-        PrimaryWindow = MainWindow;
-        Backdrop = new MicaSystemBackdrop();
+
+        // Register secondary window events handlers
         Activated += OnSecondaryWindowActivated;
         Closed += OnSecondaryWindowClosed;
+
+        // Set default window configuration
+        PrimaryWindow = MainWindow;
+        SystemBackdrop = PrimaryWindow.SystemBackdrop;
+        UseAppTheme = true;
+        Title = AppInfo.GetAppNameLocalized();
+        this.SetIcon(AppInfo.IconPath);
+
+        ShowInTaskbar();
     }
 
     /// <summary>
-    /// Place the secondary window in the center of the <see cref="PrimaryWindow"/>.
+    /// If the primary window is set, center the secondary window on the
+    /// primary window. Otherwise, center the secondary window on the screen.
     /// </summary>
     /// <remarks>See also: <seealso cref="WindowExtensions.CenterOnScreen"/></remarks>
     public void CenterOnWindow()
     {
-        if (PrimaryWindow != null)
+        if (PrimaryWindow == null)
+        {
+            this.CenterOnScreen();
+        }
+        else
         {
             // Get DPI for primary widow
             const float defaultDPI = 96f;
@@ -178,20 +210,51 @@ public class SecondaryWindow : WindowEx
         }
     }
 
-    public void OnPrimaryWindowClosed(object? sender, WindowEventArgs args)
+    /// <summary>
+    /// Show secondary window in taskbar.
+    /// </summary>
+    /// <remarks>
+    /// This is specifically required when a window owner is set, where by
+    /// default the secondary window is not visible in the taskbar.
+    /// </remarks>
+    private void ShowInTaskbar()
+    {
+        var hwnd = (HWND)this.GetWindowHandle();
+        var exStyle = PInvoke.GetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE) | (int)WINDOW_EX_STYLE.WS_EX_APPWINDOW;
+        _ = PInvoke.SetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, exStyle);
+    }
+
+    /**********************************************************
+     *  Application services event handlers                   *
+     *  Note: Application services event must be unregistered *
+     *        when the secondary window is closed.            *
+     **********************************************************/
+
+    private void OnThemeChanged(object? sender, ElementTheme theme)
+    {
+        // Update the window theme
+        this.SetRequestedTheme(theme);
+    }
+
+    /**************************************************************
+     *  Primary window event handlers                             *
+     *  Note: Primary window event handlers must be unregistered  *
+     *        when the secondary window is closed.                *
+     **************************************************************/
+
+    private void OnPrimaryWindowClosed(object? sender, WindowEventArgs args)
     {
         // Close secondary window
         Close();
     }
 
-    private void OnPrimaryWindowZOrderChanged(object? sender, ZOrderInfo args)
-    {
-        // Bring secondary window to front
-        BringToFront();
-    }
+    /*************************************
+     *  Secondary window event handlers  *
+     ************************************/
 
     private void OnSecondaryWindowActivated(object? sender, WindowActivatedEventArgs args)
     {
+        // Reflect window activation state in title bar
         if (this.WindowTitleBar != null)
         {
             this.WindowTitleBar.IsActive = args.WindowActivationState != WindowActivationState.Deactivated;
@@ -200,36 +263,17 @@ public class SecondaryWindow : WindowEx
 
     private void OnSecondaryWindowClosed(object? sender, WindowEventArgs args)
     {
-        if (PrimaryWindow != null)
-        {
-            // Unregister z-order change handler
-            PrimaryWindow.ZOrderChanged -= OnPrimaryWindowZOrderChanged;
-            Closed -= OnSecondaryWindowClosed;
-            PrimaryWindow.Closed -= OnPrimaryWindowClosed;
-            PrimaryWindow.VisibilityChanged -= OnPrimaryWindowVisibilityChanged;
-            UseAppTheme = false;
-            IsModal = false;
-        }
+        // Free the secondary window from the application
+        IsModal = false;
+        HasOwner = false;
+        UseAppTheme = false;
+
+        // Unset the primary window at the end
+        PrimaryWindow = null;
     }
 
-    private void OnPrimaryWindowVisibilityChanged(object? sender, WindowVisibilityChangedEventArgs args)
+    private void OnSecondaryWindowTitleChanged(object? sender, string? title)
     {
-        if (PrimaryWindow != null)
-        {
-            if (PrimaryWindow.Visible)
-            {
-                this.Show();
-            }
-            else
-            {
-                this.Minimize();
-            }
-        }
-    }
-
-    private void OnThemeChanged(object? sender, ElementTheme theme)
-    {
-        // Update the window theme
-        this.SetRequestedTheme(theme);
+        Title = string.IsNullOrEmpty(title) ? AppInfo.GetAppNameLocalized() : title;
     }
 }

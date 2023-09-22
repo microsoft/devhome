@@ -5,11 +5,12 @@
     xmlns:local="using:DevHome.Common.Windows"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    IsModal="True"
-    IsAlwaysOnTopOfPrimary="True"
+    IsModal="False"
+    UseAppTheme="False"
+    HasOwner="False"
     mc:Ignorable="d">
     <local:SecondaryWindow.WindowTitleBar>
-        <local:WindowTitleBar Title="Hello world" HideIcon="True" />
+        <local:WindowTitleBar Title="Hello world" />
     </local:SecondaryWindow.WindowTitleBar>
 
     <Grid>
