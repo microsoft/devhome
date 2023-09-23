@@ -14,7 +14,7 @@
     <None Remove="Views\CloseButton.xaml" />
     <None Remove="Views\HyperlinkTextBlock.xaml" />
     <None Remove="Windows\Example2.xaml" />
-    <None Remove="Windows\WindowTemplate.xaml" />
+    <None Remove="Windows\SecondaryWindowTemplate.xaml" />
     <None Remove="Windows\WindowTitleBar.xaml" />
   </ItemGroup>
 

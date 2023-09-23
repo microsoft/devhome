@@ -20,8 +20,6 @@ public partial class ShellViewModel : ObservableObject
 
     public string Title => _appInfoService.GetAppNameLocalized();
 
-    public string IconPath => _appInfoService.IconPath;
-
     public INavigationService NavigationService
     {
         get;

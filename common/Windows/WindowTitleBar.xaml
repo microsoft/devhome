@@ -6,14 +6,15 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     VerticalAlignment="Top"
-    Canvas.ZIndex="1"
+    Height="{StaticResource WindowTitleBarHeight}"
+    Margin="{StaticResource WindowTitleBarOffset}"
     IsHitTestVisible="True"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:BoolToObjectConverter
                 x:Key="SpacingConverter"
-                FalseValue="12"
+                FalseValue="{StaticResource WindowTitleBarComponentSpacing}"
                 TrueValue="0"/>
             <converters:BoolToObjectConverter
                 x:Key="IconContainerConverter"
@@ -41,15 +42,15 @@
             <ContentControl.Resources>
                 <ResourceDictionary>
                     <Style TargetType="ImageIcon">
-                        <Setter Property="Width" Value="16" />
-                        <Setter Property="Height" Value="16" />
+                        <Setter Property="Width" Value="{StaticResource WindowTitleBarIconWidth}" />
+                        <Setter Property="Height" Value="{StaticResource WindowTitleBarIconHeight}" />
                         <Setter Property="VerticalAlignment" Value="Center" />
                         <Setter Property="HorizontalAlignment" Value="Left" />
                     </Style>
                 </ResourceDictionary>
             </ContentControl.Resources>
             <ContentControl.Content>
-                <ImageIcon x:Name="DefaultIconContent" Source="ms-appx:///Assets/DevHome.ico" />
+                <ImageIcon x:Name="DefaultIconContent" Source="{StaticResource WindowTitleBarDefaultIcon}" />
             </ContentControl.Content>
         </ContentControl>
 

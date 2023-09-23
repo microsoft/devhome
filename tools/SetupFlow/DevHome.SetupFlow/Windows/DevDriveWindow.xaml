@@ -7,9 +7,9 @@
     xmlns:windows="using:DevHome.Common.Windows"
     HasOwner="True"
     MinHeight="518"
+    Height="518"
     MinWidth="577"
-    Height="{x:Bind MinHeight, Mode=OneTime}"
-    Width="{x:Bind MinWidth, Mode=OneTime}"
+    Width="577"
     mc:Ignorable="d">
 
     <!-- Default title bar -->

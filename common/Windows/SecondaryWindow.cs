@@ -5,6 +5,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Markup;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -12,9 +13,10 @@ using WinUIEx;
 
 namespace DevHome.Common.Windows;
 
+[ContentProperty(Name = nameof(SecondaryWindowContent))]
 public class SecondaryWindow : WindowEx
 {
-    private readonly WindowTemplate _windowTemplate;
+    private readonly SecondaryWindowTemplate _windowTemplate;
     private WindowEx? _primaryWindow;
     private bool _useAppTheme;
     private bool _isModal;
@@ -55,7 +57,7 @@ public class SecondaryWindow : WindowEx
     /// <summary>
     /// Gets or sets the window content in the custom layout.
     /// </summary>
-    public new object WindowContent
+    public object SecondaryWindowContent
     {
         get => _windowTemplate.MainContent;
         set => _windowTemplate.MainContent = value;
@@ -160,11 +162,15 @@ public class SecondaryWindow : WindowEx
     {
         // Initialize window content template
         _windowTemplate = new (this);
-        Content = _windowTemplate;
+        WindowContent = _windowTemplate;
 
         // Register secondary window events handlers
         Activated += OnSecondaryWindowActivated;
         Closed += OnSecondaryWindowClosed;
+
+        // A custom title bar is required for full window theme and Mica support.
+        // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
+        ExtendsContentIntoTitleBar = true;
 
         // Set default window configuration
         PrimaryWindow = MainWindow;

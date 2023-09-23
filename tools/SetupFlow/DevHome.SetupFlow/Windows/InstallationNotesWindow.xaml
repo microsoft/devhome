@@ -7,9 +7,9 @@
     xmlns:windows="using:DevHome.Common.Windows"
     HasOwner="True"
     MinHeight="385"
+    Height="385"
     MinWidth="501"
-    Height="{x:Bind MinHeight, Mode=OneTime}"
-    Width="{x:Bind MinWidth, Mode=OneTime}"
+    Width="501"
     mc:Ignorable="d">
     <windows:SecondaryWindow.WindowTitleBar>
         <windows:WindowTitleBar Title="{x:Bind PackageTitle}" />

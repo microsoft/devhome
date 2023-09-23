@@ -12,8 +12,5 @@
     <local:SecondaryWindow.WindowTitleBar>
         <local:WindowTitleBar Title="Hello world" />
     </local:SecondaryWindow.WindowTitleBar>
-
-    <Grid>
-        <TextBlock>Hello world</TextBlock>
-    </Grid>
+    <TextBlock Text="{x:Bind PackageTitle}" />
 </local:SecondaryWindow>

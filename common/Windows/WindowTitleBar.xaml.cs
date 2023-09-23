@@ -19,7 +19,7 @@ public sealed partial class WindowTitleBar : UserControl
 
     public IconElement Icon
     {
-        get => (IconElement)GetValue(IconProperty);
+        get => (IconElement)GetValue(IconProperty) ?? DefaultIconContent;
         set => SetValue(IconProperty, value);
     }
 
@@ -29,6 +29,15 @@ public sealed partial class WindowTitleBar : UserControl
         set => SetValue(HideIconProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the title bar is active.
+    /// </summary>
+    /// <remarks>
+    /// <para>Title bars help users differentiate when a window is active and
+    /// inactive. All title bar elements should be semi-transparent when the
+    /// window is inactive.</para>
+    /// <para>Reference: <a href="https://learn.microsoft.com/en-us/windows/apps/design/basics/titlebar-design#bar" /></para>
+    /// </remarks>
     public bool IsActive
     {
         get => (bool)GetValue(IsActiveProperty);
@@ -45,13 +54,8 @@ public sealed partial class WindowTitleBar : UserControl
         windowTitleBar.TitleChanged?.Invoke(windowTitleBar, newValue);
     }
 
-    private static void OnIconChanged(WindowTitleBar windowTitleBar, IconElement newValue)
-    {
-        windowTitleBar.IconControl.Content = newValue ?? windowTitleBar.DefaultIconContent;
-    }
-
     private static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(WindowTitleBar), new PropertyMetadata(null, (s, e) => OnTitleChanged((WindowTitleBar)s, (string)e.NewValue)));
-    private static readonly DependencyProperty IconProperty = DependencyProperty.Register(nameof(Icon), typeof(IconElement), typeof(WindowTitleBar), new PropertyMetadata(null, (s, a) => OnIconChanged((WindowTitleBar)s, (IconElement)a.NewValue)));
+    private static readonly DependencyProperty IconProperty = DependencyProperty.Register(nameof(Icon), typeof(IconElement), typeof(WindowTitleBar), new PropertyMetadata(null));
     private static readonly DependencyProperty HideIconProperty = DependencyProperty.Register(nameof(HideIcon), typeof(bool), typeof(WindowTitleBar), new PropertyMetadata(false));
     private static readonly DependencyProperty IsActiveProperty = DependencyProperty.Register(nameof(IsActive), typeof(bool), typeof(WindowTitleBar), new PropertyMetadata(true));
 }
