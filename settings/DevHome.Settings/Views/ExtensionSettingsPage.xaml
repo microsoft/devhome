@@ -30,13 +30,13 @@
 
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
             <StackPanel>
-                <views:PluginAdaptiveCardPanel x:Name="SettingsContent">
+                <views:ExtensionAdaptiveCardPanel x:Name="SettingsContent">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="Loaded">
                             <ic:InvokeCommandAction Command="{x:Bind ViewModel.SettingsContentLoadedCommand}" CommandParameter="{x:Bind SettingsContent}" />
                         </ic:EventTriggerBehavior>
                     </i:Interaction.Behaviors>
-                </views:PluginAdaptiveCardPanel>
+                </views:ExtensionAdaptiveCardPanel>
             </StackPanel>
         </ScrollViewer>
     </Grid>

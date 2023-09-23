@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Exceptions;
-using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Services;
 using DevHome.SetupFlow.Common.Extensions;
@@ -13,7 +12,6 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Management.Deployment;
 using Windows.Win32.Foundation;
 
@@ -176,7 +174,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting AppInstaller registration ...");
             await _packageDeploymentService.RegisterPackageForCurrentUserAsync(AppInstallerPackageFamilyName);
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller registered succcessfully");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller registered successfully");
             return true;
         }
         catch (RegisterPackageException e)

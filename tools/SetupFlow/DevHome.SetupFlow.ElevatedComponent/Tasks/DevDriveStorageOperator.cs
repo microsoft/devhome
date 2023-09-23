@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
 using System.Runtime.InteropServices;
 using DevHome.SetupFlow.Common.DevDriveFormatter;
 using DevHome.SetupFlow.Common.Helpers;
@@ -37,7 +36,7 @@ public sealed class DevDriveStorageOperator
     }
 
     /// <summary>
-    /// Manually make this macro because CsWin32 does not generate it from Ntddisk.h.
+    /// Manually make this macro because CsWin32 does not generate it from ntddisk.h.
     /// The IOCTL_DISK_ARE_VOLUMES_READY when used with ioDeviceControl, is used so that DevHome
     /// waits until all volumes have completed any work assigned to them before using them.
     /// e.g creating the partition, before trying to use it again.
@@ -72,7 +71,7 @@ public sealed class DevDriveStorageOperator
     /// <param name="sizeInBytes">The size the drive will be created with</param>
     /// <param name="newDriveLetter">The drive letter to format the new drive</param>
     /// <param name="driveLabel">The label that will be given to the drive during formatting</param>
-    /// <returns>An int which is the Hresult code that indicates whether the operation succeeded or failed</returns>
+    /// <returns>An int which is the HRESULT code that indicates whether the operation succeeded or failed</returns>
     public int CreateDevDrive(string virtDiskPath, ulong sizeInBytes, char newDriveLetter, string driveLabel)
     {
         // Create the location if it doesn't exist.
@@ -120,7 +119,7 @@ public sealed class DevDriveStorageOperator
     /// <param name="virtDiskPath">The place in the file system the vhdx file will be saved to</param>
     /// <param name="sizeInBytes">The size the drive will be created with</param>
     /// <param name="virtDiskPhysicalPath">The logical representation of the virtual disks physical path on the system</param>
-    /// <returns>An Hresult that indicates whether the operation succeeded or failed</returns>
+    /// <returns>An HRESULT that indicates whether the operation succeeded or failed</returns>
     private HRESULT CreateAndAttachVhdx(string virtDiskPath, ulong sizeInBytes, out string virtDiskPhysicalPath)
     {
         virtDiskPhysicalPath = string.Empty;
@@ -204,8 +203,8 @@ public sealed class DevDriveStorageOperator
     /// </summary>
     /// <param name="virtDiskPhysicalPath">The logical representation of the virtual disks physical path on the system</param>
     /// <param name="diskNumber">The current number of the new virtual disk</param>
-    /// <returns>An Hresult that indicates whether the operation succeeded or failed</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1119:Statement should not use unnecessary parenthesis", Justification = "For math, 10 - 3 - 7 is alot different than 10  - (3 - 7)")]
+    /// <returns>An HRESULT that indicates whether the operation succeeded or failed</returns>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1119:Statement should not use unnecessary parenthesis", Justification = "For math, 10 - 3 - 7 is a lot different than 10  - (3 - 7)")]
     private HRESULT CreatePartition(string virtDiskPhysicalPath, out uint diskNumber)
     {
         diskNumber = 0;
@@ -397,7 +396,7 @@ public sealed class DevDriveStorageOperator
     /// </summary>
     /// <param name="diskNumber">The disk number the method uses to located the correct disk</param>
     /// <param name="newDriveLetter">The new drive letter provided by the caller</param>
-    /// <returns>An Hresult that indicates whether the operation succeeded or failed</returns>
+    /// <returns>An HRESULT that indicates whether the operation succeeded or failed</returns>
     private HRESULT AssignDriveLetterToPartition(uint diskNumber, char newDriveLetter)
     {
         // Just created the virtual disk and created a single partition. Don't have to worry about there
@@ -429,8 +428,8 @@ public sealed class DevDriveStorageOperator
                     // The call to createFile succeeds with the trailing backslash, however when getting the device info
                     // using that handle fails. Remove it before the call, and add it back later.
                     var volumeGuidPathAfterTrim = volumeGuidPathBeforeTrim.Trim('\0');
-                    var hasTrailingbackslash = volumeGuidPathAfterTrim.Last() == '\\';
-                    if (hasTrailingbackslash)
+                    var hasTrailingBackslash = volumeGuidPathAfterTrim.Last() == '\\';
+                    if (hasTrailingBackslash)
                     {
                         volumeGuidPathAfterTrim = volumeGuidPathAfterTrim.TrimEnd('\\');
                     }
@@ -490,7 +489,7 @@ public sealed class DevDriveStorageOperator
                         continue;
                     }
 
-                    volumeGuidPathBeforeTrim = hasTrailingbackslash ? volumeGuidPathBeforeTrim : volumeGuidPathAfterTrim;
+                    volumeGuidPathBeforeTrim = hasTrailingBackslash ? volumeGuidPathBeforeTrim : volumeGuidPathAfterTrim;
                     Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(AssignDriveLetterToPartition), $"Finding old drive letter for volume: {volumeGuidPathBeforeTrim}");
 
                     // At this point there will most likely be a default drive letter
@@ -561,7 +560,7 @@ public sealed class DevDriveStorageOperator
     /// <summary>
     /// Helper method that results in the HRESULT class wrapping GetHRForLastWin32Error return value.
     /// </summary>
-    /// <returns>Returns errorcode indicating success or failure</returns>
+    /// <returns>Returns error code indicating success or failure</returns>
     private HRESULT ReturnLastErrorAsHR()
     {
         return new HRESULT(Marshal.GetHRForLastWin32Error());
@@ -573,7 +572,7 @@ public sealed class DevDriveStorageOperator
     /// </summary>
     /// <param name="curDriveLetter">The drive letter the method will use when attempting to find a volume and format it</param>
     /// <param name="driveLabel">The new drive label the Dev Drive will have after formatting completes.</param>
-    /// <returns>An Hresult that indicates whether the operation succeeded or failed</returns>
+    /// <returns>An HRESULT that indicates whether the operation succeeded or failed</returns>
     private int FormatPartitionAsDevDrive(char curDriveLetter, string driveLabel)
     {
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"Creating DevDriveFormatter");

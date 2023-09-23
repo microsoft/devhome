@@ -13,21 +13,21 @@ using Windows.Foundation.Collections;
 
 namespace DevHome.Services;
 
-public class PluginService : IPluginService, IDisposable
+public class ExtensionService : IExtensionService, IDisposable
 {
-    public event EventHandler OnPluginsChanged = (_, _) => { };
+    public event EventHandler OnExtensionsChanged = (_, _) => { };
 
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
     private static readonly object _lock = new ();
-    private readonly SemaphoreSlim _getInstalledPluginsLock = new (1, 1);
+    private readonly SemaphoreSlim _getInstalledExtensionsLock = new (1, 1);
     private bool _disposedValue;
 
 #pragma warning disable IDE0044 // Add readonly modifier
-    private static List<IPluginWrapper> _installedPlugins = new ();
-    private static List<IPluginWrapper> _enabledPlugins = new ();
+    private static List<IExtensionWrapper> _installedExtensions = new ();
+    private static List<IExtensionWrapper> _enabledExtensions = new ();
 #pragma warning restore IDE0044 // Add readonly modifier
 
-    public PluginService()
+    public ExtensionService()
     {
         _catalog.PackageInstalling += Catalog_PackageInstalling;
         _catalog.PackageUninstalling += Catalog_PackageUninstalling;
@@ -59,9 +59,9 @@ public class PluginService : IPluginService, IDisposable
         {
             lock (_lock)
             {
-                foreach (var plugin in _installedPlugins)
+                foreach (var extension in _installedExtensions)
                 {
-                    if (plugin.PackageFullName == args.Package.Id.FullName)
+                    if (extension.PackageFullName == args.Package.Id.FullName)
                     {
                         OnPackageChange(args.Package);
                         break;
@@ -92,9 +92,9 @@ public class PluginService : IPluginService, IDisposable
 
     private void OnPackageChange(Package package)
     {
-        _installedPlugins.Clear();
-        _enabledPlugins.Clear();
-        OnPluginsChanged.Invoke(this, EventArgs.Empty);
+        _installedExtensions.Clear();
+        _enabledExtensions.Clear();
+        OnExtensionsChanged.Invoke(this, EventArgs.Empty);
     }
 
     private async Task<bool> IsValidDevHomeExtension(Package package)
@@ -148,12 +148,12 @@ public class PluginService : IPluginService, IDisposable
         return await AppExtensionCatalog.Open("com.microsoft.devhome").FindAllAsync();
     }
 
-    public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(bool includeDisabledPlugins = false)
+    public async Task<IEnumerable<IExtensionWrapper>> GetInstalledExtensionsAsync(bool includeDisabledExtensions = false)
     {
-        await _getInstalledPluginsLock.WaitAsync();
+        await _getInstalledExtensionsLock.WaitAsync();
         try
         {
-            if (_installedPlugins.Count == 0)
+            if (_installedExtensions.Count == 0)
             {
                 var extensions = await GetInstalledAppExtensionsAsync();
                 foreach (var extension in extensions)
@@ -164,7 +164,7 @@ public class PluginService : IPluginService, IDisposable
                         continue;
                     }
 
-                    var pluginWrapper = new PluginWrapper(extension, classId);
+                    var extensionWrapper = new ExtensionWrapper(extension, classId);
 
                     var supportedInterfaces = GetSubPropertySet(devHomeProvider, "SupportedInterfaces");
                     if (supportedInterfaces is not null)
@@ -174,11 +174,11 @@ public class PluginService : IPluginService, IDisposable
                             ProviderType pt;
                             if (Enum.TryParse<ProviderType>(supportedInterface.Key, out pt))
                             {
-                                pluginWrapper.AddProviderType(pt);
+                                extensionWrapper.AddProviderType(pt);
                             }
                             else
                             {
-                                // TODO: throw warning or fire notification that plugin declared unsupported plugin interface
+                                // TODO: throw warning or fire notification that extension declared unsupported extension interface
                                 // https://github.com/microsoft/devhome/issues/617
                             }
                         }
@@ -186,64 +186,64 @@ public class PluginService : IPluginService, IDisposable
 
                     var localSettingsService = Application.Current.GetService<ILocalSettingsService>();
                     var extensionUniqueId = extension.AppInfo.AppUserModelId + "!" + extension.Id;
-                    var isPluginDisabled = await localSettingsService.ReadSettingAsync<bool>(extensionUniqueId + "-ExtensionDisabled");
+                    var isExtensionDisabled = await localSettingsService.ReadSettingAsync<bool>(extensionUniqueId + "-ExtensionDisabled");
 
-                    _installedPlugins.Add(pluginWrapper);
-                    if (!isPluginDisabled)
+                    _installedExtensions.Add(extensionWrapper);
+                    if (!isExtensionDisabled)
                     {
-                        _enabledPlugins.Add(pluginWrapper);
+                        _enabledExtensions.Add(extensionWrapper);
                     }
                 }
             }
 
-            return includeDisabledPlugins ? _installedPlugins : _enabledPlugins;
+            return includeDisabledExtensions ? _installedExtensions : _enabledExtensions;
         }
         finally
         {
-            _getInstalledPluginsLock.Release();
+            _getInstalledExtensionsLock.Release();
         }
     }
 
-    public async Task<IEnumerable<IPluginWrapper>> StartAllPluginsAsync()
+    public async Task<IEnumerable<IExtensionWrapper>> GetAllExtensionsAsync()
     {
-        var installedPlugins = await GetInstalledPluginsAsync();
-        foreach (var installedPlugin in installedPlugins)
+        var installedExtensions = await GetInstalledExtensionsAsync();
+        foreach (var installedExtension in installedExtensions)
         {
-            if (!installedPlugin.IsRunning())
+            if (!installedExtension.IsRunning())
             {
-                await installedPlugin.StartPluginAsync();
+                await installedExtension.StartExtensionAsync();
             }
         }
 
-        return installedPlugins;
+        return installedExtensions;
     }
 
-    public async Task SignalStopPluginsAsync()
+    public async Task SignalStopExtensionsAsync()
     {
-        var installedPlugins = await GetInstalledPluginsAsync();
-        foreach (var installedPlugin in installedPlugins)
+        var installedExtensions = await GetInstalledExtensionsAsync();
+        foreach (var installedExtension in installedExtensions)
         {
-            if (installedPlugin.IsRunning())
+            if (installedExtension.IsRunning())
             {
-                installedPlugin.SignalDispose();
+                installedExtension.SignalDispose();
             }
         }
     }
 
-    public async Task<IEnumerable<IPluginWrapper>> GetInstalledPluginsAsync(ProviderType providerType, bool includeDisabledPlugins = false)
+    public async Task<IEnumerable<IExtensionWrapper>> GetInstalledExtensionsAsync(ProviderType providerType, bool includeDisabledExtensions = false)
     {
-        var installedPlugins = await GetInstalledPluginsAsync(includeDisabledPlugins);
+        var installedExtensions = await GetInstalledExtensionsAsync(includeDisabledExtensions);
 
-        List<IPluginWrapper> filteredPlugins = new ();
-        foreach (var installedPlugin in installedPlugins)
+        List<IExtensionWrapper> filteredExtensions = new ();
+        foreach (var installedExtension in installedExtensions)
         {
-            if (installedPlugin.HasProviderType(providerType))
+            if (installedExtension.HasProviderType(providerType))
             {
-                filteredPlugins.Add(installedPlugin);
+                filteredExtensions.Add(installedExtension);
             }
         }
 
-        return filteredPlugins;
+        return filteredExtensions;
     }
 
     public void Dispose()
@@ -258,7 +258,7 @@ public class PluginService : IPluginService, IDisposable
         {
             if (disposing)
             {
-                _getInstalledPluginsLock.Dispose();
+                _getInstalledExtensionsLock.Dispose();
             }
 
             _disposedValue = true;
@@ -277,13 +277,13 @@ public class PluginService : IPluginService, IDisposable
 
     public void EnableExtension(string extensionUniqueId)
     {
-        var extension = _installedPlugins.Where(plugin => plugin.ExtensionUniqueId == extensionUniqueId);
-        _enabledPlugins.Add(extension.First());
+        var extension = _installedExtensions.Where(extension => extension.ExtensionUniqueId == extensionUniqueId);
+        _enabledExtensions.Add(extension.First());
     }
 
     public void DisableExtension(string extensionUniqueId)
     {
-        var extension = _enabledPlugins.Where(plugin => plugin.ExtensionUniqueId == extensionUniqueId);
-        _enabledPlugins.Remove(extension.First());
+        var extension = _enabledExtensions.Where(extension => extension.ExtensionUniqueId == extensionUniqueId);
+        _enabledExtensions.Remove(extension.First());
     }
 }

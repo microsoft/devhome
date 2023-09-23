@@ -58,11 +58,11 @@ jobs:
 
     - name: Restore nuget packages
       run: |
-        cmd /c "$env:VSDevCmd" "&" msbuild -t:restore /m /p:Configuration=Release,Platform=${{ matrix.platform }},RestorePackagesConfig=true pluginsdk\\DevHomeSDK.sln
+        cmd /c "$env:VSDevCmd" "&" msbuild -t:restore /m /p:Configuration=Release,Platform=${{ matrix.platform }},RestorePackagesConfig=true extensionsdk\\DevHomeSDK.sln
         cmd /c "$env:VSDevCmd" "&" msbuild -t:restore /m /p:Configuration=Release,Platform=${{ matrix.platform }} DevHome.sln
 
     - name: Build_SDK
-      run: cmd /c "$env:VSDevCmd" "&" msbuild /m /p:Configuration=Release,Platform=${{ matrix.platform }} pluginsdk\\DevHomeSDK.sln
+      run: cmd /c "$env:VSDevCmd" "&" msbuild /m /p:Configuration=Release,Platform=${{ matrix.platform }} extensionsdk\\DevHomeSDK.sln
 
     - name: Build_DevHome
       run: cmd /c "$env:VSDevCmd" "&" msbuild /m /p:Configuration=${{ matrix.configuration }},Platform=${{ matrix.platform }} DevHome.sln

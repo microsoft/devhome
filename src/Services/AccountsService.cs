@@ -17,8 +17,11 @@ namespace DevHome.Services;
 
 public class AccountsService : IAccountsService
 {
-    public AccountsService()
+    private readonly IExtensionService _extensionService;
+
+    public AccountsService(IExtensionService extensionService)
     {
+        _extensionService = extensionService;
     }
 
     public async Task InitializeAsync()
@@ -43,22 +46,21 @@ public class AccountsService : IAccountsService
     public async Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders()
     {
         var devIdProviders = new List<IDeveloperIdProvider>();
-        try
+        var extensions = await _extensionService.GetInstalledExtensionsAsync(ProviderType.DeveloperId);
+        foreach (var extension in extensions)
         {
-            var pluginService = Application.Current.GetService<IPluginService>();
-            var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
-
-            foreach (var plugin in plugins)
+            try
             {
-                var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
+                var devIdProvider = await extension.GetProviderAsync<IDeveloperIdProvider>();
                 if (devIdProvider is not null)
                 {
                     devIdProviders.Add(devIdProvider);
                 }
             }
-        }
-        catch
-        {
+            catch (Exception ex)
+            {
+                GlobalLog.Logger?.ReportError($"Failed to get {nameof(IDeveloperIdProvider)} provider from '{extension.Name}'", ex);
+            }
         }
 
         return devIdProviders;
