@@ -7,6 +7,10 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Common.Windows;
 
+/// <summary>
+/// A title bar that can be used in place of the default title bar when the
+/// host window set <see cref="Window.ExtendsContentIntoTitleBar"/> to true.
+/// </summary>
 public sealed partial class WindowTitleBar : UserControl
 {
     public event EventHandler<string>? TitleChanged;

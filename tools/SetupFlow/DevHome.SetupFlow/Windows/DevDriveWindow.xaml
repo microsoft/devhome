@@ -11,8 +11,6 @@
     MinWidth="577"
     Width="577"
     mc:Ignorable="d">
-
-    <!-- Default title bar -->
     <windows:SecondaryWindow.WindowTitleBar>
         <windows:WindowTitleBar />
     </windows:SecondaryWindow.WindowTitleBar>

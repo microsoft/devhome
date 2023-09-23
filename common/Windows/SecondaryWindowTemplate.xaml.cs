@@ -33,6 +33,9 @@ internal sealed partial class SecondaryWindowTemplate : UserControl
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        // A custom title bar is required for full window theme and Mica support.
+        // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
+        _secondaryWindow.ExtendsContentIntoTitleBar = true;
         _secondaryWindow.SetTitleBar(this.WindowTitleBar);
     }
 

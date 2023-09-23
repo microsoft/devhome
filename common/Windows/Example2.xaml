@@ -10,7 +10,7 @@
     HasOwner="False"
     mc:Ignorable="d">
     <local:SecondaryWindow.WindowTitleBar>
-        <local:WindowTitleBar Title="Hello world" />
+        <local:WindowTitleBar />
     </local:SecondaryWindow.WindowTitleBar>
-    <TextBlock Text="{x:Bind PackageTitle}" />
+    <TextBlock Text="{x:Bind Example, Mode=OneWay}" />
 </local:SecondaryWindow>

@@ -9,8 +9,8 @@ namespace DevHome.SetupFlow.Windows;
 public sealed partial class DevDriveWindow : SecondaryWindow
 {
     public DevDriveWindow(DevDriveViewModel viewModel)
+        : base(new DevDriveView(viewModel))
     {
-        WindowContent = new DevDriveView(viewModel);
         this.InitializeComponent();
     }
 }

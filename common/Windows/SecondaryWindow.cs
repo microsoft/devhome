@@ -41,22 +41,31 @@ public class SecondaryWindow : WindowEx
                     WindowTitleBar.TitleChanged -= OnSecondaryWindowTitleChanged;
                 }
 
-                // Set new title bar and update window title
+                // Set new title bar
                 _windowTemplate.TitleBar = value;
-                OnSecondaryWindowTitleChanged(null, value?.Title);
+
+                // By default, if no title is set, use the application name as title
+                var title = value?.Title;
+                title = string.IsNullOrEmpty(title) ? AppInfo.GetAppNameLocalized() : title;
+                OnSecondaryWindowTitleChanged(null, title);
 
                 // Add title changed event handler to new title bar
                 if (value != null)
                 {
+                    value.Title = title;
                     value.TitleChanged += OnSecondaryWindowTitleChanged;
                 }
             }
-        }
+    }
     }
 
     /// <summary>
     /// Gets or sets the window content in the custom layout.
     /// </summary>
+    /// <remarks>
+    /// This is the default content of the secondary window.
+    /// See also <seealso cref="ContentPropertyAttribute"/>.
+    /// </remarks>
     public object SecondaryWindowContent
     {
         get => _windowTemplate.MainContent;
@@ -168,10 +177,6 @@ public class SecondaryWindow : WindowEx
         Activated += OnSecondaryWindowActivated;
         Closed += OnSecondaryWindowClosed;
 
-        // A custom title bar is required for full window theme and Mica support.
-        // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
-        ExtendsContentIntoTitleBar = true;
-
         // Set default window configuration
         PrimaryWindow = MainWindow;
         SystemBackdrop = PrimaryWindow.SystemBackdrop;
@@ -180,6 +185,12 @@ public class SecondaryWindow : WindowEx
         this.SetIcon(AppInfo.IconPath);
 
         ShowInTaskbar();
+    }
+
+    public SecondaryWindow(object secondaryWindowContent)
+        : this()
+    {
+        SecondaryWindowContent = secondaryWindowContent;
     }
 
     /// <summary>
@@ -283,13 +294,7 @@ public class SecondaryWindow : WindowEx
 
     private void OnSecondaryWindowTitleChanged(object? sender, string? title)
     {
-        // Window title in taskbar
-        Title = string.IsNullOrEmpty(title) ? AppInfo.GetAppNameLocalized() : title;
-
-        // Window title bar text
-        if (WindowTitleBar != null)
-        {
-            WindowTitleBar.Title = Title;
-        }
+        // Update window title (e.g. in taskbar)
+        Title = title ?? string.Empty;
     }
 }
