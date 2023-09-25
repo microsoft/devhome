@@ -55,7 +55,10 @@
     <Page Update="Views\HyperlinkTextBlock.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Update="Windows\*.xaml">
+    <Page Update="Windows\SecondaryWindowTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Windows\WindowTitleBar.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -71,11 +74,5 @@
     <Content Update="Assets\BannerBackgroundLight.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Windows\WindowTitleBar.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
 </Project>
