@@ -125,10 +125,4 @@ public sealed partial class ShellPage : Page
             }
         }
     }
-
-    private void Button_Click(object sender, RoutedEventArgs e)
-    {
-        var example = new Example2();
-        example.Activate();
-    }
 }

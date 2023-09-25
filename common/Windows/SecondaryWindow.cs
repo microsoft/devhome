@@ -20,7 +20,7 @@ public class SecondaryWindow : WindowEx
     private WindowEx? _primaryWindow;
     private bool _useAppTheme;
     private bool _isModal;
-    private bool _hasOwner;
+    private bool _isTopLevel;
 
     private WindowEx MainWindow => Application.Current.GetService<WindowEx>();
 
@@ -118,18 +118,16 @@ public class SecondaryWindow : WindowEx
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the <see cref="PrimaryWindow"/>
-    /// should be the owner of the secondary window.
+    /// Gets or sets a value indicating whether the secondary window should stay on top of the primary window.
     /// </summary>
-    /// <remarks>Setting this property to true will keep the secondary window on top of the primary window.</remarks>
-    public bool HasOwner
+    public bool IsTopLevel
     {
-        get => _hasOwner;
+        get => _isTopLevel;
         set
         {
-            if (_hasOwner != value)
+            if (_isTopLevel != value)
             {
-                _hasOwner = value;
+                _isTopLevel = value;
 
                 // Set primary window as owner of secondary window
                 var child = (HWND)this.GetWindowHandle();
@@ -139,9 +137,6 @@ public class SecondaryWindow : WindowEx
         }
     }
 
-    /// <summary>
-    /// Gets or sets the primary window.
-    /// </summary>
     public WindowEx? PrimaryWindow
     {
         get => _primaryWindow;
@@ -285,7 +280,7 @@ public class SecondaryWindow : WindowEx
     {
         // Free the secondary window from the application
         IsModal = false;
-        HasOwner = false;
+        IsTopLevel = false;
         UseAppTheme = false;
 
         // Unset the primary window at the end
