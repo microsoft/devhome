@@ -42,14 +42,8 @@ public partial class DashboardViewModel : ObservableObject
 
     private bool ShouldShowDashboardBanner()
     {
-        var show = true;
         var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        if (roamingProperties.ContainsKey(_hideDashboardBannerKey))
-        {
-            show = false;
-        }
-
-        return show;
+        return !roamingProperties.ContainsKey(_hideDashboardBannerKey);
     }
 
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
