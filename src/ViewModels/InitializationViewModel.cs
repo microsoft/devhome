@@ -12,12 +12,12 @@ namespace DevHome.ViewModels;
 public class InitializationViewModel : ObservableObject
 {
     private readonly IThemeSelectorService _themeSelector;
-    private readonly IPluginService _pluginService;
+    private readonly IExtensionService _extensionService;
 
-    public InitializationViewModel(IThemeSelectorService themeSelector, IPluginService pluginService)
+    public InitializationViewModel(IThemeSelectorService themeSelector, IExtensionService extensionService)
     {
         _themeSelector = themeSelector;
-        _pluginService = pluginService;
+        _extensionService = extensionService;
     }
 
     public void OnPageLoaded()

@@ -114,7 +114,7 @@ internal class CreateDevDriveTask : ISetupTask
                     return TaskFinishedState.Failure;
                 }
 
-                Result.ThrowIfFailed(await elevatedComponentOperation.CreateDevDriveAsync());
+                ResultHelper.ThrowIfFailed(await elevatedComponentOperation.CreateDevDriveAsync());
                 return TaskFinishedState.Success;
             }
             catch (Exception ex)

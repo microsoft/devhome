@@ -18,10 +18,10 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
 {
-    private readonly IPluginService _extensionService;
+    private readonly IExtensionService _extensionService;
     private readonly IList<IFeaturedApplicationsGroup> _groups;
 
-    public WinGetFeaturedApplicationsDataSource(IWindowsPackageManager wpm, IPluginService extensionService)
+    public WinGetFeaturedApplicationsDataSource(IWindowsPackageManager wpm, IExtensionService extensionService)
         : base(wpm)
     {
         _extensionService = extensionService;
@@ -32,7 +32,7 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
 
     public async override Task InitializeAsync()
     {
-        var extensions = await _extensionService.GetInstalledPluginsAsync(ProviderType.FeaturedApplications);
+        var extensions = await _extensionService.GetInstalledExtensionsAsync(ProviderType.FeaturedApplications);
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Initializing featured applications from all extensions");
         foreach (var extension in extensions)
         {

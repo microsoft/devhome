@@ -19,12 +19,12 @@ namespace DevHome.Settings.ViewModels;
 
 public partial class ExtensionSettingsViewModel : ObservableObject
 {
-    private readonly IPluginService _pluginService;
+    private readonly IExtensionService _extensionService;
     private readonly INavigationService _navigationService;
 
-    public ExtensionSettingsViewModel(IPluginService pluginService, INavigationService navigationService)
+    public ExtensionSettingsViewModel(IExtensionService extensionService, INavigationService navigationService)
     {
-        _pluginService = pluginService;
+        _extensionService = extensionService;
         _navigationService = navigationService;
 
         Breadcrumbs = new ObservableCollection<Breadcrumb> { };
@@ -36,18 +36,18 @@ public partial class ExtensionSettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task OnSettingsContentLoadedAsync(PluginAdaptiveCardPanel pluginAdaptiveCardPanel)
+    private async Task OnSettingsContentLoadedAsync(ExtensionAdaptiveCardPanel extensionAdaptiveCardPanel)
     {
-        var pluginWrappers = await _pluginService.GetInstalledPluginsAsync(true);
+        var extensionWrappers = await _extensionService.GetInstalledExtensionsAsync(true);
 
-        foreach (var pluginWrapper in pluginWrappers)
+        foreach (var extensionWrapper in extensionWrappers)
         {
             if ((_navigationService.LastParameterUsed != null) &&
-                ((string)_navigationService.LastParameterUsed == pluginWrapper.ExtensionUniqueId))
+                ((string)_navigationService.LastParameterUsed == extensionWrapper.ExtensionUniqueId))
             {
-                FillBreadcrumbBar(pluginWrapper.Name);
+                FillBreadcrumbBar(extensionWrapper.Name);
 
-                var settingsProvider = Task.Run(() => pluginWrapper.GetProviderAsync<ISettingsProvider>()).Result;
+                var settingsProvider = Task.Run(() => extensionWrapper.GetProviderAsync<ISettingsProvider>()).Result;
                 if (settingsProvider != null)
                 {
                     var adaptiveCardSessionResult = settingsProvider.GetSettingsAdaptiveCardSession();
@@ -62,7 +62,7 @@ public partial class ExtensionSettingsViewModel : ObservableObject
                     var renderer = new AdaptiveCardRenderer();
                     renderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
 
-                    pluginAdaptiveCardPanel.Bind(adaptiveCardSession, renderer);
+                    extensionAdaptiveCardPanel.Bind(adaptiveCardSession, renderer);
                 }
             }
         }

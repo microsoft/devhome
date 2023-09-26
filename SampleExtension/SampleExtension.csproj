@@ -44,7 +44,7 @@
       <ProjectCapability Include="Msix" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\pluginsdk\Microsoft.Windows.DevHome.SDK.Lib\Microsoft.Windows.DevHome.SDK.Lib.csproj" />
+      <ProjectReference Include="..\extensionsdk\Microsoft.Windows.DevHome.SDK.Lib\Microsoft.Windows.DevHome.SDK.Lib.csproj" />
     </ItemGroup>
 
     <!-- 
