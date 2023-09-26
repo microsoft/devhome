@@ -128,6 +128,9 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private string _applicationsClonedText;
 
+    [ObservableProperty]
+    private bool _isBothAppsAndReposInstalled;
+
     [RelayCommand]
     public void RemoveRestartGrid()
     {
