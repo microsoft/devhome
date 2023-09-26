@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
+using System.Runtime.InteropServices;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
@@ -130,9 +132,9 @@ public class SecondaryWindow : WindowEx
                 _isTopLevel = value;
 
                 // Set primary window as owner of secondary window
-                var child = (HWND)this.GetWindowHandle();
-                var parent = (HWND?)PrimaryWindow?.GetWindowHandle() ?? HWND.Null;
-                PInvoke.SetWindowLongPtr(child, WINDOW_LONG_PTR_INDEX.GWL_HWNDPARENT, value ? parent : HWND.Null);
+                var sWindow = (HWND)this.GetWindowHandle();
+                var pWindow = (HWND?)PrimaryWindow?.GetWindowHandle() ?? HWND.Null;
+                SetWindowOwner(sWindow, value ? pWindow : HWND.Null);
             }
         }
     }
@@ -238,6 +240,29 @@ public class SecondaryWindow : WindowEx
         var exStyle = PInvoke.GetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE) | (int)WINDOW_EX_STYLE.WS_EX_APPWINDOW;
         _ = PInvoke.SetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, exStyle);
     }
+
+    internal static void SetWindowOwner(HWND secondaryWindow, HWND primaryWindow)
+    {
+        // On x64 platform (IntPtr.Size = 8), call SetWindowLongPtr
+        // On x32 platform (IntPtr.Size = 4), call SetWindowLong
+        // Reference: https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowlongptra
+        // Note: CsWin32 will not generate PInvoke.SetWindowLongPtr for x86 platform which will cause a compilation error.
+        if (IntPtr.Size == 8)
+        {
+            SetWindowLongPtr(secondaryWindow, WINDOW_LONG_PTR_INDEX.GWLP_HWNDPARENT, primaryWindow);
+        }
+        else
+        {
+            _ = PInvoke.SetWindowLong(secondaryWindow, WINDOW_LONG_PTR_INDEX.GWL_HWNDPARENT, primaryWindow.Value.ToInt32());
+        }
+    }
+
+    /// <remarks>
+    /// This method cannot be added to the NativeMethods.txt because it is not
+    /// available when compiling the solution for x86 platform.
+    /// </remarks>
+    [DllImport("user32.dll", ExactSpelling = true, EntryPoint = "SetWindowLongPtrW", SetLastError = true)]
+    internal static extern nint SetWindowLongPtr(HWND hWnd, WINDOW_LONG_PTR_INDEX nIndex, nint dwNewLong);
 
     /**********************************************************
      *  Application services event handlers                   *
