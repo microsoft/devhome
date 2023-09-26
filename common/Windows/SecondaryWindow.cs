@@ -241,7 +241,7 @@ public class SecondaryWindow : WindowEx
         _ = PInvoke.SetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, exStyle);
     }
 
-    internal static void SetWindowOwner(HWND secondaryWindow, HWND primaryWindow)
+    private static void SetWindowOwner(HWND secondaryWindow, HWND primaryWindow)
     {
         // On x64 platform (IntPtr.Size = 8), call SetWindowLongPtr
         // On x32 platform (IntPtr.Size = 4), call SetWindowLong
