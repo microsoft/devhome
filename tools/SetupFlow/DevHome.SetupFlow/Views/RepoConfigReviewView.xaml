@@ -81,7 +81,7 @@
                                 </TextBlock>
                             </Grid>
                         </Border>
-                        <Border Grid.Column="1" Style="{StaticResource BorderStyle}" BorderThickness="1, 1, 0, 0">
+                        <Border Grid.Column="1" Style="{StaticResource BorderStyle}" BorderThickness="0, 1, 0, 0">
                             <ToolTipService.ToolTip>
                                 <ToolTip IsEnabled="{x:Bind IsClonePathTrimmed, Mode=OneWay}" Content="{x:Bind CloneLocation}"/>
                             </ToolTipService.ToolTip>
