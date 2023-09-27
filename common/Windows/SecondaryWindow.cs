@@ -114,7 +114,7 @@ public class SecondaryWindow : WindowEx
                 if (PrimaryWindow != null)
                 {
                     // Note: This is a temporary workaround until there's a
-                    // built-in support for modal windows.
+                    // built-in support for modal windows in WinUI 3.
                     PInvoke.EnableWindow((HWND)PrimaryWindow.GetWindowHandle(), !value);
                 }
             }
@@ -133,11 +133,13 @@ public class SecondaryWindow : WindowEx
             {
                 _isTopLevel = value;
 
-                // Note: Setting the owner here is a temporary workaround until there's is
-                // a built-in support for creating secondary windows with an owner while
-                // also being able to customize the content from XAML.
-                // Related: https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/windowing/windowing-overview#limitations
-                // "The Windows App SDK doesn't currently provide methods for attaching UI framework content to an AppWindow."
+                /*
+                 * Note: Setting the owner here is a temporary workaround until there's is
+                 * a built-in support for creating secondary windows with an owner while
+                 * also being able to customize the content from XAML in WinUI 3.
+                 * Related: https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/windowing/windowing-overview#limitations
+                 * "The Windows App SDK doesn't currently provide methods for attaching UI framework content to an AppWindow."
+                 */
 
                 // Set primary window as owner of secondary window
                 var sWindow = (HWND)this.GetWindowHandle();
