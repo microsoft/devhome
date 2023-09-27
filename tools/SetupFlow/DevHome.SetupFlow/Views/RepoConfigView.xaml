@@ -138,7 +138,7 @@
                                     </Button>
                                 </Grid>
                             </Border>
-                            <Button Click="RemoveCloningInformationButton_Click" DataContext="{x:Bind}" Grid.Column="3" Style="{ThemeResource AlternateCloseButtonStyle}" AutomationProperties.Name="{x:Bind RemoveFromCloningAutomationName}">
+                            <Button Click="RemoveCloningInformationButton_Click" DataContext="{x:Bind}" Grid.Column="3" Style="{ThemeResource AlternateCloseButtonStyle}" AutomationProperties.Name="{x:Bind RemoveFromCloningAutomationName}" VerticalAlignment="Center">
                                 <Button.Content>
                                     <SymbolIcon Symbol="Cancel"/>
                                 </Button.Content>

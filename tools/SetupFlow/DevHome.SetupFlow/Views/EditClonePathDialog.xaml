@@ -84,7 +84,7 @@
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" 
                     Click="ChooseCloneLocationButton_Click"  
                     Grid.Column="1" 
-                    Margin="5, 25, 0, 0"
+                    Margin="5, 27, 0, 0"
                     Padding="8 5 10 5"/>
                 </Grid>
             </Grid>

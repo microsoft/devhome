@@ -148,7 +148,6 @@
                             </ToolTipService.ToolTip>
                             <ctControls:SettingsCard.Header>
                                 <TextBlock
-                                    Height="14"
                                     TextTrimming="CharacterEllipsis"
                                     MaxLines="2"
                                     Style="{ThemeResource CaptionTextBlockStyle}"

@@ -33,7 +33,8 @@
                             <TextBlock
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_NextSteps"
                                 Style="{ThemeResource BodyStrongTextBlockStyle}"
-                                Padding="0,20,0,25" />
+                                Padding="0,20,0,25" 
+                                Foreground="{ThemeResource TextFillColorSecondary}"/>
                             <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_SetUpAnotherProject" Command="{Binding GoToMainPageCommand}"/>
                             <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDevHomeSettings" Command="{Binding GoToDevHomeSettingsCommand}"/>
                             <HyperlinkButton x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_ChangeDeveloperSettingsInWindows" Command="{Binding GoToForDevelopersSettingsPageCommand}"/>
@@ -274,7 +275,8 @@
                                 <TextBlock 
                                         Grid.Row="1" 
                                         Text="{x:Bind ViewModel.ApplicationsClonedText}"
-                                        HorizontalAlignment="center"/>
+                                        HorizontalAlignment="center"
+                                    Foreground="{ThemeResource TextFillColorSecondary}"/>
                             </Grid>
                             <Grid
                                 Grid.Column="1"
@@ -292,7 +294,8 @@
                                 <TextBlock 
                                     Grid.Row="1" 
                                     HorizontalAlignment="Center"
-                                    Text="{x:Bind ViewModel.RepositoriesClonedText}"/>
+                                    Text="{x:Bind ViewModel.RepositoriesClonedText}"
+                                    Foreground="{ThemeResource TextFillColorSecondary}"/>
                             </Grid>
                             <Button Grid.Row="1" Grid.ColumnSpan="2" Visibility="{x:Bind ViewModel.FailedTasks, Mode=OneWay, Converter={StaticResource NegatedCollectionVisibilityConverter}}"
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SummaryPage_OpenDashboard" 

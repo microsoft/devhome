@@ -137,7 +137,7 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}" Margin="0, 0, 0, 5"/>
+                <TextBlock Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}" Margin="0, 0, 0, 5" Foreground="{ThemeResource TextFillColorSecondary}"/>
                 <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind ViewModel.ActionCenterItems, Mode=OneWay}" SelectionMode="None">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="commonModels:ActionCenterMessages">
