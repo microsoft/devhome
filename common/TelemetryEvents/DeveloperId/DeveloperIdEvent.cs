@@ -10,28 +10,26 @@ using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 using Microsoft.Windows.DevHome.SDK;
 
-namespace DevHome.Common.TelemetryEvents;
+namespace DevHome.Common.TelemetryEvents.DeveloperId;
 
 [EventData]
 public class DeveloperIdEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-#pragma warning disable SA1300 // Element should begin with upper-case letter
-    public string developerId
+    public string DeveloperId
     {
         get;
     }
-#pragma warning restore SA1300 // Element should begin with upper-case letter
 
     public DeveloperIdEvent(string providerName, IDeveloperId devId)
     {
-        this.developerId = DeveloperIdHelper.GetHashedDeveloperId(providerName, devId);
+        DeveloperId = DeveloperIdHelper.GetHashedDeveloperId(providerName, devId);
     }
 
     public DeveloperIdEvent(string providerName, IEnumerable<IDeveloperId> devIds)
     {
-        this.developerId = string.Join(" , ", devIds.Select(devId => DeveloperIdHelper.GetHashedDeveloperId(providerName, devId)));
+        DeveloperId = string.Join(" , ", devIds.Select(devId => DeveloperIdHelper.GetHashedDeveloperId(providerName, devId)));
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
