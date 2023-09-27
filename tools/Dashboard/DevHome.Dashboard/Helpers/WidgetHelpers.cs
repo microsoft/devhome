@@ -75,7 +75,7 @@ internal class WidgetHelpers
         var providerId = provider.Id;
 
         var extensionService = Application.Current.GetService<IExtensionService>();
-        var enabledWidgetProviderIds = await extensionService.GetInstalledDevHomeWidgetPackageFamilyNamesAsync();
+        var enabledWidgetProviderIds = await extensionService.GetInstalledDevHomeWidgetPackageFamilyNamesAsync(true);
 
         var endOfPfnIndex = providerId.IndexOf('!', StringComparison.Ordinal);
         var familyNamePartOfProviderId = providerId[..endOfPfnIndex];
