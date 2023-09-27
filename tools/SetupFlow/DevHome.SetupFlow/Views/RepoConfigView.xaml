@@ -108,8 +108,8 @@
                                         <ColumnDefinition Width="0.1*"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <FontIcon Grid.Column="0" Width="20" Height="20" FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind RepositoryOwnerAndName}" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
+                                    <FontIcon Grid.Column="0" FontSize="16" FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind RepositoryOwnerAndName}" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
                             </Border>
                             <Border Style="{StaticResource BorderStyle}"  Grid.Column="2" BorderThickness="0, 1, 0, 0">

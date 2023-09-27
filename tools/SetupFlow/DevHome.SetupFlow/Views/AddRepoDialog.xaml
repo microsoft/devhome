@@ -95,10 +95,10 @@
                                     <ToolTip IsEnabled="{x:Bind IsRepoNameTrimmed, Mode=OneWay}" Content="{x:Bind RepoDisplayName}"/>
                                 </ToolTipService.ToolTip>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="16"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <FontIcon Grid.Column="0" FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
+                                <FontIcon Grid.Column="0" FontSize="16" FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
                                 <TextBlock Grid.Column="1" Text="{x:Bind RepoDisplayName}" TextTrimming="CharacterEllipsis">
                                     <i:Interaction.Behaviors>
                                         <ic:EventTriggerBehavior EventName="IsTextTrimmedChanged">
