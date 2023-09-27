@@ -25,6 +25,7 @@ public class ExtensionService : IExtensionService, IDisposable
 #pragma warning disable IDE0044 // Add readonly modifier
     private static List<IExtensionWrapper> _installedExtensions = new ();
     private static List<IExtensionWrapper> _enabledExtensions = new ();
+    private static List<string> _installedWidgetsPackageFamilyNames = new ();
 #pragma warning restore IDE0044 // Add readonly modifier
 
     public ExtensionService()
@@ -94,6 +95,7 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         _installedExtensions.Clear();
         _enabledExtensions.Clear();
+        _installedWidgetsPackageFamilyNames.Clear();
         OnExtensionsChanged.Invoke(this, EventArgs.Empty);
     }
 
@@ -202,6 +204,38 @@ public class ExtensionService : IExtensionService, IDisposable
         {
             _getInstalledExtensionsLock.Release();
         }
+    }
+
+    private async Task<IEnumerable<string>> GetInstalledWidgetExtensionsAsync()
+    {
+        await _getInstalledExtensionsLock.WaitAsync();
+        try
+        {
+            if (_installedWidgetsPackageFamilyNames.Count == 0)
+            {
+                var widgetExtensions = await AppExtensionCatalog.Open("com.microsoft.windows.widgets").FindAllAsync();
+                foreach (var widgetExtension in widgetExtensions)
+                {
+                    _installedWidgetsPackageFamilyNames.Add(widgetExtension.Package.Id.FamilyName);
+                }
+            }
+
+            return _installedWidgetsPackageFamilyNames;
+        }
+        finally
+        {
+            _getInstalledExtensionsLock.Release();
+        }
+    }
+
+    public async Task<IEnumerable<string>> GetInstalledDevHomeWidgetPackageFamilyNamesAsync(bool includeDisabledExtensions = false)
+    {
+        var devHomeExtensionWrappers = await GetInstalledExtensionsAsync(includeDisabledExtensions);
+        var widgetExtensionWrappers = await GetInstalledWidgetExtensionsAsync();
+
+        var ids = devHomeExtensionWrappers.Select(x => x.PackageFamilyName).Intersect(widgetExtensionWrappers).ToList();
+
+        return ids;
     }
 
     public async Task<IEnumerable<IExtensionWrapper>> GetAllExtensionsAsync()

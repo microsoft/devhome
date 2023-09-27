@@ -25,6 +25,7 @@
         <uap3:Extension Category="windows.appExtensionHost">
           <uap3:AppExtensionHost>
             <uap3:Name>com.microsoft.devhome</uap3:Name>
+            <uap3:Name>com.microsoft.windows.widgets</uap3:Name>
           </uap3:AppExtensionHost>
         </uap3:Extension>
         <uap:Extension Category="windows.protocol">

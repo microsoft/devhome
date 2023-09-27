@@ -5,6 +5,9 @@ using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using DevHome.Common.Extensions;
+using DevHome.Common.Services;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
@@ -67,10 +70,18 @@ internal class WidgetHelpers
         };
     }
 
-    public static bool IsIncludedWidgetProvider(WidgetProviderDefinition provider)
+    public static async Task<bool> IsIncludedWidgetProviderAsync(WidgetProviderDefinition provider)
     {
-        var include = provider.Id.StartsWith("Microsoft.Windows.DevHome", StringComparison.CurrentCulture);
-        Log.Logger()?.ReportInfo("WidgetHelpers", $"Found provider Id = {provider.Id}, include = {include}");
+        var providerId = provider.Id;
+
+        var extensionService = Application.Current.GetService<IExtensionService>();
+        var enabledWidgetProviderIds = await extensionService.GetInstalledDevHomeWidgetPackageFamilyNamesAsync();
+
+        var endOfPfnIndex = providerId.IndexOf('!', StringComparison.Ordinal);
+        var familyNamePartOfProviderId = providerId[..endOfPfnIndex];
+
+        var include = enabledWidgetProviderIds.ToList().Contains(familyNamePartOfProviderId);
+        Log.Logger()?.ReportInfo("WidgetHelpers", $"Found provider Id = {providerId}, include = {include}");
         return include;
     }
 
