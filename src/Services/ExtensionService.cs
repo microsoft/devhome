@@ -20,6 +20,7 @@ public class ExtensionService : IExtensionService, IDisposable
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
     private static readonly object _lock = new ();
     private readonly SemaphoreSlim _getInstalledExtensionsLock = new (1, 1);
+    private readonly SemaphoreSlim _getInstalledWidgetsLock = new (1, 1);
     private bool _disposedValue;
 
 #pragma warning disable IDE0044 // Add readonly modifier
@@ -208,7 +209,7 @@ public class ExtensionService : IExtensionService, IDisposable
 
     private async Task<IEnumerable<string>> GetInstalledWidgetExtensionsAsync()
     {
-        await _getInstalledExtensionsLock.WaitAsync();
+        await _getInstalledWidgetsLock.WaitAsync();
         try
         {
             if (_installedWidgetsPackageFamilyNames.Count == 0)
@@ -224,7 +225,7 @@ public class ExtensionService : IExtensionService, IDisposable
         }
         finally
         {
-            _getInstalledExtensionsLock.Release();
+            _getInstalledWidgetsLock.Release();
         }
     }
 
@@ -293,6 +294,7 @@ public class ExtensionService : IExtensionService, IDisposable
             if (disposing)
             {
                 _getInstalledExtensionsLock.Dispose();
+                _getInstalledWidgetsLock.Dispose();
             }
 
             _disposedValue = true;
