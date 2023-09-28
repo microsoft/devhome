@@ -72,14 +72,16 @@ internal class WidgetHelpers
 
     public static async Task<bool> IsIncludedWidgetProviderAsync(WidgetProviderDefinition provider)
     {
+        // Cut WidgetProviderDefinition id down to just the package family name.
         var providerId = provider.Id;
-
-        var extensionService = Application.Current.GetService<IExtensionService>();
-        var enabledWidgetProviderIds = await extensionService.GetInstalledDevHomeWidgetPackageFamilyNamesAsync(true);
-
         var endOfPfnIndex = providerId.IndexOf('!', StringComparison.Ordinal);
         var familyNamePartOfProviderId = providerId[..endOfPfnIndex];
 
+        // Get the list of packages that contain Dev Home widgets.
+        var extensionService = Application.Current.GetService<IExtensionService>();
+        var enabledWidgetProviderIds = await extensionService.GetInstalledDevHomeWidgetPackageFamilyNamesAsync(true);
+
+        // Check if the specified widget provider is in the list.
         var include = enabledWidgetProviderIds.ToList().Contains(familyNamePartOfProviderId);
         Log.Logger()?.ReportInfo("WidgetHelpers", $"Found provider Id = {providerId}, include = {include}");
         return include;
