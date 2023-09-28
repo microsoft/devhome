@@ -137,7 +137,7 @@
                 <!-- No available items messages -->
                 <TextBlock x:Uid="NoAvailableExtensions"
                            Visibility="{x:Bind ViewModel.GetNoAvailablePackagesVisibility(ViewModel.StorePackagesList.Count, ViewModel.ShouldShowStoreError), Mode=OneWay}"
-                           Margin="0,50,0,0"
+                           Margin="0,50,0,70"
                            HorizontalAlignment="Center" />
                 <StackPanel Visibility="{x:Bind ViewModel.ShouldShowStoreError, Mode=OneWay}" HorizontalAlignment="Center">
                     <TextBlock x:Uid="StoreErrorMessage"
