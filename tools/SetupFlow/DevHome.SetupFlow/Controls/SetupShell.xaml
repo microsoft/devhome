@@ -14,10 +14,6 @@
         <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
         <converters:BoolToObjectConverter x:Key="StepperBoolToGlyphBrushConverter" TrueValue="{ThemeResource AccentFillColorDisabledBrush}" FalseValue="{ThemeResource AccentFillColorDefaultBrush}" />
         <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
-        <!-- If no custom header template was provided, display a TextBlock -->
-        <ControlTemplate x:Name="defaultHeaderTemplate">
-            <ContentPresenter />
-        </ControlTemplate>
     </UserControl.Resources>
     <Grid RowSpacing="6" x:Name="ShellContent">
         <Grid.RowDefinitions>
@@ -92,7 +88,7 @@
                 Grid.Column="1"
                 IsTabStop="False"
                 HorizontalAlignment="Right"
-                Template="{x:Bind HeaderTemplate, Mode=OneWay}" />
+                Content="{x:Bind Header, Mode=OneWay}" />
         </Grid>
         <!-- Description -->
         <TextBlock
