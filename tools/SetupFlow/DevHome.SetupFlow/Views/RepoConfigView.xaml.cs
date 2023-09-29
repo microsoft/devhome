@@ -54,7 +54,7 @@ public sealed partial class RepoConfigView : UserControl
     /// User wants to add a repo.  Bring up the tool.
     /// </summary>
     [RelayCommand]
-    private async Task AddRepoButtonAsync()
+    private async Task AddRepoAsync()
     {
         // hold information for telemetry calls
         const string EventName = "RepoTool_AddRepos_Event";

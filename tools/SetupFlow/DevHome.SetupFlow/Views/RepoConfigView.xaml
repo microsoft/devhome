@@ -38,7 +38,7 @@
             <Button
                 AutomationProperties.AutomationId="AddRepositoriesButton"
                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"
-                Command="{x:Bind AddRepoButtonCommand}" />
+                Command="{x:Bind AddRepoCommand}" />
         </setupControls:SetupShell.Header>
         <Grid x:Name="RepoConfigGrid" RowSpacing="10">
             <ListView ScrollViewer.VerticalScrollBarVisibility="Auto" 
@@ -158,7 +158,7 @@
                     Grid.Row="1"
                     AutomationProperties.AutomationId="AddRepoHyperLinkButton"
                     HorizontalAlignment="Center"
-                    Command="{x:Bind AddRepoButtonCommand}"
+                    Command="{x:Bind AddRepoCommand}"
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
             </Grid>
         </Grid>

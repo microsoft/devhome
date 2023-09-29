@@ -48,6 +48,10 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+            <!--
+                TODO: https://github.com/microsoft/devhome/issues/1621
+                Promote stepper to a separate control
+            -->
             <!-- Stepper showing the progress within the flow -->
             <StackPanel Margin="0, 20, 0, 0" Visibility="{x:Bind Orchestrator.CurrentPageViewModel.IsStepPage, Mode=OneWay}">
                 <ItemsRepeater ItemsSource="{x:Bind Orchestrator.SetupStepPages, Mode=OneWay}">
