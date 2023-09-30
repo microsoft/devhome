@@ -537,6 +537,10 @@
     <value>Check the spelling or try new keywords.</value>
     <comment>Text displayed when no search results were found</comment>
   </data>
+  <data name="RemoveAll.Text" xml:space="preserve">
+    <value>Remove all</value>
+    <comment>Label for removing all items from selection</comment>
+  </data>
   <data name="RemoveApplication" xml:space="preserve">
     <value>Remove</value>
     <comment>Text announced when screen readers focus on the 'Remove' button. The 'Remove' button allows users to remove an application from their cart</comment>

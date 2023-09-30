@@ -100,11 +100,22 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Header text -->
-            <StackPanel Grid.Row="0" Padding="5 0" Orientation="Vertical" Spacing="4">
-                <TextBlock x:Name="SidePanelTitle" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SelectedPackages" />
-                <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind ViewModel.ApplicationsAddedText,Mode=OneWay}"/>
-            </StackPanel>
+            <Grid Grid.Row="0">
+                <!-- Header text -->
+                <StackPanel Grid.Row="0" Padding="5 0" Orientation="Vertical" Spacing="4">
+                    <TextBlock x:Name="SidePanelTitle" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SelectedPackages" />
+                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind ViewModel.ApplicationsAddedText,Mode=OneWay}"/>
+                </StackPanel>
+                <!-- Remove all -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <HyperlinkButton
+                        AutomationProperties.AutomationControlType="Button"
+                        Command="{x:Bind ViewModel.RemoveAllPackagesCommand}"
+                        IsEnabled="{x:Bind ViewModel.EnableRemoveAll, Mode=OneWay}">
+                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RemoveAll" />
+                    </HyperlinkButton>
+                </StackPanel>
+            </Grid>
 
             <!-- No package selected -->
             <TextBlock
