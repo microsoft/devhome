@@ -377,7 +377,7 @@
                                                 <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
                                                 <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
                                                 <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-                                                <x:Double x:Key="SettingsCardHeaderIconMaxSize">16</x:Double>
+                                                <x:Double x:Key="SettingsCardHeaderIconMaxSize">18</x:Double>
                                             </ctControls:SettingsCard.Resources>
                                             <ctControls:SettingsCard.Header>
                                                 <TextBlock Text="{x:Bind Name, Mode=OneWay}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />

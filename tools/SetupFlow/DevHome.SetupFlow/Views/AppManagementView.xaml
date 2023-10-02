@@ -34,7 +34,8 @@
 
         <!-- Main/Center panel -->
         <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_AppManagement"
-                             Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}">
+                             Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+                             Foreground="{ThemeResource TextFillColorSecondary}">
             <Grid Grid.Column="0" RowSpacing="20">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
@@ -131,7 +132,7 @@
                                 <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
                                 <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
                                 <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-                                <x:Double x:Key="SettingsCardHeaderIconMaxSize">16</x:Double>
+                                <x:Double x:Key="SettingsCardHeaderIconMaxSize">18</x:Double>
                             </ctControls:SettingsCard.Resources>
                             <ToolTipService.ToolTip>
                                 <StackPanel>

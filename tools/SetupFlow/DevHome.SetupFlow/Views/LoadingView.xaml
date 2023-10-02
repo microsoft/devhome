@@ -79,7 +79,7 @@
                 <RowDefinition Height="400"/>
             </Grid.RowDefinitions>
             <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Style="{StaticResource WidgetConfigHeaderTextStyle}" VerticalAlignment="Bottom" Padding="0, 0, 0, 6"/>
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Bottom" Padding="0, 0, 0, 6"/>
             </Border>
             <ListView  Grid.Column="0" Grid.Row="1" ItemsSource="{x:Bind ViewModel.Messages, Mode=OneWay}" SelectionMode="None">
                 <ListView.ItemTemplate>
@@ -128,7 +128,7 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter" VerticalAlignment="Bottom" Style="{StaticResource WidgetConfigHeaderTextStyle}" Padding="0, 0, 0, 6"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter" VerticalAlignment="Bottom" Style="{StaticResource BodyStrongTextBlockStyle}" Padding="0, 0, 0, 6"/>
                     <HyperlinkButton Grid.Row="0" Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}" HorizontalAlignment="right" Margin="0, 8, 0, 0"/>
                 </Grid>
             </Border>

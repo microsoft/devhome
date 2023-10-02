@@ -33,7 +33,8 @@
     </UserControl.Resources>
 
     <setupControls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_RepoConfig"
-                               Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
+                               Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+                              Foreground="{StaticResource TextFillColorSecondary}">
         <setupControls:SetupShell.HeaderTemplate>
             <ControlTemplate>
                 <Button x:Name="AddRepositoriesButton" Click="AddRepoButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"/>
