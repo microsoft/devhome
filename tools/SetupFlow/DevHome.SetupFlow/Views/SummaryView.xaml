@@ -227,7 +227,7 @@
                                             </Grid.ColumnDefinitions>
                                             <ImageIcon
                                                  Source="{x:Bind StatusSymbolIcon, Mode=OneWay}" Grid.Column="0"/>
-                                            <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Grid.Column="1" TextTrimming="CharacterEllipsis" Foreground="{StaticResource SystemErrorTextColor}">
+                                            <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" Grid.Column="1" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource SystemErrorTextColor}">
                                                 <ToolTipService.ToolTip>
                                                     <ToolTip IsEnabled="{x:Bind IsMessageTrimmed, Mode=OneWay}" Content="{x:Bind MessageToShow}"/>
                                                 </ToolTipService.ToolTip>
