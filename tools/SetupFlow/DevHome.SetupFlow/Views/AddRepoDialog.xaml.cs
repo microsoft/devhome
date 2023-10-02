@@ -114,7 +114,6 @@ internal partial class AddRepoDialog
 
     private void ChangeToAccountPage()
     {
-        SwitchViewsSegmentedView.IsEnabled = false;
         AddRepoViewModel.ChangeToAccountPage();
         FolderPickerViewModel.CloseFolderPicker();
         EditDevDriveViewModel.HideDevDriveUI();

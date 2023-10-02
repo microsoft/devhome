@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -127,12 +128,6 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private bool? _isUrlAccountButtonChecked;
 
-    /// <summary>
-    /// Controls if the primary button is enabled.  Turns true if everything is correct.
-    /// </summary>
-    [ObservableProperty]
-    private bool _shouldPrimaryButtonBeEnabled;
-
     [ObservableProperty]
     private string _primaryButtonText;
 
@@ -146,6 +141,12 @@ public partial class AddRepoViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isFetchingRepos;
+
+    [ObservableProperty]
+    private bool _shouldEnablePrimaryButton;
+
+    [ObservableProperty]
+    private Style _styleForPrimaryButton;
 
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
@@ -242,6 +243,28 @@ public partial class AddRepoViewModel : ObservableObject
         get; set;
     }
 
+    /// <summary>
+    /// Logs the user into the provider if they aren't already.
+    /// Changes the page to show all repositories for the user.
+    /// </summary>
+    /// <remarks>
+    /// Fired when the combo box on the account page is changed.
+    /// </remarks>
+    [RelayCommand]
+    private void RepoProviderSelected(string repositoryProviderName)
+    {
+        if (!string.IsNullOrEmpty(repositoryProviderName))
+        {
+            StyleForPrimaryButton = Application.Current.Resources["ContentDialogLogInButtonStyle"] as Style;
+            ShouldEnablePrimaryButton = true;
+        }
+        else
+        {
+            StyleForPrimaryButton = Application.Current.Resources["DefaultButtonStyle"] as Style;
+            ShouldEnablePrimaryButton = false;
+        }
+    }
+
     public AddRepoViewModel(
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
@@ -254,7 +277,6 @@ public partial class AddRepoViewModel : ObservableObject
         // override changes ChangeToUrlPage to correctly set the state.
         UrlParsingError = string.Empty;
         ShouldShowUrlError = Visibility.Collapsed;
-        ShouldPrimaryButtonBeEnabled = false;
         ShowErrorTextBox = Visibility.Collapsed;
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
@@ -381,16 +403,6 @@ public partial class AddRepoViewModel : ObservableObject
         {
             return false;
         }
-    }
-
-    public void EnablePrimaryButton()
-    {
-        ShouldPrimaryButtonBeEnabled = true;
-    }
-
-    public void DisablePrimaryButton()
-    {
-        ShouldPrimaryButtonBeEnabled = false;
     }
 
     /// <summary>
