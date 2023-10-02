@@ -32,12 +32,18 @@ public sealed class ElevatedConfigurationTask
                 taskResult.TaskAttempted = true;
                 taskResult.TaskSucceeded = result.Succeeded;
                 taskResult.RebootRequired = result.RequiresReboot;
-                taskResult.UnitResults = result.Result.UnitResults.Select(unitResult => new ElevatedConfigureUnitTaskResult
+                taskResult.UnitResults = result.Result.UnitResults.Select(unitResult =>
                 {
-                    UnitName = unitResult.Unit.UnitName,
-                    Intent = unitResult.Unit.Intent.ToString(),
-                    IsSkipped = unitResult.State == ConfigurationUnitState.Skipped,
-                    HResult = unitResult.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK,
+                    unitResult.Unit.Directives.TryGetValue("description", out var descriptionObj);
+                    return new ElevatedConfigureUnitTaskResult
+                    {
+                        UnitName = unitResult.Unit.UnitName,
+                        Id = unitResult.Unit.Identifier,
+                        Description = descriptionObj?.ToString() ?? string.Empty,
+                        Intent = unitResult.Unit.Intent.ToString(),
+                        IsSkipped = unitResult.State == ConfigurationUnitState.Skipped,
+                        HResult = unitResult.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK,
+                    };
                 }).ToList();
 
                 if (result.ResultException != null)
