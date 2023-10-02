@@ -13,12 +13,15 @@
     <None Remove="Views\Banner.xaml" />
     <None Remove="Views\CloseButton.xaml" />
     <None Remove="Views\HyperlinkTextBlock.xaml" />
+    <None Remove="Windows\SecondaryWindowTemplate.xaml" />
+    <None Remove="Windows\WindowTitleBar.xaml" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.0.230907" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.Primitives" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.230907" />
     <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.0.230907" />
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.206-beta">
       <PrivateAssets>all</PrivateAssets>
@@ -50,6 +53,12 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\HyperlinkTextBlock.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Windows\SecondaryWindowTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Update="Windows\WindowTitleBar.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
