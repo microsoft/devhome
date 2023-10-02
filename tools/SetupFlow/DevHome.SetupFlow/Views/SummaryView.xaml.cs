@@ -24,8 +24,8 @@ public sealed partial class SummaryView : UserControl
         if (sender is HyperlinkButton hyperlinkButton && hyperlinkButton.Tag is PackageViewModel package)
         {
             var window = new InstallationNotesWindow(package.PackageTitle, package.InstallationNotes);
-            window.CenterOnWindow();
             window.Activate();
+            window.CenterOnWindow();
         }
     }
 

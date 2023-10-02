@@ -390,9 +390,9 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         Log.Logger?.ReportInfo(Log.Component.DevDrive, "Launching window to set up Dev Drive");
         ResetErrors();
         DevDriveWindowContainer = new (this);
-        DevDriveWindowContainer.CenterOnWindow();
         DevDriveWindowContainer.Closed += ViewContainerClosed;
         DevDriveWindowContainer.Activate();
+        DevDriveWindowContainer.CenterOnWindow();
         IsDevDriveWindowOpen = true;
         RefreshDriveLetterToSizeMapping();
         DriveLetters.Clear();

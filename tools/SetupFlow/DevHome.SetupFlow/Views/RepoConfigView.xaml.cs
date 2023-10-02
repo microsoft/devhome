@@ -2,18 +2,17 @@
 // Licensed under the MIT License.
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
-using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
-using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -22,6 +21,7 @@ namespace DevHome.SetupFlow.Views;
 /// <summary>
 /// Shows the user the repositories they have selected.
 /// </summary>
+[INotifyPropertyChanged]
 public sealed partial class RepoConfigView : UserControl
 {
     private readonly IThemeSelectorService _themeSelectorService;
@@ -60,7 +60,8 @@ public sealed partial class RepoConfigView : UserControl
     /// <summary>
     /// User wants to add a repo.  Bring up the tool.
     /// </summary>
-    private async void AddRepoButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    [RelayCommand]
+    private async Task AddRepoAsync()
     {
         // hold information for telemetry calls
         const string EventName = "RepoTool_AddRepos_Event";
@@ -68,14 +69,6 @@ public sealed partial class RepoConfigView : UserControl
         var telemetryLogger = TelemetryFactory.Get<ITelemetry>();
 
         telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Open", dialogName), ActivityId);
-
-        // Both the hyperlink button and button call this.
-        // disable the button to prevent users from double clicking it.
-        var senderAsButton = sender as Button;
-        if (senderAsButton != null)
-        {
-            senderAsButton.IsEnabled = false;
-        }
 
         _addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), _themeSelectorService, ActivityId);
         var getExtensionsTask = _addRepoDialog.GetExtensionsAsync();
@@ -92,11 +85,6 @@ public sealed partial class RepoConfigView : UserControl
         }
 
         var result = await _addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
-
-        if (senderAsButton != null)
-        {
-            senderAsButton.IsEnabled = true;
-        }
 
         var devDrive = _addRepoDialog.EditDevDriveViewModel.DevDrive;
 
