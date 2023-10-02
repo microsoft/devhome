@@ -54,7 +54,7 @@ internal class WidgetIconCache
     public async Task AddIconsToCacheAsync(WidgetDefinition widgetDef)
     {
         // Only cache icons for providers that we're including.
-        if (WidgetHelpers.IsIncludedWidgetProvider(widgetDef.ProviderDefinition))
+        if (await WidgetHelpers.IsIncludedWidgetProviderAsync(widgetDef.ProviderDefinition))
         {
             var widgetDefId = widgetDef.Id;
             try

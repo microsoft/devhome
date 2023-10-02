@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.Tracing;
 using System.Security.Cryptography;
 using System.Text;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;

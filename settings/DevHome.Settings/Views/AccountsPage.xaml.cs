@@ -10,10 +10,12 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.Views;
 using DevHome.Logging;
 using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -225,6 +227,11 @@ public sealed partial class AccountsPage : Page
 
     private async Task InitiateAddAccountUserExperienceAsync(Page parentPage, AccountsProviderViewModel accountProvider)
     {
+        TelemetryFactory.Get<ITelemetry>().Log(
+                                                "EntryPoint_DevId_Event",
+                                                LogLevel.Critical,
+                                                new EntryPointEvent(EntryPointEvent.EntryPoint.Settings));
+
         var authenticationFlow = accountProvider.DeveloperIdProvider.GetAuthenticationExperienceKind();
         if (authenticationFlow == AuthenticationExperienceKind.CardSession)
         {
@@ -232,8 +239,8 @@ public sealed partial class AccountsPage : Page
         }
         else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
         {
-            IntPtr windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
-            WindowId windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
+            var windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
+            var windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
             try
             {
                 var developerIdResult = await accountProvider.DeveloperIdProvider.ShowLogonSession(windowPtr);

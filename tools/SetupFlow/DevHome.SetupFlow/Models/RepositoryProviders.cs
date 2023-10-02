@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -103,6 +104,10 @@ internal class RepositoryProviders
 
     public ExtensionAdaptiveCardPanel GetLoginUi(string providerName, ElementTheme elementTheme)
     {
+        TelemetryFactory.Get<ITelemetry>().Log(
+                                                "EntryPoint_DevId_Event",
+                                                LogLevel.Critical,
+                                                new EntryPointEvent(EntryPointEvent.EntryPoint.SetupFlow));
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting login UI {providerName}");
         return _providers.GetValueOrDefault(providerName)?.GetLoginUi(elementTheme);
     }
