@@ -34,11 +34,12 @@
 
     <setupControls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_RepoConfig"
                                Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
-        <setupControls:SetupShell.HeaderTemplate>
-            <ControlTemplate>
-                <Button x:Name="AddRepositoriesButton" Click="AddRepoButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"/>
-            </ControlTemplate>
-        </setupControls:SetupShell.HeaderTemplate>
+        <setupControls:SetupShell.Header>
+            <Button
+                AutomationProperties.AutomationId="AddRepositoriesButton"
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"
+                Command="{x:Bind AddRepoCommand}" />
+        </setupControls:SetupShell.Header>
         <Grid x:Name="RepoConfigGrid" RowSpacing="10">
             <ListView ScrollViewer.VerticalScrollBarVisibility="Auto" 
                       ScrollViewer.VerticalScrollMode="Auto" 
@@ -153,7 +154,12 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
-                <HyperlinkButton x:Name="AddRepoHyperLinkButton" Grid.Row="1" Click="AddRepoButton_Click" HorizontalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
+                <HyperlinkButton
+                    Grid.Row="1"
+                    AutomationProperties.AutomationId="AddRepoHyperLinkButton"
+                    HorizontalAlignment="Center"
+                    Command="{x:Bind AddRepoCommand}"
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
             </Grid>
         </Grid>
     </setupControls:SetupShell>

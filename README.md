@@ -97,7 +97,7 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
 1. Clone the repository
 2. Configure your system, please use the [configuration file](.configurations/configuration.dsc.yaml). This can be applied by either:
    * Dev Home's machine configuration tool
-   * WinGet configuration. If you have the experimental feature enabled, run `winget configure .configurations/configuration.dsc.yaml` from the project root so relative paths resolve correctly
+   * WinGet configuration. If you have WinGet version [v1.6.2631 or later](https://github.com/microsoft/winget-cli/releases), run `winget configure .configurations/configuration.dsc.yaml` in an elevated shell from the project root so relative paths resolve correctly
 
 ## Running & debugging
 

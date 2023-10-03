@@ -11,6 +11,8 @@ public interface IExtensionService
 {
     Task<IEnumerable<IExtensionWrapper>> GetInstalledExtensionsAsync(bool includeDisabledExtensions = false);
 
+    Task<IEnumerable<string>> GetInstalledDevHomeWidgetPackageFamilyNamesAsync(bool includeDisabledExtensions = false);
+
     Task<IEnumerable<IExtensionWrapper>> GetInstalledExtensionsAsync(Microsoft.Windows.DevHome.SDK.ProviderType providerType, bool includeDisabledExtensions = false);
 
     Task<IEnumerable<IExtensionWrapper>> GetAllExtensionsAsync();

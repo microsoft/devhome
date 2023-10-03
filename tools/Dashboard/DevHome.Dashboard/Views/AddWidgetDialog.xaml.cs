@@ -83,7 +83,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // the widget if it is selected later.
         foreach (var providerDef in providerDefs)
         {
-            if (WidgetHelpers.IsIncludedWidgetProvider(providerDef))
+            if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
             {
                 var navItem = new NavigationViewItem
                 {

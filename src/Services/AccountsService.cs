@@ -3,12 +3,10 @@
 
 using System.Diagnostics;
 using DevHome.Common.Contracts.Services;
-using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Logging;
 using DevHome.Telemetry;
-using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Win32;
 using Windows.Win32.Foundation;

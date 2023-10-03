@@ -32,7 +32,10 @@ public static class StringResourceKey
     public static readonly string ConfigurationUnitFailed = nameof(ConfigurationUnitFailed);
     public static readonly string ConfigurationUnitSkipped = nameof(ConfigurationUnitSkipped);
     public static readonly string ConfigurationUnitSuccess = nameof(ConfigurationUnitSuccess);
-    public static readonly string ConfigurationUnitSummary = nameof(ConfigurationUnitSummary);
+    public static readonly string ConfigurationUnitSummaryFull = nameof(ConfigurationUnitSummaryFull);
+    public static readonly string ConfigurationUnitSummaryMinimal = nameof(ConfigurationUnitSummaryMinimal);
+    public static readonly string ConfigurationUnitSummaryNoDescription = nameof(ConfigurationUnitSummaryNoDescription);
+    public static readonly string ConfigurationUnitSummaryNoId = nameof(ConfigurationUnitSummaryNoId);
     public static readonly string ConfigurationUnitStats = nameof(ConfigurationUnitStats);
     public static readonly string ConfigurationViewTitle = nameof(ConfigurationViewTitle);
     public static readonly string DevDriveReviewTitle = nameof(DevDriveReviewTitle);
