@@ -29,7 +29,7 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class MainPageViewModel : SetupPageViewModelBase
 {
-    private const string _hideSetupFlowBannerKey = "HideSetupFLowBanner";
+    private const string _hideSetupFlowBannerKey = "HideSetupFlowBanner";
 
     private readonly IHost _host;
     private readonly IWindowsPackageManager _wpm;
