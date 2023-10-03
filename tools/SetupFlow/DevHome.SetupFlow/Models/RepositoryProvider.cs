@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Views;
 using DevHome.Logging;
@@ -17,7 +18,9 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Foundation;
 using Windows.Storage;
+using Windows.UI.ViewManagement;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -68,12 +71,16 @@ internal class RepositoryProvider
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider extensions");
         _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
         _repositoryProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
-        var myName = _repositoryProvider.DisplayName;
     }
 
     public IRepositoryProvider GetProvider()
     {
         return _repositoryProvider;
+    }
+
+    public void SetChangedEvent(TypedEventHandler<IDeveloperIdProvider, IDeveloperId> handler)
+    {
+        _devIdProvider.Changed += handler;
     }
 
     /// <summary>
@@ -259,4 +266,25 @@ internal class RepositoryProvider
 
         return _repositories.Value;
     }
+
+    /*
+    public void ChangedEventHandler(object sender, IDeveloperId developerId)
+    {
+        if (sender is IDeveloperIdProvider devIdProvider)
+        {
+            var authenticationState = devIdProvider.GetDeveloperIdState(developerId);
+
+            if (authenticationState == AuthenticationState.LoggedIn)
+            {
+                TelemetryFactory.Get<ITelemetry>().Log("Login_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.DisplayName, developerId));
+
+                // Bring focus back to DevHome after login
+                _ = PInvoke.SetForegroundWindow((HWND)Process.GetCurrentProcess().MainWindowHandle);
+            }
+            else if (authenticationState == AuthenticationState.LoggedOut)
+            {
+                TelemetryFactory.Get<ITelemetry>().Log("Logout_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.DisplayName, developerId));
+            }
+        }
+    }*/
 }

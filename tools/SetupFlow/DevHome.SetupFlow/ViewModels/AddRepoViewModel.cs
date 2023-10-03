@@ -13,15 +13,16 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.Common.Views;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Foundation;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -33,6 +34,8 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class AddRepoViewModel : ObservableObject
 {
+    private readonly IHost _host;
+
     private readonly Guid _activityId;
 
     private readonly ISetupFlowStringResource _stringResource;
@@ -255,7 +258,7 @@ public partial class AddRepoViewModel : ObservableObject
     {
         if (!string.IsNullOrEmpty(repositoryProviderName))
         {
-            StyleForPrimaryButton = Application.Current.Resources["ContentDialogLogInButtonStyle"] as Style;
+            StyleForPrimaryButton = Application.Current.Resources["SystemAccentColor"] as Style;
             ShouldEnablePrimaryButton = true;
         }
         else
@@ -268,10 +271,11 @@ public partial class AddRepoViewModel : ObservableObject
     public AddRepoViewModel(
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
-        ElementTheme elementTheme,
+        IHost host,
         Guid activityId)
     {
         _stringResource = stringResource;
+        _host = host;
         ChangeToUrlPage();
 
         // override changes ChangeToUrlPage to correctly set the state.
@@ -281,7 +285,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
-        _selectedTheme = elementTheme;
+        _selectedTheme = _host.GetService<IThemeSelectorService>().Theme;
         _activityId = activityId;
     }
 
@@ -310,6 +314,11 @@ public partial class AddRepoViewModel : ObservableObject
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForProviders_Event", LogLevel.Critical, new ProviderEvent(ProviderNames.Count), _activityId);
 
         IsAccountButtonEnabled = extensions.Any();
+    }
+
+    public void SetChangedEvents(TypedEventHandler<IDeveloperIdProvider, IDeveloperId> handler)
+    {
+        _providers.SetChangedEvent(handler);
     }
 
     public void ChangeToUrlPage()

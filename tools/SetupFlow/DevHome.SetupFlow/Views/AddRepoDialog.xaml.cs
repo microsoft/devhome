@@ -6,14 +6,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.Windows.DevHome.SDK;
+using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.Views;
@@ -24,6 +28,8 @@ namespace DevHome.SetupFlow.Views;
 internal partial class AddRepoDialog
 {
     private readonly string _defaultClonePath;
+
+    private readonly IHost _host;
 
     private readonly List<CloningInformation> _previouslySelectedRepos = new ();
 
@@ -60,12 +66,12 @@ internal partial class AddRepoDialog
         IDevDriveManager devDriveManager,
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
-        ElementTheme elementTheme,
-        Guid activityId)
+        Guid activityId,
+        IHost host)
     {
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, elementTheme, activityId);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
 
@@ -84,6 +90,7 @@ internal partial class AddRepoDialog
         IsPrimaryButtonEnabled = false;
         AddViaUrlSegmentedItem.IsSelected = true;
         SwitchViewsSegmentedView.SelectedIndex = 1;
+        _host = host;
     }
 
     /// <summary>
@@ -92,6 +99,31 @@ internal partial class AddRepoDialog
     public async Task GetExtensionsAsync()
     {
         await Task.Run(() => AddRepoViewModel.GetExtensions());
+    }
+
+    public void SetDeveloperChangedEvents()
+    {
+        AddRepoViewModel.SetChangedEvents(ChangedEventHandler);
+    }
+
+    public void ChangedEventHandler(object sender, IDeveloperId developerId)
+    {
+        if (sender is IDeveloperIdProvider devIdProvider)
+        {
+            var authenticationState = devIdProvider.GetDeveloperIdState(developerId);
+
+            if (authenticationState == AuthenticationState.LoggedIn)
+            {
+                _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+                {
+                    var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
+                    if (!string.IsNullOrEmpty(repositoryProviderName))
+                    {
+                        SwitchToRepoPage(repositoryProviderName);
+                    }
+                });
+            }
+        }
     }
 
     /// <summary>
@@ -297,7 +329,6 @@ internal partial class AddRepoDialog
             FolderPickerViewModel.ShowFolderPicker();
             EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
             AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
-            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
             IsPrimaryButtonEnabled = false;
         }
     }

@@ -15,7 +15,7 @@
                PrimaryButtonClick="AddRepoContentDialog_PrimaryButtonClick"
                IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldEnablePrimaryButton, Mode=OneWay}"
                DefaultButton="Primary"
-               Style="{x:Bind AddRepoViewModel.StyleForPrimaryButton}"
+               Style="{StaticResource DefaultContentDialogStyle}"
                PrimaryButtonText="{x:Bind AddRepoViewModel.PrimaryButtonText, Mode=OneWay}"
                CornerRadius="8"
                xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
@@ -63,7 +63,7 @@
             <ComboBox x:Name="RepositoryProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}" Margin="0, 20, 0, 0" >
                 <i:Interaction.Behaviors>
                     <ic:EventTriggerBehavior EventName="SelectionChanged">
-                        <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.RepoProviderSelectedCommand}" CommandParameter="{x:Bind RepositoryProviderComboBox.SelectedItem}"/>
+                        <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.RepoProviderSelectedCommand}" CommandParameter="{x:Bind RepositoryProviderComboBox.SelectedItem, Mode=OneWay}"/>
                     </ic:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </ComboBox>

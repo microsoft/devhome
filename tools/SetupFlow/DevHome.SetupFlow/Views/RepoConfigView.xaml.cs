@@ -13,6 +13,7 @@ using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -24,8 +25,6 @@ namespace DevHome.SetupFlow.Views;
 [INotifyPropertyChanged]
 public sealed partial class RepoConfigView : UserControl
 {
-    private readonly IThemeSelectorService _themeSelectorService;
-
     private Guid ActivityId => ViewModel.Orchestrator.ActivityId;
 
     public RepoConfigViewModel ViewModel => (RepoConfigViewModel)this.DataContext;
@@ -34,8 +33,6 @@ public sealed partial class RepoConfigView : UserControl
     {
         this.InitializeComponent();
         ActualThemeChanged += OnActualThemeChanged;
-
-        _themeSelectorService = Application.Current.GetService<IThemeSelectorService>();
     }
 
     public void OnActualThemeChanged(FrameworkElement sender, object args)
@@ -63,7 +60,7 @@ public sealed partial class RepoConfigView : UserControl
 
         telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Open", dialogName), ActivityId);
 
-        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), _themeSelectorService.Theme, ActivityId);
+        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), ActivityId, ViewModel.Host);
         var getExtensionsTask = addRepoDialog.GetExtensionsAsync();
         var setupDevDrivesTask = addRepoDialog.SetupDevDrivesAsync();
         addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
@@ -72,6 +69,9 @@ public sealed partial class RepoConfigView : UserControl
         // Start
         await getExtensionsTask;
         await setupDevDrivesTask;
+
+        // Needs to run after extensions are populated
+        addRepoDialog.SetDeveloperChangedEvents();
         if (addRepoDialog.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
         {
             addRepoDialog.UpdateDevDriveInfo();

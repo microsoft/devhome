@@ -11,6 +11,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -42,6 +43,14 @@ internal class RepositoryProviders
         foreach (var extensionWrapper in _providers.Values)
         {
             extensionWrapper.StartIfNotRunning();
+        }
+    }
+
+    public void SetChangedEvent(TypedEventHandler<IDeveloperIdProvider, IDeveloperId> callback)
+    {
+        foreach (var provider in _providers.Values)
+        {
+            provider.SetChangedEvent(callback);
         }
     }
 
