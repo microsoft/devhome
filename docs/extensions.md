@@ -2,7 +2,7 @@
 
 Dev Home is an app extension host which uses [out-of-process COM](https://learn.microsoft.com/en-us/samples/dotnet/samples/out-of-process-com-server/) to talk to external COM Server processes that declare themselves to be extensions of Dev Home.
 
-Dev Home currently supports extending two interfaces though the Extension SDK. In addition, extensions can provide widgets to Dev Home using [Widget providers](https://learn.microsoft.com/en-us/windows/apps/develop/widgets/widget-providers).
+Dev Home currently supports extending two interfaces through the Extension SDK. In addition, extensions can provide widgets to Dev Home using [Widget providers](https://learn.microsoft.com/en-us/windows/apps/develop/widgets/widget-providers).
 
 ## Extension basics
 
