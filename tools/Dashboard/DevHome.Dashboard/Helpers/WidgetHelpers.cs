@@ -88,9 +88,12 @@ internal class WidgetHelpers
     public static async Task SetPositionCustomStateAsync(Widget widget, int ordinal)
     {
         var stateStr = await widget.GetCustomStateAsync();
-        var state = JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
-        state.Position = ordinal;
-        stateStr = JsonSerializer.Serialize(state, SourceGenerationContext.Default.WidgetCustomState);
-        await widget.SetCustomStateAsync(stateStr);
+        if (!string.IsNullOrEmpty(stateStr))
+        {
+            var state = JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
+            state.Position = ordinal;
+            stateStr = JsonSerializer.Serialize(state, SourceGenerationContext.Default.WidgetCustomState);
+            await widget.SetCustomStateAsync(stateStr);
+        }
     }
 }
