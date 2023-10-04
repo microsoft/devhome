@@ -96,15 +96,15 @@
                     </ListView.Header>
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="models:RepoViewListItem">
-                            <Grid ColumnSpacing="5">
+                            <Grid ColumnSpacing="7">
                                 <ToolTipService.ToolTip>
                                     <ToolTip IsEnabled="{x:Bind IsRepoNameTrimmed, Mode=OneWay}" Content="{x:Bind RepoDisplayName}"/>
                                 </ToolTipService.ToolTip>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="16"/>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <FontIcon Grid.Column="0" FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
+                                <FontIcon Grid.Column="0" FontSize="16" FontFamily="{StaticResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
                                 <TextBlock Grid.Column="1" Text="{x:Bind RepoDisplayName}" TextTrimming="CharacterEllipsis">
                                     <i:Interaction.Behaviors>
                                         <ic:EventTriggerBehavior EventName="IsTextTrimmedChanged">
@@ -150,7 +150,7 @@
                         <ToolTip x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClearCheckboxToBrowse" Visibility="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
                     </ToolTipService.ToolTip>
                     </TextBlock>
-                    <Button IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click" Margin="5, 25, 0, 0"/>
+                    <Button IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click" Margin="5, 27, 0, 0"/>
                 </Grid>
             </Grid>
             <TextBlock Text="{x:Bind FolderPickerViewModel.FolderPickerErrorMessage, Mode=OneWay}" Visibility="{x:Bind FolderPickerViewModel.ShowFolderPickerError, Mode=OneWay}"/>
