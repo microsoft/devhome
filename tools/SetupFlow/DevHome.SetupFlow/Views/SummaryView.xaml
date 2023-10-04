@@ -268,14 +268,14 @@
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <TextBlock 
-                                        Grid.Row="0" Text="{x:Bind ViewModel.AppsDownloaded.Count}" 
-                                        FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
-                                        FontWeight="{StaticResource InfoBarTitleFontWeight}" 
-                                        HorizontalAlignment="center"/>
+                                    Grid.Row="0" Text="{x:Bind ViewModel.AppsDownloaded.Count}" 
+                                    FontSize="{StaticResource TitleLargeTextBlockFontSize}" 
+                                    FontWeight="{StaticResource InfoBarTitleFontWeight}" 
+                                    HorizontalAlignment="center"/>
                                 <TextBlock 
-                                        Grid.Row="1" 
-                                        Text="{x:Bind ViewModel.ApplicationsClonedText}"
-                                        HorizontalAlignment="center"
+                                    Grid.Row="1" 
+                                    Text="{x:Bind ViewModel.ApplicationsClonedText}"
+                                    HorizontalAlignment="center"
                                     Foreground="{ThemeResource TextFillColorSecondary}"/>
                             </Grid>
                             <Grid

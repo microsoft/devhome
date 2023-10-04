@@ -794,7 +794,7 @@
     <comment>Content for the primary button in the edit clone path dialog.</comment>
   </data>
   <data name="LoadingExecutingProgress" xml:space="preserve">
-    <value>Executing steps {0}/{1}</value>
+    <value>Executing step {0}/{1}</value>
     <comment>Shows ot the user how many tasks have been completed</comment>
   </data>
   <data name="Loading_StopButton.Content" xml:space="preserve">
