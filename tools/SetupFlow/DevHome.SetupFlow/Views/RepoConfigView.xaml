@@ -34,7 +34,7 @@
 
     <setupControls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_RepoConfig"
                                Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
-                               Foreground="{StaticResource TextFillColorSecondary}"                               >
+                               Foreground="{ThemeResource TextFillColorSecondary}"                               >
         <setupControls:SetupShell.Header>
             <Button
                 AutomationProperties.AutomationId="AddRepositoriesButton"
@@ -104,7 +104,7 @@
                                     <TextBlock Text="{x:Bind ProviderName}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
                             </Border>
-                            <Border Style="{StaticResource BorderStyle}"  Grid.Column="1" BorderThickness="0, 1, 1, 0">
+                            <Border Style="{ThemeResource BorderStyle}"  Grid.Column="1" BorderThickness="0, 1, 1, 0">
                                 <Grid ColumnSpacing="5" Margin="10, 0, 0, 0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="0.1*"/>
@@ -114,7 +114,7 @@
                                     <TextBlock Grid.Column="1" Text="{x:Bind RepositoryOwnerAndName}" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
                             </Border>
-                            <Border Style="{StaticResource BorderStyle}"  Grid.Column="2" BorderThickness="0, 1, 0, 0">
+                            <Border Style="{ThemeResource BorderStyle}"  Grid.Column="2" BorderThickness="0, 1, 0, 0">
                                 <Grid HorizontalAlignment="Stretch" ColumnSpacing="5">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>

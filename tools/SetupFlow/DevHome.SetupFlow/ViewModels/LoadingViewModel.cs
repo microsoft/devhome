@@ -33,8 +33,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 {
     private readonly IHost _host;
 
-    private readonly ElementTheme _currentTheme;
-
     private readonly Guid _activityId;
 
     private static readonly BitmapImage DarkCaution = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
@@ -51,6 +49,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 #pragma warning disable SA1310 // Field names should not contain underscore
     private const int MAX_RETRIES = 1;
 #pragma warning restore SA1310 // Field names should not contain underscore
+
+    private ElementTheme _currentTheme;
 
     private int _retryCount;
 
@@ -201,9 +201,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         _host = host;
         _tasksToRun = new ();
 
-        // Assuming that the theme can't change while the user is in the loading screen.
-        _currentTheme = _host.GetService<IThemeSelectorService>().Theme;
-
         IsStepPage = false;
         IsNavigationBarVisible = false;
         NextPageButtonText = stringResource.GetLocalized(StringResourceKey.LoadingScreenGoToSummaryButtonContent);
@@ -212,6 +209,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         ActionCenterItems = new ();
         Messages = new ();
         _activityId = orchestrator.ActivityId;
+        _currentTheme = ElementTheme.Default;
     }
 
     /// <summary>
@@ -348,6 +346,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     protected async override Task OnFirstNavigateToAsync()
     {
+        _currentTheme = _host.GetService<IThemeSelectorService>().Theme;
         FetchTaskInformation();
         await StartAllTasks(TasksToRun);
     }

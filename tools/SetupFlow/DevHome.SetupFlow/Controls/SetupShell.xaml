@@ -62,7 +62,7 @@
                         <DataTemplate x:DataType="viewModels:SetupPageViewModelBase">
                             <StackPanel Spacing="8" Orientation="Horizontal"
                                 Visibility="{x:Bind IsStepPage}">
-                                <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"
+                                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}"
                                           FontSize="16"
                                           Glyph="&#xEA3B;"
                                           Foreground="{x:Bind IsUpcomingPage, Converter={StaticResource StepperBoolToGlyphBrushConverter}}" 
