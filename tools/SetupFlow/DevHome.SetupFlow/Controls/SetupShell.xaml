@@ -65,9 +65,10 @@
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}"
                                           FontSize="16"
                                           Glyph="&#xEA3B;"
-                                          Foreground="{x:Bind IsUpcomingPage, Converter={StaticResource StepperBoolToGlyphBrushConverter}}" />
-                                <TextBlock VerticalAlignment="Center" Text="{x:Bind PageTitle}" />
-                                <StackPanel VerticalAlignment="Center" Visibility="{x:Bind IsLastStepPage, Converter={StaticResource NegatedBoolToVisibilityConverter}}">
+                                          Foreground="{x:Bind IsUpcomingPage, Converter={StaticResource StepperBoolToGlyphBrushConverter}}" 
+                                          Margin="0, 4, 0, 0"/>
+                                <TextBlock VerticalAlignment="Center" Text="{x:Bind PageTitle}" Margin="0, 3, 0, 0"/>
+                                <StackPanel VerticalAlignment="Center" Visibility="{x:Bind IsLastStepPage, Converter={StaticResource NegatedBoolToVisibilityConverter}}" Margin="0, 5, 0, 0">
                                     <ProgressBar Width="20" Value="100"
                                                  AutomationProperties.Name="{x:Bind PageTitle}"
                                                  Visibility="{x:Bind IsPastPage}"
