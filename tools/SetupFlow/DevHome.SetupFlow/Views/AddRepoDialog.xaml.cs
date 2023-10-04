@@ -119,7 +119,10 @@ internal partial class AddRepoDialog
                     var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
                     if (!string.IsNullOrEmpty(repositoryProviderName))
                     {
-                        SwitchToRepoPage(repositoryProviderName);
+                        if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
+                        {
+                            SwitchToRepoPage(repositoryProviderName);
+                        }
                     }
                 });
             }

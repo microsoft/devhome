@@ -536,6 +536,10 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         var providerToCloneRepo = _providers.CanAnyProviderSupportThisUri(parsedUri);
+        if (providerToCloneRepo.Item1 && providerToCloneRepo.Item2 == null)
+        {
+            
+        }
 
         // true not-null can use developer ID to clone repo.
         // True, null, do not use developer ID to clone the repo
