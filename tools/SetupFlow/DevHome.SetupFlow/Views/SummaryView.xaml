@@ -12,6 +12,7 @@
     xmlns:models="using:DevHome.SetupFlow.Models"
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
     setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
     setupFlowBehaviors:SetupFlowNavigationBehavior.NextVisibility="Collapsed"
     mc:Ignorable="d">
@@ -367,6 +368,9 @@
                                 <GridView.ItemTemplate>
                                     <DataTemplate x:DataType="viewModels:PackageViewModel">
                                         <ctControls:SettingsCard Width="250" Padding="5" Background="Transparent">
+                                            <ToolTipService.ToolTip>
+                                                <controls:PackageDetailsTooltip Package="{x:Bind}" />
+                                            </ToolTipService.ToolTip>
                                             <ctControls:SettingsCard.Resources>
                                                 <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
                                                 <Thickness x:Key="SettingsCardPadding">0</Thickness>

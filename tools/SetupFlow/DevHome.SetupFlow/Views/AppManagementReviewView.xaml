@@ -10,6 +10,7 @@
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -49,17 +50,7 @@
                             <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
                         </ctControls:SettingsCard.Resources>
                         <ToolTipService.ToolTip>
-                            <StackPanel>
-                                <StackPanel.Resources>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
-                                    </Style>
-                                </StackPanel.Resources>
-                                <TextBlock Text="{x:Bind TooltipName, Mode=OneWay}"/>
-                                <TextBlock Text="{x:Bind TooltipVersion, Mode=OneWay}"/>
-                                <TextBlock Text="{x:Bind TooltipSource, Mode=OneWay}"/>
-                                <TextBlock Text="{x:Bind TooltipPublisher, Mode=OneWay}"/>
-                            </StackPanel>
+                            <controls:PackageDetailsTooltip Package="{x:Bind}" />
                         </ToolTipService.ToolTip>
                         <ctControls:SettingsCard.Header>
                             <TextBlock

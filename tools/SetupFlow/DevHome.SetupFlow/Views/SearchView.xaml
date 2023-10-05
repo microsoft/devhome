@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:CollectionVisibilityConverter x:Name="CollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
@@ -104,23 +105,7 @@
                                             <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
                                         </ctControls:SettingsCard.Resources>
                                         <ToolTipService.ToolTip>
-                                            <ToolTip>
-                                                <StackPanel>
-                                                    <StackPanel.Resources>
-                                                        <Style TargetType="TextBlock">
-                                                            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
-                                                        </Style>
-                                                    </StackPanel.Resources>
-                                                    <TextBlock
-                                                        Foreground="{ThemeResource TextFillColorPrimary}"
-                                                        FontWeight="Bold" Text="{Binding TooltipIsInstalled}"
-                                                        Visibility="{Binding TooltipIsInstalled, Converter={StaticResource StringVisibilityConverter}}"/>
-                                                    <TextBlock Text="{Binding TooltipName}"/>
-                                                    <TextBlock Text="{Binding TooltipVersion}"/>
-                                                    <TextBlock Text="{Binding TooltipSource}"/>
-                                                    <TextBlock Text="{Binding TooltipPublisher}"/>
-                                                </StackPanel>
-                                            </ToolTip>
+                                            <controls:PackageDetailsTooltip Package="{Binding}" />
                                         </ToolTipService.ToolTip>
                                         <ctControls:SettingsCard.Header>
                                             <TextBlock
