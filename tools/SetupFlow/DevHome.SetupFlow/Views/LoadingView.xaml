@@ -66,16 +66,7 @@
                 </Button>
             </StackPanel>
         </Grid>
-        <Grid x:Name="HeaderGrid" >
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical" Grid.Column="0" >
-                <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderTopRow"/>
-                <TextBlock Grid.Row="0" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_HeaderBottomRow"/>
-            </StackPanel>
-        </Grid>
+        <TextBlock Style="{ThemeResource SubtitleTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingPage_Header"/>
         <ProgressBar AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreen_SetupProgressBar_Description" x:Name="SetupTaskProgressBar" Maximum="{x:Bind ViewModel.TasksToRun.Count, Mode=OneWay}" Value="{x:Bind ViewModel.TasksCompleted, Mode=OneWay}" />
         <TextBlock Text="{x:Bind ViewModel.ExecutingTasks, Mode=OneWay}" />
         <Grid ColumnSpacing="50" RowSpacing="5">
@@ -88,13 +79,17 @@
                 <RowDefinition Height="400"/>
             </Grid.RowDefinitions>
             <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource DevHomeBorderStyle}" BorderThickness="0, 0, 0, 1">
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Style="{StaticResource SemiBoldTextStyle}"/>
+                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ExecutingTasks" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Bottom" Padding="0, 0, 0, 6"/>
             </Border>
             <ListView  Grid.Column="0" Grid.Row="1" ItemsSource="{x:Bind ViewModel.Messages, Mode=OneWay}" SelectionMode="None">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:LoadingMessageViewModel">
-                        <StackPanel Orientation="Horizontal" Spacing="5">
-                            <StackPanel.Resources>
+                        <Grid ColumnSpacing="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="18"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.Resources>
                                 <ResourceDictionary>
                                     <Style x:Key="PrimaryTextStyle" TargetType="TextBlock">
                                         <Setter Property="Foreground">
@@ -111,18 +106,19 @@
                                         </Setter>
                                     </Style>
                                 </ResourceDictionary>
-                            </StackPanel.Resources>
+                            </Grid.Resources>
                             <ImageIcon
-                                    Width="18"
-                                    Height="18"
+                                Grid.Column="0"
                                     Visibility="{x:Bind ShouldShowStatusSymbolIcon, Mode=OneWay}"
                                     Source="{x:Bind StatusSymbolIcon, Mode=OneWay}"/>
                             <ProgressRing
+                                Grid.Column="0"
+                                Height="18"
+                                Width="18"
                                     IsActive="{x:Bind ShouldShowProgressRing, Mode=OneWay}"
-                                    Visibility="{x:Bind ShouldShowProgressRing, Mode=OneWay}"
-                                    Width="20" Height="20"/>
-                            <TextBlock Text="{x:Bind MessageToShow, Mode=OneWay}" VerticalAlignment="Center" Style="{x:Bind ShouldShowProgressRing, Mode=OneWay, Converter={StaticResource BoolToTextBrush}}"/>
-                        </StackPanel>
+                                    Visibility="{x:Bind ShouldShowProgressRing, Mode=OneWay}"/>
+                            <TextBlock Grid.Column="1" Text="{x:Bind MessageToShow, Mode=OneWay}" VerticalAlignment="Center" Style="{x:Bind ShouldShowProgressRing, Mode=OneWay, Converter={StaticResource BoolToTextBrush}}"/>
+                        </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
@@ -132,11 +128,8 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="33"/>
-                    </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter" VerticalAlignment="Center" Style="{StaticResource SemiBoldTextStyle}"/>
-                    <HyperlinkButton Grid.Row="0" Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}" HorizontalAlignment="right"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Loading_ActionCenter" VerticalAlignment="Bottom" Style="{StaticResource BodyStrongTextBlockStyle}" Padding="0, 0, 0, 6"/>
+                    <HyperlinkButton Grid.Row="0" Grid.Column="1" Visibility="{x:Bind ViewModel.ShowRetryButton, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LoadingScreenRetry" Command="{x:Bind ViewModel.RestartFailedTasksCommand}" HorizontalAlignment="right" Margin="0, 8, 0, 0"/>
                 </Grid>
             </Border>
             <Grid Grid.Row="1" Grid.Column="1">
@@ -144,7 +137,7 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}" Margin="0, 0, 0, 5"/>
+                <TextBlock Text="{x:Bind ViewModel.ActionCenterDisplay, Mode=OneWay}" Margin="0, 0, 0, 5" Foreground="{ThemeResource TextFillColorSecondary}"/>
                 <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{x:Bind ViewModel.ActionCenterItems, Mode=OneWay}" SelectionMode="None">
                     <ListView.ItemTemplate>
                         <DataTemplate x:DataType="commonModels:ActionCenterMessages">
