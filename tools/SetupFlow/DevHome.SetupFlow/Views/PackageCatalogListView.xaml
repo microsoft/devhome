@@ -22,7 +22,7 @@
                 <DataTemplate x:DataType="viewmodels:PackageCatalogViewModel">
                     <!-- Border configuration is applied in code-behind -->
                     <Border>
-                        <views:PackageCatalogView Catalog="{x:Bind Mode=OneWay}" GroupSize="{StaticResource ItemsPerPanel}"/>
+                        <views:PackageCatalogView Catalog="{x:Bind Mode=OneWay}" PackageCount="{StaticResource ItemsPerPanel}"/>
                     </Border>
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>

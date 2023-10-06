@@ -73,9 +73,6 @@
                         <ImageIcon Name="Image" Width="24" VerticalAlignment="Center" Source="{Binding Icon}"/>
 
                         <!-- Select button -->
-                        <!-- Adding a margin prevents FlipView's (overlay) next
-                             button from shadowing this button, and enables keyboard
-                             navigation -->
                         <Button
                             Grid.Column="1"
                             AutomationProperties.Name="{Binding ButtonAutomationName}"
@@ -84,7 +81,6 @@
                             BorderThickness="0"
                             Command="{Binding ToggleSelectionCommand}"
                             HorizontalAlignment="Right"
-                            Margin="0,0,2,0"
                             Padding="5">
                             <FontIcon
                                 Glyph="{Binding IsSelected, Converter={StaticResource SelectButtonGlyphConverter}}"

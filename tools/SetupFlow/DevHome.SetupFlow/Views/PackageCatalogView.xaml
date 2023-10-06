@@ -4,7 +4,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     xmlns:views="using:DevHome.SetupFlow.Views"
     mc:Ignorable="d">
@@ -28,51 +27,23 @@
             </HyperlinkButton>
         </Grid>
 
-        <!-- Packages flip view -->
-        <FlipView
-            x:Name="PackagesFlipView"
-            Background="Transparent"
-            SelectionChanged="PackagesFlipView_SelectionChanged"
-            ItemsSource="{x:Bind PackageGroups, Mode=OneWay}">
-            <FlipView.ItemContainerStyle>
-                <Style TargetType="FlipViewItem">
-                    <Setter Property="IsTabStop" Value="False" />
-                </Style>
-            </FlipView.ItemContainerStyle>
-            <FlipView.ItemTemplate>
-                <DataTemplate>
-                    <!-- Grid added here to help update the FlipView
-                    height (in code-behind) to fit its content for various
-                    control width -->
-                    <Grid VerticalAlignment="Top">
-                        <ItemsRepeater ItemsSource="{Binding}">
-                            <ItemsRepeater.Layout>
-                                <UniformGridLayout
-                                    Orientation="Horizontal"
-                                    MinItemWidth="190"
-                                    MaximumRowsOrColumns="3"
-                                    MinRowSpacing="4"
-                                    MinColumnSpacing="4"
-                                    MinItemHeight="140"
-                                    ItemsStretch="Fill" />
-                            </ItemsRepeater.Layout>
-                            <ItemsRepeater.ItemTemplate>
-                                <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                                    <views:PackageView Height="140" />
-                                </DataTemplate>
-                            </ItemsRepeater.ItemTemplate>
-                        </ItemsRepeater>
-                    </Grid>
+        <!-- List of packages -->
+        <ItemsRepeater ItemsSource="{x:Bind DisplayPackages}">
+            <ItemsRepeater.Layout>
+                <UniformGridLayout
+                    Orientation="Horizontal"
+                    MinItemWidth="190"
+                    MaximumRowsOrColumns="3"
+                    MinRowSpacing="4"
+                    MinColumnSpacing="4"
+                    MinItemHeight="140"
+                    ItemsStretch="Fill" />
+            </ItemsRepeater.Layout>
+            <ItemsRepeater.ItemTemplate>
+                <DataTemplate x:DataType="viewmodels:PackageViewModel">
+                    <views:PackageView Height="140" />
                 </DataTemplate>
-            </FlipView.ItemTemplate>
-        </FlipView>
-
-        <!-- Packages pagination -->
-        <PipsPager
-            Visibility="{x:Bind PagerVisibility,Mode=OneWay}"
-            HorizontalAlignment="Center"
-            Margin="0 15 0 0"
-            NumberOfPages="{x:Bind PackageGroups.Count, Mode=OneWay}"
-            SelectedPageIndex="{x:Bind Path=PackagesFlipView.SelectedIndex, Mode=TwoWay}" />
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
     </StackPanel>
 </UserControl>
