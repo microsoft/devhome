@@ -44,6 +44,9 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Controls\PackageDetailsSettingsCard.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Windows\InstallationNotesWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -60,6 +63,7 @@
 
   <ItemGroup>
     <None Remove="Assets\DevHomeFluentIcons.ttf" />
+    <None Remove="Controls\PackageDetailsSettingsCard.xaml" />
     <None Remove="Controls\SetupFlowNavigation.xaml" />
     <None Remove="NativeMethods.txt" />
     <None Remove="SetupFlowPage.xaml" />

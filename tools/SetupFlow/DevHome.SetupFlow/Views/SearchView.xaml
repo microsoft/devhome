@@ -4,7 +4,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     mc:Ignorable="d">
@@ -88,7 +87,7 @@
                                                     <StateTrigger IsActive="{Binding IsSelected}" />
                                                 </VisualState.StateTriggers>
                                                 <VisualState.Setters>
-                                                    <Setter Target="Image.Opacity" Value="0.4"/>
+                                                    <Setter Target="Image.Opacity" Value="{ThemeResource AppManagementIconDisabledOpacity}"/>
                                                     <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
                                                     <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
                                                 </VisualState.Setters>
@@ -96,50 +95,32 @@
                                         </VisualStateGroup>
                                     </VisualStateManager.VisualStateGroups>
 
-                                    <ctControls:SettingsCard Background="Transparent" BorderThickness="0">
-                                        <ctControls:SettingsCard.Resources>
-                                            <Thickness x:Key="SettingsCardPadding">0, 10</Thickness>
-                                            <Thickness x:Key="SettingsCardMinHeight">0</Thickness>
-                                            <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
-                                            <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-                                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">24</x:Double>
-                                        </ctControls:SettingsCard.Resources>
+                                    <controls:PackageDetailsSettingsCard>
                                         <ToolTipService.ToolTip>
                                             <controls:PackageDetailsTooltip Package="{Binding}" />
                                         </ToolTipService.ToolTip>
-                                        <ctControls:SettingsCard.Header>
-                                            <TextBlock
-                                                Name="Title"
-                                                TextTrimming="CharacterEllipsis"
-                                                MaxLines="1"
-                                                Style="{ThemeResource CaptionTextBlockStyle}"
-                                                Text="{Binding PackageTitle}"/>
-                                        </ctControls:SettingsCard.Header>
-                                        <ctControls:SettingsCard.Description>
-                                            <TextBlock
-                                                Name="Version"
-                                                TextTrimming="CharacterEllipsis"
-                                                MaxLines="1"
-                                                Foreground="{ThemeResource TextFillColorSecondary}"
-                                                Style="{ThemeResource CaptionTextBlockStyle}"
-                                                Text="{Binding PackageDescription}"/>
-                                        </ctControls:SettingsCard.Description>
-                                        <ctControls:SettingsCard.HeaderIcon>
+                                        <controls:PackageDetailsSettingsCard.Header>
+                                            <TextBlock Name="Title" Style="{ThemeResource AppManagementTitleTextBlock}" Text="{Binding PackageTitle}"/>
+                                        </controls:PackageDetailsSettingsCard.Header>
+                                        <controls:PackageDetailsSettingsCard.Description>
+                                            <TextBlock Name="Version" Style="{ThemeResource AppManagementDescriptionTextBlock}" Text="{Binding PackageDescription}"/>
+                                        </controls:PackageDetailsSettingsCard.Description>
+                                        <controls:PackageDetailsSettingsCard.HeaderIcon>
                                             <ImageIcon Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
-                                        </ctControls:SettingsCard.HeaderIcon>
+                                        </controls:PackageDetailsSettingsCard.HeaderIcon>
                                         <StackPanel Orientation="Horizontal" Spacing="10">
                                             <ContentControl IsTabStop="False" Content="{Binding IsInstalled, Converter={StaticResource LearnMoreInstalledConverter}}" />
                                             <Button
                                                 IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
-                                                Command="{Binding ToggleSelectionCommand,Mode=OneWay}"
-                                                Padding="5">
+                                                Padding="5"
+                                                Command="{Binding ToggleSelectionCommand,Mode=OneWay}">
                                                 <FontIcon
                                                     Glyph="{Binding IsSelected,Mode=OneWay, Converter={StaticResource SelectButtonGlyphConverter}}"
                                                     FontSize="{ThemeResource CaptionTextBlockFontSize}"
                                                     FontFamily="{ThemeResource SymbolThemeFontFamily}"/>
                                             </Button>
                                         </StackPanel>
-                                    </ctControls:SettingsCard>
+                                    </controls:PackageDetailsSettingsCard>
                                 </Grid>
                             </ControlTemplate>
                         </Setter.Value>
@@ -148,7 +129,7 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Spacing="2" />
+                    <StackPanel Spacing="20" />
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
         </ListView>

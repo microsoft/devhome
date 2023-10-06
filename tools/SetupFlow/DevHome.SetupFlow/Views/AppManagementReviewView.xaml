@@ -39,35 +39,17 @@
             </GridView.ItemsPanel>
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                    <ctControls:SettingsCard Width="320" Padding="5" Background="Transparent">
-                        <ctControls:SettingsCard.Resources>
-                            <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
-                            <Thickness x:Key="SettingsCardPadding">0</Thickness>
-                            <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
-                            <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
-                            <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
-                            <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-                            <x:Double x:Key="SettingsCardHeaderIconMaxSize">18</x:Double>
-                        </ctControls:SettingsCard.Resources>
+                    <controls:PackageDetailsSettingsCard Width="320" Padding="5">
                         <ToolTipService.ToolTip>
                             <controls:PackageDetailsTooltip Package="{x:Bind}" />
                         </ToolTipService.ToolTip>
                         <ctControls:SettingsCard.Header>
-                            <TextBlock
-                                Text="{x:Bind PackageTitle, Mode=OneWay}"
-                                MaxLines="2"
-                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock Style="{ThemeResource AppManagementTitleTextBlock}" Text="{x:Bind PackageTitle, Mode=OneWay}"/>
                         </ctControls:SettingsCard.Header>
                         <ctControls:SettingsCard.Description>
                             <StackPanel>
-                                <TextBlock
-                                    Text="{x:Bind PackageDescription, Mode=OneWay}"
-                                    MaxLines="1"
-                                    TextTrimming="CharacterEllipsis" />
-                                <HyperlinkButton
-                                    Padding="0"
-                                    Style="{ThemeResource TextBlockButtonStyle}"
-                                    Command="{x:Bind LearnMoreCommand, Mode=OneWay}">
+                                <TextBlock Style="{ThemeResource AppManagementDescriptionTextBlock}" Text="{x:Bind PackageDescription, Mode=OneWay}" />
+                                <HyperlinkButton Padding="0" Style="{ThemeResource TextBlockButtonStyle}" Command="{x:Bind LearnMoreCommand, Mode=OneWay}">
                                     <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
                                 </HyperlinkButton>
                             </StackPanel>
@@ -75,7 +57,7 @@
                         <ctControls:SettingsCard.HeaderIcon>
                             <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
                         </ctControls:SettingsCard.HeaderIcon>
-                    </ctControls:SettingsCard>
+                    </controls:PackageDetailsSettingsCard>
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>

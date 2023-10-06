@@ -121,46 +121,15 @@
             <ListView Grid.Row="1" ItemsSource="{x:Bind ViewModel.SelectedPackages, Mode=OneWay}" SelectionMode="None">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                        <ctControls:SettingsCard
-                            Background="Transparent"
-                            AutomationProperties.AccessibilityView="Raw"
-                            AutomationProperties.Name="{Binding PackageTitle}">
-                            <ctControls:SettingsCard.Resources>
-                                <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
-                                <Thickness x:Key="SettingsCardPadding">0</Thickness>
-                                <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
-                                <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
-                                <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
-                                <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-                                <x:Double x:Key="SettingsCardHeaderIconMaxSize">18</x:Double>
-                            </ctControls:SettingsCard.Resources>
+                        <controls:PackageDetailsSettingsCard AutomationProperties.AccessibilityView="Raw" AutomationProperties.Name="{Binding PackageTitle}">
                             <ToolTipService.ToolTip>
-                                <StackPanel>
-                                    <StackPanel.Resources>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
-                                        </Style>
-                                    </StackPanel.Resources>
-                                    <TextBlock Text="{x:Bind TooltipName, Mode=OneWay}"/>
-                                    <TextBlock Text="{x:Bind TooltipVersion, Mode=OneWay}"/>
-                                    <TextBlock Text="{x:Bind TooltipSource, Mode=OneWay}"/>
-                                    <TextBlock Text="{x:Bind TooltipPublisher, Mode=OneWay}"/>
-                                </StackPanel>
+                                <controls:PackageDetailsTooltip Package="{Binding}" />
                             </ToolTipService.ToolTip>
                             <ctControls:SettingsCard.Header>
-                                <TextBlock
-                                    TextTrimming="CharacterEllipsis"
-                                    MaxLines="2"
-                                    Style="{ThemeResource CaptionTextBlockStyle}"
-                                    Text="{Binding PackageTitle}"/>
+                                <TextBlock Style="{ThemeResource AppManagementTitleTextBlock}" Text="{Binding PackageTitle}"/>
                             </ctControls:SettingsCard.Header>
                             <ctControls:SettingsCard.Description>
-                                <TextBlock
-                                    TextTrimming="CharacterEllipsis"
-                                    MaxLines="1"
-                                    Foreground="{ThemeResource TextFillColorSecondary}"
-                                    Style="{ThemeResource CaptionTextBlockStyle}"
-                                    Text="{Binding PackageDescription}"/>
+                                <TextBlock Style="{ThemeResource AppManagementDescriptionTextBlock}" Text="{Binding PackageDescription}"/>
                             </ctControls:SettingsCard.Description>
                             <ctControls:SettingsCard.HeaderIcon>
                                 <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
@@ -171,12 +140,10 @@
                             <Button
                                 AutomationProperties.Name="{x:Bind ButtonAutomationName, Mode=OneWay}"
                                 Command="{x:Bind ToggleSelectionCommand, Mode=OneWay}"
-                                Padding="10"
-                                Background="Transparent"
-                                BorderThickness="0">
-                                <FontIcon FontSize="{ThemeResource CaptionTextBlockFontSize}" FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE894;"/>
+                                FontSize="{ThemeResource CaptionTextBlockFontSize}"
+                                Style="{ThemeResource AlternateCloseButtonStyle}">
                             </Button>
-                        </ctControls:SettingsCard>
+                        </controls:PackageDetailsSettingsCard>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>

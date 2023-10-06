@@ -6,6 +6,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="/Styles/AppManagement_ThemeResources.xaml" />
                 <ResourceDictionary Source="/Styles/BreadcrumbBar.xaml" />
                 <ResourceDictionary Source="/Styles/Feedback_ThemeResources.xaml" />
                 <ResourceDictionary Source="/Styles/FontFamilies.xaml" />
