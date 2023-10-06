@@ -50,7 +50,7 @@
                                     <StateTrigger IsActive="{Binding IsSelected}" />
                                 </VisualState.StateTriggers>
                                 <VisualState.Setters>
-                                    <Setter Target="Image.Opacity" Value="0.4"/>
+                                    <Setter Target="Image.Opacity" Value="{ThemeResource AppManagementIconDisabledOpacity}"/>
                                     <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
                                     <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
                                 </VisualState.Setters>

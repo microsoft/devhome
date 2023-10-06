@@ -8,24 +8,17 @@
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
     xmlns:views="using:DevHome.SetupFlow.Views"
     mc:Ignorable="d">
-    <StackPanel>
+    <StackPanel Spacing="12">
         <!-- Card header -->
-        <ctControls:SettingsCard
-            SizeChanged="SettingsCard_SizeChanged"
-            Background="Transparent"
-            Header="{x:Bind Catalog.Name}"
-            Description="{x:Bind Catalog.Description}">
-            <ctControls:SettingsCard.Resources>
-                <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
-                <Thickness x:Key="SettingsCardPadding">0,0,0,15</Thickness>
-                <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
-                <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
-                <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
-                <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-            </ctControls:SettingsCard.Resources>
-            <ctControls:SettingsCard.ActionIcon>
-                <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE711;"/>
-            </ctControls:SettingsCard.ActionIcon>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="{x:Bind Catalog.Name}" Style="{ThemeResource AppManagementTitleTextBlock}" />
+                <TextBlock Text="{x:Bind Catalog.Description}" Style="{ThemeResource AppManagementDescriptionTextBlock}" />
+            </StackPanel>
             <HyperlinkButton
                 Grid.Column="1"
                 AutomationProperties.AutomationControlType="Button"
@@ -33,7 +26,7 @@
                 Command="{x:Bind Catalog.AddAllPackagesCommand}">
                 <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AddAll" />
             </HyperlinkButton>
-        </ctControls:SettingsCard>
+        </Grid>
 
         <!-- Packages flip view -->
         <FlipView
