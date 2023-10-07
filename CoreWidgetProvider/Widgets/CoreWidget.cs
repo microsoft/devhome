@@ -9,7 +9,7 @@ using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
 
-internal class CoreWidget : WidgetImpl
+internal abstract class CoreWidget : WidgetImpl
 {
     protected static readonly string EmptyJson = new JsonObject().ToJsonString();
 
