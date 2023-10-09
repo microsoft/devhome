@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:commonviews="using:DevHome.Common.Views"
     mc:Ignorable="d">
-    <Grid x:Name="BannerGrid" Height="214">
+    <Grid x:Name="BannerGrid" MinHeight="214">
         <Grid.Background>
             <ImageBrush Stretch="Fill" ImageSource="{x:Bind BackgroundSource, Mode=OneWay}" />
         </Grid.Background>
