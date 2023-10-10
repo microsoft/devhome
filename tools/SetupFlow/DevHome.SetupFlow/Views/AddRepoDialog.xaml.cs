@@ -8,9 +8,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
+using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
@@ -60,12 +62,12 @@ internal partial class AddRepoDialog
         IDevDriveManager devDriveManager,
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
-        ElementTheme elementTheme,
+        IThemeSelectorService themeSelectorService,
         Guid activityId)
     {
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, elementTheme, activityId);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, themeSelectorService, activityId);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
 

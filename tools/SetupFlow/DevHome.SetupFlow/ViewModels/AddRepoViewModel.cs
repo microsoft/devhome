@@ -38,7 +38,9 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
-    private readonly ElementTheme _selectedTheme;
+    private readonly IThemeSelectorService _themeSelectorService;
+
+    private ElementTheme SelectedTheme => _themeSelectorService.Theme;
 
     /// <summary>
     /// Gets or sets the list that keeps all repositories the user wants to clone.
@@ -245,7 +247,7 @@ public partial class AddRepoViewModel : ObservableObject
     public AddRepoViewModel(
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
-        ElementTheme elementTheme,
+        IThemeSelectorService themeSelector,
         Guid activityId)
     {
         _stringResource = stringResource;
@@ -259,7 +261,8 @@ public partial class AddRepoViewModel : ObservableObject
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
-        _selectedTheme = elementTheme;
+
+        _themeSelectorService = themeSelector;
         _activityId = activityId;
     }
 
@@ -403,7 +406,7 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
-            var loginUi = _providers.GetLoginUi(repositoryProviderName, _selectedTheme);
+            var loginUi = _providers.GetLoginUi(repositoryProviderName, SelectedTheme);
             loginFrame.Content = loginUi;
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false), _activityId);
         }
