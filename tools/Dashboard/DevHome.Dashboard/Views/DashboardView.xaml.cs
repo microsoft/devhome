@@ -38,7 +38,6 @@ public partial class DashboardView : ToolPage
     private static AdaptiveCardRenderer _renderer;
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
-    private readonly WidgetServiceHelper _widgetServiceHelper;
     private readonly WidgetIconCache _widgetIconCache;
 
     private static bool _widgetHostInitialized;
@@ -49,7 +48,6 @@ public partial class DashboardView : ToolPage
     public DashboardView()
     {
         ViewModel = Application.Current.GetService<DashboardViewModel>();
-        _widgetServiceHelper = new WidgetServiceHelper();
         this.InitializeComponent();
 
         if (PinnedWidgets != null)
@@ -70,7 +68,7 @@ public partial class DashboardView : ToolPage
         // If this is the first time initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
         {
-            if (_widgetServiceHelper.EnsureWebExperiencePack())
+            if (ViewModel.EnsureWebExperiencePack())
             {
                 _widgetHostInitialized = InitializeWidgetHost();
             }
@@ -271,7 +269,7 @@ public partial class DashboardView : ToolPage
         // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
         {
-            if (_widgetServiceHelper.EnsureWebExperiencePack())
+            if (ViewModel.EnsureWebExperiencePack())
             {
                 _widgetHostInitialized = InitializeWidgetHost();
                 await _widgetIconCache.CacheAllWidgetIconsAsync(_widgetCatalog);

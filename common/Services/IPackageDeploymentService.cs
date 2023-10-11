@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.ApplicationModel;
 using Windows.Management.Deployment;
 
 namespace DevHome.Common.Services;
@@ -20,6 +22,12 @@ public interface IPackageDeploymentService
     /// <param name="options">Register package options</param>
     /// <exception cref="RegisterPackageException">Exception thrown if registration failed</exception>
     public Task RegisterPackageForCurrentUserAsync(string packageFamilyName, RegisterPackageOptions? options = null);
+
+    /// <summary>
+    /// Find packages for the current user. Package versions must be between minVersion1 and version1Ceiling, or above minVersion2.
+    /// </summary>
+    /// <returns>An IEnumerable containing the installed packages that meet the version criteria.</returns>
+    public IEnumerable<Package> FindPackagesForCurrentUser(string packageFamilyName, Version minVersion1, Version version1Ceiling, Version minVersion2);
 }
 
 /// <summary>
