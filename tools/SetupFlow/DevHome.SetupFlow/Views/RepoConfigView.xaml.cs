@@ -67,19 +67,19 @@ public sealed partial class RepoConfigView : UserControl
 
         telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Open", dialogName), ActivityId);
 
-        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), ActivityId, ViewModel.Host);
-        var getExtensionsTask = addRepoDialog.GetExtensionsAsync();
-        var setupDevDrivesTask = addRepoDialog.SetupDevDrivesAsync();
-        addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
-        addRepoDialog.RequestedTheme = ActualTheme;
+        _addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), ActivityId, ViewModel.Host);
+        var getExtensionsTask = _addRepoDialog.GetExtensionsAsync();
+        var setupDevDrivesTask = _addRepoDialog.SetupDevDrivesAsync();
+        _addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
+        _addRepoDialog.RequestedTheme = ActualTheme;
 
         // Start
         await getExtensionsTask;
         await setupDevDrivesTask;
 
-        // Needs to run after extensions are populated
-        addRepoDialog.SetDeveloperChangedEvents();
-        if (addRepoDialog.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
+        _addRepoDialog.SetDeveloperChangedEvents();
+
+        if (_addRepoDialog.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
         {
             _addRepoDialog.UpdateDevDriveInfo();
         }

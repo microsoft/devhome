@@ -96,19 +96,19 @@ internal class RepositoryProviders
     /// </summary>
     /// <param name="uri">The uri that points to a remote repository</param>
     /// <returns>THe provider that can clone the repo.  Otherwise null.</returns>
-    public (bool, IDeveloperId, IRepositoryProvider) CanAnyProviderSupportThisUri(Uri uri)
+    public RepositoryProvider CanAnyProviderSupportThisUri(Uri uri)
     {
         foreach (var provider in _providers)
         {
             provider.Value.StartIfNotRunning();
-            var isSupported = provider.Value.IsUriSupported(uri);
-            if (isSupported.Item1)
+            var isUriSupported = provider.Value.IsUriSupported(uri);
+            if (isUriSupported)
             {
-                return isSupported;
+                return provider.Value;
             }
         }
 
-        return (false, null, null);
+        return null;
     }
 
     public ExtensionAdaptiveCardPanel GetLoginUi(string providerName, ElementTheme elementTheme)
@@ -130,11 +130,21 @@ internal class RepositoryProviders
         return _providers.Keys;
     }
 
-    public IRepositoryProvider GetProvider(string providerName)
+    public IRepositoryProvider GetSDKProvider(string providerName)
     {
         if (_providers.TryGetValue(providerName, out var repoProvider))
         {
             return repoProvider.GetProvider();
+        }
+
+        return null;
+    }
+
+    public RepositoryProvider GetProvider(string providerName)
+    {
+        if (_providers.TryGetValue(providerName, out var repoProvider))
+        {
+            return repoProvider;
         }
 
         return null;
@@ -149,6 +159,11 @@ internal class RepositoryProviders
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all logged in accounts for repository provider {providerName}");
         return _providers.GetValueOrDefault(providerName)?.GetAllLoggedInAccounts() ?? new List<IDeveloperId>();
+    }
+
+    public AuthenticationExperienceKind GetAuthenticationExperienceKind(string providerName)
+    {
+        return _providers.GetValueOrDefault(providerName)?.GetAuthenticationExpirenceKind() ?? AuthenticationExperienceKind.CardSession;
     }
 
     /// <summary>

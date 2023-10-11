@@ -15,6 +15,7 @@ using DevHome.Logging;
 using DevHome.Settings.Views;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
@@ -61,6 +62,8 @@ internal class RepositoryProvider
 
     public string DisplayName => _repositoryProvider.DisplayName;
 
+    public string ExtensionDisplayName => _extensionWrapper.Name;
+
     /// <summary>
     /// Starts the extension if it isn't running.
     /// </summary>
@@ -80,7 +83,20 @@ internal class RepositoryProvider
 
     public void SetChangedEvent(TypedEventHandler<IDeveloperIdProvider, IDeveloperId> handler)
     {
-        _devIdProvider.Changed += handler;
+        if (_devIdProvider != null)
+        {
+            // TypedEventHandler does not have a way to query if this handler is listening or not.
+            // To prevent multiple instances being invoked, always remove the handler, then re-add it.
+            _devIdProvider.Changed += handler;
+        }
+    }
+
+    public void RemoveChangedEvent(TypedEventHandler<IDeveloperIdProvider, IDeveloperId> handler)
+    {
+        if (_devIdProvider != null)
+        {
+            _devIdProvider.Changed -= handler;
+        }
     }
 
     /// <summary>
@@ -105,7 +121,9 @@ internal class RepositoryProvider
 
         if (getResult.Result.Status == ProviderOperationStatus.Failure)
         {
-            throw getResult.Result.ExtendedError;
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Could not get repo from Uri.");
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, getResult.Result.DisplayMessage);
+            return null;
         }
 
         return getResult.Repository;
@@ -115,48 +133,50 @@ internal class RepositoryProvider
     /// Checks with the provider if it understands and can clone a repo via Uri.
     /// </summary>
     /// <param name="uri">The uri to the repository</param>
-    /// <returns>A tuple that containes if the provider can parse the uri and the account it can parse with.</returns>
-    /// <remarks>If the provider can't parse the Uri, this will try a second time with any logged in accounts.  If the repo is
-    /// public, the developerid can be null.</remarks>
-    public (bool, IDeveloperId, IRepositoryProvider) IsUriSupported(Uri uri)
+    /// <returns>A tuple that contains if the provider can parse the uri and the account it can parse with.</returns>
+    public bool IsUriSupported(Uri uri)
     {
-        var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
-
-        // Possible that no accounts are loggd in.  Try in case the repo is public.
-        if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
+        var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
+        if (uriSupportResult.Result.Status == ProviderOperationStatus.Failure)
         {
-            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}", developerIdsResult.Result.ExtendedError);
-            var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
-            if (uriSupportResult.IsSupported)
-            {
-                return (true, null, _repositoryProvider);
-            }
+            return false;
         }
-        else
+
+        return uriSupportResult.IsSupported;
+
+        /*
+        // Assume this is a public repo and it exists.
+        var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
+        if (uriSupportResult.IsSupported)
         {
+            return (true, null, _repositoryProvider);
+        }
+
+        // The repo is either private, or does not exist try with a logged in account.
+        var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
+        if (developerIdsResult.Result.Status == ProviderOperationStatus.Success)
+        {
+            // If at least one developer is logged in, try using their account.
             if (developerIdsResult.DeveloperIds.Any())
             {
                 foreach (var developerId in developerIdsResult.DeveloperIds)
                 {
-                    var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri, developerId).AsTask()).Result;
+                    uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri, developerId).AsTask()).Result;
                     if (uriSupportResult.IsSupported)
                     {
                         return (true, developerId, _repositoryProvider);
                     }
                 }
-            }
-            else
-            {
-                var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
-                if (uriSupportResult.IsSupported)
-                {
-                    return (true, null, _repositoryProvider);
-                }
+
+                // No logged in accounts can access the repo.
+                // This specific pattern is used in DevHome to signify someone is logged in, but can't access the repo.
+                return (false, developerIdsResult.DeveloperIds.First(), null);
             }
         }
 
         // no accounts can access this uri or the repo does not exist.
         return (false, null, null);
+        */
     }
 
     public ExtensionAdaptiveCardPanel GetLoginUi(ElementTheme elementTheme)
@@ -224,6 +244,16 @@ internal class RepositoryProvider
         return;
     }
 
+    public AuthenticationExperienceKind GetAuthenticationExpirenceKind()
+    {
+        return _devIdProvider.GetAuthenticationExperienceKind();
+    }
+
+    public IAsyncOperation<DeveloperIdResult> ShowLogonBehavior(WindowId windowHandle)
+    {
+        return _devIdProvider.ShowLogonSession(windowHandle);
+    }
+
     /// <summary>
     /// Gets all the logged in accounts for this provider.
     /// </summary>
@@ -266,25 +296,4 @@ internal class RepositoryProvider
 
         return _repositories.Value;
     }
-
-    /*
-    public void ChangedEventHandler(object sender, IDeveloperId developerId)
-    {
-        if (sender is IDeveloperIdProvider devIdProvider)
-        {
-            var authenticationState = devIdProvider.GetDeveloperIdState(developerId);
-
-            if (authenticationState == AuthenticationState.LoggedIn)
-            {
-                TelemetryFactory.Get<ITelemetry>().Log("Login_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.DisplayName, developerId));
-
-                // Bring focus back to DevHome after login
-                _ = PInvoke.SetForegroundWindow((HWND)Process.GetCurrentProcess().MainWindowHandle);
-            }
-            else if (authenticationState == AuthenticationState.LoggedOut)
-            {
-                TelemetryFactory.Get<ITelemetry>().Log("Logout_DevId_Event", LogLevel.Critical, new DeveloperIdEvent(devIdProvider.DisplayName, developerId));
-            }
-        }
-    }*/
 }

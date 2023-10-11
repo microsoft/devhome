@@ -10,7 +10,7 @@ using Microsoft.Diagnostics.Telemetry.Internal;
 namespace DevHome.Common.TelemetryEvents.SetupFlow;
 
 [EventData]
-public class ProviderEvent : EventBase
+public class ExtensionEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
@@ -19,7 +19,7 @@ public class ProviderEvent : EventBase
         get;
     }
 
-    public ProviderEvent(int numberOfProviders)
+    public ExtensionEvent(int numberOfProviders)
     {
         NumberOfProviders = numberOfProviders;
     }

@@ -12,17 +12,21 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
+using DevHome.Logging;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
+using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -42,9 +46,15 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
-    private readonly IThemeSelectorService _themeSelectorService;
+    private ElementTheme SelectedTheme => _host.GetService<IThemeSelectorService>().Theme;
 
-    private ElementTheme SelectedTheme => _themeSelectorService.Theme;
+    /// <summary>
+    /// Gets or sets a value indicating whether the log-in prompt is on screen.
+    /// </summary>
+    public bool IsLoggingIn
+    {
+        get; set;
+    }
 
     /// <summary>
     /// Gets or sets the list that keeps all repositories the user wants to clone.
@@ -248,6 +258,8 @@ public partial class AddRepoViewModel : ObservableObject
         get; set;
     }
 
+    private TypedEventHandler<IDeveloperIdProvider, IDeveloperId> _developerIdChangedEvent;
+
     /// <summary>
     /// Logs the user into the provider if they aren't already.
     /// Changes the page to show all repositories for the user.
@@ -287,7 +299,6 @@ public partial class AddRepoViewModel : ObservableObject
 
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
-        _selectedTheme = _host.GetService<IThemeSelectorService>().Theme;
         _activityId = activityId;
     }
 
@@ -313,14 +324,14 @@ public partial class AddRepoViewModel : ObservableObject
         _providers.StartAllExtensions();
 
         ProviderNames = new ObservableCollection<string>(_providers.GetAllProviderNames());
-        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForProviders_Event", LogLevel.Critical, new ProviderEvent(ProviderNames.Count), _activityId);
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForExtensions_Event", LogLevel.Critical, new ExtensionEvent(ProviderNames.Count), _activityId);
 
         IsAccountButtonEnabled = extensions.Any();
     }
 
     public void SetChangedEvents(TypedEventHandler<IDeveloperIdProvider, IDeveloperId> handler)
     {
-        _providers.SetChangedEvent(handler);
+        _developerIdChangedEvent = handler;
     }
 
     public void ChangeToUrlPage()
@@ -426,8 +437,18 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
-            var loginUi = _providers.GetLoginUi(repositoryProviderName, SelectedTheme);
-            loginFrame.Content = loginUi;
+            InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), loginFrame);
+
+            // Wait 30 seconds for user to log in.
+            var maxIterationsToWait = 30;
+            var currentIteration = 0;
+            var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
+            if (IsLoggingIn && currentIteration <= maxIterationsToWait)
+            {
+                await Task.Delay(waitDelay);
+            }
+
+            loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false), _activityId);
         }
         else
@@ -488,13 +509,45 @@ public partial class AddRepoViewModel : ObservableObject
             }
 
             var cloningInformation = new CloningInformation(repoToAdd);
-            cloningInformation.RepositoryProvider = _providers.GetProvider(providerName);
+            cloningInformation.RepositoryProvider = _providers.GetSDKProvider(providerName);
             cloningInformation.ProviderName = _providers.DisplayName(providerName);
             cloningInformation.OwningAccount = developerId;
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
             EverythingToClone.Add(cloningInformation);
         }
+    }
+
+    private bool ValidateUriAndChangeUiIfBad(string url, out Uri uri)
+    {
+        // If the url isn't valid don't bother finding a provider.
+        if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
+        {
+            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
+            ShouldShowUrlError = Visibility.Visible;
+            return false;
+        }
+
+        // If user entered a relative Uri put it into a UriBuilder to turn it into an
+        // absolute Uri.  UriBuilder prepends the https scheme
+        if (!uri.IsAbsoluteUri)
+        {
+            try
+            {
+                var uriBuilder = new UriBuilder(uri.OriginalString);
+                uriBuilder.Port = -1;
+                uri = uriBuilder.Uri;
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Invalid URL {uri.OriginalString}", e);
+                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
+                ShouldShowUrlError = Visibility.Visible;
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -507,89 +560,28 @@ public partial class AddRepoViewModel : ObservableObject
     /// If ShouldShowUrlError == Visible the repo is not added to the list of repos to clone.
     /// </remarks>
     /// <param name="cloneLocation">The location to clone the repo to</param>
-    public void AddRepositoryViaUri(string url, string cloneLocation)
+    public void AddRepositoryViaUri(string url, string cloneLocation, Frame loginFrame)
     {
-        // If the url isn't valid don't bother finding a provider.
-        Uri parsedUri;
-        if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out parsedUri))
+        ShouldEnablePrimaryButton = false;
+        Uri uri = null;
+        if (!ValidateUriAndChangeUiIfBad(url, out uri))
         {
-            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
-            ShouldShowUrlError = Visibility.Visible;
             return;
         }
 
-        // If user entered a relative Uri put it into a UriBuilder to turn it into an
-        // absolute Uri.  UriBuilder prepends the https scheme
-        if (!parsedUri.IsAbsoluteUri)
+        // This will return null even if the repo uri has a typo in it.
+        // Causing GetCloningInformationFromURL to fall back to git.
+        var provider = _providers.CanAnyProviderSupportThisUri(uri);
+
+        var cloningInformation = GetCloningInformationFromUrl(provider, cloneLocation, uri, loginFrame);
+        if (cloningInformation == null)
         {
-            try
-            {
-                var uriBuilder = new UriBuilder(parsedUri.OriginalString);
-                uriBuilder.Port = -1;
-                parsedUri = uriBuilder.Uri;
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.RepoConfig, $"Invalid URL {parsedUri.OriginalString}", e);
-                UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
-                ShouldShowUrlError = Visibility.Visible;
-                return;
-            }
+            // Error information is already set.
+            // Error string is visible
+            return;
         }
 
-        var providerToCloneRepo = _providers.CanAnyProviderSupportThisUri(parsedUri);
-        if (providerToCloneRepo.Item1 && providerToCloneRepo.Item2 == null)
-        {
-            
-        }
-
-        // true not-null can use developer ID to clone repo.
-        // True, null, do not use developer ID to clone the repo
-        // false.  Can't clone the repo.
-        CloningInformation cloningInformation;
-        if (providerToCloneRepo.Item1)
-        {
-            if (providerToCloneRepo.Item2 != null)
-            {
-                // A provider parsed the URL and at least 1 logged in account has access to the repo.
-                var repoResult = providerToCloneRepo.Item3.GetRepositoryFromUriAsync(parsedUri, providerToCloneRepo.Item2).AsTask().Result;
-                if (repoResult.Result.Status == ProviderOperationStatus.Failure)
-                {
-                    // something happened.
-                    throw repoResult.Result.ExtendedError;
-                }
-
-                cloningInformation = new CloningInformation(repoResult.Repository);
-                cloningInformation.RepositoryProvider = providerToCloneRepo.Item3;
-                cloningInformation.ProviderName = providerToCloneRepo.Item3.DisplayName;
-                cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-                cloningInformation.OwningAccount = providerToCloneRepo.Item2;
-            }
-            else
-            {
-                // A provider parsed the URL but no logged in accounts can access it (Could be public).
-                var repoResult = providerToCloneRepo.Item3.GetRepositoryFromUriAsync(parsedUri).AsTask().Result;
-                if (repoResult.Result.Status == ProviderOperationStatus.Failure)
-                {
-                    // something happened.
-                    throw repoResult.Result.ExtendedError;
-                }
-
-                cloningInformation = new CloningInformation(repoResult.Repository);
-                cloningInformation.RepositoryProvider = providerToCloneRepo.Item3;
-                cloningInformation.ProviderName = providerToCloneRepo.Item3.DisplayName;
-                cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-                cloningInformation.OwningAccount = providerToCloneRepo.Item2;
-            }
-        }
-        else
-        {
-            // No providers can parse the Url.
-            // Fall back to a git Url.
-            cloningInformation = new CloningInformation(new GenericRepository(parsedUri));
-            cloningInformation.ProviderName = "git";
-            cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
-        }
+        ShouldShowUrlError = Visibility.Collapsed;
 
         // User could paste in a url of an already added repo.  Check for that here.
         if (_previouslySelectedRepos.Any(x => x.RepositoryToClone.OwningAccountName.Equals(cloningInformation.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase)
@@ -605,6 +597,107 @@ public partial class AddRepoViewModel : ObservableObject
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
 
         EverythingToClone.Add(cloningInformation);
+        ShouldEnablePrimaryButton = true;
+    }
+
+    private CloningInformation GetCloningInformationFromUrl(RepositoryProvider provider, string cloneLocation, Uri uri, Frame loginFrame)
+    {
+        if (provider == null)
+        {
+            // Fallback to a generic git provider.
+            // If the repo does not exist, the user will get an error in the loading screen.
+            var cloningInformation = new CloningInformation(new GenericRepository(uri));
+            cloningInformation.ProviderName = "git";
+            cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+
+            return cloningInformation;
+        }
+
+        // Repo may be public.  Try that.
+        var repo = provider.GetRepositoryFromUri(uri);
+        if (repo != null)
+        {
+            var cloningInformation = new CloningInformation(repo);
+            cloningInformation.RepositoryProvider = provider.GetProvider();
+            cloningInformation.ProviderName = provider.DisplayName;
+            cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+
+            return cloningInformation;
+        }
+
+        // Repo may be private, or not exist.  Try to get repo info with all logged in accounts.
+        var loggedInAccounts = provider.GetAllLoggedInAccounts();
+        if (loggedInAccounts.Any())
+        {
+            foreach (var loggedInAccount in loggedInAccounts)
+            {
+                repo = provider.GetRepositoryFromUri(uri, loggedInAccount);
+                if (repo != null)
+                {
+                    var cloningInformation = new CloningInformation(repo);
+                    cloningInformation.RepositoryProvider = provider.GetProvider();
+                    cloningInformation.ProviderName = provider.DisplayName;
+                    cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+                    cloningInformation.OwningAccount = loggedInAccount;
+
+                    return cloningInformation;
+                }
+            }
+
+            // In the case that no logged in accounts can access it, return null
+            // until DevHome can handle multiple accounts.
+            // Should have a better error string.
+            UrlParsingError = _stringResource.GetLocalized("No currently logged in accounts have access to this repo");
+            ShouldShowUrlError = Visibility.Visible;
+
+            return null;
+        }
+
+        // At this point one of three things are true
+        // 1. The repo is private and no accounts are logged in.
+        // 2. The repo does not exist (Might have been a typo in the name)
+        // Because DevHome cannot tell if a repo is private, or does not exist, prompt the user to log in.
+        // Only ask if DevHome hasn't asked already.
+        UrlParsingError = _stringResource.GetLocalized("No currently logged in accounts have access to this repo.");
+        ShouldShowUrlError = Visibility.Visible;
+        InitiateAddAccountUserExperienceAsync(provider, loginFrame);
+        IsLoggingIn = true;
+        return null;
+    }
+
+    private void InitiateAddAccountUserExperienceAsync(RepositoryProvider provider, Frame loginFrame)
+    {
+        IsLoggingIn = true;
+        TelemetryFactory.Get<ITelemetry>().Log(
+                                                "EntryPoint_DevId_Event",
+                                                LogLevel.Critical,
+                                                new EntryPointEvent(EntryPointEvent.EntryPoint.Settings));
+
+        provider.SetChangedEvent(_developerIdChangedEvent);
+        var authenticationFlow = provider.GetAuthenticationExpirenceKind();
+        if (authenticationFlow == AuthenticationExperienceKind.CardSession)
+        {
+            var loginUi = _providers.GetLoginUi(provider.ExtensionDisplayName, SelectedTheme);
+            loginFrame.Content = loginUi;
+        }
+        else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
+        {
+            var windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
+            var windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
+            try
+            {
+                var developerIdResult = provider.ShowLogonBehavior(windowPtr).AsTask().Result;
+                if (developerIdResult.Result.Status == ProviderOperationStatus.Failure)
+                {
+                    GlobalLog.Logger?.ReportError($"{developerIdResult.Result.DisplayMessage} - {developerIdResult.Result.DiagnosticText}");
+                    return;
+                }
+            }
+            catch (Exception ex)
+            {
+                GlobalLog.Logger?.ReportError($"Exception thrown while calling show logon session", ex);
+            }
+        }
     }
 
     /// <summary>
