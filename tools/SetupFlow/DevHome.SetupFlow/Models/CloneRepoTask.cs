@@ -193,7 +193,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             {
                 ProviderOperationResult result;
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
-                TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Critical, new ReposCloneEvent(ProviderName, _developerId));
+                TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Critical, new ReposCloneEvent(ProviderName, _developerId), _activityId);
 
                 if (RepositoryToClone.GetType() == typeof(GenericRepository))
                 {
