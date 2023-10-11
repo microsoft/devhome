@@ -3,12 +3,10 @@
 
 using System.Diagnostics;
 using DevHome.Common.Contracts.Services;
-using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Logging;
 using DevHome.Telemetry;
-using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -17,8 +15,11 @@ namespace DevHome.Services;
 
 public class AccountsService : IAccountsService
 {
-    public AccountsService()
+    private readonly IExtensionService _extensionService;
+
+    public AccountsService(IExtensionService extensionService)
     {
+        _extensionService = extensionService;
     }
 
     public async Task InitializeAsync()
@@ -43,15 +44,20 @@ public class AccountsService : IAccountsService
     public async Task<IReadOnlyList<IDeveloperIdProvider>> GetDevIdProviders()
     {
         var devIdProviders = new List<IDeveloperIdProvider>();
-        var pluginService = Application.Current.GetService<IPluginService>();
-        var plugins = await pluginService.GetInstalledPluginsAsync(ProviderType.DeveloperId);
-
-        foreach (var plugin in plugins)
+        var extensions = await _extensionService.GetInstalledExtensionsAsync(ProviderType.DeveloperId);
+        foreach (var extension in extensions)
         {
-            var devIdProvider = await plugin.GetProviderAsync<IDeveloperIdProvider>();
-            if (devIdProvider is not null)
+            try
             {
-                devIdProviders.Add(devIdProvider);
+                var devIdProvider = await extension.GetProviderAsync<IDeveloperIdProvider>();
+                if (devIdProvider is not null)
+                {
+                    devIdProviders.Add(devIdProvider);
+                }
+            }
+            catch (Exception ex)
+            {
+                GlobalLog.Logger?.ReportError($"Failed to get {nameof(IDeveloperIdProvider)} provider from '{extension.Name}'", ex);
             }
         }
 

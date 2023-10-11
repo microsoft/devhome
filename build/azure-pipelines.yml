@@ -24,7 +24,7 @@ parameters:
 
 variables:
   # MSIXVersion's second part should always be odd to account for stub app's version
-  MSIXVersion: '0.503'
+  MSIXVersion: '0.601'
   VersionOfSDK: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -60,7 +60,7 @@ stages:
       displayName: Publish Artifacts
       inputs:
         artifactName: SdkNugetPackage
-        targetPath: pluginsdk\_build
+        targetPath: extensionsdk\_build
 
     - task: PublishSymbols@2
       displayName: Publish Symbols

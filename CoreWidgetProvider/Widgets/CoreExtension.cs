@@ -10,13 +10,13 @@ namespace CoreWidgetProvider;
 [ComVisible(true)]
 [Guid("426A52D6-8007-4894-A946-CF80F39507F1")]
 [ComDefaultInterface(typeof(IExtension))]
-public sealed class CorePlugin : IExtension
+public sealed class CoreExtension : IExtension
 {
-    private readonly ManualResetEvent _pluginDisposedEvent;
+    private readonly ManualResetEvent _extensionDisposedEvent;
 
-    public CorePlugin(ManualResetEvent pluginDisposedEvent)
+    public CoreExtension(ManualResetEvent extensionDisposedEvent)
     {
-        _pluginDisposedEvent = pluginDisposedEvent;
+        _extensionDisposedEvent = extensionDisposedEvent;
     }
 
     public object? GetProvider(ProviderType providerType)
@@ -37,6 +37,6 @@ public sealed class CorePlugin : IExtension
 
     public void Dispose()
     {
-        _pluginDisposedEvent.Set();
+        _extensionDisposedEvent.Set();
     }
 }

@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.Views;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.Models;
@@ -31,16 +32,16 @@ internal class RepositoryProviders
         return _providers.GetValueOrDefault(providerName)?.DisplayName ?? string.Empty;
     }
 
-    public RepositoryProviders(IEnumerable<IPluginWrapper> pluginWrappers)
+    public RepositoryProviders(IEnumerable<IExtensionWrapper> extensionWrappers)
     {
-        _providers = pluginWrappers.ToDictionary(pluginWrapper => pluginWrapper.Name, pluginWrapper => new RepositoryProvider(pluginWrapper));
+        _providers = extensionWrappers.ToDictionary(extensionWrapper => extensionWrapper.Name, extensionWrapper => new RepositoryProvider(extensionWrapper));
     }
 
-    public void StartAllPlugins()
+    public void StartAllExtensions()
     {
-        foreach (var pluginWrapper in _providers.Values)
+        foreach (var extensionWrapper in _providers.Values)
         {
-            pluginWrapper.StartIfNotRunning();
+            extensionWrapper.StartIfNotRunning();
         }
     }
 
@@ -101,8 +102,12 @@ internal class RepositoryProviders
         return (false, null, null);
     }
 
-    public PluginAdaptiveCardPanel GetLoginUi(string providerName, ElementTheme elementTheme)
+    public ExtensionAdaptiveCardPanel GetLoginUi(string providerName, ElementTheme elementTheme)
     {
+        TelemetryFactory.Get<ITelemetry>().Log(
+                                                "EntryPoint_DevId_Event",
+                                                LogLevel.Critical,
+                                                new EntryPointEvent(EntryPointEvent.EntryPoint.SetupFlow));
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting login UI {providerName}");
         return _providers.GetValueOrDefault(providerName)?.GetLoginUi(elementTheme);
     }

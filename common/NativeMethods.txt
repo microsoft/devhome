@@ -1,5 +1,9 @@
-﻿CoCreateInstance
+﻿EnableWindow
+CoCreateInstance
 FileOpenDialog
 IFileOpenDialog
 SHCreateItemFromParsingName
 GetCurrentPackageFullName
+SetWindowLong
+GetWindowLong
+WINDOW_EX_STYLE

@@ -12,7 +12,7 @@ using WinRT;
 
 namespace DevHome.Models;
 
-public class PluginWrapper : IPluginWrapper
+public class ExtensionWrapper : IExtensionWrapper
 {
     private const int HResultRpcServerNotRunning = -2147023174;
 
@@ -29,12 +29,12 @@ public class PluginWrapper : IPluginWrapper
 
     private IExtension? _extensionObject;
 
-    public PluginWrapper(AppExtension appExtension, string classId)
+    public ExtensionWrapper(AppExtension appExtension, string classId)
     {
         Name = appExtension.DisplayName;
         PackageFullName = appExtension.Package.Id.FullName;
         PackageFamilyName = appExtension.Package.Id.FamilyName;
-        PluginClassId = classId ?? throw new ArgumentNullException(nameof(classId));
+        ExtensionClassId = classId ?? throw new ArgumentNullException(nameof(classId));
         Publisher = appExtension.Package.PublisherDisplayName;
         InstalledDate = appExtension.Package.InstalledDate;
         Version = appExtension.Package.Id.Version;
@@ -56,7 +56,7 @@ public class PluginWrapper : IPluginWrapper
         get;
     }
 
-    public string PluginClassId
+    public string ExtensionClassId
     {
         get;
     }
@@ -114,7 +114,7 @@ public class PluginWrapper : IPluginWrapper
         return true;
     }
 
-    public async Task StartPluginAsync()
+    public async Task StartExtensionAsync()
     {
         await Task.Run(() =>
         {
@@ -122,23 +122,23 @@ public class PluginWrapper : IPluginWrapper
             {
                 if (!IsRunning())
                 {
-                    var pluginPtr = IntPtr.Zero;
+                    var extensionPtr = IntPtr.Zero;
                     try
                     {
-                        var hr = PInvoke.CoCreateInstance(Guid.Parse(PluginClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IExtension).GUID, out var pluginObj);
-                        pluginPtr = Marshal.GetIUnknownForObject(pluginObj);
+                        var hr = PInvoke.CoCreateInstance(Guid.Parse(ExtensionClassId), null, CLSCTX.CLSCTX_LOCAL_SERVER, typeof(IExtension).GUID, out var extensionObj);
+                        extensionPtr = Marshal.GetIUnknownForObject(extensionObj);
                         if (hr < 0)
                         {
                             Marshal.ThrowExceptionForHR(hr);
                         }
 
-                        _extensionObject = MarshalInterface<IExtension>.FromAbi(pluginPtr);
+                        _extensionObject = MarshalInterface<IExtension>.FromAbi(extensionPtr);
                     }
                     finally
                     {
-                        if (pluginPtr != IntPtr.Zero)
+                        if (extensionPtr != IntPtr.Zero)
                         {
-                            Marshal.Release(pluginPtr);
+                            Marshal.Release(extensionPtr);
                         }
                     }
                 }
@@ -177,7 +177,7 @@ public class PluginWrapper : IPluginWrapper
     public async Task<T?> GetProviderAsync<T>()
         where T : class
     {
-        await StartPluginAsync();
+        await StartExtensionAsync();
 
         return GetExtensionObject()?.GetProvider(_providerTypeMap[typeof(T)]) as T;
     }

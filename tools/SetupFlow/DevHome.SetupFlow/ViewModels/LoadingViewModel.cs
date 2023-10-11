@@ -21,6 +21,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
@@ -70,6 +71,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// Keep track of all failed tasks so they can be re-ran if the user wishes.
     /// </summary>
     private readonly IList<TaskInformation> _failedTasks;
+
+    public IList<TaskInformation> FailedTasks => _failedTasks;
 
     /// <summary>
     /// All the tasks that will be executed.

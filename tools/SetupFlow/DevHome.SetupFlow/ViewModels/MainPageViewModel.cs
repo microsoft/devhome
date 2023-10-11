@@ -16,8 +16,8 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
+using Windows.Storage;
 using Windows.System;
-using WinRT;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -29,6 +29,8 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class MainPageViewModel : SetupPageViewModelBase
 {
+    private const string _hideSetupFlowBannerKey = "HideSetupFlowBanner";
+
     private readonly IHost _host;
     private readonly IWindowsPackageManager _wpm;
 
@@ -64,6 +66,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
+        ShowBanner = ShouldShowSetupFlowBanner();
     }
 
     protected async override Task OnFirstNavigateToAsync()
@@ -84,6 +87,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     private void HideBanner()
     {
         TelemetryFactory.Get<ITelemetry>().LogCritical("MainPage_HideLearnMoreBanner_Event", false, Orchestrator.ActivityId);
+        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
+        roamingProperties[_hideSetupFlowBannerKey] = bool.TrueString;
         ShowBanner = false;
     }
 
@@ -200,5 +205,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         HideAppInstallerUpdateNotification();
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Opening AppInstaller in the Store app");
         await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?productid={WindowsPackageManager.AppInstallerProductId}"));
+    }
+
+    private bool ShouldShowSetupFlowBanner()
+    {
+        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
+        return !roamingProperties.ContainsKey(_hideSetupFlowBannerKey);
     }
 }

@@ -75,7 +75,7 @@ public class BaseSetupFlowTest
                 services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory());
                 services.AddSingleton<IAppManagementInitializer, AppManagementInitializer>();
                 services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
-                services.AddSingleton<CatalogDataSourceLoacder>();
+                services.AddSingleton<CatalogDataSourceLoader>();
                 services.AddSingleton<IScreenReaderService>(new Mock<IScreenReaderService>().Object);
 
                 // DI factory pattern

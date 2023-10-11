@@ -25,6 +25,7 @@
         <uap3:Extension Category="windows.appExtensionHost">
           <uap3:AppExtensionHost>
             <uap3:Name>com.microsoft.devhome</uap3:Name>
+            <uap3:Name>com.microsoft.windows.widgets</uap3:Name>
           </uap3:AppExtensionHost>
         </uap3:Extension>
         <uap:Extension Category="windows.protocol">
@@ -41,8 +42,8 @@
         </com:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Core Plugin">
-              <com:Class Id="426A52D6-8007-4894-A946-CF80F39507F1" DisplayName="Core Plugin" />
+            <com:ExeServer Executable="CoreWidgetProvider.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Core Extension">
+              <com:Class Id="426A52D6-8007-4894-A946-CF80F39507F1" DisplayName="Core Extension" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>

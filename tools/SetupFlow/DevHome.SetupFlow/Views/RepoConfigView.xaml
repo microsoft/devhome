@@ -33,12 +33,14 @@
     </UserControl.Resources>
 
     <setupControls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_RepoConfig"
-                               Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
-        <setupControls:SetupShell.HeaderTemplate>
-            <ControlTemplate>
-                <Button x:Name="AddRepositoriesButton" Click="AddRepoButton_Click" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"/>
-            </ControlTemplate>
-        </setupControls:SetupShell.HeaderTemplate>
+                               Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+                               Foreground="{ThemeResource TextFillColorSecondary}">
+        <setupControls:SetupShell.Header>
+            <Button
+                AutomationProperties.AutomationId="AddRepositoriesButton"
+                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_RepoReview_AddRepository"
+                Command="{x:Bind AddRepoCommand}" />
+        </setupControls:SetupShell.Header>
         <Grid x:Name="RepoConfigGrid" RowSpacing="10">
             <ListView ScrollViewer.VerticalScrollBarVisibility="Auto" 
                       ScrollViewer.VerticalScrollMode="Auto" 
@@ -108,8 +110,8 @@
                                         <ColumnDefinition Width="0.1*"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <FontIcon Grid.Column="0" Width="20" Height="20" FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
-                                    <TextBlock Grid.Column="1" Text="{x:Bind RepositoryOwnerAndName}" Padding="10, 0, 0, 0" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
+                                    <FontIcon Grid.Column="0" FontSize="16" FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="{x:Bind IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind RepositoryOwnerAndName}" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
                             </Border>
                             <Border Style="{StaticResource BorderStyle}"  Grid.Column="2" BorderThickness="0, 1, 0, 0">
@@ -138,7 +140,7 @@
                                     </Button>
                                 </Grid>
                             </Border>
-                            <Button Click="RemoveCloningInformationButton_Click" DataContext="{x:Bind}" Grid.Column="3" Style="{ThemeResource AlternateCloseButtonStyle}" AutomationProperties.Name="{x:Bind RemoveFromCloningAutomationName}">
+                            <Button Click="RemoveCloningInformationButton_Click" DataContext="{x:Bind}" Grid.Column="3" Style="{ThemeResource AlternateCloseButtonStyle}" AutomationProperties.Name="{x:Bind RemoveFromCloningAutomationName}" VerticalAlignment="Center">
                                 <Button.Content>
                                     <SymbolIcon Symbol="Cancel"/>
                                 </Button.Content>
@@ -153,7 +155,12 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelected"/>
-                <HyperlinkButton x:Name="AddRepoHyperLinkButton" Grid.Row="1" Click="AddRepoButton_Click" HorizontalAlignment="Center" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
+                <HyperlinkButton
+                    Grid.Row="1"
+                    AutomationProperties.AutomationId="AddRepoHyperLinkButton"
+                    HorizontalAlignment="Center"
+                    Command="{x:Bind AddRepoCommand}"
+                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoReview_NoReposSelectedLink" />
             </Grid>
         </Grid>
     </setupControls:SetupShell>

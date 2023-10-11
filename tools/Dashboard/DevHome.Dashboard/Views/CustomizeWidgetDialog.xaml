@@ -54,7 +54,7 @@
             <ScrollViewer Grid.Row="1"
                           x:Name="ConfigurationContentViewer"
                           VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
-                <Frame x:Name="ConfigurationContentFrame" Margin="0,44,0,0"
+                <Frame x:Name="ConfigurationContentFrame" Margin="0,44,0,76"
                         Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}" />
             </ScrollViewer>
 

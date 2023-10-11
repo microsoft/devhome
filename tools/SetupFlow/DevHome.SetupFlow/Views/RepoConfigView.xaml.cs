@@ -2,18 +2,17 @@
 // Licensed under the MIT License.
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
-using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
-using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -22,6 +21,7 @@ namespace DevHome.SetupFlow.Views;
 /// <summary>
 /// Shows the user the repositories they have selected.
 /// </summary>
+[INotifyPropertyChanged]
 public sealed partial class RepoConfigView : UserControl
 {
     private readonly IThemeSelectorService _themeSelectorService;
@@ -29,6 +29,8 @@ public sealed partial class RepoConfigView : UserControl
     private Guid ActivityId => ViewModel.Orchestrator.ActivityId;
 
     public RepoConfigViewModel ViewModel => (RepoConfigViewModel)this.DataContext;
+
+    private AddRepoDialog _addRepoDialog;
 
     public RepoConfigView()
     {
@@ -48,12 +50,18 @@ public sealed partial class RepoConfigView : UserControl
                 cloneInformation.SetIcon(sender.ActualTheme);
             }
         }
+
+        if (_addRepoDialog != null)
+        {
+            _addRepoDialog.RequestedTheme = sender.ActualTheme;
+        }
     }
 
     /// <summary>
     /// User wants to add a repo.  Bring up the tool.
     /// </summary>
-    private async void AddRepoButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    [RelayCommand]
+    private async Task AddRepoAsync()
     {
         // hold information for telemetry calls
         const string EventName = "RepoTool_AddRepos_Event";
@@ -62,45 +70,32 @@ public sealed partial class RepoConfigView : UserControl
 
         telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Open", dialogName), ActivityId);
 
-        // Both the hyperlink button and button call this.
-        // disable the button to prevent users from double clicking it.
-        var senderAsButton = sender as Button;
-        if (senderAsButton != null)
-        {
-            senderAsButton.IsEnabled = false;
-        }
-
-        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), _themeSelectorService.Theme, ActivityId);
-        var getPluginsTask = addRepoDialog.GetPluginsAsync();
-        var setupDevDrivesTask = addRepoDialog.SetupDevDrivesAsync();
-        addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
-        addRepoDialog.RequestedTheme = ActualTheme;
+        _addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), _themeSelectorService, ActivityId);
+        var getExtensionsTask = _addRepoDialog.GetExtensionsAsync();
+        var setupDevDrivesTask = _addRepoDialog.SetupDevDrivesAsync();
+        _addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
+        _addRepoDialog.RequestedTheme = ActualTheme;
 
         // Start
-        await getPluginsTask;
+        await getExtensionsTask;
         await setupDevDrivesTask;
-        if (addRepoDialog.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
+        if (_addRepoDialog.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
         {
-            addRepoDialog.UpdateDevDriveInfo();
+            _addRepoDialog.UpdateDevDriveInfo();
         }
 
-        var result = await addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
+        var result = await _addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
 
-        if (senderAsButton != null)
-        {
-            senderAsButton.IsEnabled = true;
-        }
+        var devDrive = _addRepoDialog.EditDevDriveViewModel.DevDrive;
 
-        var devDrive = addRepoDialog.EditDevDriveViewModel.DevDrive;
-
-        if (addRepoDialog.EditDevDriveViewModel.IsWindowOpen)
+        if (_addRepoDialog.EditDevDriveViewModel.IsWindowOpen)
         {
             ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(devDrive);
         }
 
         // save cloneLocationKind for telemetry
         CloneLocationKind cloneLocationKind = CloneLocationKind.LocalPath;
-        var everythingToClone = addRepoDialog.AddRepoViewModel.EverythingToClone;
+        var everythingToClone = _addRepoDialog.AddRepoViewModel.EverythingToClone;
 
         foreach (var repoToClone in everythingToClone)
         {
@@ -123,7 +118,7 @@ public sealed partial class RepoConfigView : UserControl
                 foreach (var cloneInfo in everythingToClone)
                 {
                     cloneInfo.CloneToDevDrive = true;
-                    cloneInfo.CloneLocationAlias = addRepoDialog.FolderPickerViewModel.CloneLocationAlias;
+                    cloneInfo.CloneLocationAlias = _addRepoDialog.FolderPickerViewModel.CloneLocationAlias;
                 }
 
                 // The cloning location may have changed e.g The original Drive clone path for Dev Drives was the F: drive for items
@@ -150,7 +145,7 @@ public sealed partial class RepoConfigView : UserControl
 
             // Check if user unchecked the Dev Drive checkbox before closing, to update the the behavior the next time the user launches the dialog. Note we only keep
             // track of this for the current launch of the setup flow. If the user completes or cancels the setup flow and re enters, we do not keep the unchecked behavior.
-            if (!addRepoDialog.EditDevDriveViewModel.IsDevDriveCheckboxChecked)
+            if (!_addRepoDialog.EditDevDriveViewModel.IsDevDriveCheckboxChecked)
             {
                 ViewModel.ShouldAutoCheckDevDriveCheckbox = false;
             }
@@ -163,14 +158,14 @@ public sealed partial class RepoConfigView : UserControl
 
         // Convert current page to addkind.  Currently users can add either by URL or account (via the repos page)
         AddKind addKind = AddKind.URL;
-        if (addRepoDialog.AddRepoViewModel.CurrentPage == Models.Common.PageKind.Repositories)
+        if (_addRepoDialog.AddRepoViewModel.CurrentPage == Models.Common.PageKind.Repositories)
         {
             addKind = AddKind.Account;
         }
 
         // Only 1 provider can be selected per repo dialog session.
         // Okay to use EverythingToClone[0].ProviderName here.
-        var providerName = addRepoDialog.AddRepoViewModel.EverythingToClone.Any() ? addRepoDialog.AddRepoViewModel.EverythingToClone[0].ProviderName : string.Empty;
+        var providerName = _addRepoDialog.AddRepoViewModel.EverythingToClone.Any() ? _addRepoDialog.AddRepoViewModel.EverythingToClone[0].ProviderName : string.Empty;
 
         // If needs be, this can run inside a foreach loop to capture details on each repo.
         if (cloneLocationKind == CloneLocationKind.DevDrive)
@@ -180,10 +175,10 @@ public sealed partial class RepoConfigView : UserControl
                 LogLevel.Critical,
                 RepoDialogAddRepoEvent.AddWithDevDrive(
                 addKind,
-                addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
+                _addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
                 providerName,
-                addRepoDialog.EditDevDriveViewModel.DevDrive.State == DevDriveState.New,
-                addRepoDialog.EditDevDriveViewModel.DevDriveDetailsChanged),
+                _addRepoDialog.EditDevDriveViewModel.DevDrive.State == DevDriveState.New,
+                _addRepoDialog.EditDevDriveViewModel.DevDriveDetailsChanged),
                 ActivityId);
         }
         else if (cloneLocationKind == CloneLocationKind.LocalPath)
@@ -193,7 +188,7 @@ public sealed partial class RepoConfigView : UserControl
                 LogLevel.Critical,
                 RepoDialogAddRepoEvent.AddWithLocalPath(
                 addKind,
-                addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
+                _addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
                 providerName),
                 ActivityId);
         }

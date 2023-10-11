@@ -11,15 +11,7 @@ using Windows.ApplicationModel;
 namespace DevHome.Services;
 public class AppInfoService : IAppInfoService
 {
-    private static bool RunningAsAdmin
-    {
-        get
-        {
-            using var identity = WindowsIdentity.GetCurrent();
-            var principal = new WindowsPrincipal(identity);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-    }
+    public string IconPath { get; } = Path.Combine(AppContext.BaseDirectory, "Assets/DevHome.ico");
 
     public string GetAppNameLocalized()
     {
@@ -42,6 +34,16 @@ public class AppInfoService : IAppInfoService
         else
         {
             return Assembly.GetExecutingAssembly().GetName().Version!;
+        }
+    }
+
+    private static bool RunningAsAdmin
+    {
+        get
+        {
+            using var identity = WindowsIdentity.GetCurrent();
+            var principal = new WindowsPrincipal(identity);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
     }
 }
