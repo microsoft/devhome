@@ -41,7 +41,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
         // Get the application root window so we know when it has closed.
         Application.Current.GetService<WindowEx>().Closed += OnMainWindowClosed;
 
-        _hostingService.GetWidgetCatalog().WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        _hostingService.GetWidgetCatalog()!.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
 
         this.Loaded += InitializeWidgetCustomization;
     }
@@ -51,10 +51,16 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
         var size = WidgetHelpers.GetLargestCapabilitySize(_widgetDefinition.GetWidgetCapabilities());
 
         // Create the widget for configuration. We will need to delete it if the dialog is closed without updating.
-        var widget = await _hostingService.GetWidgetHost().CreateWidgetAsync(_widgetDefinition.Id, size);
-        Log.Logger()?.ReportInfo("CustomizeWidgetDialog", $"Created Widget {widget.Id}");
-
-        ViewModel.Widget = widget;
+        var widget = await _hostingService.GetWidgetHost()?.CreateWidgetAsync(_widgetDefinition.Id, size);
+        if (widget != null)
+        {
+            Log.Logger()?.ReportInfo("CustomizeWidgetDialog", $"Created Widget {widget.Id}");
+            ViewModel.Widget = widget;
+        }
+        else
+        {
+            Log.Logger()?.ReportError("CustomizeWidgetDialog", $"Error creating Widget {_widgetDefinition.Id}");
+        }
     }
 
     private void UpdateWidgetButton_Click(object sender, RoutedEventArgs e)
@@ -78,7 +84,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
     private void HideDialog()
     {
         Application.Current.GetService<WindowEx>().Closed -= OnMainWindowClosed;
-        _hostingService.GetWidgetCatalog().WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        _hostingService.GetWidgetCatalog()!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
         ViewModel.IsInEditMode = false;
 
         this.Hide();
@@ -98,7 +104,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
         {
             Log.Logger()?.ReportDebug("CustomizeWidgetDialog", $"Exiting dialog, widget definition was deleted");
             EditedWidget = null;
-            _hostingService.GetWidgetCatalog().WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+            _hostingService.GetWidgetCatalog()!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
             _dispatcher.TryEnqueue(() =>
             {
                 this.Hide();

@@ -52,7 +52,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // Get the application root window so we know when it has closed.
         Application.Current.GetService<WindowEx>().Closed += OnMainWindowClosed;
 
-        _hostingService.GetWidgetCatalog().WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        _hostingService.GetWidgetCatalog()!.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
     }
 
     [RelayCommand]
@@ -73,8 +73,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
             return;
         }
 
-        var providerDefs = _hostingService.GetWidgetCatalog().GetProviderDefinitions();
-        var widgetDefs = _hostingService.GetWidgetCatalog().GetWidgetDefinitions();
+        var providerDefs = _hostingService.GetWidgetCatalog()!.GetProviderDefinitions();
+        var widgetDefs = _hostingService.GetWidgetCatalog()!.GetWidgetDefinitions();
 
         Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefs.Length} providers and {widgetDefs.Length} widgets");
 
@@ -169,7 +169,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
         if (!widgetDef.AllowMultiple)
         {
-            var currentlyPinnedWidgets = _hostingService.GetWidgetHost().GetWidgets();
+            var currentlyPinnedWidgets = _hostingService.GetWidgetHost()?.GetWidgets();
             if (currentlyPinnedWidgets != null)
             {
                 foreach (var pinnedWidget in currentlyPinnedWidgets)
@@ -228,7 +228,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
             // Create the widget for configuration. We will need to delete it if the user closes the dialog
             // without pinning, or selects a different widget.
-            var widget = await _hostingService.GetWidgetHost().CreateWidgetAsync(selectedWidgetDefinition.Id, size);
+            var widget = await _hostingService.GetWidgetHost()?.CreateWidgetAsync(selectedWidgetDefinition.Id, size);
             if (widget is not null)
             {
                 Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
@@ -237,7 +237,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 ViewModel.IsInAddMode = true;
                 PinButton.Visibility = Visibility.Visible;
 
-                var widgetDefinition = _hostingService.GetWidgetCatalog().GetWidgetDefinition(widget.DefinitionId);
+                var widgetDefinition = _hostingService.GetWidgetCatalog()!.GetWidgetDefinition(widget.DefinitionId);
                 ViewModel.WidgetDefinition = widgetDefinition;
 
                 clearWidgetTask.Wait();
@@ -281,7 +281,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         ViewModel = null;
 
         Application.Current.GetService<WindowEx>().Closed -= OnMainWindowClosed;
-        _hostingService.GetWidgetCatalog().WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        _hostingService.GetWidgetCatalog()!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
 
         this.Hide();
     }
