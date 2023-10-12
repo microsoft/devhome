@@ -10,6 +10,8 @@ public class AppManagementBehavior : Behavior<AppManagementView>
 {
     private static AppManagementBehavior _instance;
 
+    public static string Title => _instance?.AssociatedObject.Title ?? string.Empty;
+
     protected override void OnAttached()
     {
         base.OnAttached();

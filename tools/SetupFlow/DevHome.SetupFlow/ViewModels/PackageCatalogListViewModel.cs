@@ -24,7 +24,11 @@ public partial class PackageCatalogListViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CatalogFullPath))]
     private PackageCatalogViewModel _viewAllCatalog;
 
-    public List<string> CatalogFullPath => new () { "Install applications", ViewAllCatalog?.Name ?? string.Empty };
+    public List<string> CatalogFullPath => new ()
+    {
+        AppManagementBehavior.Title,
+        ViewAllCatalog?.Name ?? string.Empty,
+    };
 
     /// <summary>
     /// Gets a list of package catalogs to display

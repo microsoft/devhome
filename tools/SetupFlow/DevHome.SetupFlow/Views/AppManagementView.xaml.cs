@@ -9,6 +9,8 @@ namespace DevHome.SetupFlow.Views;
 
 public sealed partial class AppManagementView : UserControl
 {
+    public string Title => SetupShell.Title;
+
     public AppManagementView()
     {
         this.InitializeComponent();

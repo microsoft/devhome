@@ -19,7 +19,11 @@ public sealed partial class SetupShell : UserControl
 {
     public string Title
     {
-        get => (string)GetValue(TitleProperty);
+        get
+        {
+            var title = (string)GetValue(TitleProperty);
+            return string.IsNullOrEmpty(title) ? Orchestrator.FlowTitle : title;
+        }
         set => SetValue(TitleProperty, value);
     }
 
@@ -52,8 +56,6 @@ public sealed partial class SetupShell : UserControl
         get => (Visibility)GetValue(HeaderVisibilityProperty);
         set => SetValue(HeaderVisibilityProperty, value);
     }
-
-    public bool UseOrchestratorTitle => string.IsNullOrEmpty(Title);
 
     public SetupShell()
     {

@@ -9,7 +9,6 @@
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:controls="using:DevHome.SetupFlow.Controls"
     mc:Ignorable="d">
     <UserControl.Resources>
         <!-- Number of items to display per panel -->
