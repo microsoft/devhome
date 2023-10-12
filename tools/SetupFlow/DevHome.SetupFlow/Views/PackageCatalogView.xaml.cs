@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
@@ -31,6 +32,12 @@ public sealed partial class PackageCatalogView : UserControl
         set => SetValue(PackageCountProperty, value);
     }
 
+    public ICommand ViewAllCommand
+    {
+        get => (ICommand)GetValue(ViewAllCommandProperty);
+        set => SetValue(PackageCountProperty, value);
+    }
+
     public PackageCatalogView()
     {
         this.InitializeComponent();
@@ -49,4 +56,5 @@ public sealed partial class PackageCatalogView : UserControl
 
     public static readonly DependencyProperty CatalogProperty = DependencyProperty.Register(nameof(Catalog), typeof(PackageCatalogViewModel), typeof(PackageCatalogView), new PropertyMetadata(null, (c, _) => ((PackageCatalogView)c).UpdatePackageGroups()));
     public static readonly DependencyProperty PackageCountProperty = DependencyProperty.Register(nameof(PackageCount), typeof(int), typeof(PackageCatalogView), new PropertyMetadata(4, (c, _) => ((PackageCatalogView)c).UpdatePackageGroups()));
+    public static readonly DependencyProperty ViewAllCommandProperty = DependencyProperty.Register(nameof(ViewAllCommand), typeof(ICommand), typeof(PackageCatalogView), new PropertyMetadata(null));
 }

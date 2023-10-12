@@ -47,6 +47,12 @@ public sealed partial class SetupShell : UserControl
         set => SetValue(OrchestratorProperty, value);
     }
 
+    public Visibility HeaderVisibility
+    {
+        get => (Visibility)GetValue(HeaderVisibilityProperty);
+        set => SetValue(HeaderVisibilityProperty, value);
+    }
+
     public bool UseOrchestratorTitle => string.IsNullOrEmpty(Title);
 
     public SetupShell()
@@ -59,6 +65,7 @@ public sealed partial class SetupShell : UserControl
     public static readonly DependencyProperty SetupShellContentProperty = DependencyProperty.RegisterAttached(nameof(SetupShellContent), typeof(object), typeof(SetupShell), new PropertyMetadata(null));
     public static readonly DependencyProperty HeaderProperty = DependencyProperty.RegisterAttached(nameof(Header), typeof(object), typeof(SetupShell), new PropertyMetadata(null));
     public static readonly DependencyProperty OrchestratorProperty = DependencyProperty.RegisterAttached(nameof(Orchestrator), typeof(SetupFlowOrchestrator), typeof(SetupShell), new PropertyMetadata(null));
+    public static readonly DependencyProperty HeaderVisibilityProperty = DependencyProperty.RegisterAttached(nameof(HeaderVisibility), typeof(Visibility), typeof(SetupShell), new PropertyMetadata(Visibility.Visible));
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {

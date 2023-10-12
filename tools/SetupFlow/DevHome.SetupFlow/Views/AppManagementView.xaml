@@ -12,6 +12,7 @@
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:selectors="using:DevHome.SetupFlow.Selectors"
     xmlns:viewmodels="using:DevHome.SetupFlow.ViewModels"
+    xmlns:behaviors="using:DevHome.SetupFlow.Behaviors"
     xmlns:views="using:DevHome.SetupFlow.Views"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
@@ -25,6 +26,10 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
+    <i:Interaction.Behaviors >
+        <behaviors:AppManagementBehavior />
+    </i:Interaction.Behaviors>
+
     <!-- Page split layout -->
     <Grid ColumnSpacing="10">
         <Grid.ColumnDefinitions>
@@ -34,9 +39,10 @@
 
         <!-- Main/Center panel -->
         <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_AppManagement"
+                             x:Name="SetupShell"
                              Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
                              Foreground="{ThemeResource TextFillColorSecondary}">
-            <Grid Grid.Column="0" RowSpacing="20">
+            <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
@@ -48,6 +54,7 @@
                     QueryIcon="Find"
                     HorizontalAlignment="Left"
                     Width="400"
+                    Margin="0,0,0,20"
                     IsEnabled="{x:Bind ViewModel.SearchBoxEnabled, Mode=OneWay}"
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SearchBox">
                     <i:Interaction.Behaviors>
@@ -58,7 +65,7 @@
                 </AutoSuggestBox>
 
                 <!-- Main content -->
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="MainContent">
                     <ContentControl
                         IsTabStop="False"
                         Margin="0 0 10 0"

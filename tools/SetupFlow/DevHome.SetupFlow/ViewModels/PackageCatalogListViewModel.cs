@@ -2,10 +2,13 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DevHome.SetupFlow.Behaviors;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 
@@ -16,6 +19,12 @@ public partial class PackageCatalogListViewModel : ObservableObject
     private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
     private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
     private bool _initialized;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CatalogFullPath))]
+    private PackageCatalogViewModel _viewAllCatalog;
+
+    public List<string> CatalogFullPath => new () { "Install applications", ViewAllCatalog?.Name ?? string.Empty };
 
     /// <summary>
     /// Gets a list of package catalogs to display
@@ -96,5 +105,19 @@ public partial class PackageCatalogListViewModel : ObservableObject
         {
             PackageCatalogShimmers.Remove(PackageCatalogShimmers.Last());
         }
+    }
+
+    [RelayCommand]
+    private void ViewAllPackages(PackageCatalogViewModel catalog)
+    {
+        AppManagementBehavior.SetHeaderVisibility(false);
+        ViewAllCatalog = catalog;
+    }
+
+    [RelayCommand]
+    private void ExitViewAllPackages()
+    {
+        AppManagementBehavior.SetHeaderVisibility(true);
+        ViewAllCatalog = null;
     }
 }

@@ -6,7 +6,6 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
-                <ResourceDictionary Source="/Styles/AppManagement_ThemeResources.xaml" />
                 <ResourceDictionary Source="/Styles/BreadcrumbBar.xaml" />
                 <ResourceDictionary Source="/Styles/Feedback_ThemeResources.xaml" />
                 <ResourceDictionary Source="/Styles/FontFamilies.xaml" />
@@ -15,6 +14,9 @@
                 <ResourceDictionary Source="/Styles/TextBlock.xaml" />
                 <ResourceDictionary Source="/Styles/Thickness.xaml" />
                 <ResourceDictionary Source="/Styles/WindowTitleBar_ThemeResources.xaml" />
+
+                <!-- Resources from other projects -->
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlow_ThemeResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

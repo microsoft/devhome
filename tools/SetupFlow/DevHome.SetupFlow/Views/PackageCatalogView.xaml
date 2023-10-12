@@ -22,8 +22,9 @@
                 Grid.Column="1"
                 AutomationProperties.AutomationControlType="Button"
                 Visibility="{x:Bind Catalog.CanAddAllPackages, Mode=OneWay}"
-                Command="{x:Bind Catalog.AddAllPackagesCommand}">
-                <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/AddAll" />
+                CommandParameter="{x:Bind Catalog}"
+                Command="{x:Bind ViewAllCommand, Mode=OneWay}">
+                <TextBlock Text="View all"/>
             </HyperlinkButton>
         </Grid>
 

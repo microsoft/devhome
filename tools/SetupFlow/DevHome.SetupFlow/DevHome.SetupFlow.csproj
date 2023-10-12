@@ -44,6 +44,13 @@
     <None Update="Assets\AppManagementPackages.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Page Update="Styles\AppManagement_ThemeResources.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Styles\SetupFlow_ThemeResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Update="Controls\PackageDetailsSettingsCard.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -68,7 +75,9 @@
     <None Remove="NativeMethods.txt" />
     <None Remove="SetupFlowPage.xaml" />
     <None Remove="Controls\SetupShell.xaml" />
+    <None Remove="Styles\AppManagement_ThemeResources.xaml" />
     <None Remove="Styles\SetupFlowStyles.xaml" />
+    <None Remove="Styles\SetupFlow_ThemeResources.xaml" />
     <None Remove="Styles\SetupToolStyles.xaml" />
     <None Remove="Views\AddRepoDialog.xaml" />
     <None Remove="Views\DevDriveReviewView.xaml" />
