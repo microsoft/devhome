@@ -5,6 +5,7 @@ using System;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
@@ -13,32 +14,34 @@ using Microsoft.Windows.Widgets.Hosts;
 using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
+
 public sealed partial class CustomizeWidgetDialog : ContentDialog
 {
     public Widget EditedWidget { get; set; }
 
     public WidgetViewModel ViewModel { get; set; }
 
+    private readonly WidgetHostingService _hostingService;
+
     private readonly WidgetDefinition _widgetDefinition;
-    private readonly WidgetHost _widgetHost;
-    private readonly WidgetCatalog _widgetCatalog;
     private static DispatcherQueue _dispatcher;
 
-    public CustomizeWidgetDialog(WidgetHost host, WidgetCatalog catalog, AdaptiveCardRenderer renderer, DispatcherQueue dispatcher, WidgetDefinition widgetDefinition)
+    public CustomizeWidgetDialog(AdaptiveCardRenderer renderer, DispatcherQueue dispatcher, WidgetDefinition widgetDefinition)
     {
         ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, widgetDefinition, renderer, dispatcher);
         ViewModel.IsInEditMode = true;
+
+        _hostingService = Application.Current.GetService<WidgetHostingService>();
+
         this.InitializeComponent();
 
-        _widgetHost = host;
-        _widgetCatalog = catalog;
         _widgetDefinition = widgetDefinition;
         _dispatcher = dispatcher;
 
         // Get the application root window so we know when it has closed.
         Application.Current.GetService<WindowEx>().Closed += OnMainWindowClosed;
 
-        _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        _hostingService.GetWidgetCatalog().WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
 
         this.Loaded += InitializeWidgetCustomization;
     }
@@ -48,7 +51,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
         var size = WidgetHelpers.GetLargestCapabilitySize(_widgetDefinition.GetWidgetCapabilities());
 
         // Create the widget for configuration. We will need to delete it if the dialog is closed without updating.
-        var widget = await _widgetHost.CreateWidgetAsync(_widgetDefinition.Id, size);
+        var widget = await _hostingService.GetWidgetHost().CreateWidgetAsync(_widgetDefinition.Id, size);
         Log.Logger()?.ReportInfo("CustomizeWidgetDialog", $"Created Widget {widget.Id}");
 
         ViewModel.Widget = widget;
@@ -75,7 +78,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
     private void HideDialog()
     {
         Application.Current.GetService<WindowEx>().Closed -= OnMainWindowClosed;
-        _widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        _hostingService.GetWidgetCatalog().WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
         ViewModel.IsInEditMode = false;
 
         this.Hide();
@@ -95,7 +98,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
         {
             Log.Logger()?.ReportDebug("CustomizeWidgetDialog", $"Exiting dialog, widget definition was deleted");
             EditedWidget = null;
-            _widgetCatalog.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+            _hostingService.GetWidgetCatalog().WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
             _dispatcher.TryEnqueue(() =>
             {
                 this.Hide();

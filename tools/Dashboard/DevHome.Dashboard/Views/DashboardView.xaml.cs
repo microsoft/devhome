@@ -15,6 +15,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
@@ -25,6 +26,7 @@ using Windows.Storage;
 using Windows.System;
 
 namespace DevHome.Dashboard.Views;
+
 public partial class DashboardView : ToolPage
 {
     public override string ShortName => "Dashboard";
@@ -33,8 +35,8 @@ public partial class DashboardView : ToolPage
 
     public static ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
 
-    private static WidgetHost _widgetHost;
-    private static WidgetCatalog _widgetCatalog;
+    private readonly WidgetHostingService _hostingService;
+
     private static AdaptiveCardRenderer _renderer;
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
@@ -48,6 +50,8 @@ public partial class DashboardView : ToolPage
     public DashboardView()
     {
         ViewModel = Application.Current.GetService<DashboardViewModel>();
+        _hostingService = Application.Current.GetService<WidgetHostingService>();
+
         this.InitializeComponent();
 
         if (PinnedWidgets != null)
@@ -65,17 +69,9 @@ public partial class DashboardView : ToolPage
 
         ActualThemeChanged += OnActualThemeChanged;
 
-        // If this is the first time initializing the Dashboard, or if initialization failed last time, initialize now.
-        if (!_widgetHostInitialized)
+        if (ViewModel.EnsureWebExperiencePack() && _hostingService.GetWidgetCatalog() != null && SubscribeToWidgetCatalogEvents())
         {
-            if (ViewModel.EnsureWebExperiencePack())
-            {
-                _widgetHostInitialized = InitializeWidgetHost();
-            }
-        }
-
-        if (_widgetHostInitialized)
-        {
+            _widgetHostInitialized = true;
             Loaded += OnLoaded;
         }
         else
@@ -88,25 +84,21 @@ public partial class DashboardView : ToolPage
 #endif
     }
 
-    private bool InitializeWidgetHost()
+    private bool SubscribeToWidgetCatalogEvents()
     {
         Log.Logger()?.ReportInfo("DashboardView", "Register with WidgetHost");
 
         try
         {
-            // The GUID is Dev Home's Host GUID that Widget Platform will use to identify this host.
-            _widgetHost = WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031"));
-            _widgetCatalog = WidgetCatalog.GetDefault();
-
-            _widgetCatalog.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
-            _widgetCatalog.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
-            _widgetCatalog.WidgetDefinitionAdded += WidgetCatalog_WidgetDefinitionAdded;
-            _widgetCatalog.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
-            _widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+            _hostingService.GetWidgetCatalog().WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
+            _hostingService.GetWidgetCatalog().WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
+            _hostingService.GetWidgetCatalog().WidgetDefinitionAdded += WidgetCatalog_WidgetDefinitionAdded;
+            _hostingService.GetWidgetCatalog().WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
+            _hostingService.GetWidgetCatalog().WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
         }
         catch (Exception ex)
         {
-            Log.Logger()?.ReportError("DashboardView", "Exception in InitializeWidgetHost:", ex);
+            Log.Logger()?.ReportError("DashboardView", "Exception in SubscribeToWidgetCatalogEvents:", ex);
             return false;
         }
 
@@ -177,7 +169,7 @@ public partial class DashboardView : ToolPage
         ViewModel.IsLoading = true;
 
         // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
-        await _widgetIconCache.CacheAllWidgetIconsAsync(_widgetCatalog);
+        await _widgetIconCache.CacheAllWidgetIconsAsync(_hostingService.GetWidgetCatalog());
 
         await ConfigureWidgetRenderer(_renderer);
 
@@ -190,7 +182,7 @@ public partial class DashboardView : ToolPage
     private async Task RestorePinnedWidgetsAsync()
     {
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
-        var pinnedWidgets = _widgetHost.GetWidgets();
+        var pinnedWidgets = _hostingService.GetWidgetHost().GetWidgets();
         if (pinnedWidgets != null)
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found {pinnedWidgets.Length} widgets for this host");
@@ -269,10 +261,10 @@ public partial class DashboardView : ToolPage
         // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
         if (!_widgetHostInitialized)
         {
-            if (ViewModel.EnsureWebExperiencePack())
+            if (ViewModel.EnsureWebExperiencePack() && _hostingService.GetWidgetCatalog() != null)
             {
-                _widgetHostInitialized = InitializeWidgetHost();
-                await _widgetIconCache.CacheAllWidgetIconsAsync(_widgetCatalog);
+                _widgetHostInitialized = true;
+                await _widgetIconCache.CacheAllWidgetIconsAsync(_hostingService.GetWidgetCatalog());
                 await ConfigureWidgetRenderer(_renderer);
             }
             else
@@ -299,7 +291,7 @@ public partial class DashboardView : ToolPage
         }
 
         var configurationRenderer = await GetConfigurationRendererAsync();
-        var dialog = new AddWidgetDialog(_widgetHost, _widgetCatalog, configurationRenderer, _dispatcher, ActualTheme)
+        var dialog = new AddWidgetDialog(configurationRenderer, _dispatcher, ActualTheme)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
@@ -318,7 +310,7 @@ public partial class DashboardView : ToolPage
             await newWidget.SetCustomStateAsync(newCustomState);
 
             // Put new widget on the Dashboard.
-            var widgetDef = _widgetCatalog.GetWidgetDefinition(newWidget.DefinitionId);
+            var widgetDef = _hostingService.GetWidgetCatalog().GetWidgetDefinition(newWidget.DefinitionId);
             if (widgetDef is not null)
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
@@ -334,7 +326,7 @@ public partial class DashboardView : ToolPage
         {
             var widgetDefinitionId = widget.DefinitionId;
             var widgetId = widget.Id;
-            var widgetDefinition = _widgetCatalog.GetWidgetDefinition(widgetDefinitionId);
+            var widgetDefinition = _hostingService.GetWidgetCatalog().GetWidgetDefinition(widgetDefinitionId);
 
             if (widgetDefinition != null)
             {
@@ -499,10 +491,10 @@ public partial class DashboardView : ToolPage
         // Get info about the widget we're "editing".
         var index = PinnedWidgets.IndexOf(widgetViewModel);
         var originalSize = widgetViewModel.WidgetSize;
-        var widgetDef = _widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
+        var widgetDef = _hostingService.GetWidgetCatalog().GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
 
         var configurationRenderer = await GetConfigurationRendererAsync();
-        var dialog = new CustomizeWidgetDialog(_widgetHost, _widgetCatalog, configurationRenderer, _dispatcher, widgetDef)
+        var dialog = new CustomizeWidgetDialog(configurationRenderer, _dispatcher, widgetDef)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
