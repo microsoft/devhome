@@ -12,7 +12,6 @@ using Microsoft.Windows.Widgets.Hosts;
 using Windows.Storage.Streams;
 
 namespace DevHome.Dashboard.Helpers;
-
 internal class WidgetIconCache
 {
     private static DispatcherQueue _dispatcher;
