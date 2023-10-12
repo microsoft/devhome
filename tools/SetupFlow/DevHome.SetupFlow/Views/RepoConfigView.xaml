@@ -34,7 +34,7 @@
 
     <setupControls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_RepoConfig"
                                Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
-                               Foreground="{StaticResource TextFillColorSecondary}"                               >
+                               Foreground="{ThemeResource TextFillColorSecondary}">
         <setupControls:SetupShell.Header>
             <Button
                 AutomationProperties.AutomationId="AddRepositoriesButton"

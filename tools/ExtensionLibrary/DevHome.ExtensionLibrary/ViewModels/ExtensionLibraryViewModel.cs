@@ -70,14 +70,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
     private bool ShouldShowExtensionsBanner()
     {
-        var show = true;
         var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        if (roamingProperties.ContainsKey(_hideExtensionsBannerKey))
-        {
-            show = false;
-        }
-
-        return show;
+        return !roamingProperties.ContainsKey(_hideExtensionsBannerKey);
     }
 
     [RelayCommand]
