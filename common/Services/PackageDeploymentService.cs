@@ -36,7 +36,7 @@ public class PackageDeploymentService : IPackageDeploymentService
     }
 
     /// <inheritdoc />
-    public IEnumerable<Package> FindPackagesForCurrentUser(string packageFamilyName, Version minVersion1, Version version1Ceiling, Version minVersion2)
+    public IEnumerable<Package> FindPackagesForCurrentUser(string packageFamilyName, params (Version minVersion, Version? maxVersion)[] ranges)
     {
         var packages = _packageManager.FindPackagesForUser(string.Empty, packageFamilyName);
         if (packages.Any())
@@ -51,7 +51,7 @@ public class PackageDeploymentService : IPackageDeploymentService
                 Log.Logger()?.ReportInfo("PackageDeploymentService", $"Found package {package.Id.FullName}");
 
                 // Create System.Version type from PackageVersion to test. System.Version supports CompareTo() for easy comparisons.
-                if (IsVersionSupported(new (major, minor), minVersion1, version1Ceiling, minVersion2))
+                if (IsVersionSupported(new (major, minor), ranges))
                 {
                     versionedPackages.Add(package);
                 }
@@ -77,6 +77,26 @@ public class PackageDeploymentService : IPackageDeploymentService
     /// </summary>
     private bool IsVersionAtOrAbove(Version target, Version min) => target.CompareTo(min) >= 0;
 
-    private bool IsVersionSupported(Version target, Version minVersion1, Version version1Ceiling, Version minVersion2) =>
-        IsVersionBetween(target, minVersion1, version1Ceiling) || IsVersionAtOrAbove(target, minVersion2);
+    private bool IsVersionSupported(Version target, params (Version minVersion, Version? maxVersion)[] ranges)
+    {
+        foreach (var (minVersion, maxVersion) in ranges)
+        {
+            if (maxVersion == null)
+            {
+                if (IsVersionAtOrAbove(target, minVersion))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (IsVersionBetween(target, minVersion, maxVersion))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }

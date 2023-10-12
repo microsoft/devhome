@@ -49,7 +49,10 @@ public partial class DashboardViewModel : ObservableObject
 
         // Ensure the application is installed, and the version is high enough.
         const string packageFamilyName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
-        var packages = _packageDeploymentService.FindPackagesForCurrentUser(packageFamilyName, minSupportedVersion400, version500, minSupportedVersion500);
+        var packages = _packageDeploymentService.FindPackagesForCurrentUser(
+            packageFamilyName,
+            (minSupportedVersion400, version500),
+            (minSupportedVersion500, null));
         _validatedWebExpPack = packages.Any();
         return _validatedWebExpPack;
     }
