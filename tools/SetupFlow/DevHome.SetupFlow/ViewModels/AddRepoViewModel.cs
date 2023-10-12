@@ -437,13 +437,14 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
+            IsLoggingIn = true;
             InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), loginFrame);
 
             // Wait 30 seconds for user to log in.
             var maxIterationsToWait = 30;
             var currentIteration = 0;
             var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
-            if (IsLoggingIn && currentIteration <= maxIterationsToWait)
+            while (IsLoggingIn && currentIteration++ <= maxIterationsToWait)
             {
                 await Task.Delay(waitDelay);
             }

@@ -58,9 +58,6 @@
                      Text="{x:Bind AddRepoViewModel.Url, Mode=TwoWay}"
                      Margin="0, 20, 0, 0"/>
             <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.UrlParsingError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlError, Mode=OneWay}"/>
-            <Grid Height="50" Width="50">
-                <ProgressRing Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay}"/>
-            </Grid>
 
             <!-- Log into account -->
             <ComboBox x:Name="RepositoryProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}" Margin="0, 20, 0, 0" >
