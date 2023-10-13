@@ -32,10 +32,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         _host = host;
         _stringResource = stringResource;
 
-        // TODO Remove `this` argument from CreateInstance since this task
-        // group is a registered type. This requires updating dependent classes
-        // correspondingly.
-        // https://github.com/microsoft/devhome/issues/631
+        // TODO https://github.com/microsoft/devhome/issues/631
         _repoConfigViewModel = new (() => new RepoConfigViewModel(stringResource, setupFlowOrchestrator, devDriveManager, this, host));
         _repoConfigReviewViewModel = new (() => new RepoConfigReviewViewModel(stringResource, this));
         _activityId = setupFlowOrchestrator.ActivityId;
