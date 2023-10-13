@@ -15,8 +15,8 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <StackPanel>
-                <TextBlock Text="{x:Bind Catalog.Name}" Style="{ThemeResource AppManagementTitleTextBlock}" />
-                <TextBlock Text="{x:Bind Catalog.Description}" Style="{ThemeResource AppManagementDescriptionTextBlock}" />
+                <TextBlock Text="{x:Bind Catalog.Name}" Style="{ThemeResource AppManagementPackageTitleTextBlock}" />
+                <TextBlock Text="{x:Bind Catalog.Description}" Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" />
             </StackPanel>
             <HyperlinkButton
                 Grid.Column="1"
@@ -24,7 +24,7 @@
                 Visibility="{x:Bind Catalog.CanAddAllPackages, Mode=OneWay}"
                 CommandParameter="{x:Bind Catalog}"
                 Command="{x:Bind ViewAllCommand, Mode=OneWay}">
-                <TextBlock Text="View all"/>
+                <TextBlock x:Uid="ViewAll" />
             </HyperlinkButton>
         </Grid>
 

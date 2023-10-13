@@ -44,11 +44,11 @@
                             <controls:PackageDetailsTooltip Package="{x:Bind}" />
                         </ToolTipService.ToolTip>
                         <ctControls:SettingsCard.Header>
-                            <TextBlock Style="{ThemeResource AppManagementTitleTextBlock}" Text="{x:Bind PackageTitle, Mode=OneWay}"/>
+                            <TextBlock Style="{ThemeResource AppManagementPackageTitleTextBlock}" Text="{x:Bind PackageTitle, Mode=OneWay}"/>
                         </ctControls:SettingsCard.Header>
                         <ctControls:SettingsCard.Description>
                             <StackPanel>
-                                <TextBlock Style="{ThemeResource AppManagementDescriptionTextBlock}" Text="{x:Bind PackageDescription, Mode=OneWay}" />
+                                <TextBlock Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{x:Bind PackageDescription, Mode=OneWay}" />
                                 <HyperlinkButton Padding="0" Style="{ThemeResource TextBlockButtonStyle}" Command="{x:Bind LearnMoreCommand, Mode=OneWay}">
                                     <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
                                 </HyperlinkButton>

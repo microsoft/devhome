@@ -17,16 +17,24 @@
         <converters:EmptyObjectToObjectConverter x:Key="ViewAllInverseConverter" EmptyValue="Visible" NotEmptyValue="Collapsed" />
     </UserControl.Resources>
 
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+
     <Grid>
         <!-- View all packages from a catalog -->
         <StackPanel Margin="0,0,15,0" Spacing="27" Visibility="{x:Bind ViewModel.ViewAllCatalog, Mode=OneWay, Converter={StaticResource ViewAllConverter}}">
-            <!-- Header -->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
+
+                <!-- Full catalog path -->
                 <StackPanel Spacing="8">
+                    <!-- Add negative margin to counteract the margin added by breadcrumb bar -->
                     <BreadcrumbBar Margin="-1,-3" ItemsSource="{x:Bind ViewModel.CatalogFullPath, Mode=OneWay}">
                         <i:Interaction.Behaviors>
                             <ic:EventTriggerBehavior EventName="ItemClicked">
@@ -41,6 +49,8 @@
                     </BreadcrumbBar>
                     <TextBlock Text="{x:Bind ViewModel.ViewAllCatalog.Description, Mode=OneWay}" />
                 </StackPanel>
+
+                <!-- Close button -->
                 <Button
                     Grid.Column="1"
                     FontSize="{ThemeResource CaptionTextBlockFontSize}"

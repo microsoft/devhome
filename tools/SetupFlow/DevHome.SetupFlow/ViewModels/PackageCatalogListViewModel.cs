@@ -124,4 +124,11 @@ public partial class PackageCatalogListViewModel : ObservableObject
         AppManagementBehavior.SetHeaderVisibility(true);
         ViewAllCatalog = null;
     }
+
+    [RelayCommand]
+    private void OnLoaded()
+    {
+        // When the view is loaded, ensure we exit the view all packages mode
+        ExitViewAllPackages();
+    }
 }

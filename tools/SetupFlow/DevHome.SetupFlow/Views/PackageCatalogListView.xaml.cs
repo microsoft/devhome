@@ -15,7 +15,6 @@ public sealed partial class PackageCatalogListView : UserControl
     public PackageCatalogListView()
     {
         this.InitializeComponent();
-        Loaded += (_, _) => ViewModel.ViewAllCatalog = null;
     }
 
     private void ItemsRepeater_ElementPrepared(ItemsRepeater sender, ItemsRepeaterElementPreparedEventArgs args)

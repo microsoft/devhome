@@ -374,10 +374,10 @@
                                                 <controls:PackageDetailsTooltip Package="{x:Bind}" />
                                             </ToolTipService.ToolTip>
                                             <controls:PackageDetailsSettingsCard.Header>
-                                                <TextBlock Style="{ThemeResource AppManagementTitleTextBlock}" Text="{x:Bind PackageTitle}" />
+                                                <TextBlock Style="{ThemeResource AppManagementPackageTitleTextBlock}" Text="{x:Bind PackageTitle}" />
                                             </controls:PackageDetailsSettingsCard.Header>
                                             <controls:PackageDetailsSettingsCard.Description>
-                                                <TextBlock Style="{ThemeResource AppManagementDescriptionTextBlock}" Text="{x:Bind PackageDescription}" />
+                                                <TextBlock Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{x:Bind PackageDescription}" />
                                             </controls:PackageDetailsSettingsCard.Description>
                                             <controls:PackageDetailsSettingsCard.HeaderIcon>
                                                 <ImageIcon Source="{x:Bind Icon}"/>

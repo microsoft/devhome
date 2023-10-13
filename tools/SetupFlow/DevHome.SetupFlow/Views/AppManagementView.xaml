@@ -133,10 +133,10 @@
                                 <controls:PackageDetailsTooltip Package="{Binding}" />
                             </ToolTipService.ToolTip>
                             <ctControls:SettingsCard.Header>
-                                <TextBlock Style="{ThemeResource AppManagementTitleTextBlock}" Text="{Binding PackageTitle}"/>
+                                <TextBlock Style="{ThemeResource AppManagementPackageTitleTextBlock}" Text="{Binding PackageTitle}"/>
                             </ctControls:SettingsCard.Header>
                             <ctControls:SettingsCard.Description>
-                                <TextBlock Style="{ThemeResource AppManagementDescriptionTextBlock}" Text="{Binding PackageDescription}"/>
+                                <TextBlock Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{Binding PackageDescription}"/>
                             </ctControls:SettingsCard.Description>
                             <ctControls:SettingsCard.HeaderIcon>
                                 <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
