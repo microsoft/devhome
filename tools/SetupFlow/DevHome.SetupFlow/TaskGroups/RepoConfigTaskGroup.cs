@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
@@ -28,7 +29,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
 
     private readonly ISetupFlowStringResource _stringResource;
 
-    public RepoConfigTaskGroup(IHost host, ISetupFlowStringResource stringResource, SetupFlowOrchestrator setupFlowOrchestrator)
+    public RepoConfigTaskGroup(IHost host, ISetupFlowStringResource stringResource, SetupFlowOrchestrator setupFlowOrchestrator, IDevDriveManager devDriveManager)
     {
         _host = host;
         _stringResource = stringResource;
@@ -37,7 +38,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         // group is a registered type. This requires updating dependent classes
         // correspondingly.
         // https://github.com/microsoft/devhome/issues/631
-        _repoConfigViewModel = new (() => _host.CreateInstance<RepoConfigViewModel>(this));
+        _repoConfigViewModel = new (() => new RepoConfigViewModel(stringResource, setupFlowOrchestrator, devDriveManager, this, host));
         _repoConfigReviewViewModel = new (() => _host.CreateInstance<RepoConfigReviewViewModel>(this));
         _activityId = setupFlowOrchestrator.ActivityId;
     }

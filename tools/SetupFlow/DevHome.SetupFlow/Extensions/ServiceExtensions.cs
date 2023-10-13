@@ -48,10 +48,8 @@ public static class ServiceExtensions
         // View models
         services.AddTransient<ShimmerSearchViewModel>();
         services.AddTransient<SearchViewModel>();
-        services.AddTransient<PackageViewModel>();
         services.AddTransient<PackageCatalogListViewModel>();
         services.AddTransient<AppManagementViewModel>();
-        services.AddTransient<PackageCatalogViewModel>();
         services.AddTransient<AppManagementReviewViewModel>();
 
         // Services
@@ -124,7 +122,6 @@ public static class ServiceExtensions
     private static IServiceCollection AddRepoConfig(this IServiceCollection services)
     {
         // View models
-        services.AddTransient<AddRepoViewModel>();
         services.AddTransient<RepoConfigViewModel>();
         services.AddTransient<RepoConfigReviewViewModel>();
 
