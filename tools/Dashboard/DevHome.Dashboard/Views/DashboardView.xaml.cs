@@ -15,7 +15,6 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
-using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
@@ -35,8 +34,6 @@ public partial class DashboardView : ToolPage
 
     public static ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
 
-    private readonly WidgetHostingService _hostingService;
-
     private static AdaptiveCardRenderer _renderer;
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
@@ -50,7 +47,6 @@ public partial class DashboardView : ToolPage
     public DashboardView()
     {
         ViewModel = Application.Current.GetService<DashboardViewModel>();
-        _hostingService = Application.Current.GetService<WidgetHostingService>();
 
         this.InitializeComponent();
 
@@ -82,11 +78,11 @@ public partial class DashboardView : ToolPage
 
         try
         {
-            _hostingService.GetWidgetCatalog()!.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
-            _hostingService.GetWidgetCatalog()!.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
-            _hostingService.GetWidgetCatalog()!.WidgetDefinitionAdded += WidgetCatalog_WidgetDefinitionAdded;
-            _hostingService.GetWidgetCatalog()!.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
-            _hostingService.GetWidgetCatalog()!.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+            ViewModel.WidgetHostingService.GetWidgetCatalog()!.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
+            ViewModel.WidgetHostingService.GetWidgetCatalog()!.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
+            ViewModel.WidgetHostingService.GetWidgetCatalog()!.WidgetDefinitionAdded += WidgetCatalog_WidgetDefinitionAdded;
+            ViewModel.WidgetHostingService.GetWidgetCatalog()!.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
+            ViewModel.WidgetHostingService.GetWidgetCatalog()!.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
         }
         catch (Exception ex)
         {
@@ -167,7 +163,7 @@ public partial class DashboardView : ToolPage
             return _widgetHostInitialized;
         }
 
-        _widgetHostInitialized = ViewModel.EnsureWebExperiencePack() && _hostingService.GetWidgetCatalog() != null && SubscribeToWidgetCatalogEvents();
+        _widgetHostInitialized = ViewModel.EnsureWebExperiencePack() && ViewModel.WidgetHostingService.GetWidgetCatalog() != null && SubscribeToWidgetCatalogEvents();
 
         return _widgetHostInitialized;
     }
@@ -180,7 +176,7 @@ public partial class DashboardView : ToolPage
         if (EnsureHostingInitialized())
         {
             // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
-            await _widgetIconCache.CacheAllWidgetIconsAsync(_hostingService.GetWidgetCatalog()!);
+            await _widgetIconCache.CacheAllWidgetIconsAsync(ViewModel.WidgetHostingService.GetWidgetCatalog()!);
 
             await ConfigureWidgetRenderer(_renderer);
             await RestorePinnedWidgetsAsync();
@@ -199,7 +195,7 @@ public partial class DashboardView : ToolPage
     private async Task RestorePinnedWidgetsAsync()
     {
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
-        var pinnedWidgets = _hostingService.GetWidgetHost()?.GetWidgets();
+        var pinnedWidgets = ViewModel.WidgetHostingService.GetWidgetHost()?.GetWidgets();
         if (pinnedWidgets != null)
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found {pinnedWidgets.Length} widgets for this host");
@@ -322,7 +318,7 @@ public partial class DashboardView : ToolPage
             await newWidget.SetCustomStateAsync(newCustomState);
 
             // Put new widget on the Dashboard.
-            var widgetDef = _hostingService.GetWidgetCatalog()!.GetWidgetDefinition(newWidget.DefinitionId);
+            var widgetDef = ViewModel.WidgetHostingService.GetWidgetCatalog()!.GetWidgetDefinition(newWidget.DefinitionId);
             if (widgetDef is not null)
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
@@ -338,7 +334,7 @@ public partial class DashboardView : ToolPage
         {
             var widgetDefinitionId = widget.DefinitionId;
             var widgetId = widget.Id;
-            var widgetDefinition = _hostingService.GetWidgetCatalog()!.GetWidgetDefinition(widgetDefinitionId);
+            var widgetDefinition = ViewModel.WidgetHostingService.GetWidgetCatalog()!.GetWidgetDefinition(widgetDefinitionId);
 
             if (widgetDefinition != null)
             {
@@ -503,7 +499,7 @@ public partial class DashboardView : ToolPage
         // Get info about the widget we're "editing".
         var index = PinnedWidgets.IndexOf(widgetViewModel);
         var originalSize = widgetViewModel.WidgetSize;
-        var widgetDef = _hostingService.GetWidgetCatalog()!.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
+        var widgetDef = ViewModel.WidgetHostingService.GetWidgetCatalog()!.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
 
         var configurationRenderer = await GetConfigurationRendererAsync();
         var dialog = new CustomizeWidgetDialog(configurationRenderer, _dispatcher, widgetDef)

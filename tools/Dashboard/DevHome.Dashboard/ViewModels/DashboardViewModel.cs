@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
+using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml;
 using Windows.Storage;
 using Windows.System;
@@ -15,6 +16,8 @@ namespace DevHome.Dashboard.ViewModels;
 
 public partial class DashboardViewModel : ObservableObject
 {
+    public WidgetHostingService WidgetHostingService { get; }
+
     private readonly IPackageDeploymentService _packageDeploymentService;
 
     private readonly Version minSupportedVersion400 = new (423, 3800);
@@ -32,9 +35,10 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty]
     private bool _isLoading;
 
-    public DashboardViewModel(IPackageDeploymentService packageDeploymentService)
+    public DashboardViewModel(IPackageDeploymentService packageDeploymentService, WidgetHostingService widgetHostingService)
     {
         _packageDeploymentService = packageDeploymentService;
+        WidgetHostingService = widgetHostingService;
 
         ShowDashboardBanner = ShouldShowDashboardBanner();
     }
