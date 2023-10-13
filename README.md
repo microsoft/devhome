@@ -98,7 +98,7 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
    * Please use the [configuration file](.configurations/configuration.dsc.yaml). This can be applied by either:
      *  Dev Home's machine configuration tool
      * WinGet configuration. If you have WinGet version [v1.6.2631 or later](https://github.com/microsoft/winget-cli/releases), run `winget configure .configurations/configuration.dsc.yaml` in an elevated shell from the project root so relative paths resolve correctly
-   * Alternatively, if you already are running the minimum OS version, have Visual Studio installed, and have developer mode enabled, you may configure your Visual Studio directly via the .vsconfig file. To do thhis:
+   * Alternatively, if you already are running the minimum OS version, have Visual Studio installed, and have developer mode enabled, you may configure your Visual Studio directly via the .vsconfig file. To do this:
      * Open the Visual Studio Installer, select “More” on your product card and then "Import configuration"
      * Specify the .vsconfig file at the root of the repo and select “Review Details”
 
