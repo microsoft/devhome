@@ -661,14 +661,13 @@ public partial class AddRepoViewModel : ObservableObject
         // Only ask if DevHome hasn't asked already.
         UrlParsingError = _stringResource.GetLocalized("No currently logged in accounts have access to this repo.");
         ShouldShowUrlError = Visibility.Visible;
-        InitiateAddAccountUserExperienceAsync(provider, loginFrame);
         IsLoggingIn = true;
+        InitiateAddAccountUserExperienceAsync(provider, loginFrame);
         return null;
     }
 
     private void InitiateAddAccountUserExperienceAsync(RepositoryProvider provider, Frame loginFrame)
     {
-        IsLoggingIn = true;
         TelemetryFactory.Get<ITelemetry>().Log(
                                                 "EntryPoint_DevId_Event",
                                                 LogLevel.Critical,

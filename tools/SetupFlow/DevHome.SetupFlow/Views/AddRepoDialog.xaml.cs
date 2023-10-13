@@ -311,7 +311,7 @@ internal partial class AddRepoDialog : ContentDialog
             var maxIterationsToWait = 30;
             var currentIteration = 0;
             var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
-            if (AddRepoViewModel.IsLoggingIn && currentIteration <= maxIterationsToWait)
+            while (AddRepoViewModel.IsLoggingIn && currentIteration++ <= maxIterationsToWait)
             {
                 await Task.Delay(waitDelay);
             }
@@ -321,6 +321,7 @@ internal partial class AddRepoDialog : ContentDialog
             if (!AddRepoViewModel.EverythingToClone.Any())
             {
                 AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation, LoginUIContent);
+                AddRepoViewModel.ShouldShowUrlError = Visibility.Collapsed;
             }
 
             if (AddRepoViewModel.ShouldShowUrlError == Visibility.Visible)

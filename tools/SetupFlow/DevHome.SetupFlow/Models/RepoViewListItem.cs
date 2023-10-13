@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Collections.ObjectModel;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -41,10 +42,16 @@ public partial class RepoViewListItem : ObservableObject
 
     public string RepoDisplayName => Path.Join(OwningAccountName, RepoName);
 
+    public ObservableCollection<RepoViewListItem> Children
+    {
+        get; set;
+    }
+
     public RepoViewListItem(IRepository repo)
     {
         IsPrivate = repo.IsPrivate;
         RepoName = repo.DisplayName;
         OwningAccountName = repo.OwningAccountName;
+        Children = new ObservableCollection<RepoViewListItem>();
     }
 }
