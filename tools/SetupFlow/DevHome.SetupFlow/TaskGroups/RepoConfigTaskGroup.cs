@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
@@ -12,7 +12,6 @@ using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.SetupFlow.TaskGroups;
 
@@ -28,17 +27,14 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
 
     private readonly ISetupFlowStringResource _stringResource;
 
-    public RepoConfigTaskGroup(IHost host, ISetupFlowStringResource stringResource, SetupFlowOrchestrator setupFlowOrchestrator)
+    public RepoConfigTaskGroup(IHost host, ISetupFlowStringResource stringResource, SetupFlowOrchestrator setupFlowOrchestrator, IDevDriveManager devDriveManager)
     {
         _host = host;
         _stringResource = stringResource;
 
-        // TODO Remove `this` argument from CreateInstance since this task
-        // group is a registered type. This requires updating dependent classes
-        // correspondingly.
-        // https://github.com/microsoft/devhome/issues/631
-        _repoConfigViewModel = new (() => _host.CreateInstance<RepoConfigViewModel>(this));
-        _repoConfigReviewViewModel = new (() => _host.CreateInstance<RepoConfigReviewViewModel>(this));
+        // TODO https://github.com/microsoft/devhome/issues/631
+        _repoConfigViewModel = new (() => new RepoConfigViewModel(stringResource, setupFlowOrchestrator, devDriveManager, this, host));
+        _repoConfigReviewViewModel = new (() => new RepoConfigReviewViewModel(stringResource, this));
         _activityId = setupFlowOrchestrator.ActivityId;
     }
 
