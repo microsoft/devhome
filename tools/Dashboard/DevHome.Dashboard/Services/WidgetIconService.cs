@@ -4,30 +4,28 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.UI.Dispatching;
+using DevHome.Common.Extensions;
+using DevHome.Dashboard.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.Storage.Streams;
+using WinUIEx;
 
-namespace DevHome.Dashboard.Helpers;
-internal class WidgetIconCache
+namespace DevHome.Dashboard.Services;
+
+public class WidgetIconService
 {
-    private static DispatcherQueue _dispatcher;
+    private readonly WidgetHostingService _widgetHostingService;
 
-    private static Dictionary<string, BitmapImage> _widgetLightIconCache;
-    private static Dictionary<string, BitmapImage> _widgetDarkIconCache;
+    private readonly Dictionary<string, BitmapImage> _widgetLightIconCache;
+    private readonly Dictionary<string, BitmapImage> _widgetDarkIconCache;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WidgetIconCache"/> class.
-    /// </summary>
-    /// <remarks>
-    /// The WidgetIconCache is backed by two dictionaries, one for light themed icons and one for dark themed icons.
-    /// </remarks>
-    public WidgetIconCache(DispatcherQueue dispatcher)
+    public WidgetIconService(WidgetHostingService widgetHostingService)
     {
-        _dispatcher = dispatcher;
+        _widgetHostingService = widgetHostingService;
+
         _widgetLightIconCache = new Dictionary<string, BitmapImage>();
         _widgetDarkIconCache = new Dictionary<string, BitmapImage>();
     }
@@ -35,10 +33,10 @@ internal class WidgetIconCache
     /// <summary>
     /// Caches icons for all widgets in the WidgetCatalog that are included in Dev Home.
     /// </summary>
-    public async Task CacheAllWidgetIconsAsync(WidgetCatalog widgetCatalog)
+    public async Task CacheAllWidgetIconsAsync()
     {
         var cacheTasks = new List<Task>();
-        var widgetDefinitions = widgetCatalog.GetWidgetDefinitions();
+        var widgetDefinitions = _widgetHostingService.GetWidgetCatalog()!.GetWidgetDefinitions();
         foreach (var widgetDef in widgetDefinitions ?? Array.Empty<WidgetDefinition>())
         {
             var task = AddIconsToCacheAsync(widgetDef);
@@ -93,12 +91,12 @@ internal class WidgetIconCache
         _widgetDarkIconCache.Remove(definitionId);
     }
 
-    public static async Task<BitmapImage> GetWidgetIconForThemeAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
+    public async Task<BitmapImage> GetWidgetIconForThemeAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
     {
         // Return the WidgetDefinition Id via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
         // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
         var completionSource = new TaskCompletionSource<string>();
-        _dispatcher.TryEnqueue(() =>
+        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
             completionSource.TrySetResult(widgetDefinition.Id);
         });
@@ -118,7 +116,7 @@ internal class WidgetIconCache
         return image;
     }
 
-    public static async Task<Brush> GetBrushForWidgetIconAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
+    public async Task<Brush> GetBrushForWidgetIconAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
     {
         var image = await GetWidgetIconForThemeAsync(widgetDefinition, theme);
 
@@ -135,7 +133,7 @@ internal class WidgetIconCache
         // Return the bitmap image via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
         // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
         var completionSource = new TaskCompletionSource<BitmapImage>();
-        _dispatcher.TryEnqueue(async () =>
+        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(async () =>
         {
             using var bitmapStream = await iconStreamRef.OpenReadAsync();
             var itemImage = new BitmapImage();

@@ -3,7 +3,9 @@
 
 using System;
 using System.Linq;
+using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Dashboard.Views;
 using Microsoft.UI.Xaml;
@@ -14,7 +16,7 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Controls;
-public sealed partial class WidgetControl : UserControl
+internal sealed partial class WidgetControl : UserControl
 {
     private MenuFlyoutItem _currentSelectedSize;
 
@@ -228,11 +230,13 @@ public sealed partial class WidgetControl : UserControl
 
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        WidgetHeaderIcon.Fill = await WidgetIconCache.GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
+        WidgetHeaderIcon.Fill = await Application.Current.GetService<WidgetIconService>()
+            .GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
     }
 
     private async void UpdateWidgetHeaderIconFillAsync()
     {
-        WidgetHeaderIcon.Fill = await WidgetIconCache.GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
+        WidgetHeaderIcon.Fill = await Application.Current.GetService<WidgetIconService>()
+            .GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
     }
 }

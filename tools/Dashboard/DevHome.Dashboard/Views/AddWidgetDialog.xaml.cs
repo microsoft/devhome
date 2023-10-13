@@ -22,7 +22,7 @@ using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
 
-public sealed partial class AddWidgetDialog : ContentDialog
+internal sealed partial class AddWidgetDialog : ContentDialog
 {
     private Widget _currentWidget;
     private static DispatcherQueue _dispatcher;
@@ -32,6 +32,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     public WidgetViewModel ViewModel { get; set; }
 
     private readonly IWidgetHostingService _hostingService;
+    private readonly WidgetIconService _widgetIconService;
 
     public AddWidgetDialog(
         AdaptiveCardRenderer renderer,
@@ -40,6 +41,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, renderer, dispatcher);
         _hostingService = Application.Current.GetService<IWidgetHostingService>();
+        _widgetIconService = Application.Current.GetService<WidgetIconService>();
 
         this.InitializeComponent();
 
@@ -127,7 +129,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private async Task<StackPanel> BuildWidgetNavItem(WidgetDefinition widgetDefinition)
     {
-        var image = await WidgetIconCache.GetWidgetIconForThemeAsync(widgetDefinition, ActualTheme);
+        var image = await _widgetIconService.GetWidgetIconForThemeAsync(widgetDefinition, ActualTheme);
         return BuildNavItem(image, widgetDefinition.DisplayTitle);
     }
 
