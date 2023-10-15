@@ -118,11 +118,11 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ContentArea.Text" xml:space="preserve">
-    <value>Experiments</value>
+    <value>This is a test experiment page</value>
     <comment>The name is Experiments</comment>
   </data>
   <data name="NavigationPane.Content" xml:space="preserve">
-    <value>Experiments</value>
+    <value>Test Experiment page</value>
     <comment>The name of the Experiments page</comment>
   </data>
 </root>

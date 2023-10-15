@@ -4,27 +4,35 @@
       {
         "identity": "main",
         "tools": [
-          {
-            "identity": "DevHome.Dashboard",
-            "assembly": "DevHome.Dashboard",
-            "viewFullName": "DevHome.Dashboard.Views.DashboardView",
-            "viewModelFullName": "DevHome.Dashboard.ViewModels.DashboardViewModel",
-            "icon": "f246"
-          },
-          {
-            "identity": "DevHome.SetupFlow",
-            "assembly": "DevHome.SetupFlow",
-            "viewFullName": "DevHome.SetupFlow.Views.SetupFlowPage",
-            "viewModelFullName": "DevHome.SetupFlow.ViewModels.SetupFlowViewModel",
-            "icon": "f156"
-          },
-          {
-            "identity": "DevHome.ExtensionLibrary",
-            "assembly": "DevHome.ExtensionLibrary",
-            "viewFullName": "DevHome.ExtensionLibrary.Views.ExtensionLibraryView",
-            "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
-            "icon": "ea86"
-          }
+            {
+                "identity": "DevHome.Dashboard",
+                "assembly": "DevHome.Dashboard",
+                "viewFullName": "DevHome.Dashboard.Views.DashboardView",
+                "viewModelFullName": "DevHome.Dashboard.ViewModels.DashboardViewModel",
+                "icon": "f246"
+            },
+            {
+                "identity": "DevHome.SetupFlow",
+                "assembly": "DevHome.SetupFlow",
+                "viewFullName": "DevHome.SetupFlow.Views.SetupFlowPage",
+                "viewModelFullName": "DevHome.SetupFlow.ViewModels.SetupFlowViewModel",
+                "icon": "f156"
+            },
+            {
+                "identity": "DevHome.ExtensionLibrary",
+                "assembly": "DevHome.ExtensionLibrary",
+                "viewFullName": "DevHome.ExtensionLibrary.Views.ExtensionLibraryView",
+                "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
+                "icon": "ea86"
+            },
+            {
+                "identity": "DevHome.TestExperiment",
+                "assembly": "DevHome.Experiments",
+                "viewFullName": "DevHome.Experiments.Views.TestExperimentPage",
+                "viewModelFullName": "DevHome.Experiments.ViewModels.TestExperimentViewModel",
+                "icon": "f0f7",
+                "experimentId": "ExperimentalFeature_1"
+            }
         ]
       }
     ]

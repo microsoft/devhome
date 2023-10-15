@@ -8,7 +8,6 @@
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="ExperimentsPage.xaml" />
     <None Remove="Views\TestExperimentPage.xaml" />
   </ItemGroup>
 
@@ -23,8 +22,5 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="ExperimentsPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
 </Project>

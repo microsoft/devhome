@@ -25,7 +25,7 @@ namespace DevHome.Experiments.Views;
 /// </summary>
 public sealed partial class TestExperimentPage : ToolPage
 {
-    public override string ShortName => "Experiments";
+    public override string ShortName => "TestExperiment1";
 
     public TestExperimentViewModel ViewModel
     {

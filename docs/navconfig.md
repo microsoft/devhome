@@ -43,3 +43,7 @@
                                 - Unicode point of tool's icon
                                 - Type: `string`
                                 - <i id="/navMenu/groups/items/tools/items/icon">path: #/navMenu/groups/items/tools/items/icons</i>
+                            - <b id="#/navMenu/groups/items/tools/items/experimentId">experimentId</b> `optional`
+								- This page is experimental and tied to an experiment ID
+								- Type: `string`
+								- <i id="/navMenu/groups/items/tools/items/experimentId">path: #/navMenu/groups/items/tools/items/experimentId</i>

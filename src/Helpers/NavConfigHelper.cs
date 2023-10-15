@@ -44,6 +44,9 @@ internal class Tool
 
     [JsonPropertyName("icon")]
     public string Icon { get; set; }
+
+    [JsonPropertyName("experimentId")]
+    public string ExperimentId { get; set; }
 }
 
 // Uses .NET's JSON source generator support for serializing / deserializing NavConfig to get some perf gains at startup.

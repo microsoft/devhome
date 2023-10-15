@@ -3,6 +3,8 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Contracts.Services;
+using DevHome.Experiments.ViewModels;
+using DevHome.Experiments.Views;
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
 using DevHome.ViewModels;
@@ -35,6 +37,17 @@ public class PageService : IPageService
                 var toolType = from assembly in assemblies
                                where assembly.GetName().Name == tool.Assembly
                                select assembly.GetType(tool.ViewFullName);
+
+                /*
+                if (!string.IsNullOrEmpty(tool.ExperimentId))
+                {
+                    ExperimentalFeaturesViewModel.ExperimentalFeatures.Add(new ExperimentalFeature()
+                    {
+                        Id = tool.ViewModelFullName,
+                        Enabled = false
+                    });
+                }
+                */
 
                 Configure(tool.ViewModelFullName, toolType.First());
             }

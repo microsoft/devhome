@@ -10,19 +10,23 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.ViewModels;
 
-public sealed class ExperimentalFeature : ObservableObject
+public partial class ExperimentalFeature : ObservableObject
 {
-    public string Id { get; set; } = string.Empty;
+    public string Id { get; init; }
 
-    public ILocalSettingsService? LocalSettingsService
+    public static ILocalSettingsService? LocalSettingsService { get; set; }
+
+    public ExperimentalFeature(string id)
     {
-        get; set;
+        Id = id;
+        IsEnabled = GetIsEnabled();
     }
 
     public string Name
@@ -43,17 +47,17 @@ public sealed class ExperimentalFeature : ObservableObject
         }
     }
 
-    public bool IsEnabled
-    {
-        get
-        {
-            return LocalSettingsService!.ReadSettingAsync<bool>($"ExperimentalFeature_{Id}").Result;
-        }
+    [ObservableProperty]
+    private bool isEnabled;
 
-        set
-        {
-            LocalSettingsService!.SaveSettingAsync($"ExperimentalFeature_{Id}", value).Wait();
-        }
+    public bool GetIsEnabled()
+    {
+        return LocalSettingsService!.ReadSettingAsync<bool>($"ExperimentalFeature_{Id}").Result;
+    }
+
+    partial void OnIsEnabledChanging(bool value)
+    {
+        LocalSettingsService!.SaveSettingAsync($"ExperimentalFeature_{Id}", value).Wait();
     }
 }
 
@@ -71,20 +75,21 @@ public class ExperimentalFeaturesViewModel : ObservableObject
     public ExperimentalFeaturesViewModel(ILocalSettingsService localSettingsService)
     {
         _localSettingsService = localSettingsService;
+        ExperimentalFeature.LocalSettingsService = localSettingsService;
         InternalFeatureDefinitions = new[]
         {
-            new ExperimentalFeature { Id = "ExperimentalFeature_1", LocalSettingsService = _localSettingsService },
-            new ExperimentalFeature { Id = "ExperimentalFeature_2", LocalSettingsService = _localSettingsService },
+            new ExperimentalFeature("ExperimentalFeature_1"),
+            new ExperimentalFeature("ExperimentalFeature_2"),
         };
 
         const string prefix = "ExperimentalFeature_";
         var features = _localSettingsService.EnumerateSettings().Result
             .Where(s => s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-            .Select(s => new ExperimentalFeature { Id = s.Substring(prefix.Length), LocalSettingsService = _localSettingsService });
+            .Select(s => new ExperimentalFeature(s.Substring(prefix.Length)));
+        var joined = features.Concat(InternalFeatureDefinitions
+            .Where(f => !features.Any(f2 => f2.Id == f.Id)));
 
-        var joined = features.Concat(InternalFeatureDefinitions.Where(f => !features.Any(f2 => f2.Id == f.Id)));
         var sorted = joined.ToImmutableSortedSet(Comparer<ExperimentalFeature>.Create((f1, f2) => string.Compare(f1.Id, f2.Id, StringComparison.OrdinalIgnoreCase)));
-
         foreach (var feature in sorted)
         {
             Features.Add(feature);
