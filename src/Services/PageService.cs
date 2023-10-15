@@ -25,6 +25,7 @@ public class PageService : IPageService
         Configure<FeedbackViewModel, FeedbackPage>();
         Configure<WhatsNewViewModel, WhatsNewPage>();
         Configure<ExtensionSettingsViewModel, ExtensionSettingsPage>();
+        Configure<ExperimentalFeaturesViewModel, ExperimentalFeaturesPage>();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var group in App.NavConfig.NavMenu.Groups)

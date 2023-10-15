@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Contracts;
 using DevHome.Common.Helpers;
@@ -47,6 +48,19 @@ public class LocalSettingsService : ILocalSettingsService
             _settings = await Task.Run(() => _fileService.Read<IDictionary<string, object>>(_applicationDataFolder, _localSettingsFile)) ?? new Dictionary<string, object>();
 
             _isInitialized = true;
+        }
+    }
+
+    public async Task<string[]> EnumerateSettings()
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return ApplicationData.Current.LocalSettings.Values.Keys.ToArray();
+        }
+        else
+        {
+            await InitializeAsync();
+            return _settings.Keys.ToArray();
         }
     }
 

@@ -26,7 +26,6 @@ using Microsoft.Windows.AppLifecycle;
 
 namespace DevHome;
 
-// To learn more about WinUI 3, see https://docs.microsoft.com/windows/apps/winui/winui3/.
 public partial class App : Application, IApp
 {
     private readonly DispatcherQueue _dispatcherQueue;
