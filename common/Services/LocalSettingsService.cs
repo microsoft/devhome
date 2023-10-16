@@ -51,19 +51,6 @@ public class LocalSettingsService : ILocalSettingsService
         }
     }
 
-    public async Task<string[]> EnumerateSettings()
-    {
-        if (RuntimeHelper.IsMSIX)
-        {
-            return ApplicationData.Current.LocalSettings.Values.Keys.ToArray();
-        }
-        else
-        {
-            await InitializeAsync();
-            return _settings.Keys.ToArray();
-        }
-    }
-
     public async Task<T?> ReadSettingAsync<T>(string key)
     {
         if (RuntimeHelper.IsMSIX)

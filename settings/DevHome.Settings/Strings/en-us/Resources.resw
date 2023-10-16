@@ -465,22 +465,13 @@
   <data name="Settings_Accounts_NoProvidersContentDialog_SecondaryButtonText" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="ExperimentalFeature_1_Description" xml:space="preserve">
-    <value>Some description</value>
-  </data>
-  <data name="ExperimentalFeature_1_Name" xml:space="preserve">
-    <value>Experimental feature #1</value>
-  </data>
-  <data name="ExperimentalFeature_2_Description" xml:space="preserve">
-    <value>Some description</value>
-  </data>
-  <data name="ExperimentalFeature_2_Name" xml:space="preserve">
-    <value>Experimental feature #2</value>
-  </data>
   <data name="Settings_ExperimentalFeatures_Description" xml:space="preserve">
     <value>Configure experimental features</value>
   </data>
   <data name="Settings_ExperimentalFeatures_Header" xml:space="preserve">
     <value>Experimental features</value>
+  </data>
+  <data name="Settings_ExperimentalFeatures_NoExperimentalFeatures.Text" xml:space="preserve">
+    <value>There are currently no experimental features</value>
   </data>
 </root>
