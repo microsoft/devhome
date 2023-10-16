@@ -226,7 +226,7 @@ namespace Microsoft.Windows.DevHome.SDK
 
         ProviderOperationResult LogoutDeveloperId(IDeveloperId developerId);
 
-        event Windows.Foundation.TypedEventHandler Changed;
+        event Windows.Foundation.TypedEventHandler<IDeveloperIdProvider, IDeveloperId> Changed;
 
         AuthenticationState GetDeveloperIdState(IDeveloperId developerId);
 
