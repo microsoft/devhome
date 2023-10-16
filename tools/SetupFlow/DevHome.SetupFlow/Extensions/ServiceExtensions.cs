@@ -48,10 +48,8 @@ public static class ServiceExtensions
         // View models
         services.AddTransient<ShimmerSearchViewModel>();
         services.AddTransient<SearchViewModel>();
-        services.AddTransient<PackageViewModel>();
         services.AddTransient<PackageCatalogListViewModel>();
         services.AddTransient<AppManagementViewModel>();
-        services.AddTransient<PackageCatalogViewModel>();
         services.AddTransient<AppManagementReviewViewModel>();
 
         // Services
@@ -96,7 +94,9 @@ public static class ServiceExtensions
     {
         // View models
         services.AddTransient<DevDriveViewModel>();
-        services.AddTransient<DevDriveReviewViewModel>();
+
+        // TODO https://github.com/microsoft/devhome/issues/631
+        // services.AddTransient<DevDriveReviewViewModel>();
 
         // Services
         services.AddTransient<DevDriveTaskGroup>();
@@ -123,10 +123,9 @@ public static class ServiceExtensions
 
     private static IServiceCollection AddRepoConfig(this IServiceCollection services)
     {
-        // View models
-        services.AddTransient<AddRepoViewModel>();
-        services.AddTransient<RepoConfigViewModel>();
-        services.AddTransient<RepoConfigReviewViewModel>();
+        // TODO https://github.com/microsoft/devhome/issues/631
+        // services.AddTransient<RepoConfigViewModel>();
+        // services.AddTransient<RepoConfigReviewViewModel>();
 
         // Services
         services.AddTransient<RepoConfigTaskGroup>();
