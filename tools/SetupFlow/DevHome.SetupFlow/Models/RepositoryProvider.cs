@@ -127,7 +127,7 @@ internal class RepositoryProvider
     /// Checks with the provider if it understands and can clone a repo via Uri.
     /// </summary>
     /// <param name="uri">The uri to the repository</param>
-    /// <returns>A tuple that contains if the provider can parse the uri and the account it can parse with.</returns>
+    /// <returns>True if this provider supports the url.  False otherwise.</returns>
     public bool IsUriSupported(Uri uri)
     {
         var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;

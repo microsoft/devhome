@@ -417,14 +417,7 @@ internal partial class AddRepoDialog : ContentDialog
             isEverythingGood &= EditDevDriveViewModel.IsDevDriveValid();
         }
 
-        if (isEverythingGood)
-        {
-            AddRepoViewModel.ShouldEnablePrimaryButton = true;
-        }
-        else
-        {
-            AddRepoViewModel.ShouldEnablePrimaryButton = false;
-        }
+        AddRepoViewModel.ShouldEnablePrimaryButton = isEverythingGood;
 
         // Fill in EverythingToClone with the location
         if (isEverythingGood)
