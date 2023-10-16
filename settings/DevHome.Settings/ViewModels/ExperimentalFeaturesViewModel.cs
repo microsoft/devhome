@@ -63,11 +63,6 @@ public partial class ExperimentalFeature : ObservableObject
 
 public class ExperimentalFeaturesViewModel : ObservableObject
 {
-    public ExperimentalFeature[] InternalFeatureDefinitions
-    {
-        get;
-    }
-
     private ILocalSettingsService _localSettingsService;
 
     public ObservableCollection<ExperimentalFeature> Features { get; } = new ();
@@ -76,23 +71,5 @@ public class ExperimentalFeaturesViewModel : ObservableObject
     {
         _localSettingsService = localSettingsService;
         ExperimentalFeature.LocalSettingsService = localSettingsService;
-        InternalFeatureDefinitions = new[]
-        {
-            new ExperimentalFeature("ExperimentalFeature_1"),
-            new ExperimentalFeature("ExperimentalFeature_2"),
-        };
-
-        const string prefix = "ExperimentalFeature_";
-        var features = _localSettingsService.EnumerateSettings().Result
-            .Where(s => s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-            .Select(s => new ExperimentalFeature(s.Substring(prefix.Length)));
-        var joined = features.Concat(InternalFeatureDefinitions
-            .Where(f => !features.Any(f2 => f2.Id == f.Id)));
-
-        var sorted = joined.ToImmutableSortedSet(Comparer<ExperimentalFeature>.Create((f1, f2) => string.Compare(f1.Id, f2.Id, StringComparison.OrdinalIgnoreCase)));
-        foreach (var feature in sorted)
-        {
-            Features.Add(feature);
-        }
     }
 }

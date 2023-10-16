@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using AdaptiveCards.ObjectModel.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
 using DevHome.Experiments.ViewModels;
 using DevHome.Experiments.Views;
@@ -38,19 +40,14 @@ public class PageService : IPageService
                                where assembly.GetName().Name == tool.Assembly
                                select assembly.GetType(tool.ViewFullName);
 
-                /*
-                if (!string.IsNullOrEmpty(tool.ExperimentId))
-                {
-                    ExperimentalFeaturesViewModel.ExperimentalFeatures.Add(new ExperimentalFeature()
-                    {
-                        Id = tool.ViewModelFullName,
-                        Enabled = false
-                    });
-                }
-                */
-
                 Configure(tool.ViewModelFullName, toolType.First());
             }
+        }
+
+        var experimentalFeaturesVM = App.Current.GetService<ExperimentalFeaturesViewModel>();
+        foreach (var experimentId in App.NavConfig.ExperimentIds ?? Array.Empty<string>())
+        {
+            experimentalFeaturesVM.Features.Add(new ExperimentalFeature(experimentId));
         }
     }
 

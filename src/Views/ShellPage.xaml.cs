@@ -116,7 +116,7 @@ public sealed partial class ShellPage : Page
         if (e.NewValue != null && e.NewValue is ExperimentalFeature experimentalFeature)
         {
             var navigationViewItem = (NavigationViewItem)d;
-            navigationViewItem.IsEnabled = experimentalFeature.IsEnabled;
+            navigationViewItem.Visibility = experimentalFeature.IsEnabled ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 
@@ -157,7 +157,7 @@ public sealed partial class ShellPage : Page
 
                 if (expFeature != null)
                 {
-                    navigationViewItem.IsEnabled = expFeature.IsEnabled;
+                    navigationViewItem.Visibility = expFeature.IsEnabled ? Visibility.Visible : Visibility.Collapsed;
                     expFeature.PropertyChanged += (s, e) =>
                     {
                         if (e.PropertyName == nameof(ExperimentalFeature.IsEnabled))

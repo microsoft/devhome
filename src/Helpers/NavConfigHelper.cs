@@ -11,6 +11,9 @@ internal class NavConfig
 {
     [JsonPropertyName("navMenu")]
     public NavMenu NavMenu { get; set; }
+
+    [JsonPropertyName("experiments")]
+    public string[] ExperimentIds { get; set; }
 }
 
 internal class NavMenu
