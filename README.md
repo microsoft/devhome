@@ -82,7 +82,7 @@ Please file new issues, feature requests, and suggestions but **DO search for si
 
 If you would like to ask a question that you feel doesn't warrant an issue (yet), please reach out to us via Twitter:
 
-* [Kayla Cinnamon](https://github.com/cinnamon-msft), Product Manager: [@cinnamon_msft](https://twitter.com/cinnamon_msft)
+* [Kayla Cinnamon](https://github.com/cinnamon-msft), Senior Product Manager: [@cinnamon_msft](https://twitter.com/cinnamon_msft)
 * [Clint Rutkas](https://github.com/crutkas), Principal Product Manager: [@clintrutkas](https://twitter.com/clintrutkas) 
 * [Leeza Mathew](https://github.com/mathewleeza), Engineering Lead: [@leezamathew](https://twitter.com/leezamathew)
 
