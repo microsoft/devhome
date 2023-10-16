@@ -704,7 +704,7 @@ public partial class AddRepoViewModel : ObservableObject
                                                 new EntryPointEvent(EntryPointEvent.EntryPoint.Settings));
 
         provider.SetChangedEvent(_developerIdChangedEvent);
-        var authenticationFlow = provider.GetAuthenticationExpirenceKind();
+        var authenticationFlow = provider.GetAuthenticationExperienceKind();
         if (authenticationFlow == AuthenticationExperienceKind.CardSession)
         {
             var loginUi = _providers.GetLoginUi(provider.ExtensionDisplayName, SelectedTheme);
