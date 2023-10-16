@@ -64,7 +64,7 @@ public partial class App : Application, IApp
     }
 
     internal static NavConfig NavConfig { get; } = System.Text.Json.JsonSerializer.Deserialize(
-        RemoveComments(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "navConfig.json"))),
+        RemoveComments(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "navConfig.jsonc"))),
         SourceGenerationContext.Default.NavConfig)!;
 
     public App()

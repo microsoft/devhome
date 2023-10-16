@@ -60,7 +60,7 @@
         <None Update="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="navConfig.json">
+        <None Update="NavConfig.jsonc">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <Page Update="Styles\WindowTitleBar_ThemeResources.xaml">
