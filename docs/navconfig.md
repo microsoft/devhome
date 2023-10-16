@@ -47,3 +47,7 @@
                                 - This page is experimental and tied to an experiment ID
                                 - Type: `string`
                                 - <i id="/navMenu/groups/items/tools/items/experimentId">path: #/navMenu/groups/items/tools/items/experimentId</i>
+- <b id="#/experiments">experiments</b> `optional`
+    - Defines the list of experimental feature IDs.
+    - Type: `array`
+    - <i id="/experiments">path: #/experiments</i>
