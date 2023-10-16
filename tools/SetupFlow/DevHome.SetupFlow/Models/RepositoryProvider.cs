@@ -81,6 +81,10 @@ internal class RepositoryProvider
         return _repositoryProvider;
     }
 
+    /// <summary>
+    /// Assigns handler as the event handler for the developerIdProvider.
+    /// </summary>
+    /// <param name="handler">The method to run.</param>
     public void SetChangedEvent(TypedEventHandler<IDeveloperIdProvider, IDeveloperId> handler)
     {
         if (_devIdProvider != null)
@@ -135,6 +139,11 @@ internal class RepositoryProvider
         return uriSupportResult.IsSupported;
     }
 
+    /// <summary>
+    /// Gets and configures the UI to show to the user for logging them in.
+    /// </summary>
+    /// <param name="elementTheme">The theme to use.</param>
+    /// <returns>The adaptive panel to show to the user.  Can be null.</returns>
     public ExtensionAdaptiveCardPanel GetLoginUi(ElementTheme elementTheme)
     {
         try
@@ -165,6 +174,12 @@ internal class RepositoryProvider
         return null;
     }
 
+    /// <summary>
+    /// Sets the renderer in the UI.
+    /// </summary>
+    /// <param name="renderer">The ui to show</param>
+    /// <param name="elementTheme">The theme to use</param>
+    /// <returns>An task to await on.</returns>
     private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer, ElementTheme elementTheme)
     {
         var dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
@@ -200,7 +215,7 @@ internal class RepositoryProvider
         return;
     }
 
-    public AuthenticationExperienceKind GetAuthenticationExpirenceKind()
+    public AuthenticationExperienceKind GetAuthenticationExperienceKind()
     {
         return _devIdProvider.GetAuthenticationExperienceKind();
     }

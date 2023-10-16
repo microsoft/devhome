@@ -103,6 +103,12 @@ internal class RepositoryProviders
         return null;
     }
 
+    /// <summary>
+    /// Gets the login UI for the provider with the name providername
+    /// </summary>
+    /// <param name="providerName">The provider to search for.</param>
+    /// <param name="elementTheme">The theme to use for the ui.</param>
+    /// <returns>The ui to show.  Can be null.</returns>
     public ExtensionAdaptiveCardPanel GetLoginUi(string providerName, ElementTheme elementTheme)
     {
         TelemetryFactory.Get<ITelemetry>().Log(
@@ -155,7 +161,7 @@ internal class RepositoryProviders
 
     public AuthenticationExperienceKind GetAuthenticationExperienceKind(string providerName)
     {
-        return _providers.GetValueOrDefault(providerName)?.GetAuthenticationExpirenceKind() ?? AuthenticationExperienceKind.CardSession;
+        return _providers.GetValueOrDefault(providerName)?.GetAuthenticationExperienceKind() ?? AuthenticationExperienceKind.CardSession;
     }
 
     /// <summary>
