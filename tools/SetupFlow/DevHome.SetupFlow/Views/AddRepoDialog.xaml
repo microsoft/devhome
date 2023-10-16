@@ -67,7 +67,7 @@
                     </ic:EventTriggerBehavior>
                 </i:Interaction.Behaviors>
             </ComboBox>
-            <StackPanel x:Name="LoginUi">
+            <StackPanel x:Name="LoginUi" Visibility="{x:Bind AddRepoViewModel.ShouldShowLoginUi, Mode=OneWay}">
                 <!-- Title and Close button -->
                 <Grid x:Name="MyGrid">
                     <TextBlock x:Uid="LoginUIDialogTitle" HorizontalAlignment="Left"

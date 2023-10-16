@@ -46,14 +46,6 @@ internal class RepositoryProviders
         }
     }
 
-    public void SetChangedEvent(TypedEventHandler<IDeveloperIdProvider, IDeveloperId> callback)
-    {
-        foreach (var provider in _providers.Values)
-        {
-            provider.SetChangedEvent(callback);
-        }
-    }
-
     /// <summary>
     /// Starts a provider if it isn't running.
     /// </summary>

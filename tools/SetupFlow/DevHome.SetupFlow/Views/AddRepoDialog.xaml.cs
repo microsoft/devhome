@@ -99,11 +99,19 @@ internal partial class AddRepoDialog : ContentDialog
         await Task.Run(() => AddRepoViewModel.GetExtensions());
     }
 
+    /// <summary>
+    /// Sets the event handler on all providers to listen when the user has logged in.
+    /// </summary>
     public void SetDeveloperChangedEvents()
     {
         AddRepoViewModel.SetChangedEvents(ChangedEventHandler);
     }
 
+    /// <summary>
+    /// Changes the flag that indicates if the user is logging in to false to indicate the user is done logging in.
+    /// </summary>
+    /// <param name="sender">The object that raised this event, should only be IDeveloperId</param>
+    /// <param name="developerId">The developer the log in action is applied to.</param>
     public void ChangedEventHandler(object sender, IDeveloperId developerId)
     {
         if (sender is IDeveloperIdProvider devIdProvider)
@@ -116,6 +124,7 @@ internal partial class AddRepoDialog : ContentDialog
                 AddRepoViewModel.IsLoggingIn = false;
             }
 
+            // Remove the handler so multiple hooks aren't attached.
             devIdProvider.Changed -= ChangedEventHandler;
         }
     }
@@ -290,13 +299,19 @@ internal partial class AddRepoDialog : ContentDialog
     }
 
     /// <summary>
-    /// Adds the repository from the URL screen to the list of repos to be cloned.
+    /// The primary button has different behavior based on the screen the user is currently in.
     /// </summary>
     private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
-            AddRepoViewModel.IsFetchingRepos = true;
+            // Try to pair a provider with the repo to clone.
+            // If the repo is private or does not exist the user will be asked to log in.
+            AddRepoViewModel.ShouldShowLoginUi = true;
+
+            // Get the number of repos already selected to clone in a previous instance.
+            // Used to figure out if the repo was added after the user logged into an account.
+            var numberOfReposToCloneCount = AddRepoViewModel.EverythingToClone.Count;
             AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation, LoginUIContent);
 
             // On the first run, ignore any warnings.
@@ -307,7 +322,7 @@ internal partial class AddRepoDialog : ContentDialog
             // Get deferral to prevent the dialog from closing when awaiting operations.
             var deferral = args.GetDeferral();
 
-            // Wait 30 seconds for the user to log in.
+            // Wait roughly 30 seconds for the user to log in.
             var maxIterationsToWait = 30;
             var currentIteration = 0;
             var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
@@ -318,7 +333,9 @@ internal partial class AddRepoDialog : ContentDialog
 
             deferral.Complete();
 
-            if (!AddRepoViewModel.EverythingToClone.Any())
+            // If the repo was rejected and the user needed to sign in, no repos would've been added
+            // and the number of repos to clone will not be changed.
+            if (numberOfReposToCloneCount == AddRepoViewModel.EverythingToClone.Count)
             {
                 AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation, LoginUIContent);
                 AddRepoViewModel.ShouldShowUrlError = Visibility.Collapsed;
@@ -330,7 +347,7 @@ internal partial class AddRepoDialog : ContentDialog
                 args.Cancel = true;
             }
 
-            AddRepoViewModel.IsFetchingRepos = false;
+            AddRepoViewModel.ShouldShowLoginUi = false;
         }
         else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
         {

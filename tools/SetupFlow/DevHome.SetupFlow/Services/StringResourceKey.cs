@@ -143,6 +143,7 @@ public static class StringResourceKey
     public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);
     public static readonly string UrlValidationNotFound = nameof(UrlValidationNotFound);
     public static readonly string UrlValidationRepoAlreadyAdded = nameof(UrlValidationRepoAlreadyAdded);
+    public static readonly string UrlNoAccountsHaveAccess = nameof(UrlNoAccountsHaveAccess);
 
     // Install errors
     public static readonly string InstallPackageError = nameof(InstallPackageError);

@@ -1235,4 +1235,8 @@
     <value>Starting to install package {0}</value>
     <comment>{Locked="{0}"} String letting users know that DevHome has started to install a package. {0} is the package id</comment>
   </data>
+  <data name="UrlNoAccountsHaveAccess" xml:space="preserve">
+    <value>No accounts have access to this repository.</value>
+    <comment>Error string letting users no that no accounts in an extension have access to the repository.</comment>
+  </data>
 </root>

@@ -163,6 +163,9 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private Style _styleForPrimaryButton;
 
+    [ObservableProperty]
+    private bool _shouldShowLoginUi;
+
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
     /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"
@@ -344,6 +347,7 @@ public partial class AddRepoViewModel : ObservableObject
         IsAccountToggleButtonChecked = false;
         CurrentPage = PageKind.AddViaUrl;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
+        ShouldShowLoginUi = false;
     }
 
     public void ChangeToAccountPage()
@@ -357,6 +361,7 @@ public partial class AddRepoViewModel : ObservableObject
         IsAccountToggleButtonChecked = true;
         CurrentPage = PageKind.AddViaAccount;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoAccountPagePrimaryButtonText);
+        ShouldShowLoginUi = false;
 
         // List of extensions needs to be refreshed before accessing
         GetExtensions();
@@ -379,6 +384,7 @@ public partial class AddRepoViewModel : ObservableObject
         ShowRepoPage = Visibility.Visible;
         CurrentPage = PageKind.Repositories;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
+        ShouldShowLoginUi = false;
 
         // The only way to get the repo page is through the account page.
         // No need to change toggle buttons.
@@ -438,6 +444,7 @@ public partial class AddRepoViewModel : ObservableObject
         if (!loggedInAccounts.Any())
         {
             IsLoggingIn = true;
+            ShouldShowLoginUi = true;
             InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), loginFrame);
 
             // Wait 30 seconds for user to log in.
@@ -450,6 +457,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
 
             loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
+            ShouldShowLoginUi = false;
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false), _activityId);
         }
         else
@@ -519,14 +527,20 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
-    private bool ValidateUriAndChangeUiIfBad(string url, out Uri uri)
+    /// <summary>
+    /// Validates that url is a valid url and changes url to be absolute if valid.
+    /// </summary>
+    /// <param name="url">The url to validate</param>
+    /// <param name="uri">The Uri after validation.</param>
+    /// <remarks>If the url is not valid this method sets UrlParsingError and ShouldShowUrlError to the correct values.</remarks>
+    private void ValidateUriAndChangeUiIfBad(string url, out Uri uri)
     {
         // If the url isn't valid don't bother finding a provider.
         if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
         {
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
             ShouldShowUrlError = Visibility.Visible;
-            return false;
+            return;
         }
 
         // If user entered a relative Uri put it into a UriBuilder to turn it into an
@@ -544,11 +558,11 @@ public partial class AddRepoViewModel : ObservableObject
                 Log.Logger?.ReportError(Log.Component.RepoConfig, $"Invalid URL {uri.OriginalString}", e);
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
                 ShouldShowUrlError = Visibility.Visible;
-                return false;
+                return;
             }
         }
 
-        return true;
+        return;
     }
 
     /// <summary>
@@ -565,7 +579,9 @@ public partial class AddRepoViewModel : ObservableObject
     {
         ShouldEnablePrimaryButton = false;
         Uri uri = null;
-        if (!ValidateUriAndChangeUiIfBad(url, out uri))
+        ValidateUriAndChangeUiIfBad(url, out uri);
+
+        if (uri == null)
         {
             return;
         }
@@ -601,12 +617,21 @@ public partial class AddRepoViewModel : ObservableObject
         ShouldEnablePrimaryButton = true;
     }
 
+    /// <summary>
+    /// Tries to assign a provider to a validated uri.
+    /// </summary>
+    /// <param name="provider">The provider to test with.</param>
+    /// <param name="cloneLocation">The location the user wnats to clone the repo.</param>
+    /// <param name="uri">The uri to the repo (Should be a valid uri)</param>
+    /// <param name="loginFrame">The frame to show OAUTH login if the user needs to log in.</param>
+    /// <returns>non-null cloning information if a provider is selected for cloning.  Null for all other cases.</returns>
+    /// <remarks>If the repo is either private, or does not exist, this will ask the user to log in.</remarks>
     private CloningInformation GetCloningInformationFromUrl(RepositoryProvider provider, string cloneLocation, Uri uri, Frame loginFrame)
     {
         if (provider == null)
         {
             // Fallback to a generic git provider.
-            // If the repo does not exist, the user will get an error in the loading screen.
+            // Code path lights up for a repo that has a typo.
             var cloningInformation = new CloningInformation(new GenericRepository(uri));
             cloningInformation.ProviderName = "git";
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
@@ -648,7 +673,7 @@ public partial class AddRepoViewModel : ObservableObject
             // In the case that no logged in accounts can access it, return null
             // until DevHome can handle multiple accounts.
             // Should have a better error string.
-            UrlParsingError = _stringResource.GetLocalized("No currently logged in accounts have access to this repo");
+            UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
             ShouldShowUrlError = Visibility.Visible;
 
             return null;
@@ -659,13 +684,18 @@ public partial class AddRepoViewModel : ObservableObject
         // 2. The repo does not exist (Might have been a typo in the name)
         // Because DevHome cannot tell if a repo is private, or does not exist, prompt the user to log in.
         // Only ask if DevHome hasn't asked already.
-        UrlParsingError = _stringResource.GetLocalized("No currently logged in accounts have access to this repo.");
+        UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
         ShouldShowUrlError = Visibility.Visible;
         IsLoggingIn = true;
         InitiateAddAccountUserExperienceAsync(provider, loginFrame);
         return null;
     }
 
+    /// <summary>
+    /// Launches the login experience for the provided provider.
+    /// </summary>
+    /// <param name="provider">The provider used to log the user in.</param>
+    /// <param name="loginFrame">The frame to use to display the OAUTH path</param>
     private void InitiateAddAccountUserExperienceAsync(RepositoryProvider provider, Frame loginFrame)
     {
         TelemetryFactory.Get<ITelemetry>().Log(
@@ -682,7 +712,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
         else if (authenticationFlow == AuthenticationExperienceKind.CustomProvider)
         {
-            var windowHandle = Application.Current.GetService<WindowEx>().GetWindowHandle();
+            var windowHandle = _host.GetService<WindowEx>().GetWindowHandle();
             var windowPtr = Win32Interop.GetWindowIdFromWindow(windowHandle);
             try
             {

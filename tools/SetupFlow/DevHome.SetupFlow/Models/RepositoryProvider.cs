@@ -85,17 +85,7 @@ internal class RepositoryProvider
     {
         if (_devIdProvider != null)
         {
-            // TypedEventHandler does not have a way to query if this handler is listening or not.
-            // To prevent multiple instances being invoked, always remove the handler, then re-add it.
             _devIdProvider.Changed += handler;
-        }
-    }
-
-    public void RemoveChangedEvent(TypedEventHandler<IDeveloperIdProvider, IDeveloperId> handler)
-    {
-        if (_devIdProvider != null)
-        {
-            _devIdProvider.Changed -= handler;
         }
     }
 
@@ -143,40 +133,6 @@ internal class RepositoryProvider
         }
 
         return uriSupportResult.IsSupported;
-
-        /*
-        // Assume this is a public repo and it exists.
-        var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
-        if (uriSupportResult.IsSupported)
-        {
-            return (true, null, _repositoryProvider);
-        }
-
-        // The repo is either private, or does not exist try with a logged in account.
-        var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
-        if (developerIdsResult.Result.Status == ProviderOperationStatus.Success)
-        {
-            // If at least one developer is logged in, try using their account.
-            if (developerIdsResult.DeveloperIds.Any())
-            {
-                foreach (var developerId in developerIdsResult.DeveloperIds)
-                {
-                    uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri, developerId).AsTask()).Result;
-                    if (uriSupportResult.IsSupported)
-                    {
-                        return (true, developerId, _repositoryProvider);
-                    }
-                }
-
-                // No logged in accounts can access the repo.
-                // This specific pattern is used in DevHome to signify someone is logged in, but can't access the repo.
-                return (false, developerIdsResult.DeveloperIds.First(), null);
-            }
-        }
-
-        // no accounts can access this uri or the repo does not exist.
-        return (false, null, null);
-        */
     }
 
     public ExtensionAdaptiveCardPanel GetLoginUi(ElementTheme elementTheme)

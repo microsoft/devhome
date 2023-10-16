@@ -42,16 +42,10 @@ public partial class RepoViewListItem : ObservableObject
 
     public string RepoDisplayName => Path.Join(OwningAccountName, RepoName);
 
-    public ObservableCollection<RepoViewListItem> Children
-    {
-        get; set;
-    }
-
     public RepoViewListItem(IRepository repo)
     {
         IsPrivate = repo.IsPrivate;
         RepoName = repo.DisplayName;
         OwningAccountName = repo.OwningAccountName;
-        Children = new ObservableCollection<RepoViewListItem>();
     }
 }
