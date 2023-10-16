@@ -15,10 +15,10 @@ Related repositories include:
 
 > **Note**: Dev Home requires Windows 11 21H2 (build 22000) or later.
 
-### Microsoft Store [Recommended]
+If you are running Windows 11 23H2 (build 22621.2361) or later, you can install and run Dev Home just by finding it in the Start menu.
 
-Install [Dev Home from the Microsoft Store](https://aka.ms/devhome).
-This allows you to always be on the latest version when we release new builds with automatic upgrades.
+Otherwise, you can install [Dev Home from the Microsoft Store](https://aka.ms/devhome).
+This allows you to always be on the latest version when we release new builds with automatic upgrades. Note that widgets may not work on older versions of Windows.
 
 This is our preferred method.
 
@@ -82,10 +82,9 @@ Please file new issues, feature requests, and suggestions but **DO search for si
 
 If you would like to ask a question that you feel doesn't warrant an issue (yet), please reach out to us via Twitter:
 
-* [Kayla Cinnamon](https://github.com/cinnamon-msft), Product Manager: [@cinnamon_msft](https://twitter.com/cinnamon_msft)
-* [Clint Rutkas](https://github.com/crutkas), Senior Product Manager: [@clintrutkas](https://twitter.com/clintrutkas) 
+* [Kayla Cinnamon](https://github.com/cinnamon-msft), Senior Product Manager: [@cinnamon_msft](https://twitter.com/cinnamon_msft)
+* [Clint Rutkas](https://github.com/crutkas), Principal Product Manager: [@clintrutkas](https://twitter.com/clintrutkas) 
 * [Leeza Mathew](https://github.com/mathewleeza), Engineering Lead: [@leezamathew](https://twitter.com/leezamathew)
-* [Ujjwal Chadha](https://github.com/ujjwalchadha), Developer: [@ujjwalscript](https://twitter.com/ujjwalscript)
 
 ## Developer guidance
 
@@ -95,13 +94,17 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
 ## Building the code
 
 1. Clone the repository
-2. Configure your system, please use the [configuration file](.configurations/configuration.dsc.yaml). This can be applied by either:
-   * Dev Home's machine configuration tool
-   * WinGet configuration. If you have WinGet version [v1.6.2631 or later](https://github.com/microsoft/winget-cli/releases), run `winget configure .configurations/configuration.dsc.yaml` in an elevated shell from the project root so relative paths resolve correctly
+2. Configure your system
+   * Please use the [configuration file](.configurations/configuration.dsc.yaml). This can be applied by either:
+     * Dev Home's machine configuration tool
+     * WinGet configuration. If you have WinGet version [v1.6.2631 or later](https://github.com/microsoft/winget-cli/releases), run `winget configure .configurations/configuration.dsc.yaml` in an elevated shell from the project root so relative paths resolve correctly
+   * Alternatively, if you already are running the minimum OS version, have Visual Studio installed, and have developer mode enabled, you may configure your Visual Studio directly via the .vsconfig file. To do this:
+     * Open the Visual Studio Installer, select “More” on your product card and then "Import configuration"
+     * Specify the .vsconfig file at the root of the repo and select “Review Details”
 
 ## Running & debugging
 
-In Visual Studio, you should be able to build and debug Dev Home by hitting <kbd>F5</kbd>. Make sure to select either the "x64" or the "x86" platform and set DevHome as the selected startup project.
+In Visual Studio, you should be able to build and debug Dev Home by hitting <kbd>F5</kbd>. Make sure to select either the `x64` or the `x86` platform and set DevHome as the selected startup project.
 
 ---
 
