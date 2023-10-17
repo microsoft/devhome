@@ -84,6 +84,7 @@ public sealed partial class RepoConfigView : UserControl
             _addRepoDialog.UpdateDevDriveInfo();
         }
 
+        _addRepoDialog.IsSecondaryButtonEnabled = true;
         var result = await _addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
 
         var devDrive = _addRepoDialog.EditDevDriveViewModel.DevDrive;

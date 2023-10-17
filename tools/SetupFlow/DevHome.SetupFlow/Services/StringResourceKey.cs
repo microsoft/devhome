@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using Windows.Media.Streaming.Adaptive;
+
 namespace DevHome.SetupFlow.Services;
 
 /// <summary>
@@ -144,6 +146,7 @@ public static class StringResourceKey
     public static readonly string UrlValidationNotFound = nameof(UrlValidationNotFound);
     public static readonly string UrlValidationRepoAlreadyAdded = nameof(UrlValidationRepoAlreadyAdded);
     public static readonly string UrlNoAccountsHaveAccess = nameof(UrlNoAccountsHaveAccess);
+    public static readonly string UrlCancelButtonText = nameof(UrlCancelButtonText);
 
     // Install errors
     public static readonly string InstallPackageError = nameof(InstallPackageError);

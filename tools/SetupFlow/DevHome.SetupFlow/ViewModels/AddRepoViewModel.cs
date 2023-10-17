@@ -166,6 +166,12 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private bool _shouldShowLoginUi;
 
+    [ObservableProperty]
+    private bool _shouldShowXButtonInLoginUi;
+
+    [ObservableProperty]
+    private bool _isCancelling;
+
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
     /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"
@@ -283,6 +289,13 @@ public partial class AddRepoViewModel : ObservableObject
             StyleForPrimaryButton = Application.Current.Resources["DefaultButtonStyle"] as Style;
             ShouldEnablePrimaryButton = false;
         }
+    }
+
+    [RelayCommand]
+    private void CancelButtonPressed()
+    {
+        IsLoggingIn = false;
+        IsCancelling = true;
     }
 
     public AddRepoViewModel(
@@ -445,19 +458,22 @@ public partial class AddRepoViewModel : ObservableObject
         {
             IsLoggingIn = true;
             ShouldShowLoginUi = true;
+
+            // AddRepoDialog can handle the close button click.  Don't show the x button.
+            ShouldShowXButtonInLoginUi = false;
             InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), loginFrame);
 
             // Wait 30 seconds for user to log in.
             var maxIterationsToWait = 30;
             var currentIteration = 0;
             var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
-            while (IsLoggingIn && currentIteration++ <= maxIterationsToWait)
+            while ((IsLoggingIn && !IsCancelling) && currentIteration++ <= maxIterationsToWait)
             {
                 await Task.Delay(waitDelay);
             }
 
-            loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
             ShouldShowLoginUi = false;
+            loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false), _activityId);
         }
         else

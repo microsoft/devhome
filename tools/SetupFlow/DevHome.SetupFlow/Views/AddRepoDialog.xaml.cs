@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
@@ -305,9 +306,14 @@ internal partial class AddRepoDialog : ContentDialog
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
+            // If the user is logging in, the close button text will change.
+            // Keep a copy of the original to revert when this button click is done.
+            var originalCloseButtonText = AddRepoContentDialog.CloseButtonText;
+
             // Try to pair a provider with the repo to clone.
             // If the repo is private or does not exist the user will be asked to log in.
             AddRepoViewModel.ShouldShowLoginUi = true;
+            AddRepoViewModel.ShouldShowXButtonInLoginUi = true;
 
             // Get the number of repos already selected to clone in a previous instance.
             // Used to figure out if the repo was added after the user logged into an account.
@@ -322,16 +328,32 @@ internal partial class AddRepoDialog : ContentDialog
             // Get deferral to prevent the dialog from closing when awaiting operations.
             var deferral = args.GetDeferral();
 
+            // Two click events can not be processed at the same time.
+            // UI will not respond to the close button when inside this method.
+            // Change the text of the close button to notify users of the X button in the upper-right corner of the log-in ui.
+            if (AddRepoViewModel.IsLoggingIn)
+            {
+                AddRepoContentDialog.CloseButtonText = _host.GetService<ISetupFlowStringResource>().GetLocalized(StringResourceKey.UrlCancelButtonText);
+            }
+
             // Wait roughly 30 seconds for the user to log in.
             var maxIterationsToWait = 30;
             var currentIteration = 0;
             var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
-            while (AddRepoViewModel.IsLoggingIn && currentIteration++ <= maxIterationsToWait)
+            while ((AddRepoViewModel.IsLoggingIn && !AddRepoViewModel.IsCancelling) && currentIteration++ <= maxIterationsToWait)
             {
                 await Task.Delay(waitDelay);
             }
 
             deferral.Complete();
+            AddRepoViewModel.ShouldShowLoginUi = false;
+            AddRepoViewModel.ShouldShowXButtonInLoginUi = false;
+
+            // User cancelled the login prompt.  Don't re-check repo access.
+            if (AddRepoViewModel.IsCancelling)
+            {
+                return;
+            }
 
             // If the repo was rejected and the user needed to sign in, no repos would've been added
             // and the number of repos to clone will not be changed.
@@ -347,7 +369,8 @@ internal partial class AddRepoDialog : ContentDialog
                 args.Cancel = true;
             }
 
-            AddRepoViewModel.ShouldShowLoginUi = false;
+            // Revert the close button text.
+            AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
         }
         else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
         {
