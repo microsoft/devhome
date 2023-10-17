@@ -689,6 +689,7 @@ public partial class AddRepoViewModel : ObservableObject
             // In the case that no logged in accounts can access it, return null
             // until DevHome can handle multiple accounts.
             // Should have a better error string.
+            // TODO: Figure out a better error message?
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
             ShouldShowUrlError = Visibility.Visible;
 

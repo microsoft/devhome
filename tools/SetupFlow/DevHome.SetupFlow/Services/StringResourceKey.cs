@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using Windows.Media.Streaming.Adaptive;
-
 namespace DevHome.SetupFlow.Services;
 
 /// <summary>
