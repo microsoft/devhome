@@ -77,7 +77,7 @@ public sealed partial class RepoConfigView : UserControl
         await getExtensionsTask;
         await setupDevDrivesTask;
 
-        _addRepoDialog.SetDeveloperChangedEvents();
+        _addRepoDialog.SetDeveloperIdChangedEvents();
 
         if (_addRepoDialog.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
         {

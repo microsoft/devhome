@@ -103,9 +103,9 @@ internal partial class AddRepoDialog : ContentDialog
     /// <summary>
     /// Sets the event handler on all providers to listen when the user has logged in.
     /// </summary>
-    public void SetDeveloperChangedEvents()
+    public void SetDeveloperIdChangedEvents()
     {
-        AddRepoViewModel.SetChangedEvents(ChangedEventHandler);
+        AddRepoViewModel.SetChangedEvents(DeveloperIdChangedEventHandler);
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ internal partial class AddRepoDialog : ContentDialog
     /// </summary>
     /// <param name="sender">The object that raised this event, should only be IDeveloperId</param>
     /// <param name="developerId">The developer the log in action is applied to.</param>
-    public void ChangedEventHandler(object sender, IDeveloperId developerId)
+    public void DeveloperIdChangedEventHandler(object sender, IDeveloperId developerId)
     {
         if (sender is IDeveloperIdProvider devIdProvider)
         {
@@ -126,7 +126,7 @@ internal partial class AddRepoDialog : ContentDialog
             }
 
             // Remove the handler so multiple hooks aren't attached.
-            devIdProvider.Changed -= ChangedEventHandler;
+            devIdProvider.Changed -= DeveloperIdChangedEventHandler;
         }
     }
 
