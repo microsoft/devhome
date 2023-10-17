@@ -1,7 +1,8 @@
 # Experimental features
 
 Dev Home supports "Experimental features" - these are features that are disabled by default, but can be enabled by the user. 
-This is useful for features that are not yet ready for general use, but can be tested by users who are interested in trying them out and they can provide us feedback to inform the development of the feature.
+This is useful for features that are not ready for general use, but can be tested by users who are interested in trying them out and providing feedback to inform the development of the feature.
+
 
 ## Adding a new experimental feature
 
