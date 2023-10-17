@@ -302,7 +302,8 @@
                                             NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
                                             VerticalAlignment="Top"
                                             Padding="0"
-                                            Margin="0"/>
+                                            Margin="0"
+                                            Visibility="{x:Bind ShouldShowLink}"/>
                                     </controls:WrapPanel>
 
                                 </Grid>
