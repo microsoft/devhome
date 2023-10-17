@@ -1,14 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Settings;
 using DevHome.Settings.ViewModels;
-using DevHome.SetupFlow.Common.Extensions;
 using DevHome.ViewModels;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
