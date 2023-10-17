@@ -4,6 +4,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using DevHome.Settings;
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
 using DevHome.ViewModels;
