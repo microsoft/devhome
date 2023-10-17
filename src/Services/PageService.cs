@@ -1,12 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using AdaptiveCards.ObjectModel.WinUI3;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
-using DevHome.Experiments.ViewModels;
-using DevHome.Experiments.Views;
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
 using DevHome.ViewModels;

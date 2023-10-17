@@ -11,55 +11,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
-using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.ViewModels;
-
-public partial class ExperimentalFeature : ObservableObject
-{
-    public string Id { get; init; }
-
-    public static ILocalSettingsService? LocalSettingsService { get; set; }
-
-    public ExperimentalFeature(string id)
-    {
-        Id = id;
-        IsEnabled = GetIsEnabled();
-    }
-
-    public string Name
-    {
-        get
-        {
-            var stringResource = new StringResource("DevHome.Settings/Resources");
-            return stringResource.GetLocalized(Id + "_Name");
-        }
-    }
-
-    public string Description
-    {
-        get
-        {
-            var stringResource = new StringResource("DevHome.Settings/Resources");
-            return stringResource.GetLocalized(Id + "_Description");
-        }
-    }
-
-    [ObservableProperty]
-    private bool isEnabled;
-
-    public bool GetIsEnabled()
-    {
-        return LocalSettingsService!.ReadSettingAsync<bool>($"ExperimentalFeature_{Id}").Result;
-    }
-
-    partial void OnIsEnabledChanging(bool value)
-    {
-        LocalSettingsService!.SaveSettingAsync($"ExperimentalFeature_{Id}", value).Wait();
-    }
-}
 
 public class ExperimentalFeaturesViewModel : ObservableObject
 {
