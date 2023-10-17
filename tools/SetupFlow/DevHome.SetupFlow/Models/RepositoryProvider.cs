@@ -179,7 +179,7 @@ internal class RepositoryProvider
     /// </summary>
     /// <param name="renderer">The ui to show</param>
     /// <param name="elementTheme">The theme to use</param>
-    /// <returns>An task to await on.</returns>
+    /// <returns>A task to await on.</returns>
     private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer, ElementTheme elementTheme)
     {
         var dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
