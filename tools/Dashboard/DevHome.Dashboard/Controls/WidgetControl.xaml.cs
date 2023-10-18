@@ -230,13 +230,13 @@ internal sealed partial class WidgetControl : UserControl
 
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
-        WidgetHeaderIcon.Fill = await Application.Current.GetService<WidgetIconService>()
+        WidgetHeaderIcon.Fill = await Application.Current.GetService<IWidgetIconService>()
             .GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
     }
 
     private async void UpdateWidgetHeaderIconFillAsync()
     {
-        WidgetHeaderIcon.Fill = await Application.Current.GetService<WidgetIconService>()
+        WidgetHeaderIcon.Fill = await Application.Current.GetService<IWidgetIconService>()
             .GetBrushForWidgetIconAsync(WidgetSource.WidgetDefinition, ActualTheme);
     }
 }

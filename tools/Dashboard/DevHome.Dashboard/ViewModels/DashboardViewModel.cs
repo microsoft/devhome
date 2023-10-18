@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml;
@@ -19,7 +18,7 @@ public partial class DashboardViewModel : ObservableObject
 {
     public IWidgetHostingService WidgetHostingService { get; }
 
-    public WidgetIconService WidgetIconService { get; }
+    public IWidgetIconService WidgetIconService { get; }
 
     private readonly IPackageDeploymentService _packageDeploymentService;
 
@@ -41,7 +40,7 @@ public partial class DashboardViewModel : ObservableObject
     public DashboardViewModel(
         IPackageDeploymentService packageDeploymentService,
         IWidgetHostingService widgetHostingService,
-        WidgetIconService widgetIconService)
+        IWidgetIconService widgetIconService)
     {
         _packageDeploymentService = packageDeploymentService;
         WidgetIconService = widgetIconService;

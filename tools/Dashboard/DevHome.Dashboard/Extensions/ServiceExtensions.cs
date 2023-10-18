@@ -17,7 +17,7 @@ public static class ServiceExtensions
 
         // Services
         services.AddSingleton<IWidgetHostingService, WidgetHostingService>();
-        services.AddSingleton<WidgetIconService>();
+        services.AddSingleton<IWidgetIconService, WidgetIconService>();
 
         return services;
     }

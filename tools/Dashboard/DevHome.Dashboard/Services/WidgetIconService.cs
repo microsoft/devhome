@@ -16,7 +16,7 @@ using WinUIEx;
 
 namespace DevHome.Dashboard.Services;
 
-public class WidgetIconService
+public class WidgetIconService : IWidgetIconService
 {
     private readonly IHost _host;
 

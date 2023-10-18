@@ -25,7 +25,7 @@ internal partial class WidgetViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly AdaptiveCardRenderer _renderer;
-    private readonly WidgetIconService _iconService;
+    private readonly IWidgetIconService _iconService;
 
     private RenderedAdaptiveCard _renderedCard;
 
@@ -100,7 +100,7 @@ internal partial class WidgetViewModel : ObservableObject
         Microsoft.UI.Dispatching.DispatcherQueue dispatcher)
     {
         _renderer = renderer;
-        _iconService = Application.Current.GetService<WidgetIconService>();
+        _iconService = Application.Current.GetService<IWidgetIconService>();
         _dispatcher = dispatcher;
 
         Widget = widget;
