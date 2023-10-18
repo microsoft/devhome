@@ -16,7 +16,7 @@ namespace DevHome.Dashboard.ViewModels;
 
 public partial class DashboardViewModel : ObservableObject
 {
-    public WidgetHostingService WidgetHostingService { get; }
+    public IWidgetHostingService WidgetHostingService { get; }
 
     private readonly IPackageDeploymentService _packageDeploymentService;
 
@@ -35,7 +35,7 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty]
     private bool _isLoading;
 
-    public DashboardViewModel(IPackageDeploymentService packageDeploymentService, WidgetHostingService widgetHostingService)
+    public DashboardViewModel(IPackageDeploymentService packageDeploymentService, IWidgetHostingService widgetHostingService)
     {
         _packageDeploymentService = packageDeploymentService;
         WidgetHostingService = widgetHostingService;

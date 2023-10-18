@@ -16,7 +16,7 @@ public static class ServiceExtensions
         services.AddSingleton<DashboardViewModel>();
 
         // Services
-        services.AddSingleton<WidgetHostingService>();
+        services.AddSingleton<IWidgetHostingService, WidgetHostingService>();
 
         return services;
     }

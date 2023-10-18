@@ -31,7 +31,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     public WidgetViewModel ViewModel { get; set; }
 
-    private readonly WidgetHostingService _hostingService;
+    private readonly IWidgetHostingService _hostingService;
 
     public AddWidgetDialog(
         AdaptiveCardRenderer renderer,
@@ -39,7 +39,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         ElementTheme theme)
     {
         ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, renderer, dispatcher);
-        _hostingService = Application.Current.GetService<WidgetHostingService>();
+        _hostingService = Application.Current.GetService<IWidgetHostingService>();
 
         this.InitializeComponent();
 

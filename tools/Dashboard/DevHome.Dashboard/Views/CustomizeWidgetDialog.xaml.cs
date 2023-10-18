@@ -21,7 +21,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
 
     public WidgetViewModel ViewModel { get; set; }
 
-    private readonly WidgetHostingService _hostingService;
+    private readonly IWidgetHostingService _hostingService;
 
     private readonly WidgetDefinition _widgetDefinition;
     private static DispatcherQueue _dispatcher;
@@ -31,7 +31,7 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
         ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, widgetDefinition, renderer, dispatcher);
         ViewModel.IsInEditMode = true;
 
-        _hostingService = Application.Current.GetService<WidgetHostingService>();
+        _hostingService = Application.Current.GetService<IWidgetHostingService>();
 
         this.InitializeComponent();
 
