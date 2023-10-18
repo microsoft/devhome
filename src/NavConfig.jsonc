@@ -39,9 +39,7 @@
       }
     ]
   },
-  "experiments": [
-  /*
+  "experiments": [ /*
   "ExperimentalFeature_1"
-  */
-  ]
+  */ ]
 }
