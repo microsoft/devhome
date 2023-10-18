@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml;
@@ -17,6 +18,8 @@ namespace DevHome.Dashboard.ViewModels;
 public partial class DashboardViewModel : ObservableObject
 {
     public IWidgetHostingService WidgetHostingService { get; }
+
+    public WidgetIconService WidgetIconService { get; }
 
     private readonly IPackageDeploymentService _packageDeploymentService;
 
@@ -35,9 +38,14 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty]
     private bool _isLoading;
 
-    public DashboardViewModel(IPackageDeploymentService packageDeploymentService, IWidgetHostingService widgetHostingService)
+    public DashboardViewModel(
+        IPackageDeploymentService packageDeploymentService,
+        IWidgetHostingService widgetHostingService,
+        WidgetIconService widgetIconService)
     {
         _packageDeploymentService = packageDeploymentService;
+        WidgetIconService = widgetIconService;
+
         WidgetHostingService = widgetHostingService;
 
         ShowDashboardBanner = ShouldShowDashboardBanner();
