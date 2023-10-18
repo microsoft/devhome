@@ -25,7 +25,7 @@
             "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
             "icon": "ea86"
           }
-          ,
+          /*,
           {
             "identity": "DevHome.TestExperiment",
             "assembly": "DevHome.Experiments",
@@ -34,13 +34,14 @@
             "icon": "f0f7",
             "experimentId": "ExperimentalFeature_1"
           }
+          */
         ]
       }
     ]
   },
   "experiments": [
-  
-  "ExperimentalFeature_1", "ExperimentalFeature_2"
-  
+  /*
+  "ExperimentalFeature_1"
+  */
   ]
 }
