@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -17,13 +18,16 @@ namespace DevHome.Dashboard.Services;
 
 public class WidgetIconService
 {
+    private readonly IHost _host;
+
     private readonly WidgetHostingService _widgetHostingService;
 
     private readonly Dictionary<string, BitmapImage> _widgetLightIconCache;
     private readonly Dictionary<string, BitmapImage> _widgetDarkIconCache;
 
-    public WidgetIconService(WidgetHostingService widgetHostingService)
+    public WidgetIconService(IHost host, WidgetHostingService widgetHostingService)
     {
+        _host = host;
         _widgetHostingService = widgetHostingService;
 
         _widgetLightIconCache = new Dictionary<string, BitmapImage>();
@@ -96,7 +100,7 @@ public class WidgetIconService
         // Return the WidgetDefinition Id via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
         // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
         var completionSource = new TaskCompletionSource<string>();
-        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
             completionSource.TrySetResult(widgetDefinition.Id);
         });
@@ -133,7 +137,7 @@ public class WidgetIconService
         // Return the bitmap image via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
         // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
         var completionSource = new TaskCompletionSource<BitmapImage>();
-        Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(async () =>
+        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(async () =>
         {
             using var bitmapStream = await iconStreamRef.OpenReadAsync();
             var itemImage = new BitmapImage();
