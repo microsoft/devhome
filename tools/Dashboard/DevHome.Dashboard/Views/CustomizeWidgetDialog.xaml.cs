@@ -15,7 +15,7 @@ using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
 
-internal sealed partial class CustomizeWidgetDialog : ContentDialog
+public sealed partial class CustomizeWidgetDialog : ContentDialog
 {
     public Widget EditedWidget { get; set; }
 

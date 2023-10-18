@@ -26,7 +26,7 @@ using Windows.System;
 
 namespace DevHome.Dashboard.Views;
 
-internal partial class DashboardView : ToolPage
+public partial class DashboardView : ToolPage
 {
     public override string ShortName => "Dashboard";
 

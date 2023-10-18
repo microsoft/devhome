@@ -44,7 +44,6 @@ public partial class DashboardViewModel : ObservableObject
     {
         _packageDeploymentService = packageDeploymentService;
         WidgetIconService = widgetIconService;
-
         WidgetHostingService = widgetHostingService;
 
         ShowDashboardBanner = ShouldShowDashboardBanner();

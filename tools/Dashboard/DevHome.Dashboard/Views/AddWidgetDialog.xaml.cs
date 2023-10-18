@@ -22,7 +22,7 @@ using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
 
-internal sealed partial class AddWidgetDialog : ContentDialog
+public sealed partial class AddWidgetDialog : ContentDialog
 {
     private Widget _currentWidget;
     private static DispatcherQueue _dispatcher;

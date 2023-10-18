@@ -21,7 +21,7 @@ using Windows.System;
 
 namespace DevHome.Dashboard.ViewModels;
 
-internal partial class WidgetViewModel : ObservableObject
+public partial class WidgetViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly AdaptiveCardRenderer _renderer;
