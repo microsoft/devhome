@@ -406,4 +406,16 @@
   <data name="Settings_Accounts_NoProvidersContentDialog_SecondaryButtonText" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="Settings_ExperimentalFeatures_Description" xml:space="preserve">
+    <value>Configure experimental features</value>
+    <comment>The description for the Experimental Features settings card</comment>
+  </data>
+  <data name="Settings_ExperimentalFeatures_Header" xml:space="preserve">
+    <value>Experimental features</value>
+    <comment>The header for the Experimental Features settings card</comment>
+  </data>
+  <data name="Settings_ExperimentalFeatures_NoExperimentalFeatures.Text" xml:space="preserve">
+    <value>There are currently no experimental features</value>
+    <comment>Message shown when there are no available experimental features</comment>
+  </data>
 </root>
