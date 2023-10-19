@@ -7,7 +7,7 @@ using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Services;
 
-public class WidgetHostingService
+public class WidgetHostingService : IWidgetHostingService
 {
     private WidgetHost _widgetHost;
     private WidgetCatalog _widgetCatalog;
