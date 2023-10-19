@@ -18,12 +18,12 @@ public class WidgetIconService : IWidgetIconService
 {
     private readonly WindowEx _windowEx;
 
-    private readonly WidgetHostingService _widgetHostingService;
+    private readonly IWidgetHostingService _widgetHostingService;
 
     private readonly Dictionary<string, BitmapImage> _widgetLightIconCache;
     private readonly Dictionary<string, BitmapImage> _widgetDarkIconCache;
 
-    public WidgetIconService(WindowEx windowEx, WidgetHostingService widgetHostingService)
+    public WidgetIconService(WindowEx windowEx, IWidgetHostingService widgetHostingService)
     {
         _windowEx = windowEx;
         _widgetHostingService = widgetHostingService;
