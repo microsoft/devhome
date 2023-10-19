@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System.Diagnostics.Tracing;
+using DevHome.Common.Helpers;
 using DevHome.Logging;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
@@ -17,12 +18,18 @@ public class DevHomeClosedEvent : EventBase
         get;
     }
 
+    public Guid DeploymentIdentifier
+    {
+        get;
+    }
+
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
     public DevHomeClosedEvent(DateTime startTime)
     {
         ElapsedTime = (DateTime.UtcNow - startTime).TotalMilliseconds;
-        GlobalLog.Logger?.ReportDebug($"DevHome Closed Event, ElapsedTime: {ElapsedTime}ms");
+        DeploymentIdentifier = Deployment.Identifier;
+        GlobalLog.Logger?.ReportDebug($"DevHome Closed Event, ElapsedTime: {ElapsedTime}ms  Identifier: {DeploymentIdentifier}");
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
