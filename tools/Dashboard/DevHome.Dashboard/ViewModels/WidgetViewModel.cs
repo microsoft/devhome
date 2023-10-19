@@ -7,10 +7,8 @@ using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
-using DevHome.Dashboard.Services;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -25,7 +23,6 @@ public partial class WidgetViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
     private readonly AdaptiveCardRenderer _renderer;
-    private readonly IWidgetIconService _iconService;
 
     private RenderedAdaptiveCard _renderedCard;
 
@@ -100,7 +97,6 @@ public partial class WidgetViewModel : ObservableObject
         Microsoft.UI.Dispatching.DispatcherQueue dispatcher)
     {
         _renderer = renderer;
-        _iconService = Application.Current.GetService<IWidgetIconService>();
         _dispatcher = dispatcher;
 
         Widget = widget;
