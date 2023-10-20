@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using CommunityToolkit.WinUI;
 using System.Web.Services.Description;
+using CommunityToolkit.WinUI;
 using DevHome.Activation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Contracts.Services;
