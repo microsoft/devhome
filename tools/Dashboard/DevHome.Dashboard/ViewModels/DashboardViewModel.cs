@@ -18,6 +18,8 @@ public partial class DashboardViewModel : ObservableObject
 {
     public IWidgetHostingService WidgetHostingService { get; }
 
+    public IWidgetIconService WidgetIconService { get; }
+
     private readonly IPackageDeploymentService _packageDeploymentService;
 
     private readonly Version minSupportedVersion400 = new (423, 3800);
@@ -35,9 +37,13 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty]
     private bool _isLoading;
 
-    public DashboardViewModel(IPackageDeploymentService packageDeploymentService, IWidgetHostingService widgetHostingService)
+    public DashboardViewModel(
+        IPackageDeploymentService packageDeploymentService,
+        IWidgetHostingService widgetHostingService,
+        IWidgetIconService widgetIconService)
     {
         _packageDeploymentService = packageDeploymentService;
+        WidgetIconService = widgetIconService;
         WidgetHostingService = widgetHostingService;
 
         ShowDashboardBanner = ShouldShowDashboardBanner();

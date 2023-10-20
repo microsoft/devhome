@@ -37,8 +37,6 @@ public partial class DashboardView : ToolPage
     private static AdaptiveCardRenderer _renderer;
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
-    private readonly WidgetIconCache _widgetIconCache;
-
     private static bool _widgetHostInitialized;
 
     private const string DraggedWidget = "DraggedWidget";
@@ -60,8 +58,6 @@ public partial class DashboardView : ToolPage
 
         _renderer = new AdaptiveCardRenderer();
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
-
-        _widgetIconCache = new WidgetIconCache(_dispatcher);
 
         ActualThemeChanged += OnActualThemeChanged;
 
@@ -176,7 +172,7 @@ public partial class DashboardView : ToolPage
         if (EnsureHostingInitialized())
         {
             // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
-            await _widgetIconCache.CacheAllWidgetIconsAsync(ViewModel.WidgetHostingService.GetWidgetCatalog()!);
+            await ViewModel.WidgetIconService.CacheAllWidgetIconsAsync();
 
             await ConfigureWidgetRenderer(_renderer);
             await RestorePinnedWidgetsAsync();
@@ -384,7 +380,7 @@ public partial class DashboardView : ToolPage
     private async void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args)
     {
         Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetDefinitionAdded {args.Definition.Id}");
-        await _widgetIconCache.AddIconsToCacheAsync(args.Definition);
+        await ViewModel.WidgetIconService.AddIconsToCacheAsync(args.Definition);
     }
 
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
@@ -455,7 +451,7 @@ public partial class DashboardView : ToolPage
             }
         });
 
-        _widgetIconCache.RemoveIconsFromCache(definitionId);
+        ViewModel.WidgetIconService.RemoveIconsFromCache(definitionId);
     }
 
     // Listen for widgets being added or removed, so we can add or remove listeners on the WidgetViewModels' properties.
