@@ -133,7 +133,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
-    /// Saves all cloning informations to be cloned during the loading screen.
+    /// Saves all cloning information to be cloned during the loading screen.
     /// </summary>
     /// <param name="cloningInformations">All repositories the user selected.</param>
     /// <remarks>

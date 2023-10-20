@@ -637,7 +637,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// Tries to assign a provider to a validated uri.
     /// </summary>
     /// <param name="provider">The provider to test with.</param>
-    /// <param name="cloneLocation">The location the user wnats to clone the repo.</param>
+    /// <param name="cloneLocation">The location the user wants to clone the repo.</param>
     /// <param name="uri">The uri to the repo (Should be a valid uri)</param>
     /// <param name="loginFrame">The frame to show OAUTH login if the user needs to log in.</param>
     /// <returns>non-null cloning information if a provider is selected for cloning.  Null for all other cases.</returns>

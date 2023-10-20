@@ -854,7 +854,7 @@
   </data>
   <data name="DevDriveReviewPageNumberOfDevDrivesTitle" xml:space="preserve">
     <value>Dev Drive creation</value>
-    <comment>Test that will be the decription to a section of the review page where the user will see the number of Dev Drives they are about to create</comment>
+    <comment>Test that will be the description to a section of the review page where the user will see the number of Dev Drives they are about to create</comment>
   </data>
   <data name="PathWithColon.Text" xml:space="preserve">
     <value>Path:</value>
