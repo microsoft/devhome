@@ -7,8 +7,10 @@ using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.Services;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -22,7 +24,7 @@ namespace DevHome.Dashboard.ViewModels;
 public partial class WidgetViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-    private readonly AdaptiveCardRenderer _renderer;
+    private readonly IAdaptiveCardRenderingService _renderingService;
 
     private RenderedAdaptiveCard _renderedCard;
 
@@ -81,22 +83,13 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    partial void OnWidgetFrameworkElementChanged(FrameworkElement value)
-    {
-        if (WidgetFrameworkElement != null && WidgetFrameworkElement is Grid grid)
-        {
-            WidgetBackground = grid.Background;
-        }
-    }
-
     public WidgetViewModel(
         Widget widget,
         WidgetSize widgetSize,
         WidgetDefinition widgetDefinition,
-        AdaptiveCardRenderer renderer,
         Microsoft.UI.Dispatching.DispatcherQueue dispatcher)
     {
-        _renderer = renderer;
+        _renderingService = Application.Current.GetService<IAdaptiveCardRenderingService>();
         _dispatcher = dispatcher;
 
         Widget = widget;
@@ -186,11 +179,12 @@ public partial class WidgetViewModel : ObservableObject
             }
 
             // Render card on the UI thread.
-            _dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(async () =>
             {
                 try
                 {
-                    _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
+                    var renderer = await _renderingService.GetRenderer();
+                    _renderedCard = renderer.RenderAdaptiveCard(card.AdaptiveCard);
                     if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                     {
                         _renderedCard.Action += HandleAdaptiveAction;

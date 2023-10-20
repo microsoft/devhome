@@ -8,20 +8,18 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
 using DevHome.Common.Extensions;
-using DevHome.Common.Renderers;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.Services;
 using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
-using Windows.Storage;
 using Windows.System;
 
 namespace DevHome.Dashboard.Views;
@@ -34,7 +32,6 @@ public partial class DashboardView : ToolPage
 
     public static ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
 
-    private static AdaptiveCardRenderer _renderer;
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     private static bool _widgetHostInitialized;
@@ -56,7 +53,6 @@ public partial class DashboardView : ToolPage
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
         PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
 
-        _renderer = new AdaptiveCardRenderer();
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         ActualThemeChanged += OnActualThemeChanged;
@@ -89,62 +85,16 @@ public partial class DashboardView : ToolPage
         return true;
     }
 
-    private async Task<AdaptiveCardRenderer> GetConfigurationRendererAsync()
-    {
-        // When we render a card in an add or edit dialog, we need to have a different HostConfig,
-        // so create a new renderer for those situations. We can't just temporarily edit the existing
-        // renderer, because a pinned widget might get re-rendered the wrong way while the dialog is open.
-        var configRenderer = new AdaptiveCardRenderer();
-        await ConfigureWidgetRenderer(configRenderer);
-        configRenderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
-        return configRenderer;
-    }
-
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
         // A different host config is used to render widgets (adaptive cards) in light and dark themes.
-        await ConfigureWidgetRenderer(_renderer);
+        await Application.Current.GetService<IAdaptiveCardRenderingService>().UpdateHostConfig();
 
         // Re-render the widgets with the new theme and renderer.
         foreach (var widget in PinnedWidgets)
         {
             await widget.RenderAsync();
         }
-    }
-
-    private async Task ConfigureWidgetRenderer(AdaptiveCardRenderer renderer)
-    {
-        // Add custom Adaptive Card renderer.
-        renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
-
-        // Add host config for current theme.
-        var hostConfigContents = string.Empty;
-        var hostConfigFileName = (ActualTheme == ElementTheme.Light) ? "HostConfigLight.json" : "HostConfigDark.json";
-        try
-        {
-            Log.Logger()?.ReportInfo("DashboardView", $"Get HostConfig file '{hostConfigFileName}'");
-            var uri = new Uri($"ms-appx:///DevHome.Dashboard/Assets/{hostConfigFileName}");
-            var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
-            hostConfigContents = await FileIO.ReadTextAsync(file);
-        }
-        catch (Exception ex)
-        {
-            Log.Logger()?.ReportError("DashboardView", "Error retrieving HostConfig", ex);
-        }
-
-        _dispatcher.TryEnqueue(() =>
-        {
-            if (!string.IsNullOrEmpty(hostConfigContents))
-            {
-                renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
-            }
-            else
-            {
-                Log.Logger()?.ReportError("DashboardView", $"HostConfig contents are {hostConfigContents}");
-            }
-        });
-
-        return;
     }
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -174,7 +124,6 @@ public partial class DashboardView : ToolPage
             // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
             await ViewModel.WidgetIconService.CacheAllWidgetIconsAsync();
 
-            await ConfigureWidgetRenderer(_renderer);
             await RestorePinnedWidgetsAsync();
         }
         else
@@ -294,8 +243,7 @@ public partial class DashboardView : ToolPage
             }
         }
 
-        var configurationRenderer = await GetConfigurationRendererAsync();
-        var dialog = new AddWidgetDialog(configurationRenderer, _dispatcher, ActualTheme)
+        var dialog = new AddWidgetDialog(_dispatcher, ActualTheme)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
@@ -335,7 +283,7 @@ public partial class DashboardView : ToolPage
             if (widgetDefinition != null)
             {
                 Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
-                var wvm = new WidgetViewModel(widget, size, widgetDefinition, _renderer, _dispatcher);
+                var wvm = new WidgetViewModel(widget, size, widgetDefinition, _dispatcher);
                 _dispatcher.TryEnqueue(() =>
                 {
                     try
@@ -497,8 +445,7 @@ public partial class DashboardView : ToolPage
         var originalSize = widgetViewModel.WidgetSize;
         var widgetDef = ViewModel.WidgetHostingService.GetWidgetCatalog()!.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
 
-        var configurationRenderer = await GetConfigurationRendererAsync();
-        var dialog = new CustomizeWidgetDialog(configurationRenderer, _dispatcher, widgetDef)
+        var dialog = new CustomizeWidgetDialog(_dispatcher, widgetDef)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,

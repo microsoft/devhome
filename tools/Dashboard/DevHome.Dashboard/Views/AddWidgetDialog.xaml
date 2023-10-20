@@ -76,7 +76,6 @@
 
                 <ScrollViewer Grid.Row="1"
                               x:Name="ConfigurationContentViewer"
-                              Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}"
                               VerticalScrollBarVisibility="Auto" VerticalAlignment="Stretch">
                     <Frame x:Name="ConfigurationContentFrame" Margin="45,45,45,150"
                            Content="{x:Bind ViewModel.WidgetFrameworkElement, Mode=OneWay}" />
@@ -84,8 +83,7 @@
 
                 <!-- Pin button -->
                 <Grid Grid.Row="2"
-                      x:Name="PinRow"
-                      Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
+                      x:Name="PinRow">
                     <Button x:Name="PinButton"
                             Style="{ThemeResource AccentButtonStyle}"
                             VerticalAlignment="Bottom" HorizontalAlignment="Center"
