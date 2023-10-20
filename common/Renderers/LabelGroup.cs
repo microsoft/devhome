@@ -4,10 +4,11 @@
 using System.Collections.Generic;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
-using CommunityToolkit.WinUI.UI.Controls;
+using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Data.Json;
+using Windows.UI;
 
 namespace DevHome.Common.Renderers;
 public class LabelGroup : IAdaptiveCardElement
@@ -141,7 +142,7 @@ public class LabelGroupRenderer : IAdaptiveElementRenderer
             var g = (byte)System.Convert.ToUInt32(colorString.Substring(2, 2), 16);
             var b = (byte)System.Convert.ToUInt32(colorString.Substring(4, 2), 16);
 
-            return new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(a, r, g, b));
+            return new Microsoft.UI.Xaml.Media.SolidColorBrush(Color.FromArgb(a, r, g, b));
         }
 
         return new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);

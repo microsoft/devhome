@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics.Tracing;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;

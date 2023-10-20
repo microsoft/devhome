@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.TelemetryEvents.SetupFlow;
@@ -12,6 +13,7 @@ using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -20,46 +22,19 @@ namespace DevHome.SetupFlow.Views;
 /// <summary>
 /// Shows the user the repositories they have selected.
 /// </summary>
+[INotifyPropertyChanged]
 public sealed partial class RepoConfigView : UserControl
 {
-    private readonly Guid relatedActivityId;
+    private Guid ActivityId => ViewModel.Orchestrator.ActivityId;
 
-    private IThemeSelectorService _themeSelectorService;
+    public RepoConfigViewModel ViewModel => (RepoConfigViewModel)this.DataContext;
+
+    private AddRepoDialog _addRepoDialog;
 
     public RepoConfigView()
     {
-        relatedActivityId = Guid.NewGuid();
         this.InitializeComponent();
         ActualThemeChanged += OnActualThemeChanged;
-
-        _themeSelectorService = Application.Current.GetService<IThemeSelectorService>();
-        _themeSelectorService.ThemeChanged += OnThemeChanged;
-    }
-
-    private void OnThemeChanged(object sender, ElementTheme e)
-    {
-        ElementTheme themeToSwitchTo = e;
-
-        if (themeToSwitchTo == ElementTheme.Default)
-        {
-            if (_themeSelectorService.IsDarkTheme())
-            {
-                themeToSwitchTo = ElementTheme.Dark;
-            }
-            else
-            {
-                themeToSwitchTo = ElementTheme.Light;
-            }
-        }
-
-        if (ViewModel != null)
-        {
-            // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
-            foreach (var cloneInformation in ViewModel.RepoReviewItems)
-            {
-                cloneInformation.SetIcon(themeToSwitchTo);
-            }
-        }
     }
 
     public void OnActualThemeChanged(FrameworkElement sender, object args)
@@ -72,61 +47,56 @@ public sealed partial class RepoConfigView : UserControl
                 cloneInformation.SetIcon(sender.ActualTheme);
             }
         }
-    }
 
-    public RepoConfigViewModel ViewModel => (RepoConfigViewModel)this.DataContext;
+        if (_addRepoDialog != null)
+        {
+            _addRepoDialog.RequestedTheme = sender.ActualTheme;
+        }
+    }
 
     /// <summary>
     /// User wants to add a repo.  Bring up the tool.
     /// </summary>
-    private async void AddRepoButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    [RelayCommand]
+    private async Task AddRepoAsync()
     {
         // hold information for telemetry calls
         const string EventName = "RepoTool_AddRepos_Event";
         var dialogName = "RepoDialog";
         var telemetryLogger = TelemetryFactory.Get<ITelemetry>();
 
-        telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Open", dialogName), relatedActivityId);
+        telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Open", dialogName), ActivityId);
 
-        // Both the hyperlink button and button call this.
-        // disable the button to prevent users from double clicking it.
-        var senderAsButton = sender as Button;
-        if (senderAsButton != null)
-        {
-            senderAsButton.IsEnabled = false;
-        }
-
-        var addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList());
-        var getPluginsTask = addRepoDialog.GetPluginsAsync();
-        var setupDevDrivesTask = addRepoDialog.SetupDevDrivesAsync();
-        addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
-        addRepoDialog.RequestedTheme = ActualTheme;
+        _addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), ActivityId, ViewModel.Host);
+        var getExtensionsTask = _addRepoDialog.GetExtensionsAsync();
+        var setupDevDrivesTask = _addRepoDialog.SetupDevDrivesAsync();
+        _addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
+        _addRepoDialog.RequestedTheme = ActualTheme;
 
         // Start
-        await getPluginsTask;
+        await getExtensionsTask;
         await setupDevDrivesTask;
-        if (addRepoDialog.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
+
+        _addRepoDialog.SetDeveloperIdChangedEvents();
+
+        if (_addRepoDialog.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
         {
-            addRepoDialog.UpdateDevDriveInfo();
+            _addRepoDialog.UpdateDevDriveInfo();
         }
 
-        var result = await addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
+        _addRepoDialog.IsSecondaryButtonEnabled = true;
+        var result = await _addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
 
-        if (senderAsButton != null)
-        {
-            senderAsButton.IsEnabled = true;
-        }
+        var devDrive = _addRepoDialog.EditDevDriveViewModel.DevDrive;
 
-        var devDrive = addRepoDialog.EditDevDriveViewModel.DevDrive;
-
-        if (addRepoDialog.EditDevDriveViewModel.IsWindowOpen)
+        if (_addRepoDialog.EditDevDriveViewModel.IsWindowOpen)
         {
             ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(devDrive);
         }
 
         // save cloneLocationKind for telemetry
         CloneLocationKind cloneLocationKind = CloneLocationKind.LocalPath;
-        var everythingToClone = addRepoDialog.AddRepoViewModel.EverythingToClone;
+        var everythingToClone = _addRepoDialog.AddRepoViewModel.EverythingToClone;
 
         foreach (var repoToClone in everythingToClone)
         {
@@ -149,7 +119,7 @@ public sealed partial class RepoConfigView : UserControl
                 foreach (var cloneInfo in everythingToClone)
                 {
                     cloneInfo.CloneToDevDrive = true;
-                    cloneInfo.CloneLocationAlias = addRepoDialog.FolderPickerViewModel.CloneLocationAlias;
+                    cloneInfo.CloneLocationAlias = _addRepoDialog.FolderPickerViewModel.CloneLocationAlias;
                 }
 
                 // The cloning location may have changed e.g The original Drive clone path for Dev Drives was the F: drive for items
@@ -176,7 +146,7 @@ public sealed partial class RepoConfigView : UserControl
 
             // Check if user unchecked the Dev Drive checkbox before closing, to update the the behavior the next time the user launches the dialog. Note we only keep
             // track of this for the current launch of the setup flow. If the user completes or cancels the setup flow and re enters, we do not keep the unchecked behavior.
-            if (!addRepoDialog.EditDevDriveViewModel.IsDevDriveCheckboxChecked)
+            if (!_addRepoDialog.EditDevDriveViewModel.IsDevDriveCheckboxChecked)
             {
                 ViewModel.ShouldAutoCheckDevDriveCheckbox = false;
             }
@@ -189,14 +159,14 @@ public sealed partial class RepoConfigView : UserControl
 
         // Convert current page to addkind.  Currently users can add either by URL or account (via the repos page)
         AddKind addKind = AddKind.URL;
-        if (addRepoDialog.AddRepoViewModel.CurrentPage == Models.Common.PageKind.Repositories)
+        if (_addRepoDialog.AddRepoViewModel.CurrentPage == Models.Common.PageKind.Repositories)
         {
             addKind = AddKind.Account;
         }
 
         // Only 1 provider can be selected per repo dialog session.
         // Okay to use EverythingToClone[0].ProviderName here.
-        var providerName = addRepoDialog.AddRepoViewModel.EverythingToClone.Any() ? addRepoDialog.AddRepoViewModel.EverythingToClone[0].ProviderName : string.Empty;
+        var providerName = _addRepoDialog.AddRepoViewModel.EverythingToClone.Any() ? _addRepoDialog.AddRepoViewModel.EverythingToClone[0].ProviderName : string.Empty;
 
         // If needs be, this can run inside a foreach loop to capture details on each repo.
         if (cloneLocationKind == CloneLocationKind.DevDrive)
@@ -206,11 +176,11 @@ public sealed partial class RepoConfigView : UserControl
                 LogLevel.Critical,
                 RepoDialogAddRepoEvent.AddWithDevDrive(
                 addKind,
-                addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
+                _addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
                 providerName,
-                addRepoDialog.EditDevDriveViewModel.DevDrive.State == DevDriveState.New,
-                addRepoDialog.EditDevDriveViewModel.DevDriveDetailsChanged),
-                relatedActivityId);
+                _addRepoDialog.EditDevDriveViewModel.DevDrive.State == DevDriveState.New,
+                _addRepoDialog.EditDevDriveViewModel.DevDriveDetailsChanged),
+                ActivityId);
         }
         else if (cloneLocationKind == CloneLocationKind.LocalPath)
         {
@@ -219,12 +189,12 @@ public sealed partial class RepoConfigView : UserControl
                 LogLevel.Critical,
                 RepoDialogAddRepoEvent.AddWithLocalPath(
                 addKind,
-                addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
+                _addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
                 providerName),
-                relatedActivityId);
+                ActivityId);
         }
 
-        telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Close", dialogName, result), relatedActivityId);
+        telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Close", dialogName, result), ActivityId);
     }
 
     /// <summary>
@@ -235,10 +205,9 @@ public sealed partial class RepoConfigView : UserControl
     {
         const string EventName = "RepoTool_EditClonePath_Event";
         var dialogName = "EditClonePath";
-        var relatedActivityId = Guid.NewGuid();
         var telemetryLogger = TelemetryFactory.Get<ITelemetry>();
 
-        telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Open", dialogName), relatedActivityId);
+        telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Open", dialogName), ActivityId);
 
         var cloningInformation = (sender as Button).DataContext as CloningInformation;
         var oldLocation = cloningInformation.CloningLocation;
@@ -261,7 +230,7 @@ public sealed partial class RepoConfigView : UserControl
             // so decrease the Dev Managers count.
             if (wasCloningToDevDrive && !cloningInformation.CloneToDevDrive)
             {
-                telemetryLogger.Log(EventName, LogLevel.Critical, new SwitchedCloningLocationEvent(CloneLocationKind.LocalPath, devDrive?.State == DevDriveState.New, devDrive?.State == DevDriveState.ExistsOnSystem), relatedActivityId);
+                telemetryLogger.Log(EventName, LogLevel.Critical, new SwitchedCloningLocationEvent(CloneLocationKind.LocalPath, devDrive?.State == DevDriveState.New, devDrive?.State == DevDriveState.ExistsOnSystem), ActivityId);
                 ViewModel.DevDriveManager.DecreaseRepositoriesCount();
                 ViewModel.DevDriveManager.CancelChangesToDevDrive();
             }
@@ -273,7 +242,7 @@ public sealed partial class RepoConfigView : UserControl
                 // User switched from local path to Dev Drive
                 if (!wasCloningToDevDrive)
                 {
-                    telemetryLogger.Log(EventName, LogLevel.Critical, new SwitchedCloningLocationEvent(CloneLocationKind.DevDrive), relatedActivityId);
+                    telemetryLogger.Log(EventName, LogLevel.Critical, new SwitchedCloningLocationEvent(CloneLocationKind.DevDrive), ActivityId);
                     ViewModel.DevDriveManager.IncreaseRepositoriesCount(1);
                 }
 
@@ -300,7 +269,7 @@ public sealed partial class RepoConfigView : UserControl
             ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(editClonePathDialog.EditDevDriveViewModel.DevDrive);
         }
 
-        telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Close", dialogName, result), relatedActivityId);
+        telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Close", dialogName, result), ActivityId);
     }
 
     /// <summary>
@@ -316,6 +285,6 @@ public sealed partial class RepoConfigView : UserControl
             ViewModel.DevDriveManager.DecreaseRepositoriesCount();
         }
 
-        TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RemoveRepo_Event");
+        TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RemoveRepo_Event", false, ActivityId);
     }
 }

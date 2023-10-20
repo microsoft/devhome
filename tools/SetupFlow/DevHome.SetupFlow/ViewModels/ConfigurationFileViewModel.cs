@@ -69,7 +69,15 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
         }
 
         TelemetryFactory.Get<ITelemetry>().Log("ConfigurationButton_Click", LogLevel.Critical, new ConfigureCommandEvent(true), Orchestrator.ActivityId);
-        await Orchestrator.GoToNextPage();
+        try
+        {
+            await Orchestrator.InitializeElevatedServerAsync();
+            await Orchestrator.GoToNextPage();
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to initialize elevated process.", e);
+        }
     }
 
     [RelayCommand(CanExecute = nameof(ReadAndAgree))]
@@ -98,7 +106,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
                 Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
                 Configuration = new (file.Path);
                 Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
-                var task = new ConfigureTask(StringResource, file);
+                var task = new ConfigureTask(StringResource, file, Orchestrator.ActivityId);
                 await task.OpenConfigurationSetAsync();
                 TaskList.Add(task);
                 return true;

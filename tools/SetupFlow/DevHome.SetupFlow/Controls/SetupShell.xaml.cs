@@ -1,9 +1,11 @@
 // Copyright (c) Microsoft Corporation and Contributors.
 // Licensed under the MIT License.
 
+using System;
 using DevHome.SetupFlow.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Markup;
 
 namespace DevHome.SetupFlow.Controls;
@@ -27,10 +29,10 @@ public sealed partial class SetupShell : UserControl
         set => SetValue(DescriptionProperty, value);
     }
 
-    public ControlTemplate HeaderTemplate
+    public object Header
     {
-        get => (ControlTemplate)GetValue(HeaderTemplateProperty) ?? defaultHeaderTemplate;
-        set => SetValue(HeaderTemplateProperty, value);
+        get => GetValue(HeaderProperty);
+        set => SetValue(HeaderProperty, value);
     }
 
     public object SetupShellContent
@@ -55,6 +57,16 @@ public sealed partial class SetupShell : UserControl
     public static readonly DependencyProperty TitleProperty = DependencyProperty.RegisterAttached(nameof(Title), typeof(string), typeof(SetupShell), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty DescriptionProperty = DependencyProperty.RegisterAttached(nameof(Description), typeof(string), typeof(SetupShell), new PropertyMetadata(string.Empty));
     public static readonly DependencyProperty SetupShellContentProperty = DependencyProperty.RegisterAttached(nameof(SetupShellContent), typeof(object), typeof(SetupShell), new PropertyMetadata(null));
-    public static readonly DependencyProperty HeaderTemplateProperty = DependencyProperty.RegisterAttached(nameof(HeaderTemplate), typeof(ControlTemplate), typeof(SetupShell), new PropertyMetadata(null));
+    public static readonly DependencyProperty HeaderProperty = DependencyProperty.RegisterAttached(nameof(Header), typeof(object), typeof(SetupShell), new PropertyMetadata(null));
     public static readonly DependencyProperty OrchestratorProperty = DependencyProperty.RegisterAttached(nameof(Orchestrator), typeof(SetupFlowOrchestrator), typeof(SetupShell), new PropertyMetadata(null));
+
+    private async void OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // Focus on the first focusable element inside the shell content
+        var element = FocusManager.FindFirstFocusableElement(ShellContent);
+        if (element != null)
+        {
+            await FocusManager.TryFocusAsync(element, FocusState.Programmatic).AsTask();
+        }
+    }
 }

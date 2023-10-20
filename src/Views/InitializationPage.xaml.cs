@@ -23,8 +23,8 @@ public sealed partial class InitializationPage : Page
         ViewModel = initializationViewModel;
     }
 
-    private async void Page_Loaded(object sender, RoutedEventArgs e)
+    private void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        await ViewModel.OnPageLoadedAsync();
+        ViewModel.OnPageLoaded();
     }
 }

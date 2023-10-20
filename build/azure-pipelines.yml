@@ -24,7 +24,7 @@ parameters:
 
 variables:
   # MSIXVersion's second part should always be odd to account for stub app's version
-  MSIXVersion: '0.401'
+  MSIXVersion: '0.601'
   VersionOfSDK: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -60,7 +60,7 @@ stages:
       displayName: Publish Artifacts
       inputs:
         artifactName: SdkNugetPackage
-        targetPath: pluginsdk\_build
+        targetPath: extensionsdk\_build
 
     - task: PublishSymbols@2
       displayName: Publish Symbols
@@ -471,12 +471,56 @@ stages:
             SessionTimeout: '60'
             MaxConcurrency: '50'
             MaxRetryAttempts: '5'
-
+    
         - task: PublishPipelineArtifact@0
           displayName: Publish MSIX Bundle Artifacts
           inputs:
             artifactName: MsixBundle_${{ configuration }}
             targetPath: AppxBundles\${{ configuration }}
+            
+- stage: VPack
+  dependsOn:
+  - SourceAnalysis
+  - Build_MsixBundle
+  condition: |
+    and
+    (
+      in(dependencies.Build_MsixBundle.result, 'Succeeded'),
+      in(dependencies.SourceAnalysis.result, 'Succeeded', 'SucceededWithIssues'),
+      eq(variables['BuildingBranch'], 'release')
+    )
+  jobs:
+  - job: ReleaseVPack
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: MsixBundle_Release
+        itemPattern: '*.msixbundle'
+        targetPath: $(Build.ArtifactStagingDirectory)\$(appxPackageDir)\vpack
+
+    - task: CmdLine@2
+      inputs:
+        script: ren $(Build.ArtifactStagingDirectory)\$(appxPackageDir)\vpack\*.msixbundle DevHome_8wekyb3d8bbwe.msixbundle
+
+    - task: PkgESVPack@12
+      displayName: Create and push vpack for app
+      env: 
+        SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+      inputs:
+        sourceDirectory: $(Build.ArtifactStagingDirectory)\$(appxPackageDir)\vpack
+        description: VPack for DevHome
+        pushPkgName: DevHome.app
+        version: $(MSIXVersion).0
+        owner: chriwall
+        provData: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish vpack\app artifact with vpack manifest
+      inputs:
+        pathtoPublish: $(XES_VPACKMANIFESTDIRECTORY)\$(XES_VPACKMANIFESTNAME)
+        artifactName: vpackManifest
+      
 
 - stage: Store_Publish
   dependsOn:

@@ -10,6 +10,8 @@ using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Settings.Models;
+using DevHome.Settings.TelemetryEvents;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Windows.ApplicationModel;
 
@@ -35,6 +37,8 @@ public partial class ExtensionViewModel : ObservableObject
 
     public bool HasToggleSwitch => _setting.HasToggleSwitch;
 
+    public bool HasSettingsProvider => _setting.HasSettingsProvider;
+
     public bool IsEnabled
     {
         get => _setting.IsExtensionEnabled;
@@ -59,44 +63,48 @@ public partial class ExtensionsViewModel : ObservableObject
     {
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
-        var pluginService = Application.Current.GetService<IPluginService>();
-        pluginService.OnPluginsChanged -= OnPluginsChanged;
-        pluginService.OnPluginsChanged += OnPluginsChanged;
+        var extensionService = Application.Current.GetService<IExtensionService>();
+        extensionService.OnExtensionsChanged -= OnExtensionsChanged;
+        extensionService.OnExtensionsChanged += OnExtensionsChanged;
 
         DisplaySettings();
     }
 
     private void DisplaySettings()
     {
-        var pluginWrappers = Task.Run(async () =>
+        var extensionWrappers = Task.Run(async () =>
         {
-            var pluginService = Application.Current.GetService<IPluginService>();
-            return await pluginService.GetInstalledPluginsAsync(true);
+            var extensionService = Application.Current.GetService<IExtensionService>();
+            return await extensionService.GetInstalledExtensionsAsync(true);
         }).Result;
 
         SettingsList.Clear();
 
-        foreach (var pluginWrapper in pluginWrappers)
+        foreach (var extensionWrapper in extensionWrappers)
         {
             // Don't show self as an extension
-            if (Package.Current.Id.FullName == pluginWrapper.PackageFullName)
+            if (Package.Current.Id.FullName == extensionWrapper.PackageFullName)
             {
                 continue;
             }
 
-            var setting = new Setting("Plugins/" + pluginWrapper.PackageFullName, pluginWrapper.PackageFullName, pluginWrapper.Name, string.Empty, string.Empty, true);
+            var hasSettingsProvider = extensionWrapper.HasProviderType(Microsoft.Windows.DevHome.SDK.ProviderType.Settings);
+            var setting = new Setting("Extensions/" + extensionWrapper.ExtensionUniqueId, extensionWrapper.ExtensionUniqueId, extensionWrapper.Name, string.Empty, string.Empty, true, hasSettingsProvider);
             SettingsList.Add(new ExtensionViewModel(setting, this));
         }
     }
 
-    private async void OnPluginsChanged(object? sender, EventArgs e)
+    private async void OnExtensionsChanged(object? sender, EventArgs e)
     {
         await _dispatcher.EnqueueAsync(() => { DisplaySettings(); });
     }
 
     public void Navigate(string path)
     {
-        // TODO: Navigate to Plugin's settings Adaptive Card
-        // https://github.com/microsoft/devhome/issues/608
+        TelemetryFactory.Get<ITelemetry>().Log("ExtensionsSettings_Navigate_Event", LogLevel.Critical, new NavigateToExtensionSettingsEvent("ExtensionsViewModel"));
+
+        var navigationService = Application.Current.GetService<INavigationService>();
+        var segments = path.Split("/");
+        navigationService.NavigateTo(typeof(ExtensionSettingsViewModel).FullName!, segments[1]);
     }
 }

@@ -59,7 +59,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Settings_Preferences_Description" xml:space="preserve">
-    <value>Application theme</value>
+    <value>Theme</value>
     <comment>Body text description for a card than when clicked takes the user to the Preferences settings page</comment>
   </data>
   <data name="Settings_Preferences_Header" xml:space="preserve">
@@ -82,8 +82,16 @@
     <value>Extensions</value>
     <comment>Header for a card than when clicked takes the user to the Extensions settings page</comment>
   </data>
+  <data name="Settings_Extensions_Details.Text" xml:space="preserve">
+    <value>View and manage Dev Home extensions.</value>
+    <comment>Description at the top of the Extensions page</comment>
+  </data>
+  <data name="Settings_Extensions_NoneInstalled.Text" xml:space="preserve">
+    <value>No extensions are installed.</value>
+    <comment>Message shown when the user does not have any Dev Home extensions installed</comment>
+  </data>
   <data name="Settings_About_Description" xml:space="preserve">
-    <value>App info, privacy policy</value>
+    <value>Info, Privacy Statement</value>
     <comment>Body text description for a card than when clicked takes the user to the About settings page</comment>
   </data>
   <data name="Settings_About_Header" xml:space="preserve">
@@ -91,7 +99,7 @@
     <comment>Header for a card than when clicked takes the user to the About settings page</comment>
   </data>
   <data name="Settings_Theme.Header" xml:space="preserve">
-    <value>App theme</value>
+    <value>Theme</value>
   </data>
   <data name="Settings_Theme_Light.Content" xml:space="preserve">
     <value>Light</value>
@@ -125,7 +133,7 @@
     <comment>URL</comment>
   </data>
   <data name="SettingsPage_PrivacyPolicyLink.Content" xml:space="preserve">
-    <value>Privacy policy</value>
+    <value>Privacy Statement</value>
   </data>
   <data name="SettingsPage_PrivacyPolicyLink.NavigateUri" xml:space="preserve">
     <value>https://go.microsoft.com/fwlink/?linkid=2234882</value>
@@ -147,28 +155,28 @@
     <value>Logout successful!</value>
   </data>
   <data name="Settings_Accounts_ConfirmLogoutContentDialog_Content" xml:space="preserve">
-    <value>Dev Home will no longer be able to access online resources that use this account.</value>
+    <value>You won't be able to access different features in Dev Home that use this account until you sign in again.</value>
   </data>
   <data name="Settings_Accounts_ConfirmLogoutContentDialog_PrimaryButtonText" xml:space="preserve">
-    <value>Yes</value>
+    <value>Sign out</value>
   </data>
   <data name="Settings_Accounts_ConfirmLogoutContentDialog_SecondaryButtonText" xml:space="preserve">
-    <value>No</value>
+    <value>Cancel</value>
   </data>
   <data name="Settings_Accounts_ConfirmLogoutContentDialog_Title" xml:space="preserve">
-    <value>Are you sure?</value>
+    <value>Are you sure you want to sign out?</value>
   </data>
   <data name="Settings_Accounts_LogoutButton.Content" xml:space="preserve">
     <value>Sign out</value>
   </data>
   <data name="Settings_Accounts_NoProvidersContentDialog_Content" xml:space="preserve">
-    <value>Please install a Dev Home extension and restart Dev Home to add an account.</value>
+    <value>Install a Dev Home extension that uses your developer account, then sign in to add the account.</value>
   </data>
   <data name="Settings_Accounts_NoProvidersContentDialog_PrimaryButtonText" xml:space="preserve">
-    <value>OK</value>
+    <value>Find Extensions</value>
   </data>
   <data name="Settings_Accounts_NoProvidersContentDialog_Title" xml:space="preserve">
-    <value>No Dev Home extensions found!</value>
+    <value>No extensions found</value>
   </data>
   <data name="Settings_Header" xml:space="preserve">
     <value>Settings</value>
@@ -185,19 +193,23 @@
   <data name="Settings_About_RelatedLinks.Text" xml:space="preserve">
     <value>Related links</value>
   </data>
-    <data name="Settings_Feedback_Header" xml:space="preserve">
+  <data name="Settings_Feedback_Header" xml:space="preserve">
     <value>Feedback</value>
   </data>
-    <data name="Settings_Feedback_Description" xml:space="preserve">
+  <data name="Settings_Feedback_Description" xml:space="preserve">
     <value>Report problems, suggest a feature, report translation problems</value>
   </data>
   <data name="Settings_Feedback_OpenSource.Text" xml:space="preserve">
-    <value>Dev Home follows the Microsoft Open Source Code of Conduct. </value>
+    <value>Your feedback helps us improve. Dev Home follows the Microsoft Open Source Code of Conduct. </value>
     <comment>Dev Home abides by Microsoft Open Source guidance</comment>
   </data>
   <data name="Settings_Feedback_FeatureImprovement.Header" xml:space="preserve">
     <value>Suggest a feature</value>
-    <comment>FeatureImprovement is to suggest a useful feature that the app does not currently have</comment>
+    <comment>FeatureImprovement is to suggest a useful feature that Dev Home does not currently have</comment>
+  </data>
+  <data name="Settings_Feedback_FeatureImprovement.Description" xml:space="preserve">
+    <value>Propose something new</value>
+    <comment>Details about when this option should be used</comment>
   </data>
   <data name="Settings_Feedback_FeatureImprovement_Button.Content" xml:space="preserve">
     <value>New suggestion</value>
@@ -206,6 +218,10 @@
   <data name="Settings_Feedback_ReportBug.Header" xml:space="preserve">
     <value>Report a bug</value>
     <comment>Tell us about an error that is happening</comment>
+  </data>
+  <data name="Settings_Feedback_ReportBug.Description" xml:space="preserve">
+    <value>Report problems or unexpected results</value>
+    <comment>Details about when to use this option</comment>
   </data>
   <data name="Settings_Feedback_ReportBug_Button.Content" xml:space="preserve">
     <value>New report</value>
@@ -251,9 +267,9 @@
     <value>Include A/B experiment info</value>
     <comment>Opt into including experimentation information into your issue template</comment>
   </data>
-  <data name="Settings_Feedback_ReportBug_IncludePlugins.Content" xml:space="preserve">
-    <value>Include installed Dev Home plugins</value>
-    <comment>Opt into including information on plugins into your issue template</comment>
+  <data name="Settings_Feedback_ReportBug_IncludeExtensions.Content" xml:space="preserve">
+    <value>Include installed Dev Home extensions</value>
+    <comment>Opt into including information on extensions into your issue template</comment>
   </data>
   <data name="Settings_Feedback_ReportBug_IncludeSystemInfo.Content" xml:space="preserve">
     <value>Include my system information</value>
@@ -275,12 +291,16 @@
     <value>Create an extension</value>
     <comment>Creating a new extension</comment>
   </data>
-  <data name="Settings_Feedback_BuildExtension_Button.Content" xml:space="preserve">
+  <data name="Settings_Feedback_BuildExtension_Button.Text" xml:space="preserve">
     <value>Learn more</value>
     <comment>Description or instruction on building an extension</comment>
   </data>
   <data name="Settings_Feedback_LocalizationIssue.Header" xml:space="preserve">
     <value>Report a translation problem</value>
+    <comment>LocalizationTranslation means that there are words and language being translated that are incorrect</comment>
+  </data>
+  <data name="Settings_Feedback_LocalizationIssue.Description" xml:space="preserve">
+    <value>Let us know about incorrect translations</value>
     <comment>LocalizationTranslation means that there are words and language being translated that are incorrect</comment>
   </data>
   <data name="Settings_Feedback_LocalizationIssue_Button.Content" xml:space="preserve">
@@ -315,7 +335,7 @@
     <value>Report a security vulnerability</value>
     <comment>Tell us about potential security concerns</comment>
   </data>
-  <data name="Settings_Feedback_ReportSecurity_Button.Content" xml:space="preserve">
+  <data name="Settings_Feedback_ReportSecurity_Button.Text" xml:space="preserve">
     <value>Learn more</value>
     <comment>Click on this link if you want to learn more and read the security policy. View is an action.</comment>
   </data>
@@ -345,7 +365,7 @@
   </data>
   <data name="Settings_Feedback_SuggestFeature_Dialog.Title" xml:space="preserve">
     <value>Suggest a new feature or improvement</value>
-    <comment>Tell us about a feature that you would like to see. FeatureImprovement is a feature that would be useful for the app to have that it doesn't currently have already.</comment>
+    <comment>Tell us about a feature that you would like to see. FeatureImprovement is a feature that would be useful for Dev Home to have that it doesn't currently have already.</comment>
   </data>
   <data name="Settings_Feedback_SuggestFeature_IssueTitle.Header" xml:space="preserve">
     <value>Title</value>
@@ -382,5 +402,20 @@
   <data name="Settings_Feedback_OpenSource_Link.NavigateUri" xml:space="preserve">
     <value>https://go.microsoft.com/fwlink/?linkid=2236981</value>
     <comment>This is the microsoft code of conduct link.</comment>
+  </data>
+  <data name="Settings_Accounts_NoProvidersContentDialog_SecondaryButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Settings_ExperimentalFeatures_Description" xml:space="preserve">
+    <value>Configure experimental features</value>
+    <comment>The description for the Experimental Features settings card</comment>
+  </data>
+  <data name="Settings_ExperimentalFeatures_Header" xml:space="preserve">
+    <value>Experimental features</value>
+    <comment>The header for the Experimental Features settings card</comment>
+  </data>
+  <data name="Settings_ExperimentalFeatures_NoExperimentalFeatures.Text" xml:space="preserve">
+    <value>There are currently no experimental features</value>
+    <comment>Message shown when there are no available experimental features</comment>
   </data>
 </root>

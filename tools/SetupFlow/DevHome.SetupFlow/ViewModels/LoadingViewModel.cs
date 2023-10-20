@@ -13,8 +13,6 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.Common.Contracts;
-using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
@@ -23,7 +21,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Projection::DevHome.SetupFlow.ElevatedComponent;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -33,6 +30,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     private readonly IHost _host;
 
     private readonly ElementTheme _currentTheme;
+
+    private readonly Guid _activityId;
 
     private static readonly BitmapImage DarkCaution = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
     private static readonly BitmapImage DarkError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
@@ -68,6 +67,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// Keep track of all failed tasks so they can be re-ran if the user wishes.
     /// </summary>
     private readonly IList<TaskInformation> _failedTasks;
+
+    public IList<TaskInformation> FailedTasks => _failedTasks;
 
     /// <summary>
     /// All the tasks that will be executed.
@@ -206,6 +207,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         _failedTasks = new List<TaskInformation>();
         ActionCenterItems = new ();
         Messages = new ();
+        _activityId = orchestrator.ActivityId;
     }
 
     /// <summary>
@@ -342,28 +344,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// </summary>
     protected async override Task OnFirstNavigateToAsync()
     {
-        var elevatedTasks = Orchestrator.TaskGroups.SelectMany(taskGroup => taskGroup.SetupTasks.Where(task => task.RequiresAdmin));
-        if (elevatedTasks.Any())
-        {
-            try
-            {
-                TasksArguments tasksArguments = new ()
-                {
-                    InstallPackages = elevatedTasks.OfType<InstallPackageTask>().Select(task => task.GetArguments()).ToList(),
-                    Configure = elevatedTasks.OfType<ConfigureTask>().Select(task => task.GetArguments()).FirstOrDefault(),
-                    CreateDevDrive = elevatedTasks.OfType<CreateDevDriveTask>().Select(task => task.GetArguments()).FirstOrDefault(),
-                };
-                Orchestrator.RemoteElevatedOperation = await IPCSetup.CreateOutOfProcessObjectAsync<IElevatedComponentOperation>(tasksArguments);
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.Loading, $"Failed to initialize elevated process.", e);
-                Log.Logger?.ReportInfo(Log.Component.Loading, "Will continue with setup as best-effort");
-            }
-        }
-
         FetchTaskInformation();
-
         await StartAllTasks(TasksToRun);
     }
 
@@ -438,7 +419,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
         if (_failedTasks.Any())
         {
-            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count));
+            TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count), _activityId);
         }
     }
 

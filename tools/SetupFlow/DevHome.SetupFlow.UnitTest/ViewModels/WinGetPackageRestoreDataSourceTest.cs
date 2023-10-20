@@ -26,7 +26,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
         // Arrange
         var expectedPackages = new List<IWinGetPackage>();
         var restoreApplicationInfoList = expectedPackages.Select(p => CreateRestoreApplicationInfo(p.Id).Object).ToList();
-        var catalog = ConfigureWinGetCatalogPackages(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<HashSet<Uri>>())).ReturnsAsync(expectedPackages);
         ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act
@@ -34,7 +34,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
 
         // Assert
         Assert.AreEqual(0, loadedPackages.Count);
-        catalog.Verify(c => c.GetPackagesAsync(It.IsAny<HashSet<string>>()), Times.Never());
+        WindowsPackageManager.Verify(wpm => wpm.GetPackagesAsync(It.IsAny<HashSet<Uri>>()), Times.Never());
     }
 
     [TestMethod]
@@ -80,7 +80,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
             PackageHelper.CreatePackage(packageId2).Object,
         };
         var restoreApplicationInfoList = expectedPackages.Select(p => CreateRestoreApplicationInfo(p.Id).Object).ToList();
-        ConfigureWinGetCatalogPackages(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<HashSet<Uri>>())).ReturnsAsync(expectedPackages);
         ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act
@@ -107,7 +107,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
             PackageHelper.CreatePackage("mock2").Object,
         };
         var restoreApplicationInfoList = expectedPackages.Select(p => CreateRestoreApplicationInfo(p.Id).Object).ToList();
-        ConfigureWinGetCatalogPackages(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<HashSet<Uri>>())).ReturnsAsync(expectedPackages);
         ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act
@@ -142,7 +142,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
 
             return restoreAppInfo.Object;
         }).ToList();
-        ConfigureWinGetCatalogPackages(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<HashSet<Uri>>())).ReturnsAsync(expectedPackages);
         ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act
@@ -164,7 +164,7 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
             PackageHelper.CreatePackage("mock").Object,
         };
         var restoreApplicationInfoList = expectedPackages.Select(p => CreateRestoreApplicationInfo(p.Id, EmptyIconStreamSize).Object).ToList();
-        ConfigureWinGetCatalogPackages(expectedPackages);
+        WindowsPackageManager.Setup(wpm => wpm.GetPackagesAsync(It.IsAny<HashSet<Uri>>())).ReturnsAsync(expectedPackages);
         ConfigureRestoreDeviceInfo(RestoreDeviceInfoStatus.Ok, restoreApplicationInfoList);
 
         // Act
@@ -176,19 +176,6 @@ public class WinGetPackageRestoreDataSourceTest : BaseSetupFlowTest
         Assert.AreEqual(expectedPackages[0].Id, loadedPackages[0].Packages.ElementAt(0).Id);
         Assert.IsNull(expectedPackages[0].LightThemeIcon);
         Assert.IsNull(expectedPackages[0].DarkThemeIcon);
-    }
-
-    /// <summary>
-    /// Configure WinGet catalog packages
-    /// </summary>
-    /// <param name="expectedPackages">Expected packages</param>
-    /// <returns>Mock winget catalog</returns>
-    private Mock<IWinGetCatalog> ConfigureWinGetCatalogPackages(IList<IWinGetPackage> expectedPackages)
-    {
-        var catalog = new Mock<IWinGetCatalog>();
-        catalog.Setup(c => c.GetPackagesAsync(It.IsAny<HashSet<string>>())).ReturnsAsync(expectedPackages);
-        WindowsPackageManager!.Setup(wpm => wpm.WinGetCatalog).Returns(catalog.Object);
-        return catalog;
     }
 
     /// <summary>

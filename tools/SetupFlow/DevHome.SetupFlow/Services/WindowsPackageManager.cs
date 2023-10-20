@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.Common.Exceptions;
 using DevHome.Common.Services;
@@ -25,6 +25,12 @@ public class WindowsPackageManager : IWindowsPackageManager
     public const int AppInstallerErrorFacility = 0xA15;
     public const string AppInstallerProductId = "9NBLGGH4NNS1";
     public const string AppInstallerPackageFamilyName = "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe";
+
+    // Package manager URI constants:
+    // - x-ms-winget: is a custom scheme for WinGet package manager
+    // - winget: is a reserved URI name for the winget catalog
+    public const string Scheme = "x-ms-winget";
+    public const string WingetCatalogURIName = "winget";
 
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;
@@ -101,7 +107,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs completed");
     }
 
-    public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package)
+    public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package, Guid activityId)
     {
         var packageManager = _wingetFactory.CreatePackageManager();
         var options = _wingetFactory.CreateInstallOptions();
@@ -168,7 +174,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting AppInstaller registration ...");
             await _packageDeploymentService.RegisterPackageForCurrentUserAsync(AppInstallerPackageFamilyName);
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller registered succcessfully");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller registered successfully");
             return true;
         }
         catch (RegisterPackageException e)
@@ -181,6 +187,26 @@ public class WindowsPackageManager : IWindowsPackageManager
             Log.Logger?.ReportError(Log.Component.AppManagement, "An unexpected error occurred when registering AppInstaller", e);
             return false;
         }
+    }
+
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet)
+    {
+        // TODO Add support for other catalogs (e.g. `msstore` and custom).
+        // https://github.com/microsoft/devhome/issues/1521
+        HashSet<string> wingetPackageIds = new ();
+        foreach (var packageUri in packageUriSet)
+        {
+            if (TryGetPackageId(packageUri, out var packageId))
+            {
+                wingetPackageIds.Add(packageId);
+            }
+            else
+            {
+                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package id from uri '{packageUri}'");
+            }
+        }
+
+        return await WinGetCatalog.GetPackagesAsync(wingetPackageIds);
     }
 
     /// <summary>
@@ -266,5 +292,27 @@ public class WindowsPackageManager : IWindowsPackageManager
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create dummy {nameof(PackageManager)} COM object. WinGet COM Server is not available.", e);
             return false;
         }
+    }
+
+    /// <summary>
+    /// Try get the package id from a package uri
+    /// </summary>
+    /// <param name="packageUri">Input package uri</param>
+    /// <param name="packageId">Output package id</param>
+    /// <returns>True if the package uri is valid and a package id was identified, false otherwise.</returns>
+    private bool TryGetPackageId(Uri packageUri, out string packageId)
+    {
+        // TODO Add support for other catalogs (e.g. `msstore` and custom).
+        // https://github.com/microsoft/devhome/issues/1521
+        if (packageUri.Scheme == Scheme &&
+            packageUri.Host == WingetCatalogURIName &&
+            packageUri.Segments.Length == 2)
+        {
+            packageId = packageUri.Segments[1];
+            return true;
+        }
+
+        packageId = null;
+        return false;
     }
 }

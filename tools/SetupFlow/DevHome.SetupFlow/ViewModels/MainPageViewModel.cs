@@ -29,6 +29,8 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class MainPageViewModel : SetupPageViewModelBase
 {
+    private const string _hideSetupFlowBannerKey = "HideSetupFlowBanner";
+
     private readonly IHost _host;
     private readonly IWindowsPackageManager _wpm;
 
@@ -64,6 +66,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
+        ShowBanner = ShouldShowSetupFlowBanner();
     }
 
     public async Task StartFileActivationAsync(StorageFile file)
@@ -94,7 +97,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     [RelayCommand]
     private void HideBanner()
     {
-        TelemetryFactory.Get<ITelemetry>().LogCritical("MainPage_HideLearnMoreBanner_Event");
+        TelemetryFactory.Get<ITelemetry>().LogCritical("MainPage_HideLearnMoreBanner_Event", false, Orchestrator.ActivityId);
+        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
+        roamingProperties[_hideSetupFlowBannerKey] = bool.TrueString;
         ShowBanner = false;
     }
 
@@ -171,7 +176,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         TelemetryFactory.Get<ITelemetry>().Log(
             "LaunchDisksAndVolumesSettingsPageTriggered",
             LogLevel.Critical,
-            new DisksAndVolumesSettingsPageTriggeredEvent(source: "MainPageView"));
+            new DisksAndVolumesSettingsPageTriggeredEvent(source: "MainPageView"),
+            Orchestrator.ActivityId);
 
         await Launcher.LaunchUriAsync(new Uri("ms-settings:disksandvolumes"));
     }
@@ -210,5 +216,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         HideAppInstallerUpdateNotification();
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Opening AppInstaller in the Store app");
         await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?productid={WindowsPackageManager.AppInstallerProductId}"));
+    }
+
+    private bool ShouldShowSetupFlowBanner()
+    {
+        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
+        return !roamingProperties.ContainsKey(_hideSetupFlowBannerKey);
     }
 }

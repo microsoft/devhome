@@ -25,11 +25,8 @@ public class DevDriveTaskGroup : ISetupTaskGroup
     {
         _host = host;
 
-        // TODO Remove `this` argument from CreateInstance since this task
-        // group is a registered type. This requires updating dependent classes
-        // correspondingly.
-        // https://github.com/microsoft/devhome/issues/631
-        _devDriveReviewViewModel = new (() => _host.CreateInstance<DevDriveReviewViewModel>(this));
+        // TODO https://github.com/microsoft/devhome/issues/631
+        _devDriveReviewViewModel = new (() => new DevDriveReviewViewModel(host, stringResource, this));
         _stringResource = stringResource;
     }
 
@@ -50,7 +47,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         else
         {
             Log.Logger?.ReportInfo(Log.Component.DevDrive, "Adding new dev drive task");
-            _devDriveTasks.Add(new CreateDevDriveTask(devDrive, _host, _stringResource));
+            _devDriveTasks.Add(new CreateDevDriveTask(devDrive, _host, _host.GetService<SetupFlowOrchestrator>().ActivityId, _stringResource));
         }
     }
 

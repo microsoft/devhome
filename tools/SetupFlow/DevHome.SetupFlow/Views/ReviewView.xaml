@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
@@ -40,8 +40,20 @@
             IsChecked="{x:Bind ViewModel.ReadAndAgree, Mode=TwoWay}"/>
     </setupFlowBehaviors:SetupFlowNavigationBehavior.ContentTemplate>
 
+    <setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+        <Grid Background="Transparent" ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}">
+            <Button
+                Command="{x:Bind ViewModel.SetUpCommand, Mode=OneWay}"
+                Style="{StaticResource AccentButtonStyle}"
+                MinWidth="120" Margin="4,0"
+                Content="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonText, Mode=OneWay}"
+                ToolTipService.ToolTip="{x:Bind ViewModel.Orchestrator.CurrentPageViewModel.NextPageButtonToolTipText, Mode=OneWay}" />
+        </Grid>
+    </setupFlowBehaviors:SetupFlowNavigationBehavior.NextTemplate>
+
     <controls:SetupShell x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SetupShell_Review"
-                         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}" >
+                         Orchestrator="{x:Bind ViewModel.Orchestrator, Mode=OneWay}"
+                         Foreground="{ThemeResource TextFillColorSecondary}">
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <StackPanel>
                 <!-- TODO: We should use the labs:SettingsExpander to get some of the styling for
@@ -50,7 +62,7 @@
                            https://github.com/microsoft/devhome/issues/626-->
                 <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           IsExpanded="true"
-                          MinHeight="64" CornerRadius="3" Padding="47,0,47,7" >
+                          MinHeight="64" CornerRadius="3" Padding="24,0,24,7" >
                     <Expander.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_SetUpDetails" />

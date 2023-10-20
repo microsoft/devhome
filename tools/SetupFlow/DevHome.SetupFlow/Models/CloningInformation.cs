@@ -18,7 +18,7 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloningInformation : ObservableObject, IEquatable<CloningInformation>
 {
-    // TODO: Remove when plugin SDK has the ability to pass an icon to DevHome.
+    // TODO: Remove when extension SDK has the ability to pass an icon to DevHome.
     private static readonly BitmapImage LightGithub = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Light.png"));
 
     private static readonly BitmapImage DarkGithub = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Dark.png"));
@@ -59,11 +59,6 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// Gets or sets the name of the repository provider that the user used to log into their account.
     /// </summary>
     public string ProviderName
-    {
-        get; set;
-    }
-
-    public string PluginName
     {
         get; set;
     }
@@ -167,6 +162,14 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// the name is stored here so it can be set at the time when a unique name can be made.
     /// </summary>
     public string RemoveFromCloningAutomationName
+    {
+        get; set;
+    }
+
+    /// <summary>
+    /// Gets or sets the provider to use to clone the repository
+    /// </summary>
+    public IRepositoryProvider RepositoryProvider
     {
         get; set;
     }

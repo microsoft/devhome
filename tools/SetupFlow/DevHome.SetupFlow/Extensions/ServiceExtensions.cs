@@ -48,10 +48,8 @@ public static class ServiceExtensions
         // View models
         services.AddTransient<ShimmerSearchViewModel>();
         services.AddTransient<SearchViewModel>();
-        services.AddTransient<PackageViewModel>();
         services.AddTransient<PackageCatalogListViewModel>();
         services.AddTransient<AppManagementViewModel>();
-        services.AddTransient<PackageCatalogViewModel>();
         services.AddTransient<AppManagementReviewViewModel>();
 
         // Services
@@ -60,7 +58,7 @@ public static class ServiceExtensions
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();
-        services.AddSingleton<CatalogDataSourceLoacder>();
+        services.AddSingleton<CatalogDataSourceLoader>();
         services.AddSingleton<IAppManagementInitializer, AppManagementInitializer>();
 
         services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
@@ -70,6 +68,7 @@ public static class ServiceExtensions
             var dataSourceFullPath = Path.Combine(AppContext.BaseDirectory, dataSourcePath);
             return ActivatorUtilities.CreateInstance<WinGetPackageJsonDataSource>(sp, dataSourceFullPath);
         });
+        services.AddSingleton<WinGetPackageDataSource, WinGetFeaturedApplicationsDataSource>();
 
         // DI factory pattern for creating instances with certain parameters
         // determined at runtime
@@ -95,7 +94,9 @@ public static class ServiceExtensions
     {
         // View models
         services.AddTransient<DevDriveViewModel>();
-        services.AddTransient<DevDriveReviewViewModel>();
+
+        // TODO https://github.com/microsoft/devhome/issues/631
+        // services.AddTransient<DevDriveReviewViewModel>();
 
         // Services
         services.AddTransient<DevDriveTaskGroup>();
@@ -122,10 +123,9 @@ public static class ServiceExtensions
 
     private static IServiceCollection AddRepoConfig(this IServiceCollection services)
     {
-        // View models
-        services.AddTransient<AddRepoViewModel>();
-        services.AddTransient<RepoConfigViewModel>();
-        services.AddTransient<RepoConfigReviewViewModel>();
+        // TODO https://github.com/microsoft/devhome/issues/631
+        // services.AddTransient<RepoConfigViewModel>();
+        // services.AddTransient<RepoConfigReviewViewModel>();
 
         // Services
         services.AddTransient<RepoConfigTaskGroup>();

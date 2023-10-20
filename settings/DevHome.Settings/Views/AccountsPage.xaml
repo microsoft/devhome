@@ -4,13 +4,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:viewmodels="using:DevHome.Settings.ViewModels"
     xmlns:models="using:DevHome.Settings.Models"
-    xmlns:labs="using:CommunityToolkit.Labs.WinUI"
+    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>
+        <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Collapsed" TrueValue="Visible"/>
+
         <DataTemplate x:Key="AccountsProviderButtonTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
             <StackPanel>
                 <Button Content="{x:Bind ProviderName}" HorizontalAlignment="Stretch" Click="AddDeveloperId_Click" Tag="{x:Bind}" />
@@ -18,7 +21,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="AccountsProviderViewTemplate" x:DataType="viewmodels:AccountsProviderViewModel">
-            <StackPanel>
+            <StackPanel Visibility="{x:Bind LoggedInAccounts.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}">
                 <TextBlock Text="{x:Bind ProviderName}" Style="{ThemeResource SettingsSectionHeaderTextBlockStyle}"/>
                 <ItemsRepeater ItemsSource="{x:Bind LoggedInAccounts}" ItemTemplate="{StaticResource AccountsViewTemplate}"
                                     HorizontalAlignment="Stretch" VerticalAlignment="Center" Visibility="Visible" />
@@ -26,9 +29,9 @@
         </DataTemplate>
 
         <DataTemplate x:Key="AccountsViewTemplate" x:DataType="models:Account">
-            <labs:SettingsCard Header="{x:Bind LoginId}" Margin="{StaticResource SettingsCardMargin}">
+            <ctControls:SettingsCard Header="{x:Bind LoginId}" Margin="{StaticResource SettingsCardMargin}">
                 <Button Tag="{x:Bind}" x:Uid="Settings_Accounts_LogoutButton" Click="Logout_Click"/>
-            </labs:SettingsCard>
+            </ctControls:SettingsCard>
         </DataTemplate>
     </Page.Resources>
 
@@ -48,10 +51,10 @@
 
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
             <StackPanel>
-                <labs:SettingsCard x:Uid="Settings_Accounts_AddAccount">
-                    <labs:SettingsCard.HeaderIcon>
+                <ctControls:SettingsCard x:Uid="Settings_Accounts_AddAccount">
+                    <ctControls:SettingsCard.HeaderIcon>
                         <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xe8fa;"/>
-                    </labs:SettingsCard.HeaderIcon>
+                    </ctControls:SettingsCard.HeaderIcon>
                     <Button x:Uid="Settings_Accounts_AddAccountButton" HorizontalAlignment="Right" Click="AddAccountButton_Click">
                         <Button.Resources>
                             <Flyout x:Name="AccountsProvidersFlyout" Placement="Bottom">
@@ -69,7 +72,7 @@
                             </Flyout>
                         </Button.Resources>
                     </Button>
-                </labs:SettingsCard>
+                </ctControls:SettingsCard>
                 
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.AccountsProviders}"
                                ItemTemplate="{StaticResource AccountsProviderViewTemplate}"

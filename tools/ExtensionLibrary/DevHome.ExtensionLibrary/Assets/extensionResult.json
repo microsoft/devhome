@@ -1,0 +1,35 @@
+{
+  "ProductIds": ["9NZCC27PR6N6", "9N8MHTPHNGVV"],
+  "Products":
+  [
+    {
+      "LocalizedProperties":
+	  [
+        {
+          "PublisherName": "Microsoft Corporation",
+          "ProductTitle": "Dev Home GitHub Extension (Preview)"
+        }
+      ],
+      "ProductId": "9NZCC27PR6N6",
+      "Properties":
+	  {
+        "PackageFamilyName": "Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe"
+      }
+    },
+    {
+      "LocalizedProperties": 
+	  [
+        {
+          "PublisherName": "Microsoft Corporation",
+          "ProductTitle": "Dev Home (Preview)"
+		}
+      ],
+      "ProductId": "9N8MHTPHNGVV",
+      "Properties":
+	  {
+        "PackageFamilyName": "Microsoft.Windows.DevHome_8wekyb3d8bbwe"
+      }
+    }
+  ],
+  "TotalResultCount": 2
+}

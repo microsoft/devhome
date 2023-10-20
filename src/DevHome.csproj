@@ -21,19 +21,26 @@
         <BuildRing Condition="'$(BuildRing)'==''">Dev</BuildRing>
         <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
     </PropertyGroup>
+    <ItemGroup>
+      <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
+      <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
+      <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
+      <None Remove="Assets\WhatsNewPage\LightTheme\ExtensionsBig.png" />
+      <None Remove="Styles\WindowTitleBar_ThemeResources.xaml" />
+    </ItemGroup>
 
     <ItemGroup>
         <Manifest Include="$(ApplicationManifest)" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Labs.WinUI.SettingsControls" Version="0.0.14" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
         <PackageReference Include="Microsoft.Management.Infrastructure" Version="2.0.0" />
         <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.188-beta">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
         <PackageReference Include="WinUIEx" Version="1.8.0" />
         <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
             <ExcludeAssets>contentFiles</ExcludeAssets>
@@ -45,15 +52,20 @@
         <ProjectReference Include="..\CoreWidgetProvider\CoreWidgetProvider.csproj" />
         <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
         <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
+        <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
         <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
+        <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
     </ItemGroup>
     <ItemGroup>
         <None Update="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Update="navConfig.json">
+        <None Update="NavConfig.jsonc">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <Page Update="Styles\WindowTitleBar_ThemeResources.xaml">
+          <Generator>MSBuild:Compile</Generator>
+        </Page>
         <Page Update="Styles\BreadcrumbBar.xaml">
           <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
         </Page>

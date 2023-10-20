@@ -11,17 +11,19 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public class DeveloperId : IDeveloperId
 {
-    private readonly string _loginId;
+    public string LoginId
+    {
+        get;
+    }
 
-    private readonly string _url;
-
-    public string LoginId() => _loginId;
-
-    public string Url() => _url;
+    public string Url
+    {
+        get;
+    }
 
     public DeveloperId(string loginId, string url)
     {
-        _loginId = loginId;
-        _url = url;
+        LoginId = loginId;
+        Url = url;
     }
 }

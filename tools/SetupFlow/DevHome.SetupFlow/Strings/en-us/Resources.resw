@@ -121,6 +121,18 @@
     <value>Add all</value>
     <comment>Label for adding all items for selection</comment>
   </data>
+  <data name="AddAllApplications" xml:space="preserve">
+    <value>Added all applications</value>
+    <comment>Text announced by screen readers when the 'Add all' button is invoked. The 'Add all' button allows users to add all applications to their cart</comment>
+  </data>
+  <data name="AddApplication" xml:space="preserve">
+    <value>Add</value>
+    <comment>Text announced when screen readers focus on the 'Add' button. The 'Add' button allows users to add an application to their cart</comment>
+  </data>
+  <data name="AddedApplication" xml:space="preserve">
+    <value>Added {0}</value>
+    <comment>{Locked="{0}"}Text announced when a button for adding an application is invoked. {0} is replaced by the application name.</comment>
+  </data>
   <data name="AddPackagesDescription.Text" xml:space="preserve">
     <value>Select packages to restore from your backup, clone from repository, or search with Windows Package Manager.</value>
     <comment>Description for Add packages page</comment>
@@ -221,9 +233,21 @@
     <value>Configuration successfully applied</value>
     <comment>Message displayed when applying a configuration unit succeeds.</comment>
   </data>
-  <data name="ConfigurationUnitSummary" xml:space="preserve">
+  <data name="ConfigurationUnitSummaryFull" xml:space="preserve">
+    <value>{0} : {3} [{1} {2}]</value>
+    <comment>{Locked="{0}","{1}","{2}","{3}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit id. {3} is replaced by the configuration unit description. A string with all values replaced could look like "Apply : Install VS [WinGetPackage vspackage]"</comment>
+  </data>
+  <data name="ConfigurationUnitSummaryMinimal" xml:space="preserve">
     <value>{0} : {1}</value>
-    <comment>{Locked="{0}","{1}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name.</comment>
+    <comment>{Locked="{0}","{1}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. A string with all values replaced could look like "Apply : WinGetPackage"</comment>
+  </data>
+  <data name="ConfigurationUnitSummaryNoDescription" xml:space="preserve">
+    <value>{0} : {1} [{2}]</value>
+    <comment>{Locked="{0}","{1}","{2}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit id. A string with all values replaced could look like "Apply : WinGetPackage [vspackage]"</comment>
+  </data>
+  <data name="ConfigurationUnitSummaryNoId" xml:space="preserve">
+    <value>{0} : {2} [{1}]</value>
+    <comment>{Locked="{0}","{1}","{2}"}Summary text for a configuration unit. {0} is replaced by the configuration unit intent (e.g. Assert, Inform, Apply). {1} is replaced by the configuration unit name. {2} is replaced by the configuration unit description. A string with all values replaced could look like "Apply : Install VS [WinGetPackage]"</comment>
   </data>
   <data name="ConfigurationUnitStats" xml:space="preserve">
     <value>Succeeded: {0} | Failed: {1} | Skipped: {2}</value>
@@ -525,6 +549,14 @@
     <value>Check the spelling or try new keywords.</value>
     <comment>Text displayed when no search results were found</comment>
   </data>
+  <data name="RemoveApplication" xml:space="preserve">
+    <value>Remove</value>
+    <comment>Text announced when screen readers focus on the 'Remove' button. The 'Remove' button allows users to remove an application from their cart</comment>
+  </data>
+  <data name="RemovedApplication" xml:space="preserve">
+    <value>Removed {0}</value>
+    <comment>{Locked="{0}"}Text announced when a button for removing an application is invoked. {0} is replaced by the application name.</comment>
+  </data>
   <data name="ResultCount" xml:space="preserve">
     <value>{0} Result(s)</value>
     <comment>{Locked="{0}"} Label for a search result counter. {0} is replaced by the number of result items.</comment>
@@ -773,16 +805,8 @@
     <value>Save</value>
     <comment>Content for the primary button in the edit clone path dialog.</comment>
   </data>
-  <data name="LoadingPage_HeaderBottomRow.Text" xml:space="preserve">
-    <value>Stay tuned for the magic...</value>
-    <comment>Bottom row of the header for the loading page.</comment>
-  </data>
-  <data name="LoadingPage_HeaderTopRow.Text" xml:space="preserve">
-    <value>Setup initiated</value>
-    <comment>Top row of the header for the loading page</comment>
-  </data>
   <data name="LoadingExecutingProgress" xml:space="preserve">
-    <value>Executing task {0}/{1}</value>
+    <value>Executing step {0}/{1}</value>
     <comment>Shows ot the user how many tasks have been completed</comment>
   </data>
   <data name="Loading_StopButton.Content" xml:space="preserve">
@@ -961,7 +985,7 @@
     <comment>Hyper link button content to allow users to retry all failed tasks</comment>
   </data>
   <data name="LoadingPage_Header.Text" xml:space="preserve">
-    <value>Hold on while we set things up</value>
+    <value>Setup initiated, stay tuned for the magic...</value>
     <comment>Header for the loading screen</comment>
   </data>
   <data name="LoadingPage_Tasks.Text" xml:space="preserve">
@@ -1019,6 +1043,14 @@
   <data name="SummaryPage_Summary.Text" xml:space="preserve">
     <value>Summary</value>
     <comment>Title for a section in the summary page</comment>
+  </data>
+  <data name="SummaryPage_ViewAll.Content" xml:space="preserve">
+    <value>View all</value>
+    <comment>Hyperlink button text for revealing the remainder of a trimmed message</comment>
+  </data>
+  <data name="InstallationNotesTitle" xml:space="preserve">
+    <value>{0} Installation Notes</value>
+    <comment>{Locked="{0}"} Title for a window displaying installation notes for an application. {0} is replaced by the application name.</comment>
   </data>
   <data name="DevDriveErrorWithReason" xml:space="preserve">
     <value>Dev Drive couldn't be created error: {0}</value>
@@ -1152,8 +1184,8 @@
     <comment>Error string to show the user if the drive they want to clone to does not exist.  Should be used if not making a devdrive</comment>
   </data>
   <data name="CloneRepoErrorForActionCenter" xml:space="preserve">
-    <value>Couldn't clone {0} 0x{1}</value>
-    <comment>{Locked="{0}","{1}"}Action center message to give the hresult as to why the repo could not be cloned {0}: name of repo {1}:Hresult as a hex</comment>
+    <value>Couldn't clone {0} because {1}</value>
+    <comment>{Locked="{0}","{1}"}Action center message to give the hresult as to why the repo could not be cloned {0}: name of repo {1}: hresult as a hex</comment>
   </data>
   <data name="ClonePathForTextBlock.Text" xml:space="preserve">
     <value>Path</value>
@@ -1202,5 +1234,13 @@
   <data name="StartingInstallPackageMessage" xml:space="preserve">
     <value>Starting to install package {0}</value>
     <comment>{Locked="{0}"} String letting users know that DevHome has started to install a package. {0} is the package id</comment>
+  </data>
+  <data name="UrlCancelButtonText" xml:space="preserve">
+    <value>Press the X button to cancel.</value>
+    <comment>String directing users to use the x button on the dialog to cancel the log-in process.</comment>
+  </data>
+  <data name="UrlNoAccountsHaveAccess" xml:space="preserve">
+    <value>No accounts have access to this repository.</value>
+    <comment>Error string letting users no that no accounts in an extension have access to the repository.</comment>
   </data>
 </root>

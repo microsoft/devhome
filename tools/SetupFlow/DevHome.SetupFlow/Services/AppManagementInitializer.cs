@@ -8,11 +8,11 @@ namespace DevHome.SetupFlow.Services;
 public class AppManagementInitializer : IAppManagementInitializer
 {
     private readonly IWindowsPackageManager _wpm;
-    private readonly CatalogDataSourceLoacder _catalogDataSourceLoader;
+    private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
 
     public AppManagementInitializer(
         IWindowsPackageManager wpm,
-        CatalogDataSourceLoacder catalogDataSourceLoader)
+        CatalogDataSourceLoader catalogDataSourceLoader)
     {
         _wpm = wpm;
         _catalogDataSourceLoader = catalogDataSourceLoader;
@@ -46,7 +46,7 @@ public class AppManagementInitializer : IAppManagementInitializer
     /// </summary>
     private async Task LoadCatalogsAsync()
     {
-        Log.Logger?.ReportInfo($"Loading catalogs from all data sources at app launch time to reduce the wait time when this information is requested");
+        Log.Logger?.ReportInfo($"Loading catalogs from all data sources at launch time to reduce the wait time when this information is requested");
         await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
         {
             Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
@@ -67,7 +67,7 @@ public class AppManagementInitializer : IAppManagementInitializer
             return true;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "WinGet COM Server is not availbale. AppInstaller might be staged but not registered, attempting to register it to fix the issue");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, "WinGet COM Server is not available. AppInstaller might be staged but not registered, attempting to register it to fix the issue");
         if (await _wpm.RegisterAppInstallerAsync())
         {
             if (await _wpm.IsCOMServerAvailableAsync())

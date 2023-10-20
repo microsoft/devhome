@@ -17,7 +17,7 @@ internal class ChartHelper
         Net,
     }
 
-    public const int ChartHeight = 102;
+    public const int ChartHeight = 86;
     public const int ChartWidth = 264;
 
     private const string LightGrayBoxStyle = "fill:none;stroke:lightgrey;stroke-width:1";
@@ -60,8 +60,6 @@ internal class ChartHelper
     private const string IdAttr = "id";
 
     private const int MaxChartValues = 30;
-
-    private static readonly object _lock = new ();
 
     public static string CreateImageUrl(List<float> chartValues, ChartType type)
     {
@@ -112,7 +110,7 @@ internal class ChartHelper
 
         var chartDoc = new XDocument();
 
-        lock (_lock)
+        lock (chartValues)
         {
             var svgElement = CreateBlankSvg(ChartHeight, ChartWidth);
 
@@ -240,7 +238,13 @@ internal class ChartHelper
         finalX = startX;
         foreach (var origY in chartValues)
         {
-            var finalY = ChartHeight - 1 - origY;
+            // We receive the height as a number up from the X axis (bottom of the chart), but we have to invert it
+            // since the Y coordinate is relative to the top of the chart.
+            var invertedHeight = 100 - origY;
+
+            // Scale the final Y to whatever the chart height is.
+            var finalY = (invertedHeight * (ChartHeight / 100.0)) - 1;
+
             points.Append(CultureInfo.InvariantCulture, $"{finalX},{finalY} ");
             finalX += pxBetweenPoints;
         }

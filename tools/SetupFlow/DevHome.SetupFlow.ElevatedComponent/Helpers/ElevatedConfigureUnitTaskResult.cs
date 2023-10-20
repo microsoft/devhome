@@ -10,6 +10,10 @@ public sealed class ElevatedConfigureUnitTaskResult
 {
     public string? UnitName { get; set; }
 
+    public string? Id { get; set; }
+
+    public string? Description { get; set; }
+
     public string? Intent { get; set; }
 
     public bool IsSkipped { get; set; }

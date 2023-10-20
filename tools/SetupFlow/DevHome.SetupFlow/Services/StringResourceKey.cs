@@ -11,6 +11,9 @@ namespace DevHome.SetupFlow.Services;
 public static class StringResourceKey
 {
     // Keys in this file should be a subset of the ones found in the .resw file.
+    public static readonly string AddAllApplications = nameof(AddAllApplications);
+    public static readonly string AddApplication = nameof(AddApplication);
+    public static readonly string AddedApplication = nameof(AddedApplication);
     public static readonly string ApplicationsAddedPlural = nameof(ApplicationsAddedPlural);
     public static readonly string ApplicationsAddedSingular = nameof(ApplicationsAddedSingular);
     public static readonly string Applications = nameof(Applications);
@@ -29,7 +32,10 @@ public static class StringResourceKey
     public static readonly string ConfigurationUnitFailed = nameof(ConfigurationUnitFailed);
     public static readonly string ConfigurationUnitSkipped = nameof(ConfigurationUnitSkipped);
     public static readonly string ConfigurationUnitSuccess = nameof(ConfigurationUnitSuccess);
-    public static readonly string ConfigurationUnitSummary = nameof(ConfigurationUnitSummary);
+    public static readonly string ConfigurationUnitSummaryFull = nameof(ConfigurationUnitSummaryFull);
+    public static readonly string ConfigurationUnitSummaryMinimal = nameof(ConfigurationUnitSummaryMinimal);
+    public static readonly string ConfigurationUnitSummaryNoDescription = nameof(ConfigurationUnitSummaryNoDescription);
+    public static readonly string ConfigurationUnitSummaryNoId = nameof(ConfigurationUnitSummaryNoId);
     public static readonly string ConfigurationUnitStats = nameof(ConfigurationUnitStats);
     public static readonly string ConfigurationViewTitle = nameof(ConfigurationViewTitle);
     public static readonly string DevDriveReviewTitle = nameof(DevDriveReviewTitle);
@@ -55,6 +61,7 @@ public static class StringResourceKey
     public static readonly string InstalledPackage = nameof(InstalledPackage);
     public static readonly string InstalledPackageReboot = nameof(InstalledPackageReboot);
     public static readonly string InstallingPackage = nameof(InstallingPackage);
+    public static readonly string InstallationNotesTitle = nameof(InstallationNotesTitle);
     public static readonly string Next = nameof(Next);
     public static readonly string NoSearchResultsFoundTitle = nameof(NoSearchResultsFoundTitle);
     public static readonly string PackagesCount = nameof(PackagesCount);
@@ -66,6 +73,8 @@ public static class StringResourceKey
     public static readonly string PackageSourceTooltip = nameof(PackageSourceTooltip);
     public static readonly string PackageVersionTooltip = nameof(PackageVersionTooltip);
     public static readonly string PathWithColon = nameof(PathWithColon);
+    public static readonly string RemoveApplication = nameof(RemoveApplication);
+    public static readonly string RemovedApplication = nameof(RemovedApplication);
     public static readonly string ResultCount = nameof(ResultCount);
     public static readonly string RestorePackagesTitle = nameof(RestorePackagesTitle);
     public static readonly string RestorePackagesDescription = nameof(RestorePackagesDescription);
@@ -134,6 +143,8 @@ public static class StringResourceKey
     public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);
     public static readonly string UrlValidationNotFound = nameof(UrlValidationNotFound);
     public static readonly string UrlValidationRepoAlreadyAdded = nameof(UrlValidationRepoAlreadyAdded);
+    public static readonly string UrlNoAccountsHaveAccess = nameof(UrlNoAccountsHaveAccess);
+    public static readonly string UrlCancelButtonText = nameof(UrlCancelButtonText);
 
     // Install errors
     public static readonly string InstallPackageError = nameof(InstallPackageError);

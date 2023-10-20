@@ -3,19 +3,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration.Provider;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
-using Windows.Security.Authentication.Identity.Provider;
+using Microsoft.Windows.DevHome.SDK;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.Views;
@@ -23,9 +24,11 @@ namespace DevHome.SetupFlow.Views;
 /// <summary>
 /// Dialog to allow users to select repositories they want to clone.
 /// </summary>
-internal partial class AddRepoDialog
+internal partial class AddRepoDialog : ContentDialog
 {
     private readonly string _defaultClonePath;
+
+    private readonly IHost _host;
 
     private readonly List<CloningInformation> _previouslySelectedRepos = new ();
 
@@ -58,11 +61,16 @@ internal partial class AddRepoDialog
     /// </summary>
     private string _oldCloneLocation;
 
-    public AddRepoDialog(IDevDriveManager devDriveManager, ISetupFlowStringResource stringResource, List<CloningInformation> previouslySelectedRepos)
+    public AddRepoDialog(
+        IDevDriveManager devDriveManager,
+        ISetupFlowStringResource stringResource,
+        List<CloningInformation> previouslySelectedRepos,
+        Guid activityId,
+        IHost host)
     {
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
 
@@ -78,17 +86,48 @@ internal partial class AddRepoDialog
 
         // Changing view to account so the selection changed event for Segment correctly shows URL.
         AddRepoViewModel.CurrentPage = PageKind.AddViaAccount;
-        IsPrimaryButtonEnabled = false;
+        AddRepoViewModel.ShouldEnablePrimaryButton = false;
         AddViaUrlSegmentedItem.IsSelected = true;
         SwitchViewsSegmentedView.SelectedIndex = 1;
+        _host = host;
     }
 
     /// <summary>
-    /// Gets all plugins that have a provider type of repository and developerId.
+    /// Gets all extensions that have a provider type of repository and developerId.
     /// </summary>
-    public async Task GetPluginsAsync()
+    public async Task GetExtensionsAsync()
     {
-        await Task.Run(() => AddRepoViewModel.GetPlugins());
+        await Task.Run(() => AddRepoViewModel.GetExtensions());
+    }
+
+    /// <summary>
+    /// Sets the event handler on all providers to listen when the user has logged in.
+    /// </summary>
+    public void SetDeveloperIdChangedEvents()
+    {
+        AddRepoViewModel.SetChangedEvents(DeveloperIdChangedEventHandler);
+    }
+
+    /// <summary>
+    /// Changes the flag that indicates if the user is logging in to false to indicate the user is done logging in.
+    /// </summary>
+    /// <param name="sender">The object that raised this event, should only be IDeveloperId</param>
+    /// <param name="developerId">The developer the log in action is applied to.</param>
+    public void DeveloperIdChangedEventHandler(object sender, IDeveloperId developerId)
+    {
+        if (sender is IDeveloperIdProvider devIdProvider)
+        {
+            var authenticationState = devIdProvider.GetDeveloperIdState(developerId);
+
+            if (authenticationState == AuthenticationState.LoggedIn)
+            {
+                // AddRepoViewModel uses this to wait for the user to log in before continuing.
+                AddRepoViewModel.IsLoggingIn = false;
+            }
+
+            // Remove the handler so multiple hooks aren't attached.
+            devIdProvider.Changed -= DeveloperIdChangedEventHandler;
+        }
     }
 
     /// <summary>
@@ -111,7 +150,6 @@ internal partial class AddRepoDialog
 
     private void ChangeToAccountPage()
     {
-        SwitchViewsSegmentedView.IsEnabled = false;
         AddRepoViewModel.ChangeToAccountPage();
         FolderPickerViewModel.CloseFolderPicker();
         EditDevDriveViewModel.HideDevDriveUI();
@@ -150,12 +188,12 @@ internal partial class AddRepoDialog
         if (!string.IsNullOrEmpty(repositoryProviderName))
         {
             PrimaryButtonStyle = AddRepoStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
-            IsPrimaryButtonEnabled = true;
+            AddRepoViewModel.ShouldEnablePrimaryButton = true;
         }
         else
         {
             PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-            IsPrimaryButtonEnabled = false;
+            AddRepoViewModel.ShouldEnablePrimaryButton = false;
         }
     }
 
@@ -262,18 +300,77 @@ internal partial class AddRepoDialog
     }
 
     /// <summary>
-    /// Adds the repository from the URL screen to the list of repos to be cloned.
+    /// The primary button has different behavior based on the screen the user is currently in.
     /// </summary>
-    private void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+    private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
         {
-            AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation);
+            // If the user is logging in, the close button text will change.
+            // Keep a copy of the original to revert when this button click is done.
+            var originalCloseButtonText = AddRepoContentDialog.CloseButtonText;
+
+            // Try to pair a provider with the repo to clone.
+            // If the repo is private or does not exist the user will be asked to log in.
+            AddRepoViewModel.ShouldShowLoginUi = true;
+            AddRepoViewModel.ShouldShowXButtonInLoginUi = true;
+
+            // Get the number of repos already selected to clone in a previous instance.
+            // Used to figure out if the repo was added after the user logged into an account.
+            var numberOfReposToCloneCount = AddRepoViewModel.EverythingToClone.Count;
+            AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation, LoginUIContent);
+
+            // On the first run, ignore any warnings.
+            // If this is set to visible and the user needs to log in they'll see an error message after the log-in
+            // prompt exits even if they logged in successfully.
+            AddRepoViewModel.ShouldShowUrlError = Visibility.Collapsed;
+
+            // Get deferral to prevent the dialog from closing when awaiting operations.
+            var deferral = args.GetDeferral();
+
+            // Two click events can not be processed at the same time.
+            // UI will not respond to the close button when inside this method.
+            // Change the text of the close button to notify users of the X button in the upper-right corner of the log-in ui.
+            if (AddRepoViewModel.IsLoggingIn)
+            {
+                AddRepoContentDialog.CloseButtonText = _host.GetService<ISetupFlowStringResource>().GetLocalized(StringResourceKey.UrlCancelButtonText);
+            }
+
+            // Wait roughly 30 seconds for the user to log in.
+            var maxIterationsToWait = 30;
+            var currentIteration = 0;
+            var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
+            while ((AddRepoViewModel.IsLoggingIn && !AddRepoViewModel.IsCancelling) && currentIteration++ <= maxIterationsToWait)
+            {
+                await Task.Delay(waitDelay);
+            }
+
+            deferral.Complete();
+            AddRepoViewModel.ShouldShowLoginUi = false;
+            AddRepoViewModel.ShouldShowXButtonInLoginUi = false;
+
+            // User cancelled the login prompt.  Don't re-check repo access.
+            if (AddRepoViewModel.IsCancelling)
+            {
+                return;
+            }
+
+            // If the repo was rejected and the user needed to sign in, no repos would've been added
+            // and the number of repos to clone will not be changed.
+            if (numberOfReposToCloneCount == AddRepoViewModel.EverythingToClone.Count)
+            {
+                AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation, LoginUIContent);
+                AddRepoViewModel.ShouldShowUrlError = Visibility.Collapsed;
+            }
+
             if (AddRepoViewModel.ShouldShowUrlError == Visibility.Visible)
             {
-                IsPrimaryButtonEnabled = false;
+                AddRepoViewModel.ShouldEnablePrimaryButton = false;
                 args.Cancel = true;
             }
+
+            // Revert the close button text.
+            AddRepoContentDialog.CloseButtonText = originalCloseButtonText;
         }
         else if (AddRepoViewModel.CurrentPage == PageKind.AddViaAccount)
         {
@@ -288,19 +385,15 @@ internal partial class AddRepoDialog
 
     private async void SwitchToRepoPage(string repositoryProviderName)
     {
-        var getAccountsTask = AddRepoViewModel.GetAccountsAsync(repositoryProviderName);
-        AddRepoViewModel.ChangeToRepoPage();
-        FolderPickerViewModel.ShowFolderPicker();
-        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-
-        await getAccountsTask;
+        await AddRepoViewModel.GetAccountsAsync(repositoryProviderName, LoginUIContent);
         if (AddRepoViewModel.Accounts.Any())
         {
+            AddRepoViewModel.ChangeToRepoPage();
+            FolderPickerViewModel.ShowFolderPicker();
+            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
             AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+            AddRepoViewModel.ShouldEnablePrimaryButton = false;
         }
-
-        PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-        IsPrimaryButtonEnabled = false;
     }
 
     /// <summary>
@@ -347,14 +440,7 @@ internal partial class AddRepoDialog
             isEverythingGood &= EditDevDriveViewModel.IsDevDriveValid();
         }
 
-        if (isEverythingGood)
-        {
-            IsPrimaryButtonEnabled = true;
-        }
-        else
-        {
-            IsPrimaryButtonEnabled = false;
-        }
+        AddRepoViewModel.ShouldEnablePrimaryButton = isEverythingGood;
 
         // Fill in EverythingToClone with the location
         if (isEverythingGood)

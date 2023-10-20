@@ -6,6 +6,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Models;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
@@ -21,6 +22,7 @@ public sealed partial class WhatsNewPage : Page
     private readonly Uri _devDrivePageKeyUri = new ("ms-settings:disksandvolumes");
     private readonly Uri _devDriveLearnMoreLinkUri = new ("https://go.microsoft.com/fwlink/?linkid=2236041");
     private const string _devDriveLinkResourceKey = "WhatsNewPage_DevDriveCard/Link";
+    private const string _accountsPageNavigationLink = "DevHome.Settings.ViewModels.AccountsViewModel";
 
     public WhatsNewViewModel ViewModel
     {
@@ -61,6 +63,25 @@ public sealed partial class WhatsNewPage : Page
 
             ViewModel.AddCard(card);
         }
+
+        var whatsNewBigCards = BigFeaturesContainer.Resources
+            .Where((item) => item.Value.GetType() == typeof(WhatsNewCard))
+            .Select(card => card.Value as WhatsNewCard)
+            .OrderBy(card => card?.Priority ?? 0);
+
+        foreach (var card in whatsNewBigCards)
+        {
+            if (card is null)
+            {
+                continue;
+            }
+
+            ViewModel.AddBigCard(card);
+        }
+
+        ViewModel.NumberOfBigCards = whatsNewBigCards.Count();
+
+        MoveBigCardsIfNeeded(this.ActualWidth);
     }
 
     private void MachineConfigButton_Click(object sender, RoutedEventArgs e)
@@ -91,8 +112,36 @@ public sealed partial class WhatsNewPage : Page
         }
         else
         {
+            if (pageKey.Equals(_accountsPageNavigationLink, StringComparison.OrdinalIgnoreCase))
+            {
+                TelemetryFactory.Get<ITelemetry>().Log(
+                                                        "EntryPoint_DevId_Event",
+                                                        LogLevel.Critical,
+                                                        new EntryPointEvent(EntryPointEvent.EntryPoint.WhatsNewPage));
+            }
+
             var navigationService = Application.Current.GetService<INavigationService>();
             navigationService.NavigateTo(pageKey!);
+        }
+    }
+
+    public void OnSizeChanged(object sender, SizeChangedEventArgs args)
+    {
+        if ((Page)sender == this)
+        {
+            MoveBigCardsIfNeeded(args.NewSize.Width);
+        }
+    }
+
+    private void MoveBigCardsIfNeeded(double newWidth)
+    {
+        if (newWidth < 786)
+        {
+            ViewModel.SwitchToSmallerView();
+        }
+        else
+        {
+            ViewModel.SwitchToLargerView();
         }
     }
 

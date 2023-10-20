@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using CommunityToolkit.WinUI;
+using System.Web.Services.Description;
 using DevHome.Activation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Contracts.Services;
@@ -9,6 +10,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
 using DevHome.Services;
 using DevHome.Settings.Extensions;
@@ -25,7 +27,6 @@ using Microsoft.Windows.AppLifecycle;
 
 namespace DevHome;
 
-// To learn more about WinUI 3, see https://docs.microsoft.com/windows/apps/winui/winui3/.
 public partial class App : Application, IApp
 {
     private readonly DispatcherQueue _dispatcherQueue;
@@ -45,7 +46,27 @@ public partial class App : Application, IApp
 
     public static WindowEx MainWindow { get; } = new MainWindow();
 
-    internal static NavConfig NavConfig { get; } = System.Text.Json.JsonSerializer.Deserialize(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "navConfig.json")), SourceGenerationContext.Default.NavConfig)!;
+    private static string RemoveComments(string text)
+    {
+        var start = text.IndexOf("/*", StringComparison.Ordinal);
+        while (start >= 0)
+        {
+            var end = text.IndexOf("*/", start + 2, StringComparison.Ordinal);
+            if (end < 0)
+            {
+                end = text.Length;
+            }
+
+            text = text.Remove(start, end - start + 2);
+            start = text.IndexOf("/*", start, StringComparison.Ordinal);
+        }
+
+        return text;
+    }
+
+    internal static NavConfig NavConfig { get; } = System.Text.Json.JsonSerializer.Deserialize(
+        RemoveComments(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "navConfig.jsonc"))),
+        SourceGenerationContext.Default.NavConfig)!;
 
     public App()
     {
@@ -55,6 +76,10 @@ public partial class App : Application, IApp
         Host = Microsoft.Extensions.Hosting.Host.
         CreateDefaultBuilder().
         UseContentRoot(AppContext.BaseDirectory).
+        UseDefaultServiceProvider((context, options) =>
+        {
+            options.ValidateOnBuild = true;
+        }).
         ConfigureServices((context, services) =>
         {
             // Default Activation Handler
@@ -70,7 +95,7 @@ public partial class App : Application, IApp
             services.AddTransient<INavigationViewService, NavigationViewService>();
 
             services.AddSingleton<IActivationService, ActivationService>();
-            services.AddSingleton<IPluginService, PluginService>();
+            services.AddSingleton<IExtensionService, ExtensionService>();
             services.AddSingleton<IPageService, PageService>();
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IAccountsService, AccountsService>();
@@ -80,6 +105,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IStringResource, StringResource>();
             services.AddSingleton<IAppInstallManagerService, AppInstallManagerService>();
             services.AddSingleton<IPackageDeploymentService, PackageDeploymentService>();
+            services.AddSingleton<IScreenReaderService, ScreenReaderService>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
@@ -106,6 +132,9 @@ public partial class App : Application, IApp
 
             // Dashboard
             services.AddDashboard(context);
+
+            // ExtensionLibrary
+            services.AddExtensionLibrary(context);
         }).
         Build();
 
@@ -134,7 +163,7 @@ public partial class App : Application, IApp
         // TODO: Log and handle exceptions as appropriate.
         // https://docs.microsoft.com/windows/windows-app-sdk/api/winrt/microsoft.ui.xaml.application.unhandledexception.
         // https://github.com/microsoft/devhome/issues/613
-        await GetService<IPluginService>().SignalStopPluginsAsync();
+        await GetService<IExtensionService>().SignalStopExtensionsAsync();
     }
 
     protected async override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)

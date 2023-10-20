@@ -9,4 +9,6 @@ public interface IAppInfoService
     public string GetAppNameLocalized();
 
     public Version GetAppVersion();
+
+    public string IconPath { get; }
 }

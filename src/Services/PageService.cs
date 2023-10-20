@@ -2,7 +2,9 @@
 // Licensed under the MIT license.
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using DevHome.Settings;
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
 using DevHome.ViewModels;
@@ -24,6 +26,8 @@ public class PageService : IPageService
         Configure<AboutViewModel, AboutPage>();
         Configure<FeedbackViewModel, FeedbackPage>();
         Configure<WhatsNewViewModel, WhatsNewPage>();
+        Configure<ExtensionSettingsViewModel, ExtensionSettingsPage>();
+        Configure<ExperimentalFeaturesViewModel, ExperimentalFeaturesPage>();
 
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var group in App.NavConfig.NavMenu.Groups)
@@ -36,6 +40,12 @@ public class PageService : IPageService
 
                 Configure(tool.ViewModelFullName, toolType.First());
             }
+        }
+
+        var experimentalFeaturesVM = App.Current.GetService<ExperimentalFeaturesViewModel>();
+        foreach (var experimentId in App.NavConfig.ExperimentIds ?? Array.Empty<string>())
+        {
+            experimentalFeaturesVM.Features.Add(new ExperimentalFeature(experimentId));
         }
     }
 

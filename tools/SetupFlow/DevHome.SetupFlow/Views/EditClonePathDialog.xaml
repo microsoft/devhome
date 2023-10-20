@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:converters="using:CommunityToolkit.WinUI.UI.Converters"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/EditClonePathDialog"
     mc:Ignorable="d"
     IsPrimaryButtonEnabled="{x:Bind EditClonePathViewModel.IsPrimaryButtonEnabled, Mode=OneWay}"
@@ -41,7 +41,7 @@
             MinWidth="500">
             <StackPanel.Resources>
                 <ResourceDictionary>
-                    <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource DefaultButtonStyle}">
+                    <Style TargetType="Button" x:Key="ContentDialogLogInButtonStyle" BasedOn="{StaticResource AccentButtonStyle}">
                         <Setter Property="Background">
                             <Setter.Value>
                                 <SolidColorBrush Color="{ThemeResource SystemAccentColor}"/>
@@ -84,7 +84,7 @@
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" 
                     Click="ChooseCloneLocationButton_Click"  
                     Grid.Column="1" 
-                    Margin="5, 25, 0, 0"
+                    Margin="5, 27, 0, 0"
                     Padding="8 5 10 5"/>
                 </Grid>
             </Grid>

@@ -12,7 +12,7 @@ namespace DevHome.SetupFlow.ElevatedComponent.Tasks;
 
 public sealed class ElevatedConfigurationTask
 {
-    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(string filePath, string content)
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfiguration(string filePath, string content, Guid activityId)
     {
         return Task.Run(async () =>
         {
@@ -20,7 +20,7 @@ public sealed class ElevatedConfigurationTask
 
             try
             {
-                var configurationFileHelper = new ConfigurationFileHelper();
+                var configurationFileHelper = new ConfigurationFileHelper(activityId);
 
                 Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from file: {filePath}");
                 await configurationFileHelper.OpenConfigurationSetAsync(filePath, content);
@@ -32,12 +32,18 @@ public sealed class ElevatedConfigurationTask
                 taskResult.TaskAttempted = true;
                 taskResult.TaskSucceeded = result.Succeeded;
                 taskResult.RebootRequired = result.RequiresReboot;
-                taskResult.UnitResults = result.Result.UnitResults.Select(unitResult => new ElevatedConfigureUnitTaskResult
+                taskResult.UnitResults = result.Result.UnitResults.Select(unitResult =>
                 {
-                    UnitName = unitResult.Unit.UnitName,
-                    Intent = unitResult.Unit.Intent.ToString(),
-                    IsSkipped = unitResult.State == ConfigurationUnitState.Skipped,
-                    HResult = unitResult.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK,
+                    unitResult.Unit.Directives.TryGetValue("description", out var descriptionObj);
+                    return new ElevatedConfigureUnitTaskResult
+                    {
+                        UnitName = unitResult.Unit.UnitName,
+                        Id = unitResult.Unit.Identifier,
+                        Description = descriptionObj?.ToString() ?? string.Empty,
+                        Intent = unitResult.Unit.Intent.ToString(),
+                        IsSkipped = unitResult.State == ConfigurationUnitState.Skipped,
+                        HResult = unitResult.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK,
+                    };
                 }).ToList();
 
                 if (result.ResultException != null)

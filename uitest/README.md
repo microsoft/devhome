@@ -11,7 +11,7 @@
 ```
 5. From Visual Studio, navigate to the "Test Explorer" tab and locate the `DevHome.UITest` set of tests.
 6. Select a test and run it.
-    - Note: Once the test starts, avoid interacting with your machine (e.g. move mouse, use keyboard) to allow the test to navigate the Dev Home app and execute the test.
+    - Note: Once the test starts, avoid interacting with your machine (e.g. move mouse, use keyboard) to allow the test to navigate Dev Home and execute the test.
 
 ### Run tests on a different release of Dev Home (Canary, Prod, Dev)
 #### Option 1: Manually update the Test.runsettings file
@@ -28,12 +28,12 @@ Edit the `Test.runsettings` file and set the appropriate value for `AppSettingsM
       <Parameter name="AppSettingsMode" value="canary" />
   </TestRunParameters>
 ```
-### Option 2: Overwite test parameters from the command line
-Overwrite test parameters when exeucting the test from the command line
+### Option 2: Overwrite test parameters from the command line
+Overwrite test parameters when executing the test from the command line
 ```cmd
 dotnet test DevHome.UITest.csproj -- 'TestRunParameters.Parameter(name=\"AppSettingsMode\", value=\"prod\")'
 ```
-### Option 3: Overwite test parameters from the pipeline YAML file (CI)
+### Option 3: Overwrite test parameters from the pipeline YAML file (CI)
 ```yaml
   - task: VSTest@2
     displayName: Run UI Tests

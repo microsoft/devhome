@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,6 +13,7 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.SetupFlow;
+using DevHome.Contracts.Services;
 using DevHome.Dashboard.ViewModels;
 using DevHome.Settings.ViewModels;
 using DevHome.SetupFlow.Common.Helpers;
@@ -20,12 +23,18 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Storage.Pickers;
 using Windows.System;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class SummaryViewModel : SetupPageViewModelBase
 {
+    private static readonly BitmapImage DarkError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
+    private static readonly BitmapImage LightError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
+
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly SetupFlowViewModel _setupFlowViewModel;
     private readonly IHost _host;
@@ -33,10 +42,28 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
     private readonly IWindowsPackageManager _wpm;
     private readonly PackageProvider _packageProvider;
-    private readonly CatalogDataSourceLoacder _catalogDataSourceLoacder;
+    private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
+
+    [ObservableProperty]
+    private List<SummaryErrorMessageViewModel> _failedTasks = new ();
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
+
+    [RelayCommand]
+    public async Task ShowLogFiles()
+    {
+        await Task.Run(() =>
+        {
+            var folderToOpen = Log.Logger.Options.LogFileFolderPath;
+            var startInfo = new ProcessStartInfo();
+            startInfo.UseShellExecute = true;
+            startInfo.FileName = folderToOpen;
+            var explorerWindow = new Process();
+            explorerWindow.StartInfo = startInfo;
+            explorerWindow.Start();
+        });
+    }
 
     public ObservableCollection<RepoViewListItem> RepositoriesCloned
     {
@@ -67,17 +94,15 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         get
         {
             var packagesInstalled = new ObservableCollection<PackageViewModel>();
-            var packages = _packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true);
-            foreach (var package in packages)
-            {
-                packagesInstalled.Add(package);
-            }
-
+            var packages = _packageProvider.SelectedPackages.Where(sp => sp.InstallPackageTask.WasInstallSuccessful == true).ToList();
+            packages.ForEach(p => packagesInstalled.Add(p));
             var localizedHeader = (packagesInstalled.Count == 1) ? StringResourceKey.SummaryPageOneApplicationInstalled : StringResourceKey.SummaryPageAppsDownloadedCount;
             ApplicationsClonedText = StringResource.GetLocalized(localizedHeader);
             return packagesInstalled;
         }
     }
+
+    public List<PackageViewModel> AppsDownloadedInstallationNotes => AppsDownloaded.Where(p => !string.IsNullOrEmpty(p.InstallationNotes)).ToList();
 
     public IList<ConfigurationUnitResultViewModel> ConfigurationUnitResults => _configurationUnitResults.Value;
 
@@ -115,21 +140,21 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public async Task LearnMoreAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("LearnMoreAboutDevHome"));
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("LearnMoreAboutDevHome"), Orchestrator.ActivityId);
         await Launcher.LaunchUriAsync(new Uri("https://learn.microsoft.com/windows/"));
     }
 
     [RelayCommand]
     public void GoToMainPage()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("MachineConfiguration"));
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("MachineConfiguration"), Orchestrator.ActivityId);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToMainPage");
     }
 
     [RelayCommand]
     public void GoToDashboard()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("Dashboard"));
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("Dashboard"), Orchestrator.ActivityId);
         _host.GetService<INavigationService>().NavigateTo(typeof(DashboardViewModel).FullName);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToDashboard");
     }
@@ -137,7 +162,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void GoToDevHomeSettings()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("DevHomeSettings"));
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("DevHomeSettings"), Orchestrator.ActivityId);
         _host.GetService<INavigationService>().NavigateTo(typeof(SettingsViewModel).FullName);
         _setupFlowViewModel.TerminateCurrentFlow("Summary_GoToSettings");
     }
@@ -145,7 +170,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     [RelayCommand]
     public void GoToForDevelopersSettingsPage()
     {
-        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("WindowsDeveloperSettings"));
+        TelemetryFactory.Get<ITelemetry>().Log("Summary_NavigateTo_Event", LogLevel.Critical, new NavigateFromSummaryEvent("WindowsDeveloperSettings"), Orchestrator.ActivityId);
         Task.Run(() => Launcher.LaunchUriAsync(new Uri("ms-settings:developers"))).Wait();
     }
 
@@ -157,7 +182,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory,
         IWindowsPackageManager wpm,
         PackageProvider packageProvider,
-        CatalogDataSourceLoacder catalogDataSourceLoader)
+        CatalogDataSourceLoader catalogDataSourceLoader)
         : base(stringResource, orchestrator)
     {
         _orchestrator = orchestrator;
@@ -166,7 +191,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
         _wpm = wpm;
         _packageProvider = packageProvider;
-        _catalogDataSourceLoacder = catalogDataSourceLoader;
+        _catalogDataSourceLoader = catalogDataSourceLoader;
         _configurationUnitResults = new (GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
 
@@ -176,7 +201,36 @@ public partial class SummaryViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        TelemetryFactory.Get<ITelemetry>().LogCritical("Summary_NavigatedTo_Event");
+        IList<TaskInformation> failedTasks = new List<TaskInformation>();
+
+        // Find the loading view model.
+        foreach (var flowPage in _orchestrator.FlowPages)
+        {
+            if (flowPage is LoadingViewModel loadingViewModel)
+            {
+                failedTasks = loadingViewModel.FailedTasks;
+            }
+        }
+
+        BitmapImage statusSymbol;
+        if (_host.GetService<IThemeSelectorService>().Theme == ElementTheme.Dark)
+        {
+            statusSymbol = DarkError;
+        }
+        else
+        {
+            statusSymbol = LightError;
+        }
+
+        foreach (var failedTask in failedTasks)
+        {
+            var summaryMessageViewModel = new SummaryErrorMessageViewModel();
+            summaryMessageViewModel.MessageToShow = failedTask.MessageToShow;
+            summaryMessageViewModel.StatusSymbolIcon = statusSymbol;
+            FailedTasks.Add(summaryMessageViewModel);
+        }
+
+        TelemetryFactory.Get<ITelemetry>().LogCritical("Summary_NavigatedTo_Event", false, Orchestrator.ActivityId);
         _orchestrator.ReleaseRemoteOperationObject();
         await ReloadCatalogsAsync();
     }
@@ -194,8 +248,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 await _wpm.ConnectToAllCatalogsAsync(force: true);
 
                 Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloading catalogs from all data sources");
-                _catalogDataSourceLoacder.Clear();
-                await foreach (var dataSourceCatalogs in _catalogDataSourceLoacder.LoadCatalogsAsync())
+                _catalogDataSourceLoader.Clear();
+                await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
                 {
                     Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloaded {dataSourceCatalogs.Count} catalog(s)");
                 }

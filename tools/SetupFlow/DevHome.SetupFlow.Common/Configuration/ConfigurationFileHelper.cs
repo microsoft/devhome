@@ -42,8 +42,14 @@ public class ConfigurationFileHelper
         }
     }
 
+    private readonly Guid _activityId;
     private ConfigurationProcessor _processor;
     private ConfigurationSet _configSet;
+
+    public ConfigurationFileHelper(Guid activityId)
+    {
+        _activityId = activityId;
+    }
 
     /// <summary>
     /// Open configuration set from the provided <paramref name="content"/>.
@@ -109,10 +115,10 @@ public class ConfigurationFileHelper
 
         foreach (var unitResult in result.UnitResults)
         {
-            TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_UnitResult", LogLevel.Critical, new ConfigurationUnitResultEvent(unitResult));
+            TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_UnitResult", LogLevel.Critical, new ConfigurationUnitResultEvent(unitResult), _activityId);
         }
 
-        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Result", LogLevel.Critical, new ConfigurationSetResultEvent(_configSet, result));
+        TelemetryFactory.Get<ITelemetry>().Log("ConfigurationFile_Result", LogLevel.Critical, new ConfigurationSetResultEvent(_configSet, result), _activityId);
 
         Log.Logger?.ReportInfo(Log.Component.Configuration, $"Apply configuration finished. HResult: {result.ResultCode?.HResult}");
         return new ApplicationResult(result);

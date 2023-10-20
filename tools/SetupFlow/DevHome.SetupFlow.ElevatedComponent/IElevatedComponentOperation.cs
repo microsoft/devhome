@@ -47,5 +47,5 @@ public interface IElevatedComponentOperation
     /// Apply DSC configuration
     /// </summary>
     /// <returns>Apply configuration operation result</returns>
-    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfigurationAsync();
+    public IAsyncOperation<ElevatedConfigureTaskResult> ApplyConfigurationAsync(Guid activityId);
 }
