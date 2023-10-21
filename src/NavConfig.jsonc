@@ -37,7 +37,5 @@
       }
     ]
   },
-  "experiments": [
-    "ProjectsPage"
-  ]
+  "experiments": [ "ProjectsPage" ]
 }
