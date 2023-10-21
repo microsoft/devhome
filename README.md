@@ -86,7 +86,7 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
 * [Clint Rutkas](https://github.com/crutkas), Principal Product Manager: [@clintrutkas](https://twitter.com/clintrutkas) 
 * [Leeza Mathew](https://github.com/mathewleeza), Engineering Lead: [@leezamathew](https://twitter.com/leezamathew)
 
-## Developer guidance
+## Developer Requirements
 
 * You must be running Windows 11 21H2 (build >= 10.0.22000.0) to run Dev Home
 * You must [enable Developer Mode in the Windows Settings app](https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development)
@@ -99,8 +99,8 @@ If you would like to ask a question that you feel doesn't warrant an issue (yet)
      * Dev Home's machine configuration tool
      * WinGet configuration. If you have WinGet version [v1.6.2631 or later](https://github.com/microsoft/winget-cli/releases), run `winget configure .configurations/configuration.dsc.yaml` in an elevated shell from the project root so relative paths resolve correctly
    * Alternatively, if you already are running the minimum OS version, have Visual Studio installed, and have developer mode enabled, you may configure your Visual Studio directly via the .vsconfig file. To do this:
-     * Open the Visual Studio Installer, select “More” on your product card and then "Import configuration"
-     * Specify the .vsconfig file at the root of the repo and select “Review Details”
+     * Open the Visual Studio Installer, select “More” on your product card and then "Import configuration".
+     * Specify the .vsconfig file at the root of the repo and select “Review Details”.
 
 ## Running & debugging
 
