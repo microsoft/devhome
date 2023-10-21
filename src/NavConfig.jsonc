@@ -30,7 +30,8 @@
             "assembly": "DevHome.Projects",
             "viewFullName": "DevHome.Projects.Views.ProjectsPage",
             "viewModelFullName": "DevHome.Projects.ViewModels.ProjectsViewModel",
-            "icon": "f156"
+            "icon": "f156",
+            "experimentId": "ProjectsPage"
           }
           /*,
           {
@@ -46,7 +47,7 @@
       }
     ]
   },
-  "experiments": [ /*
-  "ExperimentalFeature_1"
-  */ ]
+  "experiments": [
+    "ProjectsPage"
+  ]
 }

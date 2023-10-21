@@ -8,6 +8,7 @@
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\projects.schema.json" />
     <None Remove="ProjectsPage.xaml" />
     <None Remove="Views\LauncherView.xaml" />
     <None Remove="Views\ProjectView.xaml" />
@@ -23,6 +24,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Assets\projects.schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

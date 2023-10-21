@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "title": "JSON Schema for Dev Home Projects configuration",
+  "type": "object",
+  "properties": {
+    "Projects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Name": {
+            "type": "string"
+          },
+          "Color": {
+            "type": "string"
+          },
+          "FilePath": {
+            "type": "string"
+          },
+          "Url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "Launchers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "DisplayName": {
+                  "type": "string"
+                },
+                "CommandLine": {
+                  "type": "string"
+                },
+                "IconPath": {
+                  "type": "string"
+                },
+                "Environment": {
+                  "type": "object"
+                }
+              },
+              "required": [ "DisplayName", "CommandLine" ]
+            }
+          }
+        },
+        "required": [ "Name", "Color", "FilePath", "Url", "Launchers" ]
+      }
+    }
+  },
+  "required": [ "Projects" ]
+}

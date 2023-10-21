@@ -99,6 +99,12 @@ public partial class ProjectsPage : ToolPage, IDisposable
 
     private void AddProjectButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        if (!File.Exists(JsonFilePath))
+        {
+            var jsonStr = JsonConvert.SerializeObject(ViewModel, Formatting.Indented, new ObservableRecipientConverter());
+            File.WriteAllText(JsonFilePath, jsonStr);
+        }
+
         Process.Start(new ProcessStartInfo { FileName = JsonFilePath, UseShellExecute = true });
     }
 
