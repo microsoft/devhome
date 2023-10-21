@@ -2,12 +2,9 @@
 // Licensed under the MIT license.
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
-using DevHome.Projects.ViewModels;
-using DevHome.Projects.Views;
 using DevHome.Settings;
-using DevHome.Projects.ViewModels;
-using DevHome.Projects.Views;
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
 using DevHome.ViewModels;

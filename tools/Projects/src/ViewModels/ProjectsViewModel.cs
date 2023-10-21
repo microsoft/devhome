@@ -22,9 +22,7 @@ public class ProjectsViewModel : ObservableRecipient
     {
         get
         {
-            var location = Assembly.GetExecutingAssembly().Location;
-            var path = Path.Combine(Path.GetDirectoryName(location)!, @"Assets\projects.schema.json");
-            return path;
+            return "https://aka.ms/devhome/projects.schema.json";
         }
     }
 }

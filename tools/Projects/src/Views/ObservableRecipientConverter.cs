@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
 
@@ -24,8 +25,10 @@ internal class ObservableRecipientConverter : JsonConverter<ObservableRecipient>
             {
                 continue;
             }
+            var jsonProperty = prop.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(JsonPropertyAttribute));
+            var name = jsonProperty?.ConstructorArguments.FirstOrDefault().Value?.ToString() ?? prop.Name;
 
-            writer.WritePropertyName(prop.Name);
+            writer.WritePropertyName(name);
             serializer.Serialize(writer, prop.GetValue(value));
         }
 
