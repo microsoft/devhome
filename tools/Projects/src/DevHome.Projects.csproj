@@ -8,7 +8,9 @@
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Assets\projects.schema.json" />
+    <Content Remove="Assets\projects.schema.json" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="ProjectsPage.xaml" />
     <None Remove="Views\LauncherView.xaml" />
     <None Remove="Views\ProjectView.xaml" />
@@ -27,9 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Assets\projects.schema.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Update="Assets\projects.schema.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
