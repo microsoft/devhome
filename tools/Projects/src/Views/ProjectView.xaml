@@ -47,7 +47,10 @@
                 </Hyperlink>
             </Paragraph>
         </RichTextBlock>
-        <TextBlock Grid.Row="3" Text="{x:Bind ((vm:ProjectViewModel)DataContext).Branch}" Style="{ThemeResource BodyTextStyle}" Padding="8,2"/>
+        <StackPanel Orientation="Horizontal" Grid.Row="3">
+            <FontIcon Margin="4"  Glyph="&#xe001;" />
+            <TextBlock Text="{x:Bind ((vm:ProjectViewModel)DataContext).Branch}" Style="{ThemeResource CaptionTextBlockStyle}" Padding="8,2" VerticalAlignment="Center"/>
+        </StackPanel>
         <ItemsRepeater Grid.Row="4" ItemsSource="{x:Bind ((vm:ProjectViewModel)DataContext).Launchers}" 
                                        Margin="4">
             <ItemsRepeater.Layout>

@@ -119,6 +119,7 @@ public class LauncherViewModel : ObservableObject
                 }
 
                 var argv = Enumerable.Range(0, argc).Select(i => args[i].ToString()).ToArray();
+                argv[0] = argv[0].Replace('/', '\\');
                 return argv;
             }
             finally
