@@ -22,7 +22,7 @@ public partial class ProjectsPage : ToolPage, IDisposable
     private FileSystemWatcher _watcher;
     private bool disposedValue;
 
-    private static string JsonFilePath => Environment.ExpandEnvironmentVariables(@"%USERPROFILE%\DevHome.projects.json");
+    private static string JsonFilePath => Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\DevHome.projects.json");
 
     protected virtual void Dispose(bool disposing)
     {

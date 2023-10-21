@@ -7,7 +7,9 @@
     xmlns:vm="using:DevHome.Projects.ViewModels"
     xmlns:views="using:DevHome.Projects.Views"
     xmlns:pg="using:DevHome.Common"
-    mc:Ignorable="d">
+    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    mc:Ignorable="d"
+    behaviors:NavigationViewHeaderBehavior.HeaderMode="Never">
 
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <Grid.RowDefinitions>
@@ -17,7 +19,7 @@
 
         <!-- Header - Title and Add Project button -->
         <Grid Grid.Row="0" Margin="0,0,0,22">
-            <TextBlock x:Uid="ProjectsPage_Title" Style="{ThemeResource TitleTextBlockStyle}" HorizontalAlignment="Left"/>
+            <TextBlock x:Uid="ProjectsPage_Title" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Left"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="AddProjectButton" x:Uid="AddProject" HorizontalAlignment="Right" Click="AddProjectButton_Click"/>
             </StackPanel>

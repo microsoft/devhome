@@ -33,16 +33,6 @@
             "icon": "f156",
             "experimentId": "ProjectsPage"
           }
-          /*,
-          {
-            "identity": "DevHome.TestExperiment",
-            "assembly": "DevHome.Experiments",
-            "viewFullName": "DevHome.Experiments.Views.TestExperimentPage",
-            "viewModelFullName": "DevHome.Experiments.ViewModels.TestExperimentViewModel",
-            "icon": "f0f7",
-            "experimentId": "ExperimentalFeature_1"
-          }
-          */
         ]
       }
     ]
