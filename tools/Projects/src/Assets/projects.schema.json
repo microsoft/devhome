@@ -14,6 +14,7 @@
           },
           "Color": {
             "type": "string",
+            "format": "color",
             "title": "Project Color",
             "description": "The color associated with the project.",
             "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"

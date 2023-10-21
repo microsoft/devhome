@@ -25,6 +25,7 @@ internal class ObservableRecipientConverter : JsonConverter<ObservableRecipient>
             {
                 continue;
             }
+
             var jsonProperty = prop.CustomAttributes.FirstOrDefault(a => a.AttributeType == typeof(JsonPropertyAttribute));
             var name = jsonProperty?.ConstructorArguments.FirstOrDefault().Value?.ToString() ?? prop.Name;
 
