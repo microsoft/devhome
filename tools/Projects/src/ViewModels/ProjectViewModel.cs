@@ -35,12 +35,14 @@ public partial class ProjectViewModel : ObservableObject, IDisposable
     [NotifyPropertyChangedFor(nameof(ForegroundColor))]
     private string color = "Transparent";
 
+    [JsonIgnore]
     public SolidColorBrush ForegroundColor
     {
         get
         {
             var background = (Color)Microsoft.UI.Xaml.Markup.XamlBindingHelper.ConvertValue(typeof(Color), Color);
-            var foreground = background.R + background.G + background.B > 382 ? Colors.Black : Colors.White;
+            var luminosity = (0.2126 * background.R) + (0.7152 * background.G) + (0.0722 * background.B);
+            var foreground = luminosity >= 128 ? Colors.Black : Colors.White;
             return new SolidColorBrush(foreground);
         }
     }
