@@ -6,17 +6,18 @@ extern alias Projection;
 using System;
 using System.Globalization;
 using System.IO;
-using System.Management.Automation;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DevHome.Common;
+using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
+using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Projection::DevHome.SetupFlow.ElevatedComponent;
 using Windows.Foundation;
@@ -181,6 +182,18 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
         _needsRebootMessage.PrimaryMessage = needsRebootMessage;
     }
 
+    private void Notify()
+    {
+        var eventing = Application.Current.GetService<Eventing>();
+        var evt = new RepositoryClonedEventArgs
+        {
+            CloneLocation = CloneLocation.FullName,
+            RepositoryName = RepositoryName,
+            Repository = RepositoryToClone,
+        };
+        eventing.OnRepositoryCloned(evt);
+    }
+
     /// <summary>
     /// Clones the repository.
     /// </summary>
@@ -198,8 +211,8 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
                 if (RepositoryToClone.GetType() == typeof(GenericRepository))
                 {
                     await (RepositoryToClone as GenericRepository).CloneRepositoryAsync(_cloneLocation.FullName, null);
-
                     WasCloningSuccessful = true;
+                    Notify();
                     return TaskFinishedState.Success;
                 }
 
@@ -228,6 +241,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             }
 
             WasCloningSuccessful = true;
+            Notify();
             return TaskFinishedState.Success;
         }).AsAsyncOperation();
     }

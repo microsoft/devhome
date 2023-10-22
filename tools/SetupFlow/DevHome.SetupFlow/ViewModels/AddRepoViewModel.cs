@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -208,11 +209,11 @@ public partial class AddRepoViewModel : ObservableObject
         else
         {
             filteredRepositories = _repositoriesForAccount
-                .Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase));
+                ?.Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase));
         }
 
         _isFiltering = true;
-        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(filteredRepositories));
+        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(filteredRepositories ?? ImmutableArray<IRepository>.Empty));
         _isFiltering = false;
     }
 
@@ -778,7 +779,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <returns>All previously selected repos excluding any added via URL.</returns>
     public IEnumerable<RepoViewListItem> SetRepositories(string repositoryProvider, string loginId)
     {
-        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
+        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount ?? ImmutableArray<IRepository>.Empty));
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
             .Where(x => x.RepositoryProvider.DisplayName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)

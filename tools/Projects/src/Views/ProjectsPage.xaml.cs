@@ -2,14 +2,15 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
+using System.Linq;
+using System.Threading.Tasks;
 using DevHome.Common;
+using DevHome.Common.Extensions;
 using DevHome.Projects.ViewModels;
-using Microsoft.Extensions.FileSystemGlobbing;
-using Microsoft.UI.Xaml.Controls;
-using Newtonsoft.Json;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.Projects.Views;
 
@@ -21,8 +22,6 @@ public partial class ProjectsPage : ToolPage, IDisposable
 
     private FileSystemWatcher _watcher;
     private bool disposedValue;
-
-    private static string JsonFilePath => Environment.ExpandEnvironmentVariables(@"%LOCALAPPDATA%\DevHome.projects.json");
 
     protected virtual void Dispose(bool disposing)
     {
@@ -44,44 +43,49 @@ public partial class ProjectsPage : ToolPage, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public static ProjectsViewModel CreateViewModel()
-    {
-        Thread.Sleep(300); // wait for Defender to release the lock
-        for (int i = 0; i < 5; i++)
-        {
-            if (File.Exists(JsonFilePath))
-            {
-                var jsonStr = File.ReadAllText(JsonFilePath);
-                var vm = JsonConvert.DeserializeObject<ProjectsViewModel>(jsonStr);
-                if (vm == null)
-                {
-                    Thread.Sleep(300); // wait for Defender to release the lock
-                    continue;
-                }
-
-                foreach (var p in vm.Projects)
-                {
-                    foreach (var l in p.Launchers)
-                    {
-                        l.ProjectViewModel = new WeakReference<ProjectViewModel>(p);
-                    }
-                }
-
-                return vm;
-            }
-        }
-
-        return new ProjectsViewModel();
-    }
+    private static List<RepositoryClonedEventArgs> alreadySeen = new ();
 
     public ProjectsPage()
     {
-        ViewModel = CreateViewModel();
-        _watcher = new FileSystemWatcher(Path.GetDirectoryName(JsonFilePath), Path.GetFileName(JsonFilePath));
+        ViewModel = ProjectsViewModel.CreateViewModel();
+        _watcher = new FileSystemWatcher(Path.GetDirectoryName(ProjectsViewModel.JsonFilePath), Path.GetFileName(ProjectsViewModel.JsonFilePath));
         _watcher.NotifyFilter = NotifyFilters.LastWrite;
         _watcher.Changed += (s, e) => ProjectsViewModel_ProjectsChanged(s, e);
         _watcher.EnableRaisingEvents = true;
+
+        var eventing = Application.Current.GetService<Eventing>();
+        eventing.RepositoryCloned += Eventing_RepositoryCloned;
+
+        // cloning might have happened before we subscribed to the event
+        // however as we process the events, we add them to the list of projects and serialize the viewmodel
+        // so we have to keep track of which events we've already processed.
+        var missedEvents = eventing.Seen.Where(x => x is RepositoryClonedEventArgs args &&
+        !alreadySeen.Contains(args)).Cast<RepositoryClonedEventArgs>();
+
+        if (missedEvents.Any())
+        {
+            DispatcherQueue.TryEnqueue(async () =>
+            {
+                var addProjectTasks = missedEvents.Select(x =>
+                {
+                    alreadySeen.Add(x);
+                    return ViewModel.AddProject(x.RepositoryName, x.CloneLocation, x.Repository.RepoUri);
+                });
+                await Task.WhenAll(addProjectTasks);
+                ViewModel.SerializeViewModel();
+            });
+        }
+
         InitializeComponent();
+    }
+
+    private void Eventing_RepositoryCloned(object sender, RepositoryClonedEventArgs e)
+    {
+        DispatcherQueue.TryEnqueue(async () =>
+        {
+            alreadySeen.Add(e);
+            await ViewModel.AddProject(e.RepositoryName, e.CloneLocation, e.Repository.RepoUri);
+        });
     }
 
     private void ProjectsViewModel_ProjectsChanged(object sender, System.EventArgs e)
@@ -89,7 +93,7 @@ public partial class ProjectsPage : ToolPage, IDisposable
         DispatcherQueue.TryEnqueue(() =>
         {
             ViewModel.Projects.Clear();
-            var newVM = CreateViewModel();
+            var newVM = ProjectsViewModel.CreateViewModel();
             foreach (var project in newVM.Projects)
             {
                 ViewModel.Projects.Add(project);
@@ -99,13 +103,8 @@ public partial class ProjectsPage : ToolPage, IDisposable
 
     private void AddProjectButton_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
-        if (!File.Exists(JsonFilePath))
-        {
-            var jsonStr = JsonConvert.SerializeObject(ViewModel, Formatting.Indented, new ObservableRecipientConverter());
-            File.WriteAllText(JsonFilePath, jsonStr);
-        }
-
-        Process.Start(new ProcessStartInfo { FileName = JsonFilePath, UseShellExecute = true });
+        ViewModel.SerializeViewModel();
+        Process.Start(new ProcessStartInfo { FileName = ProjectsViewModel.JsonFilePath, UseShellExecute = true });
     }
 
     private void OnDeleteProject(object sender, ProjectViewModel project)
@@ -116,8 +115,7 @@ public partial class ProjectsPage : ToolPage, IDisposable
 
             // ViewModel inherits from ObservableRecipient, which has an IsActive property
             // we don't want to serialize that, so we use a custom JsonConverter
-            var jsonStr = JsonConvert.SerializeObject(ViewModel, Formatting.Indented, new ObservableRecipientConverter());
-            File.WriteAllText(JsonFilePath, jsonStr);
+            ViewModel.SerializeViewModel();
         });
     }
 }
