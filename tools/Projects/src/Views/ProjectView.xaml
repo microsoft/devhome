@@ -26,10 +26,11 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="{x:Bind ((vm:ProjectViewModel)DataContext).Name}" Style="{ThemeResource SubtitleTextBlockStyle}" />
+      <TextBlock Text="{x:Bind ((vm:ProjectViewModel)DataContext).Name}" Style="{ThemeResource SubtitleTextBlockStyle}" Foreground="{x:Bind ((vm:ProjectViewModel)DataContext).ForegroundColor}" />
             <Button Grid.Column="1" x:Name="DeleteProjectButton" 
                     Click="DeleteProjectButton_Click"
                     Background="Transparent" 
+                    Foreground="{x:Bind ((vm:ProjectViewModel)DataContext).ForegroundColor}"
                     BorderThickness="0"
                     HorizontalContentAlignment="Right"
                     Padding="4"
@@ -39,8 +40,9 @@
             </Button>
         </Grid>
         <TextBlock x:Name="filePath" Grid.Row="1" Text="{x:Bind ((vm:ProjectViewModel)DataContext).ExpandedFilePath}" 
-                   Style="{ThemeResource CaptionTextBlockStyle}" Padding="8,2" Tapped="FilePath_Tapped"/>
-        <RichTextBlock Grid.Row="2" Padding="8,2">
+                   Style="{ThemeResource CaptionTextBlockStyle}" Padding="8,2" Tapped="FilePath_Tapped"
+                   Foreground="{x:Bind ((vm:ProjectViewModel)DataContext).ForegroundColor}"/>
+    <RichTextBlock Grid.Row="2" Padding="8,2" Foreground="{x:Bind ((vm:ProjectViewModel)DataContext).ForegroundColor}">
             <Paragraph>
                 <Hyperlink NavigateUri="{x:Bind ((vm:ProjectViewModel)DataContext).Url}">
                     <Run Text="{x:Bind ((vm:ProjectViewModel)DataContext).Url}" FontSize="12" />
@@ -48,8 +50,8 @@
             </Paragraph>
         </RichTextBlock>
         <StackPanel Orientation="Horizontal" Grid.Row="3">
-            <FontIcon Margin="4"  Glyph="&#xe001;" />
-            <TextBlock Text="{x:Bind ((vm:ProjectViewModel)DataContext).Branch}" Style="{ThemeResource CaptionTextBlockStyle}" Padding="8,2" VerticalAlignment="Center"/>
+      <FontIcon Margin="4"  Glyph="&#xe001;" Foreground="{x:Bind ((vm:ProjectViewModel)DataContext).ForegroundColor}"/>
+      <TextBlock Text="{x:Bind ((vm:ProjectViewModel)DataContext).Branch}" Style="{ThemeResource CaptionTextBlockStyle}" Padding="8,2" VerticalAlignment="Center" Foreground="{x:Bind ((vm:ProjectViewModel)DataContext).ForegroundColor}"/>
         </StackPanel>
         <ItemsRepeater Grid.Row="4" ItemsSource="{x:Bind ((vm:ProjectViewModel)DataContext).Launchers}" 
                                        Margin="4">

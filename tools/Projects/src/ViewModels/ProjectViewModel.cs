@@ -11,9 +11,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Media;
 using Newtonsoft.Json;
+using Windows.UI;
 
 namespace DevHome.Projects.ViewModels;
 public partial class ProjectViewModel : ObservableObject, IDisposable
@@ -29,7 +31,19 @@ public partial class ProjectViewModel : ObservableObject, IDisposable
     [JsonIgnore]
     public string ExpandedFilePath => Environment.ExpandEnvironmentVariables(FilePath);
 
-    public string Color { get; set; } = "Transparent";
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ForegroundColor))]
+    private string color = "Transparent";
+
+    public SolidColorBrush ForegroundColor
+    {
+        get
+        {
+            var background = (Color)Microsoft.UI.Xaml.Markup.XamlBindingHelper.ConvertValue(typeof(Color), Color);
+            var foreground = background.R + background.G + background.B > 382 ? Colors.Black : Colors.White;
+            return new SolidColorBrush(foreground);
+        }
+    }
 
     public ObservableCollection<LauncherViewModel> Launchers { get; } = new ();
 
