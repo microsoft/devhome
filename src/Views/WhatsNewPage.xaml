@@ -7,7 +7,8 @@
     xmlns:animations="using:CommunityToolkit.WinUI.Animations"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls" 
     xmlns:models="using:DevHome.Models"
-    xmlns:behaviors="using:DevHome.Common.Behaviors"
+    xmlns:behaviors="using:DevHome.Common.Behaviors" 
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="OnLoaded"
     SizeChanged="OnSizeChanged"
@@ -279,7 +280,6 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="*" />
-                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
                                     <TextBlock
@@ -288,22 +288,24 @@
                                         Style="{ThemeResource BodyTextStyle}"
                                         Text="{x:Bind Title}" />
 
-                                    <TextBlock
-                                        Grid.Row="1"
-                                        Margin="0 16 0 25"
-                                        TextWrapping="Wrap"
-                                        VerticalAlignment="Stretch"
-                                        TextTrimming="WordEllipsis"
-                                        Text="{x:Bind Description}"/>
+                                    <controls:WrapPanel Grid.Row="1" Orientation="Vertical" Margin="0 16 0 20" >
+                                        <TextBlock
+                                            Margin="0 0 0 5"
+                                            TextWrapping="Wrap"
+                                            VerticalAlignment="Top"
+                                            TextTrimming="WordEllipsis"
+                                            Text="{x:Bind Description}"/>
 
-                                    <HyperlinkButton
-                                        Grid.Row="2"
-                                        Content="{x:Bind Link}"
-                                        Foreground="{ThemeResource LearnMoreForeground}"
-                                        NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
-                                        Padding="0"
-                                        Margin="0"
-                                        Visibility="{x:Bind ShouldShowLink}"/>
+                                        <HyperlinkButton
+                                            Content="{x:Bind Link}"
+                                            Foreground="{ThemeResource LearnMoreForeground}"
+                                            NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
+                                            VerticalAlignment="Top"
+                                            Padding="0"
+                                            Margin="0"
+                                            Visibility="{x:Bind ShouldShowLink}"/>
+                                    </controls:WrapPanel>
+
                                 </Grid>
 
                                 <Button 
