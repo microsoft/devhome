@@ -11,7 +11,7 @@ extends:
       roslyn:
         enabled: true
       arrow:
-        serviceConnection: DevHome Catch All (DO NOT PUBLISH)
+        serviceConnection: DevHome Build VM Generation
     pool:
       name: Azure-Pipelines-1ESPT-ExDShared
       image: windows-2022
