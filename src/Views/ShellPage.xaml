@@ -9,22 +9,16 @@
     Loaded="OnLoaded">
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
         <windows:WindowTitleBar
-            Grid.Row="0"
             x:Name="AppTitleBar"
             Title="{x:Bind ViewModel.Title}"
             Height="{x:Bind NavigationViewControl.CompactPaneLength}" />
 
         <NavigationView
-            Grid.Row="1"
             x:Name="NavigationViewControl"
             Canvas.ZIndex="0"
-            IsBackButtonVisible="Collapsed"
-            IsTitleBarAutoPaddingEnabled="True"
+            IsBackButtonVisible="Auto"
+            IsBackEnabled="{x:Bind ViewModel.IsBackEnabled, Mode=OneWay}"
             SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
             IsSettingsVisible="True"
             OpenPaneLength="350"
@@ -58,7 +52,7 @@
                 https://docs.microsoft.com/windows/apps/design/style/segoe-fluent-icons-font#icon-list
                 https://github.com/microsoft/devhome/issues/615
                 -->
-                <!-- The navigation menu is populated dynamically, but must have one static entry.  This NavigationViewItem is invisible and ignored -->
+                <!-- The navigation menu is populated dynamically, but must have one static entry. This NavigationViewItem is invisible and ignored -->
                 <NavigationViewItem x:Uid="Shell_IGNORE" helpers:NavigationHelper.NavigateTo="DevHome.Settings.ViewModels.SettingsViewModel" Visibility="Collapsed"/>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>

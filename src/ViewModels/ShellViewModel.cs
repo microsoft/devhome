@@ -6,6 +6,7 @@ using DevHome.Common.Contracts;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Logging;
 using Microsoft.UI.Xaml.Navigation;
 
 namespace DevHome.ViewModels;
@@ -17,6 +18,9 @@ public partial class ShellViewModel : ObservableObject
 
     [ObservableProperty]
     private string? _announcementText;
+
+    [ObservableProperty]
+    private bool isBackEnabled;
 
     public string Title => _appInfoService.GetAppNameLocalized();
 
@@ -66,6 +70,8 @@ public partial class ShellViewModel : ObservableObject
 
     private void OnNavigated(object sender, NavigationEventArgs e)
     {
+        IsBackEnabled = IsSetupFlowPage(e.SourcePageType.FullName) ? false : NavigationService.CanGoBack;
+
         if (IsExtensionSettingsPage(e.SourcePageType.FullName))
         {
             // If we navigate to the L3 settings page for an extension, leave the selected NavigationView item as it
@@ -103,6 +109,17 @@ public partial class ShellViewModel : ObservableObject
         }
 
         return pageType.StartsWith("DevHome.Settings", StringComparison.Ordinal);
+    }
+
+    private bool IsSetupFlowPage(string? pageType)
+    {
+        if (string.IsNullOrEmpty(pageType))
+        {
+            return false;
+        }
+
+        return pageType.StartsWith("DevHome.SetupFlow.Views", StringComparison.Ordinal) &&
+            !pageType.Equals("DevHome.SetupFlow.Views.SetupFlowPage", StringComparison.Ordinal);
     }
 
     private void OnAnnouncementTextChanged(object? sender, string text)
