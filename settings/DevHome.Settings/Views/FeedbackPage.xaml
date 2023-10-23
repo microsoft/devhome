@@ -89,6 +89,16 @@
                         </ScrollViewer>
                     </Grid>
                 </ContentDialog>
+                <ContentDialog x:Name="BlankIssueDialog" x:Uid="Settings_Feedback_BlankIssue_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
+                    <Grid>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBox x:Name="BlankIssueTitle" x:Uid="Settings_Feedback_BlankIssue_IssueTitle" AcceptsReturn="True"/>
+                                <TextBox x:Name="BlankIssueDescription" x:Uid="Settings_Feedback_BlankIssue_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </ContentDialog>
                 <TextBlock Margin="{StaticResource MediumBottomMargin}">
                     <Run x:Uid="Settings_Feedback_OpenSource"/>
                     <Hyperlink x:Uid="Settings_Feedback_OpenSource_Link" TextDecorations="None">
@@ -116,6 +126,13 @@
                                   Glyph="&#xE909;"/>
                         </ctControls:SettingsCard.HeaderIcon>
                         <Button x:Uid="Settings_Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog" MinWidth="150" />
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_BlankIssue">
+                        <ctControls:SettingsCard.HeaderIcon>
+                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                Glyph="&#xe89c;"/>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_BlankIssue_Button" Click="DisplayBlankIssueDialog" MinWidth="150" />
                     </ctControls:SettingsCard>
                     <ctControls:SettingsCard x:Uid="Settings_Feedback_BuildExtension">
                         <ctControls:SettingsCard.HeaderIcon>
