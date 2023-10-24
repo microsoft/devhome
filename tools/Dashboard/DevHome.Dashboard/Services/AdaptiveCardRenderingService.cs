@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
@@ -13,13 +14,17 @@ using WinUIEx;
 
 namespace DevHome.Dashboard.Services;
 
-public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService
+public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisposable
 {
     private readonly WindowEx _windowEx;
 
     private readonly IThemeSelectorService _themeSelectorService;
 
+    private readonly SemaphoreSlim _rendererLock = new (1, 1);
+
     private AdaptiveCardRenderer _renderer;
+
+    private bool _disposedValue;
 
     public AdaptiveCardRenderingService(WindowEx windowEx, IThemeSelectorService themeSelectorService)
     {
@@ -28,15 +33,44 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService
         _themeSelectorService.ThemeChanged += OnThemeChanged;
     }
 
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _rendererLock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
     public async Task<AdaptiveCardRenderer> GetRenderer()
     {
-        if (_renderer == null)
+        // We need to lock the renderer, otherwise another widget could come in after the renderer
+        // is created but before it is configured and render the widget without configuration.
+        await _rendererLock.WaitAsync();
+        try
         {
-            _renderer = new AdaptiveCardRenderer();
-            await ConfigureWidgetRenderer();
-        }
+            if (_renderer == null)
+            {
+                _renderer = new AdaptiveCardRenderer();
+                await ConfigureWidgetRenderer();
+            }
 
-        return _renderer;
+            return _renderer;
+        }
+        finally
+        {
+            _rendererLock.Release();
+        }
     }
 
     private async Task ConfigureWidgetRenderer()
