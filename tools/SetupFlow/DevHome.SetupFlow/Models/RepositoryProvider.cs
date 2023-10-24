@@ -8,16 +8,20 @@ using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Views;
 using DevHome.Logging;
 using DevHome.Settings.Views;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Foundation;
 using Windows.Storage;
+using Windows.UI.ViewManagement;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -58,6 +62,8 @@ internal class RepositoryProvider
 
     public string DisplayName => _repositoryProvider.DisplayName;
 
+    public string ExtensionDisplayName => _extensionWrapper.Name;
+
     /// <summary>
     /// Starts the extension if it isn't running.
     /// </summary>
@@ -68,12 +74,23 @@ internal class RepositoryProvider
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider extensions");
         _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
         _repositoryProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
-        var myName = _repositoryProvider.DisplayName;
     }
 
     public IRepositoryProvider GetProvider()
     {
         return _repositoryProvider;
+    }
+
+    /// <summary>
+    /// Assigns handler as the event handler for the developerIdProvider.
+    /// </summary>
+    /// <param name="handler">The method to run.</param>
+    public void SetChangedEvent(TypedEventHandler<IDeveloperIdProvider, IDeveloperId> handler)
+    {
+        if (_devIdProvider != null)
+        {
+            _devIdProvider.Changed += handler;
+        }
     }
 
     /// <summary>
@@ -98,7 +115,9 @@ internal class RepositoryProvider
 
         if (getResult.Result.Status == ProviderOperationStatus.Failure)
         {
-            throw getResult.Result.ExtendedError;
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Could not get repo from Uri.");
+            Log.Logger?.ReportInfo(Log.Component.RepoConfig, getResult.Result.DisplayMessage);
+            return null;
         }
 
         return getResult.Repository;
@@ -108,50 +127,23 @@ internal class RepositoryProvider
     /// Checks with the provider if it understands and can clone a repo via Uri.
     /// </summary>
     /// <param name="uri">The uri to the repository</param>
-    /// <returns>A tuple that containes if the provider can parse the uri and the account it can parse with.</returns>
-    /// <remarks>If the provider can't parse the Uri, this will try a second time with any logged in accounts.  If the repo is
-    /// public, the developerid can be null.</remarks>
-    public (bool, IDeveloperId, IRepositoryProvider) IsUriSupported(Uri uri)
+    /// <returns>True if this provider supports the url.  False otherwise.</returns>
+    public bool IsUriSupported(Uri uri)
     {
-        var developerIdsResult = _devIdProvider.GetLoggedInDeveloperIds();
-
-        // Possible that no accounts are loggd in.  Try in case the repo is public.
-        if (developerIdsResult.Result.Status != ProviderOperationStatus.Success)
+        var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
+        if (uriSupportResult.Result.Status == ProviderOperationStatus.Failure)
         {
-            Log.Logger?.ReportError(Log.Component.RepoConfig, $"Could not get logged in accounts.  Message: {developerIdsResult.Result.DisplayMessage}", developerIdsResult.Result.ExtendedError);
-            var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
-            if (uriSupportResult.IsSupported)
-            {
-                return (true, null, _repositoryProvider);
-            }
-        }
-        else
-        {
-            if (developerIdsResult.DeveloperIds.Any())
-            {
-                foreach (var developerId in developerIdsResult.DeveloperIds)
-                {
-                    var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri, developerId).AsTask()).Result;
-                    if (uriSupportResult.IsSupported)
-                    {
-                        return (true, developerId, _repositoryProvider);
-                    }
-                }
-            }
-            else
-            {
-                var uriSupportResult = Task.Run(() => _repositoryProvider.IsUriSupportedAsync(uri).AsTask()).Result;
-                if (uriSupportResult.IsSupported)
-                {
-                    return (true, null, _repositoryProvider);
-                }
-            }
+            return false;
         }
 
-        // no accounts can access this uri or the repo does not exist.
-        return (false, null, null);
+        return uriSupportResult.IsSupported;
     }
 
+    /// <summary>
+    /// Gets and configures the UI to show to the user for logging them in.
+    /// </summary>
+    /// <param name="elementTheme">The theme to use.</param>
+    /// <returns>The adaptive panel to show to the user.  Can be null.</returns>
     public ExtensionAdaptiveCardPanel GetLoginUi(ElementTheme elementTheme)
     {
         try
@@ -182,6 +174,12 @@ internal class RepositoryProvider
         return null;
     }
 
+    /// <summary>
+    /// Sets the renderer in the UI.
+    /// </summary>
+    /// <param name="renderer">The ui to show</param>
+    /// <param name="elementTheme">The theme to use</param>
+    /// <returns>A task to await on.</returns>
     private async Task ConfigureLoginUIRenderer(AdaptiveCardRenderer renderer, ElementTheme elementTheme)
     {
         var dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
@@ -215,6 +213,16 @@ internal class RepositoryProvider
             }
         });
         return;
+    }
+
+    public AuthenticationExperienceKind GetAuthenticationExperienceKind()
+    {
+        return _devIdProvider.GetAuthenticationExperienceKind();
+    }
+
+    public IAsyncOperation<DeveloperIdResult> ShowLogonBehavior(WindowId windowHandle)
+    {
+        return _devIdProvider.ShowLogonSession(windowHandle);
     }
 
     /// <summary>

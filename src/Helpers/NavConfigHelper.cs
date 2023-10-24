@@ -11,6 +11,9 @@ internal class NavConfig
 {
     [JsonPropertyName("navMenu")]
     public NavMenu NavMenu { get; set; }
+
+    [JsonPropertyName("experiments")]
+    public string[] ExperimentIds { get; set; }
 }
 
 internal class NavMenu
@@ -44,6 +47,9 @@ internal class Tool
 
     [JsonPropertyName("icon")]
     public string Icon { get; set; }
+
+    [JsonPropertyName("experimentId")]
+    public string ExperimentId { get; set; }
 }
 
 // Uses .NET's JSON source generator support for serializing / deserializing NavConfig to get some perf gains at startup.
