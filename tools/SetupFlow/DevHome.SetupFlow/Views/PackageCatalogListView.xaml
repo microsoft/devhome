@@ -25,7 +25,10 @@
 
     <Grid>
         <!-- View all packages from a catalog -->
-        <StackPanel Margin="0,0,15,0" Spacing="27" Visibility="{x:Bind ViewModel.ViewAllCatalog, Mode=OneWay, Converter={StaticResource ViewAllConverter}}">
+        <StackPanel
+            Margin="0,0,15,0"
+            Spacing="27"
+            Visibility="{x:Bind ViewModel.ViewAllCatalog, Mode=OneWay, Converter={StaticResource ViewAllConverter}}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />

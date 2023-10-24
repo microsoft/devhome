@@ -48,8 +48,13 @@
                         </ctControls:SettingsCard.Header>
                         <ctControls:SettingsCard.Description>
                             <StackPanel>
-                                <TextBlock Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{x:Bind PackageDescription, Mode=OneWay}" />
-                                <HyperlinkButton Padding="0" Style="{ThemeResource TextBlockButtonStyle}" Command="{x:Bind LearnMoreCommand, Mode=OneWay}">
+                                <TextBlock
+                                    Style="{ThemeResource AppManagementPackageDescriptionTextBlock}"
+                                    Text="{x:Bind PackageDescription, Mode=OneWay}" />
+                                <HyperlinkButton
+                                    Padding="0"
+                                    Style="{ThemeResource TextBlockButtonStyle}"
+                                    Command="{x:Bind LearnMoreCommand, Mode=OneWay}">
                                     <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/LearnMore"/>
                                 </HyperlinkButton>
                             </StackPanel>

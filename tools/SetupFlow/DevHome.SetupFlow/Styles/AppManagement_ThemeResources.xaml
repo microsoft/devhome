@@ -34,7 +34,10 @@
                             </HyperlinkButton>
                         </converters:BoolToObjectConverter.FalseValue>
                         <converters:BoolToObjectConverter.TrueValue>
-                            <TextBlock Padding="0,0,12,0" Foreground="{ThemeResource TextFillColorDisabled}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Installed"/>
+                            <TextBlock
+                                Padding="0,0,12,0"
+                                Foreground="{ThemeResource TextFillColorDisabled}"
+                                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Installed"/>
                         </converters:BoolToObjectConverter.TrueValue>
                     </converters:BoolToObjectConverter>
                     <converters:BoolNegationConverter x:Key="BoolNegationConverter" />

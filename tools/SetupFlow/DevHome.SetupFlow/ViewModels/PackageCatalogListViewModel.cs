@@ -13,6 +13,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 
 namespace DevHome.SetupFlow.ViewModels;
+
 public partial class PackageCatalogListViewModel : ObservableObject
 {
     private readonly IWindowsPackageManager _wpm;
