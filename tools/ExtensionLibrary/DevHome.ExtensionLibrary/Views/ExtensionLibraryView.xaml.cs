@@ -14,9 +14,12 @@ public partial class ExtensionLibraryView : ToolPage
 
     public ExtensionLibraryViewModel ViewModel { get; }
 
+    internal ExtensionLibraryBannerViewModel BannerViewModel { get; }
+
     public ExtensionLibraryView()
     {
         ViewModel = Application.Current.GetService<ExtensionLibraryViewModel>();
+        BannerViewModel = Application.Current.GetService<ExtensionLibraryBannerViewModel>();
         this.InitializeComponent();
     }
 }

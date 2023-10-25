@@ -23,8 +23,6 @@ namespace DevHome.ExtensionLibrary.ViewModels;
 
 public partial class ExtensionLibraryViewModel : ObservableObject
 {
-    private const string _hideExtensionsBannerKey = "HideExtensionsBanner";
-
     private readonly string devHomeProductId = "9N8MHTPHNGVV";
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
@@ -33,9 +31,6 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     public ObservableCollection<StorePackageViewModel> StorePackagesList { get; set; }
 
     public ObservableCollection<InstalledPackageViewModel> InstalledPackagesList { get; set; }
-
-    [ObservableProperty]
-    private bool _showExtensionsBanner;
 
     [ObservableProperty]
     private bool _shouldShowStoreError = false;
@@ -50,28 +45,6 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
         StorePackagesList = new ();
         InstalledPackagesList = new ();
-
-        ShowExtensionsBanner = ShouldShowExtensionsBanner();
-    }
-
-    [RelayCommand]
-    private async Task ExtensionsBannerButtonAsync()
-    {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2247301"));
-    }
-
-    [RelayCommand]
-    private void HideExtensionsBannerButton()
-    {
-        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        roamingProperties[_hideExtensionsBannerKey] = bool.TrueString;
-        ShowExtensionsBanner = false;
-    }
-
-    private bool ShouldShowExtensionsBanner()
-    {
-        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        return !roamingProperties.ContainsKey(_hideExtensionsBannerKey);
     }
 
     [RelayCommand]
