@@ -89,7 +89,7 @@
                         </ScrollViewer>
                     </Grid>
                 </ContentDialog>
-                <TextBlock Margin="{StaticResource MediumBottomMargin}">
+                <TextBlock Margin="{StaticResource MediumBottomMargin}" TextWrapping="WrapWholeWords">
                     <Run x:Uid="Settings_Feedback_OpenSource"/>
                     <Hyperlink x:Uid="Settings_Feedback_OpenSource_Link" TextDecorations="None">
                         <Run x:Uid="Settings_Feedback_OpenSource_LinkText" />
