@@ -96,11 +96,11 @@ public class TitleBarHelper
     /// <summary>
     /// Gets the title bar text color brush based on the window activation state.
     /// </summary>
-    /// <param name="state">Window activation state</param>
+    /// <param name="isWindowActive">Window activation state</param>
     /// <returns>Corresponding color brush for the title bar text</returns>
-    public static SolidColorBrush GetTitleBarTextColorBrush(WindowActivationState state)
+    public static SolidColorBrush GetTitleBarTextColorBrush(bool isWindowActive)
     {
-        var resource = state == WindowActivationState.Deactivated ? "WindowCaptionForegroundDisabled" : "WindowCaptionForeground";
+        var resource = isWindowActive ? "WindowCaptionForeground" : "WindowCaptionForegroundDisabled";
         return (SolidColorBrush)Application.Current.Resources[resource];
     }
 }

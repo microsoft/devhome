@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using DevHome.Common.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -58,8 +59,16 @@ public sealed partial class WindowTitleBar : UserControl
         windowTitleBar.TitleChanged?.Invoke(windowTitleBar, newValue);
     }
 
+    private static void OnIsActiveChanged(WindowTitleBar windowTitleBar, bool newValue)
+    {
+        // Update the title text block foreground from code behind after the
+        // window activation state has changed and after the WindowCaption*
+        // brushes have been updated. More details in TitleBarHelper.UpdateTitleBar method.
+        windowTitleBar.TitleTextBlock.Foreground = TitleBarHelper.GetTitleBarTextColorBrush(newValue);
+    }
+
     private static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(WindowTitleBar), new PropertyMetadata(null, (s, e) => OnTitleChanged((WindowTitleBar)s, (string)e.NewValue)));
     private static readonly DependencyProperty IconProperty = DependencyProperty.Register(nameof(Icon), typeof(IconElement), typeof(WindowTitleBar), new PropertyMetadata(null));
     private static readonly DependencyProperty HideIconProperty = DependencyProperty.Register(nameof(HideIcon), typeof(bool), typeof(WindowTitleBar), new PropertyMetadata(false));
-    private static readonly DependencyProperty IsActiveProperty = DependencyProperty.Register(nameof(IsActive), typeof(bool), typeof(WindowTitleBar), new PropertyMetadata(true));
+    private static readonly DependencyProperty IsActiveProperty = DependencyProperty.Register(nameof(IsActive), typeof(bool), typeof(WindowTitleBar), new PropertyMetadata(true, (s, e) => OnIsActiveChanged((WindowTitleBar)s, (bool)e.NewValue)));
 }
