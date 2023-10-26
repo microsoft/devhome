@@ -54,6 +54,14 @@ public sealed partial class WindowTitleBar : UserControl
         this.InitializeComponent();
     }
 
+    public void Repaint()
+    {
+        // Update the title text block foreground from code behind after the
+        // window activation state or system theme has changed, and after the WindowCaption*
+        // brushes have been updated. More details in TitleBarHelper.UpdateTitleBar method.
+        TitleTextBlock.Foreground = TitleBarHelper.GetTitleBarTextColorBrush(IsActive);
+    }
+
     private static void OnTitleChanged(WindowTitleBar windowTitleBar, string newValue)
     {
         windowTitleBar.TitleChanged?.Invoke(windowTitleBar, newValue);
@@ -61,10 +69,7 @@ public sealed partial class WindowTitleBar : UserControl
 
     private static void OnIsActiveChanged(WindowTitleBar windowTitleBar, bool newValue)
     {
-        // Update the title text block foreground from code behind after the
-        // window activation state has changed and after the WindowCaption*
-        // brushes have been updated. More details in TitleBarHelper.UpdateTitleBar method.
-        windowTitleBar.TitleTextBlock.Foreground = TitleBarHelper.GetTitleBarTextColorBrush(newValue);
+        windowTitleBar.Repaint();
     }
 
     private static readonly DependencyProperty TitleProperty = DependencyProperty.Register(nameof(Title), typeof(string), typeof(WindowTitleBar), new PropertyMetadata(null, (s, e) => OnTitleChanged((WindowTitleBar)s, (string)e.NewValue)));
