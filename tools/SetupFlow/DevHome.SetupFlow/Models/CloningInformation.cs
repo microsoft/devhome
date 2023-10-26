@@ -89,7 +89,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
             // Currently the only providers are Github and the generic provider.  The provider type
             // for the generic provider is git.
             // TODO: Remove when extensions have a GetIcon method.
-            if (ProviderName.Equals("github", StringComparison.OrdinalIgnoreCase))
+            if (RepositoryProvider.DisplayName.Equals("github", StringComparison.OrdinalIgnoreCase))
             {
                 RepositoryTypeIcon = DarkGithub;
             }
@@ -100,7 +100,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         }
         else
         {
-            if (ProviderName.Equals("github", StringComparison.OrdinalIgnoreCase))
+            if (RepositoryProvider.DisplayName.Equals("github", StringComparison.OrdinalIgnoreCase))
             {
                 RepositoryTypeIcon = LightGithub;
             }

@@ -518,7 +518,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
 
             var cloningInformation = new CloningInformation(repoToRemove);
-            cloningInformation.ProviderName = _providers.DisplayName(providerName);
+            cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
 
             EverythingToClone.Remove(cloningInformation);
@@ -535,7 +535,7 @@ public partial class AddRepoViewModel : ObservableObject
 
             var cloningInformation = new CloningInformation(repoToAdd);
             cloningInformation.RepositoryProvider = _providers.GetSDKProvider(providerName);
-            cloningInformation.ProviderName = _providers.DisplayName(providerName);
+            cloningInformation.ProviderName = providerName;
             cloningInformation.OwningAccount = developerId;
             cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
             cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
@@ -781,7 +781,7 @@ public partial class AddRepoViewModel : ObservableObject
         Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
-            .Where(x => x.RepositoryProvider.DisplayName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
+            .Where(x => x.ProviderName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
             && x.OwningAccount.LoginId.Equals(loginId, StringComparison.OrdinalIgnoreCase))
             .Select(x => new RepoViewListItem(x.RepositoryToClone));
     }
@@ -795,7 +795,10 @@ public partial class AddRepoViewModel : ObservableObject
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Setting the clone location for all repositories to {cloneLocation}");
         foreach (var cloningInformation in EverythingToClone)
         {
-            cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+            if (!_previouslySelectedRepos.Any(x => x == cloningInformation))
+            {
+                cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
+            }
         }
     }
 }
