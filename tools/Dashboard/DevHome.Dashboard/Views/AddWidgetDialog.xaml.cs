@@ -171,12 +171,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
         if (!widgetDef.AllowMultiple)
         {
-            var currentlyPinnedWidgets = _hostingService.GetWidgetHost()?.GetWidgets();
+            var currentlyPinnedWidgets = DashboardView.PinnedWidgets;
             if (currentlyPinnedWidgets != null)
             {
                 foreach (var pinnedWidget in currentlyPinnedWidgets)
                 {
-                    if (pinnedWidget.DefinitionId == widgetDef.Id)
+                    if (pinnedWidget.WidgetDefinition.Id == widgetDef.Id)
                     {
                         return true;
                     }
