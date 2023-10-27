@@ -101,7 +101,7 @@
                                         Width="16"
                                         Height="16"
                                         Source="{x:Bind RepositoryTypeIcon, Mode=OneWay}"/>
-                                    <TextBlock Text="{x:Bind ProviderName}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{x:Bind RepositoryProvider.DisplayName}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
                             </Border>
                             <Border Style="{StaticResource BorderStyle}"  Grid.Column="1" BorderThickness="0, 1, 1, 0">
