@@ -119,18 +119,13 @@ internal class SSHWalletWidget : CoreWidget
 
     private void HandleConnect(WidgetActionInvokedArgs args)
     {
-        var data = args.Data;
-
-        Process cmd = new Process();
-
-        var info = new ProcessStartInfo
+        var cmd = new Process();
+        cmd.StartInfo = new ProcessStartInfo
         {
             FileName = "cmd.exe",
-            Arguments = $"/k \"ssh {data}\"",
+            Arguments = $"/k \"ssh {args.Data}\"",
             UseShellExecute = true,
         };
-
-        cmd.StartInfo = info;
 
         cmd.Start();
     }
@@ -161,8 +156,10 @@ internal class SSHWalletWidget : CoreWidget
 
     private MatchCollection? GetHostEntries()
     {
-        FileStreamOptions options = new FileStreamOptions();
-        options.Access = FileAccess.Read;
+        var options = new FileStreamOptions()
+        {
+            Access = FileAccess.Read,
+        };
 
         using var reader = new StreamReader(ConfigFile, options);
 
@@ -179,12 +176,7 @@ internal class SSHWalletWidget : CoreWidget
     private int GetNumberOfHostEntries()
     {
         var hostEntries = GetHostEntries();
-        if (hostEntries == null)
-        {
-            return 0;
-        }
-
-        return hostEntries.Count;
+        return (hostEntries != null) ? hostEntries.Count : 0;
     }
 
     private void SetupFileWatcher()
