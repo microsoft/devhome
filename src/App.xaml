@@ -14,6 +14,9 @@
                 <ResourceDictionary Source="/Styles/TextBlock.xaml" />
                 <ResourceDictionary Source="/Styles/Thickness.xaml" />
                 <ResourceDictionary Source="/Styles/WindowTitleBar_ThemeResources.xaml" />
+
+                <!-- Resources from other projects -->
+                <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlow_ThemeResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
