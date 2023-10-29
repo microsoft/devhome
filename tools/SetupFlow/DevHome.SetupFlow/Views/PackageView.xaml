@@ -77,8 +77,6 @@
                             Grid.Column="1"
                             AutomationProperties.Name="{Binding ButtonAutomationName}"
                             IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
-                            Background="Transparent"
-                            BorderThickness="0"
                             Command="{Binding ToggleSelectionCommand}"
                             HorizontalAlignment="Right"
                             Padding="5">
