@@ -16,6 +16,7 @@ using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.Views;
 
@@ -44,7 +45,7 @@ public sealed partial class RepoConfigView : UserControl
             // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
             foreach (var cloneInformation in ViewModel.RepoReviewItems)
             {
-                cloneInformation.SetIcon(sender.ActualTheme);
+                cloneInformation.SetIcon(sender.ActualTheme, ViewModel.Host.GetService<WindowEx>());
             }
         }
 
@@ -100,7 +101,7 @@ public sealed partial class RepoConfigView : UserControl
 
         foreach (var repoToClone in everythingToClone)
         {
-            repoToClone.SetIcon(ActualTheme);
+            repoToClone.SetIcon(ActualTheme, ViewModel.Host.GetService<WindowEx>());
         }
 
         // Handle the case the user de-selected all repos.

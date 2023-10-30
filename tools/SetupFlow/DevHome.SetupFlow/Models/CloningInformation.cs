@@ -7,8 +7,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using Windows.UI;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -82,8 +89,59 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     [ObservableProperty]
     private BitmapImage _repositoryTypeIcon;
 
-    public void SetIcon(ElementTheme theme)
+    public void SetIcon(ElementTheme theme, WindowEx window)
     {
+        BitmapDecoder decoder = BitmapDecoder.CreateAsync(RepositoryProvider.Icon.OpenReadAsync().AsTask().Result).AsTask().Result;
+
+        // Get the pixel data as a byte array
+        PixelDataProvider pixelData = decoder.GetPixelDataAsync().AsTask().Result;
+        var pixels = pixelData.DetachPixelData();
+
+        // Assume that the icon is colored for dark mode.
+        if (theme != ElementTheme.Dark)
+        {
+            // Loop through the pixels and toggle black to white and vice versa
+            // Assuming the pixel format is BGRA8
+            for (var i = 0; i < pixels.Length; i += 4)
+            {
+                // Get the color components of the pixel
+                var b = pixels[i];
+                var g = pixels[i + 1];
+                var r = pixels[i + 2];
+
+                // Check if the pixel is black or white
+                if (r == 0 && g == 0 && b == 0)
+                {
+                    // Change black to white
+                    pixels[i] = 255;
+                    pixels[i + 1] = 255;
+                    pixels[i + 2] = 255;
+                }
+                else if (r == 255 && g == 255 && b == 255)
+                {
+                    // Change white to black
+                    pixels[i] = 0;
+                    pixels[i + 1] = 0;
+                    pixels[i + 2] = 0;
+                }
+            }
+        }
+
+        // Create a new InMemoryRandomAccessStream to store the reversed image
+        var reversedStream = new InMemoryRandomAccessStream();
+
+        // Create a BitmapEncoder from the stream
+        var encoder = BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, reversedStream).AsTask().Result;
+
+        // Set the pixel data from the modified byte array
+        encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, decoder.PixelWidth, decoder.PixelHeight, decoder.DpiX, decoder.DpiY, pixels);
+
+        // Flush the encoder to write the data to the stream
+        encoder.FlushAsync().AsTask().Wait();
+
+        RepositoryTypeIcon.SetSource(reversedStream);
+
+        /*
         if (theme == ElementTheme.Dark)
         {
             // Currently the only providers are Github and the generic provider.  The provider type
@@ -109,6 +167,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
                 RepositoryTypeIcon = LightGit;
             }
         }
+        */
     }
 
     /// <summary>
@@ -171,12 +230,24 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// </summary>
     public IRepositoryProvider RepositoryProvider
     {
-        get; set;
+        get => _repositoryProvider;
+
+        set
+        {
+            var iconStream = value.Icon.OpenReadAsync().AsTask().Result;
+
+            RepositoryTypeIcon = new BitmapImage();
+            RepositoryTypeIcon.SetSource(iconStream);
+
+            _repositoryProvider = value;
+        }
     }
+
+    private IRepositoryProvider _repositoryProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CloningInformation"/> class.
-    /// Public constructor for XAML view to construct a CLoningInformation
+    /// Public constructor for XAML view to construct a CloningInformation
     /// </summary>
     public CloningInformation()
     {
@@ -186,7 +257,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// Initializes a new instance of the <see cref="CloningInformation"/> class.
     /// </summary>
     /// <param name="repoToClone">The repo to clone</param>
-    public CloningInformation(IRepository repoToClone)
+    public CloningInformation(IRepository repoToClone, ElementTheme currentTheme)
     {
         RepositoryToClone = repoToClone;
     }

@@ -517,7 +517,7 @@ public partial class AddRepoViewModel : ObservableObject
                 continue;
             }
 
-            var cloningInformation = new CloningInformation(repoToRemove);
+            var cloningInformation = new CloningInformation(repoToRemove, _host.GetService<IThemeSelectorService>().Theme);
             cloningInformation.ProviderName = _providers.DisplayName(providerName);
             cloningInformation.OwningAccount = developerId;
 
@@ -533,7 +533,7 @@ public partial class AddRepoViewModel : ObservableObject
                 continue;
             }
 
-            var cloningInformation = new CloningInformation(repoToAdd);
+            var cloningInformation = new CloningInformation(repoToAdd, _host.GetService<IThemeSelectorService>().Theme);
             cloningInformation.RepositoryProvider = _providers.GetSDKProvider(providerName);
             cloningInformation.ProviderName = _providers.DisplayName(providerName);
             cloningInformation.OwningAccount = developerId;
@@ -648,7 +648,7 @@ public partial class AddRepoViewModel : ObservableObject
         {
             // Fallback to a generic git provider.
             // Code path lights up for a repo that has a typo.
-            var cloningInformation = new CloningInformation(new GenericRepository(uri));
+            var cloningInformation = new CloningInformation(new GenericRepository(uri), _host.GetService<IThemeSelectorService>().Theme);
             cloningInformation.ProviderName = "git";
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
 
@@ -659,7 +659,7 @@ public partial class AddRepoViewModel : ObservableObject
         var repo = provider.GetRepositoryFromUri(uri);
         if (repo != null)
         {
-            var cloningInformation = new CloningInformation(repo);
+            var cloningInformation = new CloningInformation(repo, _host.GetService<IThemeSelectorService>().Theme);
             cloningInformation.RepositoryProvider = provider.GetProvider();
             cloningInformation.ProviderName = provider.DisplayName;
             cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
@@ -671,12 +671,13 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = provider.GetAllLoggedInAccounts();
         if (loggedInAccounts.Any())
         {
+            var currentTheme = _host.GetService<IThemeSelectorService>().Theme;
             foreach (var loggedInAccount in loggedInAccounts)
             {
                 repo = provider.GetRepositoryFromUri(uri, loggedInAccount);
                 if (repo != null)
                 {
-                    var cloningInformation = new CloningInformation(repo);
+                    var cloningInformation = new CloningInformation(repo, currentTheme);
                     cloningInformation.RepositoryProvider = provider.GetProvider();
                     cloningInformation.ProviderName = provider.DisplayName;
                     cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);

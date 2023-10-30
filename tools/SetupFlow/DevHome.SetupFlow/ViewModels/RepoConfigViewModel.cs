@@ -17,6 +17,7 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
+using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -128,7 +129,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
         foreach (var cloneInformation in RepoReviewItems)
         {
-            cloneInformation.SetIcon(themeToSwitchTo);
+            cloneInformation.SetIcon(themeToSwitchTo, Host.GetService<WindowEx>());
         }
     }
 
