@@ -51,7 +51,7 @@ internal class RepositoryProvider
     private IDeveloperIdProvider _devIdProvider;
 
     /// <summary>
-    /// Provider used to clone a repsitory.
+    /// Provider used to clone a repository.
     /// </summary>
     private IRepositoryProvider _repositoryProvider;
 
