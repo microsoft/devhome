@@ -29,7 +29,7 @@ public class Program
         }
         else
         {
-            Console.WriteLine("Not being launched as a Extension... exiting.");
+            Console.WriteLine("Not being launched as an Extension... exiting.");
         }
     }
 }
