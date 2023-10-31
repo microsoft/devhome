@@ -389,7 +389,7 @@
   </data>
   <data name="Settings_Feedback_SuggestFeature_SupportingInfo.PlaceholderText" xml:space="preserve">
     <value>Enter more info or links to give us more details.</value>
-    <comment>What are some additional resoures about this feature</comment>
+    <comment>What are some additional resources about this feature</comment>
   </data>
   <data name="Settings_Feedback_DocumentationInfo_LinkText.Text" xml:space="preserve">
     <value>Learn more about how we use your Settings_Feedback</value>
