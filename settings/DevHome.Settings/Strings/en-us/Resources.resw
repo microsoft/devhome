@@ -369,11 +369,11 @@
   </data>
   <data name="Settings_Feedback_SuggestFeature_IssueTitle.Header" xml:space="preserve">
     <value>Title</value>
-    <comment>SubjectTitle topic of the feature that the user wants to reccomend creating</comment>
+    <comment>SubjectTitle topic of the feature that the user wants to recommend creating</comment>
   </data>
   <data name="Settings_Feedback_SuggestFeature_IssueTitle.PlaceholderText" xml:space="preserve">
     <value>Enter title</value>
-    <comment>The topic of the feature that the user wants to reccomend creating</comment>
+    <comment>The topic of the feature that the user wants to recommend creating</comment>
   </data>
   <data name="Settings_Feedback_SuggestFeature_Scenario.Header" xml:space="preserve">
     <value>Scenario</value>
