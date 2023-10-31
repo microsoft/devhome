@@ -12,7 +12,7 @@ Create a secondary application window that derives from `WinUIEx.WindowEx` ensur
 \* Default value
 
 ## Additional methods
-| Property | Retrun type | Description |
+| Property | Return type | Description |
 | -------- | -------- | -------- |
 | CenterOnWindow() | void | If the primary window is set, center the secondary window on the primary window. Otherwise, center the secondary window on the screen by calling `WinUIEx.WindowExtensions.CenterOnScreen()`. |
 
