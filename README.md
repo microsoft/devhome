@@ -18,7 +18,7 @@ Related repositories include:
 If you are running Windows 11 23H2 (build 22621.2361) or later, you can install and run Dev Home just by finding it in the Start menu.
 
 Otherwise, you can install [Dev Home from the Microsoft Store](https://aka.ms/devhome).
-This allows you to always be on the latest version when we release new builds with automatic upgrades. Note that widgets may not work on older versions of Windows.
+This allows you to always be on the latest version when we release new builds with automatic upgrades. Note that the widgets may not work on older versions of Windows.
 
 This is our preferred method.
 
@@ -46,11 +46,11 @@ The plan for Dev Home can be found in our [roadmap](docs/roadmap.md).
 
 ## Dev Home overview
 
-Please take a few minutes to review the overview below before diving into the code:
+Please take a few minutes in order to review the overview below before diving into the code:
 
 ### Dashboard
 
-The Dev Home dashboard displays Windows widgets. These widgets are built using the Windows widget platform, which relies on Adaptive Cards.
+The Dev Home dashboard displays Windows' widgets. These widgets are built using the Windows' widget platform, which relies on Adaptive Cards.
 
 ### Machine configuration
 
