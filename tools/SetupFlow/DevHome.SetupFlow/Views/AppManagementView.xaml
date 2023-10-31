@@ -65,7 +65,7 @@
                 </AutoSuggestBox>
 
                 <!-- Main content -->
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="MainContent">
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Name="MainContent" AutomationProperties.AccessibilityView="Raw">
                     <ContentControl
                         IsTabStop="False"
                         Margin="0 0 10 0"
