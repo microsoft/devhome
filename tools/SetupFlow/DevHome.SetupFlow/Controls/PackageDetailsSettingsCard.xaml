@@ -1,7 +1,7 @@
 <!-- Copyright (c) Microsoft Corporation and Contributors. -->
 <!-- Licensed under the MIT License. -->
 
-<!-- Settings card for package details overwritting default resources and styles -->
+<!-- Settings card for package details overwriting default resources and styles -->
 <ctControls:SettingsCard
     x:Class="DevHome.SetupFlow.Controls.PackageDetailsSettingsCard"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
