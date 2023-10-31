@@ -29,7 +29,7 @@ public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
     public override bool HasItems => Application.Current.GetService<IDevDriveManager>().DevDrivesMarkedForCreation.Any();
 
     /// <summary>
-    /// Gets the a collection of <see cref="DevDriveReviewTabItem"/> to be displayed on the Basics review tab in the
+    /// Gets a collection of <see cref="DevDriveReviewTabItem"/> to be displayed on the Basics review tab in the
     /// setup flow review page.
     /// </summary>
     public ObservableCollection<DevDriveReviewTabItem> DevDrives
