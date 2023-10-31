@@ -26,6 +26,6 @@ public class ExtensionEvent : EventBase
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // No sensitive strings to replace.s
+        // No sensitive strings to replace.
     }
 }
