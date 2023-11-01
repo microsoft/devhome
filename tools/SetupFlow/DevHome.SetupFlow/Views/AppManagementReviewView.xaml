@@ -39,7 +39,7 @@
             </GridView.ItemsPanel>
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                    <controls:PackageDetailsSettingsCard Width="320" Padding="5">
+                    <controls:PackageDetailsSettingsCard AutomationProperties.Name="{x:Bind PackageTitle}" Width="320" Padding="5">
                         <ToolTipService.ToolTip>
                             <controls:PackageDetailsTooltip Package="{x:Bind}" />
                         </ToolTipService.ToolTip>
