@@ -193,43 +193,6 @@
   <data name="Settings_About_RelatedLinks.Text" xml:space="preserve">
     <value>Related links</value>
   </data>
-  <data name="Settings_Feedback_BlankIssue.Header" xml:space="preserve">
-    <value>General feedback</value>
-    <comment>BlankIssue is for general feedback that does not categorize under given options</comment>
-  </data>
-  <data name="Settings_Feedback_BlankIssue.Description" xml:space="preserve">
-    <value>Give general comments and suggestions</value>
-    <comment>Details about when this option should be used</comment>
-  </data>
-  <data name="Settings_Feedback_BlankIssue_Button.Content" xml:space="preserve">
-    <value>Feedback</value>
-    <comment>Begin to fill out the blank issue content dialog</comment>
-  </data>
-  <data name="Settings_Feedback_BlankIssue_Dialog.CloseButtonText" xml:space="preserve">
-    <value>Cancel</value>
-    <comment>Close out of the content dialog</comment>
-  </data>
-  <data name="Settings_Feedback_BlankIssue_Dialog.PrimaryButtonText" xml:space="preserve">
-    <value>Preview on GitHub</value>
-    <comment>Navigate to the GitHub issue to see the issue form</comment>
-  </data>
-  <data name="Settings_Feedback_BlankIssue_Dialog.Title" xml:space="preserve">
-    <value>Give general feedback</value>
-  </data>
-  <data name="Settings_Feedback_BlankIssue_IssueTitle.Header" xml:space="preserve">
-    <value>Title</value>
-  </data>
-  <data name="Settings_Feedback_BlankIssue_IssueTitle.PlaceholderText" xml:space="preserve">
-    <value>Enter title</value>
-    <comment>General feedback title</comment>
-  </data>
-  <data name="Settings_Feedback_BlankIssue_Description.Header" xml:space="preserve">
-    <value>Description</value>
-  </data>
-  <data name="Settings_Feedback_BlankIssue_Description.PlaceholderText" xml:space="preserve">
-    <value>Share your thoughts with us.</value>
-    <comment>General feedback description</comment>
-  </data>
   <data name="Settings_Feedback_Header" xml:space="preserve">
     <value>Feedback</value>
   </data>
