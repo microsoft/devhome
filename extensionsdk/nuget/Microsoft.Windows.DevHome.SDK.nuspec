@@ -7,9 +7,9 @@
     <authors>Microsoft</authors>
     <owners>Microsoft</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Dev Home SDK provides support for creating Dev Home plugins on Windows.</description>
+    <description>Dev Home SDK provides support for creating Dev Home extensions on Windows.</description>
     <releaseNotes>Release notes are available on the Dev Home repository.</releaseNotes>
-    <tags>Dev Home Windows App Plugin</tags>
+    <tags>Dev Home Windows Extension</tags>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <!-- TODO : <license type="file">LICENSE</license> -->
     <projectUrl>https://github.com/microsoft/devhome</projectUrl>
