@@ -1,9 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using Windows.Web.AtomPub;
-
 namespace DevHome.Models;
+
 public class WhatsNewCard
 {
     public int Priority

@@ -42,7 +42,7 @@ public class WhatsNewViewModel : ObservableObject
         {
             lock (BigSource)
             {
-                List<WhatsNewCard> cards = new List<WhatsNewCard>();
+                var cards = new List<WhatsNewCard>();
                 foreach (var card in BigSource)
                 {
                     cards.Add(card);
@@ -81,7 +81,7 @@ public class WhatsNewViewModel : ObservableObject
         {
             lock (BigSource)
             {
-                List<WhatsNewCard> cards = new List<WhatsNewCard>();
+                var cards = new List<WhatsNewCard>();
                 foreach (var card in Source)
                 {
                     if (card.IsBig == true)
