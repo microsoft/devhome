@@ -3,11 +3,9 @@
 
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI;
-using Windows.UI.Xaml.Interop;
 
 namespace DevHome.SetupFlow.Views;
 

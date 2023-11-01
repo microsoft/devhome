@@ -18,18 +18,13 @@ public sealed partial class SearchView : UserControl
 
     private void PackagesListView_Loaded(object sender, RoutedEventArgs e)
     {
-        var listView = sender as ListView;
-        if (listView != null)
+        if (sender is ListView listView)
         {
             for (var i = 0; i < listView.Items.Count; i++)
             {
-                var item = listView.ContainerFromIndex(i) as ListViewItem;
-                if (item != null)
+                if (listView.ContainerFromIndex(i) is ListViewItem item && item.Content is PackageViewModel package)
                 {
-                    if (item.Content is PackageViewModel package)
-                    {
-                        AutomationProperties.SetName(item, package.PackageTitle);
-                    }
+                    AutomationProperties.SetName(item, package.PackageTitle);
                 }
             }
         }
