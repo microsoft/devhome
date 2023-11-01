@@ -26,9 +26,9 @@ public sealed partial class CustomizeWidgetDialog : ContentDialog
     private readonly WidgetDefinition _widgetDefinition;
     private static DispatcherQueue _dispatcher;
 
-    public CustomizeWidgetDialog(AdaptiveCardRenderer renderer, DispatcherQueue dispatcher, WidgetDefinition widgetDefinition)
+    public CustomizeWidgetDialog(DispatcherQueue dispatcher, WidgetDefinition widgetDefinition)
     {
-        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, widgetDefinition, renderer, dispatcher);
+        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, widgetDefinition, dispatcher);
         ViewModel.IsInEditMode = true;
 
         _hostingService = Application.Current.GetService<IWidgetHostingService>();

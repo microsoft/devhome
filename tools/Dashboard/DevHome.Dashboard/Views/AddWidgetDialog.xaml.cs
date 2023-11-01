@@ -35,11 +35,10 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private readonly IWidgetIconService _widgetIconService;
 
     public AddWidgetDialog(
-        AdaptiveCardRenderer renderer,
         DispatcherQueue dispatcher,
         ElementTheme theme)
     {
-        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, renderer, dispatcher);
+        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, dispatcher);
         _hostingService = Application.Current.GetService<IWidgetHostingService>();
         _widgetIconService = Application.Current.GetService<IWidgetIconService>();
 
@@ -254,8 +253,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
         else if (selectedTag as WidgetProviderDefinition is not null)
         {
-            // Null out the view model background so we don't bind to the old one.
-            ViewModel.WidgetBackground = null;
             ConfigurationContentFrame.Content = null;
             PinButton.Visibility = Visibility.Collapsed;
         }

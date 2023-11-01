@@ -23,7 +23,7 @@
         <converters:BoolNegationConverter x:Key="BoolNegation"/>
     </ContentDialog.Resources>
 
-    <StackPanel Background="{x:Bind ViewModel.WidgetBackground, Mode=OneWay}">
+    <StackPanel>
         <!-- Close button -->
         <Grid x:Name="CustomizeWidgetTitleBar">
             <TextBlock x:Uid="CustomizeWidgetTitle" HorizontalAlignment="Left" Margin="16,10,0,0" />

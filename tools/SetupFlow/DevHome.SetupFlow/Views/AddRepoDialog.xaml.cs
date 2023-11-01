@@ -176,28 +176,6 @@ internal partial class AddRepoDialog : ContentDialog
     }
 
     /// <summary>
-    /// Logs the user into the provider if they aren't already.
-    /// Changes the page to show all repositories for the user.
-    /// </summary>
-    /// <remarks>
-    /// Fired when the combo box on the account page is changed.
-    /// </remarks>
-    private void RepositoryProviderNamesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
-        if (!string.IsNullOrEmpty(repositoryProviderName))
-        {
-            PrimaryButtonStyle = AddRepoStackPanel.Resources["ContentDialogLogInButtonStyle"] as Style;
-            AddRepoViewModel.ShouldEnablePrimaryButton = true;
-        }
-        else
-        {
-            PrimaryButtonStyle = Application.Current.Resources["DefaultButtonStyle"] as Style;
-            AddRepoViewModel.ShouldEnablePrimaryButton = false;
-        }
-    }
-
-    /// <summary>
     /// Open up the folder picker for choosing a clone location.
     /// </summary>
     private async void ChooseCloneLocationButton_Click(object sender, RoutedEventArgs e)

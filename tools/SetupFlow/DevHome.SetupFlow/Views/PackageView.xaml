@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
     AutomationProperties.Name="{Binding PackageTitle}"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -49,7 +50,7 @@
                                     <StateTrigger IsActive="{Binding IsSelected}" />
                                 </VisualState.StateTriggers>
                                 <VisualState.Setters>
-                                    <Setter Target="Image.Opacity" Value="0.4"/>
+                                    <Setter Target="Image.Opacity" Value="{ThemeResource AppManagementIconDisabledOpacity}"/>
                                     <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
                                     <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
                                 </VisualState.Setters>
@@ -58,22 +59,7 @@
                     </VisualStateManager.VisualStateGroups>
 
                     <ToolTipService.ToolTip>
-                        <StackPanel>
-                            <StackPanel.Resources>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
-                                </Style>
-                            </StackPanel.Resources>
-                            <TextBlock
-                                Foreground="{ThemeResource TextFillColorPrimary}"
-                                FontWeight="Bold"
-                                Text="{Binding TooltipIsInstalled}"
-                                Visibility="{Binding TooltipIsInstalled, Converter={StaticResource StringVisibilityConverter}}"/>
-                            <TextBlock Text="{Binding TooltipName}"/>
-                            <TextBlock Text="{Binding TooltipVersion}"/>
-                            <TextBlock Text="{Binding TooltipSource}"/>
-                            <TextBlock Text="{Binding TooltipPublisher}"/>
-                        </StackPanel>
+                        <controls:PackageDetailsTooltip Package="{Binding}" />
                     </ToolTipService.ToolTip>
 
                     <!-- Package card header layout -->
@@ -87,9 +73,6 @@
                         <ImageIcon Name="Image" Width="24" VerticalAlignment="Center" Source="{Binding Icon}"/>
 
                         <!-- Select button -->
-                        <!-- Adding a margin prevents FlipView's (overlay) next
-                             button from shadowing this button, and enables keyboard
-                             navigation -->
                         <Button
                             Grid.Column="1"
                             AutomationProperties.Name="{Binding ButtonAutomationName}"
@@ -98,7 +81,6 @@
                             BorderThickness="0"
                             Command="{Binding ToggleSelectionCommand}"
                             HorizontalAlignment="Right"
-                            Margin="0,0,2,0"
                             Padding="5">
                             <FontIcon
                                 Glyph="{Binding IsSelected, Converter={StaticResource SelectButtonGlyphConverter}}"

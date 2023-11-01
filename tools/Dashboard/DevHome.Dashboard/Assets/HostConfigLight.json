@@ -46,8 +46,8 @@
   },
   "containerStyles": {
     "default": {
-      "backgroundColor": "#B4FFFFFF",
-      "borderColor": "#B4FFFFFF",
+      "backgroundColor": "#00000000",
+      "borderColor": "#00000000",
       "foregroundColors": {
         "default": {
           "default": "#E6000000",
