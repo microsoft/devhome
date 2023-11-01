@@ -45,7 +45,7 @@ public sealed partial class RepoConfigView : UserControl
             // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
             foreach (var cloneInformation in ViewModel.RepoReviewItems)
             {
-                cloneInformation.SetIcon(sender.ActualTheme, ViewModel.Host.GetService<WindowEx>());
+                cloneInformation.SetIcon(sender.ActualTheme);
             }
         }
 
@@ -101,7 +101,7 @@ public sealed partial class RepoConfigView : UserControl
 
         foreach (var repoToClone in everythingToClone)
         {
-            repoToClone.SetIcon(ActualTheme, ViewModel.Host.GetService<WindowEx>());
+            repoToClone.SetIcon(ActualTheme);
         }
 
         // Handle the case the user de-selected all repos.

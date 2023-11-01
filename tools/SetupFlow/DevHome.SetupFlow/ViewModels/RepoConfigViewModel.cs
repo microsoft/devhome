@@ -129,7 +129,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         // Because the logos aren't glyphs DevHome has to change the logos manually to match the theme.
         foreach (var cloneInformation in RepoReviewItems)
         {
-            cloneInformation.SetIcon(themeToSwitchTo, Host.GetService<WindowEx>());
+            cloneInformation.SetIcon(themeToSwitchTo);
         }
     }
 

@@ -4,19 +4,12 @@
 using System;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Extensions;
-using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Graphics.Imaging;
-using Windows.Storage;
 using Windows.Storage.Streams;
-using Windows.UI;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -26,11 +19,7 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public partial class CloningInformation : ObservableObject, IEquatable<CloningInformation>
 {
-    // TODO: Remove when extension SDK has the ability to pass an icon to DevHome.
-    private static readonly BitmapImage LightGithub = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Light.png"));
-
-    private static readonly BitmapImage DarkGithub = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitHubLogo_Dark.png"));
-
+    // Use git icons for the generic provider.
     private static readonly BitmapImage LightGit = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitLight.png"));
 
     private static readonly BitmapImage DarkGit = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitDark.png"));
@@ -90,8 +79,34 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     [ObservableProperty]
     private BitmapImage _repositoryTypeIcon;
 
-    public void SetIcon(ElementTheme theme, WindowEx window)
+    /// <summary>
+    /// Sets RepositoryTypeIcon according to the theme.
+    /// </summary>
+    /// <param name="theme">The theme to use to determine the icon.</param>
+    /// <remarks>
+    /// This is for monochrome icons only.
+    /// Additionally, this assumes the icon coming from the extension is colored for the dark theme.
+    /// If the provider is null (Generic repo) or if the icon is null, the git icon is used instead.
+    /// </remarks>
+    public void SetIcon(ElementTheme theme)
     {
+        // RepositoryProvider can be null in the case of URL cloning.
+        if (RepositoryProvider == null || RepositoryProvider.Icon == null)
+        {
+            BitmapImage gitIcon;
+            if (theme == ElementTheme.Dark)
+            {
+                gitIcon = DarkGit;
+            }
+            else
+            {
+                gitIcon = LightGit;
+            }
+
+            RepositoryTypeIcon = gitIcon;
+            return;
+        }
+
         BitmapDecoder decoder = BitmapDecoder.CreateAsync(RepositoryProvider.Icon.OpenReadAsync().AsTask().Result).AsTask().Result;
 
         // Get the pixel data as a byte array
@@ -128,47 +143,12 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
             }
         }
 
-        // Create a new InMemoryRandomAccessStream to store the reversed image
         var reversedStream = new InMemoryRandomAccessStream();
-
-        // Create a BitmapEncoder from the stream
         var encoder = BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, reversedStream).AsTask().Result;
-
-        // Set the pixel data from the modified byte array
         encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, decoder.PixelWidth, decoder.PixelHeight, decoder.DpiX, decoder.DpiY, pixels);
-
-        // Flush the encoder to write the data to the stream
         encoder.FlushAsync().AsTask().Wait();
 
         RepositoryTypeIcon.SetSource(reversedStream);
-
-        /*
-        if (theme == ElementTheme.Dark)
-        {
-            // Currently the only providers are Github and the generic provider.  The provider type
-            // for the generic provider is git.
-            // TODO: Remove when extensions have a GetIcon method.
-            if (RepositoryProviderDisplayName.Equals("github", StringComparison.OrdinalIgnoreCase))
-            {
-                RepositoryTypeIcon = DarkGithub;
-            }
-            else
-            {
-                RepositoryTypeIcon = DarkGit;
-            }
-        }
-        else
-        {
-            if (RepositoryProviderDisplayName.Equals("github", StringComparison.OrdinalIgnoreCase))
-            {
-                RepositoryTypeIcon = LightGithub;
-            }
-            else
-            {
-                RepositoryTypeIcon = LightGit;
-            }
-        }
-        */
     }
 
     /// <summary>
@@ -184,7 +164,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     public string RepositoryId => $"{RepositoryToClone.DisplayName ?? string.Empty}";
 
     /// <summary>
-    /// Gets the repository in a [organization]\[reponame] style
+    /// Gets the repository in a [oening account name]\[reponame] style
     /// </summary>
     public string RepositoryOwnerAndName => Path.Join(RepositoryToClone.OwningAccountName ?? string.Empty, RepositoryToClone.DisplayName);
 
@@ -280,7 +260,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     /// Initializes a new instance of the <see cref="CloningInformation"/> class.
     /// </summary>
     /// <param name="repoToClone">The repo to clone</param>
-    public CloningInformation(IRepository repoToClone, ElementTheme currentTheme)
+    public CloningInformation(IRepository repoToClone)
     {
         RepositoryToClone = repoToClone;
     }
