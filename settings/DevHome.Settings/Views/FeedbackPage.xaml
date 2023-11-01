@@ -34,7 +34,7 @@
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel>
                                 <TextBox x:Name="ReportBugIssueTitle" x:Uid="Settings_Feedback_ReportBug_IssueTitle" AcceptsReturn="True" />
-                                <TextBox x:Name="ReportBugReproSteps" x:Uid="Settings_Feedback_ReportBug_ReproSteps" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
+                                <TextBox x:Name="ReportBugReproSteps" x:Uid="Settings_Feedback_ReportBug_ReproSteps" TextWrapping="Wrap" MinHeight="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
                                 <TextBox x:Name="ReportBugExpectedBehavior" x:Uid="Settings_Feedback_ReportBug_ExpectedBehavior" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
                                 <TextBox x:Name="ReportBugActualBehavior" x:Uid="Settings_Feedback_ReportBug_ActualBehavior" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
                                 <Expander x:Name="ReportBugSysInfoExpander" Expanding="ShowSysInfoExpander_Expanding" Margin="{StaticResource SmallTopMargin}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinWidth="{StaticResource FeedbackExpanderWidth}">
@@ -83,9 +83,9 @@
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel>
                                 <TextBox x:Name="SuggestFeatureTitle" x:Uid="Settings_Feedback_SuggestFeature_IssueTitle" AcceptsReturn="True"/>
-                                <TextBox x:Name="SuggestFeatureDescription" x:Uid="Settings_Feedback_SuggestFeature_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
-                                <TextBox x:Name="SuggestFeatureScenario" x:Uid="Settings_Feedback_SuggestFeature_Scenario" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
-                                <TextBox x:Name="SuggestFeatureSupportingInfo" x:Uid="Settings_Feedback_SuggestFeature_SupportingInfo" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                                <TextBox x:Name="SuggestFeatureDescription" x:Uid="Settings_Feedback_SuggestFeature_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" MinHeight="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                                <TextBox x:Name="SuggestFeatureScenario" x:Uid="Settings_Feedback_SuggestFeature_Scenario" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" MinHeight="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                                <TextBox x:Name="SuggestFeatureSupportingInfo" x:Uid="Settings_Feedback_SuggestFeature_SupportingInfo" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" MinHeight="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
                             </StackPanel>
                         </ScrollViewer>
                     </Grid>
