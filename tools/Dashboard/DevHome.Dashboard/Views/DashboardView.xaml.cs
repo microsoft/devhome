@@ -30,6 +30,8 @@ public partial class DashboardView : ToolPage
 
     public DashboardViewModel ViewModel { get; }
 
+    internal DashboardBannerViewModel BannerViewModel { get; }
+
     public static ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
 
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
@@ -42,6 +44,7 @@ public partial class DashboardView : ToolPage
     public DashboardView()
     {
         ViewModel = Application.Current.GetService<DashboardViewModel>();
+        BannerViewModel = Application.Current.GetService<DashboardBannerViewModel>();
 
         this.InitializeComponent();
 
@@ -626,7 +629,7 @@ public partial class DashboardView : ToolPage
             roamingProperties.Remove("HideDashboardBanner");
         }
 
-        ViewModel.ResetDashboardBanner();
+        BannerViewModel.ResetDashboardBanner();
     }
 #endif
 }

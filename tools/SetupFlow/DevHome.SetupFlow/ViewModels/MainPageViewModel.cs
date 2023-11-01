@@ -16,7 +16,6 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
-using Windows.Storage;
 using Windows.System;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -29,13 +28,10 @@ namespace DevHome.SetupFlow.ViewModels;
 /// </summary>
 public partial class MainPageViewModel : SetupPageViewModelBase
 {
-    private const string _hideSetupFlowBannerKey = "HideSetupFlowBanner";
-
     private readonly IHost _host;
     private readonly IWindowsPackageManager _wpm;
 
-    [ObservableProperty]
-    private bool _showBanner = true;
+    public MainPageBannerViewModel BannerViewModel { get; }
 
     [ObservableProperty]
     private bool _showDevDriveItem;
@@ -57,7 +53,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         IWindowsPackageManager wpm,
-        IHost host)
+        IHost host,
+        MainPageBannerViewModel bannerViewModel)
         : base(stringResource, orchestrator)
     {
         _host = host;
@@ -66,7 +63,8 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         IsNavigationBarVisible = false;
         IsStepPage = false;
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
-        ShowBanner = ShouldShowSetupFlowBanner();
+
+        BannerViewModel = bannerViewModel;
     }
 
     protected async override Task OnFirstNavigateToAsync()
@@ -81,15 +79,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         {
             Log.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available. Package install item is hidden.");
         }
-    }
-
-    [RelayCommand]
-    private void HideBanner()
-    {
-        TelemetryFactory.Get<ITelemetry>().LogCritical("MainPage_HideLearnMoreBanner_Event", false, Orchestrator.ActivityId);
-        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        roamingProperties[_hideSetupFlowBannerKey] = bool.TrueString;
-        ShowBanner = false;
     }
 
     /// <summary>
@@ -187,12 +176,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     }
 
     [RelayCommand]
-    private async Task BannerButtonAsync()
-    {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2235076"));
-    }
-
-    [RelayCommand]
     private void HideAppInstallerUpdateNotification()
     {
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Hiding AppInstaller update notification");
@@ -205,11 +188,5 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         HideAppInstallerUpdateNotification();
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Opening AppInstaller in the Store app");
         await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?productid={WindowsPackageManager.AppInstallerProductId}"));
-    }
-
-    private bool ShouldShowSetupFlowBanner()
-    {
-        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        return !roamingProperties.ContainsKey(_hideSetupFlowBannerKey);
     }
 }

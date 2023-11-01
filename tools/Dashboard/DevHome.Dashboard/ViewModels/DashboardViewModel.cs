@@ -3,14 +3,10 @@
 
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml;
-using Windows.Storage;
-using Windows.System;
 
 namespace DevHome.Dashboard.ViewModels;
 
@@ -22,17 +18,7 @@ public partial class DashboardViewModel : ObservableObject
 
     private readonly IPackageDeploymentService _packageDeploymentService;
 
-    private readonly Version minSupportedVersion400 = new (423, 3800);
-    private readonly Version minSupportedVersion500 = new (523, 3300);
-    private readonly Version version500 = new (500, 0);
-
     private bool _validatedWebExpPack;
-
-    // Banner properties
-    private const string _hideDashboardBannerKey = "HideDashboardBanner";
-
-    [ObservableProperty]
-    private bool _showDashboardBanner;
 
     [ObservableProperty]
     private bool _isLoading;
@@ -45,8 +31,6 @@ public partial class DashboardViewModel : ObservableObject
         _packageDeploymentService = packageDeploymentService;
         WidgetIconService = widgetIconService;
         WidgetHostingService = widgetHostingService;
-
-        ShowDashboardBanner = ShouldShowDashboardBanner();
     }
 
     public bool EnsureWebExperiencePack()
@@ -56,6 +40,10 @@ public partial class DashboardViewModel : ObservableObject
         {
             return true;
         }
+
+        var minSupportedVersion400 = new Version(423, 3800);
+        var minSupportedVersion500 = new Version(523, 3300);
+        var version500 = new Version(500, 0);
 
         // Ensure the application is installed, and the version is high enough.
         const string packageFamilyName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
@@ -76,39 +64,4 @@ public partial class DashboardViewModel : ObservableObject
 
         return Visibility.Collapsed;
     }
-
-    // =============================================================================================
-    // Banner methods
-    // =============================================================================================
-    [RelayCommand]
-    private async Task DashboardBannerButtonAsync()
-    {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2234395"));
-    }
-
-    [RelayCommand]
-    private void HideDashboardBannerButton()
-    {
-        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        roamingProperties[_hideDashboardBannerKey] = bool.TrueString;
-        ShowDashboardBanner = false;
-    }
-
-    private bool ShouldShowDashboardBanner()
-    {
-        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        return !roamingProperties.ContainsKey(_hideDashboardBannerKey);
-    }
-
-#if DEBUG
-    public void ResetDashboardBanner()
-    {
-        ShowDashboardBanner = true;
-        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        if (roamingProperties.ContainsKey(_hideDashboardBannerKey))
-        {
-            roamingProperties.Remove(_hideDashboardBannerKey);
-        }
-    }
-#endif
 }

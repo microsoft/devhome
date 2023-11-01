@@ -14,6 +14,7 @@ public static class ServiceExtensions
     {
         // View-models
         services.AddSingleton<DashboardViewModel>();
+        services.AddTransient<DashboardBannerViewModel>();
 
         // Services
         services.AddSingleton<IWidgetHostingService, WidgetHostingService>();

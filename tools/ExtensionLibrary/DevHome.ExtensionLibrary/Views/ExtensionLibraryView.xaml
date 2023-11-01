@@ -42,10 +42,10 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,22,0,0">
             <StackPanel>
                 <commonviews:Banner TextWidth="350"
-                                    Visibility="{x:Bind ViewModel.ShowExtensionsBanner,Mode=OneWay}"
+                                    Visibility="{x:Bind BannerViewModel.ShowExtensionsBanner,Mode=OneWay}"
                                     HideButtonVisibility="true"
-                                    HideButtonCommand="{x:Bind ViewModel.HideExtensionsBannerButtonCommand,Mode=OneWay}"
-                                    ButtonCommand="{x:Bind ViewModel.ExtensionsBannerButtonCommand,Mode=OneWay}"
+                                    HideButtonCommand="{x:Bind BannerViewModel.HideExtensionsBannerButtonCommand,Mode=OneWay}"
+                                    ButtonCommand="{x:Bind BannerViewModel.ExtensionsBannerButtonCommand,Mode=OneWay}"
                                     x:Uid="ExtensionsBanner"
                                     BackgroundSource="{ThemeResource ExtensionsBannerBack}"
                                     OverlaySource="{ThemeResource ExtensionsBannerFront}"
