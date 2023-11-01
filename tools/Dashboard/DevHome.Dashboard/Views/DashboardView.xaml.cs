@@ -187,6 +187,8 @@ public partial class DashboardView : ToolPage
                     }
                     else
                     {
+                        // If we have a widget with no state, Dev Home does not consider it a valid widget
+                        // and should delete it, rather than letting it run invisibly in the background.
                         await DeleteAbandonedWidget(widget);
                     }
                 }
@@ -216,14 +218,13 @@ public partial class DashboardView : ToolPage
 
     private async Task DeleteAbandonedWidget(Widget widget)
     {
-        var length = ViewModel.WidgetHostingService.GetWidgetHost()?.GetWidgets().Length;
+        var length = ViewModel.WidgetHostingService.GetWidgetHost()!.GetWidgets().Length;
         Log.Logger()?.ReportInfo("DashboardView", $"Found abandoned widget, try to delete it...");
         Log.Logger()?.ReportInfo("DashboardView", $"Before delete, {length} widgets for this host");
 
-        // If we have an abandoned widget, delete it.
         await widget.DeleteAsync();
 
-        length = ViewModel.WidgetHostingService.GetWidgetHost()?.GetWidgets().Length;
+        length = ViewModel.WidgetHostingService.GetWidgetHost()!.GetWidgets().Length;
         Log.Logger()?.ReportInfo("DashboardView", $"After delete, {length} widgets for this host");
     }
 
