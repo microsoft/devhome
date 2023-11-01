@@ -249,6 +249,17 @@ public partial class DashboardView : ToolPage
             XamlRoot = this.XamlRoot,
             RequestedTheme = this.ActualTheme,
         };
+
+        // If the dialog was closed in a way we don't already handle (for example, pressing Esc),
+        // delete the partially created widget.
+        dialog.Closed += async (sender, args) =>
+        {
+            if (dialog.AddedWidget == null && dialog.ViewModel.Widget != null)
+            {
+                await dialog.ViewModel.Widget.DeleteAsync();
+            }
+        };
+
         _ = await dialog.ShowAsync();
 
         var newWidget = dialog.AddedWidget;
@@ -450,6 +461,16 @@ public partial class DashboardView : ToolPage
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
             RequestedTheme = this.ActualTheme,
+        };
+
+        // If the dialog was closed in a way we don't already handle (for example, pressing Esc),
+        // delete the partially created widget.
+        dialog.Closed += async (sender, args) =>
+        {
+            if (dialog.EditedWidget == null && dialog.ViewModel.Widget != null)
+            {
+                await dialog.ViewModel.Widget.DeleteAsync();
+            }
         };
         _ = await dialog.ShowAsync();
 

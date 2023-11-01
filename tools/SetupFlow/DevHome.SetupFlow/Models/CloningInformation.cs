@@ -6,6 +6,7 @@ using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Contracts.Services;
+using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -147,7 +148,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
             // Currently the only providers are Github and the generic provider.  The provider type
             // for the generic provider is git.
             // TODO: Remove when extensions have a GetIcon method.
-            if (ProviderName.Equals("github", StringComparison.OrdinalIgnoreCase))
+            if (RepositoryProviderDisplayName.Equals("github", StringComparison.OrdinalIgnoreCase))
             {
                 RepositoryTypeIcon = DarkGithub;
             }
@@ -158,7 +159,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         }
         else
         {
-            if (ProviderName.Equals("github", StringComparison.OrdinalIgnoreCase))
+            if (RepositoryProviderDisplayName.Equals("github", StringComparison.OrdinalIgnoreCase))
             {
                 RepositoryTypeIcon = LightGithub;
             }
@@ -244,6 +245,28 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     }
 
     private IRepositoryProvider _repositoryProvider;
+
+    public string RepositoryProviderDisplayName
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_repositoryProviderDisplayName))
+            {
+                try
+                {
+                    _repositoryProviderDisplayName = RepositoryProvider.DisplayName;
+                }
+                catch (Exception e)
+                {
+                    Log.Logger?.ReportError(_repositoryProviderDisplayName, e);
+                }
+            }
+
+            return _repositoryProviderDisplayName;
+        }
+    }
+
+    private string _repositoryProviderDisplayName = string.Empty;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CloningInformation"/> class.
