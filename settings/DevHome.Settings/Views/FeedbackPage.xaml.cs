@@ -165,27 +165,6 @@ public sealed partial class FeedbackPage : Page
         ReportBugIssueTitle.Text = ReportBugReproSteps.Text = ReportBugExpectedBehavior.Text = ReportBugActualBehavior.Text = string.Empty;
     }
 
-    private async void DisplayBlankIssueDialog(object sender, RoutedEventArgs e)
-    {
-        var result = await BlankIssueDialog.ShowAsync();
-        if (result == ContentDialogResult.Primary)
-        {
-            var issueTitle = HttpUtility.UrlEncode(BlankIssueTitle.Text);
-            var issueDescription = HttpUtility.UrlEncode(BlankIssueDescription.Text);
-            var gitHubURL = "https://github.com/microsoft/devhome/issues/new?title=" + issueTitle +
-                "&body=" + issueDescription;
-
-            // Make sure any changes are consistent with the translation issue template on GitHub
-            await Windows.System.Launcher.LaunchUriAsync(new Uri(gitHubURL));
-        }
-        else
-        {
-            BlankIssueDialog.Hide();
-        }
-
-        BlankIssueTitle.Text = BlankIssueDescription.Text = string.Empty;
-    }
-
     private void ShowSysInfoExpander_Expanding(Expander sender, ExpanderExpandingEventArgs args)
     {
         PhysicalMemory.Text = GetPhysicalMemory();
