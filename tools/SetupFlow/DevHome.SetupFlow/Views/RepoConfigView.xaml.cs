@@ -13,10 +13,8 @@ using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.Telemetry;
-using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.Views;
 
