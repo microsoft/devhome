@@ -211,6 +211,60 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
+				  <Definition Id="System_CPUUsage" DisplayName="CPU" Description="Microsoft System CPU Usage Widget Description" AllowMultiple="true">
+                    <Capabilities>
+                      <Capability>
+                        <Size Name="small" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="medium" />
+                      </Capability>
+                      <Capability>
+                        <Size Name="large" />
+                      </Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="Widgets\Assets\cpu_icon_light.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Icons>
+                          <Icon Path="Widgets\Assets\cpu_icon_dark.png" />
+                        </Icons>
+                      </DarkMode>
+                      <LightMode />
+                    </ThemeResources>
+                  </Definition>
+				  <Definition Id="System_Update" DisplayName="System Update" Description="Microsoft System Update Widget Description" AllowMultiple="true">
+				    <Capabilities>
+				      <Capability>
+					     <Size Name="small" />
+				     </Capability>
+					 <Capability>
+					   <Size Name="medium" />
+				     </Capability>
+					 <Capability>
+					    <Size Name="large" />
+					  </Capability>
+					</Capabilities>
+					<ThemeResources>
+					  <Icons>
+					    <Icon Path="Widgets\Assets\update_icon_light.png" />
+					  </Icons>
+					  <Screenshots>
+					    <Screenshot Path="Assets\Preview\StoreLogo.png" DisplayAltText="For accessibility" />
+					  </Screenshots>
+					  <DarkMode>
+					    <Icons>
+						  <Icon Path="Widgets\Assets\update_icon_dark.png" />
+						</Icons>
+					  </DarkMode>
+					  <LightMode />
+				    </ThemeResources>
+				  </Definition>
                 </Definitions>
               </WidgetProvider>
             </uap3:Properties>
