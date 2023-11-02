@@ -13,7 +13,6 @@
     <None Remove="Assets\HostConfigDark.json" />
     <None Remove="Assets\HostConfigLight.json" />
     <None Remove="Views\AddWidgetDialog.xaml" />
-    <None Remove="Views\CustomizeWidgetDialog.xaml" />
     <None Remove="Views\DashboardView.xaml" />
     <None Remove="Views\WidgetControl.xaml" />
   </ItemGroup>
@@ -55,9 +54,6 @@
 
   <ItemGroup>
     <Page Update="Views\AddWidgetDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Views\CustomizeWidgetDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Update="Views\DashboardView.xaml">

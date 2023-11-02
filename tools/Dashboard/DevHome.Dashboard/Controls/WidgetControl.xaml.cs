@@ -227,7 +227,6 @@ public sealed partial class WidgetControl : UserControl
         {
             if (customizeMenuItem?.Tag is WidgetViewModel widgetViewModel)
             {
-                ////widgetViewModel.IsInEditMode = true;
                 await widgetViewModel.Widget.NotifyCustomizationRequestedAsync();
             }
         }

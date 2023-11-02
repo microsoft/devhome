@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
@@ -48,13 +46,7 @@ public partial class DashboardView : ToolPage
 
         this.InitializeComponent();
 
-        if (PinnedWidgets != null)
-        {
-            PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChanged;
-        }
-
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
-        PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
 
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
@@ -437,64 +429,6 @@ public partial class DashboardView : ToolPage
         });
 
         ViewModel.WidgetIconService.RemoveIconsFromCache(definitionId);
-    }
-
-    // Listen for widgets being added or removed, so we can add or remove listeners on the WidgetViewModels' properties.
-    private void OnPinnedWidgetsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (e.OldItems != null)
-        {
-            foreach (INotifyPropertyChanged item in e.OldItems)
-            {
-                item.PropertyChanged -= PinnedWidgetsPropertyChanged;
-            }
-        }
-
-        if (e.NewItems != null)
-        {
-            foreach (INotifyPropertyChanged item in e.NewItems)
-            {
-                item.PropertyChanged += PinnedWidgetsPropertyChanged;
-            }
-        }
-    }
-
-    private async void PinnedWidgetsPropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName.Equals(nameof(WidgetViewModel.IsInEditMode), StringComparison.Ordinal))
-        {
-            var widgetViewModel = sender as WidgetViewModel;
-            if (widgetViewModel.IsInEditMode == true)
-            {
-                // If the WidgetControl has marked this widget as in edit mode, bring up the edit widget dialog.
-                Log.Logger()?.ReportInfo("DashboardView", $"EditWidget {widgetViewModel.Widget.Id}");
-                await EditWidget(widgetViewModel);
-            }
-        }
-    }
-
-    private async Task EditWidget(WidgetViewModel widgetViewModel)
-    {
-        // Get info about the widget we're editing.
-        var originalSize = widgetViewModel.WidgetSize;
-        var widgetDef = ViewModel.WidgetHostingService.GetWidgetCatalog()!.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
-
-        widgetViewModel.StopListeningForWidgetUpdated();
-        var dialog = new CustomizeWidgetDialog(widgetViewModel.Widget, _dispatcher, widgetDef)
-        {
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
-            XamlRoot = this.XamlRoot,
-            RequestedTheme = this.ActualTheme,
-        };
-        _ = await dialog.ShowAsync();
-
-        widgetViewModel.IsInEditMode = false;
-        widgetViewModel.StartListeningForWidgetUpdated();
-
-        // Put back the original size.
-        await widgetViewModel.Widget.SetSizeAsync(originalSize);
-
-        await widgetViewModel.RenderAsync();
     }
 
     private void WidgetGridView_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
