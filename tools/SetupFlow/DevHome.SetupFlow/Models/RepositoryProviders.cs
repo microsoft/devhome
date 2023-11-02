@@ -104,7 +104,7 @@ internal class RepositoryProviders
     }
 
     /// <summary>
-    /// Gets the login UI for the provider with the name providername
+    /// Gets the login UI for the provider with the name providerName
     /// </summary>
     /// <param name="providerName">The provider to search for.</param>
     /// <param name="elementTheme">The theme to use for the ui.</param>
