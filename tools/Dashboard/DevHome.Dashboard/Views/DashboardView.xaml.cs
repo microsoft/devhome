@@ -30,6 +30,8 @@ public partial class DashboardView : ToolPage
 
     public DashboardViewModel ViewModel { get; }
 
+    internal DashboardBannerViewModel BannerViewModel { get; }
+
     public static ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
 
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
@@ -42,6 +44,7 @@ public partial class DashboardView : ToolPage
     public DashboardView()
     {
         ViewModel = Application.Current.GetService<DashboardViewModel>();
+        BannerViewModel = Application.Current.GetService<DashboardBannerViewModel>();
 
         this.InitializeComponent();
 
@@ -140,10 +143,10 @@ public partial class DashboardView : ToolPage
     private async Task RestorePinnedWidgetsAsync()
     {
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
-        var pinnedWidgets = ViewModel.WidgetHostingService.GetWidgetHost()?.GetWidgets();
-        if (pinnedWidgets != null)
+        var hostWidgets = ViewModel.WidgetHostingService.GetWidgetHost()?.GetWidgets();
+        if (hostWidgets != null)
         {
-            Log.Logger()?.ReportInfo("DashboardView", $"Found {pinnedWidgets.Length} widgets for this host");
+            Log.Logger()?.ReportInfo("DashboardView", $"Found {hostWidgets.Length} widgets for this host");
             var restoredWidgetsWithPosition = new SortedDictionary<int, Widget>();
             var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
             var numUnorderedWidgets = 0;
@@ -151,7 +154,7 @@ public partial class DashboardView : ToolPage
             // Widgets do not come from the host in a deterministic order, so save their order in each widget's CustomState.
             // Iterate through all the widgets and put them in order. If a widget does not have a position assigned to it,
             // append it at the end. If a position is missing, just show the next widget in order.
-            foreach (var widget in pinnedWidgets)
+            foreach (var widget in hostWidgets)
             {
                 try
                 {
@@ -179,6 +182,17 @@ public partial class DashboardView : ToolPage
                                 restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
                             }
                         }
+                        else
+                        {
+                            // This shouldn't be able to be reached
+                            Log.Logger()?.ReportError("DashboardView", $"Widget has custom state but no HostName.");
+                        }
+                    }
+                    else
+                    {
+                        // If we have a widget with no state, Dev Home does not consider it a valid widget
+                        // and should delete it, rather than letting it run invisibly in the background.
+                        await DeleteAbandonedWidgetAsync(widget);
                     }
                 }
                 catch (Exception ex)
@@ -203,6 +217,18 @@ public partial class DashboardView : ToolPage
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
         }
+    }
+
+    private async Task DeleteAbandonedWidgetAsync(Widget widget)
+    {
+        var length = ViewModel.WidgetHostingService.GetWidgetHost()!.GetWidgets().Length;
+        Log.Logger()?.ReportInfo("DashboardView", $"Found abandoned widget, try to delete it...");
+        Log.Logger()?.ReportInfo("DashboardView", $"Before delete, {length} widgets for this host");
+
+        await widget.DeleteAsync();
+
+        length = ViewModel.WidgetHostingService.GetWidgetHost()!.GetWidgets().Length;
+        Log.Logger()?.ReportInfo("DashboardView", $"After delete, {length} widgets for this host");
     }
 
     private async Task PlaceWidget(KeyValuePair<int, Widget> orderedWidget, int finalPlace)
@@ -603,7 +629,7 @@ public partial class DashboardView : ToolPage
             roamingProperties.Remove("HideDashboardBanner");
         }
 
-        ViewModel.ResetDashboardBanner();
+        BannerViewModel.ResetDashboardBanner();
     }
 #endif
 }

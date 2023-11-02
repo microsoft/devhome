@@ -9,15 +9,22 @@
     Loaded="OnLoaded">
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <windows:WindowTitleBar
+            Grid.Row="0"
             x:Name="AppTitleBar"
             Title="{x:Bind ViewModel.Title}"
             Height="{x:Bind NavigationViewControl.CompactPaneLength}" />
 
         <NavigationView
+            Grid.Row="1"
             x:Name="NavigationViewControl"
             Canvas.ZIndex="0"
             IsBackButtonVisible="Collapsed"
+            IsTitleBarAutoPaddingEnabled="True"
             SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
             IsSettingsVisible="True"
             OpenPaneLength="350"

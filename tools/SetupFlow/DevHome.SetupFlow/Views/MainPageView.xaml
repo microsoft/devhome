@@ -72,9 +72,9 @@
                     <commonviews:Banner
                         TextWidth="345"
                         HideButtonVisibility="True"
-                        HideButtonCommand="{x:Bind ViewModel.HideBannerCommand}"
-                        Visibility="{x:Bind ViewModel.ShowBanner, Mode=OneWay}"
-                        ButtonCommand="{x:Bind ViewModel.BannerButtonCommand, Mode=OneWay}"
+                        HideButtonCommand="{x:Bind ViewModel.BannerViewModel.HideBannerCommand}"
+                        Visibility="{x:Bind ViewModel.BannerViewModel.ShowBanner, Mode=OneWay}"
+                        ButtonCommand="{x:Bind ViewModel.BannerViewModel.BannerButtonCommand, Mode=OneWay}"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DefaultBanner"
                         BackgroundSource="{ThemeResource Setup_Banner_Back}"
                         OverlaySource="{ThemeResource Setup_Banner_Front}" />
