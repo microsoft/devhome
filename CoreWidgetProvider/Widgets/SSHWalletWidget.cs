@@ -117,6 +117,10 @@ internal class SSHWalletWidget : CoreWidget
         }
     }
 
+    public override void OnCustomizationRequested(WidgetCustomizationRequestedArgs customizationRequestedArgs)
+    {
+    }
+
     private void HandleConnect(WidgetActionInvokedArgs args)
     {
         var cmd = new Process();
