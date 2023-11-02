@@ -250,11 +250,18 @@ internal class SSHWalletWidget : CoreWidget
     {
         var configurationData = new JsonObject();
 
-        var currentOrDefaultConfigFile = string.IsNullOrEmpty(configFile) ? DefaultConfigFile : configFile;
+        // Determine what config file to suggest in configuration form.
+        // 1. If there is a currently selected configFile, show that.
+        // 2. Else, check if there is a _savedConfigFile. If so, the user
+        //    is in the customize flow and we should show the _savedConfigFile.
+        // 3. Else, show the DefaultConfigFile.
+        var suggestedConfigFile = string.IsNullOrEmpty(configFile) ? _savedConfigFile : configFile;
+        suggestedConfigFile = string.IsNullOrEmpty(suggestedConfigFile) ? DefaultConfigFile : suggestedConfigFile;
+
         var sshConfigData = new JsonObject
             {
                 { "configFile", configFile },
-                { "currentOrDefaultConfigFile", currentOrDefaultConfigFile },
+                { "currentOrDefaultConfigFile", suggestedConfigFile },
                 { "numOfEntries", numOfEntries.ToString(CultureInfo.InvariantCulture) },
             };
 
