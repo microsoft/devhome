@@ -80,6 +80,7 @@
                     <ContentControl IsTabStop="False" Content="{Binding IsInstalled, Converter={StaticResource LearnMoreInstalledConverter}}" />
                     <Button
                         IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
+                        AutomationProperties.Name="{Binding ButtonAutomationName}"
                         Padding="5"
                         Command="{Binding ToggleSelectionCommand,Mode=OneWay}">
                         <FontIcon

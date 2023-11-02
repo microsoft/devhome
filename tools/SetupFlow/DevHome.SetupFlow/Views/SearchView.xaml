@@ -51,7 +51,12 @@
         </StackPanel>
 
         <!-- Search result -->
-        <ListView Name="PackagesListView" Grid.Row="1" ItemsSource="{x:Bind ViewModel.ResultPackages, Mode=OneWay}" SelectionMode="None">
+        <ListView
+            Name="PackagesListView"
+            Grid.Row="1"
+            Loaded="PackagesListView_Loaded"
+            ItemsSource="{x:Bind ViewModel.ResultPackages, Mode=OneWay}"
+            SelectionMode="None">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="Template" Value="{ThemeResource AppManagementSelectablePackageTemplate}" />
