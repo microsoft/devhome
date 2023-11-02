@@ -30,6 +30,9 @@ internal class SSHWalletWidget : CoreWidget
         set => SetState(value);
     }
 
+    private string _savedContentData = string.Empty;
+    private string _savedConfigFile = string.Empty;
+
     public SSHWalletWidget()
     {
     }
@@ -114,11 +117,27 @@ internal class SSHWalletWidget : CoreWidget
             case WidgetAction.Unknown:
                 Log.Logger()?.ReportError(Name, ShortId, $"Unknown verb: {actionInvokedArgs.Verb}");
                 break;
+
+            case WidgetAction.Save:
+                _savedContentData = string.Empty;
+                _savedConfigFile = string.Empty;
+                ContentData = EmptyJson;
+                SetActive();
+                break;
+
+            case WidgetAction.Cancel:
+                ConfigFile = _savedConfigFile;
+                ContentData = _savedContentData;
+                SetActive();
+                break;
         }
     }
 
     public override void OnCustomizationRequested(WidgetCustomizationRequestedArgs customizationRequestedArgs)
     {
+        _savedContentData = ContentData;
+        _savedConfigFile = ConfigFile;
+        SetConfigure();
     }
 
     private void HandleConnect(WidgetActionInvokedArgs args)
@@ -242,6 +261,7 @@ internal class SSHWalletWidget : CoreWidget
         configurationData.Add("configuring", configuring);
         configurationData.Add("hasConfiguration", hasConfiguration);
         configurationData.Add("configuration", sshConfigData);
+        configurationData.Add("savedConfigFile", _savedConfigFile);
         configurationData.Add("submitIcon", IconLoader.GetIconAsBase64("arrow.png"));
 
         if (!string.IsNullOrEmpty(errorMessage))

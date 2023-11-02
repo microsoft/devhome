@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 namespace CoreWidgetProvider.Widgets.Enums;
+
 public enum WidgetAction
 {
     /// <summary>
@@ -43,4 +44,8 @@ public enum WidgetAction
     /// Kill process #3.
     /// </summary>
     CpuKill3,
+
+    Save,
+
+    Cancel,
 }
