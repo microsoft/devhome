@@ -117,8 +117,6 @@ configuration:
             association: Member
       then:
       - removeLabel:
-          label: Needs-Triage
-      - removeLabel:
           label: Needs-Team-Response
       - addLabel:
           label: Needs-Author-Feedback
