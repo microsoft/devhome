@@ -17,8 +17,9 @@ public class AccountsViewModel : ObservableObject
 
     public AccountsViewModel()
     {
-        var devIdProviders = Task.Run(async () => await Application.Current.GetService<IAccountsService>().GetDevIdProviders()).Result;
-        devIdProviders.ToList().ForEach((devIdProvider) =>
+        var devIdProviders = Task.Run(async () => await Application.Current.GetService<IAccountsService>().GetDevIdProviders()).Result.ToList();
+        devIdProviders.Sort((a, b) => string.Compare(a.DisplayName, b.DisplayName, System.StringComparison.OrdinalIgnoreCase));
+        devIdProviders.ForEach((devIdProvider) =>
         {
             AccountsProviders.Add(new AccountsProviderViewModel(devIdProvider));
         });

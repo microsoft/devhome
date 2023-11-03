@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -77,6 +78,8 @@ public partial class ExtensionsViewModel : ObservableObject
             var extensionService = Application.Current.GetService<IExtensionService>();
             return await extensionService.GetInstalledExtensionsAsync(true);
         }).Result;
+
+        extensionWrappers = extensionWrappers.OrderBy(extensionWrapper => extensionWrapper.Name);
 
         SettingsList.Clear();
 

@@ -76,6 +76,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
         InstalledPackagesList.Clear();
 
+        extensionWrappers = extensionWrappers.OrderBy(extensionWrapper => extensionWrapper.Name);
+
         foreach (var extensionWrapper in extensionWrappers)
         {
             // Don't show self as an extension.
