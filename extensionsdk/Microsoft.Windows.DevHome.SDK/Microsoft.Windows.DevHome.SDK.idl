@@ -1,6 +1,6 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract DevHomeContract {}
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -141,10 +141,13 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)] 
     enum AuthenticationState {
         LoggedIn = 0,
-        LoggedOut = 1
+        LoggedOut = 1,
+
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] 
+        FixAccount = 2
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
