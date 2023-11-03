@@ -3,7 +3,8 @@ description: Report issues on our documentation
 labels: 
 - Issue-Docs 
 body:
-- type: textarea
+- id: description
+  type: textarea
   attributes: 
     label: Provide a description of requested docs changes
     placeholder: Briefly describe which document needs to be corrected and why.

@@ -90,6 +90,16 @@
                         </ScrollViewer>
                     </Grid>
                 </ContentDialog>
+                <ContentDialog x:Name="DocumentationIssueDialog" x:Uid="Settings_Feedback_DocumentationIssue_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
+                    <Grid>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBox x:Name="DocumentationIssueTitle" x:Uid="Settings_Feedback_DocumentationIssue_IssueTitle" AcceptsReturn="True"/>
+                                <TextBox x:Name="DocumentationIssueDescription" x:Uid="Settings_Feedback_DocumentationIssue_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </ContentDialog>
                 <TextBlock Margin="{StaticResource MediumBottomMargin}" TextWrapping="WrapWholeWords">
                     <Run x:Uid="Settings_Feedback_OpenSource"/>
                     <Hyperlink x:Uid="Settings_Feedback_OpenSource_Link" TextDecorations="None">
@@ -117,6 +127,13 @@
                                   Glyph="&#xE909;"/>
                         </ctControls:SettingsCard.HeaderIcon>
                         <Button x:Uid="Settings_Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog" MinWidth="150" />
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_DocumentationIssue">
+                        <ctControls:SettingsCard.HeaderIcon>
+                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                Glyph="&#xe736;"/>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_DocumentationIssue_Button" Click="DisplayDocumentationIssueDialog" MinWidth="150" />
                     </ctControls:SettingsCard>
                     <ctControls:SettingsCard x:Uid="Settings_Feedback_BuildExtension">
                         <ctControls:SettingsCard.HeaderIcon>
