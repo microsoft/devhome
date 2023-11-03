@@ -214,6 +214,8 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
 
                 if (result.Status == ProviderOperationStatus.Failure)
                 {
+                    TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_CouldNotClone_Event", LogLevel.Critical, new ExceptionEvent(result.ExtendedError.HResult, result.DisplayMessage));
+
                     _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, result.DisplayMessage);
                     WasCloningSuccessful = false;
                     return TaskFinishedState.Failure;

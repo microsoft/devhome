@@ -16,9 +16,21 @@ public class ExceptionEvent : EventBase
 
     public int HResult { get; }
 
+    public string Message
+    {
+        get; private set;
+    }
+
     public ExceptionEvent(int hresult)
     {
         HResult = hresult;
+        Message = string.Empty;
+    }
+
+    public ExceptionEvent(int hresult, string message)
+    {
+        HResult = hresult;
+        Message = message;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
