@@ -338,7 +338,6 @@ internal partial class AddRepoDialog : ContentDialog
             if (numberOfReposToCloneCount == AddRepoViewModel.EverythingToClone.Count)
             {
                 AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation, LoginUIContent);
-                AddRepoViewModel.ShouldShowUrlError = Visibility.Collapsed;
             }
 
             if (AddRepoViewModel.ShouldShowUrlError == Visibility.Visible)
