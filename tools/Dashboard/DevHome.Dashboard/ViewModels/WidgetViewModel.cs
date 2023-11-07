@@ -38,6 +38,9 @@ public partial class WidgetViewModel : ObservableObject
     private WidgetSize _widgetSize;
 
     [ObservableProperty]
+    private bool _isCustomizable;
+
+    [ObservableProperty]
     private string _widgetDisplayTitle;
 
     [ObservableProperty]
@@ -45,9 +48,6 @@ public partial class WidgetViewModel : ObservableObject
 
     [ObservableProperty]
     private FrameworkElement _widgetFrameworkElement;
-
-    [ObservableProperty]
-    private Microsoft.UI.Xaml.Media.Brush _widgetBackground;
 
     public bool IsInAddMode { get; set; }
 
@@ -80,6 +80,7 @@ public partial class WidgetViewModel : ObservableObject
         {
             WidgetDisplayTitle = WidgetDefinition.DisplayTitle;
             WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinition.DisplayName;
+            IsCustomizable = WidgetDefinition.IsCustomizable;
         }
     }
 

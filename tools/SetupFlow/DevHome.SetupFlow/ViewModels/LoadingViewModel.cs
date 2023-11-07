@@ -181,7 +181,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
             var messageToDisplay = new LoadingMessageViewModel(message);
-            messageToDisplay.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
             messageToDisplay.ShouldShowStatusSymbolIcon = false;
             messageToDisplay.ShouldShowProgressRing = false;
             Messages.Insert(Messages.Count - _numberOfExecutingTasks, messageToDisplay);
@@ -323,7 +322,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         Messages.Remove(loadingMessage);
 
         // Modify the message so it looks done.
-        loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
         loadingMessage.ShouldShowProgressRing = false;
 
         // Insert the message right before any "executing" messages.
@@ -441,7 +439,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
 
                 loadingMessage.ShouldShowProgressRing = true;
-                loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
                 Messages.Add(loadingMessage);
 
                 // Keep increment inside TryEnqueue to enforce "locking"

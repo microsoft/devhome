@@ -10,7 +10,7 @@ namespace CoreWidgetProvider.Widgets;
 [ComVisible(true)]
 [ClassInterface(ClassInterfaceType.None)]
 [Guid("F8B2DBB9-3687-4C6E-99B2-B92C82905937")]
-internal class WidgetProvider : IWidgetProvider
+internal class WidgetProvider : IWidgetProvider, IWidgetProvider2
 {
     private readonly Dictionary<string, IWidgetImplFactory> widgetDefinitionRegistry = new ();
     private readonly Dictionary<string, WidgetImpl> runningWidgets = new ();
@@ -137,6 +137,17 @@ internal class WidgetProvider : IWidgetProvider
         if (runningWidgets.ContainsKey(widgetId))
         {
             runningWidgets[widgetId].OnActionInvoked(actionInvokedArgs);
+        }
+    }
+
+    public void OnCustomizationRequested(WidgetCustomizationRequestedArgs customizationRequestedArgs)
+    {
+        Log.Logger()?.ReportDebug($"OnCustomizationRequested id: {customizationRequestedArgs.WidgetContext.Id} definitionId: {customizationRequestedArgs.WidgetContext.DefinitionId}");
+        var widgetContext = customizationRequestedArgs.WidgetContext;
+        var widgetId = widgetContext.Id;
+        if (runningWidgets.ContainsKey(widgetId))
+        {
+            runningWidgets[widgetId].OnCustomizationRequested(customizationRequestedArgs);
         }
     }
 
