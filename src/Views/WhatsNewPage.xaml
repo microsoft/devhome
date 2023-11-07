@@ -293,16 +293,15 @@
                                         </controls:WrapPanel>
                                     </StackPanel>
                                 </ScrollViewer>
-
+                 
                                 <Button 
                                     Grid.Row="2"
-                                    Margin="15 0 15 10"
+                                    Margin="16 0 16 16"
                                     DataContext="{x:Bind PageKey}"
                                     Click="Button_ClickAsync"
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Bottom"
                                     Content="{x:Bind Button}" />
-
                             </Grid>
                         </DataTemplate>
                     </muxc:ItemsRepeater.ItemTemplate>
