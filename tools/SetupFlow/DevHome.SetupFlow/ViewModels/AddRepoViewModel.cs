@@ -518,7 +518,7 @@ public partial class AddRepoViewModel : ObservableObject
             }
 
             var cloningInformation = new CloningInformation(repoToRemove);
-            cloningInformation.ProviderName = providerName;
+            cloningInformation.ProviderName = _providers.DisplayName(providerName);
             cloningInformation.OwningAccount = developerId;
 
             EverythingToClone.Remove(cloningInformation);
