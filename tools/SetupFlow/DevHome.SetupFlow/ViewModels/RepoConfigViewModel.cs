@@ -17,7 +17,6 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 

@@ -164,7 +164,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     public string RepositoryId => $"{RepositoryToClone.DisplayName ?? string.Empty}";
 
     /// <summary>
-    /// Gets the repository in a [oening account name]\[reponame] style
+    /// Gets the repository in a [owning account name]\[reponame] style
     /// </summary>
     public string RepositoryOwnerAndName => Path.Join(RepositoryToClone.OwningAccountName ?? string.Empty, RepositoryToClone.DisplayName);
 
