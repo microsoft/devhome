@@ -268,7 +268,7 @@ public partial class DashboardView : ToolPage
                 };
                 errorDialog.PrimaryButtonClick += async (ContentDialog sender, ContentDialogButtonClickEventArgs args) =>
                 {
-                    await Launcher.LaunchUriAsync(new("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
+                    await Launcher.LaunchUriAsync(new ("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
                     sender.Hide();
                 };
                 _ = await errorDialog.ShowAsync();
