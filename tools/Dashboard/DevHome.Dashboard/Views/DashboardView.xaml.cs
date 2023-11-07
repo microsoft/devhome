@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
@@ -48,13 +46,7 @@ public partial class DashboardView : ToolPage
 
         this.InitializeComponent();
 
-        if (PinnedWidgets != null)
-        {
-            PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChanged;
-        }
-
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
-        PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
 
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
@@ -280,7 +272,7 @@ public partial class DashboardView : ToolPage
         // delete the partially created widget.
         dialog.Closed += async (sender, args) =>
         {
-            if (dialog.AddedWidget == null && dialog.ViewModel.Widget != null)
+            if (dialog.AddedWidget == null && dialog.ViewModel != null && dialog.ViewModel.Widget != null)
             {
                 await dialog.ViewModel.Widget.DeleteAsync();
             }
@@ -437,87 +429,6 @@ public partial class DashboardView : ToolPage
         });
 
         ViewModel.WidgetIconService.RemoveIconsFromCache(definitionId);
-    }
-
-    // Listen for widgets being added or removed, so we can add or remove listeners on the WidgetViewModels' properties.
-    private void OnPinnedWidgetsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (e.OldItems != null)
-        {
-            foreach (INotifyPropertyChanged item in e.OldItems)
-            {
-                item.PropertyChanged -= PinnedWidgetsPropertyChanged;
-            }
-        }
-
-        if (e.NewItems != null)
-        {
-            foreach (INotifyPropertyChanged item in e.NewItems)
-            {
-                item.PropertyChanged += PinnedWidgetsPropertyChanged;
-            }
-        }
-    }
-
-    private async void PinnedWidgetsPropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName.Equals(nameof(WidgetViewModel.IsInEditMode), StringComparison.Ordinal))
-        {
-            var widgetViewModel = sender as WidgetViewModel;
-            if (widgetViewModel.IsInEditMode == true)
-            {
-                // If the WidgetControl has marked this widget as in edit mode, bring up the edit widget dialog.
-                Log.Logger()?.ReportInfo("DashboardView", $"EditWidget {widgetViewModel.Widget.Id}");
-                await EditWidget(widgetViewModel);
-            }
-        }
-    }
-
-    // We can't truly edit a widget once it has been pinned. Instead, simulate editing by
-    // removing the old widget and creating a new one.
-    private async Task EditWidget(WidgetViewModel widgetViewModel)
-    {
-        // Get info about the widget we're "editing".
-        var index = PinnedWidgets.IndexOf(widgetViewModel);
-        var originalSize = widgetViewModel.WidgetSize;
-        var widgetDef = ViewModel.WidgetHostingService.GetWidgetCatalog()!.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
-
-        var dialog = new CustomizeWidgetDialog(_dispatcher, widgetDef)
-        {
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
-            XamlRoot = this.XamlRoot,
-            RequestedTheme = this.ActualTheme,
-        };
-
-        // If the dialog was closed in a way we don't already handle (for example, pressing Esc),
-        // delete the partially created widget.
-        dialog.Closed += async (sender, args) =>
-        {
-            if (dialog.EditedWidget == null && dialog.ViewModel.Widget != null)
-            {
-                await dialog.ViewModel.Widget.DeleteAsync();
-            }
-        };
-        _ = await dialog.ShowAsync();
-
-        var newWidget = dialog.EditedWidget;
-
-        if (newWidget != null)
-        {
-            // Remove and delete the old widget.
-            var state = await widgetViewModel.Widget.GetCustomStateAsync();
-            PinnedWidgets.RemoveAt(index);
-            await widgetViewModel.Widget.DeleteAsync();
-
-            // Put the old widget's state on the new widget.
-            await newWidget.SetCustomStateAsync(state);
-
-            // Set the original size on the new widget and add it to the list.
-            await newWidget.SetSizeAsync(originalSize);
-            await InsertWidgetInPinnedWidgetsAsync(newWidget, originalSize, index);
-        }
-
-        widgetViewModel.IsInEditMode = false;
     }
 
     private void WidgetGridView_DragItemsStarting(object sender, DragItemsStartingEventArgs e)

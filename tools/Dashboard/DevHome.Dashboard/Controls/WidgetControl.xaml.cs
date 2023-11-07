@@ -17,6 +17,7 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Controls;
+
 public sealed partial class WidgetControl : UserControl
 {
     private MenuFlyoutItem _currentSelectedSize;
@@ -213,15 +214,20 @@ public sealed partial class WidgetControl : UserControl
         };
         menuItemCustomize.Click += OnCustomizeWidgetClick;
         widgetMenuFlyout.Items.Add(menuItemCustomize);
+
+        if (!widgetViewModel.IsCustomizable)
+        {
+            menuItemCustomize.IsEnabled = false;
+        }
     }
 
-    private void OnCustomizeWidgetClick(object sender, RoutedEventArgs e)
+    private async void OnCustomizeWidgetClick(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem customizeMenuItem)
         {
             if (customizeMenuItem?.Tag is WidgetViewModel widgetViewModel)
             {
-                widgetViewModel.IsInEditMode = true;
+                await widgetViewModel.Widget.NotifyCustomizationRequestedAsync();
             }
         }
     }
