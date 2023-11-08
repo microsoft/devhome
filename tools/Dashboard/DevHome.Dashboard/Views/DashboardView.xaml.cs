@@ -12,7 +12,9 @@ using DevHome.Common.Extensions;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
+using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Dashboard.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
@@ -312,6 +314,12 @@ public partial class DashboardView : ToolPage
             if (widgetDefinition != null)
             {
                 Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
+
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    "Dashboard_ReportPinnedWidget",
+                    LogLevel.Critical,
+                    new ReportPinnedWidgetEvent(widgetDefinition.ProviderDefinition.Id, widgetDefinitionId));
+
                 var wvm = new WidgetViewModel(widget, size, widgetDefinition, _dispatcher);
                 _dispatcher.TryEnqueue(() =>
                 {
