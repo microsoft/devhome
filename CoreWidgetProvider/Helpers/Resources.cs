@@ -67,7 +67,7 @@ public static class Resources
             "Memory_Widget_Template/MemoryUsage",
             "Memory_Widget_Template/AllMemory",
             "Memory_Widget_Template/UsedMemory",
-            "Memory_Widget_Template/Commited",
+            "Memory_Widget_Template/Committed",
             "Memory_Widget_Template/Cached",
             "Memory_Widget_Template/NonPagedPool",
             "Memory_Widget_Template/PagedPool",

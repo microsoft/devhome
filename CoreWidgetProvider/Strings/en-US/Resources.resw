@@ -102,8 +102,8 @@
   <data name="Memory_Widget_Template.UsedMemory" xml:space="preserve">
     <value>In use (compressed)</value>
   </data>
-  <data name="Memory_Widget_Template.Commited" xml:space="preserve">
-    <value>Commited</value>
+  <data name="Memory_Widget_Template.Committed" xml:space="preserve">
+    <value>Committed</value>
   </data>
   <data name="Memory_Widget_Template.Cached" xml:space="preserve">
     <value>Cached</value>
