@@ -37,29 +37,37 @@ public class LogFileListener : ListenerBase, IDisposable
 
     private void HandleLogFileEvent(LogEvent evt, bool newline, TimeSpan elapsed)
     {
-        if (!MeetsFilter(evt))
+        try
         {
-            return;
-        }
+            if (!MeetsFilter(evt))
+            {
+                return;
+            }
 
-        writer?.Write($"[{DateTime.UtcNow:yyyy/MM/dd hh\\:mm\\:ss\\.ffff}][{evt.FullSourceName}] {evt.Severity.ToString().ToUpper(CultureInfo.InvariantCulture)}: {evt.Message}");
-        if (elapsed != LogEvent.NoElapsed)
+            writer?.Write($"[{DateTime.UtcNow:yyyy/MM/dd hh\\:mm\\:ss\\.ffff}][{evt.FullSourceName}] {evt.Severity.ToString().ToUpper(CultureInfo.InvariantCulture)}: {evt.Message}");
+            if (elapsed != LogEvent.NoElapsed)
+            {
+                writer?.Write($" [Elapsed: {elapsed:hh\\:mm\\:ss\\.ffffff}]");
+            }
+
+            if (evt.Exception != null)
+            {
+                WriteLine(newline);
+                writer?.Write(evt?.Exception.ToString());
+            }
+
+            if (newline)
+            {
+                writer?.WriteLine();
+            }
+
+            writer?.Flush();
+        }
+        catch (Exception)
         {
-            writer?.Write($" [Elapsed: {elapsed:hh\\:mm\\:ss\\.ffffff}]");
+            // Do nothing, program should not crash because
+            // the log file couldn't be written, carry on without it.
         }
-
-        if (evt.Exception != null)
-        {
-            WriteLine(newline);
-            writer?.Write(evt?.Exception.ToString());
-        }
-
-        if (newline)
-        {
-            writer?.WriteLine();
-        }
-
-        writer?.Flush();
     }
 
     private void WriteLine(bool newline)
