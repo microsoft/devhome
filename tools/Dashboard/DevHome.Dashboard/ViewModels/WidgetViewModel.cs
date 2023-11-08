@@ -129,7 +129,7 @@ public partial class WidgetViewModel : ObservableObject
             Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
 
             // Use the data to fill in the template.
-            AdaptiveCardParseResult card;
+            AdaptiveCardParseResult cardResult;
             try
             {
                 var template = new AdaptiveCardTemplate(cardTemplate);
@@ -148,7 +148,7 @@ public partial class WidgetViewModel : ObservableObject
                 elementParser.Set(LabelGroup.CustomTypeString, new LabelGroupParser());
 
                 // Create adaptive card.
-                card = AdaptiveCard.FromJsonString(json, elementParser, new AdaptiveActionParserRegistration());
+                cardResult = AdaptiveCard.FromJsonString(json, elementParser, new AdaptiveActionParserRegistration());
             }
             catch (Exception ex)
             {
@@ -162,10 +162,10 @@ public partial class WidgetViewModel : ObservableObject
                 _renderedCard.Action -= HandleAdaptiveAction;
             }
 
-            if (card == null || card.AdaptiveCard == null)
+            if (cardResult == null || cardResult.AdaptiveCard == null)
             {
                 Log.Logger()?.ReportError("WidgetViewModel", "Error in AdaptiveCardParseResult");
-                ShowErrorCard("WidgetErrorCardDisplayText");
+                ShowErrorCard("WidgetErrorCardDisplayText", cardResult: cardResult);
                 return;
             }
 
@@ -175,7 +175,7 @@ public partial class WidgetViewModel : ObservableObject
                 try
                 {
                     var renderer = await _renderingService.GetRenderer();
-                    _renderedCard = renderer.RenderAdaptiveCard(card.AdaptiveCard);
+                    _renderedCard = renderer.RenderAdaptiveCard(cardResult.AdaptiveCard);
                     if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                     {
                         _renderedCard.Action += HandleAdaptiveAction;
@@ -239,15 +239,15 @@ public partial class WidgetViewModel : ObservableObject
     }
 
     // Used to show a message instead of Adaptive Card content in a widget.
-    public void ShowErrorCard(string error, string subError = null)
+    public void ShowErrorCard(string error, string subError = null, AdaptiveCardParseResult cardResult = null)
     {
         _dispatcher.TryEnqueue(() =>
         {
-            WidgetFrameworkElement = GetErrorCard(error, subError);
+            WidgetFrameworkElement = GetErrorCard(error, subError, cardResult);
         });
     }
 
-    private Grid GetErrorCard(string error, string subError = null)
+    private Grid GetErrorCard(string error, string subError = null, AdaptiveCardParseResult cardResult = null)
     {
         var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
 
@@ -283,6 +283,34 @@ public partial class WidgetViewModel : ObservableObject
 
             sp.Children.Add(subErrorText);
         }
+#if DEBUG
+        if (cardResult != null)
+        {
+            foreach (var adaptiveError in cardResult.Errors)
+            {
+                var adaptiveErrorBlock = new TextBlock
+                {
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    TextWrapping = TextWrapping.WrapWholeWords,
+                    Text = resourceLoader.GetString("Error: " + adaptiveError.StatusCode.ToString() + ": " + adaptiveError.Message),
+                    Margin = new Thickness(0, 12, 0, 0),
+                };
+                sp.Children.Add(adaptiveErrorBlock);
+            }
+
+            foreach (var adaptiveWarning in cardResult.Warnings)
+            {
+                var adaptiveErrorBlock = new TextBlock
+                {
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    TextWrapping = TextWrapping.WrapWholeWords,
+                    Text = resourceLoader.GetString("Warning: " + adaptiveWarning.StatusCode + ": " + adaptiveWarning.Message),
+                    Margin = new Thickness(0, 12, 0, 0),
+                };
+                sp.Children.Add(adaptiveErrorBlock);
+            }
+        }
+#endif
 
         grid.Children.Add(sp);
         return grid;
