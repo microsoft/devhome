@@ -1243,4 +1243,8 @@
     <value>No accounts have access to this repository.</value>
     <comment>Error string letting users no that no accounts in an extension have access to the repository.</comment>
   </data>
+  <data name="DevDriveWindowByteUnitComboBoxPrefix" xml:space="preserve">
+    <value>Size unit, </value>
+    <comment>Prefix for GB and TB for the screen reader</comment>
+  </data>
 </root>

@@ -116,6 +116,7 @@
                     ValidationMode="InvalidInputOverwritten">
                 </NumberBox>
                 <ComboBox 
+                    AutomationProperties.Name="Size Unit"
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowByteUnitComboBox"
                     x:Name="DriveByteUnitComboBox"
                     Grid.Column="2"
