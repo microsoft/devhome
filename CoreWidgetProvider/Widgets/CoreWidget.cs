@@ -71,6 +71,8 @@ internal abstract class CoreWidget : WidgetImpl
 
     public override void OnActionInvoked(WidgetActionInvokedArgs actionInvokedArgs) => throw new NotImplementedException();
 
+    public override void OnCustomizationRequested(WidgetCustomizationRequestedArgs customizationRequestedArgs) => throw new NotImplementedException();
+
     protected WidgetAction GetWidgetActionForVerb(string verb)
     {
         try

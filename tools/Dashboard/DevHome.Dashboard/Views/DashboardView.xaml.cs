@@ -4,24 +4,22 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
 using DevHome.Common.Extensions;
-using DevHome.Common.Renderers;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.Services;
+using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Dashboard.ViewModels;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
-using Windows.Storage;
 using Windows.System;
 
 namespace DevHome.Dashboard.Views;
@@ -32,9 +30,10 @@ public partial class DashboardView : ToolPage
 
     public DashboardViewModel ViewModel { get; }
 
+    internal DashboardBannerViewModel BannerViewModel { get; }
+
     public static ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
 
-    private static AdaptiveCardRenderer _renderer;
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     private static bool _widgetHostInitialized;
@@ -45,18 +44,12 @@ public partial class DashboardView : ToolPage
     public DashboardView()
     {
         ViewModel = Application.Current.GetService<DashboardViewModel>();
+        BannerViewModel = Application.Current.GetService<DashboardBannerViewModel>();
 
         this.InitializeComponent();
 
-        if (PinnedWidgets != null)
-        {
-            PinnedWidgets.CollectionChanged -= OnPinnedWidgetsCollectionChanged;
-        }
-
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
-        PinnedWidgets.CollectionChanged += OnPinnedWidgetsCollectionChanged;
 
-        _renderer = new AdaptiveCardRenderer();
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
         ActualThemeChanged += OnActualThemeChanged;
@@ -89,62 +82,16 @@ public partial class DashboardView : ToolPage
         return true;
     }
 
-    private async Task<AdaptiveCardRenderer> GetConfigurationRendererAsync()
-    {
-        // When we render a card in an add or edit dialog, we need to have a different HostConfig,
-        // so create a new renderer for those situations. We can't just temporarily edit the existing
-        // renderer, because a pinned widget might get re-rendered the wrong way while the dialog is open.
-        var configRenderer = new AdaptiveCardRenderer();
-        await ConfigureWidgetRenderer(configRenderer);
-        configRenderer.HostConfig.ContainerStyles.Default.BackgroundColor = Microsoft.UI.Colors.Transparent;
-        return configRenderer;
-    }
-
     private async void OnActualThemeChanged(FrameworkElement sender, object args)
     {
         // A different host config is used to render widgets (adaptive cards) in light and dark themes.
-        await ConfigureWidgetRenderer(_renderer);
+        await Application.Current.GetService<IAdaptiveCardRenderingService>().UpdateHostConfig();
 
         // Re-render the widgets with the new theme and renderer.
         foreach (var widget in PinnedWidgets)
         {
             await widget.RenderAsync();
         }
-    }
-
-    private async Task ConfigureWidgetRenderer(AdaptiveCardRenderer renderer)
-    {
-        // Add custom Adaptive Card renderer.
-        renderer.ElementRenderers.Set(LabelGroup.CustomTypeString, new LabelGroupRenderer());
-
-        // Add host config for current theme.
-        var hostConfigContents = string.Empty;
-        var hostConfigFileName = (ActualTheme == ElementTheme.Light) ? "HostConfigLight.json" : "HostConfigDark.json";
-        try
-        {
-            Log.Logger()?.ReportInfo("DashboardView", $"Get HostConfig file '{hostConfigFileName}'");
-            var uri = new Uri($"ms-appx:///DevHome.Dashboard/Assets/{hostConfigFileName}");
-            var file = await StorageFile.GetFileFromApplicationUriAsync(uri).AsTask().ConfigureAwait(false);
-            hostConfigContents = await FileIO.ReadTextAsync(file);
-        }
-        catch (Exception ex)
-        {
-            Log.Logger()?.ReportError("DashboardView", "Error retrieving HostConfig", ex);
-        }
-
-        _dispatcher.TryEnqueue(() =>
-        {
-            if (!string.IsNullOrEmpty(hostConfigContents))
-            {
-                renderer.HostConfig = AdaptiveHostConfig.FromJsonString(hostConfigContents).HostConfig;
-            }
-            else
-            {
-                Log.Logger()?.ReportError("DashboardView", $"HostConfig contents are {hostConfigContents}");
-            }
-        });
-
-        return;
     }
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -174,7 +121,6 @@ public partial class DashboardView : ToolPage
             // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
             await ViewModel.WidgetIconService.CacheAllWidgetIconsAsync();
 
-            await ConfigureWidgetRenderer(_renderer);
             await RestorePinnedWidgetsAsync();
         }
         else
@@ -191,10 +137,10 @@ public partial class DashboardView : ToolPage
     private async Task RestorePinnedWidgetsAsync()
     {
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
-        var pinnedWidgets = ViewModel.WidgetHostingService.GetWidgetHost()?.GetWidgets();
-        if (pinnedWidgets != null)
+        var hostWidgets = ViewModel.WidgetHostingService.GetWidgetHost()?.GetWidgets();
+        if (hostWidgets != null)
         {
-            Log.Logger()?.ReportInfo("DashboardView", $"Found {pinnedWidgets.Length} widgets for this host");
+            Log.Logger()?.ReportInfo("DashboardView", $"Found {hostWidgets.Length} widgets for this host");
             var restoredWidgetsWithPosition = new SortedDictionary<int, Widget>();
             var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
             var numUnorderedWidgets = 0;
@@ -202,7 +148,7 @@ public partial class DashboardView : ToolPage
             // Widgets do not come from the host in a deterministic order, so save their order in each widget's CustomState.
             // Iterate through all the widgets and put them in order. If a widget does not have a position assigned to it,
             // append it at the end. If a position is missing, just show the next widget in order.
-            foreach (var widget in pinnedWidgets)
+            foreach (var widget in hostWidgets)
             {
                 try
                 {
@@ -230,6 +176,17 @@ public partial class DashboardView : ToolPage
                                 restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
                             }
                         }
+                        else
+                        {
+                            // This shouldn't be able to be reached
+                            Log.Logger()?.ReportError("DashboardView", $"Widget has custom state but no HostName.");
+                        }
+                    }
+                    else
+                    {
+                        // If we have a widget with no state, Dev Home does not consider it a valid widget
+                        // and should delete it, rather than letting it run invisibly in the background.
+                        await DeleteAbandonedWidgetAsync(widget);
                     }
                 }
                 catch (Exception ex)
@@ -254,6 +211,18 @@ public partial class DashboardView : ToolPage
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
         }
+    }
+
+    private async Task DeleteAbandonedWidgetAsync(Widget widget)
+    {
+        var length = ViewModel.WidgetHostingService.GetWidgetHost()!.GetWidgets().Length;
+        Log.Logger()?.ReportInfo("DashboardView", $"Found abandoned widget, try to delete it...");
+        Log.Logger()?.ReportInfo("DashboardView", $"Before delete, {length} widgets for this host");
+
+        await widget.DeleteAsync();
+
+        length = ViewModel.WidgetHostingService.GetWidgetHost()!.GetWidgets().Length;
+        Log.Logger()?.ReportInfo("DashboardView", $"After delete, {length} widgets for this host");
     }
 
     private async Task PlaceWidget(KeyValuePair<int, Widget> orderedWidget, int finalPlace)
@@ -294,13 +263,23 @@ public partial class DashboardView : ToolPage
             }
         }
 
-        var configurationRenderer = await GetConfigurationRendererAsync();
-        var dialog = new AddWidgetDialog(configurationRenderer, _dispatcher, ActualTheme)
+        var dialog = new AddWidgetDialog(_dispatcher, ActualTheme)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
             XamlRoot = this.XamlRoot,
             RequestedTheme = this.ActualTheme,
         };
+
+        // If the dialog was closed in a way we don't already handle (for example, pressing Esc),
+        // delete the partially created widget.
+        dialog.Closed += async (sender, args) =>
+        {
+            if (dialog.AddedWidget == null && dialog.ViewModel != null && dialog.ViewModel.Widget != null)
+            {
+                await dialog.ViewModel.Widget.DeleteAsync();
+            }
+        };
+
         _ = await dialog.ShowAsync();
 
         var newWidget = dialog.AddedWidget;
@@ -335,7 +314,13 @@ public partial class DashboardView : ToolPage
             if (widgetDefinition != null)
             {
                 Log.Logger()?.ReportInfo("DashboardView", $"Insert widget in pinned widgets, id = {widgetId}, index = {index}");
-                var wvm = new WidgetViewModel(widget, size, widgetDefinition, _renderer, _dispatcher);
+
+                TelemetryFactory.Get<ITelemetry>().Log(
+                    "Dashboard_ReportPinnedWidget",
+                    LogLevel.Critical,
+                    new ReportPinnedWidgetEvent(widgetDefinition.ProviderDefinition.Id, widgetDefinitionId));
+
+                var wvm = new WidgetViewModel(widget, size, widgetDefinition, _dispatcher);
                 _dispatcher.TryEnqueue(() =>
                 {
                     try
@@ -454,78 +439,6 @@ public partial class DashboardView : ToolPage
         ViewModel.WidgetIconService.RemoveIconsFromCache(definitionId);
     }
 
-    // Listen for widgets being added or removed, so we can add or remove listeners on the WidgetViewModels' properties.
-    private void OnPinnedWidgetsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-    {
-        if (e.OldItems != null)
-        {
-            foreach (INotifyPropertyChanged item in e.OldItems)
-            {
-                item.PropertyChanged -= PinnedWidgetsPropertyChanged;
-            }
-        }
-
-        if (e.NewItems != null)
-        {
-            foreach (INotifyPropertyChanged item in e.NewItems)
-            {
-                item.PropertyChanged += PinnedWidgetsPropertyChanged;
-            }
-        }
-    }
-
-    private async void PinnedWidgetsPropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName.Equals(nameof(WidgetViewModel.IsInEditMode), StringComparison.Ordinal))
-        {
-            var widgetViewModel = sender as WidgetViewModel;
-            if (widgetViewModel.IsInEditMode == true)
-            {
-                // If the WidgetControl has marked this widget as in edit mode, bring up the edit widget dialog.
-                Log.Logger()?.ReportInfo("DashboardView", $"EditWidget {widgetViewModel.Widget.Id}");
-                await EditWidget(widgetViewModel);
-            }
-        }
-    }
-
-    // We can't truly edit a widget once it has been pinned. Instead, simulate editing by
-    // removing the old widget and creating a new one.
-    private async Task EditWidget(WidgetViewModel widgetViewModel)
-    {
-        // Get info about the widget we're "editing".
-        var index = PinnedWidgets.IndexOf(widgetViewModel);
-        var originalSize = widgetViewModel.WidgetSize;
-        var widgetDef = ViewModel.WidgetHostingService.GetWidgetCatalog()!.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
-
-        var configurationRenderer = await GetConfigurationRendererAsync();
-        var dialog = new CustomizeWidgetDialog(configurationRenderer, _dispatcher, widgetDef)
-        {
-            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.
-            XamlRoot = this.XamlRoot,
-            RequestedTheme = this.ActualTheme,
-        };
-        _ = await dialog.ShowAsync();
-
-        var newWidget = dialog.EditedWidget;
-
-        if (newWidget != null)
-        {
-            // Remove and delete the old widget.
-            var state = await widgetViewModel.Widget.GetCustomStateAsync();
-            PinnedWidgets.RemoveAt(index);
-            await widgetViewModel.Widget.DeleteAsync();
-
-            // Put the old widget's state on the new widget.
-            await newWidget.SetCustomStateAsync(state);
-
-            // Set the original size on the new widget and add it to the list.
-            await newWidget.SetSizeAsync(originalSize);
-            await InsertWidgetInPinnedWidgetsAsync(newWidget, originalSize, index);
-        }
-
-        widgetViewModel.IsInEditMode = false;
-    }
-
     private void WidgetGridView_DragItemsStarting(object sender, DragItemsStartingEventArgs e)
     {
         Log.Logger()?.ReportDebug("DashboardView", $"Drag starting");
@@ -635,7 +548,7 @@ public partial class DashboardView : ToolPage
             roamingProperties.Remove("HideDashboardBanner");
         }
 
-        ViewModel.ResetDashboardBanner();
+        BannerViewModel.ResetDashboardBanner();
     }
 #endif
 }

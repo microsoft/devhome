@@ -327,6 +327,43 @@
     <value>Enter title</value>
     <comment>The topic of the issue that the user wants to report</comment>
   </data>
+  <data name="Settings_Feedback_DocumentationIssue.Header" xml:space="preserve">
+    <value>Report a documentation issue</value>
+    <comment>DocumentationIssue is for reporting an issue in documentation</comment>
+  </data>
+  <data name="Settings_Feedback_DocumentationIssue.Description" xml:space="preserve">
+    <value>Report issues on our documentation</value>
+    <comment>Details about when this option should be used</comment>
+  </data>
+  <data name="Settings_Feedback_DocumentationIssue_Button.Content" xml:space="preserve">
+    <value>New report</value>
+    <comment>Begin to fill out the documentation issue content dialog</comment>
+  </data>
+  <data name="Settings_Feedback_DocumentationIssue_Dialog.CloseButtonText" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Close out of the content dialog</comment>
+  </data>
+  <data name="Settings_Feedback_DocumentationIssue_Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>Preview on GitHub</value>
+    <comment>Navigate to the GitHub issue to see the issue form</comment>
+  </data>
+  <data name="Settings_Feedback_DocumentationIssue_Dialog.Title" xml:space="preserve">
+    <value>Report a documentation issue</value>
+  </data>
+  <data name="Settings_Feedback_DocumentationIssue_IssueTitle.Header" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Settings_Feedback_DocumentationIssue_IssueTitle.PlaceholderText" xml:space="preserve">
+    <value>Enter title</value>
+    <comment>Documentation issue title</comment>
+  </data>
+  <data name="Settings_Feedback_DocumentationIssue_Description.Header" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Settings_Feedback_DocumentationIssue_Description.PlaceholderText" xml:space="preserve">
+    <value>Briefly describe which document needs to be corrected and why.</value>
+    <comment>Documentation issue description</comment>
+  </data>
   <data name="Settings_Feedback_ReportSecurity.Description" xml:space="preserve">
     <value>Read our security policy and learn how to report vulnerabilities</value>
     <comment>Look at the guidance on security</comment>

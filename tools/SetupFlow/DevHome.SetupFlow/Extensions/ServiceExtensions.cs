@@ -117,6 +117,7 @@ public static class ServiceExtensions
     {
         // View models
         services.AddTransient<MainPageViewModel>();
+        services.AddTransient<MainPageBannerViewModel>();
 
         return services;
     }

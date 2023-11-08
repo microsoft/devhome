@@ -14,10 +14,12 @@ public static class ServiceExtensions
     {
         // View-models
         services.AddSingleton<DashboardViewModel>();
+        services.AddTransient<DashboardBannerViewModel>();
 
         // Services
         services.AddSingleton<IWidgetHostingService, WidgetHostingService>();
         services.AddSingleton<IWidgetIconService, WidgetIconService>();
+        services.AddSingleton<IAdaptiveCardRenderingService, AdaptiveCardRenderingService>();
 
         return services;
     }

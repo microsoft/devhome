@@ -30,6 +30,9 @@ internal class SSHWalletWidget : CoreWidget
         set => SetState(value);
     }
 
+    private string _savedContentData = string.Empty;
+    private string _savedConfigFile = string.Empty;
+
     public SSHWalletWidget()
     {
     }
@@ -114,23 +117,38 @@ internal class SSHWalletWidget : CoreWidget
             case WidgetAction.Unknown:
                 Log.Logger()?.ReportError(Name, ShortId, $"Unknown verb: {actionInvokedArgs.Verb}");
                 break;
+
+            case WidgetAction.Save:
+                _savedContentData = string.Empty;
+                _savedConfigFile = string.Empty;
+                ContentData = EmptyJson;
+                SetActive();
+                break;
+
+            case WidgetAction.Cancel:
+                ConfigFile = _savedConfigFile;
+                ContentData = _savedContentData;
+                SetActive();
+                break;
         }
+    }
+
+    public override void OnCustomizationRequested(WidgetCustomizationRequestedArgs customizationRequestedArgs)
+    {
+        _savedContentData = ContentData;
+        _savedConfigFile = ConfigFile;
+        SetConfigure();
     }
 
     private void HandleConnect(WidgetActionInvokedArgs args)
     {
-        var data = args.Data;
-
-        Process cmd = new Process();
-
-        var info = new ProcessStartInfo
+        var cmd = new Process();
+        cmd.StartInfo = new ProcessStartInfo
         {
             FileName = "cmd.exe",
-            Arguments = $"/k \"ssh {data}\"",
+            Arguments = $"/k \"ssh {args.Data}\"",
             UseShellExecute = true,
         };
-
-        cmd.StartInfo = info;
 
         cmd.Start();
     }
@@ -161,8 +179,10 @@ internal class SSHWalletWidget : CoreWidget
 
     private MatchCollection? GetHostEntries()
     {
-        FileStreamOptions options = new FileStreamOptions();
-        options.Access = FileAccess.Read;
+        var options = new FileStreamOptions()
+        {
+            Access = FileAccess.Read,
+        };
 
         using var reader = new StreamReader(ConfigFile, options);
 
@@ -179,12 +199,7 @@ internal class SSHWalletWidget : CoreWidget
     private int GetNumberOfHostEntries()
     {
         var hostEntries = GetHostEntries();
-        if (hostEntries == null)
-        {
-            return 0;
-        }
-
-        return hostEntries.Count;
+        return (hostEntries != null) ? hostEntries.Count : 0;
     }
 
     private void SetupFileWatcher()
@@ -235,17 +250,25 @@ internal class SSHWalletWidget : CoreWidget
     {
         var configurationData = new JsonObject();
 
-        var currentOrDefaultConfigFile = string.IsNullOrEmpty(configFile) ? DefaultConfigFile : configFile;
+        // Determine what config file to suggest in configuration form.
+        // 1. If there is a currently selected configFile, show that.
+        // 2. Else, check if there is a _savedConfigFile. If so, the user
+        //    is in the customize flow and we should show the _savedConfigFile.
+        // 3. Else, show the DefaultConfigFile.
+        var suggestedConfigFile = string.IsNullOrEmpty(configFile) ? _savedConfigFile : configFile;
+        suggestedConfigFile = string.IsNullOrEmpty(suggestedConfigFile) ? DefaultConfigFile : suggestedConfigFile;
+
         var sshConfigData = new JsonObject
             {
                 { "configFile", configFile },
-                { "currentOrDefaultConfigFile", currentOrDefaultConfigFile },
+                { "currentOrDefaultConfigFile", suggestedConfigFile },
                 { "numOfEntries", numOfEntries.ToString(CultureInfo.InvariantCulture) },
             };
 
         configurationData.Add("configuring", configuring);
         configurationData.Add("hasConfiguration", hasConfiguration);
         configurationData.Add("configuration", sshConfigData);
+        configurationData.Add("savedConfigFile", _savedConfigFile);
         configurationData.Add("submitIcon", IconLoader.GetIconAsBase64("arrow.png"));
 
         if (!string.IsNullOrEmpty(errorMessage))

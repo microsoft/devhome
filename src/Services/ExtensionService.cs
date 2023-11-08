@@ -4,7 +4,9 @@
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Models;
+using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel;
@@ -196,6 +198,11 @@ public class ExtensionService : IExtensionService, IDisposable
                     {
                         _enabledExtensions.Add(extensionWrapper);
                     }
+
+                    TelemetryFactory.Get<ITelemetry>().Log(
+                        "Extension_ReportInstalled",
+                        LogLevel.Critical,
+                        new ReportInstalledExtensionEvent(extensionUniqueId, isEnabled: !isExtensionDisabled));
                 }
             }
 

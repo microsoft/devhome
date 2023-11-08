@@ -7,8 +7,10 @@ using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.Services;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -22,7 +24,7 @@ namespace DevHome.Dashboard.ViewModels;
 public partial class WidgetViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-    private readonly AdaptiveCardRenderer _renderer;
+    private readonly IAdaptiveCardRenderingService _renderingService;
 
     private RenderedAdaptiveCard _renderedCard;
 
@@ -36,6 +38,9 @@ public partial class WidgetViewModel : ObservableObject
     private WidgetSize _widgetSize;
 
     [ObservableProperty]
+    private bool _isCustomizable;
+
+    [ObservableProperty]
     private string _widgetDisplayTitle;
 
     [ObservableProperty]
@@ -43,9 +48,6 @@ public partial class WidgetViewModel : ObservableObject
 
     [ObservableProperty]
     private FrameworkElement _widgetFrameworkElement;
-
-    [ObservableProperty]
-    private Microsoft.UI.Xaml.Media.Brush _widgetBackground;
 
     public bool IsInAddMode { get; set; }
 
@@ -78,14 +80,7 @@ public partial class WidgetViewModel : ObservableObject
         {
             WidgetDisplayTitle = WidgetDefinition.DisplayTitle;
             WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinition.DisplayName;
-        }
-    }
-
-    partial void OnWidgetFrameworkElementChanged(FrameworkElement value)
-    {
-        if (WidgetFrameworkElement != null && WidgetFrameworkElement is Grid grid)
-        {
-            WidgetBackground = grid.Background;
+            IsCustomizable = WidgetDefinition.IsCustomizable;
         }
     }
 
@@ -93,10 +88,9 @@ public partial class WidgetViewModel : ObservableObject
         Widget widget,
         WidgetSize widgetSize,
         WidgetDefinition widgetDefinition,
-        AdaptiveCardRenderer renderer,
         Microsoft.UI.Dispatching.DispatcherQueue dispatcher)
     {
-        _renderer = renderer;
+        _renderingService = Application.Current.GetService<IAdaptiveCardRenderingService>();
         _dispatcher = dispatcher;
 
         Widget = widget;
@@ -186,11 +180,12 @@ public partial class WidgetViewModel : ObservableObject
             }
 
             // Render card on the UI thread.
-            _dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(async () =>
             {
                 try
                 {
-                    _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
+                    var renderer = await _renderingService.GetRenderer();
+                    _renderedCard = renderer.RenderAdaptiveCard(card.AdaptiveCard);
                     if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                     {
                         _renderedCard.Action += HandleAdaptiveAction;

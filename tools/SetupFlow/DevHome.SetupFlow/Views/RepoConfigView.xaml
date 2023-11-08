@@ -96,11 +96,12 @@
                                         <ColumnDefinition Width="0.2*"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <ImageIcon
+                                    <Image
                                         Grid.Column="0"
                                         Width="16"
                                         Height="16"
-                                        Source="{x:Bind RepositoryTypeIcon, Mode=OneWay}"/>
+                                        Source="{x:Bind RepositoryTypeIcon, Mode=OneWay}">
+                                    </Image>
                                     <TextBlock Text="{x:Bind ProviderName}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis"/>
                                 </Grid>
                             </Border>

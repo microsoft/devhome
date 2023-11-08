@@ -49,5 +49,7 @@ public abstract class WidgetImpl
 
     public abstract void OnActionInvoked(WidgetActionInvokedArgs actionInvokedArgs);
 
+    public abstract void OnCustomizationRequested(WidgetCustomizationRequestedArgs customizationRequestedArgs);
+
     public abstract void OnWidgetContextChanged(WidgetContextChangedArgs contextChangedArgs);
 }

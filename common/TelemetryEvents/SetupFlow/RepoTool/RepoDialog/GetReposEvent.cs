@@ -3,8 +3,6 @@
 
 using System;
 using System.Diagnostics.Tracing;
-using System.Security.Cryptography;
-using System.Text;
 using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
@@ -56,6 +54,6 @@ public class GetReposEvent : EventBase
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
     {
-        // The only sensitive strings is the developerID.  GetHashedDeveloperId is used to hash the developerId.
+        // The only sensitive string is the developerID.  GetHashedDeveloperId is used to hash the developerId.
     }
 }

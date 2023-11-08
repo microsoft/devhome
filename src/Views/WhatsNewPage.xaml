@@ -9,6 +9,7 @@
     xmlns:models="using:DevHome.Models"
     xmlns:behaviors="using:DevHome.Common.Behaviors" 
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     Loaded="OnLoaded"
     SizeChanged="OnSizeChanged"
@@ -16,6 +17,7 @@
 
     <Page.Resources>
         <ResourceDictionary>
+            <converters:EmptyStringToObjectConverter x:Key="EmptyStringToBoolConverter" EmptyValue="False" NotEmptyValue="True"/>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/LightTheme/Background.png</x:String>
@@ -45,46 +47,32 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Padding="32 0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="100" />
-                        <RowDefinition Height="55" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-
+                <!-- Header area -->
+                <StackPanel
+                    Grid.Row="0"
+                    Padding="32 12 32 0"
+                    VerticalAlignment="Center">
                     <TextBlock
-                        Grid.Row="0"
                         x:Uid="WhatsNewPage_Header"
-                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                        VerticalAlignment="Bottom" />
-                    
+                        Style="{ThemeResource SubtitleTextBlockStyle}" />
                     <TextBlock
-                        Grid.Row="1"
                         x:Uid="WhatsNewPage_Title"
-                        Style="{ThemeResource TitleLargeTextBlockStyle}"
-                        VerticalAlignment="Bottom" />
+                        Style="{ThemeResource TitleLargeTextBlockStyle}" />
+                    <TextBlock
+                        x:Uid="WhatsNewPage_Description"
+                        Margin="0 12 0 0"
+                        MaxWidth="400"
+                        HorizontalAlignment="Left"
+                        TextWrapping="WrapWholeWords" />
+                    <Button
+                        x:Uid="WhatsNewPage_GetStartedButton"
+                        Margin="0 16"
+                        MinWidth="248"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        Click="MachineConfigButton_Click" />
+                </StackPanel>
 
-                    <StackPanel Grid.Row="2">
-                        
-                        <TextBlock
-                            Margin="0 12 0 0"
-                            x:Uid="WhatsNewPage_Description"
-                            Width="400"
-                            HorizontalAlignment="Left"
-                            TextWrapping="Wrap"
-                            Text="{StaticResource SplitViewPaneAnimationOpenDuration}" />
-
-                        <Button
-                            Margin="0 16"
-                            MinWidth="258"
-                            Style="{ThemeResource AccentButtonStyle}"
-                            Click="MachineConfigButton_Click"
-                            x:Uid="WhatsNewPage_GetStartedButton" />
-                        
-                    </StackPanel>
-                </Grid>
-
-
+                <!-- Big Cards -->
                 <muxc:ItemsRepeater
                     Name="BigFeaturesContainer"
                     Grid.Row="1"
@@ -171,6 +159,7 @@
 
                                     <HyperlinkButton
                                         Content="{x:Bind Link}"
+                                        IsTabStop="{x:Bind Link, Converter={StaticResource EmptyStringToBoolConverter}, Mode=OneWay}"
                                         Foreground="{ThemeResource LearnMoreForeground}"
                                         NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
                                         Padding="0"
@@ -193,13 +182,14 @@
                     </muxc:ItemsRepeater.ItemTemplate>
                 </muxc:ItemsRepeater>
 
+                <!-- Small Cards -->
                 <muxc:ItemsRepeater
                     Name="FeaturesContainer"
                     Grid.Row="2"
                     Margin="35, 5, 45, 45"
                     animations:Connected.ListItemElementName="itemThumbnail"
                     animations:Connected.ListItemKey="animationKeyContentGrid"
-                    ItemsSource="{x:Bind ViewModel.Source,Mode=OneWay}">
+                    ItemsSource="{x:Bind ViewModel.Source, Mode=OneWay}">
 
                     <muxc:ItemsRepeater.Resources>
                         <models:WhatsNewCard 
@@ -276,37 +266,33 @@
                                     HorizontalAlignment="Stretch"
                                     VerticalAlignment="Top"/>
 
-                                <Grid Grid.Row="1" Padding="15 10 15 0" >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-
-                                    <TextBlock
-                                        Grid.Row="0"
-                                        HorizontalAlignment="Left"
-                                        Style="{ThemeResource BodyTextStyle}"
-                                        Text="{x:Bind Title}" />
-
-                                    <controls:WrapPanel Grid.Row="1" Orientation="Vertical" Margin="0 16 0 20" >
+                                <ScrollViewer Grid.Row="1" Padding="15 10 15 0">
+                                    <StackPanel>
                                         <TextBlock
-                                            Margin="0 0 0 5"
-                                            TextWrapping="Wrap"
-                                            VerticalAlignment="Top"
-                                            TextTrimming="WordEllipsis"
-                                            Text="{x:Bind Description}"/>
+                                            HorizontalAlignment="Left"
+                                            Style="{ThemeResource BodyTextStyle}"
+                                            Text="{x:Bind Title}" />
 
-                                        <HyperlinkButton
-                                            Content="{x:Bind Link}"
-                                            Foreground="{ThemeResource LearnMoreForeground}"
-                                            NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
-                                            VerticalAlignment="Top"
-                                            Padding="0"
-                                            Margin="0"
-                                            Visibility="{x:Bind ShouldShowLink}"/>
-                                    </controls:WrapPanel>
+                                        <controls:WrapPanel Orientation="Vertical" Margin="0 16 0 20">
+                                            <TextBlock
+                                                Margin="0 0 0 5"
+                                                TextWrapping="Wrap"
+                                                VerticalAlignment="Top"
+                                                TextTrimming="WordEllipsis"
+                                                Text="{x:Bind Description}"/>
 
-                                </Grid>
+                                            <HyperlinkButton
+                                                Content="{x:Bind Link}"
+                                                IsTabStop="{x:Bind Link, Converter={StaticResource EmptyStringToBoolConverter}, Mode=OneWay}"
+                                                Foreground="{ThemeResource LearnMoreForeground}"
+                                                NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
+                                                VerticalAlignment="Top"
+                                                Padding="0"
+                                                Margin="0"
+                                                Visibility="{x:Bind ShouldShowLink}" />
+                                        </controls:WrapPanel>
+                                    </StackPanel>
+                                </ScrollViewer>
 
                                 <Button 
                                     Grid.Row="2"

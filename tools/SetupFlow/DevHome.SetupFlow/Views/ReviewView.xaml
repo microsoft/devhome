@@ -62,7 +62,7 @@
                            https://github.com/microsoft/devhome/issues/626-->
                 <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
                           IsExpanded="true"
-                          MinHeight="64" CornerRadius="3" Padding="24,0,24,7" >
+                          MinHeight="64" CornerRadius="4" Padding="24,0,24,7" >
                     <Expander.Header>
                         <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
                                    x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Review_SetUpDetails" />
@@ -75,6 +75,7 @@
 
                             <NavigationView x:Name="ReviewNavigationView"
                                             Visibility="{x:Bind ViewModel.ReviewTabs, Converter={StaticResource EmptyCollectionToVisibilityConverter}}"
+                                            Loaded="ReviewNavigationView_Loaded"
                                             HorizontalAlignment="Stretch"
                                             Padding="0" Margin="0"
                                             PaneDisplayMode="Top"
@@ -82,6 +83,7 @@
                                             IsBackButtonVisible="Collapsed"
                                             IsSettingsVisible="False"
                                             MenuItemsSource="{x:Bind ViewModel.ReviewTabs, Mode=OneWay}"
+                                            AutomationProperties.AccessibilityView="Raw"
                                             SelectedItem="{x:Bind ViewModel.SelectedReviewTab, Mode=TwoWay}">
                                 <NavigationView.Resources>
                                     <SolidColorBrush x:Key="NavigationViewContentBackground" Color="Transparent"/>

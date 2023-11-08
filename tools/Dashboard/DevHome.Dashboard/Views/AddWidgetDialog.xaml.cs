@@ -35,11 +35,10 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private readonly IWidgetIconService _widgetIconService;
 
     public AddWidgetDialog(
-        AdaptiveCardRenderer renderer,
         DispatcherQueue dispatcher,
         ElementTheme theme)
     {
-        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, renderer, dispatcher);
+        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, dispatcher);
         _hostingService = Application.Current.GetService<IWidgetHostingService>();
         _widgetIconService = Application.Current.GetService<IWidgetIconService>();
 
@@ -230,7 +229,16 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
             // Create the widget for configuration. We will need to delete it if the user closes the dialog
             // without pinning, or selects a different widget.
-            var widget = await _hostingService.GetWidgetHost()?.CreateWidgetAsync(selectedWidgetDefinition.Id, size);
+            Widget widget = null;
+            try
+            {
+                widget = await _hostingService.GetWidgetHost()?.CreateWidgetAsync(selectedWidgetDefinition.Id, size);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger()?.ReportWarn("AddWidgetDialog", $"CreateWidgetAsync failed: ", ex);
+            }
+
             if (widget is not null)
             {
                 Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
@@ -254,8 +262,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
         else if (selectedTag as WidgetProviderDefinition is not null)
         {
-            // Null out the view model background so we don't bind to the old one.
-            ViewModel.WidgetBackground = null;
             ConfigurationContentFrame.Content = null;
             PinButton.Visibility = Visibility.Collapsed;
         }
