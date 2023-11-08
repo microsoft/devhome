@@ -631,6 +631,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         EverythingToClone.Add(cloningInformation);
         ShouldEnablePrimaryButton = true;
+        ShouldShowUrlError = Visibility.Collapsed;
     }
 
     /// <summary>
@@ -693,6 +694,7 @@ public partial class AddRepoViewModel : ObservableObject
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
             ShouldShowUrlError = Visibility.Visible;
 
+            InitiateAddAccountUserExperienceAsync(provider, loginFrame);
             return null;
         }
 
