@@ -234,7 +234,8 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
             {
                 try
                 {
-                    _repositoryProviderDisplayName = RepositoryProvider.DisplayName;
+                    // This can be null in the case of URL cloning.
+                    _repositoryProviderDisplayName = RepositoryProvider?.DisplayName ?? "git";
                 }
                 catch (Exception e)
                 {
