@@ -229,7 +229,16 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
             // Create the widget for configuration. We will need to delete it if the user closes the dialog
             // without pinning, or selects a different widget.
-            var widget = await _hostingService.GetWidgetHost()?.CreateWidgetAsync(selectedWidgetDefinition.Id, size);
+            Widget widget = null;
+            try
+            {
+                widget = await _hostingService.GetWidgetHost()?.CreateWidgetAsync(selectedWidgetDefinition.Id, size);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger()?.ReportWarn("AddWidgetDialog", $"CreateWidgetAsync failed: ", ex);
+            }
+
             if (widget is not null)
             {
                 Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
