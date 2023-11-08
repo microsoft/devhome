@@ -201,23 +201,21 @@ public sealed partial class WidgetControl : UserControl
 
     private void AddCustomizeToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
     {
-        var customizeWidgetText = resourceLoader.GetString("CustomizeWidgetMenuText");
-        var icon = new FontIcon()
+        if (widgetViewModel.IsCustomizable)
         {
-            Glyph = "\xE70F",
-        };
-        var menuItemCustomize = new MenuFlyoutItem
-        {
-            Tag = widgetViewModel,
-            Text = customizeWidgetText,
-            Icon = icon,
-        };
-        menuItemCustomize.Click += OnCustomizeWidgetClick;
-        widgetMenuFlyout.Items.Add(menuItemCustomize);
-
-        if (!widgetViewModel.IsCustomizable)
-        {
-            menuItemCustomize.IsEnabled = false;
+            var customizeWidgetText = resourceLoader.GetString("CustomizeWidgetMenuText");
+            var icon = new FontIcon()
+            {
+                Glyph = "\xE70F",
+            };
+            var menuItemCustomize = new MenuFlyoutItem
+            {
+                Tag = widgetViewModel,
+                Text = customizeWidgetText,
+                Icon = icon,
+            };
+            menuItemCustomize.Click += OnCustomizeWidgetClick;
+            widgetMenuFlyout.Items.Add(menuItemCustomize);
         }
     }
 
