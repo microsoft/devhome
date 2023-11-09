@@ -220,7 +220,7 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
-    // Used to show a message instead of Adaptive Card content in a widget.
+    // Used to show a loading ring when we don't have widget content.
     public void ShowLoadingCard()
     {
         _dispatcher.TryEnqueue(() =>
@@ -229,7 +229,7 @@ public partial class WidgetViewModel : ObservableObject
         });
     }
 
-    // Used to show a loading ring when we don't have widget content.
+    // Used to show a message instead of Adaptive Card content in a widget.
     public void ShowErrorCard(string error, string subError = null)
     {
         _dispatcher.TryEnqueue(() =>
