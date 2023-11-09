@@ -93,16 +93,14 @@
                   "actions": [
                     {
                       "type": "Action.Execute",
-                      "title": "Save",
+                      "title": "%Widget_Template_Button/Save%",
                       "verb": "Save",
-                      "tooltip": "Save",
                       "isEnabled": "${$root.hasConfiguration}"
                     },
                     {
                       "type": "Action.Execute",
-                      "title": "Cancel",
-                      "verb": "Cancel",
-                      "tooltip": "Cancel"
+                      "title": "%Widget_Template_Button/Cancel%",
+                      "verb": "Cancel"
                     }
                   ]
                 }
