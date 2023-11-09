@@ -171,6 +171,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AdaptiveCardSessionResult.h" />
+    <ClInclude Include="ComputeSystemOperationResult.h" />
+    <ClInclude Include="ComputeSystemsResult.h" />
+    <ClInclude Include="ComputeSystemStateResult.h" />
+    <ClInclude Include="CreateComputeSystemResult.h" />
     <ClInclude Include="DeveloperIdResult.h" />
     <ClInclude Include="DeveloperIdsResult.h" />
     <ClInclude Include="GetFeaturedApplicationsGroupsResult.h" />
@@ -183,6 +187,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AdaptiveCardSessionResult.cpp" />
+    <ClCompile Include="ComputeSystemOperationResult.cpp" />
+    <ClCompile Include="ComputeSystemsResult.cpp" />
+    <ClCompile Include="ComputeSystemStateResult.cpp" />
+    <ClCompile Include="CreateComputeSystemResult.cpp" />
     <ClCompile Include="DeveloperIdResult.cpp" />
     <ClCompile Include="DeveloperIdsResult.cpp" />
     <ClCompile Include="Generated Files\module.g.cpp" />
