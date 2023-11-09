@@ -79,6 +79,23 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     [ObservableProperty]
     private BitmapImage _repositoryTypeIcon;
 
+    private BitmapImage GetGitIcon(ElementTheme theme)
+    {
+        BitmapImage gitIcon;
+        if (theme == ElementTheme.Dark)
+        {
+            gitIcon = DarkGit;
+        }
+        else
+        {
+            gitIcon = LightGit;
+        }
+
+        RepositoryTypeIcon = gitIcon;
+
+        return gitIcon;
+    }
+
     /// <summary>
     /// Sets RepositoryTypeIcon according to the theme.
     /// </summary>
@@ -93,17 +110,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         // RepositoryProvider can be null in the case of URL cloning.
         if (RepositoryProvider == null || RepositoryProvider.Icon == null)
         {
-            BitmapImage gitIcon;
-            if (theme == ElementTheme.Dark)
-            {
-                gitIcon = DarkGit;
-            }
-            else
-            {
-                gitIcon = LightGit;
-            }
-
-            RepositoryTypeIcon = gitIcon;
+            RepositoryTypeIcon = GetGitIcon(theme);
             return;
         }
 
@@ -116,17 +123,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         catch (Exception e)
         {
             Log.Logger?.ReportError(_repositoryProviderDisplayName, e);
-            BitmapImage gitIcon;
-            if (theme == ElementTheme.Dark)
-            {
-                gitIcon = DarkGit;
-            }
-            else
-            {
-                gitIcon = LightGit;
-            }
-
-            RepositoryTypeIcon = gitIcon;
+            RepositoryTypeIcon = GetGitIcon(theme);
             return;
         }
 
