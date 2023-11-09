@@ -79,6 +79,23 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
     [ObservableProperty]
     private BitmapImage _repositoryTypeIcon;
 
+    private BitmapImage GetGitIcon(ElementTheme theme)
+    {
+        BitmapImage gitIcon;
+        if (theme == ElementTheme.Dark)
+        {
+            gitIcon = DarkGit;
+        }
+        else
+        {
+            gitIcon = LightGit;
+        }
+
+        RepositoryTypeIcon = gitIcon;
+
+        return gitIcon;
+    }
+
     /// <summary>
     /// Sets RepositoryTypeIcon according to the theme.
     /// </summary>
@@ -93,21 +110,22 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         // RepositoryProvider can be null in the case of URL cloning.
         if (RepositoryProvider == null || RepositoryProvider.Icon == null)
         {
-            BitmapImage gitIcon;
-            if (theme == ElementTheme.Dark)
-            {
-                gitIcon = DarkGit;
-            }
-            else
-            {
-                gitIcon = LightGit;
-            }
-
-            RepositoryTypeIcon = gitIcon;
+            RepositoryTypeIcon = GetGitIcon(theme);
             return;
         }
 
-        BitmapDecoder decoder = BitmapDecoder.CreateAsync(RepositoryProvider.Icon.OpenReadAsync().AsTask().Result).AsTask().Result;
+        BitmapDecoder decoder;
+
+        try
+        {
+            decoder = BitmapDecoder.CreateAsync(RepositoryProvider.Icon.OpenReadAsync().AsTask().Result).AsTask().Result;
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(_repositoryProviderDisplayName, e);
+            RepositoryTypeIcon = GetGitIcon(theme);
+            return;
+        }
 
         // Get the pixel data as a byte array
         PixelDataProvider pixelData = decoder.GetPixelDataAsync().AsTask().Result;
