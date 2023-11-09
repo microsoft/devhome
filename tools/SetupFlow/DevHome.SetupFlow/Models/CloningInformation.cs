@@ -107,7 +107,28 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
             return;
         }
 
-        BitmapDecoder decoder = BitmapDecoder.CreateAsync(RepositoryProvider.Icon.OpenReadAsync().AsTask().Result).AsTask().Result;
+        BitmapDecoder decoder;
+
+        try
+        {
+            decoder = BitmapDecoder.CreateAsync(RepositoryProvider.Icon.OpenReadAsync().AsTask().Result).AsTask().Result;
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(_repositoryProviderDisplayName, e);
+            BitmapImage gitIcon;
+            if (theme == ElementTheme.Dark)
+            {
+                gitIcon = DarkGit;
+            }
+            else
+            {
+                gitIcon = LightGit;
+            }
+
+            RepositoryTypeIcon = gitIcon;
+            return;
+        }
 
         // Get the pixel data as a byte array
         PixelDataProvider pixelData = decoder.GetPixelDataAsync().AsTask().Result;
