@@ -28,11 +28,20 @@ public partial class DashboardView : ToolPage
 {
     public override string ShortName => "Dashboard";
 
-    public DashboardViewModel ViewModel { get; }
+    public DashboardViewModel ViewModel
+    {
+        get;
+    }
 
-    internal DashboardBannerViewModel BannerViewModel { get; }
+    internal DashboardBannerViewModel BannerViewModel
+    {
+        get;
+    }
 
-    public static ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
+    public static ObservableCollection<WidgetViewModel> PinnedWidgets
+    {
+        get; set;
+    }
 
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
@@ -138,78 +147,76 @@ public partial class DashboardView : ToolPage
     {
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
         var hostWidgets = ViewModel.WidgetHostingService.GetWidgetHost()?.GetWidgets();
-        if (hostWidgets != null)
-        {
-            Log.Logger()?.ReportInfo("DashboardView", $"Found {hostWidgets.Length} widgets for this host");
-            var restoredWidgetsWithPosition = new SortedDictionary<int, Widget>();
-            var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
-            var numUnorderedWidgets = 0;
 
-            // Widgets do not come from the host in a deterministic order, so save their order in each widget's CustomState.
-            // Iterate through all the widgets and put them in order. If a widget does not have a position assigned to it,
-            // append it at the end. If a position is missing, just show the next widget in order.
-            foreach (var widget in hostWidgets)
-            {
-                try
-                {
-                    var stateStr = await widget.GetCustomStateAsync();
-                    Log.Logger()?.ReportInfo("DashboardView", $"GetWidgetCustomState: {stateStr}");
-                    if (!string.IsNullOrEmpty(stateStr))
-                    {
-                        var stateObj = System.Text.Json.JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
-
-                        if (stateObj.Host == WidgetHelpers.DevHomeHostName)
-                        {
-                            var position = stateObj.Position;
-                            if (position >= 0)
-                            {
-                                if (!restoredWidgetsWithPosition.TryAdd(position, widget))
-                                {
-                                    // If there was an error and a widget with this position is already there,
-                                    // treat this widget as unordered and put it into the unordered map.
-                                    restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
-                                }
-                            }
-                            else
-                            {
-                                // Widgets with no position will get the default of -1. Append these at the end.
-                                restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
-                            }
-                        }
-                        else
-                        {
-                            // This shouldn't be able to be reached
-                            Log.Logger()?.ReportError("DashboardView", $"Widget has custom state but no HostName.");
-                        }
-                    }
-                    else
-                    {
-                        // If we have a widget with no state, Dev Home does not consider it a valid widget
-                        // and should delete it, rather than letting it run invisibly in the background.
-                        await DeleteAbandonedWidgetAsync(widget);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.Logger()?.ReportError("DashboardView", $"RestorePinnedWidgets(): ", ex);
-                }
-            }
-
-            // Now that we've ordered the widgets, put them in their final collection.
-            var finalPlace = 0;
-            foreach (var orderedWidget in restoredWidgetsWithPosition)
-            {
-                await PlaceWidget(orderedWidget, finalPlace++);
-            }
-
-            foreach (var orderedWidget in restoredWidgetsWithoutPosition)
-            {
-                await PlaceWidget(orderedWidget, finalPlace++);
-            }
-        }
-        else
+        if (hostWidgets == null)
         {
             Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
+            return;
+        }
+
+        Log.Logger()?.ReportInfo("DashboardView", $"Found {hostWidgets.Length} widgets for this host");
+        var restoredWidgetsWithPosition = new SortedDictionary<int, Widget>();
+        var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
+        var numUnorderedWidgets = 0;
+
+        // Widgets do not come from the host in a deterministic order, so save their order in each widget's CustomState.
+        // Iterate through all the widgets and put them in order. If a widget does not have a position assigned to it,
+        // append it at the end. If a position is missing, just show the next widget in order.
+        foreach (var widget in hostWidgets)
+        {
+            try
+            {
+                var stateStr = await widget.GetCustomStateAsync();
+                Log.Logger()?.ReportInfo("DashboardView", $"GetWidgetCustomState: {stateStr}");
+
+                if (string.IsNullOrEmpty(stateStr))
+                {
+                    // If we have a widget with no state, Dev Home does not consider it a valid widget
+                    // and should delete it, rather than letting it run invisibly in the background.
+                    await DeleteAbandonedWidgetAsync(widget);
+                    continue;
+                }
+
+                var stateObj = System.Text.Json.JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
+                if (stateObj.Host != WidgetHelpers.DevHomeHostName)
+                {
+                    // This shouldn't be able to be reached
+                    Log.Logger()?.ReportError("DashboardView", $"Widget has custom state but no HostName.");
+                    continue;
+                }
+
+                var position = stateObj.Position;
+                if (position >= 0)
+                {
+                    if (!restoredWidgetsWithPosition.TryAdd(position, widget))
+                    {
+                        // If there was an error and a widget with this position is already there,
+                        // treat this widget as unordered and put it into the unordered map.
+                        restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
+                    }
+                }
+                else
+                {
+                    // Widgets with no position will get the default of -1. Append these at the end.
+                    restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Logger()?.ReportError("DashboardView", $"RestorePinnedWidgets(): ", ex);
+            }
+        }
+
+        // Now that we've ordered the widgets, put them in their final collection.
+        var finalPlace = 0;
+        foreach (var orderedWidget in restoredWidgetsWithPosition)
+        {
+            await PlaceWidget(orderedWidget, finalPlace++);
+        }
+
+        foreach (var orderedWidget in restoredWidgetsWithoutPosition)
+        {
+            await PlaceWidget(orderedWidget, finalPlace++);
         }
     }
 
