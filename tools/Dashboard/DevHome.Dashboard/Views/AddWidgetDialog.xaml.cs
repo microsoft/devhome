@@ -243,6 +243,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             {
                 Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
 
+                ViewModel.ShowLoadingCard();
                 ViewModel.Widget = widget;
                 ViewModel.IsInAddMode = true;
                 PinButton.Visibility = Visibility.Visible;
