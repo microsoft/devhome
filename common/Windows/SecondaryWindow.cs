@@ -187,7 +187,11 @@ public class SecondaryWindow : WindowEx
         // Set default window configuration
         PrimaryWindow = MainWindow;
         SystemBackdrop = PrimaryWindow.SystemBackdrop;
+
+        // Set the theme of the secondary window to match the application theme initially.
+        this.SetRequestedTheme(ThemeSelector.Theme);
         UseAppTheme = true;
+
         Title = AppInfo.GetAppNameLocalized();
         this.SetIcon(AppInfo.IconPath);
 
