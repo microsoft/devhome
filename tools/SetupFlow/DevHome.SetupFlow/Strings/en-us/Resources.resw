@@ -286,7 +286,7 @@
     <comment>The drive letters that are currently available to use on the system</comment>
   </data>
   <data name="DevDriveWindowLaunchSettingsDisksAndVolumesHeader.Text" xml:space="preserve">
-    <value>For advanced settings such as creating a native volume, open the settings app.</value>
+    <value>For advanced settings, such as creating a native volume, open the settings app.</value>
     <comment>Text to Advise the user that the disks and volumes page in the Windows settings app has more advanced options for creating a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink.Content" xml:space="preserve">
