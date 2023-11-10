@@ -56,13 +56,13 @@
           "type": "Column",
           "items": [
             {
-              "text": "%Memory_Widget_Template/Commited%",
+              "text": "%Memory_Widget_Template/Committed%",
               "type": "TextBlock",
               "size": "small",
               "isSubtle": true
             },
             {
-              "text": "${commitedMem}/${commitedLimitMem}",
+              "text": "${committedMem}/${committedLimitMem}",
               "type": "TextBlock",
               "size": "medium"
             }

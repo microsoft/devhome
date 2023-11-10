@@ -69,8 +69,8 @@ public partial class WidgetViewModel : ObservableObject
     {
         if (Widget != null)
         {
+            ShowLoadingCard();
             Widget.WidgetUpdated += HandleWidgetUpdated;
-            _ = RenderWidgetFrameworkElementAsync();
         }
     }
 
@@ -218,6 +218,15 @@ public partial class WidgetViewModel : ObservableObject
                 Configuring = isConfiguring;
             });
         }
+    }
+
+    // Used to show a loading ring when we don't have widget content.
+    public void ShowLoadingCard()
+    {
+        _dispatcher.TryEnqueue(() =>
+        {
+            WidgetFrameworkElement = new ProgressRing();
+        });
     }
 
     // Used to show a message instead of Adaptive Card content in a widget.

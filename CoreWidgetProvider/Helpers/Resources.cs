@@ -67,7 +67,7 @@ public static class Resources
             "Memory_Widget_Template/MemoryUsage",
             "Memory_Widget_Template/AllMemory",
             "Memory_Widget_Template/UsedMemory",
-            "Memory_Widget_Template/Commited",
+            "Memory_Widget_Template/Committed",
             "Memory_Widget_Template/Cached",
             "Memory_Widget_Template/NonPagedPool",
             "Memory_Widget_Template/PagedPool",
@@ -87,6 +87,8 @@ public static class Resources
             "CPUUsage_Widget_Template/CPU_Speed",
             "CPUUsage_Widget_Template/Processes",
             "CPUUsage_Widget_Template/End_Process",
+            "Widget_Template_Button/Save",
+            "Widget_Template_Button/Cancel",
         };
     }
 }
