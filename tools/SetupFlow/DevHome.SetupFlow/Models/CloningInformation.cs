@@ -162,7 +162,7 @@ public partial class CloningInformation : ObservableObject, IEquatable<CloningIn
         }
 
         var reversedStream = new InMemoryRandomAccessStream();
-        var encoder = BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, reversedStream).AsTask().Result;
+        var encoder = BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, reversedStream).AsTask().Result;
         encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Straight, decoder.PixelWidth, decoder.PixelHeight, decoder.DpiX, decoder.DpiY, pixels);
         encoder.FlushAsync().AsTask().Wait();
 
