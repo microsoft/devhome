@@ -51,7 +51,6 @@
                     TextWrapping="Wrap" />
                 <TextBlock
                     Margin="0 0 0 12"
-                    Width="450"
                     Grid.Row="1"
                     TextWrapping="Wrap" >
                     <!-- 
