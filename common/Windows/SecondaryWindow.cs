@@ -177,8 +177,8 @@ public class SecondaryWindow : WindowEx
     public SecondaryWindow()
     {
         // Set the theme of the secondary window before creating the window template.
-        // This must be done before creation of the template or else the secondary window
-        // will continue to follow the Windows system theme and not respect the theme
+        // This must be done before the creation of the template, or else the secondary window
+        // will continue to follow the Windows system theme, and not respect the theme
         // set by the app itself.
         UseAppTheme = true;
 

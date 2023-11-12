@@ -31,8 +31,8 @@ internal sealed partial class SecondaryWindowTemplate : UserControl
 
         // A custom title bar is required for full window theme and Mica support.
         // https://docs.microsoft.com/windows/apps/develop/title-bar?tabs=winui3#full-customization
-        // Note: We need to add the titlebar before the template loads or else the titlebar will flicker
-        // from the default Windows app title bar to our own titlebar custom titlebar.
+        // Note: We need to add the title bar before the template loads, or else the title bar will flicker
+        // between the default Windows title bar and our own custom title bar.
         _secondaryWindow.ExtendsContentIntoTitleBar = true;
         _secondaryWindow.SetTitleBar(this.WindowTitleBar);
 

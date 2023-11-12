@@ -391,6 +391,9 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         ResetErrors();
         DevDriveWindowContainer = new (this);
         DevDriveWindowContainer.Closed += ViewContainerClosed;
+
+        // Setting this before the window activates prevents the window from showing up on the screen,
+        // then moving abruptly to the center.
         DevDriveWindowContainer.CenterOnWindow();
         DevDriveWindowContainer.Activate();
         IsDevDriveWindowOpen = true;
