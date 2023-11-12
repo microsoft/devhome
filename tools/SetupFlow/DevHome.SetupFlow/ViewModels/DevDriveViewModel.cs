@@ -391,8 +391,8 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
         ResetErrors();
         DevDriveWindowContainer = new (this);
         DevDriveWindowContainer.Closed += ViewContainerClosed;
-        DevDriveWindowContainer.Activate();
         DevDriveWindowContainer.CenterOnWindow();
+        DevDriveWindowContainer.Activate();
         IsDevDriveWindowOpen = true;
         RefreshDriveLetterToSizeMapping();
         DriveLetters.Clear();
