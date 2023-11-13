@@ -286,7 +286,7 @@
     <comment>The drive letters that are currently available to use on the system</comment>
   </data>
   <data name="DevDriveWindowLaunchSettingsDisksAndVolumesHeader.Text" xml:space="preserve">
-    <value>For advanced settings, open the settings app.</value>
+    <value>For advanced settings, such as creating a native volume, open the settings app.</value>
     <comment>Text to Advise the user that the disks and volumes page in the Windows settings app has more advanced options for creating a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink.Content" xml:space="preserve">
@@ -310,7 +310,7 @@
     <comment>Placeholder drive label value that will be used as the file name within the Dev Drive name text box. VHD stands for virtual hard disk, which is what will be created when the user goes to create a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowOnlyOneDevDriveAllowedHeader.Text" xml:space="preserve">
-    <value>A Dev Drive optimizes performance for development. You can create only one in Dev Home.</value>
+    <value>A Dev Drive optimizes performance for development. You can create only one in Dev Home and it will be a VHDX.</value>
     <comment>Text to advise users that they are only allowed the create one Dev Drive at a time.</comment>
   </data>
   <data name="DevDriveWindowSaveButton.Content" xml:space="preserve">
@@ -1242,10 +1242,6 @@
   <data name="UrlNoAccountsHaveAccess" xml:space="preserve">
     <value>No accounts have access to this repository.</value>
     <comment>Error string letting users no that no accounts in an extension have access to the repository.</comment>
-  </data>
-  <data name="DevDriveWindowByteUnitComboBoxPrefix" xml:space="preserve">
-    <value>Size unit, </value>
-    <comment>Prefix for GB and TB for the screen reader</comment>
   </data>
   <data name="ResultCountSingular" xml:space="preserve">
     <value>{0} Result found for "{1}"</value>
