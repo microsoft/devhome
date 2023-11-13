@@ -76,7 +76,8 @@ public static class StringResourceKey
     public static readonly string PathWithColon = nameof(PathWithColon);
     public static readonly string RemoveApplication = nameof(RemoveApplication);
     public static readonly string RemovedApplication = nameof(RemovedApplication);
-    public static readonly string ResultCount = nameof(ResultCount);
+    public static readonly string ResultCountPlural = nameof(ResultCountPlural);
+    public static readonly string ResultCountSingular = nameof(ResultCountSingular);
     public static readonly string RestorePackagesTitle = nameof(RestorePackagesTitle);
     public static readonly string RestorePackagesDescription = nameof(RestorePackagesDescription);
     public static readonly string RestorePackagesDescriptionWithDate = nameof(RestorePackagesDescriptionWithDate);

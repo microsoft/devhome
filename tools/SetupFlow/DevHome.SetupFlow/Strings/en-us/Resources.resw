@@ -557,9 +557,9 @@
     <value>Removed {0}</value>
     <comment>{Locked="{0}"}Text announced when a button for removing an application is invoked. {0} is replaced by the application name.</comment>
   </data>
-  <data name="ResultCount" xml:space="preserve">
-    <value>{0} Result(s)</value>
-    <comment>{Locked="{0}"} Label for a search result counter. {0} is replaced by the number of result items.</comment>
+  <data name="ResultCountPlural" xml:space="preserve">
+    <value>{0} Results found for "{1}"</value>
+    <comment>{Locked="{0}", "{1}"} Label for a search result counter. {0} is replaced by the number of result items. {1} is replaced with the search term.</comment>
   </data>
   <data name="RestorePackagesTitle" xml:space="preserve">
     <value>On {0}</value>
@@ -1246,5 +1246,9 @@
   <data name="DevDriveWindowByteUnitComboBoxPrefix" xml:space="preserve">
     <value>Size unit, </value>
     <comment>Prefix for GB and TB for the screen reader</comment>
+  </data>
+  <data name="ResultCountSingular" xml:space="preserve">
+    <value>{0} Result found for "{1}"</value>
+    <comment>{Locked="{0}", "{1}"} Label for a search result counter. {0} is replaced by the number of result items. {1} is replaced with the search term.</comment>
   </data>
 </root>
