@@ -25,6 +25,7 @@ public class AppManagementInitializer : IAppManagementInitializer
         await InitializeCatalogsAsync();
         if (await TryRegisterAppInstallerAsync())
         {
+            _wpm.Initialize();
             await _wpm.ConnectToAllCatalogsAsync();
             await LoadCatalogsAsync();
         }

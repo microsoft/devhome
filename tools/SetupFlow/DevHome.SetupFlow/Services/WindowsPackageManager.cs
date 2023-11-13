@@ -36,14 +36,6 @@ public class WindowsPackageManager : IWindowsPackageManager
     private readonly IAppInstallManagerService _appInstallManagerService;
     private readonly IPackageDeploymentService _packageDeploymentService;
 
-    // Custom composite catalogs
-    private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
-    private readonly Lazy<WinGetCompositeCatalog> _wingetCatalog;
-
-    // Predefined catalog ids
-    private readonly Lazy<string> _wingetCatalogId;
-    private readonly Lazy<string> _msStoreCatalogId;
-
     public WindowsPackageManager(
         WindowsPackageManagerFactory wingetFactory,
         IAppInstallManagerService appInstallManagerService,
@@ -52,23 +44,26 @@ public class WindowsPackageManager : IWindowsPackageManager
         _wingetFactory = wingetFactory;
         _appInstallManagerService = appInstallManagerService;
         _packageDeploymentService = packageDeploymentService;
-
-        // Lazy-initialize custom composite catalogs
-        _allCatalogs = new (CreateAllCatalogs);
-        _wingetCatalog = new (CreateWinGetCatalog);
-
-        // Lazy-initialize predefined catalog ids
-        _wingetCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
-        _msStoreCatalogId = new (() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
     }
 
-    public string WinGetCatalogId => _wingetCatalogId.Value;
+    public void Initialize()
+    {
+        // Create composite catalogs
+        AllCatalogs = CreateAllCatalogs();
+        WinGetCatalog = CreateWinGetCatalog();
 
-    public string MsStoreId => _msStoreCatalogId.Value;
+        // Extract catalog ids for predefined catalogs
+        WinGetCatalogId = GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
+        MsStoreId = GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
+    }
 
-    public IWinGetCatalog AllCatalogs => _allCatalogs.Value;
+    public string WinGetCatalogId { get; private set; }
 
-    public IWinGetCatalog WinGetCatalog => _wingetCatalog.Value;
+    public string MsStoreId { get; private set; }
+
+    public IWinGetCatalog AllCatalogs { get; private set; }
+
+    public IWinGetCatalog WinGetCatalog { get; private set; }
 
     public async Task ConnectToAllCatalogsAsync(bool force)
     {
