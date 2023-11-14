@@ -176,6 +176,12 @@ public class SecondaryWindow : WindowEx
 
     public SecondaryWindow()
     {
+        // Set the theme of the secondary window before creating the window template.
+        // This must be done before the creation of the template, or else the secondary window
+        // will continue to follow the Windows system theme, and not respect the theme
+        // set by the app itself.
+        UseAppTheme = true;
+
         // Initialize window content template
         _windowTemplate = new (this);
         WindowContent = _windowTemplate;
@@ -187,7 +193,7 @@ public class SecondaryWindow : WindowEx
         // Set default window configuration
         PrimaryWindow = MainWindow;
         SystemBackdrop = PrimaryWindow.SystemBackdrop;
-        UseAppTheme = true;
+
         Title = AppInfo.GetAppNameLocalized();
         this.SetIcon(AppInfo.IconPath);
 
