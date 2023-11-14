@@ -74,24 +74,16 @@ public sealed partial class AddWidgetDialog : ContentDialog
             return;
         }
 
-        var providerDefinitions = _hostingService.GetWidgetCatalog()!.GetProviderDefinitions();
-        var widgetDefinitions = _hostingService.GetWidgetCatalog()!.GetWidgetDefinitions();
-
-        if (providerDefinitions == null || widgetDefinitions == null)
-        {
-            return;
-        }
-
         // Show the providers and widgets underneath them in alphabetical order.
-        var alphabeticalProviderDefinitions = providerDefinitions.ToList().OrderBy(x => x.DisplayName);
-        var alphabeticalWidgetDefinitions = widgetDefinitions.ToList().OrderBy(x => x.DisplayTitle);
+        var providerDefinitions = _hostingService.GetWidgetCatalog()!.GetProviderDefinitions().OrderBy(x => x.DisplayName);
+        var widgetDefinitions = _hostingService.GetWidgetCatalog()!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle);
 
-        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefinitions.Length} providers and {widgetDefinitions.Length} widgets");
+        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
 
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
-        foreach (var providerDef in alphabeticalProviderDefinitions)
+        foreach (var providerDef in providerDefinitions)
         {
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
             {
@@ -102,7 +94,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     Content = providerDef.DisplayName,
                 };
 
-                foreach (var widgetDef in alphabeticalWidgetDefinitions)
+                foreach (var widgetDef in widgetDefinitions)
                 {
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
