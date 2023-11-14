@@ -51,7 +51,6 @@ public static class StringResourceKey
     public static readonly string DevDriveReviewPageNumberOfDevDrives = nameof(DevDriveReviewPageNumberOfDevDrives);
     public static readonly string DevDriveReviewPageNumberOfDevDrivesTitle = nameof(DevDriveReviewPageNumberOfDevDrivesTitle);
     public static readonly string DevDriveUnableToCreateError = nameof(DevDriveUnableToCreateError);
-    public static readonly string DevDriveWindowByteUnitComboBoxPrefix = nameof(DevDriveWindowByteUnitComboBoxPrefix);
     public static readonly string DevDriveWindowByteUnitComboBoxGB = nameof(DevDriveWindowByteUnitComboBoxGB);
     public static readonly string DevDriveWindowByteUnitComboBoxTB = nameof(DevDriveWindowByteUnitComboBoxTB);
     public static readonly string DoneButton = nameof(DoneButton);
