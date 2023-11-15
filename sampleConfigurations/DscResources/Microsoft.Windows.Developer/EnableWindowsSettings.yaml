@@ -43,6 +43,7 @@ properties:
         allowPrerelease: true
       settings:
         HideLabels: Never # 'WhenFull', 'Always'
+        # Use caution when setting `RestartExplorer: true` as this will force explorer to close.
         RestartExplorer: true # Required to apply changes
     - resource: Microsoft.Windows.Developer/EnableDarkMode
       directives:
@@ -50,5 +51,6 @@ properties:
         allowPrerelease: true
       settings:
         Ensure: Present
+        # Use caution when setting `RestartExplorer: true` as this will force explorer to close.
         RestartExplorer: true # Required to apply changes
   configurationVersion: 0.2.0

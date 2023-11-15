@@ -12,43 +12,45 @@ properties:
         description: Set taskbar alignment to left
         allowPrerelease: true
       settings:
-        Alignment: Left # 'Middle'
+        Alignment: Middle # 'Left'
     - resource: Microsoft.Windows.Developer/ShowSecondsInClock
       directives:
         description: Show seconds in clock
         allowPrerelease: true
       settings:
-        Ensure: Present
+        Ensure: Absent
     - resource: Microsoft.Windows.Developer/HideFileExtensions
       directives:
         description: Hide file extensions
         allowPrerelease: true
       settings:
-        Ensure: Present
+        Ensure: Absent
     - resource: Microsoft.Windows.Developer/ShowTaskViewButton
       directives:
         description: Show task view button
         allowPrerelease: true
       settings:
-        Ensure: Present
+        Ensure: Absent
     - resource: Microsoft.Windows.Developer/ShowHiddenFiles
       directives:
         description: Show hidden files
         allowPrerelease: true
       settings:
-        Ensure: Present
+        Ensure: Absent
     - resource: Microsoft.Windows.Developer/HideTaskBarLabels
       directives:
         description: Never hide task bar labels
         allowPrerelease: true
       settings:
-        HideLabels: Never # 'WhenFull', 'Always'
+        HideLabels: Always # 'WhenFull', 'Never'
+        # Use caution when setting `RestartExplorer: true` as this will force explorer to close.
         RestartExplorer: true # Required to apply changes
     - resource: Microsoft.Windows.Developer/EnableDarkMode
       directives:
         description: Enable dark mode
         allowPrerelease: true
       settings:
-        Ensure: Present
+        Ensure: Absent
+        # Use caution when setting `RestartExplorer: true` as this will force explorer to close.
         RestartExplorer: true # Required to apply changes
   configurationVersion: 0.2.0
