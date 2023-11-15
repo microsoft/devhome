@@ -69,8 +69,8 @@ public partial class WidgetViewModel : ObservableObject
     {
         if (Widget != null)
         {
-            ShowLoadingCard();
             Widget.WidgetUpdated += HandleWidgetUpdated;
+            ShowWidgetContentIfAvailable();
         }
     }
 
@@ -220,9 +220,42 @@ public partial class WidgetViewModel : ObservableObject
         }
     }
 
+    private async Task<bool> IsWidgetContentAvailable()
+    {
+        return await Task.Run(async () =>
+        {
+            var cardTemplate = await Widget.GetCardTemplateAsync();
+            var cardData = await Widget.GetCardDataAsync();
+
+            if (string.IsNullOrEmpty(cardTemplate) || string.IsNullOrEmpty(cardData))
+            {
+                Log.Logger()?.ReportDebug("WidgetViewModel", "Widget content not available yet.");
+                return false;
+            }
+
+            Log.Logger()?.ReportDebug("WidgetViewModel", "Widget content available.");
+            return true;
+        });
+    }
+
+    // If widget content (fresh or cached) is available, show it.
+    // Otherwise, show the loading card until the widget updates itself.
+    private async void ShowWidgetContentIfAvailable()
+    {
+        if (await IsWidgetContentAvailable())
+        {
+            await RenderWidgetFrameworkElementAsync();
+        }
+        else
+        {
+            ShowLoadingCard();
+        }
+    }
+
     // Used to show a loading ring when we don't have widget content.
     public void ShowLoadingCard()
     {
+        Log.Logger()?.ReportDebug("WidgetViewModel", "Show loading card.");
         _dispatcher.TryEnqueue(() =>
         {
             WidgetFrameworkElement = new ProgressRing();
