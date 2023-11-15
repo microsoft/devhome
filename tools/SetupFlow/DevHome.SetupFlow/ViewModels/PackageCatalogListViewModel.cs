@@ -63,7 +63,6 @@ public partial class PackageCatalogListViewModel : ObservableObject
             AddShimmers(_catalogDataSourceLoader.CatalogCount);
             try
             {
-                await Task.Run(async () => await _wpm.WinGetCatalog.ConnectAsync());
                 await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
                 {
                     foreach (var catalog in dataSourceCatalogs)
@@ -78,7 +77,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {nameof(_wpm.WinGetCatalog)}. Skipping catalogs loading operation.", e);
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to load catalogs.", e);
             }
 
             // Remove any remaining shimmers:

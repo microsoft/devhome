@@ -244,9 +244,6 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         {
             await Task.Run(async () =>
             {
-                Log.Logger?.ReportInfo(Log.Component.Summary, $"Creating a new catalog connections");
-                await _wpm.ConnectToAllCatalogsAsync(force: true);
-
                 Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloading catalogs from all data sources");
                 _catalogDataSourceLoader.Clear();
                 await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())

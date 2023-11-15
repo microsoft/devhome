@@ -17,44 +17,15 @@ public interface IWindowsPackageManager
     /// <summary>
     /// Gets the predefined WinGet catalog id
     /// </summary>
-    public string WinGetCatalogId
-    {
-        get;
-    }
+    public string WinGetCatalogId { get; }
 
     /// <summary>
     /// Gets the predefined MsStore catalog id
     /// </summary>
-    public string MsStoreId
-    {
-        get;
-    }
+    public string MsStoreId { get; }
 
     /// <summary>
-    /// Gets a composite catalog for all remote and local catalogs.
-    /// </summary>
-    public IWinGetCatalog AllCatalogs
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Gets a composite catalog for the predefined <c>winget</c> and local catalogs.
-    /// </summary>
-    public IWinGetCatalog WinGetCatalog
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Opens all custom composite catalogs.
-    /// </summary>
-    /// <param name="force">Force connect</param>
-    /// <exception cref="CatalogConnectionException">Exception thrown if a catalog connection failed</exception>
-    public Task ConnectToAllCatalogsAsync(bool force = false);
-
-    /// <summary>
-    /// Install a winget package
+    /// Install a package on the user's machine.
     /// </summary>
     /// <param name="package">Package to install</param>
     /// <param name="activityId">Guid to correlate this task to the setupflow activity.</param>
@@ -86,6 +57,8 @@ public interface IWindowsPackageManager
     /// <returns>True if AppInstaller was registered, false otherwise.</returns>
     public Task<bool> RegisterAppInstallerAsync();
 
+    public Task InitializeAsync();
+
     /// <summary>
     /// Get packages from a set of package uri.
     /// </summary>
@@ -94,5 +67,13 @@ public interface IWindowsPackageManager
     /// <exception cref="FindPackagesException">Exception thrown if the get packages operation failed</exception>
     public Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet);
 
-    public void Initialize();
+    /// <summary>
+    /// Search for packages in this catalog.
+    /// Equivalent to <c>"winget search --query {query} --source {this}"</c>
+    /// </summary>
+    /// <param name="query">Search query</param>
+    /// <param name="limit">Maximum number of results to return. Use 0 for infinite results</param>
+    /// <returns>List of winget package matches</returns>
+    /// <exception cref="FindPackagesException">Exception thrown if the search packages operation failed</exception>
+    public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit = 0);
 }

@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Exceptions;
 using DevHome.Common.Services;
@@ -20,7 +22,7 @@ namespace DevHome.SetupFlow.Services;
 /// <summary>
 /// Windows package manager class is an entry point for using the WinGet COM API.
 /// </summary>
-public class WindowsPackageManager : IWindowsPackageManager
+public class WindowsPackageManager : IWindowsPackageManager, IDisposable
 {
     public const int AppInstallerErrorFacility = 0xA15;
     public const string AppInstallerProductId = "9NBLGGH4NNS1";
@@ -36,6 +38,15 @@ public class WindowsPackageManager : IWindowsPackageManager
     private readonly IAppInstallManagerService _appInstallManagerService;
     private readonly IPackageDeploymentService _packageDeploymentService;
 
+    // Catalogs locks
+    private readonly SemaphoreSlim _searchCatalogLock = new (1, 1);
+    private readonly SemaphoreSlim _wingetCatalogLock = new (1, 1);
+    private bool _disposedValue;
+
+    // Catalogs
+    private Microsoft.Management.Deployment.PackageCatalog _searchCatalog;
+    private Microsoft.Management.Deployment.PackageCatalog _wingetCatalog;
+
     public WindowsPackageManager(
         WindowsPackageManagerFactory wingetFactory,
         IAppInstallManagerService appInstallManagerService,
@@ -46,60 +57,19 @@ public class WindowsPackageManager : IWindowsPackageManager
         _packageDeploymentService = packageDeploymentService;
     }
 
-    public void Initialize()
-    {
-        // Create composite catalogs
-        AllCatalogs = CreateAllCatalogs();
-        WinGetCatalog = CreateWinGetCatalog();
-
-        // Extract catalog ids for predefined catalogs
-        WinGetCatalogId = GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
-        MsStoreId = GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
-    }
-
     public string WinGetCatalogId { get; private set; }
 
     public string MsStoreId { get; private set; }
 
-    public IWinGetCatalog AllCatalogs { get; private set; }
-
-    public IWinGetCatalog WinGetCatalog { get; private set; }
-
-    public async Task ConnectToAllCatalogsAsync(bool force)
+    public async Task InitializeAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs");
+        // Create and connect to catalogs
+        _searchCatalog = await CreateAndConnectSearchCatalogAsync();
+        _wingetCatalog = await CreateAndConnectWinGetCatalogAsync();
 
-        // Connect predefined winget catalog to enable loading
-        // package with a known source (e.g. for restoring packages)
-        var wingetConnect = Task.Run(async () =>
-        {
-            try
-            {
-                await WinGetCatalog.ConnectAsync(force);
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {WinGetCatalog} when connecting to all catalogs", e);
-            }
-        });
-
-        // Connect composite catalog for all local and remote catalogs to
-        // enable searching for packages from any source
-        var allCatalogsConnect = Task.Run(async () =>
-        {
-            try
-            {
-                await AllCatalogs.ConnectAsync(force);
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {AllCatalogs} (search) when connecting to all catalogs", e);
-            }
-        });
-
-        await Task.WhenAll(wingetConnect, allCatalogsConnect);
-
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs completed");
+        // Extract catalog ids for predefined catalogs
+        WinGetCatalogId = GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
+        MsStoreId = GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
     }
 
     public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package, Guid activityId)
@@ -201,7 +171,7 @@ public class WindowsPackageManager : IWindowsPackageManager
             }
         }
 
-        return await WinGetCatalog.GetPackagesAsync(wingetPackageIds);
+        return await GetPackagesAsync(_wingetCatalog, wingetPackageIds);
     }
 
     /// <summary>
@@ -214,54 +184,6 @@ public class WindowsPackageManager : IWindowsPackageManager
         var packageManager = _wingetFactory.CreatePackageManager();
         var packageCatalog = packageManager.GetPredefinedPackageCatalog(catalog);
         return packageCatalog.Info.Id;
-    }
-
-    /// <summary>
-    /// Create a composite catalog that can be used for finding packages in all
-    /// remote and local packages
-    /// </summary>
-    /// <returns>Catalog composed of all remote and local catalogs</returns>
-    private WinGetCompositeCatalog CreateAllCatalogs()
-    {
-        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory);
-        compositeCatalog.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var catalogs = packageManager.GetPackageCatalogs();
-
-        // Cannot use foreach or LINQ for out-of-process IVector
-        // Bug: https://github.com/microsoft/CsWinRT/issues/1205
-        for (var i = 0; i < catalogs.Count; ++i)
-        {
-            compositeCatalog.AddPackageCatalog(catalogs[i]);
-        }
-
-        return compositeCatalog;
-    }
-
-    /// <summary>
-    /// Create a composite catalog that can be used for finding packages in
-    /// winget and local catalogs
-    /// </summary>
-    /// <returns>Catalog composed of winget and local catalogs</returns>
-    private WinGetCompositeCatalog CreateWinGetCatalog()
-    {
-        return CreatePredefinedCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
-    }
-
-    /// <summary>
-    /// Create a composite catalog that can be used for finding packages in
-    /// a predefined and local catalogs
-    /// </summary>
-    /// <param name="predefinedPackageCatalog">Predefined package catalog</param>
-    /// <returns>Catalog composed of the provided and local catalogs</returns>
-    private WinGetCompositeCatalog CreatePredefinedCatalog(PredefinedPackageCatalog predefinedPackageCatalog)
-    {
-        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory);
-        compositeCatalog.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var catalog = packageManager.GetPredefinedPackageCatalog(predefinedPackageCatalog);
-        compositeCatalog.AddPackageCatalog(catalog);
-        return compositeCatalog;
     }
 
     /// <summary>
@@ -309,5 +231,154 @@ public class WindowsPackageManager : IWindowsPackageManager
 
         packageId = null;
         return false;
+    }
+
+    private async Task<Microsoft.Management.Deployment.PackageCatalog> CreateAndConnectSearchCatalogAsync()
+    {
+        var packageManager = _wingetFactory.CreatePackageManager();
+        var catalogs = packageManager.GetPackageCatalogs();
+        return await CreateAndConnectCatalogAsync(catalogs);
+    }
+
+    private async Task<Microsoft.Management.Deployment.PackageCatalog> CreateAndConnectWinGetCatalogAsync()
+    {
+        var packageManager = _wingetFactory.CreatePackageManager();
+        var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
+        return await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog });
+    }
+
+    private async Task<Microsoft.Management.Deployment.PackageCatalog> CreateAndConnectCatalogAsync(IReadOnlyList<PackageCatalogReference> catalogReferences)
+    {
+        // Search in all catalogs including the local catalog which allows detecting if a package is installed
+        var compositeCatalogOptions = _wingetFactory.CreateCreateCompositePackageCatalogOptions();
+        compositeCatalogOptions.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
+
+        // Add all catalogs to the new composite catalog
+        // Note: Cannot use foreach or LINQ for out-of-process IVector
+        // Bug: https://github.com/microsoft/CsWinRT/issues/1205
+        var count = catalogReferences.Count;
+        for (var i = 0; i < count; ++i)
+        {
+            compositeCatalogOptions.Catalogs.Add(catalogReferences[i]);
+        }
+
+        // Create and connect the new composite catalog
+        var packageManager = _wingetFactory.CreatePackageManager();
+        var disconnectedCatalog = packageManager.CreateCompositePackageCatalog(compositeCatalogOptions);
+        var connectResult = await disconnectedCatalog.ConnectAsync();
+        if (connectResult.Status == ConnectResultStatus.Ok)
+        {
+            return connectResult.PackageCatalog;
+        }
+
+        Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to catalog with status {connectResult.Status}");
+        return null;
+    }
+
+    public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit = 0)
+    {
+        try
+        {
+            // Use default filter criteria for searching
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Searching for '{query}'. Result limit: {limit}");
+            var options = _wingetFactory.CreateFindPackagesOptions();
+            var filter = _wingetFactory.CreatePackageMatchFilter();
+            filter.Field = PackageMatchField.CatalogDefault;
+            filter.Option = PackageFieldMatchOption.ContainsCaseInsensitive;
+            filter.Value = query;
+            options.Selectors.Add(filter);
+            options.ResultLimit = limit;
+
+            return await FindPackagesAsync(_searchCatalog, options);
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error searching for packages.", e);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Core method for finding packages based on the provided options
+    /// </summary>
+    /// <param name="options">Find packages options</param>
+    /// <returns>List of winget package matches</returns>
+    /// <exception cref="InvalidOperationException">Exception thrown if the catalog is not connected before attempting to find packages</exception>
+    /// <exception cref="FindPackagesException">Exception thrown if the find packages operation failed</exception>
+    private async Task<IList<IWinGetPackage>> FindPackagesAsync(Microsoft.Management.Deployment.PackageCatalog catalog, FindPackagesOptions options)
+    {
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Performing search");
+        var result = new List<IWinGetPackage>();
+        var findResult = await catalog.FindPackagesAsync(options);
+        if (findResult.Status != FindPackagesResultStatus.Ok)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to find packages with status {findResult.Status}");
+            throw new FindPackagesException(findResult.Status);
+        }
+
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found {findResult.Matches} results");
+
+        // Cannot use foreach or LINQ for out-of-process IVector
+        // Bug: https://github.com/microsoft/CsWinRT/issues/1205
+        for (var i = 0; i < findResult.Matches.Count; ++i)
+        {
+            var catalogPackage = findResult.Matches[i].CatalogPackage;
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found [{catalogPackage.Id}]");
+            result.Add(new WinGetPackage(catalogPackage));
+        }
+
+        return result;
+    }
+
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(Microsoft.Management.Deployment.PackageCatalog catalog, ISet<string> packageIdSet)
+    {
+        try
+        {
+            // Skip search if set is empty
+            if (!packageIdSet.Any())
+            {
+                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"{nameof(GetPackagesAsync)} received an empty set of package id. Skipping search.");
+                return new List<IWinGetPackage>();
+            }
+
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting package set from catalog {catalog.Info.Name}");
+            var options = _wingetFactory.CreateFindPackagesOptions();
+            foreach (var packageId in packageIdSet)
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Adding package [{packageId}] to query");
+                var filter = _wingetFactory.CreatePackageMatchFilter();
+                filter.Field = PackageMatchField.Id;
+                filter.Option = PackageFieldMatchOption.Equals;
+                filter.Value = packageId;
+                options.Selectors.Add(filter);
+            }
+
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting search for packages");
+            return await FindPackagesAsync(catalog, options);
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error getting packages.", e);
+            throw;
+        }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                // _connectionLock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

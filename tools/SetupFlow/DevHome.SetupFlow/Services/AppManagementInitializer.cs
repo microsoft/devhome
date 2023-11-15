@@ -22,11 +22,17 @@ public class AppManagementInitializer : IAppManagementInitializer
     public async Task InitializeAsync()
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing {nameof(AppManagementInitializer)}");
+
+        // Initialize catalogs from all data sources
         await InitializeCatalogsAsync();
+
+        // Ensure AppInstaller is registered
         if (await TryRegisterAppInstallerAsync())
         {
-            _wpm.Initialize();
-            await _wpm.ConnectToAllCatalogsAsync();
+            // Initialize windows package manager after AppInstaller is registered
+            await _wpm.InitializeAsync();
+
+            // Load catalogs from all data sources
             await LoadCatalogsAsync();
         }
 
