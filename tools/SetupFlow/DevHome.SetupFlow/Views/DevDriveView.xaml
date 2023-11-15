@@ -10,9 +10,7 @@
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:util="using:DevHome.SetupFlow.Utilities"
     xmlns:services="using:DevHome.Common.Services"
-    mc:Ignorable="d"
-    Background="{ThemeResource ContentDialogBackground}"
-    Foreground="{ThemeResource ContentDialogForeground}">
+    mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
