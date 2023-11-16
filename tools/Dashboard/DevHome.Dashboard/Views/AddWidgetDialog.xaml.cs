@@ -74,15 +74,16 @@ public sealed partial class AddWidgetDialog : ContentDialog
             return;
         }
 
-        var providerDefs = _hostingService.GetWidgetCatalog()!.GetProviderDefinitions();
-        var widgetDefs = _hostingService.GetWidgetCatalog()!.GetWidgetDefinitions();
+        // Show the providers and widgets underneath them in alphabetical order.
+        var providerDefinitions = _hostingService.GetWidgetCatalog()!.GetProviderDefinitions().OrderBy(x => x.DisplayName);
+        var widgetDefinitions = _hostingService.GetWidgetCatalog()!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle);
 
-        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefs.Length} providers and {widgetDefs.Length} widgets");
+        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
 
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
-        foreach (var providerDef in providerDefs)
+        foreach (var providerDef in providerDefinitions)
         {
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
             {
@@ -93,7 +94,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     Content = providerDef.DisplayName,
                 };
 
-                foreach (var widgetDef in widgetDefs)
+                foreach (var widgetDef in widgetDefinitions)
                 {
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
