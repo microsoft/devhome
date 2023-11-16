@@ -20,7 +20,7 @@ Please make sure to verify all these scenarios.
 
 ## Providers
 ### One enabled provider
-1. If the user is logged into the provider, clicking on the "Account" tab brings the user to the list of repos they have access to.
+1. If the user is logged in to the repository provider, clicking on the "Account" tab brings the user to the list of repos they have access to.
 
 ### Multiple enabled providers
 1. The account page displays a list of all enabled providers the user can choose.  The names displayed is the long form.  Example "Dev Home GitHub Extension (dev)" and not "Github"
