@@ -15,7 +15,7 @@ Please make sure to verify all these scenarios.
 1. All repos shown on this page have the correct information, including icon, repo name, provider name, and clone location.
 
 #### Loading page
-1. All repos selected in the repo tool are cloned to their respective location.
+1. All repos selected in the repo tool are cloned to their respective locations.
 2. Any failures are logged and shown to the user. 
 
 ## Providers
