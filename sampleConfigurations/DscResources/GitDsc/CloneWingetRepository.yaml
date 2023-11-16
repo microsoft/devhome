@@ -7,6 +7,13 @@
 
 properties:
   resources:
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Git
+        allowPrerelease: true
+      settings:
+        id: Git.Git
+        source: winget
     - resource: GitDsc/GitClone
       directives:
         description: Clone the winget-cli repository
