@@ -265,10 +265,6 @@
     <value>Learn more</value>
     <comment>Button text for learning more about setting up a development machine</comment>
   </data>
-  <data name="DevDriveWindowByteUnitComboBox" xml:space="preserve">
-    <value>Byte unit of measure</value>
-    <comment>Unit of measure values that will populate the dropdown. Only gigabyte and terabyte</comment>
-  </data>
   <data name="DevDriveWindowByteUnitComboBoxGB" xml:space="preserve">
     <value>GB</value>
     <comment>Dropdown value representation for a gigabyte</comment>
@@ -1246,5 +1242,9 @@
   <data name="ResultCountSingular" xml:space="preserve">
     <value>{0} Result found for "{1}"</value>
     <comment>{Locked="{0}", "{1}"} Label for a search result counter. {0} is replaced by the number of result items. {1} is replaced with the search term.</comment>
+  </data>
+  <data name="DevDriveWindowByteUnitComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Size Unit</value>
+    <comment>Name for the combo box</comment>
   </data>
 </root>
