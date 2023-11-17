@@ -24,6 +24,8 @@ public interface IWindowsPackageManager
     /// </summary>
     public string MsStoreId { get; }
 
+    public bool CanSearch { get; }
+
     /// <summary>
     /// Install a package on the user's machine.
     /// </summary>

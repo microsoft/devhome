@@ -61,44 +61,52 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
 
     public string MsStoreId { get; private set; }
 
+    public bool CanSearch => _searchCatalog != null;
+
     public async Task InitializeAsync()
     {
-        // Create and connect to catalogs
-        _searchCatalog = await CreateAndConnectSearchCatalogAsync();
-        _wingetCatalog = await CreateAndConnectWinGetCatalogAsync();
+        await Task.Run(async () =>
+        {
+            // Create and connect to catalogs
+            _searchCatalog = await CreateAndConnectSearchCatalogAsync();
+            _wingetCatalog = await CreateAndConnectWinGetCatalogAsync();
 
-        // Extract catalog ids for predefined catalogs
-        WinGetCatalogId = GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
-        MsStoreId = GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
+            // Extract catalog ids for predefined catalogs
+            WinGetCatalogId = GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
+            MsStoreId = GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
+        });
     }
 
     public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package, Guid activityId)
     {
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var options = _wingetFactory.CreateInstallOptions();
-        options.PackageInstallMode = PackageInstallMode.Silent;
-
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package install for {package.Id}");
-        var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options).AsTask();
-        var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
-
-        // Contract version 4
-        var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK);
-
-        Log.Logger?.ReportInfo(
-            Log.Component.AppManagement,
-            $"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
-
-        if (installResult.Status != InstallResultStatus.Ok)
+        return await Task.Run(async () =>
         {
-            throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
-        }
+            var packageManager = _wingetFactory.CreatePackageManager();
+            var options = _wingetFactory.CreateInstallOptions();
+            options.PackageInstallMode = PackageInstallMode.Silent;
 
-        return new ()
-        {
-            ExtendedErrorCode = extendedErrorCode,
-            RebootRequired = installResult.RebootRequired,
-        };
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package install for {package.Id}");
+            var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options).AsTask();
+            var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
+
+            // Contract version 4
+            var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK);
+
+            Log.Logger?.ReportInfo(
+                Log.Component.AppManagement,
+                $"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
+
+            if (installResult.Status != InstallResultStatus.Ok)
+            {
+                throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
+            }
+
+            return new InstallPackageResult()
+            {
+                ExtendedErrorCode = extendedErrorCode,
+                RebootRequired = installResult.RebootRequired,
+            };
+        });
     }
 
     public async Task<bool> IsAppInstallerUpdateAvailableAsync()
@@ -156,22 +164,25 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
 
     public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet)
     {
-        // TODO Add support for other catalogs (e.g. `msstore` and custom).
-        // https://github.com/microsoft/devhome/issues/1521
-        HashSet<string> wingetPackageIds = new ();
-        foreach (var packageUri in packageUriSet)
+        return await Task.Run(async () =>
         {
-            if (TryGetPackageId(packageUri, out var packageId))
+            // TODO Add support for other catalogs (e.g. `msstore` and custom).
+            // https://github.com/microsoft/devhome/issues/1521
+            HashSet<string> wingetPackageIds = new ();
+            foreach (var packageUri in packageUriSet)
             {
-                wingetPackageIds.Add(packageId);
+                if (TryGetPackageId(packageUri, out var packageId))
+                {
+                    wingetPackageIds.Add(packageId);
+                }
+                else
+                {
+                    Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package id from uri '{packageUri}'");
+                }
             }
-            else
-            {
-                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package id from uri '{packageUri}'");
-            }
-        }
 
-        return await GetPackagesAsync(_wingetCatalog, wingetPackageIds);
+            return await GetPackagesAsync(_wingetCatalog, wingetPackageIds);
+        });
     }
 
     /// <summary>
@@ -211,6 +222,78 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         }
     }
 
+    public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit = 0)
+    {
+        return await Task.Run(async () =>
+        {
+            await _searchCatalogLock.WaitAsync();
+            try
+            {
+                // Use default filter criteria for searching
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Searching for '{query}'. Result limit: {limit}");
+                var options = _wingetFactory.CreateFindPackagesOptions();
+                var filter = _wingetFactory.CreatePackageMatchFilter();
+                filter.Field = PackageMatchField.CatalogDefault;
+                filter.Option = PackageFieldMatchOption.ContainsCaseInsensitive;
+                filter.Value = query;
+                options.Selectors.Add(filter);
+                options.ResultLimit = limit;
+
+                return await FindPackagesAsync(_searchCatalog, options);
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Error searching for packages.", e);
+                throw;
+            }
+            finally
+            {
+                _searchCatalogLock.Release();
+            }
+        });
+    }
+
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(Microsoft.Management.Deployment.PackageCatalog catalog, ISet<string> packageIdSet)
+    {
+        return await Task.Run(async () =>
+        {
+            await _wingetCatalogLock.WaitAsync();
+            try
+            {
+                // Skip search if set is empty
+                if (!packageIdSet.Any())
+                {
+                    Log.Logger?.ReportWarn(Log.Component.AppManagement, $"{nameof(GetPackagesAsync)} received an empty set of package id. Skipping search.");
+                    return new List<IWinGetPackage>();
+                }
+
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting package set from catalog {catalog.Info.Name}");
+                var options = _wingetFactory.CreateFindPackagesOptions();
+                foreach (var packageId in packageIdSet)
+                {
+                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Adding package [{packageId}] to query");
+                    var filter = _wingetFactory.CreatePackageMatchFilter();
+                    filter.Field = PackageMatchField.Id;
+                    filter.Option = PackageFieldMatchOption.Equals;
+                    filter.Value = packageId;
+                    options.Selectors.Add(filter);
+                }
+
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting search for packages");
+                return await FindPackagesAsync(catalog, options);
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Error getting packages.", e);
+                throw;
+            }
+            finally
+            {
+               _wingetCatalogLock.Release();
+            }
+        });
+    }
+
     /// <summary>
     /// Try get the package id from a package uri
     /// </summary>
@@ -235,16 +318,32 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
 
     private async Task<Microsoft.Management.Deployment.PackageCatalog> CreateAndConnectSearchCatalogAsync()
     {
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var catalogs = packageManager.GetPackageCatalogs();
-        return await CreateAndConnectCatalogAsync(catalogs);
+        await _searchCatalogLock.WaitAsync();
+        try
+        {
+            var packageManager = _wingetFactory.CreatePackageManager();
+            var catalogs = packageManager.GetPackageCatalogs();
+            return await CreateAndConnectCatalogAsync(catalogs);
+        }
+        finally
+        {
+            _searchCatalogLock.Release();
+        }
     }
 
     private async Task<Microsoft.Management.Deployment.PackageCatalog> CreateAndConnectWinGetCatalogAsync()
     {
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
-        return await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog });
+        await _wingetCatalogLock.WaitAsync();
+        try
+        {
+            var packageManager = _wingetFactory.CreatePackageManager();
+            var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
+            return await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog });
+        }
+        finally
+        {
+            _wingetCatalogLock.Release();
+        }
     }
 
     private async Task<Microsoft.Management.Deployment.PackageCatalog> CreateAndConnectCatalogAsync(IReadOnlyList<PackageCatalogReference> catalogReferences)
@@ -273,29 +372,6 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
 
         Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to catalog with status {connectResult.Status}");
         return null;
-    }
-
-    public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit = 0)
-    {
-        try
-        {
-            // Use default filter criteria for searching
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Searching for '{query}'. Result limit: {limit}");
-            var options = _wingetFactory.CreateFindPackagesOptions();
-            var filter = _wingetFactory.CreatePackageMatchFilter();
-            filter.Field = PackageMatchField.CatalogDefault;
-            filter.Option = PackageFieldMatchOption.ContainsCaseInsensitive;
-            filter.Value = query;
-            options.Selectors.Add(filter);
-            options.ResultLimit = limit;
-
-            return await FindPackagesAsync(_searchCatalog, options);
-        }
-        catch (Exception e)
-        {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error searching for packages.", e);
-            throw;
-        }
     }
 
     /// <summary>
@@ -328,39 +404,6 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         }
 
         return result;
-    }
-
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(Microsoft.Management.Deployment.PackageCatalog catalog, ISet<string> packageIdSet)
-    {
-        try
-        {
-            // Skip search if set is empty
-            if (!packageIdSet.Any())
-            {
-                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"{nameof(GetPackagesAsync)} received an empty set of package id. Skipping search.");
-                return new List<IWinGetPackage>();
-            }
-
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting package set from catalog {catalog.Info.Name}");
-            var options = _wingetFactory.CreateFindPackagesOptions();
-            foreach (var packageId in packageIdSet)
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Adding package [{packageId}] to query");
-                var filter = _wingetFactory.CreatePackageMatchFilter();
-                filter.Field = PackageMatchField.Id;
-                filter.Option = PackageFieldMatchOption.Equals;
-                filter.Value = packageId;
-                options.Selectors.Add(filter);
-            }
-
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting search for packages");
-            return await FindPackagesAsync(catalog, options);
-        }
-        catch (Exception e)
-        {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Error getting packages.", e);
-            throw;
-        }
     }
 
     protected virtual void Dispose(bool disposing)
