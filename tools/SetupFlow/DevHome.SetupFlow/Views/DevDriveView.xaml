@@ -112,7 +112,7 @@
                     NumberFormatter="{x:Bind ViewModel.DevDriveDecimalFormatter, Mode=OneWay}"
                     ValidationMode="InvalidInputOverwritten">
                 </NumberBox>
-                <ComboBox 
+                <ComboBox
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowByteUnitComboBox"
                     x:Name="DriveByteUnitComboBox"
                     Grid.Column="2"
