@@ -24,6 +24,13 @@
             "viewFullName": "DevHome.ExtensionLibrary.Views.ExtensionLibraryView",
             "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
             "icon": "ea86"
+          },
+          {
+            "identity": "DevHome.Environments",
+            "assembly": "DevHome.Environments",
+            "viewFullName": "DevHome.Environments.Views.EnvironmentsView",
+            "viewModelFullName": "DevHome.Environments.ViewModels.EnvironmentsViewModel",
+            "icon": "E83B"
           }
           /*,
           {

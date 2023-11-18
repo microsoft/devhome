@@ -17,6 +17,7 @@
 
                 <!-- Resources from other projects -->
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlow_ThemeResources.xaml" />
+                <ResourceDictionary Source="ms-appx:///DevHome.Common/Environments/Styles/HorizontalCardStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
