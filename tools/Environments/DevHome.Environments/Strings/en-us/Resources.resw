@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CheckpointButtonContextMenuItem" xml:space="preserve">
+    <value>Checkpoint</value>
+    <comment>Text for checkpoint button in the context menu that will create a checkpoint for the virtual machine.</comment>
+  </data>
+  <data name="DeleteButtonContextMenuItem" xml:space="preserve">
+    <value>Delete</value>
+    <comment>Text for delete button in the context menu that will delete the virtual machine.</comment>
+  </data>
+  <data name="LaunchButton.Content" xml:space="preserve">
+    <value>Launch</value>
+    <comment>Text that will start a virtual machines launcher app.</comment>
+  </data>
+  <data name="NavigationPane.Content" xml:space="preserve">
+    <value>Environments</value>
+    <comment>Navigation pane content</comment>
+  </data>
+  <data name="PauseButtonContextMenuItem" xml:space="preserve">
+    <value>Pause</value>
+    <comment>Text for pause button in the context menu that will pause the virtual machine.</comment>
+  </data>
+  <data name="PinToStartButtonContextMenuItem" xml:space="preserve">
+    <value>Add to Start</value>
+    <comment>Text that will pin a virtual machine's launcher app to the Start menu.</comment>
+  </data>
+  <data name="PinToTaskbarButtonContextMenuItem" xml:space="preserve">
+    <value>Pin To Taskbar</value>
+    <comment>Text that will pin a virtual machine's launcher app to the Taskbar.</comment>
+  </data>
+  <data name="RestartButtonContextMenuItem" xml:space="preserve">
+    <value>Restart</value>
+    <comment>Text for restart button in the context menu that will restart the virtual machine.</comment>
+  </data>
+  <data name="ResumeButtonContextMenuItem" xml:space="preserve">
+    <value>Resume</value>
+    <comment>Text for resume button in the context menu that will resume a paused the virtual machine.</comment>
+  </data>
+  <data name="RevertCheckpointButtonContextMenuItem" xml:space="preserve">
+    <value>Revert</value>
+    <comment>Text for the revert checkpoint button that will revert a virtual machines checkpoint to its previous checkpoint.</comment>
+  </data>
+  <data name="ShutdownButtonContextMenuItem" xml:space="preserve">
+    <value>Shutdown</value>
+    <comment>Text for shutdown button in the context menu that will shutdown the virtual machines operating system.</comment>
+  </data>
+  <data name="StartButtonContextMenuItem" xml:space="preserve">
+    <value>Start</value>
+    <comment>Text for start button in the context menu that will start the virtual machine.</comment>
+  </data>
+  <data name="TerminateButtonContextMenuItem" xml:space="preserve">
+    <value>Turn off</value>
+    <comment>Text for terminate button in the context menu that will turn off the virtual machine. This button turns off the power to the virtual machine without gracefully shutting it down first.</comment>
+  </data>
+</root>

@@ -25,6 +25,7 @@ public class ExtensionWrapper : IExtensionWrapper
         [typeof(IRepositoryProvider)] = ProviderType.Repository,
         [typeof(ISettingsProvider)] = ProviderType.Settings,
         [typeof(IFeaturedApplicationsProvider)] = ProviderType.FeaturedApplications,
+        [typeof(IComputeSystemProvider)] = ProviderType.ComputeSystem,
     };
 
     private IExtension? _extensionObject;
@@ -180,6 +181,24 @@ public class ExtensionWrapper : IExtensionWrapper
         await StartExtensionAsync();
 
         return GetExtensionObject()?.GetProvider(_providerTypeMap[typeof(T)]) as T;
+    }
+
+    public async Task<IEnumerable<T>> GetListOfProvidersAsync<T>()
+        where T : class
+    {
+        await StartExtensionAsync();
+
+        var supportedProviders = GetExtensionObject()?.GetProvider(_providerTypeMap[typeof(T)]);
+        if (supportedProviders is IEnumerable<T> multipleProvidersSupported)
+        {
+            return multipleProvidersSupported;
+        }
+        else if (supportedProviders is T singleProviderSupported)
+        {
+            return new List<T>() { singleProviderSupported };
+        }
+
+        return Enumerable.Empty<T>();
     }
 
     public void AddProviderType(ProviderType providerType)

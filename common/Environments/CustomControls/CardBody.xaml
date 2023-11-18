@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="DevHome.Common.Environments.CustomControls.CardBody"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:devEnvConverters="using:DevHome.Common.Environments.Converters"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <devEnvConverters:CardStateColorToBrushConverter x:Key="CardStateColorToBrushConverter"/>
+        <devEnvConverters:CardStateToLocalizedTextConverter x:Key="CardStateToLocalizedTextConverter"/>
+    </UserControl.Resources>
+
+        <Grid
+            Style="{StaticResource CardBodyContainerStyle}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <!-- 64x64 image for the compute system. -->
+            <Viewbox
+                Grid.Column="0"
+                Style="{StaticResource ComputeSystemImageStyle}">
+                <Grid>
+                    <!-- Background rectangle that we will fallback into if an image is not passed to the card body. -->
+                    <Rectangle Style="{StaticResource ComputeSystemImageBackgroundStyle}" />
+                    <!-- Image for card body. -->
+                    <Border Style="{StaticResource ComputeSystemImageBorderStyle}">
+                        <Image 
+                            Source="{x:Bind ComputeSystemImage, Mode=OneWay}"
+                            Width="{StaticResource ComputeSystemImage64px}"
+                            Height="{StaticResource ComputeSystemImage64px}"
+                            Stretch="Fill"/>
+                    </Border>
+                </Grid>
+            </Viewbox>
+            <!-- 
+                Stackpanel containing name of compute system, dot indicating status of compute system, state of compute system in text  and a list of 
+                the compute system properties.
+            -->
+            <StackPanel
+                Grid.Column="1"
+                Style="{StaticResource CardBodyStackPanelStyle}">
+                <TextBlock
+                    Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
+                    Text="{x:Bind ComputeSystemTitle}"/>
+                <Grid
+                    ColumnSpacing="{StaticResource ContainerElementSpacing}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <!-- Colored dot that indicates the visual state of the compute system. -->
+                    <Ellipse
+                        Grid.Column="0"
+                        Fill="{x:Bind StateColor, Converter={StaticResource CardStateColorToBrushConverter}, Mode=OneWay}"
+                        Style="{StaticResource CardBodyElipsisStyle}"/>
+                    <!-- String that indicates the internal state of the compute system. -->
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="{x:Bind CardState, Converter={StaticResource CardStateToLocalizedTextConverter}, Mode=OneWay}"
+                        Style="{StaticResource CardBodyStateTextBlockStyle}"/>
+                </Grid>
+                <ListView
+                    Style="{StaticResource CardBodyComputeSystemPropertiesStyle}"
+                    ItemsSource="{x:Bind ComputeSystemProperties, Mode=OneWay}"
+                    ItemTemplate="{x:Bind ComputeSystemPropertyTemplate, Mode=OneWay}">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Style="{StaticResource CardBodyWrapGridStyle}"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+
+                </ListView>
+            </StackPanel>
+            <!-- 
+                For an action control, like a splitbutton or checkbox. Pass a Datatemplate to the CardBody's ActionControlTemplate in xaml.
+            -->
+            <ContentControl
+                Grid.Column="2"
+                IsTabStop="False"
+                HorizontalContentAlignment="Right"
+                VerticalContentAlignment="Stretch"
+                ContentTemplate="{x:Bind ActionControlTemplate, Mode=OneWay}"/>
+    </Grid>
+</UserControl>
