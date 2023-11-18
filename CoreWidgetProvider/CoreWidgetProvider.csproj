@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(SolutionDir)ToolingVersions.props"/>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputType>Exe</OutputType>
   </PropertyGroup>
@@ -7,10 +8,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <CsWinRTEnabled>false</CsWinRTEnabled>
     <Platforms>x86;x64;arm64</Platforms>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
