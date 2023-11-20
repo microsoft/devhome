@@ -1,35 +1,42 @@
 {
-  "ProductIds": ["9NZCC27PR6N6", "9N8MHTPHNGVV"],
-  "Products":
-  [
+  "ProductIds": [ "9NZCC27PR6N6", "9N8MHTPHNGVV", "9NBVFRMSFXHW" ],
+  "Products": [
     {
-      "LocalizedProperties":
-	  [
+      "LocalizedProperties": [
         {
           "PublisherName": "Microsoft Corporation",
           "ProductTitle": "Dev Home GitHub Extension (Preview)"
         }
       ],
       "ProductId": "9NZCC27PR6N6",
-      "Properties":
-	  {
+      "Properties": {
         "PackageFamilyName": "Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe"
       }
     },
     {
-      "LocalizedProperties": 
-	  [
+      "LocalizedProperties": [
         {
           "PublisherName": "Microsoft Corporation",
           "ProductTitle": "Dev Home (Preview)"
-		}
+        }
       ],
       "ProductId": "9N8MHTPHNGVV",
-      "Properties":
-	  {
+      "Properties": {
         "PackageFamilyName": "Microsoft.Windows.DevHome_8wekyb3d8bbwe"
+      }
+    },
+    {
+      "LocalizedProperties": [
+        {
+          "PublisherName": "Microsoft Corporation",
+          "ProductTitle": "Dev Home Azure Extension (Preview)"
+        }
+      ],
+      "ProductId": "9NBVFRMSFXHW",
+      "Properties": {
+        "PackageFamilyName": "Microsoft.Windows.DevHomeAzureExtension_8wekyb3d8bbwe"
       }
     }
   ],
-  "TotalResultCount": 2
+  "TotalResultCount": 3
 }
