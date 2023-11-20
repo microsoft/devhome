@@ -85,10 +85,27 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
             var options = _wingetFactory.CreateInstallOptions();
             options.PackageInstallMode = PackageInstallMode.Silent;
 
-            // TODO Find catalog package from package id and catalog name
+            var catalog = packageManager.GetPackageCatalogByName(package.CatalogName);
+            var result = await catalog.ConnectAsync();
+
+            var op = _wingetFactory.CreateFindPackagesOptions();
+            var mop = _wingetFactory.CreatePackageMatchFilter();
+            mop.Option = PackageFieldMatchOption.Equals;
+            mop.Field = PackageMatchField.Id;
+            mop.Value = package.Id;
+            op.Filters.Add(mop);
+            var mathc = await result.PackageCatalog.FindPackagesAsync(op);
+            if (mathc.Matches.Count == 0)
+            {
+                return new InstallPackageResult
+                {
+                    ExtendedErrorCode = 0,
+                    RebootRequired = false,
+                };
+            }
 
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package install for {package.Id}");
-            var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options).AsTask();
+            var installResult = await packageManager.InstallPackageAsync(mathc.Matches[0].CatalogPackage, options).AsTask();
             var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
 
             // Contract version 4
