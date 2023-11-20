@@ -24,8 +24,6 @@ namespace DevHome.SetupFlow.Views;
 [INotifyPropertyChanged]
 public sealed partial class RepoConfigView : UserControl
 {
-    private readonly IThemeSelectorService _themeSelectorService;
-
     private Guid ActivityId => ViewModel.Orchestrator.ActivityId;
 
     public RepoConfigViewModel ViewModel => (RepoConfigViewModel)this.DataContext;
@@ -36,8 +34,6 @@ public sealed partial class RepoConfigView : UserControl
     {
         this.InitializeComponent();
         ActualThemeChanged += OnActualThemeChanged;
-
-        _themeSelectorService = Application.Current.GetService<IThemeSelectorService>();
     }
 
     public void OnActualThemeChanged(FrameworkElement sender, object args)
@@ -70,7 +66,7 @@ public sealed partial class RepoConfigView : UserControl
 
         telemetryLogger.Log(EventName, LogLevel.Critical, new DialogEvent("Open", dialogName), ActivityId);
 
-        _addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), _themeSelectorService, ActivityId);
+        _addRepoDialog = new AddRepoDialog(ViewModel.DevDriveManager, ViewModel.LocalStringResource, ViewModel.RepoReviewItems.ToList(), ActivityId, ViewModel.Host);
         var getExtensionsTask = _addRepoDialog.GetExtensionsAsync();
         var setupDevDrivesTask = _addRepoDialog.SetupDevDrivesAsync();
         _addRepoDialog.XamlRoot = RepoConfigGrid.XamlRoot;
@@ -79,11 +75,15 @@ public sealed partial class RepoConfigView : UserControl
         // Start
         await getExtensionsTask;
         await setupDevDrivesTask;
+
+        _addRepoDialog.SetDeveloperIdChangedEvents();
+
         if (_addRepoDialog.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
         {
             _addRepoDialog.UpdateDevDriveInfo();
         }
 
+        _addRepoDialog.IsSecondaryButtonEnabled = true;
         var result = await _addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
 
         var devDrive = _addRepoDialog.EditDevDriveViewModel.DevDrive;

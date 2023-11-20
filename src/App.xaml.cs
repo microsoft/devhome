@@ -26,7 +26,6 @@ using Microsoft.Windows.AppLifecycle;
 
 namespace DevHome;
 
-// To learn more about WinUI 3, see https://docs.microsoft.com/windows/apps/winui/winui3/.
 public partial class App : Application, IApp
 {
     private readonly DispatcherQueue _dispatcherQueue;
@@ -46,7 +45,27 @@ public partial class App : Application, IApp
 
     public static WindowEx MainWindow { get; } = new MainWindow();
 
-    internal static NavConfig NavConfig { get; } = System.Text.Json.JsonSerializer.Deserialize(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "navConfig.json")), SourceGenerationContext.Default.NavConfig)!;
+    private static string RemoveComments(string text)
+    {
+        var start = text.IndexOf("/*", StringComparison.Ordinal);
+        while (start >= 0)
+        {
+            var end = text.IndexOf("*/", start + 2, StringComparison.Ordinal);
+            if (end < 0)
+            {
+                end = text.Length;
+            }
+
+            text = text.Remove(start, end - start + 2);
+            start = text.IndexOf("/*", start, StringComparison.Ordinal);
+        }
+
+        return text;
+    }
+
+    internal static NavConfig NavConfig { get; } = System.Text.Json.JsonSerializer.Deserialize(
+        RemoveComments(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "navConfig.jsonc"))),
+        SourceGenerationContext.Default.NavConfig)!;
 
     public App()
     {

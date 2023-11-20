@@ -6,14 +6,12 @@ extern alias Projection;
 using System;
 using System.Globalization;
 using System.IO;
-using System.Management.Automation;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Common.TelemetryEvents.SetupFlow;
-using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -193,7 +191,7 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
             {
                 ProviderOperationResult result;
                 Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Cloning repository {RepositoryToClone.DisplayName}");
-                TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Critical, new ReposCloneEvent(ProviderName, _developerId));
+                TelemetryFactory.Get<ITelemetry>().Log("CloneTask_CloneRepo_Event", LogLevel.Critical, new ReposCloneEvent(ProviderName, _developerId), _activityId);
 
                 if (RepositoryToClone.GetType() == typeof(GenericRepository))
                 {
@@ -214,6 +212,8 @@ public partial class CloneRepoTask : ObservableObject, ISetupTask
 
                 if (result.Status == ProviderOperationStatus.Failure)
                 {
+                    TelemetryFactory.Get<ITelemetry>().LogError("CloneTask_CouldNotClone_Event", LogLevel.Critical, new ExceptionEvent(result.ExtendedError.HResult, result.DisplayMessage));
+
                     _actionCenterErrorMessage.PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.CloneRepoErrorForActionCenter, RepositoryToClone.DisplayName, result.DisplayMessage);
                     WasCloningSuccessful = false;
                     return TaskFinishedState.Failure;

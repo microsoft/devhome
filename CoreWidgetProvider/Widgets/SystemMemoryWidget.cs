@@ -63,8 +63,8 @@ internal class SystemMemoryWidget : CoreWidget, IDisposable
             memoryData.Add("allMem", MemUlongToString(currentData.AllMem));
             memoryData.Add("usedMem", MemUlongToString(currentData.UsedMem));
             memoryData.Add("memUsage", FloatToPercentString(currentData.MemUsage));
-            memoryData.Add("commitedMem", MemUlongToString(currentData.MemCommited));
-            memoryData.Add("commitedLimitMem", MemUlongToString(currentData.MemCommitLimit));
+            memoryData.Add("committedMem", MemUlongToString(currentData.MemCommitted));
+            memoryData.Add("committedLimitMem", MemUlongToString(currentData.MemCommitLimit));
             memoryData.Add("cachedMem", MemUlongToString(currentData.MemCached));
             memoryData.Add("pagedPoolMem", MemUlongToString(currentData.MemPagedPool));
             memoryData.Add("nonPagedPoolMem", MemUlongToString(currentData.MemNonPagedPool));

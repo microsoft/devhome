@@ -4,6 +4,8 @@
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Settings;
+using DevHome.Settings.ViewModels;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -52,6 +54,7 @@ public sealed partial class ShellPage : Page
     {
         // Update the title bar if the system theme changes.
         TitleBarHelper.UpdateTitleBar(App.MainWindow, ActualTheme);
+        AppTitleBar.Repaint();
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
@@ -61,14 +64,6 @@ public sealed partial class ShellPage : Page
 
     private void NavigationViewControl_DisplayModeChanged(NavigationView sender, NavigationViewDisplayModeChangedEventArgs args)
     {
-        AppTitleBar.Margin = new Thickness()
-        {
-            Left = sender.CompactPaneLength,
-            Top = AppTitleBar.Margin.Top,
-            Right = AppTitleBar.Margin.Right,
-            Bottom = AppTitleBar.Margin.Bottom,
-        };
-
         ShellInfoBar.Margin = new Thickness()
         {
             Left = ShellInfoBar.Margin.Left,
@@ -101,17 +96,47 @@ public sealed partial class ShellPage : Page
         args.Handled = result;
     }
 
+    public static readonly DependencyProperty ExperimentalFeatureProperty = DependencyProperty.Register(
+        "ExperimentalFeature",
+        typeof(ExperimentalFeature),
+        typeof(ShellPage),
+        new PropertyMetadata(null, OnExperimentalFeatureChanged));
+
+    private static void OnExperimentalFeatureChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (e.NewValue != null && e.NewValue is ExperimentalFeature experimentalFeature)
+        {
+            var navigationViewItem = (NavigationViewItem)d;
+            navigationViewItem.Visibility = experimentalFeature.IsEnabled ? Visibility.Visible : Visibility.Collapsed;
+        }
+    }
+
+    private static ExperimentalFeature? GetExperimentalFeature(NavigationViewItem navigationViewItem) => (ExperimentalFeature)navigationViewItem.GetValue(ExperimentalFeatureProperty);
+
+    public void UpdateExperimentalPageState(ExperimentalFeature expFeature)
+    {
+        var nvis = NavigationViewControl.MenuItems.Where(s => GetExperimentalFeature((NavigationViewItem)s) == expFeature);
+        foreach (NavigationViewItem nvi in nvis)
+        {
+            nvi.Visibility = expFeature.IsEnabled ? Visibility.Visible : Visibility.Collapsed;
+        }
+    }
+
     private void UpdateNavigationMenuItems()
     {
+        var expVM = App.Current.GetService<ExperimentalFeaturesViewModel>();
         foreach (var group in App.NavConfig.NavMenu.Groups)
         {
             foreach (var tool in group.Tools)
             {
+                var expFeature = expVM.Features.FirstOrDefault(x => x.Id == tool.ExperimentId);
+
                 var navigationViewItemString = $@"
                     <NavigationViewItem
                         xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
                         xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
                         xmlns:helpers=""using:DevHome.Helpers""
+                        xmlns:views=""using:DevHome.Views""
                         x:Uid=""/{tool.Assembly}/Resources/NavigationPane""
                         helpers:NavigationHelper.NavigateTo=""{tool.ViewModelFullName}""
                         AutomationProperties.AutomationId=""{tool.Identity}"">
@@ -120,6 +145,21 @@ public sealed partial class ShellPage : Page
                         </NavigationViewItem.Icon>
                     </NavigationViewItem>";
                 NavigationViewItem navigationViewItem = (NavigationViewItem)XamlReader.Load(navigationViewItemString);
+
+                if (expFeature != null)
+                {
+                    navigationViewItem.Visibility = expFeature.IsEnabled ? Visibility.Visible : Visibility.Collapsed;
+                    expFeature.PropertyChanged += (s, e) =>
+                    {
+                        if (e.PropertyName == nameof(ExperimentalFeature.IsEnabled))
+                        {
+                            UpdateExperimentalPageState(expFeature);
+                        }
+                    };
+                }
+
+                navigationViewItem.SetValue(ExperimentalFeatureProperty, expFeature);
+
                 NavigationViewControl.MenuItems.Add(navigationViewItem);
             }
         }

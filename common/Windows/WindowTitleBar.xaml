@@ -20,10 +20,6 @@
                 x:Key="IconContainerConverter"
                 FalseValue="auto"
                 TrueValue="0"/>
-            <converters:BoolToObjectConverter
-                x:Key="ActiveTitleForegroundConverter"
-                FalseValue="{ThemeResource WindowCaptionForegroundDisabled}"
-                TrueValue="{ThemeResource WindowCaptionForeground}" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -56,8 +52,8 @@
 
         <!-- Title -->
         <TextBlock
+            x:Name="TitleTextBlock"
             Grid.Column="1"
-            Foreground="{x:Bind IsActive, Mode=OneWay, Converter={StaticResource ActiveTitleForegroundConverter}}"
             Text="{x:Bind Title, Mode=OneWay}"
             Style="{ThemeResource CaptionTextBlockStyle}"
             VerticalAlignment="Center"

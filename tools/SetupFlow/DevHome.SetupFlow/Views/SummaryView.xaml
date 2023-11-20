@@ -4,7 +4,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:viewModels="using:DevHome.SetupFlow.ViewModels"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
@@ -12,6 +11,7 @@
     xmlns:models="using:DevHome.SetupFlow.Models"
     xmlns:commonviews="using:DevHome.Common.Views"
     xmlns:setupFlowBehaviors="using:DevHome.SetupFlow.Behaviors"
+    xmlns:controls="using:DevHome.SetupFlow.Controls"
     setupFlowBehaviors:SetupFlowNavigationBehavior.PreviousVisibility="Collapsed"
     setupFlowBehaviors:SetupFlowNavigationBehavior.NextVisibility="Collapsed"
     mc:Ignorable="d">
@@ -150,7 +150,7 @@
                                 <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
                                     <StackPanel>
                                         <TextBlock Text="{x:Bind Title}"/>
-                                        <TextBlock Margin="20,0,0,0" Text="{x:Bind ApplyResult}">
+                                        <TextBlock Margin="20,0,0,0" Text="{x:Bind ApplyResult}" IsTextSelectionEnabled="{x:Bind IsError}">
                                             <i:Interaction.Behaviors>
                                                 <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
                                                     <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}"/>
@@ -369,26 +369,20 @@
                                 </GridView.ItemsPanel>
                                 <GridView.ItemTemplate>
                                     <DataTemplate x:DataType="viewModels:PackageViewModel">
-                                        <ctControls:SettingsCard Width="250" Padding="5" Background="Transparent">
-                                            <ctControls:SettingsCard.Resources>
-                                                <Thickness x:Key="SettingsCardBorderThickness">0</Thickness>
-                                                <Thickness x:Key="SettingsCardPadding">0</Thickness>
-                                                <x:Double x:Key="SettingsCardMinHeight">0</x:Double>
-                                                <x:Double x:Key="SettingsCardMinWidth">0</x:Double>
-                                                <x:Double x:Key="SettingsCardWrapThreshold">0</x:Double>
-                                                <x:Double x:Key="SettingsCardWrapNoIconThreshold">0</x:Double>
-                                                <x:Double x:Key="SettingsCardHeaderIconMaxSize">18</x:Double>
-                                            </ctControls:SettingsCard.Resources>
-                                            <ctControls:SettingsCard.Header>
-                                                <TextBlock Text="{x:Bind Name, Mode=OneWay}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
-                                            </ctControls:SettingsCard.Header>
-                                            <ctControls:SettingsCard.Description>
-                                                <TextBlock Text="{x:Bind Version, Mode=OneWay}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
-                                            </ctControls:SettingsCard.Description>
-                                            <ctControls:SettingsCard.HeaderIcon>
-                                                <ImageIcon Source="{x:Bind Icon, Mode=OneWay}"/>
-                                            </ctControls:SettingsCard.HeaderIcon>
-                                        </ctControls:SettingsCard>
+                                        <controls:PackageDetailsSettingsCard Width="250" Padding="5">
+                                            <ToolTipService.ToolTip>
+                                                <controls:PackageDetailsTooltip Package="{x:Bind}" />
+                                            </ToolTipService.ToolTip>
+                                            <controls:PackageDetailsSettingsCard.Header>
+                                                <TextBlock Style="{ThemeResource AppManagementPackageTitleTextBlock}" Text="{x:Bind PackageTitle}" />
+                                            </controls:PackageDetailsSettingsCard.Header>
+                                            <controls:PackageDetailsSettingsCard.Description>
+                                                <TextBlock Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{x:Bind PackageDescription}" />
+                                            </controls:PackageDetailsSettingsCard.Description>
+                                            <controls:PackageDetailsSettingsCard.HeaderIcon>
+                                                <ImageIcon Source="{x:Bind Icon}"/>
+                                            </controls:PackageDetailsSettingsCard.HeaderIcon>
+                                        </controls:PackageDetailsSettingsCard>
                                     </DataTemplate>
                                 </GridView.ItemTemplate>
                             </GridView>

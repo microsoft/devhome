@@ -117,9 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddAll.Text" xml:space="preserve">
-    <value>Add all</value>
-    <comment>Label for adding all items for selection</comment>
+  <data name="ViewAll.Text" xml:space="preserve">
+    <value>View all</value>
+    <comment>Label for viewing all applications in a catalog</comment>
   </data>
   <data name="AddAllApplications" xml:space="preserve">
     <value>Added all applications</value>
@@ -286,7 +286,7 @@
     <comment>The drive letters that are currently available to use on the system</comment>
   </data>
   <data name="DevDriveWindowLaunchSettingsDisksAndVolumesHeader.Text" xml:space="preserve">
-    <value>For advanced settings, open the settings app.</value>
+    <value>For advanced settings, such as creating a native volume, open the settings app.</value>
     <comment>Text to Advise the user that the disks and volumes page in the Windows settings app has more advanced options for creating a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink.Content" xml:space="preserve">
@@ -310,7 +310,7 @@
     <comment>Placeholder drive label value that will be used as the file name within the Dev Drive name text box. VHD stands for virtual hard disk, which is what will be created when the user goes to create a Dev Drive.</comment>
   </data>
   <data name="DevDriveWindowOnlyOneDevDriveAllowedHeader.Text" xml:space="preserve">
-    <value>A Dev Drive optimizes performance for development. You can create only one in Dev Home.</value>
+    <value>A Dev Drive optimizes performance for development. You can create only one in Dev Home and it will be a VHDX.</value>
     <comment>Text to advise users that they are only allowed the create one Dev Drive at a time.</comment>
   </data>
   <data name="DevDriveWindowSaveButton.Content" xml:space="preserve">
@@ -1234,5 +1234,13 @@
   <data name="StartingInstallPackageMessage" xml:space="preserve">
     <value>Starting to install package {0}</value>
     <comment>{Locked="{0}"} String letting users know that DevHome has started to install a package. {0} is the package id</comment>
+  </data>
+  <data name="UrlCancelButtonText" xml:space="preserve">
+    <value>Press the X button to cancel.</value>
+    <comment>String directing users to use the x button on the dialog to cancel the log-in process.</comment>
+  </data>
+  <data name="UrlNoAccountsHaveAccess" xml:space="preserve">
+    <value>No accounts have access to this repository.</value>
+    <comment>Error string letting users no that no accounts in an extension have access to the repository.</comment>
   </data>
 </root>

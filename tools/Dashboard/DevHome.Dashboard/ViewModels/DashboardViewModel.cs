@@ -2,48 +2,57 @@
 // Licensed under the MIT license.
 
 using System;
-using System.Threading.Tasks;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
+using DevHome.Common.Services;
+using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml;
-using Windows.Storage;
-using Windows.System;
 
 namespace DevHome.Dashboard.ViewModels;
 
 public partial class DashboardViewModel : ObservableObject
 {
-    private const string _hideDashboardBannerKey = "HideDashboardBanner";
+    public IWidgetHostingService WidgetHostingService { get; }
 
-    [ObservableProperty]
-    private bool _showDashboardBanner;
+    public IWidgetIconService WidgetIconService { get; }
+
+    private readonly IPackageDeploymentService _packageDeploymentService;
+
+    private bool _validatedWebExpPack;
 
     [ObservableProperty]
     private bool _isLoading;
 
-    public DashboardViewModel()
+    public DashboardViewModel(
+        IPackageDeploymentService packageDeploymentService,
+        IWidgetHostingService widgetHostingService,
+        IWidgetIconService widgetIconService)
     {
-        ShowDashboardBanner = ShouldShowDashboardBanner();
+        _packageDeploymentService = packageDeploymentService;
+        WidgetIconService = widgetIconService;
+        WidgetHostingService = widgetHostingService;
     }
 
-    [RelayCommand]
-    private async Task DashboardBannerButtonAsync()
+    public bool EnsureWebExperiencePack()
     {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2234395"));
-    }
+        // If already validated there's a good version, don't check again.
+        if (_validatedWebExpPack)
+        {
+            return true;
+        }
 
-    [RelayCommand]
-    private void HideDashboardBannerButton()
-    {
-        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        roamingProperties[_hideDashboardBannerKey] = bool.TrueString;
-        ShowDashboardBanner = false;
-    }
+        var minSupportedVersion400 = new Version(423, 3800);
+        var minSupportedVersion500 = new Version(523, 3300);
+        var version500 = new Version(500, 0);
 
-    private bool ShouldShowDashboardBanner()
-    {
-        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        return !roamingProperties.ContainsKey(_hideDashboardBannerKey);
+        // Ensure the application is installed, and the version is high enough.
+        const string packageFamilyName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
+        var packages = _packageDeploymentService.FindPackagesForCurrentUser(
+            packageFamilyName,
+            (minSupportedVersion400, version500),
+            (minSupportedVersion500, null));
+        _validatedWebExpPack = packages.Any();
+        return _validatedWebExpPack;
     }
 
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
@@ -55,16 +64,4 @@ public partial class DashboardViewModel : ObservableObject
 
         return Visibility.Collapsed;
     }
-
-#if DEBUG
-    public void ResetDashboardBanner()
-    {
-        ShowDashboardBanner = true;
-        var roamingProperties = ApplicationData.Current.RoamingSettings.Values;
-        if (roamingProperties.ContainsKey(_hideDashboardBannerKey))
-        {
-            roamingProperties.Remove(_hideDashboardBannerKey);
-        }
-    }
-#endif
 }

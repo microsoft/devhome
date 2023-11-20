@@ -7,8 +7,10 @@ using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.Services;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -22,7 +24,7 @@ namespace DevHome.Dashboard.ViewModels;
 public partial class WidgetViewModel : ObservableObject
 {
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
-    private readonly AdaptiveCardRenderer _renderer;
+    private readonly IAdaptiveCardRenderingService _renderingService;
 
     private RenderedAdaptiveCard _renderedCard;
 
@@ -36,6 +38,9 @@ public partial class WidgetViewModel : ObservableObject
     private WidgetSize _widgetSize;
 
     [ObservableProperty]
+    private bool _isCustomizable;
+
+    [ObservableProperty]
     private string _widgetDisplayTitle;
 
     [ObservableProperty]
@@ -43,9 +48,6 @@ public partial class WidgetViewModel : ObservableObject
 
     [ObservableProperty]
     private FrameworkElement _widgetFrameworkElement;
-
-    [ObservableProperty]
-    private Microsoft.UI.Xaml.Media.Brush _widgetBackground;
 
     public bool IsInAddMode { get; set; }
 
@@ -68,7 +70,7 @@ public partial class WidgetViewModel : ObservableObject
         if (Widget != null)
         {
             Widget.WidgetUpdated += HandleWidgetUpdated;
-            _ = RenderWidgetFrameworkElementAsync();
+            ShowWidgetContentIfAvailable();
         }
     }
 
@@ -78,14 +80,7 @@ public partial class WidgetViewModel : ObservableObject
         {
             WidgetDisplayTitle = WidgetDefinition.DisplayTitle;
             WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinition.DisplayName;
-        }
-    }
-
-    partial void OnWidgetFrameworkElementChanged(FrameworkElement value)
-    {
-        if (WidgetFrameworkElement != null && WidgetFrameworkElement is Grid grid)
-        {
-            WidgetBackground = grid.Background;
+            IsCustomizable = WidgetDefinition.IsCustomizable;
         }
     }
 
@@ -93,10 +88,9 @@ public partial class WidgetViewModel : ObservableObject
         Widget widget,
         WidgetSize widgetSize,
         WidgetDefinition widgetDefinition,
-        AdaptiveCardRenderer renderer,
         Microsoft.UI.Dispatching.DispatcherQueue dispatcher)
     {
-        _renderer = renderer;
+        _renderingService = Application.Current.GetService<IAdaptiveCardRenderingService>();
         _dispatcher = dispatcher;
 
         Widget = widget;
@@ -149,7 +143,15 @@ public partial class WidgetViewModel : ObservableObject
             try
             {
                 var template = new AdaptiveCardTemplate(cardTemplate);
-                var json = template.Expand(cardData);
+
+                var hostData = new JsonObject
+                {
+                    // TODO Add support to host theme in hostData
+                    { "widgetSize", JsonValue.CreateStringValue(WidgetSize.ToString().ToLowerInvariant()) }, // "small", "medium" or "large"
+                }.ToString();
+
+                var context = new EvaluationContext(cardData, hostData);
+                var json = template.Expand(context);
 
                 // Use custom parser.
                 var elementParser = new AdaptiveElementParserRegistration();
@@ -178,11 +180,12 @@ public partial class WidgetViewModel : ObservableObject
             }
 
             // Render card on the UI thread.
-            _dispatcher.TryEnqueue(() =>
+            _dispatcher.TryEnqueue(async () =>
             {
                 try
                 {
-                    _renderedCard = _renderer.RenderAdaptiveCard(card.AdaptiveCard);
+                    var renderer = await _renderingService.GetRenderer();
+                    _renderedCard = renderer.RenderAdaptiveCard(card.AdaptiveCard);
                     if (_renderedCard != null && _renderedCard.FrameworkElement != null)
                     {
                         _renderedCard.Action += HandleAdaptiveAction;
@@ -215,6 +218,48 @@ public partial class WidgetViewModel : ObservableObject
                 Configuring = isConfiguring;
             });
         }
+    }
+
+    private async Task<bool> IsWidgetContentAvailable()
+    {
+        return await Task.Run(async () =>
+        {
+            var cardTemplate = await Widget.GetCardTemplateAsync();
+            var cardData = await Widget.GetCardDataAsync();
+
+            if (string.IsNullOrEmpty(cardTemplate) || string.IsNullOrEmpty(cardData))
+            {
+                Log.Logger()?.ReportDebug("WidgetViewModel", "Widget content not available yet.");
+                return false;
+            }
+
+            Log.Logger()?.ReportDebug("WidgetViewModel", "Widget content available.");
+            return true;
+        });
+    }
+
+    // If widget content (fresh or cached) is available, show it.
+    // Otherwise, show the loading card until the widget updates itself.
+    private async void ShowWidgetContentIfAvailable()
+    {
+        if (await IsWidgetContentAvailable())
+        {
+            await RenderWidgetFrameworkElementAsync();
+        }
+        else
+        {
+            ShowLoadingCard();
+        }
+    }
+
+    // Used to show a loading ring when we don't have widget content.
+    public void ShowLoadingCard()
+    {
+        Log.Logger()?.ReportDebug("WidgetViewModel", "Show loading card.");
+        _dispatcher.TryEnqueue(() =>
+        {
+            WidgetFrameworkElement = new ProgressRing();
+        });
     }
 
     // Used to show a message instead of Adaptive Card content in a widget.

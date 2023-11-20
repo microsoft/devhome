@@ -10,9 +10,7 @@
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     xmlns:util="using:DevHome.SetupFlow.Utilities"
     xmlns:services="using:DevHome.Common.Services"
-    mc:Ignorable="d"
-    Background="{ThemeResource ContentDialogBackground}"
-    Foreground="{ThemeResource ContentDialogForeground}">
+    mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:EmptyObjectToObjectConverter x:Key="EmptyObjectToObjectConverter" NotEmptyValue="Visible" EmptyValue="Collapsed"/>
@@ -51,7 +49,6 @@
                     TextWrapping="Wrap" />
                 <TextBlock
                     Margin="0 0 0 12"
-                    Width="450"
                     Grid.Row="1"
                     TextWrapping="Wrap" >
                     <!-- 

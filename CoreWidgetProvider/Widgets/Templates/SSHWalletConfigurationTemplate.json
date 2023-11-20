@@ -71,6 +71,48 @@
       "$data": "${$root.configuration}",
       "$when": "${$root.hasConfiguration}",
       "bleed": true
+    },
+    {
+      "type": "ColumnSet",
+      "spacing": "ExtraLarge",
+      "$when": "${$root.savedConfigFile != \"\"}",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch"
+        },
+        {
+          "type": "Column",
+          "width": "auto",
+          "items": [
+            {
+              "type": "Container",
+              "items": [
+                {
+                  "type": "ActionSet",
+                  "actions": [
+                    {
+                      "type": "Action.Execute",
+                      "title": "%Widget_Template_Button/Save%",
+                      "verb": "Save",
+                      "isEnabled": "${$root.hasConfiguration}"
+                    },
+                    {
+                      "type": "Action.Execute",
+                      "title": "%Widget_Template_Button/Cancel%",
+                      "verb": "Cancel"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch"
+        }
+      ]
     }
   ]
 }

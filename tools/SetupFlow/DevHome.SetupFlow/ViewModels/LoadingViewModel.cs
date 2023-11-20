@@ -13,18 +13,14 @@ using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.Common.Contracts;
-using DevHome.SetupFlow.Common.Elevation;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Projection::DevHome.SetupFlow.ElevatedComponent;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -185,7 +181,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         Application.Current.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
             var messageToDisplay = new LoadingMessageViewModel(message);
-            messageToDisplay.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
             messageToDisplay.ShouldShowStatusSymbolIcon = false;
             messageToDisplay.ShouldShowProgressRing = false;
             Messages.Insert(Messages.Count - _numberOfExecutingTasks, messageToDisplay);
@@ -327,7 +322,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         Messages.Remove(loadingMessage);
 
         // Modify the message so it looks done.
-        loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorSecondaryBrush"];
         loadingMessage.ShouldShowProgressRing = false;
 
         // Insert the message right before any "executing" messages.
@@ -445,7 +439,6 @@ public partial class LoadingViewModel : SetupPageViewModelBase
                 ExecutingTasks = StringResource.GetLocalized(StringResourceKey.LoadingExecutingProgress, TasksStarted, TasksToRun.Count);
 
                 loadingMessage.ShouldShowProgressRing = true;
-                loadingMessage.MessageForeground = (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
                 Messages.Add(loadingMessage);
 
                 // Keep increment inside TryEnqueue to enforce "locking"

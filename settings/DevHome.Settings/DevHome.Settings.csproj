@@ -19,6 +19,7 @@
   <ItemGroup>
     <None Remove="Views\AboutPage.xaml" />
     <None Remove="Views\AccountsPage.xaml" />
+    <None Remove="Views\ExperimentalFeaturesPage.xaml" />
     <None Remove="Views\ExtensionSettingsPage.xaml" />
     <None Remove="Views\ExtensionsPage.xaml" />
     <None Remove="Views\FeedbackPage.xaml" />
@@ -69,5 +70,11 @@
 
   <ItemGroup>
     <Folder Include="TelemetryEvents\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\ExperimentalFeaturesPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>

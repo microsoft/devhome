@@ -10,6 +10,7 @@
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors" 
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
+    Loaded="Page_Loaded"
     mc:Ignorable="d">
 
     <Grid
@@ -33,10 +34,10 @@
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel>
                                 <TextBox x:Name="ReportBugIssueTitle" x:Uid="Settings_Feedback_ReportBug_IssueTitle" AcceptsReturn="True" />
-                                <TextBox x:Name="ReportBugReproSteps" x:Uid="Settings_Feedback_ReportBug_ReproSteps" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
+                                <TextBox x:Name="ReportBugReproSteps" x:Uid="Settings_Feedback_ReportBug_ReproSteps" TextWrapping="Wrap" MinHeight="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
                                 <TextBox x:Name="ReportBugExpectedBehavior" x:Uid="Settings_Feedback_ReportBug_ExpectedBehavior" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
                                 <TextBox x:Name="ReportBugActualBehavior" x:Uid="Settings_Feedback_ReportBug_ActualBehavior" TextWrapping="Wrap" Height="{StaticResource FeedbackTextBoxHeight}" Margin="{StaticResource SmallTopMargin}" AcceptsReturn="True"/>
-                                <Expander x:Name="ReportBugSysInfoExpander" Expanding="ShowSysInfoExpander_Expanding" Margin="{StaticResource SmallTopMargin}" HorizontalAlignment="Stretch" MinWidth="{StaticResource FeedbackExpanderWidth}">
+                                <Expander x:Name="ReportBugSysInfoExpander" Expanding="ShowSysInfoExpander_Expanding" Margin="{StaticResource SmallTopMargin}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinWidth="{StaticResource FeedbackExpanderWidth}">
                                     <Expander.Header>
                                         <CheckBox x:Name="ReportBugIncludeSystemInfo" x:Uid="Settings_Feedback_ReportBug_IncludeSystemInfo" IsChecked="True"/>
                                     </Expander.Header>
@@ -48,7 +49,7 @@
                                         </StackPanel>
                                     </Expander.Content>
                                 </Expander>
-                                <Expander x:Name="ReportBugExtensionsExpander" Expanding="ShowExtensionsInfoExpander_Expanding" HorizontalAlignment="Stretch" MinWidth="{StaticResource FeedbackExpanderWidth}">
+                                <Expander x:Name="ReportBugExtensionsExpander" Expanding="ShowExtensionsInfoExpander_Expanding" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinWidth="{StaticResource FeedbackExpanderWidth}">
                                     <Expander.Header>
                                         <CheckBox x:Name="ReportBugIncludeExtensions" x:Uid="Settings_Feedback_ReportBug_IncludeExtensions" IsChecked="True"/>
                                     </Expander.Header>
@@ -58,7 +59,7 @@
                                         </StackPanel>
                                     </Expander.Content>
                                 </Expander>
-                                <Expander x:Name="ReportBugExperimentInfoExpander" HorizontalAlignment="Stretch" MinWidth="{StaticResource FeedbackExpanderWidth}">
+                                <Expander x:Name="ReportBugExperimentInfoExpander" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" MinWidth="{StaticResource FeedbackExpanderWidth}">
                                     <Expander.Header>
                                         <CheckBox x:Name="ReportBugIncludeExperimentInfo" x:Uid="Settings_Feedback_ReportBug_IncludeExperimentInfo" IsChecked="True"/>
                                     </Expander.Header>
@@ -82,14 +83,24 @@
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel>
                                 <TextBox x:Name="SuggestFeatureTitle" x:Uid="Settings_Feedback_SuggestFeature_IssueTitle" AcceptsReturn="True"/>
-                                <TextBox x:Name="SuggestFeatureDescription" x:Uid="Settings_Feedback_SuggestFeature_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
-                                <TextBox x:Name="SuggestFeatureScenario" x:Uid="Settings_Feedback_SuggestFeature_Scenario" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
-                                <TextBox x:Name="SuggestFeatureSupportingInfo" x:Uid="Settings_Feedback_SuggestFeature_SupportingInfo" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                                <TextBox x:Name="SuggestFeatureDescription" x:Uid="Settings_Feedback_SuggestFeature_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" MinHeight="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                                <TextBox x:Name="SuggestFeatureScenario" x:Uid="Settings_Feedback_SuggestFeature_Scenario" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" MinHeight="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                                <TextBox x:Name="SuggestFeatureSupportingInfo" x:Uid="Settings_Feedback_SuggestFeature_SupportingInfo" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" MinHeight="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
                             </StackPanel>
                         </ScrollViewer>
                     </Grid>
                 </ContentDialog>
-                <TextBlock Margin="{StaticResource MediumBottomMargin}">
+                <ContentDialog x:Name="DocumentationIssueDialog" x:Uid="Settings_Feedback_DocumentationIssue_Dialog" HorizontalAlignment="Center" DefaultButton="Primary">
+                    <Grid>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel>
+                                <TextBox x:Name="DocumentationIssueTitle" x:Uid="Settings_Feedback_DocumentationIssue_IssueTitle" AcceptsReturn="True"/>
+                                <TextBox x:Name="DocumentationIssueDescription" x:Uid="Settings_Feedback_DocumentationIssue_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </ContentDialog>
+                <TextBlock Margin="{StaticResource MediumBottomMargin}" TextWrapping="WrapWholeWords">
                     <Run x:Uid="Settings_Feedback_OpenSource"/>
                     <Hyperlink x:Uid="Settings_Feedback_OpenSource_Link" TextDecorations="None">
                         <Run x:Uid="Settings_Feedback_OpenSource_LinkText" />
@@ -116,6 +127,13 @@
                                   Glyph="&#xE909;"/>
                         </ctControls:SettingsCard.HeaderIcon>
                         <Button x:Uid="Settings_Feedback_LocalizationIssue_Button" Click="DisplayLocalizationIssueDialog" MinWidth="150" />
+                    </ctControls:SettingsCard>
+                    <ctControls:SettingsCard x:Uid="Settings_Feedback_DocumentationIssue">
+                        <ctControls:SettingsCard.HeaderIcon>
+                            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
+                                Glyph="&#xe736;"/>
+                        </ctControls:SettingsCard.HeaderIcon>
+                        <Button x:Uid="Settings_Feedback_DocumentationIssue_Button" Click="DisplayDocumentationIssueDialog" MinWidth="150" />
                     </ctControls:SettingsCard>
                     <ctControls:SettingsCard x:Uid="Settings_Feedback_BuildExtension">
                         <ctControls:SettingsCard.HeaderIcon>

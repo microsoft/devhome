@@ -30,6 +30,11 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// </summary>
     private readonly RepoConfigTaskGroup _taskGroup;
 
+    public IHost Host
+    {
+        get;
+    }
+
     private readonly IDevDriveManager _devDriveManager;
 
     private readonly IThemeSelectorService _themeSelectorService;
@@ -101,6 +106,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         NextPageButtonToolTipText = stringResource.GetLocalized(StringResourceKey.RepoToolNextButtonTooltip);
         _themeSelectorService = host.GetService<IThemeSelectorService>();
         _themeSelectorService.ThemeChanged += OnThemeChanged;
+        Host = host;
     }
 
     private void OnThemeChanged(object sender, ElementTheme e)

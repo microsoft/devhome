@@ -30,7 +30,7 @@ internal class MemoryStats : IDisposable
         get; set;
     }
 
-    public ulong MemCommited
+    public ulong MemCommitted
     {
         get; set;
     }
@@ -75,7 +75,7 @@ internal class MemoryStats : IDisposable
         }
 
         MemCached = (ulong)memCached.NextValue();
-        MemCommited = (ulong)memCommitted.NextValue();
+        MemCommitted = (ulong)memCommitted.NextValue();
         MemCommitLimit = (ulong)memCommittedLimit.NextValue();
         MemPagedPool = (ulong)memPoolPaged.NextValue();
         MemNonPagedPool = (ulong)memPoolNonPaged.NextValue();

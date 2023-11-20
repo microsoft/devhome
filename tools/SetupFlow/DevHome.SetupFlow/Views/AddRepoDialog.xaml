@@ -13,7 +13,7 @@
                x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CloneRepoDialog"
                x:Name="AddRepoContentDialog"
                PrimaryButtonClick="AddRepoContentDialog_PrimaryButtonClick"
-               IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldPrimaryButtonBeEnabled, Mode=OneWay}"
+               IsPrimaryButtonEnabled="{x:Bind AddRepoViewModel.ShouldEnablePrimaryButton, Mode=OneWay}"
                DefaultButton="Primary"
                Style="{StaticResource DefaultContentDialogStyle}"
                PrimaryButtonText="{x:Bind AddRepoViewModel.PrimaryButtonText, Mode=OneWay}"
@@ -46,8 +46,8 @@
                 </ResourceDictionary>
             </StackPanel.Resources>
             <ctControls:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single" SelectionChanged="Segmented_SelectionChanged">
-                <ctControls:SegmentedItem x:Name="AddViaAccountSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton" IsEnabled="{x:Bind AddRepoViewModel.IsAccountButtonEnabled, Mode=OneWay}"/>
-                <ctControls:SegmentedItem x:Name="AddViaUrlSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" />
+                <ctControls:SegmentedItem x:Name="AddViaAccountSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton" IsEnabled="{x:Bind AddRepoViewModel.IsAccountButtonEnabled, Mode=OneWay}" AutomationProperties.PositionInSet="1" AutomationProperties.SizeOfSet="2"/>
+                <ctControls:SegmentedItem x:Name="AddViaUrlSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" AutomationProperties.PositionInSet="2" AutomationProperties.SizeOfSet="2"/>
             </ctControls:Segmented>
 
             <!-- Adding a repo via URL -->
@@ -60,13 +60,28 @@
             <TextBlock x:Name="UrlErrorTextBlock" Style="{ThemeResource BaseTextBlockStyle}" Text="{x:Bind AddRepoViewModel.UrlParsingError, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowUrlError, Mode=OneWay}"/>
 
             <!-- Log into account -->
-            <ComboBox x:Name="RepositoryProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}" SelectionChanged="RepositoryProviderNamesComboBox_SelectionChanged" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}" Margin="0, 20, 0, 0" />
-            <StackPanel x:Name="LoginUi" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}">
+            <ComboBox x:Name="RepositoryProviderComboBox" Visibility="{x:Bind AddRepoViewModel.ShowAccountPage, Mode=OneWay}" HorizontalAlignment="Stretch" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoryDisplay" ItemsSource="{x:Bind AddRepoViewModel.ProviderNames}" Margin="0, 20, 0, 0" >
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="SelectionChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.RepoProviderSelectedCommand}" CommandParameter="{x:Bind RepositoryProviderComboBox.SelectedItem, Mode=OneWay}"/>
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </ComboBox>
+            <StackPanel x:Name="LoginUi" Visibility="{x:Bind AddRepoViewModel.ShouldShowLoginUi, Mode=OneWay}">
                 <!-- Title and Close button -->
                 <Grid x:Name="MyGrid">
-                    <TextBlock x:Uid="LoginUIDialogTitle" HorizontalAlignment="Left"
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="40"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" x:Uid="LoginUIDialogTitle" HorizontalAlignment="Left"
                        Style="{ThemeResource SubtitleTextBlockStyle}" 
                        Margin="16,10,0,0"/>
+                    <Button Command="{x:Bind AddRepoViewModel.CancelButtonPressedCommand, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.ShouldShowXButtonInLoginUi, Mode=OneWay}" Grid.Column="1" DataContext="{x:Bind}" Style="{ThemeResource AlternateCloseButtonStyle}" VerticalAlignment="Center">
+                        <Button.Content>
+                            <SymbolIcon Symbol="Cancel"/>
+                        </Button.Content>
+                    </Button>
                 </Grid>
                 <Frame x:Name="LoginUIContent" />
             </StackPanel>

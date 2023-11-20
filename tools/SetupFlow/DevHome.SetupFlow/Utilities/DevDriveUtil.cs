@@ -107,7 +107,7 @@ public static class DevDriveUtil
     }
 
     /// <summary>
-    /// Given a byte unit which is either GB or TB converts the value paramter to bytes.
+    /// Given a byte unit which is either GB or TB converts the value parameter to bytes.
     /// Since this is just for DevDrives the minimum size is known of value
     /// is 50 (50 gb) and its max size should be 64 (64 Tb) which is
     /// the max size that a vhdx file can be.
