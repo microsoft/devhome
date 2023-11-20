@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Exceptions;
@@ -27,6 +28,10 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     public const int AppInstallerErrorFacility = 0xA15;
     public const string AppInstallerProductId = "9NBLGGH4NNS1";
     public const string AppInstallerPackageFamilyName = "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe";
+
+    // COM error codes
+    public const int RpcServerUnavailable = unchecked((int)0x800706BA);
+    public const int RpcCallFailed = unchecked((int)0x800706BE);
 
     // Package manager URI constants:
     // - x-ms-winget: is a custom scheme for WinGet package manager
@@ -243,32 +248,35 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
 
     public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit = 0)
     {
-        return await Task.Run(async () =>
+        return await DoWithRecovery(async () =>
         {
-            await _searchCatalogLock.WaitAsync();
-            try
+            return await Task.Run(async () =>
             {
-                // Use default filter criteria for searching
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Searching for '{query}'. Result limit: {limit}");
-                var options = _wingetFactory.CreateFindPackagesOptions();
-                var filter = _wingetFactory.CreatePackageMatchFilter();
-                filter.Field = PackageMatchField.CatalogDefault;
-                filter.Option = PackageFieldMatchOption.ContainsCaseInsensitive;
-                filter.Value = query;
-                options.Selectors.Add(filter);
-                options.ResultLimit = limit;
+                await _searchCatalogLock.WaitAsync();
+                try
+                {
+                    // Use default filter criteria for searching
+                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Searching for '{query}'. Result limit: {limit}");
+                    var options = _wingetFactory.CreateFindPackagesOptions();
+                    var filter = _wingetFactory.CreatePackageMatchFilter();
+                    filter.Field = PackageMatchField.CatalogDefault;
+                    filter.Option = PackageFieldMatchOption.ContainsCaseInsensitive;
+                    filter.Value = query;
+                    options.Selectors.Add(filter);
+                    options.ResultLimit = limit;
 
-                return await FindPackagesAsync(_searchCatalog, options);
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Error searching for packages.", e);
-                throw;
-            }
-            finally
-            {
-                _searchCatalogLock.Release();
-            }
+                    return await FindPackagesAsync(_searchCatalog, options);
+                }
+                catch (Exception e)
+                {
+                    Log.Logger?.ReportError(Log.Component.AppManagement, $"Error searching for packages.", e);
+                    throw;
+                }
+                finally
+                {
+                    _searchCatalogLock.Release();
+                }
+            });
         });
     }
 
@@ -444,5 +452,58 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     {
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    private async Task<T> DoWithRecovery<T>(Func<Task<T>> actionFunc)
+    {
+        const int maxRetries = 5;
+        const int delayMs = 2_000;
+        var retry = 0;
+        while (retry <= maxRetries)
+        {
+            try
+            {
+                return await actionFunc();
+            }
+            catch (COMException e) when ((e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed) && retry < maxRetries)
+            {
+                // Retry with exponential backoff
+                var backoffMs = delayMs * (int)Math.Pow(2, retry++);
+                Log.Logger?.ReportError(
+                    Log.Component.AppManagement,
+                    $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}. Attempting to recover in: {backoffMs} ms");
+                await Task.Delay(TimeSpan.FromMilliseconds(backoffMs));
+
+                try
+                {
+                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to re-initialize ...");
+                    await InitializeAsync();
+                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Re-initialize succeeded. Attempting to resume original task");
+                }
+                catch
+                {
+                    Log.Logger?.ReportError(Log.Component.AppManagement, $"Initialization failed on retry number: {retry + 1}");
+                }
+            }
+        }
+
+        throw new PackageManagerRecoveryTimeoutException();
+    }
+
+    private async Task DoWithRecovery(Func<Task> actionFunc)
+    {
+        const int voidValue = 0;
+        _ = await DoWithRecovery<int>(async () =>
+        {
+            await actionFunc();
+            return voidValue;
+        });
+    }
+
+    public class PackageManagerRecoveryTimeoutException : Exception
+    {
+        public PackageManagerRecoveryTimeoutException()
+        {
+        }
     }
 }
