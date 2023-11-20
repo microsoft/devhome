@@ -85,6 +85,8 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
             var options = _wingetFactory.CreateInstallOptions();
             options.PackageInstallMode = PackageInstallMode.Silent;
 
+            // TODO Find catalog package from package id and catalog name
+
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package install for {package.Id}");
             var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options).AsTask();
             var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
@@ -400,7 +402,9 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         {
             var catalogPackage = findResult.Matches[i].CatalogPackage;
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found [{catalogPackage.Id}]");
-            result.Add(new WinGetPackage(catalogPackage));
+            var installOptions = _wingetFactory.CreateInstallOptions();
+            installOptions.PackageInstallScope = PackageInstallScope.Any;
+            result.Add(new WinGetPackage(catalogPackage, installOptions));
         }
 
         return result;

@@ -16,56 +16,54 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public class WinGetPackage : IWinGetPackage
 {
-    private readonly CatalogPackage _package;
-    private readonly Lazy<Uri> _packageUrl;
-    private readonly Lazy<Uri> _publisherUrl;
-    private readonly Lazy<string> _publisherName;
-    private readonly Lazy<string> _installationNotes;
-    private readonly PackageUniqueKey _uniqueKey;
-
-    public WinGetPackage(CatalogPackage package)
+    public WinGetPackage(CatalogPackage package, InstallOptions installOptions)
     {
-        _package = package;
-        _packageUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null));
-        _publisherUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PublisherUrl), nameof(CatalogPackageMetadata.PublisherUrl), null));
-        _publisherName = new (() => GetMetadataValue(metadata => metadata.Publisher, nameof(CatalogPackageMetadata.Publisher), null));
-        _installationNotes = new (() => GetMetadataValue(metadata => metadata.InstallationNotes, nameof(CatalogPackageMetadata.InstallationNotes), null));
-        _uniqueKey = new (Id, CatalogId);
+        // WinGetPackage constructor copies all the required data from the
+        // out-of-proc COM objects over to the current process. This ensures
+        // that we have this information available even if the out-of-proc COM
+        // objects are no longer available (e.g. AppInstaller service is no
+        // longer running).
+        Id = package.Id;
+        CatalogId = package.DefaultInstallVersion.PackageCatalog.Info.Id;
+        CatalogName = package.DefaultInstallVersion.PackageCatalog.Info.Name;
+        UniqueKey = new (Id, CatalogId);
+        Name = package.Name;
+        Version = package.DefaultInstallVersion.Version;
+        IsInstalled = package.InstalledVersion != null;
+        IsElevationRequired = RequiresElevation(package, installOptions);
+        PackageUrl = GetMetadataValue(package, metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null);
+        PublisherUrl = GetMetadataValue(package, metadata => new Uri(metadata.PublisherUrl), nameof(CatalogPackageMetadata.PublisherUrl), null);
+        PublisherName = GetMetadataValue(package, metadata => metadata.Publisher, nameof(CatalogPackageMetadata.Publisher), null);
+        InstallationNotes = GetMetadataValue(package, metadata => metadata.InstallationNotes, nameof(CatalogPackageMetadata.InstallationNotes), null);
     }
 
-    public CatalogPackage CatalogPackage => _package;
+    public string Id { get; }
 
-    public string Id => _package.Id;
+    public string CatalogId { get; }
 
-    public string CatalogId => _package.DefaultInstallVersion.PackageCatalog.Info.Id;
+    public string CatalogName { get; }
 
-    public string CatalogName => _package.DefaultInstallVersion.PackageCatalog.Info.Name;
+    public PackageUniqueKey UniqueKey { get; }
 
-    public PackageUniqueKey UniqueKey => _uniqueKey;
+    public string Name { get; }
 
-    public string Name => _package.Name;
+    public string Version { get; }
 
-    public string Version => _package.DefaultInstallVersion.Version;
+    public bool IsInstalled { get; }
 
-    public bool IsInstalled => _package.InstalledVersion != null;
+    public IRandomAccessStream LightThemeIcon { get; set; }
 
-    public IRandomAccessStream LightThemeIcon
-    {
-        get; set;
-    }
+    public IRandomAccessStream DarkThemeIcon { get; set; }
 
-    public IRandomAccessStream DarkThemeIcon
-    {
-        get; set;
-    }
+    public Uri PackageUrl { get; }
 
-    public Uri PackageUrl => _packageUrl.Value;
+    public Uri PublisherUrl { get; }
 
-    public Uri PublisherUrl => _publisherUrl.Value;
+    public string PublisherName { get; }
 
-    public string PublisherName => _publisherName.Value;
+    public string InstallationNotes { get; }
 
-    public string InstallationNotes => _installationNotes.Value;
+    public bool IsElevationRequired { get; }
 
     public InstallPackageTask CreateInstallTask(
         IWindowsPackageManager wpm,
@@ -78,15 +76,12 @@ public class WinGetPackage : IWinGetPackage
     /// </summary>
     /// <param name="options">Install options</param>
     /// <returns>True if the package requires elevation</returns>
-    public bool RequiresElevation(InstallOptions options)
+    private bool RequiresElevation(CatalogPackage package, InstallOptions options)
     {
         try
         {
-            // TODO Use the API contract version to check if this method can be
-            // called instead of a try/catch
-            // https://github.com/microsoft/devhome/issues/635
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting applicable installer info for package {Id}");
-            var applicableInstaller = _package.DefaultInstallVersion.GetApplicableInstaller(options);
+            var applicableInstaller = package.DefaultInstallVersion.GetApplicableInstaller(options);
             if (applicableInstaller != null)
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Elevation requirement = {applicableInstaller.ElevationRequirement} for package {Id}");
@@ -113,17 +108,17 @@ public class WinGetPackage : IWinGetPackage
     /// <param name="metadataFieldName">Name of the metadata field we want to get; used for logging</param>
     /// <param name="defaultValue">Default value returned if the package metadata threw an exception</param>
     /// <returns>Metadata function result or default value</returns>
-    private T GetMetadataValue<T>(Func<CatalogPackageMetadata, T> metadataFunction, string metadataFieldName, T defaultValue)
+    private T GetMetadataValue<T>(CatalogPackage package, Func<CatalogPackageMetadata, T> metadataFunction, string metadataFieldName, T defaultValue)
     {
         try
         {
             var locale = Thread.CurrentThread.CurrentCulture.Name;
-            var metadata = _package.DefaultInstallVersion.GetCatalogPackageMetadata(locale);
+            var metadata = package.DefaultInstallVersion.GetCatalogPackageMetadata(locale);
             return metadataFunction(metadata);
         }
         catch
         {
-            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package metadata [{metadataFieldName}] for package {_package.Id}; defaulting to {defaultValue}");
+            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package metadata [{metadataFieldName}] for package {package.Id}; defaulting to {defaultValue}");
             return defaultValue;
         }
     }
