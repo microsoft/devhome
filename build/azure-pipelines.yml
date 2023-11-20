@@ -296,8 +296,11 @@ extends:
             - task: PublishSymbols@2
               displayName: Publish Symbols
               inputs:
-                SearchPattern: '**/bin/**/*.pdb'
-                IndexSources: false
+                SearchPattern: >-
+                  $(Build.SourcesDirectory)\**\bin\**\*.pdb
+
+                  $(Build.SourcesDirectory)\**\obj\**\*.r2r.ni.pdb
+                IndexSources: true
                 SymbolServerType: TeamServices
                 SymbolsProduct: DevHome
 
