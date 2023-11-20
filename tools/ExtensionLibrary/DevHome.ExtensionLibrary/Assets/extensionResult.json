@@ -1,5 +1,5 @@
 {
-  "ProductIds": [ "9NZCC27PR6N6", "9N8MHTPHNGVV", "9NBVFRMSFXHW" ],
+  "ProductIds": [ "9NZCC27PR6N6", "9N8MHTPHNGVV", "9MV8F79FGXTR" ],
   "Products": [
     {
       "LocalizedProperties": [
@@ -32,7 +32,7 @@
           "ProductTitle": "Dev Home Azure Extension (Preview)"
         }
       ],
-      "ProductId": "9NBVFRMSFXHW",
+      "ProductId": "9MV8F79FGXTR",
       "Properties": {
         "PackageFamilyName": "Microsoft.Windows.DevHomeAzureExtension_8wekyb3d8bbwe"
       }
