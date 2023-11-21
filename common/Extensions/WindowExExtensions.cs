@@ -153,7 +153,9 @@ public static class WindowExExtensions
                 // "It is the responsibility of the caller to free the string pointed to by ppszName
                 // when it is no longer needed. Call CoTaskMemFree on *ppszName to free the memory."
                 PWSTR pFileName;
+#pragma warning disable CS9123 // The & operator should not be used in an async function
                 ppsi.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, &pFileName);
+#pragma warning restore CS9123 // The & operator should not be used in an async function
                 fileName = new string(pFileName);
                 Marshal.FreeCoTaskMem((IntPtr)pFileName.Value);
             }

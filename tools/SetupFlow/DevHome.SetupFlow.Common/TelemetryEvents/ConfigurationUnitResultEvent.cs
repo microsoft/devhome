@@ -11,7 +11,7 @@ using Microsoft.Management.Configuration;
 namespace DevHome.SetupFlow.Common.TelemetryEvents;
 
 [EventData]
-internal class ConfigurationUnitResultEvent : EventBase
+internal sealed class ConfigurationUnitResultEvent : EventBase
 {
     private readonly ApplyConfigurationUnitResult _unitResult;
 

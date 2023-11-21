@@ -30,6 +30,11 @@ public class WidgetTest : DevHomeTestBase
         Assert.AreEqual(0, finalWidgetCount);
     }
 
+#pragma warning disable CA1861
+
+    // Diabling warning about using constants in an array.
+    // https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1861
+    // The arrays can be moved to static readonly fields if performance is an issue.
     [DataTestMethod]
     [DataRow(new string[] { "SSH keychain" }, DisplayName = "SSH")]
     [DataRow(new string[] { "GPU" }, DisplayName = "GPU")]
@@ -58,4 +63,5 @@ public class WidgetTest : DevHomeTestBase
         Assert.AreEqual(widgetTitles.Length, dashboard.DisplayedWidgets.Count);
         CollectionAssert.AreEqual(widgetTitles, widgets.Select(w => w.TitleText).ToList());
     }
+#pragma warning restore CA1861
 }
