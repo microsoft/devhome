@@ -48,6 +48,17 @@
           </com:ComServer>
         </com:Extension>
         <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.devhome" Id="PG-SP-ID1" PublicFolder="Public" DisplayName="ms-resource:AppDisplayNameDev" Description="ms-resource:AppDescription">
+            <uap3:Properties>
+              <DevHomeProvider>
+                <Activation>
+                  <CreateInstance ClassId="426A52D6-8007-4894-A946-CF80F39507F1" />
+                </Activation>
+              </DevHomeProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="ms-resource:WidgetProviderDisplayNameDev" Id="CoreWidgetProvider" PublicFolder="Public">
             <uap3:Properties>
               <WidgetProvider>
