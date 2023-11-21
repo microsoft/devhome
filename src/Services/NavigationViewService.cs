@@ -68,7 +68,8 @@ public class NavigationViewService : INavigationViewService
             var invokedItem = (string)args.InvokedItem;
             if (invokedItem != null)
             {
-                TelemetryFactory.Get<ITelemetry>().Log("NavigationView_Clicked", LogLevel.Critical, new NavigationViewItemEvent(invokedItem));
+                var currentItem = _navigationService.Frame?.CurrentSourcePageType.Name ?? string.Empty;
+                TelemetryFactory.Get<ITelemetry>().Log("NavigationView_Clicked", LogLevel.Critical, new NavigationViewItemEvent(invokedItem, currentItem));
             }
         }
 
