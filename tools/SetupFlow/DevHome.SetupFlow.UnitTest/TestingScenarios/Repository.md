@@ -23,6 +23,7 @@ Please make sure to verify all these scenarios.
 
 #### Via URL
 1. Remove the extension from the list of authorized OAuth apps on your github settings.  Try cloning a private org repo via URL.
+  1. Please use https://github.com/DevHomeTestOrganization/PrivateRepo to test against a private org repo that DevHome does not have access to.
 
 ## Providers
 ### One enabled provider
