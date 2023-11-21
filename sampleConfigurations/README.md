@@ -1,7 +1,8 @@
 ## Using the sample configurations
 Download the *.dsc.yaml files to your local system. They can be executed in Dev Home via the "Machine configuration" section. They can also be executed by running `winget configure <path to configuration file>`.
 
-Several DSC resource will require running in administrator mode. If the configuration is leveraging the WinGet DSC resource to install packages, there are also limitations in some cases specific to the installers that may either require or prohibit installation in administrative context.
+Several DSC resources may require running in administrator mode. If the configuration is leveraging the [WinGet DSC resource](https://www.powershellgallery.com/packages/Microsoft.WinGet.DSC) to install packages, there are also limitations in some cases specific to the installers that may either require or prohibit installation in administrative context.
+
 
 ### GitHub projects
 Sample configurations have been provided for various GitHub repositories. These configurations ideally should be placed in a `.configurations` folder in the root of the project directory. Some DSC resources may have parameters that allow you to pass in a relative file path. The reserved variable `$(WinGetConfigRoot)` can be used to specify the full path of the configuration file. An example of how to use that variable with a relative file path is shown below:
