@@ -1,4 +1,5 @@
-﻿# Repository Tests
+﻿
+# Repository Tests
 If your code affects repository cloning, or the repo tool, please manually verify these scenarios.  This is required for all PRs that affect repo cloning directly or indirectly.  Indirectly can be changes in DeveloperId code in an extension or an SDK change.
 
 ## Scenarios
@@ -17,6 +18,11 @@ Please make sure to verify all these scenarios.
 #### Loading page
 1. All repos selected in the repo tool are cloned to their respective locations.
 2. Any failures are logged and shown to the user. 
+
+### Un-authenticated cloning
+
+#### Via URL
+1. Remove the extension from the list of authorized OAuth apps on your github settings.  Try cloning a private org repo via URL.
 
 ## Providers
 ### One enabled provider
