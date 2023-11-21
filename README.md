@@ -1,6 +1,59 @@
 ![dev-home-readme-header](https://github.com/microsoft/devhome/blob/main/src/Assets/Preview/StoreDisplay-150.png)
 
 # Welcome to the Dev Home repo
+## Forked DevHome with Remote Server CPU Usage Widget Feature
+### This is a repo intended for draft PR to the devhome repo, and now I've lost interest eventually
+Must contain a bash script called `back.sh` in the $HOME directory.
+```bash
+NUM_CORES=$(grep -c '^processor' /proc/cpuinfo)
+declare -a prev_idle
+declare -a prev_total
+
+for ((i = 0; i < NUM_CORES; i++)); do
+    prev_idle[$i]=0
+    prev_total[$i]=0
+done
+
+count=0
+
+while [[ $count -lt 2 ]]; do
+    cpu_data=$(cat /proc/stat)
+    cpu_core_data=()
+
+    for ((i = 0; i < NUM_CORES; i++)); do
+        cpu_info=($(echo "$cpu_data" | grep "^cpu$i "))
+        idle=${cpu_info[4]}
+        total=0
+
+        for value in "${cpu_info[@]:1}"; do
+            total=$((total + value))
+        done
+
+        diff_idle=$((idle - prev_idle[$i]))
+        diff_total=$((total - prev_total[$i]))
+        usage=$(bc <<< "scale=2; 100 * (1 - $diff_idle / $diff_total)")
+
+        if (( $(echo "$usage > 0" | bc -l) )); then
+            cpu_core_data+=("$usage")
+        fi
+
+        prev_idle[$i]=$idle
+        prev_total[$i]=$total
+    done
+
+    output=$(IFS=' '; echo "${cpu_core_data[*]}")
+    json_output="{\"message\": \"Success\", \"cpuCoreData\": \"$output\", \"cores\":\"$NUM_CORES\"}"
+
+    if [[ $count -eq 1 ]]; then
+        echo "$json_output"
+    fi
+
+    ((count++))
+done
+```
+Paste the above script to your machine as a `back.sh` and look for the latest commits for editing the ssh command
+
+##
 
 This repository contains the source code for:
 
