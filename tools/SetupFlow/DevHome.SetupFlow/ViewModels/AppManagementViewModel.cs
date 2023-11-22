@@ -71,6 +71,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     protected async override Task OnEachNavigateToAsync()
     {
         SelectDefaultView();
+        await _wpm.InitializeAsync();
         await Task.CompletedTask;
     }
 

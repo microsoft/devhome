@@ -140,7 +140,7 @@ public partial class PackageViewModel : ObservableObject
             return _package.PackageUrl;
         }
 
-        if (_package.CatalogId == _wpm.MsStoreId)
+        if (_wpm.IsMsStorePackage(_package))
         {
             return new Uri($"ms-windows-store://pdp/?productid={_package.Id}");
         }
@@ -205,13 +205,13 @@ public partial class PackageViewModel : ObservableObject
     private string GetPackageDescription()
     {
         // Version | Source | Publisher name
-        if (_package.CatalogId != _wpm.MsStoreId && !string.IsNullOrEmpty(_package.PublisherName))
+        if (!_wpm.IsMsStorePackage(_package) && !string.IsNullOrEmpty(_package.PublisherName))
         {
             return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, Version, CatalogName, PublisherName);
         }
 
         // Version | Source
-        if (_package.CatalogId != _wpm.MsStoreId)
+        if (!_wpm.IsMsStorePackage(_package))
         {
             return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, Version, CatalogName);
         }

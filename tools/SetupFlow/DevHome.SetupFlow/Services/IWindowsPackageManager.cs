@@ -14,16 +14,6 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public interface IWindowsPackageManager
 {
-    /// <summary>
-    /// Gets the predefined WinGet catalog id
-    /// </summary>
-    public string WinGetCatalogId { get; }
-
-    /// <summary>
-    /// Gets the predefined MsStore catalog id
-    /// </summary>
-    public string MsStoreId { get; }
-
     public bool CanSearch { get; }
 
     /// <summary>
@@ -78,4 +68,6 @@ public interface IWindowsPackageManager
     /// <returns>List of winget package matches</returns>
     /// <exception cref="FindPackagesException">Exception thrown if the search packages operation failed</exception>
     public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit = 0);
+
+    public bool IsMsStorePackage(IWinGetPackage package);
 }
