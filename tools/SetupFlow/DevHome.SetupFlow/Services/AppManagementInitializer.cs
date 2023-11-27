@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Exceptions;
 
 namespace DevHome.SetupFlow.Services;
 public class AppManagementInitializer : IAppManagementInitializer
@@ -29,11 +31,18 @@ public class AppManagementInitializer : IAppManagementInitializer
         // Ensure AppInstaller is registered
         if (await TryRegisterAppInstallerAsync())
         {
-            // Initialize windows package manager after AppInstaller is registered
-            await _wpm.InitializeAsync();
+            try
+            {
+                // Initialize windows package manager after AppInstaller is registered
+                await _wpm.InitializeAsync();
 
-            // Load catalogs from all data sources
-            await LoadCatalogsAsync();
+                // Load catalogs from all data sources
+                await LoadCatalogsAsync();
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Unable to correctly initialize app installation at the moment. Further attempts will be performed later.", e);
+            }
         }
 
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed {nameof(AppManagementInitializer)} initialization");

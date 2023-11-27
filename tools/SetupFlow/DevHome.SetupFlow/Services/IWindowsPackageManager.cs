@@ -14,8 +14,6 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public interface IWindowsPackageManager
 {
-    public bool CanSearch { get; }
-
     /// <summary>
     /// Install a package on the user's machine.
     /// </summary>

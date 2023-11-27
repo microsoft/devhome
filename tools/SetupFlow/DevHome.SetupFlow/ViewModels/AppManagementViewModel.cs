@@ -64,7 +64,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     {
         // Load catalogs from all data sources
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Loading package catalogs from all sources");
-        _dispatcherQueue.TryEnqueue(() => SearchBoxEnabled = _wpm.CanSearch);
+        _dispatcherQueue.TryEnqueue(() => SearchBoxEnabled = true);
         await _packageCatalogListViewModel.LoadCatalogsAsync();
     }
 
