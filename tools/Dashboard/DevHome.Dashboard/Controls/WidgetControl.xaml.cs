@@ -14,7 +14,6 @@ using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.ApplicationModel.Resources;
 using Microsoft.Windows.Widgets;
-using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Controls;
 
@@ -117,7 +116,7 @@ public sealed partial class WidgetControl : UserControl
 
     private void AddSizesToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
     {
-        var widgetDefinition = WidgetCatalog.GetDefault().GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
+        var widgetDefinition = Application.Current.GetService<IWidgetHostingService>().GetWidgetCatalog().GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
         var capabilities = widgetDefinition.GetWidgetCapabilities();
         var sizeMenuItems = new List<MenuFlyoutItem>();
 
