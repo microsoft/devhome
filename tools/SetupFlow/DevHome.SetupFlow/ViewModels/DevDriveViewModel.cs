@@ -158,6 +158,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     /// </summary>
     [NotifyPropertyChangedFor(nameof(MinimumAllowedSize))]
     [NotifyPropertyChangedFor(nameof(MaximumAllowedSize))]
+    [NotifyCanExecuteChangedFor(nameof(SaveButtonCommand))]
     [ObservableProperty]
     private int _comboBoxByteUnit;
 
@@ -194,6 +195,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         get
         {
+            ResetErrors();
             if ((ByteUnit)ComboBoxByteUnit == ByteUnit.TB)
             {
                 return DevDriveUtil.MaxSizeForTbComboBox;
@@ -211,6 +213,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         get
         {
+            ResetErrors();
             if ((ByteUnit)ComboBoxByteUnit == ByteUnit.TB)
             {
                 return DevDriveUtil.MinSizeForTbComboBox;
