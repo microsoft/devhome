@@ -18,6 +18,7 @@ using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
 using Windows.Win32.Foundation;
+using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
 
 namespace DevHome.SetupFlow.Services;
 
@@ -38,6 +39,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     // Package manager URI constants:
     // - x-ms-winget: is a custom scheme for WinGet package manager
     // - winget: is a reserved URI name for the winget catalog
+    // - msstore: is a reserved URI name for the msstore catalog
     public const string Scheme = "x-ms-winget";
     public const string WingetCatalogURIName = "winget";
     public const string MsStoreCatalogURIName = "msstore";
@@ -45,16 +47,17 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;
     private readonly IPackageDeploymentService _packageDeploymentService;
-    private readonly Dictionary<string, Microsoft.Management.Deployment.PackageCatalog> _customCatalogs = new ();
+    private readonly Dictionary<string, WPMPackageCatalog> _customCatalogs = new ();
     private readonly SemaphoreSlim _initLock = new (1, 1);
     private readonly SemaphoreSlim _catalogLock = new (1, 1);
 
     private bool _disposedValue;
-    private Microsoft.Management.Deployment.PackageCatalog _searchCatalog;
-    private Microsoft.Management.Deployment.PackageCatalog _wingetCatalog;
-    private Microsoft.Management.Deployment.PackageCatalog _msStoreCatalog;
+    private WPMPackageCatalog _searchCatalog;
+    private WPMPackageCatalog _wingetCatalog;
+    private WPMPackageCatalog _msStoreCatalog;
     private string _wingetCatalogId;
-    private string _msStoreId;
+    private string _msStoreCatalogId;
+    private bool _isInitialized;
 
     public WindowsPackageManager(
         WindowsPackageManagerFactory wingetFactory,
@@ -66,8 +69,6 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         _packageDeploymentService = packageDeploymentService;
     }
 
-    public bool IsInitialized { get; private set; }
-
     public async Task InitializeAsync()
     {
         try
@@ -76,7 +77,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Begin initializing WPM");
 
             // Skip if already initialized
-            if (IsInitialized)
+            if (_isInitialized)
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initialization of WPM was skipped because it is already initialized");
                 return;
@@ -86,10 +87,10 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
 
             // Extract catalog ids for predefined catalogs
             _wingetCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
-            _msStoreId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
+            _msStoreCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
 
             // Mark as initialized
-            IsInitialized = true;
+            _isInitialized = true;
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing WPM completed");
         }
         finally
@@ -121,7 +122,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         }
     }
 
-    private async Task<Microsoft.Management.Deployment.PackageCatalog> GetCustomPackageCatalogAsync(string catalogName)
+    private async Task<WPMPackageCatalog> GetCustomPackageCatalogAsync(string catalogName)
     {
         // Get custom catalog from cache or connect to it then cache it
         await _catalogLock.WaitAsync();
@@ -147,21 +148,6 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         {
             _catalogLock.Release();
         }
-    }
-
-    private async Task<Microsoft.Management.Deployment.PackageCatalog> GetPackageCatalogAsync(IWinGetPackage package)
-    {
-        if (package.CatalogId == _wingetCatalogId)
-        {
-            return _wingetCatalog;
-        }
-
-        if (package.CatalogId == _msStoreId)
-        {
-            return _wingetCatalog;
-        }
-
-        return await GetCustomPackageCatalogAsync(package.CatalogName);
     }
 
     public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package, Guid activityId)
@@ -210,7 +196,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     {
         return await DoWithRecovery(async () =>
         {
-            Dictionary<Microsoft.Management.Deployment.PackageCatalog, HashSet<string>> packageIdsByCatalog = new ();
+            Dictionary<WPMPackageCatalog, HashSet<string>> packageIdsByCatalog = new ();
             foreach (var packageUri in packageUriSet)
             {
                 var packageInfo = await GetPackageIdAndCatalogAsync(packageUri);
@@ -345,9 +331,26 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         }
     }
 
-    public bool IsMsStorePackage(IWinGetPackage package) => package.CatalogId == _msStoreId;
+    public bool IsMsStorePackage(IWinGetPackage package) => package.CatalogId == _msStoreCatalogId;
 
-    private async Task<IList<IWinGetPackage>> GetPackagesAsync(Microsoft.Management.Deployment.PackageCatalog catalog, ISet<string> packageIdSet)
+    public bool IsWinGetPackage(IWinGetPackage package) => package.CatalogId == _wingetCatalogId;
+
+    private async Task<WPMPackageCatalog> GetPackageCatalogAsync(IWinGetPackage package)
+    {
+        if (package.CatalogId == _wingetCatalogId)
+        {
+            return _wingetCatalog;
+        }
+
+        if (package.CatalogId == _msStoreCatalogId)
+        {
+            return _msStoreCatalog;
+        }
+
+        return await GetCustomPackageCatalogAsync(package.CatalogName);
+    }
+
+    private async Task<IList<IWinGetPackage>> GetPackagesAsync(WPMPackageCatalog catalog, ISet<string> packageIdSet)
     {
         try
         {
@@ -358,6 +361,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
                 return new List<IWinGetPackage>();
             }
 
+            // WinGet catalog supports querying multiple packages in a single query (faster)
             if (catalog == _wingetCatalog)
             {
                 return await GetPackagesSingleQueryAsync(_wingetCatalog, packageIdSet);
@@ -372,7 +376,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         }
     }
 
-    private async Task<IList<IWinGetPackage>> GetPackagesMultiQueriesAsync(Microsoft.Management.Deployment.PackageCatalog catalog, ISet<string> packageIdSet)
+    private async Task<IList<IWinGetPackage>> GetPackagesMultiQueriesAsync(WPMPackageCatalog catalog, ISet<string> packageIdSet)
     {
         var result = new List<IWinGetPackage>();
         foreach (var packageId in packageIdSet)
@@ -395,7 +399,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         return result;
     }
 
-    private async Task<IList<IWinGetPackage>> GetPackagesSingleQueryAsync(Microsoft.Management.Deployment.PackageCatalog catalog, ISet<string> packageIdSet)
+    private async Task<IList<IWinGetPackage>> GetPackagesSingleQueryAsync(WPMPackageCatalog catalog, ISet<string> packageIdSet)
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting package set from catalog {catalog.Info.Name}");
         var options = _wingetFactory.CreateFindPackagesOptions();
@@ -427,7 +431,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     /// </summary>
     /// <param name="packageUri">Input package uri</param>
     /// <returns>True if the package uri is valid and a package id was identified, false otherwise.</returns>
-    private async Task<(string, Microsoft.Management.Deployment.PackageCatalog)?> GetPackageIdAndCatalogAsync(Uri packageUri)
+    private async Task<(string, WPMPackageCatalog)?> GetPackageIdAndCatalogAsync(Uri packageUri)
     {
         if (packageUri.Scheme == Scheme && packageUri.Segments.Length == 2)
         {
@@ -448,28 +452,28 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         return null;
     }
 
-    private async Task<Microsoft.Management.Deployment.PackageCatalog> CreateAndConnectSearchCatalogAsync()
+    private async Task<WPMPackageCatalog> CreateAndConnectSearchCatalogAsync()
     {
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalogs = packageManager.GetPackageCatalogs();
         return await CreateAndConnectCatalogAsync(catalogs);
     }
 
-    private async Task<Microsoft.Management.Deployment.PackageCatalog> CreateAndConnectWinGetCatalogAsync()
+    private async Task<WPMPackageCatalog> CreateAndConnectWinGetCatalogAsync()
     {
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
         return await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog });
     }
 
-    private async Task<Microsoft.Management.Deployment.PackageCatalog> CreateAndConnectMsStoreCatalogAsync()
+    private async Task<WPMPackageCatalog> CreateAndConnectMsStoreCatalogAsync()
     {
         var packageManager = _wingetFactory.CreatePackageManager();
         var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.MicrosoftStore);
         return await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog });
     }
 
-    private async Task<Microsoft.Management.Deployment.PackageCatalog> CreateAndConnectCatalogAsync(IReadOnlyList<PackageCatalogReference> catalogReferences)
+    private async Task<WPMPackageCatalog> CreateAndConnectCatalogAsync(IReadOnlyList<PackageCatalogReference> catalogReferences)
     {
         // Search in all catalogs including the local catalog which allows detecting if a package is installed
         var disconnectedCatalog = _wingetFactory.CreateCompositePackageCatalog(CompositeSearchBehavior.RemotePackagesFromAllCatalogs, catalogReferences);
@@ -490,7 +494,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     /// <returns>List of winget package matches</returns>
     /// <exception cref="InvalidOperationException">Exception thrown if the catalog is not connected before attempting to find packages</exception>
     /// <exception cref="FindPackagesException">Exception thrown if the find packages operation failed</exception>
-    private async Task<IList<IWinGetPackage>> FindPackagesAsync(Microsoft.Management.Deployment.PackageCatalog catalog, FindPackagesOptions options)
+    private async Task<IList<IWinGetPackage>> FindPackagesAsync(WPMPackageCatalog catalog, FindPackagesOptions options)
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Performing search");
         var result = new List<IWinGetPackage>();
@@ -556,7 +560,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
                 }
                 catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
                 {
-                    IsInitialized = false;
+                    _isInitialized = false;
 
                     if (retry < maxRetries)
                     {
