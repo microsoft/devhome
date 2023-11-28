@@ -47,8 +47,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     private readonly IPackageDeploymentService _packageDeploymentService;
 
     // Catalogs locks
-    private readonly SemaphoreSlim _wpmSearchLock = new (1, 1);
-    private readonly SemaphoreSlim _wpmInstallLock = new (1, 1);
+    private readonly SemaphoreSlim _lock = new (1, 1);
     private bool _disposedValue;
 
     // Catalogs
@@ -68,105 +67,95 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         _packageDeploymentService = packageDeploymentService;
     }
 
-    // TODO Use IsInitialized to determine if the catalog is ready to be used
     public bool IsInitialized { get; private set; }
 
     public async Task InitializeAsync()
     {
-        await DoWithRecovery(
-            async () =>
-            {
-                await _wpmSearchLock.WaitAsync();
-                await _wpmInstallLock.WaitAsync();
-                try
-                {
-                    await CreateAndConnectCatalogsAsync();
+        try
+        {
+            await _lock.WaitAsync();
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Begin initializing WPM");
 
-                    // Extract catalog ids for predefined catalogs
-                    _wingetCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
-                    _msStoreId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
-                    IsInitialized = true;
-                }
-                finally
-                {
-                    _wpmSearchLock.Release();
-                    _wpmInstallLock.Release();
-                }
-            }, reinitialize: false);
+            // Skip if already initialized
+            if (IsInitialized)
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initialization of WPM was skipped because it is already initialized");
+                return;
+            }
+
+            await InitializeInternalAsync();
+
+            // Extract catalog ids for predefined catalogs
+            _wingetCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
+            _msStoreId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
+
+            // Mark as initialized
+            IsInitialized = true;
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing WPM completed");
+        }
+        finally
+        {
+            _lock.Release();
+        }
     }
 
-    public async Task ReloadCatalogs()
+    private async Task InitializeInternalAsync()
     {
-        await DoWithRecovery(
-            async () =>
-            {
-                await _wpmInstallLock.WaitAsync();
-                await _wpmSearchLock.WaitAsync();
-                try
-                {
-                    await CreateAndConnectCatalogsAsync();
-                }
-                finally
-                {
-                    _wpmInstallLock.Release();
-                    _wpmSearchLock.Release();
-                }
-            }, reinitialize: false);
+        // Create and connect to catalogs in concurrently
+        var searchCatalog = CreateAndConnectSearchCatalogAsync();
+        var wingetCatalog = CreateAndConnectWinGetCatalogAsync();
+        var msStoreCatalog = CreateAndConnectMsStoreCatalogAsync();
+        await Task.WhenAll(searchCatalog, wingetCatalog, msStoreCatalog);
+        _searchCatalog = searchCatalog.Result;
+        _wingetCatalog = wingetCatalog.Result;
+        _msStoreCatalog = msStoreCatalog.Result;
     }
 
     public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package, Guid activityId)
     {
         return await DoWithRecovery(async () =>
         {
-            await _wpmInstallLock.WaitAsync();
-            try
+            var packageManager = _wingetFactory.CreatePackageManager();
+            var options = _wingetFactory.CreateInstallOptions();
+            options.PackageInstallMode = PackageInstallMode.Silent;
+
+            var catalog = packageManager.GetPackageCatalogByName(package.CatalogName);
+            var result = await catalog.ConnectAsync();
+
+            var op = _wingetFactory.CreateFindPackagesOptions();
+            var mop = _wingetFactory.CreatePackageMatchFilter(PackageMatchField.Id, PackageFieldMatchOption.Equals, package.Id);
+            op.Filters.Add(mop);
+            var mathc = await result.PackageCatalog.FindPackagesAsync(op);
+            if (mathc.Matches.Count == 0)
             {
-                var packageManager = _wingetFactory.CreatePackageManager();
-                var options = _wingetFactory.CreateInstallOptions();
-                options.PackageInstallMode = PackageInstallMode.Silent;
-
-                var catalog = packageManager.GetPackageCatalogByName(package.CatalogName);
-                var result = await catalog.ConnectAsync();
-
-                var op = _wingetFactory.CreateFindPackagesOptions();
-                var mop = _wingetFactory.CreatePackageMatchFilter(PackageMatchField.Id, PackageFieldMatchOption.Equals, package.Id);
-                op.Filters.Add(mop);
-                var mathc = await result.PackageCatalog.FindPackagesAsync(op);
-                if (mathc.Matches.Count == 0)
+                return new InstallPackageResult
                 {
-                    return new InstallPackageResult
-                    {
-                        ExtendedErrorCode = 0,
-                        RebootRequired = false,
-                    };
-                }
-
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package install for {package.Id}");
-                var installResult = await packageManager.InstallPackageAsync(mathc.Matches[0].CatalogPackage, options).AsTask();
-                var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
-
-                // Contract version 4
-                var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK);
-
-                Log.Logger?.ReportInfo(
-                    Log.Component.AppManagement,
-                    $"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
-
-                if (installResult.Status != InstallResultStatus.Ok)
-                {
-                    throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
-                }
-
-                return new InstallPackageResult()
-                {
-                    ExtendedErrorCode = extendedErrorCode,
-                    RebootRequired = installResult.RebootRequired,
+                    ExtendedErrorCode = 0,
+                    RebootRequired = false,
                 };
             }
-            finally
+
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package install for {package.Id}");
+            var installResult = await packageManager.InstallPackageAsync(mathc.Matches[0].CatalogPackage, options).AsTask();
+            var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
+
+            // Contract version 4
+            var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK);
+
+            Log.Logger?.ReportInfo(
+                Log.Component.AppManagement,
+                $"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
+
+            if (installResult.Status != InstallResultStatus.Ok)
             {
-                _wpmInstallLock.Release();
+                throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
             }
+
+            return new InstallPackageResult()
+            {
+                ExtendedErrorCode = extendedErrorCode,
+                RebootRequired = installResult.RebootRequired,
+            };
         });
     }
 
@@ -174,30 +163,22 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     {
         return await DoWithRecovery(async () =>
         {
-            await _wpmSearchLock.WaitAsync();
-            try
+            // TODO Add support for other catalogs (e.g. `msstore` and custom).
+            // https://github.com/microsoft/devhome/issues/1521
+            HashSet<string> wingetPackageIds = new ();
+            foreach (var packageUri in packageUriSet)
             {
-                // TODO Add support for other catalogs (e.g. `msstore` and custom).
-                // https://github.com/microsoft/devhome/issues/1521
-                HashSet<string> wingetPackageIds = new ();
-                foreach (var packageUri in packageUriSet)
+                if (TryGetPackageId(packageUri, out var packageId))
                 {
-                    if (TryGetPackageId(packageUri, out var packageId))
-                    {
-                        wingetPackageIds.Add(packageId);
-                    }
-                    else
-                    {
-                        Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package id from uri '{packageUri}'");
-                    }
+                    wingetPackageIds.Add(packageId);
                 }
+                else
+                {
+                    Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package id from uri '{packageUri}'");
+                }
+            }
 
-                return await GetPackagesAsync(_wingetCatalog, wingetPackageIds);
-            }
-            finally
-            {
-                _wpmSearchLock.Release();
-            }
+            return await GetPackagesAsync(_wingetCatalog, wingetPackageIds);
         });
     }
 
@@ -205,7 +186,6 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     {
         return await DoWithRecovery(async () =>
         {
-            await _wpmSearchLock.WaitAsync();
             try
             {
                 // Use default filter criteria for searching
@@ -220,10 +200,6 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
             {
                 Log.Logger?.ReportError(Log.Component.AppManagement, $"Error searching for packages.", e);
                 throw;
-            }
-            finally
-            {
-                _wpmSearchLock.Release();
             }
         });
     }
@@ -309,18 +285,6 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     }
 
     public bool IsMsStorePackage(IWinGetPackage package) => package.CatalogId == _msStoreId;
-
-    private async Task CreateAndConnectCatalogsAsync()
-    {
-        // Create and connect to catalogs in concurrently
-        var searchCatalog = CreateAndConnectSearchCatalogAsync();
-        var wingetCatalog = CreateAndConnectWinGetCatalogAsync();
-        var msStoreCatalog = CreateAndConnectMsStoreCatalogAsync();
-        await Task.WhenAll(searchCatalog, wingetCatalog, msStoreCatalog);
-        _searchCatalog = searchCatalog.Result;
-        _wingetCatalog = wingetCatalog.Result;
-        _msStoreCatalog = msStoreCatalog.Result;
-    }
 
     private async Task<IList<IWinGetPackage>> GetPackagesAsync(Microsoft.Management.Deployment.PackageCatalog catalog, ISet<string> packageIdSet)
     {
@@ -461,8 +425,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         {
             if (disposing)
             {
-                _wpmInstallLock.Dispose();
-                _wpmSearchLock.Dispose();
+                _lock.Dispose();
             }
 
             _disposedValue = true;
@@ -475,7 +438,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private async Task<T> DoWithRecovery<T>(Func<Task<T>> actionFunc, bool reinitialize = true)
+    private async Task<T> DoWithRecovery<T>(Func<Task<T>> actionFunc)
     {
         const int maxRetries = 3;
         const int delayMs = 1_000;
@@ -489,11 +452,13 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
             {
                 try
                 {
+                    await InitializeAsync();
                     return await actionFunc();
                 }
                 catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
                 {
                     IsInitialized = false;
+
                     if (retry < maxRetries)
                     {
                         // Retry with exponential backoff
@@ -502,20 +467,6 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
                             Log.Component.AppManagement,
                             $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}. Attempting to recover in: {backoffMs} ms");
                         await Task.Delay(TimeSpan.FromMilliseconds(backoffMs));
-
-                        if (reinitialize)
-                        {
-                            try
-                            {
-                                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to re-initialize ...");
-                                await InitializeAsync();
-                                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Re-initialize succeeded. Attempting to resume original task");
-                            }
-                            catch
-                            {
-                                Log.Logger?.ReportError(Log.Component.AppManagement, $"Initialization failed on retry number: {retry + 1}");
-                            }
-                        }
                     }
                 }
             }
@@ -523,17 +474,5 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Unable to recover windows package manager after {maxRetries} retries");
             throw new WindowsPackageManagerRecoveryException();
         });
-    }
-
-    private async Task DoWithRecovery(Func<Task> actionFunc, bool reinitialize = true)
-    {
-        const int voidValue = 0;
-        _ = await DoWithRecovery<int>(
-            async () =>
-            {
-                await actionFunc();
-                return voidValue;
-            },
-            reinitialize);
     }
 }
