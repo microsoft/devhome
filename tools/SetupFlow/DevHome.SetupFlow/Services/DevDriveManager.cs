@@ -145,7 +145,7 @@ public class DevDriveManager : IDevDriveManager
     {
         // Currently only one Dev Drive can be created at a time. If one was
         // produced before reuse it.
-        if (_devDrives.Any())
+        if (_devDrives.Count != 0)
         {
             Log.Logger?.ReportInfo(Log.Component.DevDrive, "Reusing existing Dev Drive");
             _devDrives.First().State = DevDriveState.New;
@@ -470,7 +470,7 @@ public class DevDriveManager : IDevDriveManager
     /// <inheritdoc/>
     public void ConfirmChangesToDevDrive()
     {
-        if (_devDrives.Any())
+        if (_devDrives.Count != 0)
         {
             PreviousDevDrive = _devDrives.First();
         }
