@@ -394,7 +394,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         });
 
         // All the tasks are done.  Re-try logic follows.
-        if (!_failedTasks.Any())
+        if (_failedTasks.Count == 0)
         {
             Log.Logger?.ReportInfo(Log.Component.Loading, "All tasks succeeded.  Moving to next page");
             ExecutionFinished.Invoke(null, null);
@@ -415,7 +415,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             IsNavigationBarVisible = true;
         }
 
-        if (_failedTasks.Any())
+        if (_failedTasks.Count != 0)
         {
             TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count), _activityId);
         }
