@@ -66,7 +66,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// <summary>
     /// Keep track of all failed tasks so they can be re-ran if the user wishes.
     /// </summary>
-    private readonly IList<TaskInformation> _failedTasks;
+    private readonly List<TaskInformation> _failedTasks;
 
     public IList<TaskInformation> FailedTasks => _failedTasks;
 

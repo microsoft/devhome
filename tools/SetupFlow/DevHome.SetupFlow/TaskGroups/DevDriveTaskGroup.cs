@@ -61,7 +61,9 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         _devDriveTasks.Clear();
     }
 
-    private readonly IList<CreateDevDriveTask> _devDriveTasks = new List<CreateDevDriveTask>();
+    private readonly List<CreateDevDriveTask> _devDriveTasks =
+        [
+        ];
 
     public IEnumerable<ISetupTask> SetupTasks
     {
