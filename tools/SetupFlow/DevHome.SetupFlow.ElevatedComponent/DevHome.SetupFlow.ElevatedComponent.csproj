@@ -22,7 +22,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.3" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
     <!-- 
     The ExcludeAssets=runtime is needed to prevent build errors from System.Management.dll being produced in 2 different locations.
     DevHome.SetupFlow.Common.csproj, uses System.Management instead, to prevent the reference from escaping into here
