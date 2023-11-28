@@ -31,7 +31,12 @@ internal class CPUStats : IDisposable
     public CPUStats()
     {
         CpuUsage = 0;
-        ProcessCPUStats = new ProcessStats[3] { new ProcessStats(), new ProcessStats(), new ProcessStats() };
+        ProcessCPUStats =
+        [
+            new ProcessStats(),
+            new ProcessStats(),
+            new ProcessStats()
+        ];
 
         InitCPUPerfCounters();
     }
