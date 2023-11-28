@@ -23,7 +23,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     /// <summary>
     /// Class for deserializing a JSON winget package
     /// </summary>
-    private class JsonWinGetPackage
+    private sealed class JsonWinGetPackage
     {
         public Uri Uri { get; set; }
 
@@ -34,7 +34,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     /// Class for deserializing a JSON package catalog with package ids from
     /// winget
     /// </summary>
-    private class JsonWinGetPackageCatalog
+    private sealed class JsonWinGetPackageCatalog
     {
         public string NameResourceKey { get; set; }
 

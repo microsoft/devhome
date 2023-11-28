@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal class NetworkStats : IDisposable
+internal sealed class NetworkStats : IDisposable
 {
     private readonly Dictionary<string, List<PerformanceCounter>> networkCounters = new ();
 
@@ -13,7 +13,7 @@ internal class NetworkStats : IDisposable
 
     private Dictionary<string, List<float>> NetChartValues { get; set; } = new Dictionary<string, List<float>>();
 
-    public class Data
+    public sealed class Data
     {
         public float Usage
         {

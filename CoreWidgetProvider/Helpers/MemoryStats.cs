@@ -7,7 +7,7 @@ using Windows.Win32;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal class MemoryStats : IDisposable
+internal sealed class MemoryStats : IDisposable
 {
     private readonly PerformanceCounter memCommitted = new ("Memory", "Committed Bytes", string.Empty);
     private readonly PerformanceCounter memCached = new ("Memory", "Cache Bytes", string.Empty);

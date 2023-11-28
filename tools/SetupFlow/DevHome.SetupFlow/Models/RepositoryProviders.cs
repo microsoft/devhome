@@ -21,7 +21,7 @@ namespace DevHome.SetupFlow.Models;
 /// <remarks>
 /// This class only uses providers that implement IDeveloperIdProvider and IRepositoryProvider.
 /// </remarks>
-internal class RepositoryProviders
+internal sealed class RepositoryProviders
 {
     /// <summary>
     /// Hold all providers and organize by their names.
