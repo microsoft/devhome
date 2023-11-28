@@ -45,6 +45,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 
     private readonly ISetupFlowStringResource _stringResource;
     private readonly string _fileName;
+    private readonly JsonSerializerOptions jsonSerializerOptions = new () { ReadCommentHandling = JsonCommentHandling.Skip };
     private IList<JsonWinGetPackageCatalog> _jsonCatalogs = new List<JsonWinGetPackageCatalog>();
 
     public override int CatalogCount => _jsonCatalogs.Count;
@@ -64,8 +65,8 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         // Open and deserialize JSON file
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Reading package list from JSON file {_fileName}");
         using var fileStream = File.OpenRead(_fileName);
-        var options = new JsonSerializerOptions() { ReadCommentHandling = JsonCommentHandling.Skip };
-        _jsonCatalogs = await JsonSerializer.DeserializeAsync<IList<JsonWinGetPackageCatalog>>(fileStream, options);
+
+        _jsonCatalogs = await JsonSerializer.DeserializeAsync<IList<JsonWinGetPackageCatalog>>(fileStream, jsonSerializerOptions);
     }
 
     public async override Task<IList<PackageCatalog>> LoadCatalogsAsync()
