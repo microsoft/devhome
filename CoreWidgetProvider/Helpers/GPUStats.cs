@@ -79,12 +79,13 @@ internal class GPUStats : IDisposable
                         continue;
                     }
 
-                    if (!gpuCounters.ContainsKey(phys))
+                    if (!gpuCounters.TryGetValue(phys, out var value))
                     {
-                        gpuCounters.Add(phys, new ());
+                        value = new ();
+                        gpuCounters.Add(phys, value);
                     }
 
-                    gpuCounters[phys].Add(counter);
+                    value.Add(counter);
                 }
             }
         }

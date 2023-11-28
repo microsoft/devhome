@@ -114,12 +114,12 @@ internal class NetworkStats : IDisposable
         }
 
         var currNetworkName = NetChartValues.ElementAt(networkIndex).Key;
-        if (!NetworkUsages.ContainsKey(currNetworkName))
+        if (!NetworkUsages.TryGetValue(currNetworkName, out var value))
         {
             return new Data();
         }
 
-        return NetworkUsages[currNetworkName];
+        return value;
     }
 
     public int GetPrevNetworkIndex(int networkIndex)

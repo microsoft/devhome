@@ -53,9 +53,9 @@ internal class RepositoryProviders
     public void StartIfNotRunning(string providerName)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Starting RepositoryProvider {providerName}");
-        if (_providers.ContainsKey(providerName))
+        if (_providers.TryGetValue(providerName, out var value))
         {
-            _providers[providerName].StartIfNotRunning();
+            value.StartIfNotRunning();
         }
     }
 
