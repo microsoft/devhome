@@ -14,6 +14,7 @@ using DevHome.SetupFlow.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
+using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
 using Windows.Win32.Foundation;
@@ -128,10 +129,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
                 var result = await catalog.ConnectAsync();
 
                 var op = _wingetFactory.CreateFindPackagesOptions();
-                var mop = _wingetFactory.CreatePackageMatchFilter();
-                mop.Option = PackageFieldMatchOption.Equals;
-                mop.Field = PackageMatchField.Id;
-                mop.Value = package.Id;
+                var mop = _wingetFactory.CreatePackageMatchFilter(PackageMatchField.Id, PackageFieldMatchOption.Equals, package.Id);
                 op.Filters.Add(mop);
                 var mathc = await result.PackageCatalog.FindPackagesAsync(op);
                 if (mathc.Matches.Count == 0)
@@ -213,13 +211,9 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
                 // Use default filter criteria for searching
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Searching for '{query}'. Result limit: {limit}");
                 var options = _wingetFactory.CreateFindPackagesOptions();
-                var filter = _wingetFactory.CreatePackageMatchFilter();
-                filter.Field = PackageMatchField.CatalogDefault;
-                filter.Option = PackageFieldMatchOption.ContainsCaseInsensitive;
-                filter.Value = query;
+                var filter = _wingetFactory.CreatePackageMatchFilter(PackageMatchField.CatalogDefault, PackageFieldMatchOption.ContainsCaseInsensitive, query);
                 options.Selectors.Add(filter);
                 options.ResultLimit = limit;
-
                 return await FindPackagesAsync(_searchCatalog, options);
             }
             catch (Exception e)
@@ -344,10 +338,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
             foreach (var packageId in packageIdSet)
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Adding package [{packageId}] to query");
-                var filter = _wingetFactory.CreatePackageMatchFilter();
-                filter.Field = PackageMatchField.Id;
-                filter.Option = PackageFieldMatchOption.Equals;
-                filter.Value = packageId;
+                var filter = _wingetFactory.CreatePackageMatchFilter(PackageMatchField.Id, PackageFieldMatchOption.Equals, packageId);
                 options.Selectors.Add(filter);
             }
 
@@ -419,21 +410,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     private async Task<Microsoft.Management.Deployment.PackageCatalog> CreateAndConnectCatalogAsync(IReadOnlyList<PackageCatalogReference> catalogReferences)
     {
         // Search in all catalogs including the local catalog which allows detecting if a package is installed
-        var compositeCatalogOptions = _wingetFactory.CreateCreateCompositePackageCatalogOptions();
-        compositeCatalogOptions.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
-
-        // Add all catalogs to the new composite catalog
-        // Note: Cannot use foreach or LINQ for out-of-process IVector
-        // Bug: https://github.com/microsoft/CsWinRT/issues/1205
-        var count = catalogReferences.Count;
-        for (var i = 0; i < count; ++i)
-        {
-            compositeCatalogOptions.Catalogs.Add(catalogReferences[i]);
-        }
-
-        // Create and connect the new composite catalog
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var disconnectedCatalog = packageManager.CreateCompositePackageCatalog(compositeCatalogOptions);
+        var disconnectedCatalog = _wingetFactory.CreateCompositePackageCatalog(CompositeSearchBehavior.RemotePackagesFromAllCatalogs, catalogReferences);
         var connectResult = await disconnectedCatalog.ConnectAsync();
         if (connectResult.Status == ConnectResultStatus.Ok)
         {
