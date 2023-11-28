@@ -13,9 +13,8 @@ public static class DeveloperIdHelper
     {
         // TODO: Instead of LoginId, hash a globally unique id of DeveloperId (like url)
         // https://github.com/microsoft/devhome/issues/611
-        using var hasher = SHA256.Create();
         var loginIdBytes = Encoding.ASCII.GetBytes(devId.LoginId);
-        var hashedLoginId = hasher.ComputeHash(loginIdBytes);
+        var hashedLoginId = SHA256.HashData(loginIdBytes);
         if (BitConverter.IsLittleEndian)
         {
             Array.Reverse(hashedLoginId);
