@@ -12,7 +12,7 @@ namespace DevHome.Common.TelemetryEvents.SetupFlow;
 [EventData]
 public class ExtensionEvent : EventBase
 {
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public int NumberOfProviders
     {
