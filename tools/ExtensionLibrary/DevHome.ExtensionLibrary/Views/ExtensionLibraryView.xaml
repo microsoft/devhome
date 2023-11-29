@@ -41,12 +41,12 @@
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,22,0,0">
             <StackPanel>
-                <commonviews:Banner TextWidth="350"
+                <commonviews:Banner x:Uid="ExtensionsBanner"
+                                    TextWidth="350"
                                     Visibility="{x:Bind BannerViewModel.ShowExtensionsBanner,Mode=OneWay}"
                                     HideButtonVisibility="true"
                                     HideButtonCommand="{x:Bind BannerViewModel.HideExtensionsBannerButtonCommand,Mode=OneWay}"
                                     ButtonCommand="{x:Bind BannerViewModel.ExtensionsBannerButtonCommand,Mode=OneWay}"
-                                    x:Uid="ExtensionsBanner"
                                     BackgroundSource="{ThemeResource ExtensionsBannerBack}"
                                     OverlaySource="{ThemeResource ExtensionsBannerFront}"
                                     Margin="0,0,0,28" />
@@ -73,7 +73,8 @@
                                 <ctControls:SettingsExpander.HeaderIcon>
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
                                 </ctControls:SettingsExpander.HeaderIcon>
-                                <Button Content="&#xe712;"
+                                <Button x:Uid="MoreOptionsButton"
+                                        Content="&#xe712;"
                                         Height="36" Width="36"
                                         FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                         Background="Transparent"

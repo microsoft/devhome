@@ -85,6 +85,7 @@
                 <Grid Grid.Row="2"
                       x:Name="PinRow">
                     <Button x:Name="PinButton"
+                            x:Uid="PinButton"
                             Style="{ThemeResource AccentButtonStyle}"
                             VerticalAlignment="Bottom" HorizontalAlignment="Center"
                             Visibility="Collapsed"
