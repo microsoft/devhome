@@ -86,6 +86,10 @@
     <value>Pin</value>
     <comment>Label for button that pins the widget</comment>
   </data>
+  <data name="PinButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Pin</value>
+    <comment>Name of the button that pins the widget</comment>
+  </data>
   <data name="UpdateWidgetButton.Content" xml:space="preserve">
     <value>Update</value>
     <comment>Label for button that updates the widget</comment>
