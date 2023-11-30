@@ -57,7 +57,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     private WPMPackageCatalog _msStoreCatalog;
     private string _wingetCatalogId;
     private string _msStoreCatalogId;
-    private bool _isInitialized;
+    private long _session;
 
     public WindowsPackageManager(
         WindowsPackageManagerFactory wingetFactory,
@@ -69,7 +69,9 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         _packageDeploymentService = packageDeploymentService;
     }
 
-    public async Task InitializeAsync()
+    public async Task InitializeAsync() => await InitializeAsync(_session);
+
+    public async Task InitializeAsync(long requestSession)
     {
         // Run action in a background thread to avoid blocking the UI thread
         // Async methods are blocking in WinGet: https://github.com/microsoft/winget-cli/issues/3205
@@ -78,23 +80,22 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
             try
             {
                 await _initLock.WaitAsync();
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Begin initializing WPM");
 
-                // Skip if already initialized
-                if (_isInitialized)
+                // If the initialization was requested from an older session, then skip it
+                if (requestSession < _session)
                 {
-                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initialization of WPM was skipped because it is already initialized");
                     return;
                 }
 
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Begin initializing WPM");
                 await CreateAndConnectCatalogsAsync();
 
                 // Extract catalog ids for predefined catalogs
                 _wingetCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
                 _msStoreCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
 
-                // Mark as initialized
-                _isInitialized = true;
+                // New session
+                _session = DateTime.Now.Ticks;
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing WPM completed");
             }
             finally
@@ -104,20 +105,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         });
     }
 
-    public async Task ReconnectCatalogsAsync()
-    {
-        try
-        {
-            await _initLock.WaitAsync();
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Begin re-initializing WPM");
-            await CreateAndConnectCatalogsAsync();
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Re-initializing WPM completed");
-        }
-        finally
-        {
-            _initLock.Release();
-        }
-    }
+    public async Task ReconnectCatalogsAsync() => await InitializeAsync(_session);
 
     public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package, Guid activityId)
     {
@@ -571,17 +559,29 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         return await Task.Run(async () =>
         {
             var retry = 0;
+            var recover = false;
             while (++retry <= maxRetries)
             {
                 try
                 {
-                    await InitializeAsync();
+                    if (recover)
+                    {
+                        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to recover windows package manager before retry number: {retry}");
+                        try
+                        {
+                            await InitializeAsync(_session);
+                        }
+                        catch
+                        {
+                            // No-op
+                        }
+                    }
+
                     return await actionFunc();
                 }
                 catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
                 {
-                    _isInitialized = false;
-
+                    recover = true;
                     if (retry < maxRetries)
                     {
                         // Retry with exponential backoff
