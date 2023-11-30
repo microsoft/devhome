@@ -46,6 +46,28 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+        interface IRepositorySearchProperty
+    {
+        String Name
+        {
+            get;
+            set;
+        };
+
+        String Value
+        {
+            get;
+            set;
+        };
+
+        UInt64 Rank
+        {
+            get;
+            set;
+        };
+    };
+
     // Repository Provider
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface IRepositoryProvider
@@ -70,6 +92,9 @@ namespace Microsoft.Windows.DevHome.SDK
 
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination);
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination, IDeveloperId developerId);
+
+        // Update contract when making the PR.
+
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
