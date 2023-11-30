@@ -23,7 +23,8 @@
         VerticalContentAlignment="Center"
         TabNavigation="Cycle">
         <StackPanel
-            Margin="20 0 10 20">
+            Margin="20 0 10 20"
+            MaxWidth="{ThemeResource MaxPageContentWidth}">
             <Grid
                 Margin="0 0 0 12"
                 HorizontalAlignment="Left">
