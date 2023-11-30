@@ -213,7 +213,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         get
         {
-            ResetErrors();
+            ValidateDriveSize();
             if ((ByteUnit)ComboBoxByteUnit == ByteUnit.TB)
             {
                 return DevDriveUtil.MinSizeForTbComboBox;
