@@ -45,21 +45,46 @@ public class CatalogDataSourceLoader : IDisposable
         await _lock.WaitAsync();
         try
         {
-            foreach (var dataSource in _dataSources)
+            await foreach (var catalog in LoadCatalogsInternalAsync())
             {
-                IList<PackageCatalog> dataSourceCatalogs;
-                if (!_catalogsMap.TryGetValue(dataSource, out dataSourceCatalogs))
-                {
-                    dataSourceCatalogs = await LoadCatalogsFromDataSourceAsync(dataSource);
-                    _catalogsMap.TryAdd(dataSource, dataSourceCatalogs);
-                }
-
-                yield return dataSourceCatalogs;
+                yield return catalog;
             }
         }
         finally
         {
             _lock.Release();
+        }
+    }
+
+    public async IAsyncEnumerable<IList<PackageCatalog>> ReloadCatalogsAsync()
+    {
+        await _lock.WaitAsync();
+        try
+        {
+            Clear();
+            await foreach (var catalog in LoadCatalogsInternalAsync())
+            {
+                yield return catalog;
+            }
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
+    private async IAsyncEnumerable<IList<PackageCatalog>> LoadCatalogsInternalAsync()
+    {
+        foreach (var dataSource in _dataSources)
+        {
+            IList<PackageCatalog> dataSourceCatalogs;
+            if (!_catalogsMap.TryGetValue(dataSource, out dataSourceCatalogs))
+            {
+                dataSourceCatalogs = await LoadCatalogsFromDataSourceAsync(dataSource);
+                _catalogsMap.TryAdd(dataSource, dataSourceCatalogs);
+            }
+
+            yield return dataSourceCatalogs;
         }
     }
 
@@ -82,10 +107,7 @@ public class CatalogDataSourceLoader : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public void Clear()
-    {
-        _catalogsMap.Clear();
-    }
+    private void Clear() => _catalogsMap.Clear();
 
     /// <summary>
     /// Initialize data source

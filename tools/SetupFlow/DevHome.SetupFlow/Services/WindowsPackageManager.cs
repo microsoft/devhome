@@ -71,82 +71,51 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
 
     public async Task InitializeAsync()
     {
+        // Run action in a background thread to avoid blocking the UI thread
+        // Async methods are blocking in WinGet: https://github.com/microsoft/winget-cli/issues/3205
+        await Task.Run(async () =>
+        {
+            try
+            {
+                await _initLock.WaitAsync();
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Begin initializing WPM");
+
+                // Skip if already initialized
+                if (_isInitialized)
+                {
+                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initialization of WPM was skipped because it is already initialized");
+                    return;
+                }
+
+                await CreateAndConnectCatalogsAsync();
+
+                // Extract catalog ids for predefined catalogs
+                _wingetCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
+                _msStoreCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
+
+                // Mark as initialized
+                _isInitialized = true;
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing WPM completed");
+            }
+            finally
+            {
+                _initLock.Release();
+            }
+        });
+    }
+
+    public async Task ReconnectCatalogsAsync()
+    {
         try
         {
             await _initLock.WaitAsync();
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Begin initializing WPM");
-
-            // Skip if already initialized
-            if (_isInitialized)
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initialization of WPM was skipped because it is already initialized");
-                return;
-            }
-
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Begin re-initializing WPM");
             await CreateAndConnectCatalogsAsync();
-
-            // Extract catalog ids for predefined catalogs
-            _wingetCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
-            _msStoreCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
-
-            // Mark as initialized
-            _isInitialized = true;
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing WPM completed");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Re-initializing WPM completed");
         }
         finally
         {
             _initLock.Release();
-        }
-    }
-
-    private async Task CreateAndConnectCatalogsAsync()
-    {
-        // Create and connect to predefined catalogs concurrently
-        var searchCatalog = CreateAndConnectSearchCatalogAsync();
-        var wingetCatalog = CreateAndConnectWinGetCatalogAsync();
-        var msStoreCatalog = CreateAndConnectMsStoreCatalogAsync();
-        await Task.WhenAll(searchCatalog, wingetCatalog, msStoreCatalog);
-        _searchCatalog = searchCatalog.Result;
-        _wingetCatalog = wingetCatalog.Result;
-        _msStoreCatalog = msStoreCatalog.Result;
-
-        // Clear custom catalogs
-        await _catalogLock.WaitAsync();
-        try
-        {
-            _customCatalogs.Clear();
-        }
-        finally
-        {
-            _catalogLock.Release();
-        }
-    }
-
-    private async Task<WPMPackageCatalog> GetCustomPackageCatalogAsync(string catalogName)
-    {
-        // Get custom catalog from cache or connect to it then cache it
-        await _catalogLock.WaitAsync();
-        try
-        {
-            if (_customCatalogs.TryGetValue(catalogName, out var catalog))
-            {
-                return catalog;
-            }
-
-            var packageManager = _wingetFactory.CreatePackageManager();
-            var customCatalog = packageManager.GetPackageCatalogByName(catalogName);
-            var result = await customCatalog.ConnectAsync();
-            if (result.Status != ConnectResultStatus.Ok)
-            {
-                throw new InvalidOperationException($"Failed to connect to catalog {catalogName} with status {result.Status}");
-            }
-
-            _customCatalogs[catalogName] = result.PackageCatalog;
-            return result.PackageCatalog;
-        }
-        finally
-        {
-            _catalogLock.Release();
         }
     }
 
@@ -519,6 +488,57 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         }
 
         return result;
+    }
+
+    private async Task CreateAndConnectCatalogsAsync()
+    {
+        // Create and connect to predefined catalogs concurrently
+        var searchCatalog = CreateAndConnectSearchCatalogAsync();
+        var wingetCatalog = CreateAndConnectWinGetCatalogAsync();
+        var msStoreCatalog = CreateAndConnectMsStoreCatalogAsync();
+        await Task.WhenAll(searchCatalog, wingetCatalog, msStoreCatalog);
+        _searchCatalog = searchCatalog.Result;
+        _wingetCatalog = wingetCatalog.Result;
+        _msStoreCatalog = msStoreCatalog.Result;
+
+        // Clear custom catalogs
+        await _catalogLock.WaitAsync();
+        try
+        {
+            _customCatalogs.Clear();
+        }
+        finally
+        {
+            _catalogLock.Release();
+        }
+    }
+
+    private async Task<WPMPackageCatalog> GetCustomPackageCatalogAsync(string catalogName)
+    {
+        // Get custom catalog from cache or connect to it then cache it
+        await _catalogLock.WaitAsync();
+        try
+        {
+            if (_customCatalogs.TryGetValue(catalogName, out var catalog))
+            {
+                return catalog;
+            }
+
+            var packageManager = _wingetFactory.CreatePackageManager();
+            var customCatalog = packageManager.GetPackageCatalogByName(catalogName);
+            var result = await customCatalog.ConnectAsync();
+            if (result.Status != ConnectResultStatus.Ok)
+            {
+                throw new InvalidOperationException($"Failed to connect to catalog {catalogName} with status {result.Status}");
+            }
+
+            _customCatalogs[catalogName] = result.PackageCatalog;
+            return result.PackageCatalog;
+        }
+        finally
+        {
+            _catalogLock.Release();
+        }
     }
 
     protected virtual void Dispose(bool disposing)

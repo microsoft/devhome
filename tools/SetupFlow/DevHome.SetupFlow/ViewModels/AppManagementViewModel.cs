@@ -20,7 +20,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     private readonly ShimmerSearchViewModel _shimmerSearchViewModel;
     private readonly SearchViewModel _searchViewModel;
     private readonly PackageCatalogListViewModel _packageCatalogListViewModel;
-    private readonly IWindowsPackageManager _wpm;
+    private readonly IAppManagementInitializer _appManagementInitializer;
     private readonly PackageProvider _packageProvider;
     private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
@@ -43,11 +43,12 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         IHost host,
+        IAppManagementInitializer appManagementInitializer,
         IWindowsPackageManager wpm,
         PackageProvider packageProvider)
         : base(stringResource, orchestrator)
     {
-        _wpm = wpm;
+        _appManagementInitializer = appManagementInitializer;
         _packageProvider = packageProvider;
         _searchViewModel = host.GetService<SearchViewModel>();
         _shimmerSearchViewModel = host.GetService<ShimmerSearchViewModel>();
@@ -65,14 +66,14 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         // Load catalogs from all data sources
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Loading package catalogs from all sources");
         _dispatcherQueue.TryEnqueue(() => SearchBoxEnabled = true);
-        await _packageCatalogListViewModel.LoadCatalogsAsync();
+        await Task.CompletedTask;
     }
 
     protected async override Task OnEachNavigateToAsync()
     {
         SelectDefaultView();
-        await _wpm.InitializeAsync();
-        await Task.CompletedTask;
+        await _appManagementInitializer.EnsureAppManagementInitializationAsync();
+        await _packageCatalogListViewModel.LoadCatalogsAsync();
     }
 
     private void SelectDefaultView()

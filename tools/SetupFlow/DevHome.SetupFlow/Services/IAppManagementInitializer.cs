@@ -15,4 +15,8 @@ public interface IAppManagementInitializer
     /// Ensure all services and deployments are initialized
     /// </summary>
     public Task InitializeAsync();
+
+    public Task EnsureAppManagementInitializationAsync();
+
+    public Task RefreshAsync();
 }

@@ -49,6 +49,8 @@ public interface IWindowsPackageManager
 
     public Task InitializeAsync();
 
+    public Task ReconnectCatalogsAsync();
+
     /// <summary>
     /// Get packages from a set of package uri.
     /// </summary>

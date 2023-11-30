@@ -4,7 +4,6 @@
 using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Exceptions;
 
 namespace DevHome.SetupFlow.Services;
 public class AppManagementInitializer : IAppManagementInitializer
@@ -31,21 +30,45 @@ public class AppManagementInitializer : IAppManagementInitializer
         // Ensure AppInstaller is registered
         if (await TryRegisterAppInstallerAsync())
         {
-            try
-            {
-                // Initialize windows package manager after AppInstaller is registered
-                await _wpm.InitializeAsync();
-
-                // Load catalogs from all data sources
-                await LoadCatalogsAsync();
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Unable to correctly initialize app installation at the moment. Further attempts will be performed later.", e);
-            }
+            await EnsureAppManagementInitializationAsync();
         }
 
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed {nameof(AppManagementInitializer)} initialization");
+    }
+
+    public async Task EnsureAppManagementInitializationAsync()
+    {
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Ensuring app management initialization");
+
+            // Initialize windows package manager after AppInstaller is registered
+            await _wpm.InitializeAsync();
+
+            // Load catalogs from all data sources
+            await LoadCatalogsAsync();
+
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Finished ensuring app management initialization");
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Unable to correctly initialize app management at the moment. Further attempts will be performed later.", e);
+        }
+    }
+
+    public async Task RefreshAsync()
+    {
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Reinitializing app management");
+            await _wpm.ReconnectCatalogsAsync();
+            await ReloadCatalogsAsync();
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Finished reinitializing app management");
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Unable to correctly reinitialize app management at the moment. Further attempts will be performed later.", e);
+        }
     }
 
     /// <summary>
@@ -66,6 +89,18 @@ public class AppManagementInitializer : IAppManagementInitializer
         await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
         {
             Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
+        }
+    }
+
+    /// <summary>
+    /// Loading catalogs from all data sources(e.g. Restore packages, etc ...)
+    /// </summary>
+    private async Task ReloadCatalogsAsync()
+    {
+        Log.Logger?.ReportInfo($"Reloading catalogs from all data sources");
+        await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.ReloadCatalogsAsync())
+        {
+            Log.Logger?.ReportInfo($"Reloaded {dataSourceCatalogs.Count} catalog(s)");
         }
     }
 

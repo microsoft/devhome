@@ -40,9 +40,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly IHost _host;
     private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
-    private readonly IWindowsPackageManager _wpm;
     private readonly PackageProvider _packageProvider;
-    private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
+    private readonly IAppManagementInitializer _appManagementInitializer;
 
     [ObservableProperty]
     private List<SummaryErrorMessageViewModel> _failedTasks = new ();
@@ -181,6 +180,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         IHost host,
         ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory,
         IWindowsPackageManager wpm,
+        IAppManagementInitializer appManagementInitializer,
         PackageProvider packageProvider,
         CatalogDataSourceLoader catalogDataSourceLoader)
         : base(stringResource, orchestrator)
@@ -189,11 +189,10 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _setupFlowViewModel = setupFlowViewModel;
         _host = host;
         _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
-        _wpm = wpm;
         _packageProvider = packageProvider;
-        _catalogDataSourceLoader = catalogDataSourceLoader;
         _configurationUnitResults = new (GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
+        _appManagementInitializer = appManagementInitializer;
 
         IsNavigationBarVisible = true;
         IsStepPage = false;
@@ -244,12 +243,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         {
             await Task.Run(async () =>
             {
-                Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloading catalogs from all data sources");
-                _catalogDataSourceLoader.Clear();
-                await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
-                {
-                    Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloaded {dataSourceCatalogs.Count} catalog(s)");
-                }
+                await _appManagementInitializer.RefreshAsync();
             });
         }
     }
