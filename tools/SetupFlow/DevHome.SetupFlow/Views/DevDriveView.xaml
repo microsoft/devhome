@@ -19,16 +19,11 @@
     </UserControl.Resources>
     <ScrollViewer 
         VerticalScrollBarVisibility="Auto"
-        HorizontalScrollBarVisibility="Disabled"
         Name="Scroller"
-        Margin="10 0 0 20"
-        Canvas.ZIndex="1"
-        MaxWidth="{ThemeResource MaxPageContentWidth}"
-        HorizontalContentAlignment="Center"
         VerticalContentAlignment="Center"
         TabNavigation="Cycle">
         <StackPanel
-            Margin="10 0 10 0">
+            Margin="20 0 10 20">
             <Grid
                 Margin="0 0 0 12"
                 HorizontalAlignment="Left">
