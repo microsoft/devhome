@@ -62,4 +62,8 @@
     <value>Close</value>
     <comment>Name of the button that hides the banner</comment>
   </data>
+  <data name="CloseButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Close</value>
+    <comment>Name of the button that closes a view</comment>
+  </data>
 </root>
