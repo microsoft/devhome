@@ -23,4 +23,4 @@ Sample configurations have been provided for various GitHub repositories. These 
 The sample configurations in the Windows directory are related to [Windows development paths](https://learn.microsoft.com/windows/dev-environment/#development-paths).
 
 ### Sample DSC Resources
-Examples for a few specific DSC Resources are under the DscResources directory.
+Examples for a few specific DSC Resources are under the [DscResources](./DscResources/) directory.
