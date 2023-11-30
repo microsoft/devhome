@@ -3,7 +3,7 @@
 
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="$(SolutionDir)ToolingVersions.props"/>
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -22,7 +22,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.3" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
   </ItemGroup>
 
 </Project>

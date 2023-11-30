@@ -81,9 +81,6 @@
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="models:CloningInformation">
                         <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="55"/>
-                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
