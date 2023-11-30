@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(SolutionDir)ToolingVersions.props"/>
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup>
     <RootNamespace>DevHome.Dashboard</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>
@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.230907" />
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.3" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
   </ItemGroup>
 

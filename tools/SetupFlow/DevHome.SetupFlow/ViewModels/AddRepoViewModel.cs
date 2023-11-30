@@ -46,6 +46,18 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
+    /// <summary>
+    /// Gets the folder picker view model.
+    /// </summary>
+    /// <remarks>
+    /// Currently public because EditDevDriveViewModel needs access to it.
+    /// THis can be made private when EditDevDriveViewModel is in this class.
+    /// </remarks>
+    public FolderPickerViewModel FolderPickerViewModel
+    {
+        get; private set;
+    }
+
     private ElementTheme SelectedTheme => _host.GetService<IThemeSelectorService>().Theme;
 
     /// <summary>
@@ -302,7 +314,8 @@ public partial class AddRepoViewModel : ObservableObject
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
         IHost host,
-        Guid activityId)
+        Guid activityId,
+        string defaultClonePath)
     {
         _stringResource = stringResource;
         _host = host;
@@ -316,6 +329,54 @@ public partial class AddRepoViewModel : ObservableObject
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
         _activityId = activityId;
+
+        FolderPickerViewModel = new FolderPickerViewModel(stringResource);
+        FolderPickerViewModel.CloneLocation = defaultClonePath;
+
+        /*
+         * So. Now.  We need to add more things.
+         * User picks an extension.
+         * DevHome asks extension what information do you need from the user? (However, need to QI for this)
+         * No.  We load up defaults.  However, the repos + what was used to get those repos needs to be passed.
+         * I know.  Ask the extension, what do you need to get repos.
+         * This gives back a list of string(Keys)
+         * When asking for repos we have two options.
+         * Asking for repos with a blank list
+         * Asking for repos with a dictionary of keys to values.
+         * 
+         * The idea is DevHome, when defaults are grabbed, needs to know what was used.  In the azure case
+         * the organization and project.  Why do we need this?  To display in the UI.
+         * 
+         * What about in the case where the old SDK is being used?
+         * 
+         * We do need to consider that.  RIght.  Because the old SDK does not allow DevHOme to ask for different information.
+         * THis means DevHome need to try its best to populate the new string in the repo page.
+         * 
+         * So.  We currently have GetAllRepos().  This should return a good default.
+         * Then in V2.  GetAllRepos(Dictionary<string, string> parameters)  these can be applied to get a specific set of repos.
+         * So.  How does if the dictionary is empty, it behaves like GetAllRepos.
+         * But, what about when the user clicsk on AddRepo.  DevHome does not know what to use.
+         * Two(?) options.
+         * 1. Call GetAllRepos(Dictionary<string, string>) but make it null or empty.  That tells the extension to use defaults.
+         *   But once that is returned, how does DevHome know what they are?  Is it in the return object?  Maybe the responce object
+         *   returns the repos AND the search terms?
+         *  2. Two calls.  One to get The list of strings that are required to get to repos.  Can be empty.  Then, another to GetAllRepos(Dictionary<string, string>) will just return a list of repos?
+         *  
+         *  If using SDK version 1 just call GetAllRepos().
+         *  Is using version 2, do some other things.
+         *  
+         *  Cool.  EZPZ.  What is next?  THe extensions need to deal with it.
+         *  
+         *  
+         *  Spoke with Hart.  Figured things out.
+         *  1. Call "Get me properties" - returns a dictionary with keys and good defaults.
+         *  2. GetAllRepos(Dictionary<string, string>) - extensions have to handle missing or optional data.
+         *  3. Add to the IDL IRepositoryProvider.SaveDefaults(IDeveloperId, Dictionary<string, string>) - extension has to save these and use them if they exist.
+         *     I. Does not need to be implemented.
+         *  4. Extensions have to handle data that is correct individually, but does not make sense together.  FOr example, for ADO, a valid
+         *      org name and project name, but the project isn't in the org.
+         *  5. GetAllRepos from the old interface would do that 1 and 2 does, just in 1 step.
+         */
     }
 
     /// <summary>
