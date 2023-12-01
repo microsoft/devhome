@@ -172,6 +172,7 @@ extends:
                 authKey: $(TouchdownAppKey)
                 resourceFilePath: |
                   **\en-US\*.resw
+                  **\en-US\PDP.xml
                 localizationTarget: false
                 appendRelativeDir: true
                 pseudoSetting: Included
@@ -184,6 +185,10 @@ extends:
                 script: >-
                   $Files = Get-ChildItem . -R -Filter 'Resources.resw' | ? FullName -Like '*en-US\*\Resources.resw'
                   
+                  $Files | % { Move-Item -Verbose $_.Directory $_.Directory.Parent.Parent -EA:Ignore }
+
+                  $Files = Get-ChildItem . -R -Filter 'PDP.xml' | ? FullName -Like '*en-US\*\PDP.xml'
+
                   $Files | % { Move-Item -Verbose $_.Directory $_.Directory.Parent.Parent -EA:Ignore }
                 pwsh: true
 
