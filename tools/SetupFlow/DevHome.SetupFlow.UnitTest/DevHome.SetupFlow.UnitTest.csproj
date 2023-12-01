@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(SolutionDir)ToolingVersions.props"/>
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup>
     <RootNamespace>DevHome.SetupFlow.UnitTest</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>
