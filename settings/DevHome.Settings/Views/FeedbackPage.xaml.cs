@@ -285,6 +285,7 @@ public sealed partial class FeedbackPage : Page
     {
         SYSTEM_INFO sysInfo;
         PInvoke.GetSystemInfo(out sysInfo);
+        var stringResource = new StringResource("DevHome.Settings/Resources");
         return stringResource.GetLocalized("Settings_Feedback_ProcessorArchitecture") + ": " + DetermineArchitecture((int)sysInfo.Anonymous.Anonymous.wProcessorArchitecture);
     }
 
@@ -317,6 +318,7 @@ public sealed partial class FeedbackPage : Page
     {
         var extensionService = Application.Current.GetService<IExtensionService>();
         var extensions = extensionService.GetInstalledExtensionsAsync(true).Result;
+        var stringResource = new StringResource("DevHome.Settings/Resources");
         var extensionsStr = stringResource.GetLocalized("Settings_Feedback_Extensions") + ": \n";
         foreach (var extension in extensions)
         {
