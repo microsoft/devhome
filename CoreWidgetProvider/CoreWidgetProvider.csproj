@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <Import Project="$(SolutionDir)ToolingVersions.props"/>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputType>Exe</OutputType>
   </PropertyGroup>
