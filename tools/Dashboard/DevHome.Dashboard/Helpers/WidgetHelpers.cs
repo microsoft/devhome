@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Dashboard.Models;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
@@ -98,7 +99,7 @@ internal class WidgetHelpers
         return JsonSerializer.Serialize(state, SourceGenerationContext.Default.WidgetCustomState);
     }
 
-    public static async Task SetPositionCustomStateAsync(Widget widget, int ordinal)
+    public static async Task SetPositionCustomStateAsync(WidgetModel widget, int ordinal)
     {
         var stateStr = await widget.GetCustomStateAsync();
         var state = JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);

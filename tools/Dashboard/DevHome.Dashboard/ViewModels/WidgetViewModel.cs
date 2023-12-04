@@ -10,6 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.Models;
 using DevHome.Dashboard.Services;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -29,7 +30,7 @@ public partial class WidgetViewModel : ObservableObject
     private RenderedAdaptiveCard _renderedCard;
 
     [ObservableProperty]
-    private Widget _widget;
+    private WidgetModel _widget;
 
     [ObservableProperty]
     private WidgetDefinition _widgetDefinition;
@@ -57,19 +58,19 @@ public partial class WidgetViewModel : ObservableObject
     [ObservableProperty]
     private bool _configuring;
 
-    partial void OnWidgetChanging(Widget value)
+    partial void OnWidgetChanging(WidgetModel value)
     {
         if (Widget != null)
         {
-            Widget.WidgetUpdated -= HandleWidgetUpdated;
+            Widget.Widget.WidgetUpdated -= HandleWidgetUpdated;
         }
     }
 
-    partial void OnWidgetChanged(Widget value)
+    partial void OnWidgetChanged(WidgetModel value)
     {
         if (Widget != null)
         {
-            Widget.WidgetUpdated += HandleWidgetUpdated;
+            Widget.Widget.WidgetUpdated += HandleWidgetUpdated;
             ShowWidgetContentIfAvailable();
         }
     }
@@ -85,7 +86,7 @@ public partial class WidgetViewModel : ObservableObject
     }
 
     public WidgetViewModel(
-        Widget widget,
+        WidgetModel widget,
         WidgetSize widgetSize,
         WidgetDefinition widgetDefinition,
         Microsoft.UI.Dispatching.DispatcherQueue dispatcher)
@@ -116,7 +117,7 @@ public partial class WidgetViewModel : ObservableObject
                 // Put in small wait to avoid this.
                 // https://github.com/microsoft/devhome/issues/643
                 Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardTemplateAsync returned empty, try wait");
-                await System.Threading.Tasks.Task.Delay(100);
+                await Task.Delay(100);
                 cardTemplate = await Widget.GetCardTemplateAsync();
                 cardData = await Widget.GetCardDataAsync();
             }

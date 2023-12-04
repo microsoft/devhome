@@ -11,6 +11,7 @@ using DevHome.Common;
 using DevHome.Common.Extensions;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.Models;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Dashboard.ViewModels;
@@ -155,8 +156,8 @@ public partial class DashboardView : ToolPage
         }
 
         Log.Logger()?.ReportInfo("DashboardView", $"Found {hostWidgets.Length} widgets for this host");
-        var restoredWidgetsWithPosition = new SortedDictionary<int, Widget>();
-        var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
+        var restoredWidgetsWithPosition = new SortedDictionary<int, WidgetModel>();
+        var restoredWidgetsWithoutPosition = new SortedDictionary<int, WidgetModel>();
         var numUnorderedWidgets = 0;
 
         // Widgets do not come from the host in a deterministic order, so save their order in each widget's CustomState.
@@ -186,19 +187,20 @@ public partial class DashboardView : ToolPage
                 }
 
                 var position = stateObj.Position;
+                var widgetModel = new WidgetModel(widget);
                 if (position >= 0)
                 {
-                    if (!restoredWidgetsWithPosition.TryAdd(position, widget))
+                    if (!restoredWidgetsWithPosition.TryAdd(position, widgetModel))
                     {
                         // If there was an error and a widget with this position is already there,
                         // treat this widget as unordered and put it into the unordered map.
-                        restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
+                        restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widgetModel);
                     }
                 }
                 else
                 {
                     // Widgets with no position will get the default of -1. Append these at the end.
-                    restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widget);
+                    restoredWidgetsWithoutPosition.Add(numUnorderedWidgets++, widgetModel);
                 }
             }
             catch (Exception ex)
@@ -232,7 +234,7 @@ public partial class DashboardView : ToolPage
         Log.Logger()?.ReportInfo("DashboardView", $"After delete, {length} widgets for this host");
     }
 
-    private async Task PlaceWidget(KeyValuePair<int, Widget> orderedWidget, int finalPlace)
+    private async Task PlaceWidget(KeyValuePair<int, WidgetModel> orderedWidget, int finalPlace)
     {
         var widget = orderedWidget.Value;
         var size = await widget.GetSizeAsync();
@@ -305,12 +307,12 @@ public partial class DashboardView : ToolPage
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
                 await newWidget.SetSizeAsync(size);
-                await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
+                await InsertWidgetInPinnedWidgetsAsync(new WidgetModel(newWidget), size, position);
             }
         }
     }
 
-    private async Task InsertWidgetInPinnedWidgetsAsync(Widget widget, WidgetSize size, int index)
+    private async Task InsertWidgetInPinnedWidgetsAsync(WidgetModel widget, WidgetSize size, int index)
     {
         await Task.Run(async () =>
         {
@@ -515,7 +517,7 @@ public partial class DashboardView : ToolPage
         // widgets between the starting and ending indices move up to replace the removed widget. If the widget was
         // moved from a higher index to a lower one, then the order of removal and insertion doesn't matter.
         PinnedWidgets.RemoveAt(draggedIndex);
-        var widgetPair = new KeyValuePair<int, Widget>(droppedIndex, draggedWidgetViewModel.Widget);
+        var widgetPair = new KeyValuePair<int, WidgetModel>(droppedIndex, draggedWidgetViewModel.Widget);
         await PlaceWidget(widgetPair, droppedIndex);
 
         // Update the CustomState Position of any widgets that were moved.

@@ -4,7 +4,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
@@ -244,7 +243,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             {
                 Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
 
-                ViewModel.Widget = widget;
+                ViewModel.Widget = new Models.WidgetModel(widget);
                 ViewModel.IsInAddMode = true;
                 PinButton.Visibility = Visibility.Visible;
 
