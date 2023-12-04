@@ -5,10 +5,6 @@
     <Import Project="$(SolutionDir)ToolingVersions.props" />
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        
-        <!-- TargetPlatformMinVersion is different here than the other csproj files.
-             User this version instead of the one defined in ToolingVersions.props  -->
-        <TargetPlatformMinVersion>10.0.22000.0</TargetPlatformMinVersion>
         <SupportedOSPlatformVersion>10.0.22000.0</SupportedOSPlatformVersion>
         <RootNamespace>DevHome</RootNamespace>
         <ApplicationIcon>Assets/DevHome.ico</ApplicationIcon>
