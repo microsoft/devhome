@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
@@ -46,7 +47,7 @@ public sealed partial class WidgetControl : UserControl
         ActualThemeChanged += OnActualThemeChanged;
     }
 
-    private void OpenWidgetMenu(object sender, RoutedEventArgs e)
+    private async void OpenWidgetMenuAsync(object sender, RoutedEventArgs e)
     {
         if (sender as Button is Button widgetMenuButton)
         {
@@ -59,7 +60,7 @@ public sealed partial class WidgetControl : UserControl
                 {
                     var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
 
-                    AddSizesToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                    await AddSizesToWidgetMenuAsync(widgetMenuFlyout, widgetViewModel, resourceLoader);
                     widgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
                     AddCustomizeToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
                     AddRemoveToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
@@ -114,9 +115,10 @@ public sealed partial class WidgetControl : UserControl
         }
     }
 
-    private void AddSizesToWidgetMenu(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
+    private async Task AddSizesToWidgetMenuAsync(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
     {
-        var widgetDefinition = Application.Current.GetService<IWidgetHostingService>().GetWidgetCatalog().GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
+        var widgetCatalog = await Application.Current.GetService<IWidgetHostingService>().GetWidgetCatalogAsync();
+        var widgetDefinition = widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
         var capabilities = widgetDefinition.GetWidgetCapabilities();
         var sizeMenuItems = new List<MenuFlyoutItem>();
 

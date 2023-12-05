@@ -52,13 +52,14 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         // Get the application root window so we know when it has closed.
         Application.Current.GetService<WindowEx>().Closed += OnMainWindowClosed;
-
-        _hostingService.GetWidgetCatalog()!.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
     }
 
     [RelayCommand]
     public async Task OnLoadedAsync()
     {
+        var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+        widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+
         await FillAvailableWidgetsAsync();
         SelectFirstWidgetByDefault();
     }
@@ -67,7 +68,10 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         AddWidgetNavigationView.MenuItems.Clear();
 
-        if (_hostingService.GetWidgetCatalog() is null)
+        var catalog = await _hostingService.GetWidgetCatalogAsync();
+        var host = await _hostingService.GetWidgetHostAsync();
+
+        if (catalog is null || host is null)
         {
             // We should never have gotten here if we don't have a WidgetCatalog.
             Log.Logger()?.ReportError("AddWidgetDialog", $"Opened the AddWidgetDialog, but WidgetCatalog is null.");
@@ -75,8 +79,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
 
         // Show the providers and widgets underneath them in alphabetical order.
-        var providerDefinitions = _hostingService.GetWidgetCatalog()!.GetProviderDefinitions().OrderBy(x => x.DisplayName);
-        var widgetDefinitions = _hostingService.GetWidgetCatalog()!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle);
+        var providerDefinitions = catalog!.GetProviderDefinitions().OrderBy(x => x.DisplayName);
+        var widgetDefinitions = catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle);
 
         Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
 
@@ -99,7 +103,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
                         var subItemContent = await BuildWidgetNavItem(widgetDef);
-                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef);
+                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, host);
                         var subItem = new NavigationViewItem
                         {
                             Tag = widgetDef,
@@ -166,12 +170,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
         return itemContent;
     }
 
-    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef)
+    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef, WidgetHost host)
     {
         // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
         if (!widgetDef.AllowMultiple)
         {
-            var currentlyPinnedWidgets = _hostingService.GetWidgetHost()?.GetWidgets();
+            var currentlyPinnedWidgets = host?.GetWidgets();
             if (currentlyPinnedWidgets != null)
             {
                 foreach (var pinnedWidget in currentlyPinnedWidgets)
@@ -233,7 +237,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
             Widget widget = null;
             try
             {
-                widget = await _hostingService.GetWidgetHost()?.CreateWidgetAsync(selectedWidgetDefinition.Id, size);
+                var widgetHost = await _hostingService.GetWidgetHostAsync();
+                widget = await widgetHost?.CreateWidgetAsync(selectedWidgetDefinition.Id, size);
             }
             catch (Exception ex)
             {
@@ -248,8 +253,8 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 ViewModel.IsInAddMode = true;
                 PinButton.Visibility = Visibility.Visible;
 
-                var widgetDefinition = _hostingService.GetWidgetCatalog()!.GetWidgetDefinition(widget.DefinitionId);
-                ViewModel.WidgetDefinition = widgetDefinition;
+                var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+                ViewModel.WidgetDefinition = widgetCatalog?.GetWidgetDefinition(widget.DefinitionId);
 
                 clearWidgetTask.Wait();
             }
@@ -272,7 +277,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         AddedWidget = _currentWidget;
 
-        HideDialog();
+        HideDialogAsync();
     }
 
     private async void CancelButton_Click(object sender, RoutedEventArgs e)
@@ -281,16 +286,17 @@ public sealed partial class AddWidgetDialog : ContentDialog
         Log.Logger()?.ReportDebug("AddWidgetDialog", $"Canceled dialog, delete widget");
         await ClearCurrentWidget();
 
-        HideDialog();
+        HideDialogAsync();
     }
 
-    private void HideDialog()
+    private async void HideDialogAsync()
     {
         _currentWidget = null;
         ViewModel = null;
 
         Application.Current.GetService<WindowEx>().Closed -= OnMainWindowClosed;
-        _hostingService.GetWidgetCatalog()!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+        widgetCatalog!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
 
         this.Hide();
     }
