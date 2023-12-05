@@ -1,6 +1,6 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract DevHomeContract {}
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -46,13 +46,12 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
-    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
+    [contract(DevHomeContract, 2)]
         interface IRepositorySearchProperty
     {
         String Name
         {
             get;
-            set;
         };
 
         String Value
@@ -64,7 +63,6 @@ namespace Microsoft.Windows.DevHome.SDK
         UInt64 Rank
         {
             get;
-            set;
         };
     };
 
@@ -93,8 +91,10 @@ namespace Microsoft.Windows.DevHome.SDK
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination);
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination, IDeveloperId developerId);
 
-        // Update contract when making the PR.
-
+        [contract(DevHomeContract, 2)]
+        IIterable<IRepositorySearchProperty> GetSearchProperties();
+        IIterable<String> GetChildValues(IRepositorySearchProperty parent, Boolean recursive);
+        Windows.Foundation.IAsyncOperation<RepositoriesResult> GetRepositoriesAsync(IDeveloperId developerId, IIterable<IRepositorySearchProperty> searchTerms);
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
