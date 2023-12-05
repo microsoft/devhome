@@ -79,14 +79,15 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
 
         // Show the providers and widgets underneath them in alphabetical order.
-        var providerDefinitions = catalog!.GetProviderDefinitions().OrderBy(x => x.DisplayName);
-        var widgetDefinitions = catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle);
+        var providerDefinitions = await Task.Run(() => catalog!.GetProviderDefinitions().OrderBy(x => x.DisplayName));
+        var widgetDefinitions = await Task.Run(() => catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle));
 
         Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
 
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
+        var currentlyPinnedWidgets = await Task.Run(() => host.GetWidgets());
         foreach (var providerDef in providerDefinitions)
         {
             if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
@@ -103,7 +104,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                     if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
                     {
                         var subItemContent = await BuildWidgetNavItem(widgetDef);
-                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, host);
+                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
                         var subItem = new NavigationViewItem
                         {
                             Tag = widgetDef,
@@ -170,12 +171,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
         return itemContent;
     }
 
-    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef, WidgetHost host)
+    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef, Widget[] currentlyPinnedWidgets)
     {
         // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
         if (!widgetDef.AllowMultiple)
         {
-            var currentlyPinnedWidgets = host?.GetWidgets();
             if (currentlyPinnedWidgets != null)
             {
                 foreach (var pinnedWidget in currentlyPinnedWidgets)
@@ -238,7 +238,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
             try
             {
                 var widgetHost = await _hostingService.GetWidgetHostAsync();
-                widget = await widgetHost?.CreateWidgetAsync(selectedWidgetDefinition.Id, size);
+                widget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(selectedWidgetDefinition.Id, size));
             }
             catch (Exception ex)
             {
@@ -254,7 +254,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
                 PinButton.Visibility = Visibility.Visible;
 
                 var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
-                ViewModel.WidgetDefinition = widgetCatalog?.GetWidgetDefinition(widget.DefinitionId);
+                ViewModel.WidgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(widget.DefinitionId));
 
                 clearWidgetTask.Wait();
             }

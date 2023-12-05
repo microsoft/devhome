@@ -118,7 +118,7 @@ public sealed partial class WidgetControl : UserControl
     private async Task AddSizesToWidgetMenuAsync(MenuFlyout widgetMenuFlyout, WidgetViewModel widgetViewModel, ResourceLoader resourceLoader)
     {
         var widgetCatalog = await Application.Current.GetService<IWidgetHostingService>().GetWidgetCatalogAsync();
-        var widgetDefinition = widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId);
+        var widgetDefinition = await Task.Run(() => widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId));
         var capabilities = widgetDefinition.GetWidgetCapabilities();
         var sizeMenuItems = new List<MenuFlyoutItem>();
 

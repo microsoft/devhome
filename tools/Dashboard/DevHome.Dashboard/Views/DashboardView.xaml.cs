@@ -153,7 +153,7 @@ public partial class DashboardView : ToolPage
     {
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
         var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
-        var hostWidgets = widgetHost?.GetWidgets();
+        var hostWidgets = await Task.Run(() => widgetHost?.GetWidgets());
 
         if (hostWidgets == null)
         {
@@ -229,13 +229,14 @@ public partial class DashboardView : ToolPage
 
     private async Task DeleteAbandonedWidgetAsync(Widget widget, WidgetHost widgetHost)
     {
-        var length = widgetHost!.GetWidgets().Length;
+        var length = await Task.Run(() => widgetHost!.GetWidgets().Length);
         Log.Logger()?.ReportInfo("DashboardView", $"Found abandoned widget, try to delete it...");
         Log.Logger()?.ReportInfo("DashboardView", $"Before delete, {length} widgets for this host");
 
         await widget.DeleteAsync();
 
-        length = (widgetHost.GetWidgets() == null) ? 0 : widgetHost.GetWidgets().Length;
+        var newWidgetList = await Task.Run(() => widgetHost.GetWidgets());
+        length = (newWidgetList == null) ? 0 : newWidgetList.Length;
         Log.Logger()?.ReportInfo("DashboardView", $"After delete, {length} widgets for this host");
     }
 
@@ -308,7 +309,7 @@ public partial class DashboardView : ToolPage
 
             // Put new widget on the Dashboard.
             var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
-            var widgetDefinition = widgetCatalog?.GetWidgetDefinition(newWidget.DefinitionId);
+            var widgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(newWidget.DefinitionId));
             if (widgetDefinition is not null)
             {
                 var size = WidgetHelpers.GetDefaultWidgetSize(widgetDefinition.GetWidgetCapabilities());
@@ -325,7 +326,7 @@ public partial class DashboardView : ToolPage
             var widgetDefinitionId = widget.DefinitionId;
             var widgetId = widget.Id;
             var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
-            var widgetDefinition = widgetCatalog?.GetWidgetDefinition(widgetDefinitionId);
+            var widgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(widgetDefinitionId));
 
             if (widgetDefinition != null)
             {
