@@ -3,8 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
+using DevHome.Dashboard.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -37,16 +40,24 @@ public class WidgetIconService : IWidgetIconService
     /// </summary>
     public async Task CacheAllWidgetIconsAsync()
     {
-        var cacheTasks = new List<Task>();
-        var widgetCatalog = await _widgetHostingService.GetWidgetCatalogAsync();
-        var widgetDefinitions = await Task.Run(() => widgetCatalog?.GetWidgetDefinitions());
-        foreach (var widgetDef in widgetDefinitions ?? Array.Empty<WidgetDefinition>())
+        try
         {
-            var task = AddIconsToCacheAsync(widgetDef);
-            cacheTasks.Add(task);
-        }
+            var cacheTasks = new List<Task>();
+            var widgetCatalog = await _widgetHostingService.GetWidgetCatalogAsync();
+            var widgetDefinitions = await Task.Run(() => widgetCatalog?.GetWidgetDefinitions());
+            foreach (var widgetDef in widgetDefinitions ?? Array.Empty<WidgetDefinition>())
+            {
+                var task = AddIconsToCacheAsync(widgetDef);
+                cacheTasks.Add(task);
+            }
 
-        await Task.WhenAll(cacheTasks);
+            await Task.WhenAll(cacheTasks);
+        }
+        catch (COMException ex)
+        {
+            Log.Logger()?.ReportError("WidgetIconService", $"CacheAllWidgetIconsAsync", ex);
+            Application.Current.GetService<DashboardViewModel>().DashboardNeedsRestart = true;
+        }
     }
 
     /// <summary>

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
@@ -60,10 +61,18 @@ public sealed partial class WidgetControl : UserControl
                 {
                     var resourceLoader = new ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
 
-                    await AddSizesToWidgetMenuAsync(widgetMenuFlyout, widgetViewModel, resourceLoader);
-                    widgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
-                    AddCustomizeToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
-                    AddRemoveToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                    try
+                    {
+                        await AddSizesToWidgetMenuAsync(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                        widgetMenuFlyout.Items.Add(new MenuFlyoutSeparator());
+                        AddCustomizeToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                        AddRemoveToWidgetMenu(widgetMenuFlyout, widgetViewModel, resourceLoader);
+                    }
+                    catch (COMException ex)
+                    {
+                        Log.Logger()?.ReportError("WidgetControl", $"OpenWidgetMenu", ex);
+                        Application.Current.GetService<DashboardViewModel>().DashboardNeedsRestart = true;
+                    }
                 }
             }
         }
@@ -162,6 +171,7 @@ public sealed partial class WidgetControl : UserControl
         // Mark current widget size.
         _currentSelectedSize = sizeMenuItems.FirstOrDefault(x => (WidgetSize)x.Tag == widgetViewModel.WidgetSize);
         MarkSize(_currentSelectedSize);
+        return;
     }
 
     private async void OnMenuItemSizeClick(object sender, RoutedEventArgs e)

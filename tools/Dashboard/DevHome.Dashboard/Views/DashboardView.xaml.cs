@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
@@ -82,11 +83,17 @@ public partial class DashboardView : ToolPage
                 return false;
             }
 
-            widgetCatalog!.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
-            widgetCatalog!.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
-            widgetCatalog!.WidgetDefinitionAdded += WidgetCatalog_WidgetDefinitionAdded;
-            widgetCatalog!.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
-            widgetCatalog!.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+            widgetCatalog.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
+            widgetCatalog.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
+            widgetCatalog.WidgetDefinitionAdded += WidgetCatalog_WidgetDefinitionAdded;
+            widgetCatalog.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
+            widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        }
+        catch (COMException ex)
+        {
+            Log.Logger()?.ReportError("DashboardView", ex);
+            ViewModel.DashboardNeedsRestart = true;
+            return false;
         }
         catch (Exception ex)
         {
@@ -152,16 +159,33 @@ public partial class DashboardView : ToolPage
     private async Task RestorePinnedWidgetsAsync()
     {
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
-        var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
-        var hostWidgets = await Task.Run(() => widgetHost?.GetWidgets());
-
-        if (hostWidgets == null)
+        WidgetHost widgetHost;
+        Widget[] hostWidgets;
+        try
         {
-            Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
+            var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
+            var hostWidgets = await Task.Run(() => widgetHost?.GetWidgets());
+
+            if (hostWidgets == null)
+            {
+                Log.Logger()?.ReportInfo("DashboardView", $"Found 0 widgets for this host");
+                return;
+            }
+
+            Log.Logger()?.ReportInfo("DashboardView", $"Found {hostWidgets.Length} widgets for this host");
+        }
+        catch (COMException ex)
+        {
+            Log.Logger()?.ReportError("AddWidgetDialog", ex);
+            ViewModel.DashboardNeedsRestart = true;
+            return;
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportWarn("AddWidgetDialog", $"CreateWidgetAsync failed: ", ex);
             return;
         }
 
-        Log.Logger()?.ReportInfo("DashboardView", $"Found {hostWidgets.Length} widgets for this host");
         var restoredWidgetsWithPosition = new SortedDictionary<int, Widget>();
         var restoredWidgetsWithoutPosition = new SortedDictionary<int, Widget>();
         var numUnorderedWidgets = 0;
@@ -308,13 +332,21 @@ public partial class DashboardView : ToolPage
             await newWidget.SetCustomStateAsync(newCustomState);
 
             // Put new widget on the Dashboard.
-            var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
-            var widgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(newWidget.DefinitionId));
-            if (widgetDefinition is not null)
+            try
             {
-                var size = WidgetHelpers.GetDefaultWidgetSize(widgetDefinition.GetWidgetCapabilities());
-                await newWidget.SetSizeAsync(size);
-                await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
+                var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+                var widgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(newWidget.DefinitionId));
+                if (widgetDefinition is not null)
+                {
+                    var size = WidgetHelpers.GetDefaultWidgetSize(widgetDefinition.GetWidgetCapabilities());
+                    await newWidget.SetSizeAsync(size);
+                    await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
+                }
+            }
+            catch (COMException ex)
+            {
+                Log.Logger()?.ReportError("DashboardView", ex);
+                ViewModel.DashboardNeedsRestart = true;
             }
         }
     }
@@ -325,8 +357,18 @@ public partial class DashboardView : ToolPage
         {
             var widgetDefinitionId = widget.DefinitionId;
             var widgetId = widget.Id;
-            var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
-            var widgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(widgetDefinitionId));
+            WidgetDefinition widgetDefinition;
+            try
+            {
+                var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+                var widgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(widgetDefinitionId));
+            }
+            catch (COMException ex)
+            {
+                Log.Logger()?.ReportError("DashboardView", ex);
+                ViewModel.DashboardNeedsRestart = true;
+                return;
+            }
 
             if (widgetDefinition != null)
             {
@@ -526,19 +568,28 @@ public partial class DashboardView : ToolPage
         // moved from a higher index to a lower one, then the order of removal and insertion doesn't matter.
         PinnedWidgets.RemoveAt(draggedIndex);
         var widgetPair = new KeyValuePair<int, Widget>(droppedIndex, draggedWidgetViewModel.Widget);
-        await PlaceWidget(widgetPair, droppedIndex);
 
-        // Update the CustomState Position of any widgets that were moved.
-        // The widget that has been dropped has already been updated, so don't do it again here.
-        var startIndex = draggedIndex < droppedIndex ? draggedIndex : droppedIndex + 1;
-        var endIndex = draggedIndex < droppedIndex ? droppedIndex : draggedIndex + 1;
-        for (var i = startIndex; i < endIndex; i++)
+        try
         {
-            var widgetToUpdate = PinnedWidgets.ElementAt(i);
-            await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
-        }
+            await PlaceWidget(widgetPair, droppedIndex);
 
-        Log.Logger()?.ReportDebug("DashboardView", $"Drop ended");
+            // Update the CustomState Position of any widgets that were moved.
+            // The widget that has been dropped has already been updated, so don't do it again here.
+            var startIndex = draggedIndex < droppedIndex ? draggedIndex : droppedIndex + 1;
+            var endIndex = draggedIndex < droppedIndex ? droppedIndex : draggedIndex + 1;
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                var widgetToUpdate = PinnedWidgets.ElementAt(i);
+                await WidgetHelpers.SetPositionCustomStateAsync(widgetToUpdate.Widget, i);
+            }
+
+            Log.Logger()?.ReportDebug("DashboardView", $"Drop ended");
+        }
+        catch (COMException ex)
+        {
+            Log.Logger()?.ReportError("DashboardView", "Could not finish drop", ex);
+            ViewModel.DashboardNeedsRestart = true;
+        }
     }
 
 #if DEBUG

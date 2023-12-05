@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
@@ -314,31 +315,39 @@ public partial class WidgetViewModel : ObservableObject
 
     private async void HandleAdaptiveAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
     {
-        Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction {nameof(args.Action)} for widget {Widget.Id}");
-        if (args.Action is AdaptiveOpenUrlAction openUrlAction)
+        try
         {
-            Log.Logger()?.ReportInfo("WidgetViewModel", $"Url = {openUrlAction.Url}");
-            await Launcher.LaunchUriAsync(openUrlAction.Url);
-        }
-        else if (args.Action is AdaptiveExecuteAction executeAction)
-        {
-            var dataToSend = string.Empty;
-            var dataType = executeAction.DataJson.ValueType;
-            if (dataType != Windows.Data.Json.JsonValueType.Null)
+            Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction {nameof(args.Action)} for widget {Widget.Id}");
+            if (args.Action is AdaptiveOpenUrlAction openUrlAction)
             {
-                dataToSend = executeAction.DataJson.Stringify();
+                Log.Logger()?.ReportInfo("WidgetViewModel", $"Url = {openUrlAction.Url}");
+                await Launcher.LaunchUriAsync(openUrlAction.Url);
             }
-            else
+            else if (args.Action is AdaptiveExecuteAction executeAction)
             {
-                var inputType = args.Inputs.AsJson().ValueType;
-                if (inputType != Windows.Data.Json.JsonValueType.Null)
+                var dataToSend = string.Empty;
+                var dataType = executeAction.DataJson.ValueType;
+                if (dataType != Windows.Data.Json.JsonValueType.Null)
                 {
-                    dataToSend = args.Inputs.AsJson().Stringify();
+                    dataToSend = executeAction.DataJson.Stringify();
                 }
-            }
+                else
+                {
+                    var inputType = args.Inputs.AsJson().ValueType;
+                    if (inputType != Windows.Data.Json.JsonValueType.Null)
+                    {
+                        dataToSend = args.Inputs.AsJson().Stringify();
+                    }
+                }
 
-            Log.Logger()?.ReportInfo("WidgetViewModel", $"Verb = {executeAction.Verb}, Data = {dataToSend}");
-            await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
+                Log.Logger()?.ReportInfo("WidgetViewModel", $"Verb = {executeAction.Verb}, Data = {dataToSend}");
+                await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
+            }
+        }
+        catch (COMException ex)
+        {
+            Log.Logger()?.ReportError("WidgetViewModel", ex);
+            Application.Current.GetService<DashboardViewModel>().DashboardNeedsRestart = true;
         }
 
         // TODO: Handle other ActionTypes

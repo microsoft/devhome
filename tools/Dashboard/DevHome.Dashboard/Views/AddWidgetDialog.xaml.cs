@@ -3,8 +3,8 @@
 
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
@@ -57,78 +57,98 @@ public sealed partial class AddWidgetDialog : ContentDialog
     [RelayCommand]
     public async Task OnLoadedAsync()
     {
-        var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
-        widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+        try
+        {
+            var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+            widgetCatalog.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
 
-        await FillAvailableWidgetsAsync();
-        SelectFirstWidgetByDefault();
+            await FillAvailableWidgetsAsync();
+            SelectFirstWidgetByDefault();
+        }
+        catch (COMException ex)
+        {
+            Log.Logger()?.ReportError("AddWidgetDialog", "OnLoadedAsync", ex);
+            Application.Current.GetService<DashboardViewModel>().DashboardNeedsRestart = true;
+            HideDialog();
+        }
     }
 
     private async Task FillAvailableWidgetsAsync()
     {
         AddWidgetNavigationView.MenuItems.Clear();
 
-        var catalog = await _hostingService.GetWidgetCatalogAsync();
-        var host = await _hostingService.GetWidgetHostAsync();
-
-        if (catalog is null || host is null)
+        try
         {
-            // We should never have gotten here if we don't have a WidgetCatalog.
-            Log.Logger()?.ReportError("AddWidgetDialog", $"Opened the AddWidgetDialog, but WidgetCatalog is null.");
-            return;
-        }
+            var catalog = await _hostingService.GetWidgetCatalogAsync();
+            var host = await _hostingService.GetWidgetHostAsync();
 
-        // Show the providers and widgets underneath them in alphabetical order.
-        var providerDefinitions = await Task.Run(() => catalog!.GetProviderDefinitions().OrderBy(x => x.DisplayName));
-        var widgetDefinitions = await Task.Run(() => catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle));
-
-        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
-
-        // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
-        // Tag each item with the widget or provider definition, so that it can be used to create
-        // the widget if it is selected later.
-        var currentlyPinnedWidgets = await Task.Run(() => host.GetWidgets());
-        foreach (var providerDef in providerDefinitions)
-        {
-            if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
+            if (catalog is null || host is null)
             {
-                var navItem = new NavigationViewItem
-                {
-                    IsExpanded = true,
-                    Tag = providerDef,
-                    Content = providerDef.DisplayName,
-                };
+                // We should never have gotten here if we don't have a WidgetCatalog.
+                Log.Logger()?.ReportError("AddWidgetDialog", $"Opened the AddWidgetDialog, but WidgetCatalog or WidgetHost is null.");
+                return;
+            }
 
-                foreach (var widgetDef in widgetDefinitions)
+            // Show the providers and widgets underneath them in alphabetical order.
+            var providerDefinitions = await Task.Run(() => catalog!.GetProviderDefinitions().OrderBy(x => x.DisplayName));
+            var widgetDefinitions = await Task.Run(() => catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle));
+
+            Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
+
+            // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
+            // Tag each item with the widget or provider definition, so that it can be used to create
+            // the widget if it is selected later.
+            var currentlyPinnedWidgets = await Task.Run(() => host.GetWidgets());
+            foreach (var providerDef in providerDefinitions)
+            {
+                if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
                 {
-                    if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
+                    var navItem = new NavigationViewItem
                     {
-                        var subItemContent = await BuildWidgetNavItem(widgetDef);
-                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
-                        var subItem = new NavigationViewItem
-                        {
-                            Tag = widgetDef,
-                            Content = subItemContent,
-                            IsEnabled = enable,
-                        };
-                        subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
-                        subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
+                        IsExpanded = true,
+                        Tag = providerDef,
+                        Content = providerDef.DisplayName,
+                    };
 
-                        navItem.MenuItems.Add(subItem);
+                    foreach (var widgetDef in widgetDefinitions)
+                    {
+                        if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
+                        {
+                            var subItemContent = await BuildWidgetNavItem(widgetDef);
+                            var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
+                            var subItem = new NavigationViewItem
+                            {
+                                Tag = widgetDef,
+                                Content = subItemContent,
+                                IsEnabled = enable,
+                            };
+                            subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
+                            subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
+
+                            navItem.MenuItems.Add(subItem);
+                        }
+                    }
+
+                    if (navItem.MenuItems.Count > 0)
+                    {
+                        AddWidgetNavigationView.MenuItems.Add(navItem);
                     }
                 }
+            }
 
-                if (navItem.MenuItems.Count > 0)
-                {
-                    AddWidgetNavigationView.MenuItems.Add(navItem);
-                }
+            // If there were no available widgets, show a message.
+            if (!AddWidgetNavigationView.MenuItems.Any())
+            {
+                ViewModel.ShowErrorCard("WidgetErrorCardNoWidgetsText");
             }
         }
-
-        // If there were no available widgets, show a message.
-        if (!AddWidgetNavigationView.MenuItems.Any())
+        catch (COMException ex)
         {
-            ViewModel.ShowErrorCard("WidgetErrorCardNoWidgetsText");
+            Log.Logger()?.ReportError("AddWidgetDialog", "FillAvailableWidgetsAsync", ex);
+            AddWidgetNavigationView.MenuItems.Clear();
+            Application.Current.GetService<DashboardViewModel>().DashboardNeedsRestart = true;
+            HideDialog();
+            return;
         }
     }
 
@@ -230,25 +250,38 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // If the user has selected a widget, show configuration UI. If they selected a provider, leave space blank.
         if (selectedTag as WidgetDefinition is WidgetDefinition selectedWidgetDefinition)
         {
-            var size = WidgetHelpers.GetLargestCapabilitySize(selectedWidgetDefinition.GetWidgetCapabilities());
-
             // Create the widget for configuration. We will need to delete it if the user closes the dialog
             // without pinning, or selects a different widget.
             Widget widget = null;
             try
             {
+                var size = WidgetHelpers.GetLargestCapabilitySize(selectedWidgetDefinition.GetWidgetCapabilities());
                 var widgetHost = await _hostingService.GetWidgetHostAsync();
                 widget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(selectedWidgetDefinition.Id, size));
+            }
+            catch (COMException ex)
+            {
+                Log.Logger()?.ReportError("AddWidgetNavigationView_SelectionChanged", $"", ex);
+                AddWidgetNavigationView.MenuItems.Clear();
+                Application.Current.GetService<DashboardViewModel>().DashboardNeedsRestart = true;
+                HideDialog();
+                return;
             }
             catch (Exception ex)
             {
                 Log.Logger()?.ReportWarn("AddWidgetDialog", $"CreateWidgetAsync failed: ", ex);
             }
 
-            if (widget is not null)
+            if (widget == null)
             {
-                Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
+                Log.Logger()?.ReportWarn("AddWidgetDialog", $"Widget creation failed.");
+                ViewModel.ShowErrorCard("WidgetErrorCardCreate1Text", "WidgetErrorCardCreate2Text");
+                return;
+            }
 
+            Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
+            try
+            {
                 ViewModel.Widget = widget;
                 ViewModel.IsInAddMode = true;
                 PinButton.Visibility = Visibility.Visible;
@@ -258,10 +291,13 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
                 clearWidgetTask.Wait();
             }
-            else
+            catch (COMException ex)
             {
-                Log.Logger()?.ReportWarn("AddWidgetDialog", $"Widget creation failed.");
-                ViewModel.ShowErrorCard("WidgetErrorCardCreate1Text", "WidgetErrorCardCreate2Text");
+                Log.Logger()?.ReportError("AddWidgetDialog", "AddWidgetNavigationView_SelectionChanged", ex);
+                AddWidgetNavigationView.MenuItems.Clear();
+                Application.Current.GetService<DashboardViewModel>().DashboardNeedsRestart = true;
+                HideDialog();
+                return;
             }
 
             _currentWidget = widget;
@@ -295,8 +331,16 @@ public sealed partial class AddWidgetDialog : ContentDialog
         ViewModel = null;
 
         Application.Current.GetService<WindowEx>().Closed -= OnMainWindowClosed;
-        var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
-        widgetCatalog!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        try
+        {
+            var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
+            widgetCatalog!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
+        }
+        catch (COMException ex)
+        {
+            Log.Logger()?.ReportError("AddWidgetDialog", ex);
+            Application.Current.GetService<DashboardViewModel>().DashboardNeedsRestart = true;
+        }
 
         this.Hide();
     }
@@ -311,9 +355,18 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         if (_currentWidget != null)
         {
-            var widgetIdToDelete = _currentWidget.Id;
-            await _currentWidget.DeleteAsync();
-            Log.Logger()?.ReportInfo("AddWidgetDialog", $"Deleted Widget {widgetIdToDelete}");
+            try
+            {
+                var widgetIdToDelete = _currentWidget.Id;
+                await _currentWidget.DeleteAsync();
+                Log.Logger()?.ReportInfo("AddWidgetDialog", $"Deleted Widget {widgetIdToDelete}");
+            }
+            catch (COMException ex)
+            {
+                Log.Logger()?.ReportError("AddWidgetDialog", ex);
+                Application.Current.GetService<DashboardViewModel>().DashboardNeedsRestart = true;
+            }
+
             _currentWidget = null;
         }
     }

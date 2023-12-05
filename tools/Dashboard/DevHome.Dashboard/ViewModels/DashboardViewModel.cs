@@ -21,6 +21,9 @@ public partial class DashboardViewModel : ObservableObject
     private bool _validatedWebExpPack;
 
     [ObservableProperty]
+    private bool _dashboardNeedsRestart;
+
+    [ObservableProperty]
     private bool _isLoading;
 
     public DashboardViewModel(
@@ -57,7 +60,7 @@ public partial class DashboardViewModel : ObservableObject
 
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
     {
-        if (widgetCount == 0 && !isLoading)
+        if (widgetCount == 0 && !isLoading && !DashboardNeedsRestart)
         {
             return Visibility.Visible;
         }

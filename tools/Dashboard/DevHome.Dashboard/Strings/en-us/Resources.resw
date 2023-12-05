@@ -170,4 +170,8 @@
     <value>Selected</value>
     <comment>State of selected size for automatiom purposes</comment>
   </data>
+  <data name="DashboardNeedsRestartTextBlock.Text" xml:space="preserve">
+    <value>We're having trouble displaying widgets. Please restart Dev Home to see your widgets.</value>
+    <comment>Error message shown when the widget service crashes and the user must restart Dev Home to recover.</comment>
+  </data>
 </root>
