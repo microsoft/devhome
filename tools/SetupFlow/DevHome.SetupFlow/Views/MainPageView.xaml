@@ -117,6 +117,12 @@
                             <ctControls:SettingsCard.HeaderIcon>
                                 <ImageIcon Source="ms-appx:///DevHome.SetupFlow/Assets/Setup_ConfigurationFile.png" />
                             </ctControls:SettingsCard.HeaderIcon>
+                            <ctControls:SettingsCard.Description>
+                                <StackPanel Orientation="Horizontal" Spacing="2">
+                                    <TextBlock x:Uid="MainPage_ConfigurationFile_Description"/>
+                                    <HyperlinkButton x:Uid="MainPage_ConfigurationFile_Description_Link" NavigateUri="https://aka.ms/dsc.yaml"/>
+                                </StackPanel>
+                            </ctControls:SettingsCard.Description>
                         </ctControls:SettingsCard>
                     </StackPanel>
 
