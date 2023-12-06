@@ -46,6 +46,18 @@ public partial class AddRepoViewModel : ObservableObject
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
+    /// <summary>
+    /// Gets the folder picker view model.
+    /// </summary>
+    /// <remarks>
+    /// Currently public because EditDevDriveViewModel needs access to it.
+    /// THis can be made private when EditDevDriveViewModel is in this class.
+    /// </remarks>
+    public FolderPickerViewModel FolderPickerViewModel
+    {
+        get; private set;
+    }
+
     private ElementTheme SelectedTheme => _host.GetService<IThemeSelectorService>().Theme;
 
     /// <summary>
@@ -302,7 +314,8 @@ public partial class AddRepoViewModel : ObservableObject
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
         IHost host,
-        Guid activityId)
+        Guid activityId,
+        string defaultClonePath)
     {
         _stringResource = stringResource;
         _host = host;
@@ -316,6 +329,9 @@ public partial class AddRepoViewModel : ObservableObject
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
         _activityId = activityId;
+
+        FolderPickerViewModel = new FolderPickerViewModel(stringResource);
+        FolderPickerViewModel.CloneLocation = defaultClonePath;
     }
 
     /// <summary>
@@ -398,6 +414,8 @@ public partial class AddRepoViewModel : ObservableObject
         CurrentPage = PageKind.Repositories;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
         ShouldShowLoginUi = false;
+        Accounts.Add("Hello");
+        Accounts.Add("ThisIsMe@Microsoft.com");
 
         // The only way to get the repo page is through the account page.
         // No need to change toggle buttons.
