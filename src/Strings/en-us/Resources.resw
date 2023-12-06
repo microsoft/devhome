@@ -246,4 +246,44 @@
     <value>Explore Dev Home extensions</value>
     <comment>Title of extensions card on "whats new" page</comment>
   </data>
+  <data name="WidgetDisplayNameCPU" xml:space="preserve">
+    <value>CPU</value>
+    <comment>Short name for the machine's Central Processing Unit.</comment>
+  </data>
+  <data name="WidgetDescriptionCPU" xml:space="preserve">
+    <value>Microsoft System CPU Usage Widget</value>
+    <comment>Description for widget that shows the machine's CPU data.</comment>
+  </data>
+  <data name="WidgetDisplayNameGPU" xml:space="preserve">
+    <value>GPU</value>
+    <comment>Short name for the machine's Graphics Processing Unit.</comment>
+  </data>
+  <data name="WidgetDescriptionGPU" xml:space="preserve">
+    <value>Microsoft System GPU Usage Widget</value>
+    <comment>Description for widget that shows the machine's GPU data.</comment>
+  </data>
+  <data name="WidgetDisplayNameNetwork" xml:space="preserve">
+    <value>Network</value>
+    <comment>Title for widget that displays data about the network the computer is on.</comment>
+  </data>
+  <data name="WidgetDescriptionNetwork" xml:space="preserve">
+    <value>Microsoft System Network Usage Widget</value>
+    <comment>Description for widget that shows the machine's network data.</comment>
+  </data>
+  <data name="WidgetDisplayNameMemory" xml:space="preserve">
+    <value>Memory</value>
+    <comment>Title for widget that displays how much memory the computer has.</comment>
+  </data>
+  <data name="WidgetDescriptionMemory" xml:space="preserve">
+    <value>Microsoft System Memory Usage Widget</value>
+    <comment>Description for widget that shows the machine's memory data.</comment>
+  </data>
+  <data name="WidgetDisplayNameSSHKeychain" xml:space="preserve">
+    <value>SSH keychain</value>
+    <comment>Title for widget that displays shortcuts to different SSH connections.</comment>
+  </data>
+  <data name="WidgetDescriptionSSHKeychain" xml:space="preserve">
+    <value>Quickly connect into to your favorite servers from your SSH config file</value>
+    <comment>Description for widget that displays shortcuts to different SSH connections.</comment>
+  </data>
 </root>

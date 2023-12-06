@@ -85,7 +85,7 @@
                   <TrustedPackageFamilyName>Microsoft.MicrosoftEdge.Stable_8wekyb3d8bbwe</TrustedPackageFamilyName>
                 </TrustedPackageFamilyNames>
                 <Definitions>
-                  <Definition Id="SSH_Wallet" DisplayName="SSH keychain" Description="Quickly connect into to your favorite servers from your SSH config file" AllowMultiple="true" IsCustomizable="true">
+                  <Definition Id="SSH_Wallet" DisplayName="ms-resource:WidgetDisplayNameSSHKeychain" Description="ms-resource:WidgetDescriptionSSHKeychain" AllowMultiple="true" IsCustomizable="true">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -112,7 +112,7 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_Memory" DisplayName="Memory" Description="Microsoft System Memory Widget Description" AllowMultiple="true" IsCustomizable="false">
+                  <Definition Id="System_Memory" DisplayName="ms-resource:WidgetDisplayNameMemory" Description="ms-resource:WidgetDescriptionMemory" AllowMultiple="true" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -139,7 +139,7 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_NetworkUsage" DisplayName="Network" Description="Microsoft System Network Usage Widget Description" AllowMultiple="true" IsCustomizable="false">
+                  <Definition Id="System_NetworkUsage" DisplayName="ms-resource:WidgetDisplayNameNetwork" Description="ms-resource:WidgetDescriptionNetwork" AllowMultiple="true" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -166,7 +166,7 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_GPUUsage" DisplayName="GPU" Description="Microsoft System GPU Usage Widget Description" AllowMultiple="true" IsCustomizable="false">
+                  <Definition Id="System_GPUUsage" DisplayName="ms-resource:WidgetDisplayNameGPU" Description="ms-resource:WidgetDescriptionGPU" AllowMultiple="true" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
@@ -193,7 +193,7 @@
                       <LightMode />
                     </ThemeResources>
                   </Definition>
-                  <Definition Id="System_CPUUsage" DisplayName="CPU" Description="Microsoft System CPU Usage Widget Description" AllowMultiple="true" IsCustomizable="false">
+                  <Definition Id="System_CPUUsage" DisplayName="ms-resource:WidgetDisplayNameCPU" Description="ms-resource:WidgetDescriptionCPU" AllowMultiple="true" IsCustomizable="false">
                     <Capabilities>
                       <Capability>
                         <Size Name="small" />
