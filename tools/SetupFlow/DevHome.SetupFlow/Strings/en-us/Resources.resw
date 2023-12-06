@@ -143,7 +143,7 @@
   </data>
   <data name="AppListBackupBanner.Description" xml:space="preserve">
     <value>Use Dev Home to quickly transfer your development machine settings from another PC to get back to coding.</value>
-    <comment>{Locked="Dev Home"}Description text of an instruction banner section for transferring settings from a developer machine</comment>
+    <comment>Description text of an instruction banner section for transferring settings from a developer machine</comment>
   </data>
   <data name="AppListBackupBanner.ButtonText" xml:space="preserve">
     <value>Get started</value>
@@ -259,7 +259,7 @@
   </data>
   <data name="DefaultBanner.Description" xml:space="preserve">
     <value>Find out how you can use Dev Home to quickly set up your development machine.</value>
-    <comment>{Locked="Dev Home"}Description text of an instruction banner section for setting up a development machine</comment>
+    <comment>Description text of an instruction banner section for setting up a development machine</comment>
   </data>
   <data name="DefaultBanner.ButtonText" xml:space="preserve">
     <value>Learn more</value>
@@ -1246,5 +1246,9 @@
   <data name="DevDriveWindowByteUnitComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Size Unit</value>
     <comment>Name for the combo box</comment>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Next</value>
+    <comment>Button to go to next screen</comment>
   </data>
 </root>
