@@ -493,9 +493,13 @@
     <value>Clone repositories</value>
     <comment>Header for a card that when clicked takes the user to a page for cloning git repositories</comment>
   </data>
-  <data name="MainPage_ConfigurationFile.Description" xml:space="preserve">
-    <value>Use a configuration file (YAML) for setup</value>
+  <data name="MainPage_ConfigurationFile_Description.Text" xml:space="preserve">
+    <value>Use a configuration file (YAML) for setup.</value>
     <comment>Body text description for a card that when clicked allows the user to select a configuration file and run it</comment>
+  </data>
+  <data name="MainPage_ConfigurationFile_Description_Link.Text" xml:space="preserve">
+    <value>Sample configurations</value>
+    <comment>Hyperlink text to sample configuration files</comment>
   </data>
   <data name="MainPage_ConfigurationFile.Header" xml:space="preserve">
     <value>Configuration file</value>
