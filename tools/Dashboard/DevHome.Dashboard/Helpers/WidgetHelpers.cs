@@ -12,6 +12,7 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Helpers;
+
 internal class WidgetHelpers
 {
     public const string DevHomeHostName = "DevHome";
@@ -20,22 +21,7 @@ internal class WidgetHelpers
     private const double WidgetPxHeightMedium = 304;
     private const double WidgetPxHeightLarge = 462;
 
-    public static WidgetSize GetLargestCapabilitySize(WidgetCapability[] capabilities)
-    {
-        // Guaranteed to have at least one capability
-        var largest = capabilities[0].Size;
-
-        foreach (var cap in capabilities)
-        {
-            if (cap.Size > largest)
-            {
-                largest = cap.Size;
-            }
-        }
-
-        return largest;
-    }
-
+    // The COM calls in this method aren't put on the background thread here since the whole method call already is.
     public static WidgetSize GetDefaultWidgetSize(WidgetCapability[] capabilities)
     {
         // The default size of the widget should be prioritized as Medium, Large, Small.
@@ -70,10 +56,9 @@ internal class WidgetHelpers
         };
     }
 
-    public static async Task<bool> IsIncludedWidgetProviderAsync(WidgetProviderDefinition provider)
+    public static async Task<bool> IsIncludedWidgetProviderAsync(string providerId)
     {
         // Cut WidgetProviderDefinition id down to just the package family name.
-        var providerId = provider.Id;
         var endOfPfnIndex = providerId.IndexOf('!', StringComparison.Ordinal);
         var familyNamePartOfProviderId = providerId[..endOfPfnIndex];
 
@@ -100,10 +85,10 @@ internal class WidgetHelpers
 
     public static async Task SetPositionCustomStateAsync(Widget widget, int ordinal)
     {
-        var stateStr = await widget.GetCustomStateAsync();
+        var stateStr = await Task.Run(async () => await widget.GetCustomStateAsync());
         var state = JsonSerializer.Deserialize(stateStr, SourceGenerationContext.Default.WidgetCustomState);
         state.Position = ordinal;
         stateStr = JsonSerializer.Serialize(state, SourceGenerationContext.Default.WidgetCustomState);
-        await widget.SetCustomStateAsync(stateStr);
+        await Task.Run(async () => await widget.SetCustomStateAsync(stateStr));
     }
 }

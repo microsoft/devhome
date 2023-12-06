@@ -55,7 +55,8 @@ public class WidgetIconService : IWidgetIconService
     public async Task AddIconsToCacheAsync(WidgetDefinition widgetDef)
     {
         // Only cache icons for providers that we're including.
-        if (await WidgetHelpers.IsIncludedWidgetProviderAsync(widgetDef.ProviderDefinition))
+        var providerDefinitionId = await Task.Run(() => widgetDef.ProviderDefinition.Id);
+        if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDefinitionId))
         {
             var widgetDefId = widgetDef.Id;
             try
@@ -96,15 +97,7 @@ public class WidgetIconService : IWidgetIconService
 
     public async Task<BitmapImage> GetWidgetIconForThemeAsync(WidgetDefinition widgetDefinition, ElementTheme theme)
     {
-        // Return the WidgetDefinition Id via TaskCompletionSource. Using WCT's EnqueueAsync does not suffice here, since if
-        // we're already on the thread of the DispatcherQueue then it just directly calls the function, with no async involved.
-        var completionSource = new TaskCompletionSource<string>();
-        _windowEx.DispatcherQueue.TryEnqueue(() =>
-        {
-            completionSource.TrySetResult(widgetDefinition.Id);
-        });
-
-        var widgetDefinitionId = await completionSource.Task;
+        var widgetDefinitionId = await Task.Run(() => widgetDefinition.Id);
 
         BitmapImage image;
         if (theme == ElementTheme.Light)

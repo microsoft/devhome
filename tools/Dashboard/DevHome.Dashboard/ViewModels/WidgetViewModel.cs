@@ -78,9 +78,9 @@ public partial class WidgetViewModel : ObservableObject
     {
         if (WidgetDefinition != null)
         {
-            WidgetDisplayTitle = WidgetDefinition.DisplayTitle;
-            WidgetProviderDisplayTitle = WidgetDefinition.ProviderDefinition.DisplayName;
-            IsCustomizable = WidgetDefinition.IsCustomizable;
+            WidgetDisplayTitle = Task.Run(() => WidgetDefinition.DisplayTitle).Result;
+            WidgetProviderDisplayTitle = Task.Run(() => WidgetDefinition.ProviderDefinition.DisplayName).Result;
+            IsCustomizable = Task.Run(() => WidgetDefinition.IsCustomizable).Result;
         }
     }
 
@@ -107,8 +107,8 @@ public partial class WidgetViewModel : ObservableObject
     {
         await Task.Run(async () =>
         {
-            var cardTemplate = await Widget.GetCardTemplateAsync();
-            var cardData = await Widget.GetCardDataAsync();
+            var cardTemplate = await Task.Run(async () => await Widget.GetCardTemplateAsync());
+            var cardData = await Task.Run(async () => await Widget.GetCardDataAsync());
 
             if (string.IsNullOrEmpty(cardTemplate))
             {
@@ -116,9 +116,9 @@ public partial class WidgetViewModel : ObservableObject
                 // Put in small wait to avoid this.
                 // https://github.com/microsoft/devhome/issues/643
                 Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardTemplateAsync returned empty, try wait");
-                await System.Threading.Tasks.Task.Delay(100);
-                cardTemplate = await Widget.GetCardTemplateAsync();
-                cardData = await Widget.GetCardDataAsync();
+                await Task.Delay(100);
+                cardTemplate = await Task.Run(async () => await Widget.GetCardTemplateAsync());
+                cardData = await Task.Run(async () => await Widget.GetCardDataAsync());
             }
 
             if (string.IsNullOrEmpty(cardData) || string.IsNullOrEmpty(cardTemplate))
@@ -314,7 +314,7 @@ public partial class WidgetViewModel : ObservableObject
 
     private async void HandleAdaptiveAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
     {
-        Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction {nameof(args.Action)} for widget {Widget.Id}");
+        Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction {nameof(args.Action)}");
         if (args.Action is AdaptiveOpenUrlAction openUrlAction)
         {
             Log.Logger()?.ReportInfo("WidgetViewModel", $"Url = {openUrlAction.Url}");
@@ -338,7 +338,7 @@ public partial class WidgetViewModel : ObservableObject
             }
 
             Log.Logger()?.ReportInfo("WidgetViewModel", $"Verb = {executeAction.Verb}, Data = {dataToSend}");
-            await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
+            await Task.Run(async () => await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend));
         }
 
         // TODO: Handle other ActionTypes

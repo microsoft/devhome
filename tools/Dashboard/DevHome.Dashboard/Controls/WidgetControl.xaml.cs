@@ -94,12 +94,12 @@ public sealed partial class WidgetControl : UserControl
             if (deleteMenuItem?.Tag is WidgetViewModel widgetViewModel)
             {
                 // Remove any custom state from the widget. In case the deletion fails, we won't show the widget anymore.
-                await widgetViewModel.Widget.SetCustomStateAsync(string.Empty);
+                await Task.Run(async () => await widgetViewModel.Widget.SetCustomStateAsync(string.Empty));
 
                 // Remove the widget from the list before deleting, otherwise the widget will
                 // have changed and the collection won't be able to find it to remove it.
-                var widgetIdToDelete = widgetViewModel.Widget.Id;
-                var widgetToDelete = widgetViewModel.Widget;
+                var widgetToDelete = await Task.Run(() => widgetViewModel.Widget);
+                var widgetIdToDelete = await Task.Run(() => widgetToDelete.Id);
                 Log.Logger()?.ReportDebug("WidgetControl", $"User removed widget, delete widget {widgetIdToDelete}");
                 DashboardView.PinnedWidgets.Remove(widgetViewModel);
                 try
@@ -119,11 +119,33 @@ public sealed partial class WidgetControl : UserControl
     {
         var widgetCatalog = await Application.Current.GetService<IWidgetHostingService>().GetWidgetCatalogAsync();
         var widgetDefinition = await Task.Run(() => widgetCatalog.GetWidgetDefinition(widgetViewModel.Widget.DefinitionId));
-        var capabilities = widgetDefinition.GetWidgetCapabilities();
+        var capabilities = await Task.Run(() => widgetDefinition.GetWidgetCapabilities());
+
         var sizeMenuItems = new List<MenuFlyoutItem>();
 
-        // Add the three possible sizes. Each side should only be enabled if it is included in the widget's capabilities.
-        if (capabilities.Any(cap => cap.Size == WidgetSize.Small))
+        // Save the available sizes. This consolidates the COM call to one here.
+        bool[] potentialCapabilities = { false, false, false };
+        foreach (var capability in capabilities)
+        {
+            var size = await Task.Run(() => capability.Size);
+            switch (size)
+            {
+                case WidgetSize.Small:
+                    potentialCapabilities[0] = true;
+                    break;
+                case WidgetSize.Medium:
+                    potentialCapabilities[1] = true;
+                    break;
+                case WidgetSize.Large:
+                    potentialCapabilities[2] = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Add the three possible sizes. Each size should only be enabled if it is included in the widget's capabilities.
+        if (potentialCapabilities[0])
         {
             var menuItemSmall = new MenuFlyoutItem
             {
@@ -135,7 +157,7 @@ public sealed partial class WidgetControl : UserControl
             sizeMenuItems.Add(menuItemSmall);
         }
 
-        if (capabilities.Any(cap => cap.Size == WidgetSize.Medium))
+        if (potentialCapabilities[1])
         {
             var menuItemMedium = new MenuFlyoutItem
             {
@@ -147,7 +169,7 @@ public sealed partial class WidgetControl : UserControl
             sizeMenuItems.Add(menuItemMedium);
         }
 
-        if (capabilities.Any(cap => cap.Size == WidgetSize.Large))
+        if (potentialCapabilities[2])
         {
             var menuItemLarge = new MenuFlyoutItem
             {
@@ -180,7 +202,7 @@ public sealed partial class WidgetControl : UserControl
                 // Resize widget.
                 var size = (WidgetSize)menuSizeItem.Tag;
                 widgetViewModel.WidgetSize = size;
-                await widgetViewModel.Widget.SetSizeAsync(size);
+                await Task.Run(async () => await widgetViewModel.Widget.SetSizeAsync(size));
 
                 // Set mark on new size.
                 _currentSelectedSize = menuSizeItem;
@@ -226,7 +248,7 @@ public sealed partial class WidgetControl : UserControl
         {
             if (customizeMenuItem?.Tag is WidgetViewModel widgetViewModel)
             {
-                await widgetViewModel.Widget.NotifyCustomizationRequestedAsync();
+                await Task.Run(async () => await widgetViewModel.Widget.NotifyCustomizationRequestedAsync());
             }
         }
     }

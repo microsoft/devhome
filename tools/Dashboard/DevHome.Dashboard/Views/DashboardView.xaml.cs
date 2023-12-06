@@ -9,11 +9,13 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
 using DevHome.Dashboard.TelemetryEvents;
 using DevHome.Dashboard.ViewModels;
+using DevHome.Settings.ViewModels;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
@@ -103,9 +105,9 @@ public partial class DashboardView : ToolPage
         await Application.Current.GetService<IAdaptiveCardRenderingService>().UpdateHostConfig();
 
         // Re-render the widgets with the new theme and renderer.
-        foreach (var widget in PinnedWidgets)
+        foreach (var wvm in PinnedWidgets)
         {
-            await widget.RenderAsync();
+            await wvm.RenderAsync();
         }
     }
 
@@ -173,7 +175,7 @@ public partial class DashboardView : ToolPage
         {
             try
             {
-                var stateStr = await widget.GetCustomStateAsync();
+                var stateStr = await Task.Run(async () => await widget.GetCustomStateAsync());
                 Log.Logger()?.ReportInfo("DashboardView", $"GetWidgetCustomState: {stateStr}");
 
                 if (string.IsNullOrEmpty(stateStr))
@@ -233,7 +235,7 @@ public partial class DashboardView : ToolPage
         Log.Logger()?.ReportInfo("DashboardView", $"Found abandoned widget, try to delete it...");
         Log.Logger()?.ReportInfo("DashboardView", $"Before delete, {length} widgets for this host");
 
-        await widget.DeleteAsync();
+        await Task.Run(async () => await widget.DeleteAsync());
 
         var newWidgetList = await Task.Run(() => widgetHost.GetWidgets());
         length = (newWidgetList == null) ? 0 : newWidgetList.Length;
@@ -243,7 +245,7 @@ public partial class DashboardView : ToolPage
     private async Task PlaceWidget(KeyValuePair<int, Widget> orderedWidget, int finalPlace)
     {
         var widget = orderedWidget.Value;
-        var size = await widget.GetSizeAsync();
+        var size = await Task.Run(async () => await widget.GetSizeAsync());
         await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace);
         await WidgetHelpers.SetPositionCustomStateAsync(widget, finalPlace);
     }
@@ -291,7 +293,7 @@ public partial class DashboardView : ToolPage
         {
             if (dialog.AddedWidget == null && dialog.ViewModel != null && dialog.ViewModel.Widget != null)
             {
-                await dialog.ViewModel.Widget.DeleteAsync();
+                await Task.Run(async () => await dialog.ViewModel.Widget.DeleteAsync());
             }
         };
 
@@ -312,8 +314,8 @@ public partial class DashboardView : ToolPage
             var widgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(newWidget.DefinitionId));
             if (widgetDefinition is not null)
             {
-                var size = WidgetHelpers.GetDefaultWidgetSize(widgetDefinition.GetWidgetCapabilities());
-                await newWidget.SetSizeAsync(size);
+                var size = await Task.Run(() => WidgetHelpers.GetDefaultWidgetSize(widgetDefinition.GetWidgetCapabilities()));
+                await Task.Run(async () => await newWidget.SetSizeAsync(size));
                 await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
             }
         }
@@ -381,54 +383,64 @@ public partial class DashboardView : ToolPage
 
     private async void WidgetCatalog_WidgetDefinitionAdded(WidgetCatalog sender, WidgetDefinitionAddedEventArgs args)
     {
-        Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetDefinitionAdded {args.Definition.Id}");
-        await ViewModel.WidgetIconService.AddIconsToCacheAsync(args.Definition);
+        var definition = await Task.Run(() => args.Definition);
+        var definitionId = await Task.Run(() => definition.Id);
+        Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetDefinitionAdded {definitionId}");
+        await ViewModel.WidgetIconService.AddIconsToCacheAsync(definition);
     }
 
     private async void WidgetCatalog_WidgetDefinitionUpdated(WidgetCatalog sender, WidgetDefinitionUpdatedEventArgs args)
     {
-        var updatedDefinitionId = args.Definition.Id;
+        var updatedDefinitionId = await Task.Run(() => args.Definition.Id);
         Log.Logger()?.ReportInfo("DashboardView", $"WidgetCatalog_WidgetDefinitionUpdated {updatedDefinitionId}");
 
-        foreach (var widgetToUpdate in PinnedWidgets.Where(x => x.Widget.DefinitionId == updatedDefinitionId).ToList())
+        foreach (var widgetVMToUpdate in PinnedWidgets)
         {
+            if (await Task.Run(() => widgetVMToUpdate.Widget.DefinitionId) != updatedDefinitionId)
+            {
+                continue;
+            }
+
             // Things in the definition that we need to update to if they have changed:
             // AllowMultiple, DisplayTitle, Capabilities (size), ThemeResource (icons)
-            var oldDef = widgetToUpdate.WidgetDefinition;
-            var newDef = args.Definition;
+            var oldDef = widgetVMToUpdate.WidgetDefinition;
+            var newDef = await Task.Run(() => args.Definition);
 
             // If we're no longer allowed to have multiple instances of this widget, delete all of them.
-            if (newDef.AllowMultiple == false && oldDef.AllowMultiple == true)
+            if (await Task.Run(() => newDef.AllowMultiple) == false && await Task.Run(() => oldDef.AllowMultiple) == true)
             {
                 _dispatcher.TryEnqueue(async () =>
                 {
                     Log.Logger()?.ReportInfo("DashboardView", $"No longer allowed to have multiple of widget {newDef.Id}");
-                    Log.Logger()?.ReportInfo("DashboardView", $"Delete widget {widgetToUpdate.Widget.Id}");
-                    PinnedWidgets.Remove(widgetToUpdate);
-                    await widgetToUpdate.Widget.DeleteAsync();
-                    Log.Logger()?.ReportInfo("DashboardView", $"Deleted Widget {widgetToUpdate.Widget.Id}");
+                    Log.Logger()?.ReportInfo("DashboardView", $"Delete widget {widgetVMToUpdate.Widget.Id}");
+                    PinnedWidgets.Remove(widgetVMToUpdate);
+                    await widgetVMToUpdate.Widget.DeleteAsync();
+                    Log.Logger()?.ReportInfo("DashboardView", $"Deleted Widget {widgetVMToUpdate.Widget.Id}");
                 });
             }
             else
             {
                 // Changing the definition updates the DisplayTitle.
-                widgetToUpdate.WidgetDefinition = newDef;
+                widgetVMToUpdate.WidgetDefinition = newDef;
 
                 // If the size the widget is currently set to is no longer supported by the widget, revert to its default size.
                 // TODO: Need to update WidgetControl with now-valid sizes.
                 // TODO: Properly compare widget capabilities.
                 // https://github.com/microsoft/devhome/issues/641
-                if (oldDef.GetWidgetCapabilities() != newDef.GetWidgetCapabilities())
+                await Task.Run(async () =>
                 {
-                    // TODO: handle the case where this change is made while Dev Home is not running -- how do we restore?
-                    // https://github.com/microsoft/devhome/issues/641
-                    if (!newDef.GetWidgetCapabilities().Any(cap => cap.Size == widgetToUpdate.WidgetSize))
+                    if (oldDef.GetWidgetCapabilities() != newDef.GetWidgetCapabilities())
                     {
-                        var newDefaultSize = WidgetHelpers.GetDefaultWidgetSize(newDef.GetWidgetCapabilities());
-                        widgetToUpdate.WidgetSize = newDefaultSize;
-                        await widgetToUpdate.Widget.SetSizeAsync(newDefaultSize);
+                        // TODO: handle the case where this change is made while Dev Home is not running -- how do we restore?
+                        // https://github.com/microsoft/devhome/issues/641
+                        if (!newDef.GetWidgetCapabilities().Any(cap => cap.Size == widgetVMToUpdate.WidgetSize))
+                        {
+                            var newDefaultSize = WidgetHelpers.GetDefaultWidgetSize(newDef.GetWidgetCapabilities());
+                            widgetVMToUpdate.WidgetSize = newDefaultSize;
+                            await widgetVMToUpdate.Widget.SetSizeAsync(newDefaultSize);
+                        }
                     }
-                }
+                });
             }
 
             // TODO: ThemeResource (icons) changed.
@@ -437,9 +449,9 @@ public partial class DashboardView : ToolPage
     }
 
     // Remove widget(s) from the Dashboard if the provider deletes the widget definition, or the provider is uninstalled.
-    private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
+    private async void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
-        var definitionId = args.DefinitionId;
+        var definitionId = await Task.Run(() => args.DefinitionId);
         _dispatcher.TryEnqueue(async () =>
         {
             Log.Logger()?.ReportInfo("DashboardView", $"WidgetDefinitionDeleted {definitionId}");

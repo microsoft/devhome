@@ -4,7 +4,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
@@ -17,6 +16,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Shapes;
+using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using WinUIEx;
 
@@ -38,7 +38,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         DispatcherQueue dispatcher,
         ElementTheme theme)
     {
-        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, dispatcher);
+        ViewModel = new WidgetViewModel(null, WidgetSize.Large, null, dispatcher);
         _hostingService = Application.Current.GetService<IWidgetHostingService>();
         _widgetIconService = Application.Current.GetService<IWidgetIconService>();
 
@@ -82,37 +82,46 @@ public sealed partial class AddWidgetDialog : ContentDialog
         var providerDefinitions = await Task.Run(() => catalog!.GetProviderDefinitions().OrderBy(x => x.DisplayName));
         var widgetDefinitions = await Task.Run(() => catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle));
 
-        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Filling available widget list, found {providerDefinitions.Count()} providers and {widgetDefinitions.Count()} widgets");
+        var providerDefinitionsCount = await Task.Run(() => providerDefinitions.Count());
+        var widgetDefinitionsCount = await Task.Run(() => widgetDefinitions.Count());
+
+        Log.Logger()?.ReportInfo(
+            "AddWidgetDialog",
+            $"Filling available widget list, found {providerDefinitionsCount} providers and {widgetDefinitionsCount} widgets");
 
         // Fill NavigationView Menu with Widget Providers, and group widgets under each provider.
         // Tag each item with the widget or provider definition, so that it can be used to create
         // the widget if it is selected later.
         var currentlyPinnedWidgets = await Task.Run(() => host.GetWidgets());
-        foreach (var providerDef in providerDefinitions)
+        foreach (var providerDefinition in providerDefinitions)
         {
-            if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDef))
+            var providerDefinitionId = await Task.Run(() => providerDefinition.Id);
+            if (await WidgetHelpers.IsIncludedWidgetProviderAsync(providerDefinitionId))
             {
                 var navItem = new NavigationViewItem
                 {
                     IsExpanded = true,
-                    Tag = providerDef,
-                    Content = providerDef.DisplayName,
+                    Tag = providerDefinition,
+                    Content = await Task.Run(() => providerDefinition.DisplayName),
                 };
 
                 foreach (var widgetDef in widgetDefinitions)
                 {
-                    if (widgetDef.ProviderDefinition.Id.Equals(providerDef.Id, StringComparison.Ordinal))
+                    var widgetProviderDefinitionId = await Task.Run(() => widgetDef.ProviderDefinition.Id);
+                    if (widgetProviderDefinitionId.Equals(providerDefinitionId, StringComparison.Ordinal))
                     {
                         var subItemContent = await BuildWidgetNavItem(widgetDef);
-                        var enable = !IsSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets);
+                        var enable = !(await IsSingleInstanceAndAlreadyPinned(widgetDef, currentlyPinnedWidgets));
                         var subItem = new NavigationViewItem
                         {
                             Tag = widgetDef,
                             Content = subItemContent,
                             IsEnabled = enable,
                         };
-                        subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDef.Id}");
-                        subItem.SetValue(AutomationProperties.NameProperty, widgetDef.DisplayTitle);
+                        var widgetDefinitionId = await Task.Run(() => widgetDef.Id);
+                        var widgetDisplayTitle = await Task.Run(() => widgetDef.DisplayTitle);
+                        subItem.SetValue(AutomationProperties.AutomationIdProperty, $"NavViewItem_{widgetDefinitionId}");
+                        subItem.SetValue(AutomationProperties.NameProperty, widgetDisplayTitle);
 
                         navItem.MenuItems.Add(subItem);
                     }
@@ -135,7 +144,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private async Task<StackPanel> BuildWidgetNavItem(WidgetDefinition widgetDefinition)
     {
         var image = await _widgetIconService.GetWidgetIconForThemeAsync(widgetDefinition, ActualTheme);
-        return BuildNavItem(image, widgetDefinition.DisplayTitle);
+        return BuildNavItem(image, await Task.Run(() => widgetDefinition.DisplayTitle));
     }
 
     private StackPanel BuildNavItem(BitmapImage image, string text)
@@ -171,16 +180,20 @@ public sealed partial class AddWidgetDialog : ContentDialog
         return itemContent;
     }
 
-    private bool IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef, Widget[] currentlyPinnedWidgets)
+    private async Task<bool> IsSingleInstanceAndAlreadyPinned(WidgetDefinition widgetDef, Widget[] currentlyPinnedWidgets)
     {
         // If a WidgetDefinition has AllowMultiple = false, only one of that widget can be pinned at one time.
-        if (!widgetDef.AllowMultiple)
+        if (!(await Task.Run(() => widgetDef.AllowMultiple)))
         {
             if (currentlyPinnedWidgets != null)
             {
                 foreach (var pinnedWidget in currentlyPinnedWidgets)
                 {
-                    if (pinnedWidget.DefinitionId == widgetDef.Id)
+                    var foundAlreadyPinnedWidget = await Task.Run(() =>
+                    {
+                        return pinnedWidget.DefinitionId == widgetDef.Id;
+                    });
+                    if (foundAlreadyPinnedWidget)
                     {
                         return true;
                     }
@@ -230,7 +243,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // If the user has selected a widget, show configuration UI. If they selected a provider, leave space blank.
         if (selectedTag as WidgetDefinition is WidgetDefinition selectedWidgetDefinition)
         {
-            var size = WidgetHelpers.GetLargestCapabilitySize(selectedWidgetDefinition.GetWidgetCapabilities());
+            var size = await Task.Run(() => GetLargestCapabilitySize(selectedWidgetDefinition.GetWidgetCapabilities()));
 
             // Create the widget for configuration. We will need to delete it if the user closes the dialog
             // without pinning, or selects a different widget.
@@ -273,6 +286,23 @@ public sealed partial class AddWidgetDialog : ContentDialog
         }
     }
 
+    // The COM calls in this method aren't put on the background thread here since the whole method call already is.
+    private static WidgetSize GetLargestCapabilitySize(WidgetCapability[] capabilities)
+    {
+        // Guaranteed to have at least one capability
+        var largest = capabilities[0].Size;
+
+        foreach (var cap in capabilities)
+        {
+            if (cap.Size > largest)
+            {
+                largest = cap.Size;
+            }
+        }
+
+        return largest;
+    }
+
     private void PinButton_Click(object sender, RoutedEventArgs e)
     {
         AddedWidget = _currentWidget;
@@ -311,19 +341,23 @@ public sealed partial class AddWidgetDialog : ContentDialog
     {
         if (_currentWidget != null)
         {
-            var widgetIdToDelete = _currentWidget.Id;
-            await _currentWidget.DeleteAsync();
-            Log.Logger()?.ReportInfo("AddWidgetDialog", $"Deleted Widget {widgetIdToDelete}");
+            await Task.Run(async () =>
+            {
+                var widgetIdToDelete = _currentWidget.Id;
+                await _currentWidget.DeleteAsync();
+                Log.Logger()?.ReportInfo("AddWidgetDialog", $"Deleted Widget {widgetIdToDelete}");
+            });
+
             _currentWidget = null;
         }
     }
 
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
     {
-        var deletedDefinitionId = args.DefinitionId;
-
         _dispatcher.TryEnqueue(() =>
         {
+            var deletedDefinitionId = args.DefinitionId;
+
             // If we currently have the deleted widget open, show an error message instead.
             if (_currentWidget is not null &&
                 _currentWidget.DefinitionId.Equals(deletedDefinitionId, StringComparison.Ordinal))
