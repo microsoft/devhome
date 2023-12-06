@@ -497,7 +497,7 @@
     <value>Use a configuration file (YAML) for setup.</value>
     <comment>Body text description for a card that when clicked allows the user to select a configuration file and run it</comment>
   </data>
-  <data name="MainPage_ConfigurationFile_Description_Link.Content" xml:space="preserve">
+  <data name="MainPage_ConfigurationFile_Description_Link.Text" xml:space="preserve">
     <value>Sample configurations</value>
     <comment>Hyperlink text to sample configuration files</comment>
   </data>
