@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Threading.Tasks;
 using DevHome.Dashboard.Helpers;
 using Microsoft.Windows.Widgets.Hosts;
 
@@ -16,13 +17,13 @@ public class WidgetHostingService : IWidgetHostingService
     {
     }
 
-    public WidgetHost GetWidgetHost()
+    public async Task<WidgetHost> GetWidgetHostAsync()
     {
         if (_widgetHost == null)
         {
             try
             {
-                _widgetHost = WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031"));
+                _widgetHost = await Task.Run(() => WidgetHost.Register(new WidgetHostContext("BAA93438-9B07-4554-AD09-7ACCD7D4F031")));
             }
             catch (Exception ex)
             {
@@ -33,13 +34,13 @@ public class WidgetHostingService : IWidgetHostingService
         return _widgetHost;
     }
 
-    public WidgetCatalog GetWidgetCatalog()
+    public async Task<WidgetCatalog> GetWidgetCatalogAsync()
     {
         if (_widgetCatalog == null)
         {
             try
             {
-                _widgetCatalog = WidgetCatalog.GetDefault();
+                _widgetCatalog = await Task.Run(() => WidgetCatalog.GetDefault());
             }
             catch (Exception ex)
             {
