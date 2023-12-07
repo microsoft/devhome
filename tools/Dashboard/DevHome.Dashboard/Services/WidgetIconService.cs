@@ -38,7 +38,8 @@ public class WidgetIconService : IWidgetIconService
     public async Task CacheAllWidgetIconsAsync()
     {
         var cacheTasks = new List<Task>();
-        var widgetDefinitions = _widgetHostingService.GetWidgetCatalog()!.GetWidgetDefinitions();
+        var widgetCatalog = await _widgetHostingService.GetWidgetCatalogAsync();
+        var widgetDefinitions = await Task.Run(() => widgetCatalog?.GetWidgetDefinitions());
         foreach (var widgetDef in widgetDefinitions ?? Array.Empty<WidgetDefinition>())
         {
             var task = AddIconsToCacheAsync(widgetDef);

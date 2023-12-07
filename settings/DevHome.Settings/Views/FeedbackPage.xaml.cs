@@ -277,14 +277,16 @@ public sealed partial class FeedbackPage : Page
         var availMemKbToGb = Math.Round(memStatus.ullAvailPhys / ByteSizeGB, 2);
         var totalMemKbToGb = Math.Round(memStatus.ullTotalPhys / ByteSizeGB, 2);
 
-        return "Physical Memory: " + totalMemKbToGb.ToString(cultures) + "GB (" + availMemKbToGb.ToString(cultures) + "GB free)";
+        var stringResource = new StringResource("DevHome.Settings/Resources");
+        return stringResource.GetLocalized("Settings_Feedback_PhysicalMemory") + ": " + totalMemKbToGb.ToString(cultures) + "GB (" + availMemKbToGb.ToString(cultures) + "GB free)";
     }
 
     private string GetProcessorArchitecture()
     {
         SYSTEM_INFO sysInfo;
         PInvoke.GetSystemInfo(out sysInfo);
-        return "Processor Architecture: " + DetermineArchitecture((int)sysInfo.Anonymous.Anonymous.wProcessorArchitecture);
+        var stringResource = new StringResource("DevHome.Settings/Resources");
+        return stringResource.GetLocalized("Settings_Feedback_ProcessorArchitecture") + ": " + DetermineArchitecture((int)sysInfo.Anonymous.Anonymous.wProcessorArchitecture);
     }
 
     private string DetermineArchitecture(int value)
@@ -316,7 +318,8 @@ public sealed partial class FeedbackPage : Page
     {
         var extensionService = Application.Current.GetService<IExtensionService>();
         var extensions = extensionService.GetInstalledExtensionsAsync(true).Result;
-        var extensionsStr = "Extensions: \n";
+        var stringResource = new StringResource("DevHome.Settings/Resources");
+        var extensionsStr = stringResource.GetLocalized("Settings_Feedback_Extensions") + ": \n";
         foreach (var extension in extensions)
         {
             extensionsStr += extension.PackageFullName + "\n";
