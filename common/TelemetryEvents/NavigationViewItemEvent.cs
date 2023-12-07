@@ -19,9 +19,15 @@ public class NavigationViewItemEvent : EventBase
         get;
     }
 
-    public NavigationViewItemEvent(string navigationViewTitle)
+    public string PreviousViewTitle
+    {
+        get;
+    }
+
+    public NavigationViewItemEvent(string navigationViewTitle, string previousViewTitle)
     {
         NavigationViewTitle = navigationViewTitle;
+        PreviousViewTitle = previousViewTitle;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)

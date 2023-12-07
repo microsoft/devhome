@@ -70,17 +70,23 @@ public partial class DashboardView : ToolPage
 #endif
     }
 
-    private bool SubscribeToWidgetCatalogEvents()
+    private async Task<bool> SubscribeToWidgetCatalogEventsAsync()
     {
         Log.Logger()?.ReportInfo("DashboardView", "SubscribeToWidgetCatalogEvents");
 
         try
         {
-            ViewModel.WidgetHostingService.GetWidgetCatalog()!.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
-            ViewModel.WidgetHostingService.GetWidgetCatalog()!.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
-            ViewModel.WidgetHostingService.GetWidgetCatalog()!.WidgetDefinitionAdded += WidgetCatalog_WidgetDefinitionAdded;
-            ViewModel.WidgetHostingService.GetWidgetCatalog()!.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
-            ViewModel.WidgetHostingService.GetWidgetCatalog()!.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
+            var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+            if (widgetCatalog == null)
+            {
+                return false;
+            }
+
+            widgetCatalog!.WidgetProviderDefinitionAdded += WidgetCatalog_WidgetProviderDefinitionAdded;
+            widgetCatalog!.WidgetProviderDefinitionDeleted += WidgetCatalog_WidgetProviderDefinitionDeleted;
+            widgetCatalog!.WidgetDefinitionAdded += WidgetCatalog_WidgetDefinitionAdded;
+            widgetCatalog!.WidgetDefinitionUpdated += WidgetCatalog_WidgetDefinitionUpdated;
+            widgetCatalog!.WidgetDefinitionDeleted += WidgetCatalog_WidgetDefinitionDeleted;
         }
         catch (Exception ex)
         {
@@ -108,14 +114,14 @@ public partial class DashboardView : ToolPage
         await InitializeDashboard();
     }
 
-    private bool EnsureHostingInitialized()
+    private async Task<bool> EnsureHostingInitializedAsync()
     {
         if (_widgetHostInitialized)
         {
             return _widgetHostInitialized;
         }
 
-        _widgetHostInitialized = ViewModel.EnsureWebExperiencePack() && ViewModel.WidgetHostingService.GetWidgetCatalog() != null && SubscribeToWidgetCatalogEvents();
+        _widgetHostInitialized = ViewModel.EnsureWebExperiencePack() && await SubscribeToWidgetCatalogEventsAsync();
 
         return _widgetHostInitialized;
     }
@@ -125,7 +131,7 @@ public partial class DashboardView : ToolPage
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
         ViewModel.IsLoading = true;
 
-        if (EnsureHostingInitialized())
+        if (await EnsureHostingInitializedAsync())
         {
             // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
             await ViewModel.WidgetIconService.CacheAllWidgetIconsAsync();
@@ -146,7 +152,8 @@ public partial class DashboardView : ToolPage
     private async Task RestorePinnedWidgetsAsync()
     {
         Log.Logger()?.ReportInfo("DashboardView", "Get widgets for current host");
-        var hostWidgets = ViewModel.WidgetHostingService.GetWidgetHost()?.GetWidgets();
+        var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
+        var hostWidgets = await Task.Run(() => widgetHost?.GetWidgets());
 
         if (hostWidgets == null)
         {
@@ -173,7 +180,7 @@ public partial class DashboardView : ToolPage
                 {
                     // If we have a widget with no state, Dev Home does not consider it a valid widget
                     // and should delete it, rather than letting it run invisibly in the background.
-                    await DeleteAbandonedWidgetAsync(widget);
+                    await DeleteAbandonedWidgetAsync(widget, widgetHost);
                     continue;
                 }
 
@@ -220,15 +227,16 @@ public partial class DashboardView : ToolPage
         }
     }
 
-    private async Task DeleteAbandonedWidgetAsync(Widget widget)
+    private async Task DeleteAbandonedWidgetAsync(Widget widget, WidgetHost widgetHost)
     {
-        var length = ViewModel.WidgetHostingService.GetWidgetHost()!.GetWidgets().Length;
+        var length = await Task.Run(() => widgetHost!.GetWidgets().Length);
         Log.Logger()?.ReportInfo("DashboardView", $"Found abandoned widget, try to delete it...");
         Log.Logger()?.ReportInfo("DashboardView", $"Before delete, {length} widgets for this host");
 
         await widget.DeleteAsync();
 
-        length = ViewModel.WidgetHostingService.GetWidgetHost()!.GetWidgets().Length;
+        var newWidgetList = await Task.Run(() => widgetHost.GetWidgets());
+        length = (newWidgetList == null) ? 0 : newWidgetList.Length;
         Log.Logger()?.ReportInfo("DashboardView", $"After delete, {length} widgets for this host");
     }
 
@@ -300,10 +308,11 @@ public partial class DashboardView : ToolPage
             await newWidget.SetCustomStateAsync(newCustomState);
 
             // Put new widget on the Dashboard.
-            var widgetDef = ViewModel.WidgetHostingService.GetWidgetCatalog()!.GetWidgetDefinition(newWidget.DefinitionId);
-            if (widgetDef is not null)
+            var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+            var widgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(newWidget.DefinitionId));
+            if (widgetDefinition is not null)
             {
-                var size = WidgetHelpers.GetDefaultWidgetSize(widgetDef.GetWidgetCapabilities());
+                var size = WidgetHelpers.GetDefaultWidgetSize(widgetDefinition.GetWidgetCapabilities());
                 await newWidget.SetSizeAsync(size);
                 await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
             }
@@ -316,7 +325,8 @@ public partial class DashboardView : ToolPage
         {
             var widgetDefinitionId = widget.DefinitionId;
             var widgetId = widget.Id;
-            var widgetDefinition = ViewModel.WidgetHostingService.GetWidgetCatalog()!.GetWidgetDefinition(widgetDefinitionId);
+            var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+            var widgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(widgetDefinitionId));
 
             if (widgetDefinition != null)
             {

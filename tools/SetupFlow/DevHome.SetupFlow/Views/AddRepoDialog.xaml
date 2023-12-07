@@ -163,7 +163,7 @@
                 </Grid>
             </Grid>
             <TextBlock Text="{x:Bind FolderPickerViewModel.FolderPickerErrorMessage, Mode=OneWay}" Visibility="{x:Bind FolderPickerViewModel.ShowFolderPickerError, Mode=OneWay}"/>
-            <Grid 
+            <Grid
                     Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" 
                     Margin="0 10 0 10"
                     Grid.Row="2"
@@ -199,8 +199,7 @@
                         IsClosable="False"
                         IsOpen="True"
                         Severity="Error"
-                        Width="400"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Stretch"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveDefaultDriveCheckBoxError"
                         Visibility="{x:Bind EditDevDriveViewModel.DevDriveValidationError, Mode=OneWay}"/>
             </Grid>

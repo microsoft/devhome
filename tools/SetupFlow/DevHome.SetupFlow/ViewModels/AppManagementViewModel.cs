@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +24,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     private readonly IWindowsPackageManager _wpm;
     private readonly PackageProvider _packageProvider;
     private readonly DispatcherQueue _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
+    private readonly IScreenReaderService _screenReaderService;
 
     /// <summary>
     /// Current view to display in the main content control
@@ -52,6 +54,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         _searchViewModel = host.GetService<SearchViewModel>();
         _shimmerSearchViewModel = host.GetService<ShimmerSearchViewModel>();
         _packageCatalogListViewModel = host.GetService<PackageCatalogListViewModel>();
+        _screenReaderService = host.GetService<IScreenReaderService>();
 
         _packageProvider.PackageSelectionChanged += (_, _) => OnPropertyChanged(nameof(ApplicationsAddedText));
 
