@@ -53,6 +53,7 @@
     <ItemGroup>
         <ProjectReference Include="..\common\DevHome.Common.csproj" />
         <ProjectReference Include="..\CoreWidgetProvider\CoreWidgetProvider.csproj" />
+        <ProjectReference Include="..\DevHome.Environments\DevHome.Environments.csproj" />
         <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
         <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
         <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
