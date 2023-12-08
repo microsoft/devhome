@@ -49,15 +49,16 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     private readonly IPackageDeploymentService _packageDeploymentService;
     private readonly Dictionary<string, WPMPackageCatalog> _customCatalogs = new ();
     private readonly SemaphoreSlim _initLock = new (1, 1);
-    private readonly SemaphoreSlim _catalogLock = new (1, 1);
 
-    private bool _disposedValue;
-    private WPMPackageCatalog _searchCatalog;
-    private WPMPackageCatalog _wingetCatalog;
-    private WPMPackageCatalog _msStoreCatalog;
     private string _wingetCatalogId;
     private string _msStoreCatalogId;
-    private long _session;
+
+    private volatile WPMPackageCatalog _searchCatalog;
+    private volatile WPMPackageCatalog _wingetCatalog;
+    private volatile WPMPackageCatalog _msStoreCatalog;
+    private volatile uint _session;
+
+    private bool _disposedValue;
 
     public WindowsPackageManager(
         WindowsPackageManagerFactory wingetFactory,
@@ -69,34 +70,20 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         _packageDeploymentService = packageDeploymentService;
     }
 
-    public async Task InitializeAsync() => await InitializeAsync(_session);
-
-    public async Task InitializeAsync(long requestSession)
+    public async Task InitializeAsync()
     {
         // Run action in a background thread to avoid blocking the UI thread
         // Async methods are blocking in WinGet: https://github.com/microsoft/winget-cli/issues/3205
         await Task.Run(async () =>
         {
+            await _initLock.WaitAsync();
+
             try
             {
-                await _initLock.WaitAsync();
-
-                // If the initialization was requested from an older session, then skip it
-                if (requestSession < _session)
-                {
-                    return;
-                }
-
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Begin initializing WPM");
-                await CreateAndConnectCatalogsAsync();
-
                 // Extract catalog ids for predefined catalogs
                 _wingetCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
                 _msStoreCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
-
-                // New session
-                _session = DateTime.Now.Ticks;
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing WPM completed");
+                await InitializeInternalAsync(_session);
             }
             finally
             {
@@ -105,7 +92,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         });
     }
 
-    public async Task ReconnectCatalogsAsync() => await InitializeAsync(_session);
+    public async Task ReconnectCatalogsAsync() => await InitializeAsync();
 
     public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package, Guid activityId)
     {
@@ -153,6 +140,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     {
         return await DoWithRecovery(async () =>
         {
+            // 1. Group packages by their catalogs
             Dictionary<WPMPackageCatalog, HashSet<string>> packageIdsByCatalog = new ();
             foreach (var packageUri in packageUriSet)
             {
@@ -171,10 +159,11 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
                 }
                 else
                 {
-                    Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package id from uri '{packageUri}'");
+                    Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package details from uri '{packageUri}'");
                 }
             }
 
+            // 2. Get packages from each catalog
             var result = new List<IWinGetPackage>();
             foreach (var catalog in packageIdsByCatalog.Keys)
             {
@@ -190,21 +179,13 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     {
         return await DoWithRecovery(async () =>
         {
-            try
-            {
-                // Use default filter criteria for searching
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Searching for '{query}'. Result limit: {limit}");
-                var options = _wingetFactory.CreateFindPackagesOptions();
-                var filter = _wingetFactory.CreatePackageMatchFilter(PackageMatchField.CatalogDefault, PackageFieldMatchOption.ContainsCaseInsensitive, query);
-                options.Selectors.Add(filter);
-                options.ResultLimit = limit;
-                return await FindPackagesAsync(_searchCatalog, options);
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Error searching for packages.", e);
-                throw;
-            }
+            // Use default filter criteria for searching
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Searching for '{query}'. Result limit: {limit}");
+            var options = _wingetFactory.CreateFindPackagesOptions();
+            var filter = _wingetFactory.CreatePackageMatchFilter(PackageMatchField.CatalogDefault, PackageFieldMatchOption.ContainsCaseInsensitive, query);
+            options.Selectors.Add(filter);
+            options.ResultLimit = limit;
+            return await FindPackagesAsync(_searchCatalog, options);
         });
     }
 
@@ -292,21 +273,6 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
 
     public bool IsWinGetPackage(IWinGetPackage package) => package.CatalogId == _wingetCatalogId;
 
-    private async Task<WPMPackageCatalog> GetPackageCatalogAsync(IWinGetPackage package)
-    {
-        if (package.CatalogId == _wingetCatalogId)
-        {
-            return _wingetCatalog;
-        }
-
-        if (package.CatalogId == _msStoreCatalogId)
-        {
-            return _msStoreCatalog;
-        }
-
-        return await GetCustomPackageCatalogAsync(package.CatalogName);
-    }
-
     private async Task<IList<IWinGetPackage>> GetPackagesAsync(WPMPackageCatalog catalog, ISet<string> packageIdSet)
     {
         try
@@ -383,53 +349,6 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         return packageCatalog.Info.Id;
     }
 
-    /// <summary>
-    /// TryGet the package id and catalog from a package uri
-    /// </summary>
-    /// <param name="packageUri">Input package uri</param>
-    /// <returns>True if the package uri is valid and a package id was identified, false otherwise.</returns>
-    private async Task<(string, WPMPackageCatalog)?> GetPackageIdAndCatalogAsync(Uri packageUri)
-    {
-        if (packageUri.Scheme == Scheme && packageUri.Segments.Length == 2)
-        {
-            var packageId = packageUri.Segments[1];
-            if (packageUri.Host == WingetCatalogURIName)
-            {
-                return (packageId, _wingetCatalog);
-            }
-
-            if (packageUri.Host == MsStoreCatalogURIName)
-            {
-                return (packageId, _msStoreCatalog);
-            }
-
-            return (packageId, await GetCustomPackageCatalogAsync(packageUri.Host));
-        }
-
-        return null;
-    }
-
-    private async Task<WPMPackageCatalog> CreateAndConnectSearchCatalogAsync()
-    {
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var catalogs = packageManager.GetPackageCatalogs();
-        return await CreateAndConnectCatalogAsync(catalogs);
-    }
-
-    private async Task<WPMPackageCatalog> CreateAndConnectWinGetCatalogAsync()
-    {
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
-        return await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog });
-    }
-
-    private async Task<WPMPackageCatalog> CreateAndConnectMsStoreCatalogAsync()
-    {
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.MicrosoftStore);
-        return await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog });
-    }
-
     private async Task<WPMPackageCatalog> CreateAndConnectCatalogAsync(IReadOnlyList<PackageCatalogReference> catalogReferences)
     {
         // Search in all catalogs including the local catalog which allows detecting if a package is installed
@@ -478,6 +397,137 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         return result;
     }
 
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _initLock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    private async Task<T> DoWithRecovery<T>(Func<Task<T>> actionFunc)
+    {
+        const int maxAttempts = 3;
+        const int delayMs = 1_000;
+
+        // Run action in a background thread to avoid blocking the UI thread
+        // Async methods are blocking in WinGet: https://github.com/microsoft/winget-cli/issues/3205
+        return await Task.Run(async () =>
+        {
+            var attempt = 0;
+            while (++attempt <= maxAttempts)
+            {
+                try
+                {
+                    return await actionFunc();
+                }
+                catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
+                {
+                    if (attempt < maxAttempts)
+                    {
+                        // Retry with exponential backoff
+                        var backoffMs = delayMs * (int)Math.Pow(2, attempt);
+                        Log.Logger?.ReportError(
+                            Log.Component.AppManagement,
+                            $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}. Attempting to recover in: {backoffMs} ms");
+                        await Task.Delay(TimeSpan.FromMilliseconds(backoffMs));
+
+                        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to recover windows package manager at attempt number: {attempt}");
+
+                        // Reinitialize the package manager
+                        _initLock.Wait();
+                        try
+                        {
+                            await InitializeInternalAsync(_session);
+                        }
+                        catch
+                        {
+                            // No-op
+                        }
+                        finally
+                        {
+                            _initLock.Release();
+                        }
+                    }
+                }
+            }
+
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Unable to recover windows package manager after {maxAttempts} attempts");
+            throw new WindowsPackageManagerRecoveryException();
+        });
+    }
+
+    /// <summary>
+    /// Create and connect to the search catalog consisting of all the package catalogs.
+    /// </summary>
+    /// <returns>Search catalog or null if an error occurred</returns>
+    private async Task<WPMPackageCatalog> CreateAndConnectSearchCatalogAsync()
+    {
+        try
+        {
+            var packageManager = _wingetFactory.CreatePackageManager();
+            var catalogs = packageManager.GetPackageCatalogs();
+            return await CreateAndConnectCatalogAsync(catalogs);
+        }
+        catch
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create and/or connect to search catalog.");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Create and connect to the winget catalog
+    /// </summary>
+    /// <returns>Winget catalog or null if an error occurred</returns>
+    private async Task<WPMPackageCatalog> CreateAndConnectWinGetCatalogAsync()
+    {
+        try
+        {
+            var packageManager = _wingetFactory.CreatePackageManager();
+            var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
+            return await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog });
+        }
+        catch
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create or connect to 'winget' catalog source.");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Create and connect to the MS store catalog
+    /// </summary>
+    /// <returns>MS store catalog or null if an error occurred</returns>
+    private async Task<WPMPackageCatalog> CreateAndConnectMsStoreCatalogAsync()
+    {
+        try
+        {
+            var packageManager = _wingetFactory.CreatePackageManager();
+            var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.MicrosoftStore);
+            return await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog });
+        }
+        catch
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create or connect to 'msstore' catalog source.");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Create and connect to all catalogs
+    /// </summary>
     private async Task CreateAndConnectCatalogsAsync()
     {
         // Create and connect to predefined catalogs concurrently
@@ -490,21 +540,41 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         _msStoreCatalog = msStoreCatalog.Result;
 
         // Clear custom catalogs
-        await _catalogLock.WaitAsync();
-        try
-        {
-            _customCatalogs.Clear();
-        }
-        finally
-        {
-            _catalogLock.Release();
-        }
+        _customCatalogs.Clear();
     }
 
+    /// <summary>
+    /// Get the corresponding catalog for the provided package
+    /// </summary>
+    /// <param name="package">Target package</param>
+    /// <returns>Catalog for the provided package</returns>
+    private async Task<WPMPackageCatalog> GetPackageCatalogAsync(IWinGetPackage package)
+    {
+        // 'winget' catalog
+        if (package.CatalogId == _wingetCatalogId)
+        {
+            return _wingetCatalog;
+        }
+
+        // 'msstore' catalog
+        if (package.CatalogId == _msStoreCatalogId)
+        {
+            return _msStoreCatalog;
+        }
+
+        // custom catalog
+        return await GetCustomPackageCatalogAsync(package.CatalogName);
+    }
+
+    /// <summary>
+    /// Get a custom (non-predefined) catalog by name
+    /// </summary>
+    /// <param name="catalogName">Catalog name</param>
+    /// <returns>Target catalog</returns>
     private async Task<WPMPackageCatalog> GetCustomPackageCatalogAsync(string catalogName)
     {
         // Get custom catalog from cache or connect to it then cache it
-        await _catalogLock.WaitAsync();
+        await _initLock.WaitAsync();
         try
         {
             if (_customCatalogs.TryGetValue(catalogName, out var catalog))
@@ -525,77 +595,60 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         }
         finally
         {
-            _catalogLock.Release();
+            _initLock.Release();
         }
     }
 
-    protected virtual void Dispose(bool disposing)
+    /// <summary>
+    /// Initialize the package manager
+    /// </summary>
+    /// <param name="requestSession">Request session id</param>
+    /// <remarks>
+    /// If the provided session id is older than the current session, then the initialization is skipped.
+    /// </remarks>
+    private async Task InitializeInternalAsync(long requestSession)
     {
-        if (!_disposedValue)
+        // If the initialization was requested from an older session, then skip it
+        if (requestSession < _session)
         {
-            if (disposing)
-            {
-                _initLock.Dispose();
-                _catalogLock.Dispose();
-            }
-
-            _disposedValue = true;
+            return;
         }
+
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Begin initializing WPM");
+        await CreateAndConnectCatalogsAsync();
+
+        // New session
+        _session++;
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing WPM completed");
     }
 
-    public void Dispose()
+    /// <summary>
+    /// Get the package id and catalog from a package uri
+    /// </summary>
+    /// <param name="packageUri">Input package uri</param>
+    /// <returns>Package id and catalog, or null if the URI protocol is inaccurate</returns>
+    private async Task<(string, WPMPackageCatalog)?> GetPackageIdAndCatalogAsync(Uri packageUri)
     {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    private async Task<T> DoWithRecovery<T>(Func<Task<T>> actionFunc)
-    {
-        const int maxRetries = 3;
-        const int delayMs = 1_000;
-
-        // Run action in a background thread to avoid blocking the UI thread
-        // Async methods are blocking in WinGet: https://github.com/microsoft/winget-cli/issues/3205
-        return await Task.Run(async () =>
+        if (packageUri.Scheme == Scheme && packageUri.Segments.Length == 2)
         {
-            var retry = 0;
-            var recover = false;
-            while (++retry <= maxRetries)
-            {
-                try
-                {
-                    if (recover)
-                    {
-                        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to recover windows package manager before retry number: {retry}");
-                        try
-                        {
-                            await InitializeAsync(_session);
-                        }
-                        catch
-                        {
-                            // No-op
-                        }
-                    }
+            var packageId = packageUri.Segments[1];
 
-                    return await actionFunc();
-                }
-                catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
-                {
-                    recover = true;
-                    if (retry < maxRetries)
-                    {
-                        // Retry with exponential backoff
-                        var backoffMs = delayMs * (int)Math.Pow(2, retry);
-                        Log.Logger?.ReportError(
-                            Log.Component.AppManagement,
-                            $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}. Attempting to recover in: {backoffMs} ms");
-                        await Task.Delay(TimeSpan.FromMilliseconds(backoffMs));
-                    }
-                }
+            // 'winget' catalog
+            if (packageUri.Host == WingetCatalogURIName)
+            {
+                return (packageId, _wingetCatalog);
             }
 
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Unable to recover windows package manager after {maxRetries} retries");
-            throw new WindowsPackageManagerRecoveryException();
-        });
+            // 'msstore' catalog
+            if (packageUri.Host == MsStoreCatalogURIName)
+            {
+                return (packageId, _msStoreCatalog);
+            }
+
+            // custom catalog
+            return (packageId, await GetCustomPackageCatalogAsync(packageUri.Host));
+        }
+
+        return null;
     }
 }
