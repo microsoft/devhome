@@ -108,6 +108,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <summary>
     /// The currently selected account.
     /// </summary>
+    [ObservableProperty]
     private string _selectedAccount;
 
     /// <summary>
@@ -184,6 +185,9 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private bool _isCancelling;
 
+    [ObservableProperty]
+    private MenuFlyout _accountsToShow;
+
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
     /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"
@@ -239,11 +243,11 @@ public partial class AddRepoViewModel : ObservableObject
     /// <returns>An enumerable collection of items ready to be put into the ListView</returns>
     private IEnumerable<RepoViewListItem> OrderRepos(IEnumerable<IRepository> repos)
     {
-        var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase))
+        var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
-        var userRepos = repos.Where(x => x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase));
+        var userRepos = repos.Where(x => x.OwningAccountName.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase));
         var userPublicRepos = userRepos.Where(x => !x.IsPrivate)
             .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
@@ -310,6 +314,12 @@ public partial class AddRepoViewModel : ObservableObject
         IsCancelling = true;
     }
 
+    [RelayCommand]
+    private void AccountChanged(string accountName)
+    {
+        SelectedAccount = accountName;
+    }
+
     public AddRepoViewModel(
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
@@ -332,6 +342,18 @@ public partial class AddRepoViewModel : ObservableObject
 
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
         FolderPickerViewModel.CloneLocation = defaultClonePath;
+        AccountsToShow = new MenuFlyout();
+        for (var index = 0; index < 4; index++)
+        {
+            var thisMenuItem = new MenuFlyoutItem();
+            thisMenuItem.Text = $"Menu{index}";
+            AccountsToShow.Items.Add(thisMenuItem);
+        }
+
+        AccountsToShow.Items.Add(new MenuFlyoutSeparator());
+        var thatMenuItem = new MenuFlyoutItem();
+        thatMenuItem.Text = $"Add another account";
+        AccountsToShow.Items.Add(thatMenuItem);
     }
 
     /// <summary>
@@ -777,7 +799,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="loginId">The login Id to get the repositories for</param>
     public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
     {
-        _selectedAccount = loginId;
+        SelectedAccount = loginId;
         IsFetchingRepos = true;
         await Task.Run(() =>
         {
