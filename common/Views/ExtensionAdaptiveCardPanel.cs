@@ -5,6 +5,7 @@ using System;
 using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Models;
+using DevHome.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -20,12 +21,7 @@ public class ExtensionAdaptiveCardPanel : StackPanel
 {
     public event EventHandler<FrameworkElement>? UiUpdate;
 
-    // The rendered adaptive card is stored here so that it does not go out of scope.
-    // There should only be one rendered adaptive card at a time for one ExtensionAdaptiveCardPanel.
-    public RenderedAdaptiveCard? RenderedAdaptiveCard
-    {
-        get; set;
-    }
+    private RenderedAdaptiveCard? _renderedAdaptiveCard;
 
     public void Bind(IExtensionAdaptiveCardSession extensionAdaptiveCardSession, AdaptiveCardRenderer? customRenderer)
     {
@@ -43,24 +39,22 @@ public class ExtensionAdaptiveCardPanel : StackPanel
         {
             uiDispatcher.TryEnqueue(() =>
             {
-                var renderedAdaptiveCard = adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
-                renderedAdaptiveCard.Action += async (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
+                _renderedAdaptiveCard = adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
+                _renderedAdaptiveCard.Action += async (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
                 {
+                    GlobalLog.Logger?.ReportInfo($"RenderedAdaptiveCard.Action(): Called for {args.Action.Title}");
                     await extensionAdaptiveCardSession.OnAction(args.Action.ToJson().Stringify(), args.Inputs.AsJson().Stringify());
                 };
 
                 Children.Clear();
-                Children.Add(renderedAdaptiveCard.FrameworkElement);
+                Children.Add(_renderedAdaptiveCard.FrameworkElement);
 
-                if (this.UiUpdate != null)
-                {
-                    this.UiUpdate.Invoke(this, renderedAdaptiveCard.FrameworkElement);
-                }
-
-                RenderedAdaptiveCard = renderedAdaptiveCard;
+                UiUpdate?.Invoke(this, _renderedAdaptiveCard.FrameworkElement);
+                GlobalLog.Logger?.ReportInfo($"ExtensionAdaptiveCard.UiUpdate(): Event handler for UiUpdate finished successfully");
             });
         };
 
         extensionAdaptiveCardSession.Initialize(extensionUI);
+        GlobalLog.Logger?.ReportInfo($"ExtensionAdaptiveCardPanel.Bind(): Binding to AdaptiveCard session finished successfully");
     }
 }
