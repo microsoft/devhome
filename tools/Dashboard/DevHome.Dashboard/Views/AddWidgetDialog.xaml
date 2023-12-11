@@ -85,11 +85,12 @@
                 <Grid Grid.Row="2"
                       x:Name="PinRow">
                     <Button x:Name="PinButton"
+                            x:Uid="PinButton"
                             Style="{ThemeResource AccentButtonStyle}"
                             VerticalAlignment="Bottom" HorizontalAlignment="Center"
                             Visibility="Collapsed"
                             IsEnabled="{x:Bind ViewModel.Configuring, Mode=OneWay, Converter={StaticResource BoolNegation}}"
-                            Height="32" Width="118"
+                            MinHeight="32" MinWidth="118"
                             Click="PinButton_Click"
                             Margin="0,40">
                         <StackPanel Orientation="Horizontal" Spacing="8">

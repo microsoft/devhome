@@ -19,16 +19,12 @@
     </UserControl.Resources>
     <ScrollViewer 
         VerticalScrollBarVisibility="Auto"
-        HorizontalScrollBarVisibility="Disabled"
         Name="Scroller"
-        Margin="10 0 10 20"
-        Canvas.ZIndex="1"
-        MaxWidth="{ThemeResource MaxPageContentWidth}"
-        HorizontalContentAlignment="Center"
         VerticalContentAlignment="Center"
         TabNavigation="Cycle">
         <StackPanel
-            Margin="10 0 10 0">
+            Margin="20 0 20 20"
+            MaxWidth="{ThemeResource MaxPageContentWidth}">
             <Grid
                 Margin="0 0 0 12"
                 HorizontalAlignment="Left">
@@ -77,7 +73,7 @@
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowLaunchSettingsDisksAndVolumesHyperLink">
                 </HyperlinkButton>
             </Grid>
-            <Grid Margin="0 0 0 12">
+            <Grid Margin="0 0 0 12" ColumnSpacing="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
@@ -92,7 +88,6 @@
                     x:Name="DriveLabelTextBox"
                     Grid.Column="0"
                     Grid.Row="0"
-                    Margin="0 0 18 0"
                     HorizontalAlignment="Stretch"
                     Text="{x:Bind ViewModel.DriveLabel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     MaxLength="{x:Bind util:DevDriveUtil.MaxDriveLabelSize}"
@@ -103,7 +98,7 @@
                     x:Name="DriveSizeNumberBox"
                     Grid.Column="1"
                     Grid.Row="0"
-                    Margin="0"
+                    Margin="5 0 0 0"
                     HorizontalAlignment="Stretch"
                     Value="{x:Bind ViewModel.Size, Mode=TwoWay}"
                     Maximum="{x:Bind ViewModel.MaximumAllowedSize, Mode=OneWay}"
@@ -112,12 +107,11 @@
                     NumberFormatter="{x:Bind ViewModel.DevDriveDecimalFormatter, Mode=OneWay}"
                     ValidationMode="InvalidInputOverwritten">
                 </NumberBox>
-                <ComboBox 
+                <ComboBox
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveWindowByteUnitComboBox"
                     x:Name="DriveByteUnitComboBox"
                     Grid.Column="2"
                     Grid.Row="0"
-                    Margin="13 26 0 0"
                     Padding="5"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Bottom"

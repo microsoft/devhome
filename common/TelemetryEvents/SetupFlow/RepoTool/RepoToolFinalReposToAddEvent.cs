@@ -30,7 +30,7 @@ public class FinalRepoResult
 [EventData]
 public class RepoToolFinalReposToAddEvent : EventBase
 {
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public List<FinalRepoResult> FinalAddedRepos { get; }
 

@@ -1,13 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System.Threading.Tasks;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Services;
 
 public interface IWidgetHostingService
 {
-    public WidgetHost GetWidgetHost();
+    public Task<WidgetHost> GetWidgetHostAsync();
 
-    public WidgetCatalog GetWidgetCatalog();
+    public Task<WidgetCatalog> GetWidgetCatalogAsync();
 }
