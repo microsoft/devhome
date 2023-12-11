@@ -42,7 +42,7 @@ public class ExtensionAdaptiveCardPanel : StackPanel
                 _renderedAdaptiveCard = adaptiveCardRenderer.RenderAdaptiveCard(adaptiveCard);
                 _renderedAdaptiveCard.Action += async (RenderedAdaptiveCard? sender, AdaptiveActionEventArgs args) =>
                 {
-                    GlobalLog.Logger?.ReportInfo($"RenderedAdaptiveCard.Action(): Called for {args.Action.Title}");
+                    GlobalLog.Logger?.ReportInfo($"RenderedAdaptiveCard.Action(): Called for {args.Action.Id}");
                     await extensionAdaptiveCardSession.OnAction(args.Action.ToJson().Stringify(), args.Inputs.AsJson().Stringify());
                 };
 
