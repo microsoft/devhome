@@ -20,6 +20,13 @@ public class ExtensionAdaptiveCardPanel : StackPanel
 {
     public event EventHandler<FrameworkElement>? UiUpdate;
 
+    // The rendered adaptive card is stored here so that it does not go out of scope.
+    // There should only be one rendered adaptive card at a time for one ExtensionAdaptiveCardPanel.
+    public RenderedAdaptiveCard? RenderedAdaptiveCard
+    {
+        get; set;
+    }
+
     public void Bind(IExtensionAdaptiveCardSession extensionAdaptiveCardSession, AdaptiveCardRenderer? customRenderer)
     {
         var adaptiveCardRenderer = customRenderer ?? new AdaptiveCardRenderer();
@@ -49,6 +56,8 @@ public class ExtensionAdaptiveCardPanel : StackPanel
                 {
                     this.UiUpdate.Invoke(this, renderedAdaptiveCard.FrameworkElement);
                 }
+
+                RenderedAdaptiveCard = renderedAdaptiveCard;
             });
         };
 
