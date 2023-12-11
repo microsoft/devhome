@@ -47,8 +47,12 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     [contract(DevHomeContract, 2)]
-        interface IRepositorySearchProperty
+    runtimeclass RepositorySearchProperty 
     {
+        RepositorySearchProperty(String name, String value);
+
+        RepositorySearchProperty(String name, String value, UInt64 rank);
+
         String Name
         {
             get;
@@ -90,11 +94,14 @@ namespace Microsoft.Windows.DevHome.SDK
 
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination);
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination, IDeveloperId developerId);
+    };
 
-        [contract(DevHomeContract, 2)]
-        IIterable<IRepositorySearchProperty> GetSearchProperties();
-        IIterable<String> GetChildValues(IRepositorySearchProperty parent, Boolean recursive);
-        Windows.Foundation.IAsyncOperation<RepositoriesResult> GetRepositoriesAsync(IDeveloperId developerId, IIterable<IRepositorySearchProperty> searchTerms);
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IRepositoryProvider2
+    requires IRepositoryProvider
+    {
+        IIterable<RepositorySearchProperty> GetSearchProperties();
+        IIterable<String> GetChildValues(RepositorySearchProperty parent);
+        Windows.Foundation.IAsyncOperation<RepositoriesResult> GetRepositoriesAsync(IDeveloperId developerId, IIterable<RepositorySearchProperty> searchTerms);
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
