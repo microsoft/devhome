@@ -33,16 +33,14 @@
             <ItemsRepeater.Layout>
                 <UniformGridLayout
                     Orientation="Horizontal"
-                    MinItemWidth="190"
                     MaximumRowsOrColumns="3"
                     MinRowSpacing="4"
                     MinColumnSpacing="4"
-                    MinItemHeight="140"
                     ItemsStretch="Fill" />
             </ItemsRepeater.Layout>
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                    <views:PackageView Height="140" />
+                    <views:PackageView MinHeight="140" />
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
         </ItemsRepeater>
