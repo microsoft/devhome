@@ -130,7 +130,7 @@ public partial class DashboardView : ToolPage
         else
         {
             var widgetServiceState = ViewModel.WidgetHostingService.GetWidgetServiceState();
-            if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasNoStoreWidgetService)
+            if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion)
             {
                 // Show error message that restarting Dev Home may help
                 RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;

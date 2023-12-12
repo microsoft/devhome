@@ -30,8 +30,8 @@ public class WidgetHostingService : IWidgetHostingService
     {
         HasWebExperienceGoodVersion,
         HasWebExperienceNoOrBadVersion,
-        HasStoreWidgetService,
-        HasNoStoreWidgetService,
+        HasStoreWidgetServiceGoodVersion,
+        HasStoreWidgetServiceNoOrBadVersion,
         Unknown,
     }
 
@@ -47,27 +47,41 @@ public class WidgetHostingService : IWidgetHostingService
         {
             if (HasValidWebExperiencePack())
             {
+                Log.Logger()?.ReportInfo("WidgetHostingService", "On Windows 11, HasWebExperienceGoodVersion");
                 _widgetServiceState = WidgetServiceStates.HasWebExperienceGoodVersion;
                 return true;
             }
             else
             {
+                Log.Logger()?.ReportInfo("WidgetHostingService", "On Windows 11, HasWebExperienceNoOrBadVersion");
                 _widgetServiceState = WidgetServiceStates.HasWebExperienceNoOrBadVersion;
                 return false;
             }
         }
         else
         {
-            // If we're on Windows 10, check if we have the store version installed, and if not, install it.
+            // If we're on Windows 10, check if we have the store version installed. Check against what's really
+            // installed instead of the enum, just in case something changed between startup and now.
             if (HasValidWidgetServicePackage())
             {
-                _widgetServiceState = WidgetServiceStates.HasStoreWidgetService;
+                Log.Logger()?.ReportInfo("WidgetHostingService", "On Windows 10, HasStoreWidgetServiceGoodVersion");
+                _widgetServiceState = WidgetServiceStates.HasStoreWidgetServiceGoodVersion;
                 return true;
+            }
+            else if (_widgetServiceState == WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion)
+            {
+                // If it's not there and we already knew that, it means we tried to install during setup and it failed.
+                // Don't try again when we get to the Dashboard, it takes too long.
+                Log.Logger()?.ReportInfo("WidgetHostingService", "On Windows 10, already HasStoreWidgetServiceNoOrBadVersion");
+                return false;
             }
             else
             {
+                // Try to install and report the outcome.
+                Log.Logger()?.ReportInfo("WidgetHostingService", "On Windows 10, TryInstallWidgetServicePackageAsync...");
                 var installedSuccessfully = await TryInstallWidgetServicePackageAsync();
-                _widgetServiceState = installedSuccessfully ? WidgetServiceStates.HasStoreWidgetService : WidgetServiceStates.HasNoStoreWidgetService;
+                _widgetServiceState = installedSuccessfully ? WidgetServiceStates.HasStoreWidgetServiceGoodVersion : WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion;
+                Log.Logger()?.ReportInfo("WidgetHostingService", $"On Windows 10, ...{_widgetServiceState}");
                 return installedSuccessfully;
             }
         }
