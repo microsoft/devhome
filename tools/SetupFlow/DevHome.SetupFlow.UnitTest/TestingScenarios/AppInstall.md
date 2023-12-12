@@ -6,4 +6,4 @@ Please make sure to verify all these scenarios.
 
 1. User can search for applications in search bar
 1. User can install applications
-1. User can not install an application that is already installed 
+1. User cannot install an application that is already installed 
