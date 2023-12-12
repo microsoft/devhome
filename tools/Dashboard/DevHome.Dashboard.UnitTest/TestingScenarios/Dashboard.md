@@ -4,8 +4,8 @@ If your code affects the dashboard or widgets, please manually verify these scen
 ## Scenarios
 Please make sure to verify all these scenarios.
 
-1. Add system widget and persists after restart
-1. Add extension widget and persists after restart
+1. Add system widget and ensure it persists after Dev Home restart
+1. Add extension widget ensure it persists after Dev Home restart
 1. Rearrange widgets
 1. System widgets can be customized and persists after restart
 1. Extension widgets can be customized and persists after restart
