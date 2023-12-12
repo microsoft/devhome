@@ -13,7 +13,6 @@ namespace DevHome.Services;
 
 public class ActivationService : IActivationService
 {
-    private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly ILocalSettingsService _localSettingsService;
@@ -21,12 +20,10 @@ public class ActivationService : IActivationService
     private bool _isInitialActivation = true;
 
     public ActivationService(
-        ActivationHandler<LaunchActivatedEventArgs> defaultHandler,
         IEnumerable<IActivationHandler> activationHandlers,
         IThemeSelectorService themeSelectorService,
         ILocalSettingsService localSettingsService)
     {
-        _defaultHandler = defaultHandler;
         _activationHandlers = activationHandlers;
         _themeSelectorService = themeSelectorService;
         _localSettingsService = localSettingsService;
@@ -41,8 +38,13 @@ public class ActivationService : IActivationService
             // Execute tasks before activation.
             await InitializeAsync();
 
+            // We can skip the initialization page if it's not our first run and we're on Windows 11.
+            // If we're on Windows 10, we need to go to the initialization page to install the WidgetService if we don't have it already.
+            var skipInitialization = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun)
+                && RuntimeHelper.RunningOnWindows11;
+
             // Set the MainWindow Content.
-            App.MainWindow.Content = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun)
+            App.MainWindow.Content = skipInitialization
                 ? Application.Current.GetService<ShellPage>()
                 : Application.Current.GetService<InitializationPage>();
 

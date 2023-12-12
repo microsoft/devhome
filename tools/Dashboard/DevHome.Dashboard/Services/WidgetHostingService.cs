@@ -4,9 +4,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using DevHome.Common.Helpers;
 using DevHome.Common.Services;
-using DevHome.Dashboard.Helpers;
 using Microsoft.Windows.Widgets.Hosts;
+using Windows.ApplicationModel.Store.Preview.InstallControl;
+using Log = DevHome.Dashboard.Helpers.Log;
 
 namespace DevHome.Dashboard.Services;
 
@@ -14,15 +16,64 @@ public class WidgetHostingService : IWidgetHostingService
 {
     private readonly IPackageDeploymentService _packageDeploymentService;
 
+    private static readonly string WidgetServiceStorePackageId = "9N3RK8ZV2ZR8";
+    private const int StoreInstallTimeout = 60_000;
+
     private WidgetHost _widgetHost;
     private WidgetCatalog _widgetCatalog;
+
+    private WidgetServiceStates _widgetServiceState = WidgetServiceStates.Unknown;
+
+    public WidgetServiceStates GetWidgetServiceState() => _widgetServiceState;
+
+    public enum WidgetServiceStates
+    {
+        HasWebExperienceGoodVersion,
+        HasWebExperienceNoOrBadVersion,
+        HasStoreWidgetService,
+        HasNoStoreWidgetService,
+        Unknown,
+    }
 
     public WidgetHostingService(IPackageDeploymentService packageDeploymentService)
     {
         _packageDeploymentService = packageDeploymentService;
     }
 
-    public bool HasValidWebExperiencePack()
+    public async Task<bool> EnsureWidgetServiceAsync()
+    {
+        // If we're on Windows 11, check if we have the right WebExperiencePack version of the WidgetService.
+        if (RuntimeHelper.RunningOnWindows11)
+        {
+            if (HasValidWebExperiencePack())
+            {
+                _widgetServiceState = WidgetServiceStates.HasWebExperienceGoodVersion;
+                return true;
+            }
+            else
+            {
+                _widgetServiceState = WidgetServiceStates.HasWebExperienceNoOrBadVersion;
+                return false;
+            }
+        }
+        else
+        {
+            // If we're on Windows 10, check if we have the store version installed, and if not, install it.
+            if (HasValidWidgetServicePackage())
+            {
+                _widgetServiceState = WidgetServiceStates.HasStoreWidgetService;
+                return true;
+            }
+            else
+            {
+                var installedSuccessfully = await TryInstallWidgetServicePackageAsync();
+                _widgetServiceState = installedSuccessfully ? WidgetServiceStates.HasStoreWidgetService : WidgetServiceStates.HasNoStoreWidgetService;
+                return installedSuccessfully;
+            }
+        }
+    }
+
+    private bool HasValidWebExperiencePack()
     {
         var minSupportedVersion400 = new Version(423, 3800);
         var minSupportedVersion500 = new Version(523, 3300);
@@ -35,6 +86,83 @@ public class WidgetHostingService : IWidgetHostingService
             (minSupportedVersion400, version500),
             (minSupportedVersion500, null));
         return packages.Any();
+    }
+
+    private bool HasValidWidgetServicePackage()
+    {
+        var minSupportedVersion = new Version(1, 0, 0, 0);
+
+        const string packageFamilyName = "Microsoft.WidgetsPlatformRuntime_8wekyb3d8bbwe";
+        var packages = _packageDeploymentService.FindPackagesForCurrentUser(packageFamilyName, (minSupportedVersion, null));
+        return packages.Any();
+    }
+
+    private async Task<bool> TryInstallWidgetServicePackageAsync()
+    {
+        try
+        {
+            var installTask = InstallWidgetServicePackageAsync(WidgetServiceStorePackageId);
+
+            // Wait for a maximum of StoreInstallTimeout milliseconds.
+            var completedTask = await Task.WhenAny(installTask, Task.Delay(StoreInstallTimeout));
+
+            if (completedTask.Exception != null)
+            {
+                throw completedTask.Exception;
+            }
+
+            if (completedTask != installTask)
+            {
+                throw new TimeoutException("Store Install task did not finish in time.");
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError("WidgetService installation Failed", ex);
+        }
+
+        return false;
+    }
+
+    private async Task InstallWidgetServicePackageAsync(string packageId)
+    {
+        await Task.Run(() =>
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            AppInstallItem installItem;
+            try
+            {
+                Log.Logger()?.ReportInfo("WidgetHostingService", "Starting WidgetService install");
+                installItem = new AppInstallManager().StartAppInstallAsync(packageId, null, true, false).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                Log.Logger()?.ReportInfo("WidgetHostingService", "WidgetService install failure");
+                tcs.SetException(ex);
+                return tcs.Task;
+            }
+
+            installItem.Completed += (sender, args) =>
+            {
+                tcs.SetResult(true);
+            };
+
+            installItem.StatusChanged += (sender, args) =>
+            {
+                if (installItem.GetCurrentStatus().InstallState == AppInstallState.Canceled
+                    || installItem.GetCurrentStatus().InstallState == AppInstallState.Error)
+                {
+                    tcs.TrySetException(new System.Management.Automation.JobFailedException(installItem.GetCurrentStatus().ErrorCode.ToString()));
+                }
+                else if (installItem.GetCurrentStatus().InstallState == AppInstallState.Completed)
+                {
+                    tcs.SetResult(true);
+                }
+            };
+            return tcs.Task;
+        });
     }
 
     public async Task<WidgetHost> GetWidgetHostAsync()
