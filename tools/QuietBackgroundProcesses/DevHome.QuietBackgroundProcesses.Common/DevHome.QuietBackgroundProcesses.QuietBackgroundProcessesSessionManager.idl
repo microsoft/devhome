@@ -1,0 +1,17 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+import "inspectable.idl";
+import "DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesSession.idl";
+
+namespace DevHome.QuietBackgroundProcesses
+{
+    [default_interface]
+    runtimeclass QuietBackgroundProcessesSessionManager
+    {
+        QuietBackgroundProcessesSessionManager();
+        static Boolean IsFeatureSupported();
+        static QuietBackgroundProcessesSession GetSession();
+        static QuietBackgroundProcessesSession TryGetSession();
+    }
+}

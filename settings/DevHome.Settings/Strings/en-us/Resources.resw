@@ -542,4 +542,10 @@
     <value>View logs</value>
     <comment>Click on this if you want to see Dev Home's logs on your machine.</comment>
   </data>
+  <data name="QuietBackgroundProcessesExperiment_Description" xml:space="preserve">
+    <value>Silence and track background processes that may hinder device performance</value>
+  </data>
+  <data name="QuietBackgroundProcessesExperiment_Name" xml:space="preserve">
+    <value>Quiet background processes experiment</value>
+  </data>
 </root>

@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
+  
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <MdmergeMergedDir>..\DevHome.QuietBackgroundProcesses.Common\AnyCPU\$(Configuration)\Merged\</MdmergeMergedDir>
+  </PropertyGroup>
+  
+
+  <PropertyGroup>
+    <CsWinRTWindowsMetadata>10.0.22000.0</CsWinRTWindowsMetadata>
+    <CsWinRTIncludes>DevHome.QuietBackgroundProcesses</CsWinRTIncludes>
+    <CsWinRTGeneratedFilesDir>$(OutDir)</CsWinRTGeneratedFilesDir>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratedNugetDir>.\nuget\</GeneratedNugetDir>
+    <NuspecFile>$(GeneratedNugetDir)DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.nuspec</NuspecFile>
+    <OutputPath>$(GeneratedNugetDir)</OutputPath>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <CsWinRTInputs Include="$(MdmergeMergedDir)DevHome.QuietBackgroundProcesses.winmd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.CppWinRT" Version="2.0.240111.5" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="nuget\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.nuspec" />
+  </ItemGroup>
+
+</Project>
