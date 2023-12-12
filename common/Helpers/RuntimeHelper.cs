@@ -19,7 +19,7 @@ public static class RuntimeHelper
         }
     }
 
-    public static bool RunningOnWindows11
+    public static bool IsOnWindows11
     {
         get
         {

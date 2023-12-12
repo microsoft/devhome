@@ -17,7 +17,7 @@ public class WidgetHostingService : IWidgetHostingService
     private readonly IPackageDeploymentService _packageDeploymentService;
 
     private static readonly string WidgetServiceStorePackageId = "9N3RK8ZV2ZR8";
-    private const int StoreInstallTimeout = 60_000;
+    private static readonly TimeSpan StoreInstallTimeout = new (0, 0, 60);
 
     private WidgetHost _widgetHost;
     private WidgetCatalog _widgetCatalog;
@@ -43,7 +43,7 @@ public class WidgetHostingService : IWidgetHostingService
     public async Task<bool> EnsureWidgetServiceAsync()
     {
         // If we're on Windows 11, check if we have the right WebExperiencePack version of the WidgetService.
-        if (RuntimeHelper.RunningOnWindows11)
+        if (RuntimeHelper.IsOnWindows11)
         {
             if (HasValidWebExperiencePack())
             {
@@ -117,7 +117,7 @@ public class WidgetHostingService : IWidgetHostingService
         {
             var installTask = InstallWidgetServicePackageAsync(WidgetServiceStorePackageId);
 
-            // Wait for a maximum of StoreInstallTimeout milliseconds.
+            // Wait for a maximum of StoreInstallTimeout (60 seconds).
             var completedTask = await Task.WhenAny(installTask, Task.Delay(StoreInstallTimeout));
 
             if (completedTask.Exception != null)

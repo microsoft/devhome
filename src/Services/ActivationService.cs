@@ -41,7 +41,7 @@ public class ActivationService : IActivationService
             // We can skip the initialization page if it's not our first run and we're on Windows 11.
             // If we're on Windows 10, we need to go to the initialization page to install the WidgetService if we don't have it already.
             var skipInitialization = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun)
-                && RuntimeHelper.RunningOnWindows11;
+                && RuntimeHelper.IsOnWindows11;
 
             // Set the MainWindow Content.
             App.MainWindow.Content = skipInitialization
