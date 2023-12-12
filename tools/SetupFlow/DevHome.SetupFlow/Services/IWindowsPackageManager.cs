@@ -29,12 +29,6 @@ public interface IWindowsPackageManager
     public Task<bool> IsAppInstallerUpdateAvailableAsync();
 
     /// <summary>
-    /// Start AppInstaller update
-    /// </summary>
-    /// <returns>True if the update started, false otherwise.</returns>
-    public Task<bool> StartAppInstallerUpdateAsync();
-
-    /// <summary>
     /// Check whether the WindowsPackageManagerServer is available to create
     /// out-of-proc COM objects
     /// </summary>
