@@ -25,7 +25,7 @@
             "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
             "icon": "ea86"
           }
-          /*,
+          ,
           {
             "identity": "DevHome.TestExperiment",
             "assembly": "DevHome.Experiments",
@@ -33,13 +33,20 @@
             "viewModelFullName": "DevHome.Experiments.ViewModels.TestExperimentViewModel",
             "icon": "f0f7",
             "experimentId": "ExperimentalFeature_1"
+          },
+          {
+            "identity": "DevHome.QuietBackgroundProcessesTestExperiment",
+            "assembly": "DevHome.Experiments",
+            "viewFullName": "DevHome.Experiments.Views.QuietBackgroundProcessesPage",
+            "viewModelFullName": "DevHome.Experiments.ViewModels.QuietBackgroundProcessesViewModel",
+            "icon": "f5b0",
+            "experimentId": "QuietBackgroundProcessesExperiment"
           }
-          */
         ]
       }
     ]
   },
-  "experiments": [ /*
-  "ExperimentalFeature_1"
-  */ ]
+  "experiments": [
+  "QuietBackgroundProcessesExperiment"
+  ]
 }

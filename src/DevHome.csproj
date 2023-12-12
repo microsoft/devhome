@@ -43,24 +43,27 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Internal.Windows.DevHome.Win32" Version="1.0.20240126-x1507" />
         <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
         <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
         <PackageReference Include="WinUIEx" Version="1.8.0" />
         <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
             <ExcludeAssets>contentFiles</ExcludeAssets>
         </PackageReference>
     </ItemGroup>
-
     <ItemGroup>
         <ProjectReference Include="..\common\DevHome.Common.csproj" />
         <ProjectReference Include="..\CoreWidgetProvider\CoreWidgetProvider.csproj" />
         <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
         <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
         <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
+        <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
+        <ProjectReference Include="..\tools\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
         <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
         <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
     </ItemGroup>
@@ -86,6 +89,12 @@
     <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
         <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
     </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="$(DevHomeInternal_Win32RuntimePath)Microsoft.Internal.Windows.DevHome.Win32.dll">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
     <PropertyGroup>
         <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
@@ -120,6 +129,9 @@
             </AdditionalPackageFile>
             <AdditionalPackageFile Include="$(TargetDir)\Modules\**\*.*">
               <PackagePath>$(ModulePath)Modules</PackagePath>
+            </AdditionalPackageFile>
+            <AdditionalPackageFile Include="$(TargetDir)\DevHome.QuietBackgroundProcesses.ElevatedServer.exe">
+              <PackagePath>.\</PackagePath>
             </AdditionalPackageFile>
         </ItemGroup>
 

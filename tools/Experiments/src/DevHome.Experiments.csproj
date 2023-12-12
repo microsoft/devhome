@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(SolutionDir)ToolingVersions.props"/>
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup>
     <RootNamespace>DevHome.Experiments</RootNamespace>
     <Platforms>x86;x64;arm64</Platforms>
@@ -7,14 +7,23 @@
     <UseWinUI>true</UseWinUI>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Views\QuietBackgroundProcessesPage.xaml" />
     <None Remove="Views\TestExperimentPage.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\common\DevHome.Common.csproj" />
+    <ProjectReference Include="..\..\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection\DevHome.QuietBackgroundProcesses.ElevatedServer.Projection.csproj" />
+    <ProjectReference Include="..\..\QuietBackgroundProcesses\DevHome.QuietBackgroundProcesses.ElevatedServer\DevHome.QuietBackgroundProcesses.ElevatedServer.vcxproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Views\QuietBackgroundProcessesPage.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
     <Page Update="Views\TestExperimentPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
