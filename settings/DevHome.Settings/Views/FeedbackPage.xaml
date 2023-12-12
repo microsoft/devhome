@@ -56,6 +56,7 @@
                                     <Expander.Content>
                                         <StackPanel>
                                             <TextBlock x:Name="ReportBugIncludeExtensionsList" />
+                                            <TextBlock x:Name="WidgetServiceInfo"/>
                                         </StackPanel>
                                     </Expander.Content>
                                 </Expander>
