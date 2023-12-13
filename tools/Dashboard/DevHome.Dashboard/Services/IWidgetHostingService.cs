@@ -8,6 +8,8 @@ namespace DevHome.Dashboard.Services;
 
 public interface IWidgetHostingService
 {
+    public bool HasValidWebExperiencePack();
+
     public Task<WidgetHost> GetWidgetHostAsync();
 
     public Task<WidgetCatalog> GetWidgetCatalogAsync();
