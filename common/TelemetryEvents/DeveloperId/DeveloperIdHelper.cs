@@ -3,6 +3,7 @@
 
 using System;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using System.Text;
 using Microsoft.Windows.DevHome.SDK;
 
@@ -22,7 +23,24 @@ public static class DeveloperIdHelper
         }
 
         var hashedLoginIdString = BitConverter.ToString(hashedLoginId).Replace("-", string.Empty);
+        var hashedLoginWindowsIdString = "UNKNOWN";
 
-        return $"{hashedLoginIdString}_{providerName}";
+        // Include Hashed WindowsId if availableto devId
+        var loginSessionId = WindowsIdentity.GetCurrent().Name;
+
+        if (loginSessionId != null)
+        {
+            loginIdBytes = Encoding.ASCII.GetBytes(loginSessionId);
+
+            hashedLoginId = hasher.ComputeHash(loginIdBytes);
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(hashedLoginId);
+            }
+
+            hashedLoginWindowsIdString = BitConverter.ToString(hashedLoginId).Replace("-", string.Empty);
+        }
+
+        return $"{hashedLoginIdString}_{hashedLoginWindowsIdString}_{providerName}";
     }
 }
