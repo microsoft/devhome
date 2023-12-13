@@ -24,7 +24,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.Windows.DevHome.SDK;
+using Windows.ApplicationModel.VoiceCommands;
 using Windows.Foundation;
 using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
@@ -188,6 +190,15 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private MenuFlyout _accountsToShow;
 
+    private async void MenuItemClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem selectedItem)
+        {
+            SelectedAccount = selectedItem.Text;
+            _repositoriesForAccount = await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
+        }
+    }
+
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
     /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"
@@ -285,6 +296,8 @@ public partial class AddRepoViewModel : ObservableObject
 
     private TypedEventHandler<IDeveloperIdProvider, IDeveloperId> _developerIdChangedEvent;
 
+    private string _selectedRepoProvider = string.Empty;
+
     /// <summary>
     /// Logs the user into the provider if they aren't already.
     /// Changes the page to show all repositories for the user.
@@ -299,6 +312,7 @@ public partial class AddRepoViewModel : ObservableObject
         {
             StyleForPrimaryButton = Application.Current.Resources["SystemAccentColor"] as Style;
             ShouldEnablePrimaryButton = true;
+            _selectedRepoProvider ??= repositoryProviderName;
         }
         else
         {
@@ -312,12 +326,6 @@ public partial class AddRepoViewModel : ObservableObject
     {
         IsLoggingIn = false;
         IsCancelling = true;
-    }
-
-    [RelayCommand]
-    private void AccountChanged(string accountName)
-    {
-        SelectedAccount = accountName;
     }
 
     public AddRepoViewModel(
@@ -343,17 +351,6 @@ public partial class AddRepoViewModel : ObservableObject
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
         FolderPickerViewModel.CloneLocation = defaultClonePath;
         AccountsToShow = new MenuFlyout();
-        for (var index = 0; index < 4; index++)
-        {
-            var thisMenuItem = new MenuFlyoutItem();
-            thisMenuItem.Text = $"Menu{index}";
-            AccountsToShow.Items.Add(thisMenuItem);
-        }
-
-        AccountsToShow.Items.Add(new MenuFlyoutSeparator());
-        var thatMenuItem = new MenuFlyoutItem();
-        thatMenuItem.Text = $"Add another account";
-        AccountsToShow.Items.Add(thatMenuItem);
     }
 
     /// <summary>
@@ -436,8 +433,6 @@ public partial class AddRepoViewModel : ObservableObject
         CurrentPage = PageKind.Repositories;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
         ShouldShowLoginUi = false;
-        Accounts.Add("Hello");
-        Accounts.Add("ThisIsMe@Microsoft.com");
 
         // The only way to get the repo page is through the account page.
         // No need to change toggle buttons.
@@ -522,6 +517,22 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId));
+        var newMenu = new MenuFlyout();
+        foreach (var account in Accounts)
+        {
+            var thisMenuItem = new MenuFlyoutItem();
+            thisMenuItem.Text = account;
+            thisMenuItem.Click += MenuItemClick;
+            newMenu.Items.Add(thisMenuItem);
+        }
+
+        newMenu.Items.Add(new MenuFlyoutSeparator());
+        var thatMenuItem = new MenuFlyoutItem();
+        thatMenuItem.Text = $"Add another account";
+        newMenu.Items.Add(thatMenuItem);
+
+        AccountsToShow = newMenu;
+        SelectedAccount = Accounts.First();
     }
 
     /// <summary>
@@ -797,19 +808,22 @@ public partial class AddRepoViewModel : ObservableObject
     /// </remarks>
     /// <param name="repositoryProvider">The provider.  This should match the display name of the extension</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
-    public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
+    public async Task<IEnumerable<IRepository>> GetRepositoriesAsync(string repositoryProvider, string loginId)
     {
         SelectedAccount = loginId;
         IsFetchingRepos = true;
+        IEnumerable<IRepository> repoList = new List<IRepository>();
         await Task.Run(() =>
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllLoggedInAccounts"), _activityId);
             var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
 
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllRepos"), _activityId);
-            _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
+            repoList = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
         });
         IsFetchingRepos = false;
+
+        return repoList;
     }
 
     /// <summary>

@@ -204,6 +204,8 @@ internal partial class AddRepoDialog : ContentDialog
     /// </remarks>
     private async void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        await Task.Delay(10);
+
         // This gets fired when events are removed from the account combo box.
         // When the provider combo box is changed all accounts are removed from the account combo box
         // and new accounts are added. This method fires twice.
@@ -211,10 +213,10 @@ internal partial class AddRepoDialog : ContentDialog
         // GetRepositories sets the repositories list view.
         if (e.AddedItems.Count > 0)
         {
-            var loginId = (string)AccountsComboBox.SelectedValue;
+            /*var loginId = (string)AccountsComboBox.SelectedValue;
             var providerName = (string)RepositoryProviderComboBox.SelectedValue;
             await AddRepoViewModel.GetRepositoriesAsync(providerName, loginId);
-            SelectRepositories(AddRepoViewModel.SetRepositories(providerName, loginId));
+            SelectRepositories(AddRepoViewModel.SetRepositories(providerName, loginId));*/
         }
     }
 
@@ -258,11 +260,13 @@ internal partial class AddRepoDialog : ContentDialog
     /// </summary>
     private void RepositoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        /*
         var loginId = (string)AccountsComboBox.SelectedValue;
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
 
         AddRepoViewModel.AddOrRemoveRepository(providerName, loginId, e.AddedItems, e.RemovedItems);
         ToggleCloneButton();
+        */
     }
 
     /// <summary>
@@ -356,7 +360,7 @@ internal partial class AddRepoDialog : ContentDialog
             AddRepoViewModel.ChangeToRepoPage();
             AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
             EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-            AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+            /*AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();*/
             AddRepoViewModel.ShouldEnablePrimaryButton = false;
         }
     }
