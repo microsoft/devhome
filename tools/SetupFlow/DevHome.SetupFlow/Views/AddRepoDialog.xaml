@@ -95,13 +95,12 @@
                     </Grid.ColumnDefinitions>
                     <SplitButton x:Name="AccountSplitButton" Grid.Row="0" Height="40" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}">
                     </SplitButton>
-                    <!--<ComboBox x:Name="AccountsComboBox" Grid.Row="0" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AccountComboBox_Description" Grid.Column="0" SelectionChanged="AccountsComboBox_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Accounts, Mode=OneWay}"/>-->
                     <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
                 </Grid>
                 <Grid Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay}" Height="300" Width="300">
                     <ProgressRing/>
                 </Grid>
-                <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
+                <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
                     <ListView.Header>
                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoriesList" Margin="0, 0, 0, 8"/>
                     </ListView.Header>
@@ -126,6 +125,11 @@
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
+                    <i:Interaction.Behaviors>
+                        <ic:EventTriggerBehavior EventName="SelectionChanged">
+                            <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.RepositoryIsSelectedCommand}" CommandParameter="{x:Bind RepositoriesListView.SelectedItems, Mode=OneWay}"/>
+                        </ic:EventTriggerBehavior>
+                    </i:Interaction.Behaviors>
                 </ListView>
             </StackPanel>
             <TextBlock x:Name="ErrorTextBlock" Style="{ThemeResource BodyStrongTextBlockStyle}" Visibility="{x:Bind AddRepoViewModel.ShowErrorTextBox, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Repo_ToolClonePathError"/>

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration.Provider;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -19,14 +20,13 @@ using DevHome.Logging;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.Views;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.Windows.DevHome.SDK;
-using Windows.ApplicationModel.VoiceCommands;
 using Windows.Foundation;
 using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
@@ -47,6 +47,17 @@ public partial class AddRepoViewModel : ObservableObject
     private readonly ISetupFlowStringResource _stringResource;
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
+
+    /// <summary>
+    /// A requirment of the dialog is to select already selcted repos.
+    /// The logic to do so lives in the dialog because a method on the ListView need to be called to
+    /// 'select' the item.  Keep a reference to the dialog here so SelectRepositories can be called.
+    /// </summary>
+    /// <remarks>
+    /// This can be removed once all logic is moved into here.
+    /// Also for ToggleCloneButton()
+    /// </remarks>
+    private readonly AddRepoDialog _addRepoDialog;
 
     /// <summary>
     /// Gets the folder picker view model.
@@ -70,12 +81,41 @@ public partial class AddRepoViewModel : ObservableObject
         get; set;
     }
 
+    private List<CloningInformation> _everythingToClone;
+
     /// <summary>
-    /// Gets or sets the list that keeps all repositories the user wants to clone.
+    /// Gets the list that keeps all repositories the user wants to clone.
     /// </summary>
     public List<CloningInformation> EverythingToClone
     {
-        get; set;
+        get
+        {
+            // URL page does not interact with _everythingToClone so don't clear it.
+            if (CurrentPage != PageKind.AddViaUrl)
+            {
+                _everythingToClone.Clear();
+            }
+
+            foreach (var selectedRepo in _selectedRepos)
+            {
+                var localRepo = selectedRepo as RepoViewListItem;
+                var repoToAddOrRemove = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(localRepo.RepoName, StringComparison.OrdinalIgnoreCase));
+                var developerId = _providers.GetAllLoggedInAccounts(_selectedRepoProvider).FirstOrDefault(x => x.LoginId == SelectedAccount);
+                var cloningInformation = new CloningInformation(repoToAddOrRemove);
+                cloningInformation.RepositoryProvider = _providers.GetSDKProvider(_selectedRepoProvider);
+                cloningInformation.ProviderName = _providers.DisplayName(_selectedRepoProvider);
+                cloningInformation.OwningAccount = developerId;
+                cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{_selectedRepoProvider}/{localRepo.RepoName}");
+                cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{_selectedRepoProvider}/{localRepo.RepoName}");
+
+                _everythingToClone.Add(cloningInformation);
+            }
+
+            SetCloneLocation(FolderPickerViewModel.CloneLocation);
+            return _everythingToClone;
+        }
+
+        private set => _everythingToClone = value;
     }
 
     /// <summary>
@@ -196,6 +236,10 @@ public partial class AddRepoViewModel : ObservableObject
         {
             SelectedAccount = selectedItem.Text;
             _repositoriesForAccount = await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
+
+            var repoDisplayName = _providers.DisplayName(_selectedRepoProvider);
+            var repoListItems = SetRepositories(repoDisplayName, SelectedAccount, _repositoriesForAccount);
+            _addRepoDialog.SelectRepositories(repoListItems);
         }
     }
 
@@ -312,7 +356,7 @@ public partial class AddRepoViewModel : ObservableObject
         {
             StyleForPrimaryButton = Application.Current.Resources["SystemAccentColor"] as Style;
             ShouldEnablePrimaryButton = true;
-            _selectedRepoProvider ??= repositoryProviderName;
+            _selectedRepoProvider = repositoryProviderName;
         }
         else
         {
@@ -328,15 +372,29 @@ public partial class AddRepoViewModel : ObservableObject
         IsCancelling = true;
     }
 
+    private IList<object> _selectedRepos;
+
+    [RelayCommand]
+    private void RepositoryIsSelected(IList<object> selectedRepos)
+    {
+        _selectedRepos = selectedRepos;
+        _addRepoDialog.ToggleCloneButton();
+    }
+
     public AddRepoViewModel(
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
         IHost host,
         Guid activityId,
-        string defaultClonePath)
+        string defaultClonePath,
+        AddRepoDialog dialog)
     {
+        // Store the dialog to call SelectRepositories() and ToggleCloneButtion().
+        // This can be removed when all dialog logic is inside this class.
+        _addRepoDialog = dialog;
         _stringResource = stringResource;
         _host = host;
+        _selectedRepos = new List<object>();
         ChangeToUrlPage();
 
         // override changes ChangeToUrlPage to correctly set the state.
@@ -473,7 +531,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
         else if (CurrentPage == PageKind.AddViaAccount || CurrentPage == PageKind.Repositories)
         {
-             return EverythingToClone.Count > 0;
+             return _selectedRepos.Count > 0;
         }
         else
         {
@@ -541,14 +599,12 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     /// <param name="providerName">The provider that is used to do the cloning.</param>
     /// <param name="accountName">The account used to authenticate into the provider.</param>
-    /// <param name="repositoriesToAdd">Repositories to add</param>
-    /// <param name="repositoriesToRemove">Repositories to remove.</param>
     /// <remarks>
     /// User has to go through the account screen to get here.  The login id to use is known.
     /// Repos will not be saved when filtering is taking place, or SelectRange is being called.
     /// Both filtering and SelectRange kicks off this event and EverythingToClone should not be altered at this time.
     /// </remarks>
-    public void AddOrRemoveRepository(string providerName, string accountName, IList<object> repositoriesToAdd, IList<object> repositoriesToRemove)
+    public void AddOrRemoveRepository(string providerName, string accountName, RepoViewListItem selectedRepo)
     {
         // return right away if this event is fired because of filtering or SelectRange is called.
         if (_isFiltering || IsCallingSelectRange)
@@ -556,40 +612,21 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding and removing repositories");
+        var repoToAddOrRemove = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(selectedRepo.RepoName, StringComparison.OrdinalIgnoreCase));
         var developerId = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId == accountName);
-        foreach (RepoViewListItem repositoryToRemove in repositoriesToRemove)
+        var cloningInformation = new CloningInformation(repoToAddOrRemove);
+        cloningInformation.RepositoryProvider = _providers.GetSDKProvider(providerName);
+        cloningInformation.ProviderName = _providers.DisplayName(providerName);
+        cloningInformation.OwningAccount = developerId;
+        cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{selectedRepo.RepoName}");
+        cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{selectedRepo.RepoName}");
+
+        if (EverythingToClone.Any(x => x.Equals(cloningInformation)))
         {
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Removing repository {repositoryToRemove}");
-
-            var repoToRemove = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToRemove.RepoName, StringComparison.OrdinalIgnoreCase));
-            if (repoToRemove == null)
-            {
-                continue;
-            }
-
-            var cloningInformation = new CloningInformation(repoToRemove);
-            cloningInformation.ProviderName = _providers.DisplayName(providerName);
-            cloningInformation.OwningAccount = developerId;
-
             EverythingToClone.Remove(cloningInformation);
         }
-
-        foreach (RepoViewListItem repositoryToAdd in repositoriesToAdd)
+        else
         {
-            Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository {repositoryToAdd}");
-            var repoToAdd = _repositoriesForAccount.FirstOrDefault(x => x.DisplayName.Equals(repositoryToAdd.RepoName, StringComparison.OrdinalIgnoreCase));
-            if (repoToAdd == null)
-            {
-                continue;
-            }
-
-            var cloningInformation = new CloningInformation(repoToAdd);
-            cloningInformation.RepositoryProvider = _providers.GetSDKProvider(providerName);
-            cloningInformation.ProviderName = _providers.DisplayName(providerName);
-            cloningInformation.OwningAccount = developerId;
-            cloningInformation.EditClonePathAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageEditClonePathAutomationProperties, $"{providerName}/{repositoryToAdd}");
-            cloningInformation.RemoveFromCloningAutomationName = _stringResource.GetLocalized(StringResourceKey.RepoPageRemoveRepoAutomationProperties, $"{providerName}/{repositoryToAdd}");
             EverythingToClone.Add(cloningInformation);
         }
     }
@@ -680,7 +717,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Adding repository to clone {cloningInformation.RepositoryId} to location '{cloneLocation}'");
 
-        EverythingToClone.Add(cloningInformation);
+        _selectedRepos.Add(cloningInformation);
         ShouldEnablePrimaryButton = true;
         ShouldShowUrlError = Visibility.Collapsed;
     }
@@ -832,9 +869,9 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="repositoryProvider">The name of the provider</param>
     /// <param name="loginId">The login ID</param>
     /// <returns>All previously selected repos excluding any added via URL.</returns>
-    public IEnumerable<RepoViewListItem> SetRepositories(string repositoryProvider, string loginId)
+    public IEnumerable<RepoViewListItem> SetRepositories(string repositoryProvider, string loginId, IEnumerable<IRepository> repos)
     {
-        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
+        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(repos));
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
             .Where(x => x.ProviderName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
@@ -849,7 +886,7 @@ public partial class AddRepoViewModel : ObservableObject
     public void SetCloneLocation(string cloneLocation)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Setting the clone location for all repositories to {cloneLocation}");
-        foreach (var cloningInformation in EverythingToClone)
+        foreach (var cloningInformation in _everythingToClone)
         {
             // N^2 algorithm.  Shouldn't be too slow unless at least 100 repos are added.
             if (!_previouslySelectedRepos.Any(x => x == cloningInformation))

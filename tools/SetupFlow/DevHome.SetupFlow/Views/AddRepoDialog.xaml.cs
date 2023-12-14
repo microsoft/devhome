@@ -24,7 +24,7 @@ namespace DevHome.SetupFlow.Views;
 /// <summary>
 /// Dialog to allow users to select repositories they want to clone.
 /// </summary>
-internal partial class AddRepoDialog : ContentDialog
+public partial class AddRepoDialog : ContentDialog
 {
     private readonly IHost _host;
 
@@ -63,7 +63,7 @@ internal partial class AddRepoDialog : ContentDialog
 
         var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var defaultClonePath = Path.Join(userFolder, "source", "repos");
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId, defaultClonePath);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId, defaultClonePath, this);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
 
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
@@ -226,7 +226,7 @@ internal partial class AddRepoDialog : ContentDialog
     /// IsCallingSelectRange is used to prevent modifying EverythingToClone when repos are being re-selected after filtering.
     /// </summary>
     /// <param name="reposToSelect">The repos to select in the UI.</param>
-    private void SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
+    public void SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
     {
         AddRepoViewModel.IsCallingSelectRange = true;
         var onlyRepoNames = AddRepoViewModel.Repositories.Select(x => x.RepoName).ToList();
@@ -253,20 +253,6 @@ internal partial class AddRepoDialog : ContentDialog
     private void SelectRepositories(IEnumerable<CloningInformation> reposToSelect)
     {
         SelectRepositories(reposToSelect.Select(x => new RepoViewListItem(x.RepositoryToClone)));
-    }
-
-    /// <summary>
-    /// Adds or removes the selected repository from the list of repos to be cloned.
-    /// </summary>
-    private void RepositoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        /*
-        var loginId = (string)AccountsComboBox.SelectedValue;
-        var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-
-        AddRepoViewModel.AddOrRemoveRepository(providerName, loginId, e.AddedItems, e.RemovedItems);
-        ToggleCloneButton();
-        */
     }
 
     /// <summary>
@@ -401,7 +387,7 @@ internal partial class AddRepoDialog : ContentDialog
     /// <summary>
     /// Toggles the clone button.  Make sure other view models have correct information.
     /// </summary>
-    private void ToggleCloneButton()
+    public void ToggleCloneButton()
     {
         var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && AddRepoViewModel.FolderPickerViewModel.ValidateCloneLocation();
         if (EditDevDriveViewModel.DevDrive != null && EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
@@ -410,12 +396,6 @@ internal partial class AddRepoDialog : ContentDialog
         }
 
         AddRepoViewModel.ShouldEnablePrimaryButton = isEverythingGood;
-
-        // Fill in EverythingToClone with the location
-        if (isEverythingGood)
-        {
-            AddRepoViewModel.SetCloneLocation(AddRepoViewModel.FolderPickerViewModel.CloneLocation);
-        }
     }
 
     private void RepoUrlTextBox_TextChanged(object sender, RoutedEventArgs e)

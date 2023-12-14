@@ -84,6 +84,8 @@ public sealed partial class RepoConfigView : UserControl
         }
 
         _addRepoDialog.IsSecondaryButtonEnabled = true;
+
+        // Show the dialog
         var result = await _addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
 
         var devDrive = _addRepoDialog.EditDevDriveViewModel.DevDrive;
@@ -165,7 +167,7 @@ public sealed partial class RepoConfigView : UserControl
 
         // Only 1 provider can be selected per repo dialog session.
         // Okay to use EverythingToClone[0].ProviderName here.
-        var providerName = _addRepoDialog.AddRepoViewModel.EverythingToClone.Any() ? _addRepoDialog.AddRepoViewModel.EverythingToClone[0].ProviderName : string.Empty;
+        var providerName = everythingToClone.Any() ? everythingToClone[0].ProviderName : string.Empty;
 
         // If needs be, this can run inside a foreach loop to capture details on each repo.
         if (cloneLocationKind == CloneLocationKind.DevDrive)
@@ -188,7 +190,7 @@ public sealed partial class RepoConfigView : UserControl
                 LogLevel.Critical,
                 RepoDialogAddRepoEvent.AddWithLocalPath(
                 addKind,
-                _addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
+                everythingToClone.Count,
                 providerName),
                 ActivityId);
         }
