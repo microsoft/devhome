@@ -343,6 +343,69 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
+    private MenuFlyout ConstructFlyout()
+    {
+        var newMenu = new MenuFlyout();
+        foreach (var account in Accounts)
+        {
+            var thisMenuItem = new MenuFlyoutItem();
+            thisMenuItem.Name = account;
+            thisMenuItem.Text = account;
+            thisMenuItem.Click += MenuItemClick;
+            newMenu.Items.Add(thisMenuItem);
+        }
+
+        newMenu.Items.Add(new MenuFlyoutSeparator());
+        var thatMenuItem = new MenuFlyoutItem();
+        thatMenuItem.Text = _stringResource.GetLocalized("RepoToolAddAnotherAccount");
+        thatMenuItem.Click += AddAccountClicked;
+        newMenu.Items.Add(thatMenuItem);
+
+        return newMenu;
+    }
+
+    private async void AddAccountClicked(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem selectedItem &&
+            selectedItem.Text.Equals(_stringResource.GetLocalized("RepoToolAddAnotherAccount"), StringComparison.OrdinalIgnoreCase))
+        {
+            ShowRepoPage = Visibility.Collapsed;
+
+            // Store the logged in accounts to help figure out what accoun the user logged into.
+            var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
+            await LogUserIn(_selectedRepoProvider, _addRepoDialog.GetLoginUiContent());
+            var loggedInAccountsWithNewAccount = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
+
+            ShowRepoPage = Visibility.Visible;
+            Accounts = new ObservableCollection<string>(loggedInAccountsWithNewAccount.Select(x => x.LoginId));
+            AccountsToShow = ConstructFlyout();
+
+            // The dialog makes a user log in if they have no accounts.
+            // keep this here just in case.
+            if (Accounts.Any())
+            {
+                var newAccount = loggedInAccountsWithNewAccount.Except(loggedInAccounts);
+
+                // Logging in should allow only one account to log in at a time.
+                if (newAccount.Count() > 1)
+                {
+                    Log.Logger?.ReportError(Log.Component.RepoConfig, $"{newAccount.Count()} accounts logged in at once.  Choosing the first alphabetically");
+                }
+
+                if (newAccount.Any())
+                {
+                    SelectedAccount = newAccount.OrderByDescending(x => x.LoginId).FirstOrDefault().LoginId;
+                }
+                else
+                {
+                    SelectedAccount = Accounts.First();
+                }
+
+                MenuItemClick(AccountsToShow.Items.FirstOrDefault(x => x.Name.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase)), null);
+            }
+        }
+    }
+
     public AddRepoViewModel(
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
@@ -498,6 +561,27 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
+    private async Task LogUserIn(string repositoryProviderName, Frame loginFrame)
+    {
+        IsLoggingIn = true;
+        ShouldShowLoginUi = true;
+
+        // AddRepoDialog can handle the close button click.  Don't show the x button.
+        ShouldShowXButtonInLoginUi = false;
+        InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), loginFrame);
+
+        // Wait 30 seconds for user to log in.
+        var maxIterationsToWait = 30;
+        var currentIteration = 0;
+        var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
+        while ((IsLoggingIn && !IsCancelling) && currentIteration++ <= maxIterationsToWait)
+        {
+            await Task.Delay(waitDelay);
+        }
+
+        ShouldShowLoginUi = false;
+    }
+
     /// <summary>
     /// Gets all the accounts for a provider and updates the UI.
     /// </summary>
@@ -508,23 +592,7 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
-            IsLoggingIn = true;
-            ShouldShowLoginUi = true;
-
-            // AddRepoDialog can handle the close button click.  Don't show the x button.
-            ShouldShowXButtonInLoginUi = false;
-            InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), loginFrame);
-
-            // Wait 30 seconds for user to log in.
-            var maxIterationsToWait = 30;
-            var currentIteration = 0;
-            var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
-            while ((IsLoggingIn && !IsCancelling) && currentIteration++ <= maxIterationsToWait)
-            {
-                await Task.Delay(waitDelay);
-            }
-
-            ShouldShowLoginUi = false;
+            await LogUserIn(repositoryProviderName, loginFrame);
             loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false), _activityId);
         }
@@ -534,22 +602,15 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId));
-        var newMenu = new MenuFlyout();
-        foreach (var account in Accounts)
+        AccountsToShow = ConstructFlyout();
+
+        // The dialog makes a user log in if they have no accounts.
+        // keep this here just in case.
+        if (Accounts.Any())
         {
-            var thisMenuItem = new MenuFlyoutItem();
-            thisMenuItem.Text = account;
-            thisMenuItem.Click += MenuItemClick;
-            newMenu.Items.Add(thisMenuItem);
+            SelectedAccount = Accounts.First();
+            MenuItemClick(AccountsToShow.Items[0], null);
         }
-
-        newMenu.Items.Add(new MenuFlyoutSeparator());
-        var thatMenuItem = new MenuFlyoutItem();
-        thatMenuItem.Text = $"Add another account";
-        newMenu.Items.Add(thatMenuItem);
-
-        AccountsToShow = newMenu;
-        SelectedAccount = Accounts.First();
     }
 
     /// <summary>

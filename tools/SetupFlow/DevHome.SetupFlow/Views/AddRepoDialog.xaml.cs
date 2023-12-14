@@ -244,6 +244,15 @@ public partial class AddRepoDialog : ContentDialog
     }
 
     /// <summary>
+    /// Gets the frame used for logging in a user.  This can go away when the frame is moved to the view model.
+    /// </summary>
+    /// <returns>The frame used to log users in.</returns>
+    public Frame GetLoginUiContent()
+    {
+        return LoginUIContent;
+    }
+
+    /// <summary>
     /// The primary button has different behavior based on the screen the user is currently in.
     /// </summary>
     private async void AddRepoContentDialog_PrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)

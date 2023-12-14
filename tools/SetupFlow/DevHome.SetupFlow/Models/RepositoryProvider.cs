@@ -43,7 +43,7 @@ internal class RepositoryProvider
     /// <summary>
     /// All the repositories for an account.
     /// </summary>
-    private Lazy<IEnumerable<IRepository>> _repositories = new ();
+    private Dictionary<IDeveloperId, IEnumerable<IRepository>> _repositories = new ();
 
     /// <summary>
     /// The DeveloperId provider used to log a user into an account.
@@ -248,23 +248,26 @@ internal class RepositoryProvider
     /// <returns>A collection of repositories.  May be empty</returns>
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
     {
-        if (!_repositories.IsValueCreated)
+        IEnumerable<IRepository> repositoriesForAccount;
+        if (!_repositories.TryGetValue(developerId, out repositoriesForAccount))
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
-
             var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
             if (result.Result.Status != ProviderOperationStatus.Success)
             {
-                _repositories = new Lazy<IEnumerable<IRepository>>(new List<IRepository>());
+                _repositories.Add(developerId, new List<IRepository>());
             }
             else
             {
-                _repositories = new Lazy<IEnumerable<IRepository>>(result.Repositories);
+                _repositories.Add(developerId, result.Repositories);
             }
         }
 
+        // _repositories should have an entry for developerId by now.
+        repositoriesForAccount ??= _repositories[developerId];
+
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
-        return _repositories.Value;
+        return repositoriesForAccount;
     }
 }

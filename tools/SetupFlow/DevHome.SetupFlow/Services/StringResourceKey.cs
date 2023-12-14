@@ -139,6 +139,7 @@ public static class StringResourceKey
     public static readonly string ClonePathNotFullyQualifiedMessage = nameof(ClonePathNotFullyQualifiedMessage);
     public static readonly string ClonePathNotFolder = nameof(ClonePathNotFolder);
     public static readonly string ClonePathDriveDoesNotExist = nameof(ClonePathDriveDoesNotExist);
+    public static readonly string RepoToolAddAnotherAccount = nameof(RepoToolAddAnotherAccount);
 
     // Url Validation
     public static readonly string UrlValidationBadUrl = nameof(UrlValidationBadUrl);

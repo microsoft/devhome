@@ -1255,4 +1255,8 @@
     <value>Next</value>
     <comment>Button to go to next screen</comment>
   </data>
+  <data name="RepoToolAddAnotherAccount" xml:space="preserve">
+    <value>Add another account</value>
+    <comment>Menu flyout item content to add another account</comment>
+  </data>
 </root>
