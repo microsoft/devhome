@@ -13,10 +13,11 @@ public partial class DashboardViewModel : ObservableObject
 
     public IWidgetIconService WidgetIconService { get; }
 
-    private bool _validatedWebExpPack;
-
     [ObservableProperty]
     private bool _isLoading;
+
+    [ObservableProperty]
+    private bool _hasWidgetService;
 
     public DashboardViewModel(
         IWidgetHostingService widgetHostingService,
@@ -26,21 +27,9 @@ public partial class DashboardViewModel : ObservableObject
         WidgetHostingService = widgetHostingService;
     }
 
-    public bool EnsureWebExperiencePack()
-    {
-        // If already validated there's a good version, don't check again.
-        if (_validatedWebExpPack)
-        {
-            return true;
-        }
-
-        _validatedWebExpPack = WidgetHostingService.HasValidWebExperiencePack();
-        return _validatedWebExpPack;
-    }
-
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
     {
-        if (widgetCount == 0 && !isLoading)
+        if (widgetCount == 0 && !isLoading && HasWidgetService)
         {
             return Visibility.Visible;
         }
