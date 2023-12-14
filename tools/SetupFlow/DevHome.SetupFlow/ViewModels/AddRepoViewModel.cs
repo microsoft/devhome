@@ -19,6 +19,7 @@ using DevHome.Logging;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.Views;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI;
@@ -45,6 +46,30 @@ public partial class AddRepoViewModel : ObservableObject
     private readonly ISetupFlowStringResource _stringResource;
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
+
+    /// <summary>
+    /// Because logic is split between the back-end and the view model, incrementally migrating code from the view
+    /// to the view model is impossible.
+    /// This member is here to support this partial migration.  Once all the code-behind logic is out of the view
+    /// _addRepoDialog can be removed.
+    /// </summary>
+    /// <remarks>
+    /// This is only to help reference back to the view's code-behind.  Please do not change anything inside
+    /// the dialog from this class.
+    /// </remarks>
+    private readonly AddRepoDialog _addRepoDialog;
+
+    /// <summary>
+    /// Gets the folder picker view model.
+    /// </summary>
+    /// <remarks>
+    /// Currently public because EditDevDriveViewModel needs access to it.
+    /// THis can be made private when EditDevDriveViewModel is in this class.
+    /// </remarks>
+    public FolderPickerViewModel FolderPickerViewModel
+    {
+        get; private set;
+    }
 
     private ElementTheme SelectedTheme => _host.GetService<IThemeSelectorService>().Theme;
 
@@ -96,6 +121,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <summary>
     /// The currently selected account.
     /// </summary>
+    [ObservableProperty]
     private string _selectedAccount;
 
     /// <summary>
@@ -227,11 +253,11 @@ public partial class AddRepoViewModel : ObservableObject
     /// <returns>An enumerable collection of items ready to be put into the ListView</returns>
     private IEnumerable<RepoViewListItem> OrderRepos(IEnumerable<IRepository> repos)
     {
-        var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase))
+        var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
-        var userRepos = repos.Where(x => x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase));
+        var userRepos = repos.Where(x => x.OwningAccountName.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase));
         var userPublicRepos = userRepos.Where(x => !x.IsPrivate)
             .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
@@ -269,6 +295,8 @@ public partial class AddRepoViewModel : ObservableObject
 
     private TypedEventHandler<IDeveloperIdProvider, IDeveloperId> _developerIdChangedEvent;
 
+    private string _selectedRepoProvider = string.Empty;
+
     /// <summary>
     /// Logs the user into the provider if they aren't already.
     /// Changes the page to show all repositories for the user.
@@ -289,6 +317,8 @@ public partial class AddRepoViewModel : ObservableObject
             StyleForPrimaryButton = Application.Current.Resources["DefaultButtonStyle"] as Style;
             ShouldEnablePrimaryButton = false;
         }
+
+        _selectedRepoProvider = repositoryProviderName;
     }
 
     [RelayCommand]
@@ -298,12 +328,30 @@ public partial class AddRepoViewModel : ObservableObject
         IsCancelling = true;
     }
 
+    [ObservableProperty]
+    private MenuFlyout _accountsToShow;
+
+    private async void MenuItemClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuFlyoutItem selectedItem)
+        {
+            SelectedAccount = selectedItem.Text;
+            await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
+
+            var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
+            _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
+        }
+    }
+
     public AddRepoViewModel(
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
         IHost host,
-        Guid activityId)
+        Guid activityId,
+        string defaultClonePath,
+        AddRepoDialog addRepoDialog)
     {
+        _addRepoDialog = addRepoDialog;
         _stringResource = stringResource;
         _host = host;
         ChangeToUrlPage();
@@ -316,6 +364,10 @@ public partial class AddRepoViewModel : ObservableObject
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
         _activityId = activityId;
+        FolderPickerViewModel = new FolderPickerViewModel(stringResource);
+        FolderPickerViewModel.CloneLocation = defaultClonePath;
+
+        AccountsToShow = new MenuFlyout();
     }
 
     /// <summary>
@@ -482,6 +534,22 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId));
+        var newMenu = new MenuFlyout();
+        foreach (var account in Accounts)
+        {
+            var thisMenuItem = new MenuFlyoutItem();
+            thisMenuItem.Text = account;
+            thisMenuItem.Click += MenuItemClick;
+            newMenu.Items.Add(thisMenuItem);
+        }
+
+        newMenu.Items.Add(new MenuFlyoutSeparator());
+        var thatMenuItem = new MenuFlyoutItem();
+        thatMenuItem.Text = $"Add another account";
+        newMenu.Items.Add(thatMenuItem);
+
+        AccountsToShow = newMenu;
+        SelectedAccount = Accounts.First();
     }
 
     /// <summary>
@@ -759,7 +827,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="loginId">The login Id to get the repositories for</param>
     public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
     {
-        _selectedAccount = loginId;
+        SelectedAccount = loginId;
         IsFetchingRepos = true;
         await Task.Run(() =>
         {
