@@ -23,9 +23,9 @@ public static class DeveloperIdHelper
         }
 
         var hashedLoginIdString = BitConverter.ToString(hashedLoginId).Replace("-", string.Empty);
-        var hashedLoginWindowsIdString = "UNKNOWN";
+        var hashedWindowsIdString = "UNKNOWN";
 
-        // Include Hashed WindowsId if availableto devId
+        // Include Hashed WindowsId if available
         var loginSessionId = WindowsIdentity.GetCurrent().Name;
 
         if (loginSessionId != null)
@@ -38,9 +38,9 @@ public static class DeveloperIdHelper
                 Array.Reverse(hashedLoginId);
             }
 
-            hashedLoginWindowsIdString = BitConverter.ToString(hashedLoginId).Replace("-", string.Empty);
+            hashedWindowsIdString = BitConverter.ToString(hashedLoginId).Replace("-", string.Empty);
         }
 
-        return $"{hashedLoginIdString}_{hashedLoginWindowsIdString}_{providerName}";
+        return $"{hashedLoginIdString}_{hashedWindowsIdString}_{providerName}";
     }
 }
