@@ -24,6 +24,10 @@ namespace DevHome.SetupFlow.Views;
 /// <summary>
 /// Dialog to allow users to select repositories they want to clone.
 /// </summary>
+/// <remarks>
+/// AddRepoViewModel stores a reference to this class for the purpos of slowly migreating code from here
+/// to the view model.  The refrence the view model has will be removed once the code migration is complete.
+/// </remarks>
 public partial class AddRepoDialog : ContentDialog
 {
     private readonly IHost _host;

@@ -55,7 +55,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     /// <remarks>
     /// This is only to help reference back to the view's code-behind.  Please do not change anything inside
-    /// the dialog from this class.
+    /// this class.
     /// </remarks>
     private readonly AddRepoDialog _addRepoDialog;
 
@@ -223,7 +223,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// the flag _isFiltering is used to prevent modifications to EverythingToClone.
     /// Once filtering is done SelectRange is called on each item in EverythingToClone to re-select them.
     /// </summary>
-    /// <param name="text">The text to use with .StartsWith</param>
+    /// <param name="text">The text to use with .Contains</param>
     public void FilterRepositories(string text)
     {
         IEnumerable<IRepository> filteredRepositories;
@@ -234,7 +234,7 @@ public partial class AddRepoViewModel : ObservableObject
         else
         {
             filteredRepositories = _repositoriesForAccount
-                .Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase));
+                .Where(x => x.DisplayName.Contains(text, StringComparison.OrdinalIgnoreCase));
         }
 
         _isFiltering = true;
@@ -328,6 +328,9 @@ public partial class AddRepoViewModel : ObservableObject
         IsCancelling = true;
     }
 
+    /// <summary>
+    /// The accounts the user is logged into is stored here.
+    /// </summary>
     [ObservableProperty]
     private MenuFlyout _accountsToShow;
 
@@ -345,6 +348,7 @@ public partial class AddRepoViewModel : ObservableObject
 
     private MenuFlyout ConstructFlyout()
     {
+        AccountsToShow = new MenuFlyout();
         var newMenu = new MenuFlyout();
         foreach (var account in Accounts)
         {
@@ -429,8 +433,6 @@ public partial class AddRepoViewModel : ObservableObject
         _activityId = activityId;
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
         FolderPickerViewModel.CloneLocation = defaultClonePath;
-
-        AccountsToShow = new MenuFlyout();
     }
 
     /// <summary>
@@ -601,6 +603,11 @@ public partial class AddRepoViewModel : ObservableObject
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: true), _activityId);
         }
 
+        // At least with the github extension, LoginId is the account name and does not include
+        // @github.com.  I could try parsing the host of the URL and append that to the login id.
+        // But, if other extensions included the @something.com to the loginid, the solution mentioned above
+        // would produce [username]@[something.com]@[something.com].  Not good.
+        // To avoid this, just store the login id.
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId));
         AccountsToShow = ConstructFlyout();
 
