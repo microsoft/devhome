@@ -123,5 +123,5 @@ This project may contain trademarks or logos for projects, products, or services
 ## Thanks to our contributors
 
 <a href="https://github.com/microsoft/devhome/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=microsoft/devhome" />
+  <img src="https://contrib.rocks/image?repo=microsoft/ayatweb/devhome" />
 </a>
