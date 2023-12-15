@@ -61,7 +61,7 @@ public class AppManagementInitializer : IAppManagementInitializer
         try
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Reinitializing app management");
-            await _wpm.ReconnectCatalogsAsync();
+            await _wpm.InitializeAsync();
             await ReloadCatalogsAsync();
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Finished reinitializing app management");
         }
@@ -113,7 +113,7 @@ public class AppManagementInitializer : IAppManagementInitializer
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Ensuring AppInstaller is registered ...");
 
         // If WinGet COM Server is available, then AppInstaller is registered
-        if (await _wpm.IsCOMServerAvailableAsync())
+        if (await _wpm.IsAvailableAsync())
         {
             return true;
         }
@@ -121,7 +121,7 @@ public class AppManagementInitializer : IAppManagementInitializer
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "WinGet COM Server is not available. AppInstaller might be staged but not registered, attempting to register it to fix the issue");
         if (await _wpm.RegisterAppInstallerAsync())
         {
-            if (await _wpm.IsCOMServerAvailableAsync())
+            if (await _wpm.IsAvailableAsync())
             {
                 return true;
             }

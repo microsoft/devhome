@@ -69,11 +69,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        EnablePackageInstallerItem = await _wpm.IsCOMServerAvailableAsync();
+        EnablePackageInstallerItem = await _wpm.IsAvailableAsync();
         if (EnablePackageInstallerItem)
         {
             Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");
-            ShowAppInstallerUpdateNotification = await _wpm.IsAppInstallerUpdateAvailableAsync();
+            ShowAppInstallerUpdateNotification = await _wpm.IsUpdateAvailableAsync();
         }
         else
         {

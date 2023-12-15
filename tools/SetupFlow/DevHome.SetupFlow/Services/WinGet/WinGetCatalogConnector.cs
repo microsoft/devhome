@@ -12,16 +12,17 @@ using Microsoft.Management.Deployment;
 using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
 
 namespace DevHome.SetupFlow.Services.WinGet;
+
 public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
 {
     private readonly WindowsPackageManagerFactory _wingetFactory;
-    private readonly Dictionary<string, WPMPackageCatalog> _customCatalogs = new ();
+    private readonly Dictionary<string, WinGetCatalog> _customCatalogs = new ();
     private readonly SemaphoreSlim _lock = new (1, 1);
 
     // Predefined and custom catalogs
-    private WPMPackageCatalog _predefinedWingetCatalog;
-    private WPMPackageCatalog _predefinedMsStoreCatalog;
-    private WPMPackageCatalog _customSearchCatalog;
+    private WinGetCatalog _predefinedWingetCatalog;
+    private WinGetCatalog _predefinedMsStoreCatalog;
+    private WinGetCatalog _customSearchCatalog;
 
     // Predefined catalogs ids
     private string _predefinedWingetCatalogId;
@@ -35,7 +36,7 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     }
 
     /// <inheritdoc/>
-    public async Task<WPMPackageCatalog> GetPredefinedWingetCatalogAsync()
+    public async Task<WinGetCatalog> GetPredefinedWingetCatalogAsync()
     {
         await _lock.WaitAsync();
 
@@ -50,7 +51,7 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     }
 
     /// <inheritdoc/>
-    public async Task<WPMPackageCatalog> GetPredefinedMsStoreCatalogAsync()
+    public async Task<WinGetCatalog> GetPredefinedMsStoreCatalogAsync()
     {
         await _lock.WaitAsync();
 
@@ -65,7 +66,7 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     }
 
     /// <inheritdoc/>
-    public async Task<WPMPackageCatalog> GetCustomSearchCatalogAsync()
+    public async Task<WinGetCatalog> GetCustomSearchCatalogAsync()
     {
         await _lock.WaitAsync();
 
@@ -80,26 +81,26 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     }
 
     /// <inheritdoc/>
-    public async Task<WPMPackageCatalog> GetPackageCatalogAsync(IWinGetPackage package)
+    public async Task<WinGetCatalog> GetPackageCatalogAsync(IWinGetPackage package)
     {
         // 'winget' catalog
-        if (package.CatalogId == _predefinedWingetCatalogId)
+        if (IsWinGetPackage(package))
         {
             return await GetPredefinedWingetCatalogAsync();
         }
 
         // 'msstore' catalog
-        if (package.CatalogId == _predefinedMsStoreCatalogId)
+        if (IsMsStorePackage(package))
         {
             return await GetPredefinedMsStoreCatalogAsync();
         }
 
         // custom catalog
-        return await GetCustomPackageCatalogAsync(package.CatalogName);
+        return await GetPackageCatalogByNameAsync(package.CatalogName);
     }
 
     /// <inheritdoc/>
-    public async Task<WPMPackageCatalog> GetCustomPackageCatalogAsync(string catalogName)
+    public async Task<WinGetCatalog> GetPackageCatalogByNameAsync(string catalogName)
     {
         // Get custom catalog from cache or connect to it then cache it
         await _lock.WaitAsync();
@@ -118,8 +119,9 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
                 throw new InvalidOperationException($"Failed to connect to catalog {catalogName} with status {result.Status}");
             }
 
-            _customCatalogs[catalogName] = result.PackageCatalog;
-            return result.PackageCatalog;
+            var resultCatalog = new WinGetCatalog(result.PackageCatalog, WinGetCatalog.CatalogType.CustomUnknown, catalogName);
+            _customCatalogs[catalogName] = resultCatalog;
+            return resultCatalog;
         }
         finally
         {
@@ -157,13 +159,13 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     /// Create and connect to the search catalog consisting of all the package catalogs.
     /// </summary>
     /// <returns>Search catalog or null if an error occurred</returns>
-    private async Task<WPMPackageCatalog> CreateAndConnectSearchCatalogAsync()
+    private async Task<WinGetCatalog> CreateAndConnectSearchCatalogAsync()
     {
         try
         {
             var packageManager = _wingetFactory.CreatePackageManager();
             var catalogs = packageManager.GetPackageCatalogs();
-            return await CreateAndConnectCatalogAsync(catalogs);
+            return new (await CreateAndConnectCatalogAsync(catalogs), WinGetCatalog.CatalogType.CustomSearch);
         }
         catch
         {
@@ -176,13 +178,13 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     /// Create and connect to the winget catalog
     /// </summary>
     /// <returns>Winget catalog or null if an error occurred</returns>
-    private async Task<WPMPackageCatalog> CreateAndConnectWinGetCatalogAsync()
+    private async Task<WinGetCatalog> CreateAndConnectWinGetCatalogAsync()
     {
         try
         {
             var packageManager = _wingetFactory.CreatePackageManager();
             var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
-            return await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog });
+            return new (await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedWinget);
         }
         catch
         {
@@ -195,13 +197,13 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     /// Create and connect to the MS store catalog
     /// </summary>
     /// <returns>MS store catalog or null if an error occurred</returns>
-    private async Task<WPMPackageCatalog> CreateAndConnectMsStoreCatalogAsync()
+    private async Task<WinGetCatalog> CreateAndConnectMsStoreCatalogAsync()
     {
         try
         {
             var packageManager = _wingetFactory.CreatePackageManager();
             var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.MicrosoftStore);
-            return await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog });
+            return new (await CreateAndConnectCatalogAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedMsStore);
         }
         catch
         {

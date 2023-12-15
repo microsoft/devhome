@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Exceptions;
 using DevHome.Common.Services;
@@ -15,14 +14,13 @@ using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services.WinGet;
 using Microsoft.Management.Deployment;
-using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
 
 namespace DevHome.SetupFlow.Services;
 
 /// <summary>
 /// Windows package manager class is an entry point for using the WinGet COM API.
 /// </summary>
-public class WindowsPackageManager : IWindowsPackageManager, IDisposable
+public class WindowsPackageManager : IWindowsPackageManager
 {
     // App installer constants
     public const int AppInstallerErrorFacility = 0xA15;
@@ -36,77 +34,68 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;
     private readonly IPackageDeploymentService _packageDeploymentService;
+    private readonly IWinGetCatalogConnector _catalogConnector;
     private readonly IWinGetPackageFinder _packageFinder;
     private readonly IWinGetPackageInstaller _packageInstaller;
-    private readonly SemaphoreSlim _initLock = new (1, 1);
-
-    private volatile uint _session;
-
-    private bool _disposedValue;
+    private readonly IWinGetProtocolParser _protocolParser;
 
     public WindowsPackageManager(
         WindowsPackageManagerFactory wingetFactory,
+        IWinGetCatalogConnector catalogConnector,
         IWinGetPackageFinder packageFinder,
         IWinGetPackageInstaller packageInstaller,
         IAppInstallManagerService appInstallManagerService,
-        IPackageDeploymentService packageDeploymentService)
+        IPackageDeploymentService packageDeploymentService,
+        IWinGetProtocolParser protocolParser)
     {
         _wingetFactory = wingetFactory;
         _appInstallManagerService = appInstallManagerService;
         _packageDeploymentService = packageDeploymentService;
+        _catalogConnector = catalogConnector;
         _packageFinder = packageFinder;
         _packageInstaller = packageInstaller;
+        _protocolParser = protocolParser;
     }
 
+    /// <inheritdoc/>
     public async Task InitializeAsync()
     {
         // Run action in a background thread to avoid blocking the UI thread
         // Async methods are blocking in WinGet: https://github.com/microsoft/winget-cli/issues/3205
         await Task.Run(async () =>
         {
-            await _initLock.WaitAsync();
-
-            try
-            {
-                await InitializeInternalAsync(_session);
-            }
-            finally
-            {
-                _initLock.Release();
-            }
+            await _catalogConnector.CreateAndConnectCatalogsAsync();
         });
     }
 
-    public async Task ReconnectCatalogsAsync() => await InitializeAsync();
-
+    /// <inheritdoc/>
     public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package, Guid activityId)
     {
         return await DoWithRecovery(async () =>
         {
-            return await _packageInstaller.InstallPackageAsync(null, package.Id);
+            var catalog = await _catalogConnector.GetPackageCatalogAsync(package);
+            return await _packageInstaller.InstallPackageAsync(catalog, package.Id);
         });
     }
 
+    /// <inheritdoc/>
     public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet)
     {
         return await DoWithRecovery(async () =>
         {
             // 1. Group packages by their catalogs
-            Dictionary<WPMPackageCatalog, HashSet<string>> packageIdsByCatalog = new ();
+            Dictionary<WinGetCatalog, HashSet<string>> packageIdsByCatalog = new ();
             foreach (var packageUri in packageUriSet)
             {
-                var packageInfo = await GetPackageIdAndCatalogAsync(packageUri);
-                if (packageInfo.HasValue)
+                var packageInfo = await _protocolParser.ParsePackageUriAsync(packageUri);
+                if (packageInfo != null)
                 {
-                    var packageId = packageInfo.Value.Item1;
-                    var catalog = packageInfo.Value.Item2;
-
-                    if (!packageIdsByCatalog.ContainsKey(catalog))
+                    if (!packageIdsByCatalog.ContainsKey(packageInfo.catalog))
                     {
-                        packageIdsByCatalog[catalog] = new HashSet<string>();
+                        packageIdsByCatalog[packageInfo.catalog] = new HashSet<string>();
                     }
 
-                    packageIdsByCatalog[catalog].Add(packageId);
+                    packageIdsByCatalog[packageInfo.catalog].Add(packageInfo.packageId);
                 }
                 else
                 {
@@ -118,26 +107,27 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
             var result = new List<IWinGetPackage>();
             foreach (var catalog in packageIdsByCatalog.Keys)
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages from catalog {catalog.Info.Name}");
-
-                // Get
-
-                result.AddRange();
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages from catalog {catalog.Type}");
+                var packages = await _packageFinder.GetPackagesAsync(catalog, packageIdsByCatalog[catalog]);
+                result.AddRange(packages);
             }
 
             return result;
         });
     }
 
+    /// <inheritdoc/>
     public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit = 0)
     {
         return await DoWithRecovery(async () =>
         {
-            // Search
+            var searchCatalog = await _catalogConnector.GetCustomSearchCatalogAsync();
+            return await _packageFinder.SearchAsync(searchCatalog, query, limit);
         });
     }
 
-    public async Task<bool> IsAppInstallerUpdateAvailableAsync()
+    /// <inheritdoc/>
+    public async Task<bool> IsUpdateAvailableAsync()
     {
         try
         {
@@ -153,6 +143,7 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         }
     }
 
+    /// <inheritdoc/>
     public async Task<bool> RegisterAppInstallerAsync()
     {
         try
@@ -174,12 +165,8 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         }
     }
 
-    /// <summary>
-    /// Check if WindowsPackageManager COM Server is available by creating a
-    /// dummy out-of-proc object
-    /// </summary>
-    /// <returns>True if server is available, false otherwise.</returns>
-    public async Task<bool> IsCOMServerAvailableAsync()
+    /// <inheritdoc/>
+    public async Task<bool> IsAvailableAsync()
     {
         try
         {
@@ -201,28 +188,11 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
         }
     }
 
-    public bool IsMsStorePackage(IWinGetPackage package) => package.CatalogId == _msStoreCatalogId;
+    /// <inheritdoc/>
+    public bool IsMsStorePackage(IWinGetPackage package) => _catalogConnector.IsMsStorePackage(package);
 
-    public bool IsWinGetPackage(IWinGetPackage package) => package.CatalogId == _wingetCatalogId;
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            if (disposing)
-            {
-                _initLock.Dispose();
-            }
-
-            _disposedValue = true;
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
+    /// <inheritdoc/>
+    public bool IsWinGetPackage(IWinGetPackage package) => _catalogConnector.IsWinGetPackage(package);
 
     private async Task<T> DoWithRecovery<T>(Func<Task<T>> actionFunc)
     {
@@ -246,27 +216,10 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
                     {
                         // Retry with exponential backoff
                         var backoffMs = delayMs * (int)Math.Pow(2, attempt);
-                        Log.Logger?.ReportError(
-                            Log.Component.AppManagement,
-                            $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}. Attempting to recover in: {backoffMs} ms");
+                        Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}. Attempting to recover in: {backoffMs} ms");
                         await Task.Delay(TimeSpan.FromMilliseconds(backoffMs));
-
                         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to recover windows package manager at attempt number: {attempt}");
-
-                        // Reinitialize the package manager
-                        _initLock.Wait();
-                        try
-                        {
-                            await InitializeInternalAsync(_session);
-                        }
-                        catch
-                        {
-                            // No-op
-                        }
-                        finally
-                        {
-                            _initLock.Release();
-                        }
+                        await InitializeAsync();
                     }
                 }
             }
@@ -274,28 +227,5 @@ public class WindowsPackageManager : IWindowsPackageManager, IDisposable
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Unable to recover windows package manager after {maxAttempts} attempts");
             throw new WindowsPackageManagerRecoveryException();
         });
-    }
-
-    /// <summary>
-    /// Initialize the package manager
-    /// </summary>
-    /// <param name="requestSession">Request session id</param>
-    /// <remarks>
-    /// If the provided session id is older than the current session, then the initialization is skipped.
-    /// </remarks>
-    private async Task InitializeInternalAsync(long requestSession)
-    {
-        // If the initialization was requested from an older session, then skip it
-        if (requestSession < _session)
-        {
-            return;
-        }
-
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Begin initializing WPM");
-        await CreateAndConnectCatalogsAsync();
-
-        // New session
-        _session++;
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing WPM completed");
     }
 }

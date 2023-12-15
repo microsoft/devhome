@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services.WinGet;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Windows.Storage.Streams;
 
@@ -17,16 +18,19 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
 {
     private readonly IRestoreInfo _restoreInfo;
     private readonly ISetupFlowStringResource _stringResource;
+    private readonly IWinGetProtocolParser _protocolParser;
     private IRestoreDeviceInfo _restoreDeviceInfo;
 
     public WinGetPackageRestoreDataSource(
         ISetupFlowStringResource stringResource,
         IWindowsPackageManager wpm,
+        IWinGetProtocolParser protocolParser,
         IRestoreInfo restoreInfo)
         : base(wpm)
     {
         _stringResource = stringResource;
         _restoreInfo = restoreInfo;
+        _protocolParser = protocolParser;
     }
 
     /// <summary>
@@ -155,6 +159,6 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
     /// <remarks>All restored applications are from winget catalog</remarks>
     private Uri GetPackageUri(IRestoreApplicationInfo appInfo)
     {
-       return new Uri($"{WindowsPackageManager.Scheme}://{WindowsPackageManager.WingetCatalogURIName}/{appInfo.Id}");
+        return _protocolParser.CreateWinGetCatalogPackageUri(appInfo.Id);
    }
 }

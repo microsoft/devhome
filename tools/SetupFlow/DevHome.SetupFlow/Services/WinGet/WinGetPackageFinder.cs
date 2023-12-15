@@ -11,7 +11,6 @@ using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
-using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 public class WinGetPackageFinder : IWinGetPackageFinder
@@ -24,7 +23,7 @@ public class WinGetPackageFinder : IWinGetPackageFinder
     }
 
     /// <inheritdoc/>
-    public async Task<IList<IWinGetPackage>> SearchAsync(WPMPackageCatalog catalog, string query, uint limit = 0)
+    public async Task<IList<IWinGetPackage>> SearchAsync(WinGetCatalog catalog, string query, uint limit = 0)
     {
         // Use default filter criteria for searching ('winget search {query}')
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Searching for '{query}'. Result limit: {limit}");
@@ -36,9 +35,9 @@ public class WinGetPackageFinder : IWinGetPackageFinder
     }
 
     /// <inheritdoc/>
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(WPMPackageCatalog catalog, ISet<string> packageIds, bool singleQuery)
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(WinGetCatalog catalog, ISet<string> packageIds)
     {
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages: [{string.Join(", ", packageIds)}]. Single query: {singleQuery}");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages: [{string.Join(", ", packageIds)}]");
 
         // Skip search if set is empty
         if (!packageIds.Any())
@@ -47,22 +46,9 @@ public class WinGetPackageFinder : IWinGetPackageFinder
             return new List<IWinGetPackage>();
         }
 
+        // 'winget' catalog supports getting multiple packages in a single request
+        var singleQuery = catalog.Type == WinGetCatalog.CatalogType.PredefinedWinget;
         return singleQuery ? await GetPackagesSingleQueryAsync(catalog, packageIds) : await GetPackagesMultiQueriesAsync(catalog, packageIds);
-    }
-
-    /// <inheritdoc/>
-    public async Task<IWinGetPackage> GetPackageAsync(WPMPackageCatalog catalog, string packageId)
-    {
-        return await GetPackagesAsync(catalog, new HashSet<string> { packageId }, true).ContinueWith(task =>
-        {
-            if (task.Result.Count == 0)
-            {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to find package with id {packageId}");
-                return null;
-            }
-
-            return task.Result[0];
-        });
     }
 
     /// <summary>
@@ -71,7 +57,7 @@ public class WinGetPackageFinder : IWinGetPackageFinder
     /// <param name="catalog">Catalog from where the packages are queried</param>
     /// <param name="packageIds">Set of package ids</param>
     /// <returns>List of packages</returns>
-    private async Task<IList<IWinGetPackage>> GetPackagesMultiQueriesAsync(WPMPackageCatalog catalog, ISet<string> packageIds)
+    private async Task<IList<IWinGetPackage>> GetPackagesMultiQueriesAsync(WinGetCatalog catalog, ISet<string> packageIds)
     {
         var result = new List<IWinGetPackage>();
         foreach (var packageId in packageIds)
@@ -95,7 +81,7 @@ public class WinGetPackageFinder : IWinGetPackageFinder
     /// <param name="catalog">Catalog from where the packages are queried</param>
     /// <param name="packageIds">Set of package ids</param>
     /// <returns>List of packages</returns>
-    private async Task<IList<IWinGetPackage>> GetPackagesSingleQueryAsync(WPMPackageCatalog catalog, ISet<string> packageIds)
+    private async Task<IList<IWinGetPackage>> GetPackagesSingleQueryAsync(WinGetCatalog catalog, ISet<string> packageIds)
     {
         var options = _wingetFactory.CreateFindPackagesOptions();
         foreach (var packageId in packageIds)
@@ -114,11 +100,11 @@ public class WinGetPackageFinder : IWinGetPackageFinder
     /// <returns>List of winget package matches</returns>
     /// <exception cref="InvalidOperationException">Exception thrown if the catalog is not connected before attempting to find packages</exception>
     /// <exception cref="FindPackagesException">Exception thrown if the find packages operation failed</exception>
-    private async Task<IList<IWinGetPackage>> FindPackagesAsync(WPMPackageCatalog catalog, FindPackagesOptions options)
+    private async Task<IList<IWinGetPackage>> FindPackagesAsync(WinGetCatalog catalog, FindPackagesOptions options)
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, "Performing search");
         var result = new List<IWinGetPackage>();
-        var findResult = await catalog.FindPackagesAsync(options);
+        var findResult = await catalog.Catalog.FindPackagesAsync(options);
         if (findResult.Status != FindPackagesResultStatus.Ok)
         {
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to find packages with status {findResult.Status}");

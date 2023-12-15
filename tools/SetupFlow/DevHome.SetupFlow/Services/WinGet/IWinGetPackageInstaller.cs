@@ -3,10 +3,9 @@
 
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
-using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 public interface IWinGetPackageInstaller
 {
-    public Task<InstallPackageResult> InstallPackageAsync(WPMPackageCatalog catalog, string packageId);
+    public Task<InstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId);
 }

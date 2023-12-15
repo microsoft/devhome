@@ -25,13 +25,13 @@ public class WinGetPackageInstaller : IWinGetPackageInstaller
         _packageFinder = packageFinder;
     }
 
-    public async Task<InstallPackageResult> InstallPackageAsync(WPMPackageCatalog catalog, string packageId)
+    public async Task<InstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId)
     {
         // 1. Find package
         var findOptions = _wingetFactory.CreateFindPackagesOptions();
         var filter = _wingetFactory.CreatePackageMatchFilter(PackageMatchField.Id, PackageFieldMatchOption.Equals, packageId);
         findOptions.Filters.Add(filter);
-        var findResult = await catalog.FindPackagesAsync(findOptions);
+        var findResult = await catalog.Catalog.FindPackagesAsync(findOptions);
         if (findResult.Status != FindPackagesResultStatus.Ok)
         {
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Install aborted for package {packageId} because the find operation failed with status ");

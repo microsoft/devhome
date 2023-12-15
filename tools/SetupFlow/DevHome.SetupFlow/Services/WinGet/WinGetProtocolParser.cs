@@ -3,11 +3,11 @@
 
 using System;
 using System.Threading.Tasks;
-using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
+using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-public record class WinGetProtocolParserResult(string packageId, WPMPackageCatalog catalog);
+public record class WinGetProtocolParserResult(string packageId, WinGetCatalog catalog);
 
 /// <summary>
 /// Winget protocol parser
@@ -25,41 +25,59 @@ public class WinGetProtocolParser : IWinGetProtocolParser
     /// <summary>
     /// Windows package manager custom protocol scheme
     /// </summary>
-    public const string Scheme = "x-ms-winget";
+    private const string Scheme = "x-ms-winget";
 
     /// <summary>
     /// Reserved name for the WinGet catalog
     /// </summary>
-    public const string WingetCatalogURIName = "winget";
+    private const string WingetCatalogURIName = "winget";
 
     /// <summary>
     /// Reserved name for the Microsoft Store catalog
     /// </summary>
-    public const string MsStoreCatalogURIName = "msstore";
+    private const string MsStoreCatalogURIName = "msstore";
 
     /// <inheritdoc/>
-    public async Task<WinGetProtocolParserResult> ParseAsync(Uri packageUri)
+    public async Task<WinGetProtocolParserResult> ParsePackageUriAsync(Uri packageUri)
     {
         if (packageUri.Scheme == Scheme && packageUri.Segments.Length == 2)
         {
             var packageId = packageUri.Segments[1];
+            var catalogName = packageUri.Host;
 
             // 'winget' catalog
-            if (packageUri.Host == WingetCatalogURIName)
+            if (catalogName == WingetCatalogURIName)
             {
                 return new (packageId, await _catalogConnector.GetPredefinedWingetCatalogAsync());
             }
 
             // 'msstore' catalog
-            if (packageUri.Host == MsStoreCatalogURIName)
+            if (catalogName == MsStoreCatalogURIName)
             {
                 return new (packageId, await _catalogConnector.GetPredefinedMsStoreCatalogAsync());
             }
 
             // custom catalog
-            return new (packageId, await _catalogConnector.GetCustomPackageCatalogAsync(packageUri.Host));
+            return new (packageId, await _catalogConnector.GetPackageCatalogByNameAsync(catalogName));
         }
 
         return null;
+    }
+
+    public Uri CreateWinGetCatalogPackageUri(string packageId) => new ($"{Scheme}://{WingetCatalogURIName}/{packageId}");
+
+    public Uri CreateMsStoreCatalogPackageUri(string packageId) => new ($"{Scheme}://{MsStoreCatalogURIName}/{packageId}");
+
+    public Uri CreateCustomCatalogPackageUri(string packageId, string catalogName) => new ($"{Scheme}://{catalogName}/{packageId}");
+
+    public Uri CreatePackageUri(string packageId, WinGetCatalog catalog)
+    {
+        return catalog.Type switch
+        {
+            WinGetCatalog.CatalogType.PredefinedWinget => CreateWinGetCatalogPackageUri(packageId),
+            WinGetCatalog.CatalogType.PredefinedMsStore => CreateMsStoreCatalogPackageUri(packageId),
+            WinGetCatalog.CatalogType.CustomSearch => throw new ArgumentException("Custom search catalog is an invalid input argument"),
+            _ => CreateCustomCatalogPackageUri(packageId, catalog.UnknownCatalogName),
+        };
     }
 }

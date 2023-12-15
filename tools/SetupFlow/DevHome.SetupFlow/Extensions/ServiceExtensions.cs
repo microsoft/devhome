@@ -6,6 +6,7 @@ using System.IO;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.Services.WinGet;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -55,6 +56,10 @@ public static class ServiceExtensions
         // Services
         services.AddSingleton<IWindowsPackageManager, WindowsPackageManager>();
         services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory(ClsidContext.Prod));
+        services.AddSingleton<IWinGetCatalogConnector, WinGetCatalogConnector>();
+        services.AddSingleton<IWinGetPackageFinder, WinGetPackageFinder>();
+        services.AddSingleton<IWinGetPackageInstaller, WinGetPackageInstaller>();
+        services.AddSingleton<IWinGetProtocolParser, WinGetProtocolParser>();
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();

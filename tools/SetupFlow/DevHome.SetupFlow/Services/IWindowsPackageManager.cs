@@ -15,6 +15,11 @@ namespace DevHome.SetupFlow.Services;
 public interface IWindowsPackageManager
 {
     /// <summary>
+    /// Initialize the winget package manager.
+    /// </summary>
+    public Task InitializeAsync();
+
+    /// <summary>
     /// Install a package on the user's machine.
     /// </summary>
     /// <param name="package">Package to install</param>
@@ -26,24 +31,20 @@ public interface IWindowsPackageManager
     /// Checks if AppInstaller has an available update
     /// </summary>
     /// <returns>True if an AppInstaller update is available, false otherwise</returns>
-    public Task<bool> IsAppInstallerUpdateAvailableAsync();
+    public Task<bool> IsUpdateAvailableAsync();
 
     /// <summary>
     /// Check whether the WindowsPackageManagerServer is available to create
     /// out-of-proc COM objects
     /// </summary>
     /// <returns>True if COM Server is available, false otherwise</returns>
-    public Task<bool> IsCOMServerAvailableAsync();
+    public Task<bool> IsAvailableAsync();
 
     /// <summary>
     /// Register AppInstaller
     /// </summary>
     /// <returns>True if AppInstaller was registered, false otherwise.</returns>
     public Task<bool> RegisterAppInstallerAsync();
-
-    public Task InitializeAsync();
-
-    public Task ReconnectCatalogsAsync();
 
     /// <summary>
     /// Get packages from a set of package uri.
@@ -63,5 +64,17 @@ public interface IWindowsPackageManager
     /// <exception cref="FindPackagesException">Exception thrown if the search packages operation failed</exception>
     public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit = 0);
 
+    /// <summary>
+    /// Check if the provided package is a 'msstore' package
+    /// </summary>
+    /// <param name="package">Target package</param>
+    /// <returns>True if the provided package is a 'msstore' package</returns>
     public bool IsMsStorePackage(IWinGetPackage package);
+
+    /// <summary>
+    /// Check if the provided package is a 'winget' package
+    /// </summary>
+    /// <param name="package">Target package</param>
+    /// <returns>True if the provided package is a 'winget' package</returns>
+    public bool IsWinGetPackage(IWinGetPackage package);
 }
