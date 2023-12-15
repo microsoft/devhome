@@ -334,6 +334,11 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private MenuFlyout _accountsToShow;
 
+    /// <summary>
+    /// Switches the repos shown to the account selected.
+    /// </summary>
+    /// <param name="sender">The object sending the event.</param>
+    /// <param name="e">The arguments</param>
     private async void MenuItemClick(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem selectedItem)
@@ -346,6 +351,13 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Makes the MenuFlyout object used to display multple accounts in the repo tool.
+    /// </summary>
+    /// <returns>The MenuFlyout to display.</returns>
+    /// <remarks>
+    /// The MenuFlyout is constructed in code to apply the correct callback methods on the Menu Items.
+    /// </remarks>
     private MenuFlyout ConstructFlyout()
     {
         AccountsToShow = new MenuFlyout();
@@ -368,16 +380,33 @@ public partial class AddRepoViewModel : ObservableObject
         return newMenu;
     }
 
+    /// <summary>
+    /// The bottom of the MenuFlyout has a button to log into another account.  Handle logging the user in.
+    /// </summary>
+    /// <param name="sender">The object that sent this event.</param>
+    /// <param name="e">The arguments</param>
+    /// <remarks>
+    /// This calls MenuItemClick to poulate the list of repos if a new account is detected.
+    /// </remarks>
     private async void AddAccountClicked(object sender, RoutedEventArgs e)
     {
         if (sender is MenuFlyoutItem selectedItem &&
             selectedItem.Text.Equals(_stringResource.GetLocalized("RepoToolAddAnotherAccount"), StringComparison.OrdinalIgnoreCase))
         {
+            // If the user selects repos from account 1, then logs into account 2 and does not save between those two actions
+            // _previouslySelectedRepos will be empty.  The result is the repos in account 1 will not be selected if the user navigates
+            // to account 1 after logging into account 2.
+            // Save the repos here in that case.
+            if (!_previouslySelectedRepos.Any())
+            {
+                _previouslySelectedRepos.AddRange(EverythingToClone);
+            }
+
             ShowRepoPage = Visibility.Collapsed;
 
-            // Store the logged in accounts to help figure out what accoun the user logged into.
+            // Store the logged in accounts to help figure out what account the user logged into.
             var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
-            await LogUserIn(_selectedRepoProvider, _addRepoDialog.GetLoginUiContent());
+            await LogUserIn(_selectedRepoProvider, _addRepoDialog.GetLoginUiContent(), true);
             var loggedInAccountsWithNewAccount = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
 
             ShowRepoPage = Visibility.Visible;
@@ -405,6 +434,7 @@ public partial class AddRepoViewModel : ObservableObject
                     SelectedAccount = Accounts.First();
                 }
 
+                IsCancelling = false;
                 MenuItemClick(AccountsToShow.Items.FirstOrDefault(x => x.Name.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase)), null);
             }
         }
@@ -563,13 +593,13 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
-    private async Task LogUserIn(string repositoryProviderName, Frame loginFrame)
+    private async Task LogUserIn(string repositoryProviderName, Frame loginFrame, bool shouldShowXCancelButton = false)
     {
         IsLoggingIn = true;
         ShouldShowLoginUi = true;
 
         // AddRepoDialog can handle the close button click.  Don't show the x button.
-        ShouldShowXButtonInLoginUi = false;
+        ShouldShowXButtonInLoginUi = shouldShowXCancelButton;
         InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), loginFrame);
 
         // Wait 30 seconds for user to log in.
