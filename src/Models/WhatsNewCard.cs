@@ -60,6 +60,11 @@ public class WhatsNewCard
         get; set;
     }
 
+    public bool? ShouldShowIcon
+    {
+        get; set;
+    }
+
     public bool? IsBig
     {
         get; set;
