@@ -7,13 +7,15 @@ using DevHome.SetupFlow.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
-using DevHome.SetupFlow.Extensions;
 using DevHome.SetupFlow.Models;
 using Microsoft.Management.Deployment;
 using Windows.Win32.Foundation;
-using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
 
 namespace DevHome.SetupFlow.Services.WinGet;
+
+/// <summary>
+/// Installs a package using the Windows Package Manager (WinGet).
+/// </summary>
 public class WinGetPackageInstaller : IWinGetPackageInstaller
 {
     private readonly WindowsPackageManagerFactory _wingetFactory;
@@ -25,20 +27,12 @@ public class WinGetPackageInstaller : IWinGetPackageInstaller
         _packageFinder = packageFinder;
     }
 
+    /// <inheritdoc />
     public async Task<InstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId)
     {
         // 1. Find package
-        var findOptions = _wingetFactory.CreateFindPackagesOptions();
-        var filter = _wingetFactory.CreatePackageMatchFilter(PackageMatchField.Id, PackageFieldMatchOption.Equals, packageId);
-        findOptions.Filters.Add(filter);
-        var findResult = await catalog.Catalog.FindPackagesAsync(findOptions);
-        if (findResult.Status != FindPackagesResultStatus.Ok)
-        {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Install aborted for package {packageId} because the find operation failed with status ");
-            throw new FindPackagesException(findResult.Status);
-        }
-
-        if (findResult.Matches.Count == 0)
+        var package = await _packageFinder.GetPackageAsync(catalog, packageId);
+        if (package == null)
         {
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Install aborted for package {packageId} because it was not found in the provided catalog");
             throw new FindPackagesException(FindPackagesResultStatus.CatalogError);
@@ -46,17 +40,12 @@ public class WinGetPackageInstaller : IWinGetPackageInstaller
 
         // 2. Install package
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package install for {packageId}");
-        var installOptions = _wingetFactory.CreateInstallOptions();
-        installOptions.PackageInstallMode = PackageInstallMode.Silent;
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var installResult = await packageManager.InstallPackageAsync(findResult.Matches[0].CatalogPackage, installOptions).AsTask();
+        var installResult = await InstallPackageInternalAsync(package);
         var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
         var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK); // WPM API V4
 
         // 3. Report install result
-        Log.Logger?.ReportInfo(
-            Log.Component.AppManagement,
-            $"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
         if (installResult.Status != InstallResultStatus.Ok)
         {
             throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
@@ -67,5 +56,18 @@ public class WinGetPackageInstaller : IWinGetPackageInstaller
             ExtendedErrorCode = extendedErrorCode,
             RebootRequired = installResult.RebootRequired,
         };
+    }
+
+    /// <summary>
+    /// Install a package from a catalog.
+    /// </summary>
+    /// <param name="package">Package to install</param>
+    /// <returns>Install result</returns>
+    private async Task<InstallResult> InstallPackageInternalAsync(CatalogPackage package)
+    {
+        var installOptions = _wingetFactory.CreateInstallOptions();
+        installOptions.PackageInstallMode = PackageInstallMode.Silent;
+        var packageManager = _wingetFactory.CreatePackageManager();
+        return await packageManager.InstallPackageAsync(package, installOptions).AsTask();
     }
 }

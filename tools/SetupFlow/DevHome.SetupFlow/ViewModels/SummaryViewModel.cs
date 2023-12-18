@@ -24,9 +24,7 @@ using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Windows.Storage.Pickers;
 using Windows.System;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
@@ -179,10 +177,8 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         SetupFlowViewModel setupFlowViewModel,
         IHost host,
         ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory,
-        IWindowsPackageManager wpm,
         IAppManagementInitializer appManagementInitializer,
-        PackageProvider packageProvider,
-        CatalogDataSourceLoader catalogDataSourceLoader)
+        PackageProvider packageProvider)
         : base(stringResource, orchestrator)
     {
         _orchestrator = orchestrator;
@@ -241,10 +237,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         Log.Logger?.ReportInfo(Log.Component.Summary, $"Checking if a new catalog connections should be established");
         if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
         {
-            await Task.Run(async () =>
-            {
-                await _appManagementInitializer.RefreshAsync();
-            });
+            await _appManagementInitializer.ReinitializeAsync();
         }
     }
 

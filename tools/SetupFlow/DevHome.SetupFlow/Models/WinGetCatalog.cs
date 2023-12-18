@@ -5,6 +5,9 @@ using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
 
 namespace DevHome.SetupFlow.Models;
 
+/// <summary>
+/// Internal model for a WinGet catalog.
+/// </summary>
 public class WinGetCatalog
 {
     public enum CatalogType
@@ -15,10 +18,22 @@ public class WinGetCatalog
         CustomUnknown,
     }
 
+    /// <summary>
+    /// Gets the catalog object.
+    /// </summary>
     public WPMPackageCatalog Catalog { get; }
 
+    /// <summary>
+    /// Gets the type of the catalog.
+    /// </summary>
     public CatalogType Type { get; }
 
+    /// <summary>
+    /// Gets the name of the custom catalog.
+    /// </summary>
+    /// <remarks>
+    /// Only used for <see cref="CatalogType.CustomUnknown"/>. For other types, this is <see langword="null"/>.
+    /// </remarks>
     public string UnknownCatalogName { get; }
 
     public WinGetCatalog(WPMPackageCatalog catalog, CatalogType type, string unknownCatalogName = null)
@@ -28,6 +43,10 @@ public class WinGetCatalog
         UnknownCatalogName = unknownCatalogName;
     }
 
+    /// <summary>
+    /// Gets a descriptive name for the catalog.
+    /// </summary>
+    /// <returns>A descriptive name for the catalog.</returns>
     public string GetDescriptiveName()
     {
         return Type switch

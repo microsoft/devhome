@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DevHome.Common.Exceptions;
@@ -109,7 +110,7 @@ public class WindowsPackageManager : IWindowsPackageManager
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages from catalog {catalog.Type}");
                 var packages = await _packageFinder.GetPackagesAsync(catalog, packageIdsByCatalog[catalog]);
-                result.AddRange(packages);
+                result.AddRange(packages.Select(p => CreateWinGetPackage(p)));
             }
 
             return result;
@@ -122,8 +123,25 @@ public class WindowsPackageManager : IWindowsPackageManager
         return await DoWithRecovery(async () =>
         {
             var searchCatalog = await _catalogConnector.GetCustomSearchCatalogAsync();
-            return await _packageFinder.SearchAsync(searchCatalog, query, limit);
+            var results = await _packageFinder.SearchAsync(searchCatalog, query, limit);
+            return results.Select(p => CreateWinGetPackage(p)).ToList();
         });
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> CanSearchAsync()
+    {
+        try
+        {
+            // Attempt to access the catalog name to verify that the catalog's out-of-proc object is still alive
+            var searchCatalog = await _catalogConnector.GetCustomSearchCatalogAsync();
+            searchCatalog?.Catalog.Info.Name.ToString();
+            return searchCatalog != null;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <inheritdoc/>
@@ -228,4 +246,40 @@ public class WindowsPackageManager : IWindowsPackageManager
             throw new WindowsPackageManagerRecoveryException();
         });
     }
+
+    /// <summary>
+    /// Check if the package requires elevation
+    /// </summary>
+    /// <returns>True if the package requires elevation</returns>
+    private bool RequiresElevation(CatalogPackage package)
+    {
+        var packageId = package.Id;
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting applicable installer info for package {packageId}");
+            var installOptions = _wingetFactory.CreateInstallOptions();
+            installOptions.PackageInstallScope = PackageInstallScope.Any;
+            var applicableInstaller = package.DefaultInstallVersion.GetApplicableInstaller(installOptions);
+            if (applicableInstaller != null)
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Elevation requirement = {applicableInstaller.ElevationRequirement} for package {packageId}");
+                return applicableInstaller.ElevationRequirement == ElevationRequirement.ElevationRequired || applicableInstaller.ElevationRequirement == ElevationRequirement.ElevatesSelf;
+            }
+
+            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No applicable installer info found for package {packageId}; defaulting to not requiring elevation");
+            return false;
+        }
+        catch
+        {
+            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get elevation requirement for package {packageId}; defaulting to not requiring elevation");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Create an in-proc WinGet package from an out-of-proc COM catalog package object
+    /// </summary>
+    /// <param name="package">COM catalog package</param>
+    /// <returns>WinGet package</returns>
+    private IWinGetPackage CreateWinGetPackage(CatalogPackage package) => new WinGetPackage(package, RequiresElevation(package));
 }

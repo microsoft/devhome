@@ -64,12 +64,16 @@ public class WinGetProtocolParser : IWinGetProtocolParser
         return null;
     }
 
+    /// <inheritdoc/>
     public Uri CreateWinGetCatalogPackageUri(string packageId) => new ($"{Scheme}://{WingetCatalogURIName}/{packageId}");
 
+    /// <inheritdoc/>
     public Uri CreateMsStoreCatalogPackageUri(string packageId) => new ($"{Scheme}://{MsStoreCatalogURIName}/{packageId}");
 
+    /// <inheritdoc/>
     public Uri CreateCustomCatalogPackageUri(string packageId, string catalogName) => new ($"{Scheme}://{catalogName}/{packageId}");
 
+    /// <inheritdoc/>
     public Uri CreatePackageUri(string packageId, WinGetCatalog catalog)
     {
         return catalog.Type switch

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -19,12 +20,10 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     private readonly Dictionary<string, WinGetCatalog> _customCatalogs = new ();
     private readonly SemaphoreSlim _lock = new (1, 1);
 
-    // Predefined and custom catalogs
     private WinGetCatalog _predefinedWingetCatalog;
     private WinGetCatalog _predefinedMsStoreCatalog;
     private WinGetCatalog _customSearchCatalog;
 
-    // Predefined catalogs ids
     private string _predefinedWingetCatalogId;
     private string _predefinedMsStoreCatalogId;
 
@@ -39,7 +38,6 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     public async Task<WinGetCatalog> GetPredefinedWingetCatalogAsync()
     {
         await _lock.WaitAsync();
-
         try
         {
             return _predefinedWingetCatalog;
@@ -54,7 +52,6 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     public async Task<WinGetCatalog> GetPredefinedMsStoreCatalogAsync()
     {
         await _lock.WaitAsync();
-
         try
         {
             return _predefinedMsStoreCatalog;
@@ -69,7 +66,6 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     public async Task<WinGetCatalog> GetCustomSearchCatalogAsync()
     {
         await _lock.WaitAsync();
-
         try
         {
             return _customSearchCatalog;
@@ -78,25 +74,6 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
         {
             _lock.Release();
         }
-    }
-
-    /// <inheritdoc/>
-    public async Task<WinGetCatalog> GetPackageCatalogAsync(IWinGetPackage package)
-    {
-        // 'winget' catalog
-        if (IsWinGetPackage(package))
-        {
-            return await GetPredefinedWingetCatalogAsync();
-        }
-
-        // 'msstore' catalog
-        if (IsMsStorePackage(package))
-        {
-            return await GetPredefinedMsStoreCatalogAsync();
-        }
-
-        // custom catalog
-        return await GetPackageCatalogByNameAsync(package.CatalogName);
     }
 
     /// <inheritdoc/>
@@ -130,30 +107,57 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     }
 
     /// <inheritdoc/>
-    public bool IsMsStorePackage(IWinGetPackage package) => _predefinedMsStoreCatalogId == null ? false : package.CatalogId == _predefinedMsStoreCatalogId;
+    public async Task<WinGetCatalog> GetPackageCatalogAsync(IWinGetPackage package)
+    {
+        // 'winget' catalog
+        if (IsWinGetPackage(package))
+        {
+            return await GetPredefinedWingetCatalogAsync();
+        }
 
-    /// <inheritdoc/>
-    public bool IsWinGetPackage(IWinGetPackage package) => _predefinedWingetCatalogId == null ? false : package.CatalogId == _predefinedWingetCatalogId;
+        // 'msstore' catalog
+        if (IsMsStorePackage(package))
+        {
+            return await GetPredefinedMsStoreCatalogAsync();
+        }
+
+        // custom catalog
+        return await GetPackageCatalogByNameAsync(package.CatalogName);
+    }
 
     /// <inheritdoc/>
     public async Task CreateAndConnectCatalogsAsync()
     {
-        // Extract catalog ids for predefined catalogs
-        _predefinedWingetCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
-        _predefinedMsStoreCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
+        await _lock.WaitAsync();
+        try
+        {
+            // Extract catalog ids for predefined catalogs
+            _predefinedWingetCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
+            _predefinedMsStoreCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
 
-        // Create and connect to predefined catalogs concurrently
-        var searchCatalog = CreateAndConnectSearchCatalogAsync();
-        var wingetCatalog = CreateAndConnectWinGetCatalogAsync();
-        var msStoreCatalog = CreateAndConnectMsStoreCatalogAsync();
-        await Task.WhenAll(searchCatalog, wingetCatalog, msStoreCatalog);
-        _customSearchCatalog = searchCatalog.Result;
-        _predefinedWingetCatalog = wingetCatalog.Result;
-        _predefinedMsStoreCatalog = msStoreCatalog.Result;
+            // Create and connect to predefined catalogs concurrently
+            var searchCatalog = CreateAndConnectSearchCatalogAsync();
+            var wingetCatalog = CreateAndConnectWinGetCatalogAsync();
+            var msStoreCatalog = CreateAndConnectMsStoreCatalogAsync();
+            await Task.WhenAll(searchCatalog, wingetCatalog, msStoreCatalog);
+            _customSearchCatalog = searchCatalog.Result;
+            _predefinedWingetCatalog = wingetCatalog.Result;
+            _predefinedMsStoreCatalog = msStoreCatalog.Result;
 
-        // Clear custom catalogs
-        _customCatalogs.Clear();
+            // Clear custom catalogs
+            _customCatalogs.Clear();
+        }
+        finally
+        {
+            _lock.Release();
+        }
     }
+
+    /// <inheritdoc/>
+    public bool IsMsStorePackage(IWinGetPackage package) => package.CatalogId == _predefinedMsStoreCatalogId;
+
+    /// <inheritdoc/>
+    public bool IsWinGetPackage(IWinGetPackage package) => package.CatalogId == _predefinedWingetCatalogId;
 
     /// <summary>
     /// Create and connect to the search catalog consisting of all the package catalogs.

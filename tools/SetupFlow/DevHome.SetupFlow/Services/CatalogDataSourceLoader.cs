@@ -24,6 +24,9 @@ public class CatalogDataSourceLoader : IDisposable
 
     public int CatalogCount => _dataSources.Sum(dataSource => dataSource.CatalogCount);
 
+    /// <summary>
+    /// Initialize all data sources
+    /// </summary>
     public async Task InitializeAsync()
     {
         await _lock.WaitAsync();
@@ -40,12 +43,16 @@ public class CatalogDataSourceLoader : IDisposable
         }
     }
 
+    /// <summary>
+    /// Load catalogs from all data sources
+    /// </summary>
+    /// <returns>Catalogs from all data sources</returns>
     public async IAsyncEnumerable<IList<PackageCatalog>> LoadCatalogsAsync()
     {
         await _lock.WaitAsync();
         try
         {
-            await foreach (var catalog in LoadCatalogsInternalAsync())
+            await foreach (var catalog in LoadCatalogsInternalAsync(clearCache: false))
             {
                 yield return catalog;
             }
@@ -56,13 +63,16 @@ public class CatalogDataSourceLoader : IDisposable
         }
     }
 
+    /// <summary>
+    /// Reload catalogs from all data sources
+    /// </summary>
+    /// <returns>Catalogs from all data sources</returns>
     public async IAsyncEnumerable<IList<PackageCatalog>> ReloadCatalogsAsync()
     {
         await _lock.WaitAsync();
         try
         {
-            Clear();
-            await foreach (var catalog in LoadCatalogsInternalAsync())
+            await foreach (var catalog in LoadCatalogsInternalAsync(clearCache: true))
             {
                 yield return catalog;
             }
@@ -73,8 +83,17 @@ public class CatalogDataSourceLoader : IDisposable
         }
     }
 
-    private async IAsyncEnumerable<IList<PackageCatalog>> LoadCatalogsInternalAsync()
+    /// <summary>
+    /// Core logic to load catalogs from all data sources
+    /// </summary>
+    /// <returns>Catalogs from all data sources</returns>
+    private async IAsyncEnumerable<IList<PackageCatalog>> LoadCatalogsInternalAsync(bool clearCache)
     {
+        if (clearCache)
+        {
+            _catalogsMap.Clear();
+        }
+
         foreach (var dataSource in _dataSources)
         {
             IList<PackageCatalog> dataSourceCatalogs;
@@ -106,8 +125,6 @@ public class CatalogDataSourceLoader : IDisposable
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
     }
-
-    private void Clear() => _catalogsMap.Clear();
 
     /// <summary>
     /// Initialize data source

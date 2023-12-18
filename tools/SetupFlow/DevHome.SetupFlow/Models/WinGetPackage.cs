@@ -16,7 +16,7 @@ namespace DevHome.SetupFlow.Models;
 /// </summary>
 public class WinGetPackage : IWinGetPackage
 {
-    public WinGetPackage(CatalogPackage package, InstallOptions installOptions)
+    public WinGetPackage(CatalogPackage package, bool requiresElevated)
     {
         // WinGetPackage constructor copies all the required data from the
         // out-of-proc COM objects over to the current process. This ensures
@@ -30,7 +30,7 @@ public class WinGetPackage : IWinGetPackage
         Name = package.Name;
         Version = package.DefaultInstallVersion.Version;
         IsInstalled = package.InstalledVersion != null;
-        IsElevationRequired = RequiresElevation(package, installOptions);
+        IsElevationRequired = requiresElevated;
         PackageUrl = GetMetadataValue(package, metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null);
         PublisherUrl = GetMetadataValue(package, metadata => new Uri(metadata.PublisherUrl), nameof(CatalogPackageMetadata.PublisherUrl), null);
         PublisherName = GetMetadataValue(package, metadata => metadata.Publisher, nameof(CatalogPackageMetadata.Publisher), null);
@@ -69,36 +69,7 @@ public class WinGetPackage : IWinGetPackage
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
         WindowsPackageManagerFactory wingetFactory,
-        Guid activityId) => new (wpm, stringResource, wingetFactory, this, activityId);
-
-    /// <summary>
-    /// Check if the package requires elevation
-    /// </summary>
-    /// <param name="options">Install options</param>
-    /// <returns>True if the package requires elevation</returns>
-    private bool RequiresElevation(CatalogPackage package, InstallOptions options)
-    {
-        try
-        {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting applicable installer info for package {Id}");
-            var applicableInstaller = package.DefaultInstallVersion.GetApplicableInstaller(options);
-            if (applicableInstaller != null)
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Elevation requirement = {applicableInstaller.ElevationRequirement} for package {Id}");
-                return applicableInstaller.ElevationRequirement == ElevationRequirement.ElevationRequired || applicableInstaller.ElevationRequirement == ElevationRequirement.ElevatesSelf;
-            }
-            else
-            {
-                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No applicable installer info found for package {Id}; defaulting to not requiring elevation");
-                return false;
-            }
-        }
-        catch
-        {
-            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get elevation requirement for package {Id}; defaulting to not requiring elevation");
-            return false;
-        }
-    }
+        Guid activityId) => new (wpm, stringResource, this, activityId);
 
     /// <summary>
     /// Gets the package metadata from the current culture name (e.g. 'en-US')

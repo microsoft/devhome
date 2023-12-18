@@ -12,11 +12,12 @@ namespace DevHome.SetupFlow.Services;
 public interface IAppManagementInitializer
 {
     /// <summary>
-    /// Ensure all services and deployments are initialized
+    /// Initialize app management services
     /// </summary>
     public Task InitializeAsync();
 
-    public Task EnsureAppManagementInitializationAsync();
-
-    public Task RefreshAsync();
+    /// <summary>
+    /// Reinitialize app management services
+    /// </summary>
+    public Task ReinitializeAsync();
 }

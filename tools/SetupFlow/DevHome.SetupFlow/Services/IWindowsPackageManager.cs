@@ -65,6 +65,12 @@ public interface IWindowsPackageManager
     public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit = 0);
 
     /// <summary>
+    /// Check if search is available
+    /// </summary>
+    /// <returns>True if search is available, false otherwise</returns>
+    public Task<bool> CanSearchAsync();
+
+    /// <summary>
     /// Check if the provided package is a 'msstore' package
     /// </summary>
     /// <param name="package">Target package</param>
