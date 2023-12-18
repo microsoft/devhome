@@ -58,6 +58,32 @@ public class WinGetPackageInstaller : IWinGetPackageInstaller
         };
     }
 
+    /// <inheritdoc />
+    public bool IsElevationRequired(CatalogPackage package)
+    {
+        var packageId = package.Id;
+        try
+        {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting applicable installer info for package {packageId}");
+            var installOptions = _wingetFactory.CreateInstallOptions();
+            installOptions.PackageInstallScope = PackageInstallScope.Any;
+            var applicableInstaller = package.DefaultInstallVersion.GetApplicableInstaller(installOptions);
+            if (applicableInstaller != null)
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Elevation requirement = {applicableInstaller.ElevationRequirement} for package {packageId}");
+                return applicableInstaller.ElevationRequirement == ElevationRequirement.ElevationRequired || applicableInstaller.ElevationRequirement == ElevationRequirement.ElevatesSelf;
+            }
+
+            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"No applicable installer info found for package {packageId}; defaulting to not requiring elevation");
+            return false;
+        }
+        catch
+        {
+            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get elevation requirement for package {packageId}; defaulting to not requiring elevation");
+            return false;
+        }
+    }
+
     /// <summary>
     /// Install a package from a catalog.
     /// </summary>

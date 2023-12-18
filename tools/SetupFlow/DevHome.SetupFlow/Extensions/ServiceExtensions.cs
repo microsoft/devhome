@@ -60,6 +60,7 @@ public static class ServiceExtensions
         services.AddSingleton<IWinGetPackageFinder, WinGetPackageFinder>();
         services.AddSingleton<IWinGetPackageInstaller, WinGetPackageInstaller>();
         services.AddSingleton<IWinGetProtocolParser, WinGetProtocolParser>();
+        services.AddSingleton<IWinGetDeployment, WinGetDeployment>();
         services.AddSingleton<IRestoreInfo, RestoreInfo>();
         services.AddSingleton<PackageProvider>();
         services.AddTransient<AppManagementTaskGroup>();
