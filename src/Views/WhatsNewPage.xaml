@@ -307,7 +307,8 @@
                                             <!-- The open new window icon -->
                                             <FontIcon 
                                                 Glyph="&#xE8A7;" 
-                                                Visibility="{x:Bind ShouldShowIcon}" />
+                                                Visibility="{x:Bind ShouldShowIcon}" 
+                                                FontSize="13"/>
                                         </StackPanel>
                                     </Button.Content>
                                 </Button>
