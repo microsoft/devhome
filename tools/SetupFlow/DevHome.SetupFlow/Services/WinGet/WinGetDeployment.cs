@@ -33,6 +33,7 @@ public class WinGetDeployment : IWinGetDeployment
         _packageDeploymentService = packageDeploymentService;
     }
 
+    /// <inheritdoc />
     public async Task<bool> IsAvailableAsync()
     {
         try
@@ -55,6 +56,7 @@ public class WinGetDeployment : IWinGetDeployment
         }
     }
 
+    /// <inheritdoc />
     public async Task<bool> IsUpdateAvailableAsync()
     {
         try
@@ -71,6 +73,7 @@ public class WinGetDeployment : IWinGetDeployment
         }
     }
 
+    /// <inheritdoc />
     public async Task<bool> RegisterAppInstallerAsync()
     {
         try

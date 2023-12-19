@@ -23,6 +23,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     public const int RpcServerUnavailable = unchecked((int)0x800706BA);
     public const int RpcCallFailed = unchecked((int)0x800706BE);
 
+    // WinGet services
     private readonly IWinGetCatalogConnector _catalogConnector;
     private readonly IWinGetPackageFinder _packageFinder;
     private readonly IWinGetPackageInstaller _packageInstaller;
@@ -111,28 +112,26 @@ public class WindowsPackageManager : IWindowsPackageManager
     }
 
     /// <inheritdoc/>
-    public async Task<bool> IsUpdateAvailableAsync()
-    {
-        return await _deployment.IsUpdateAvailableAsync();
-    }
+    public async Task<bool> IsUpdateAvailableAsync() => await _deployment.IsUpdateAvailableAsync();
 
     /// <inheritdoc/>
-    public async Task<bool> RegisterAppInstallerAsync()
-    {
-        return await _deployment.RegisterAppInstallerAsync();
-    }
+    public async Task<bool> RegisterAppInstallerAsync() => await _deployment.RegisterAppInstallerAsync();
 
     /// <inheritdoc/>
-    public async Task<bool> IsAvailableAsync()
-    {
-        return await _deployment.IsAvailableAsync();
-    }
+    public async Task<bool> IsAvailableAsync() => await _deployment.IsAvailableAsync();
 
     /// <inheritdoc/>
     public bool IsMsStorePackage(IWinGetPackage package) => _catalogConnector.IsMsStorePackage(package);
 
     /// <inheritdoc/>
     public bool IsWinGetPackage(IWinGetPackage package) => _catalogConnector.IsWinGetPackage(package);
+
+    /// <summary>
+    /// Create an in-proc WinGet package from an out-of-proc COM catalog package object
+    /// </summary>
+    /// <param name="package">COM catalog package</param>
+    /// <returns>WinGet package</returns>
+    private IWinGetPackage CreateWinGetPackage(CatalogPackage package) => new WinGetPackage(package, _packageInstaller.IsElevationRequired(package));
 
     /// <summary>
     /// Group packages by their catalogs
@@ -144,19 +143,26 @@ public class WindowsPackageManager : IWindowsPackageManager
         Dictionary<WinGetCatalog, HashSet<string>> packageIdsByCatalog = new ();
         foreach (var packageUri in packageUriSet)
         {
-            var packageInfo = await _protocolParser.ParsePackageUriAsync(packageUri);
-            if (packageInfo != null)
+            var uriInfo = await _protocolParser.ParsePackageUriAsync(packageUri);
+            if (uriInfo != null)
             {
-                if (!packageIdsByCatalog.ContainsKey(packageInfo.catalog))
+                if (uriInfo.catalog != null)
                 {
-                    packageIdsByCatalog[packageInfo.catalog] = new HashSet<string>();
-                }
+                    if (!packageIdsByCatalog.TryGetValue(uriInfo.catalog, out var catalogPackageIds))
+                    {
+                        catalogPackageIds = packageIdsByCatalog[uriInfo.catalog] = new HashSet<string>();
+                    }
 
-                packageIdsByCatalog[packageInfo.catalog].Add(packageInfo.packageId);
+                    catalogPackageIds.Add(uriInfo.packageId);
+                }
+                else
+                {
+                    Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Unable to get catalog from uri '{packageUri}'");
+                }
             }
             else
             {
-                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package details from uri '{packageUri}'");
+                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get uri details from '{packageUri}'");
             }
         }
 
@@ -197,11 +203,4 @@ public class WindowsPackageManager : IWindowsPackageManager
             throw new WindowsPackageManagerRecoveryException();
         });
     }
-
-    /// <summary>
-    /// Create an in-proc WinGet package from an out-of-proc COM catalog package object
-    /// </summary>
-    /// <param name="package">COM catalog package</param>
-    /// <returns>WinGet package</returns>
-    private IWinGetPackage CreateWinGetPackage(CatalogPackage package) => new WinGetPackage(package, _packageInstaller.IsElevationRequired(package));
 }
