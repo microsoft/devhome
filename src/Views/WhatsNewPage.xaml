@@ -308,7 +308,7 @@
                                             <FontIcon 
                                                 Glyph="&#xE8A7;" 
                                                 Visibility="{x:Bind ShouldShowIcon}" 
-                                                FontSize="13"/>
+                                                FontSize="12"/>
                                         </StackPanel>
                                     </Button.Content>
                                 </Button>
