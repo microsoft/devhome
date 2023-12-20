@@ -30,9 +30,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ObservableObject _currentView;
 
-    [ObservableProperty]
-    private bool _searchBoxEnabled;
-
     public ReadOnlyObservableCollection<PackageViewModel> SelectedPackages => _packageProvider.SelectedPackages;
 
     public string ApplicationsAddedText => SelectedPackages.Count == 1 ?
@@ -63,7 +60,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     protected async override Task OnEachNavigateToAsync()
     {
         SelectDefaultView();
-        _dispatcherQueue.TryEnqueue(async () => SearchBoxEnabled = await _wpm.CanSearchAsync());
         await _packageCatalogListViewModel.LoadCatalogsAsync();
     }
 

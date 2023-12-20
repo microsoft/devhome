@@ -125,20 +125,38 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
         await _lock.WaitAsync();
         try
         {
-            // Extract catalog ids for predefined catalogs if not already done
-            _predefinedWingetCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog);
-            _predefinedMsStoreCatalogId ??= GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore);
-
             // Create and connect to predefined catalogs concurrently
-            var searchCatalog = CreateAndConnectSearchCatalogAsync();
-            var wingetCatalog = CreateAndConnectWinGetCatalogAsync();
-            var msStoreCatalog = CreateAndConnectMsStoreCatalogAsync();
-            await Task.WhenAll(searchCatalog, wingetCatalog, msStoreCatalog);
-            _customSearchCatalog = searchCatalog.Result;
-            _predefinedWingetCatalog = wingetCatalog.Result;
-            _predefinedMsStoreCatalog = msStoreCatalog.Result;
+            await Task.WhenAll(
+                CreateAndConnectSearchCatalogAsync(),
+                CreateAndConnectWinGetCatalogAsync(),
+                CreateAndConnectMsStoreCatalogAsync());
 
             // Clear custom catalogs
+            _customCatalogs.Clear();
+        }
+        finally
+        {
+            _lock.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task RecoverDisconnectedCatalogsAsync()
+    {
+        await _lock.WaitAsync();
+        try
+        {
+            // Recover catalogs that are not alive concurrently
+            var recoverSearchCatalog = !IsCatalogAlive(_customSearchCatalog);
+            var recoverWinGetCatalog = !IsCatalogAlive(_predefinedWingetCatalog);
+            var recoverMsStoreCatalog = !IsCatalogAlive(_predefinedMsStoreCatalog);
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Recovering disconnected catalogs [should recover?]: Search [{recoverSearchCatalog}], WinGet [{recoverWinGetCatalog}], MsStore [{recoverMsStoreCatalog}]");
+            await Task.WhenAll(
+                recoverSearchCatalog ? CreateAndConnectSearchCatalogAsync() : Task.CompletedTask,
+                recoverWinGetCatalog ? CreateAndConnectWinGetCatalogAsync() : Task.CompletedTask,
+                recoverMsStoreCatalog ? CreateAndConnectMsStoreCatalogAsync() : Task.CompletedTask);
+
+            // Clear custom catalogs so they are re-created and connected on demand
             _customCatalogs.Clear();
         }
         finally
@@ -153,75 +171,56 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     /// <inheritdoc/>
     public bool IsWinGetPackage(IWinGetPackage package) => package.CatalogId == _predefinedWingetCatalogId;
 
-    /// <inheritdoc/>
-    public bool IsCatalogAlive(WinGetCatalog catalog)
-    {
-        try
-        {
-            // Attempt to access the catalog name to verify that the catalog's out-of-proc object is still alive
-            catalog?.Catalog.Info.Name.ToString();
-            return catalog != null;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
     /// <summary>
     /// Create and connect to the search catalog consisting of all the package catalogs.
     /// </summary>
-    /// <returns>Search catalog or null if an error occurred</returns>
-    private async Task<WinGetCatalog> CreateAndConnectSearchCatalogAsync()
+    private async Task CreateAndConnectSearchCatalogAsync()
     {
         try
         {
             var packageManager = _wingetFactory.CreatePackageManager();
             var catalogs = packageManager.GetPackageCatalogs();
-            return new (await CreateAndConnectCatalogInternalAsync(catalogs), WinGetCatalog.CatalogType.CustomSearch);
+            _customSearchCatalog = new (await CreateAndConnectCatalogInternalAsync(catalogs), WinGetCatalog.CatalogType.CustomSearch);
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create and/or connect to search catalog.", e);
-            return null;
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create or connect to search catalog.", e);
         }
     }
 
     /// <summary>
     /// Create and connect to the winget catalog
     /// </summary>
-    /// <returns>Winget catalog or null if an error occurred</returns>
-    private async Task<WinGetCatalog> CreateAndConnectWinGetCatalogAsync()
+    private async Task CreateAndConnectWinGetCatalogAsync()
     {
         try
         {
             var packageManager = _wingetFactory.CreatePackageManager();
             var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
-            return new (await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedWinget);
+            _predefinedWingetCatalogId ??= catalog.Info.Id;
+            _predefinedWingetCatalog = new (await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedWinget);
         }
         catch (Exception e)
         {
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create or connect to 'winget' catalog source.", e);
-            return null;
         }
     }
 
     /// <summary>
     /// Create and connect to the MS store catalog
     /// </summary>
-    /// <returns>MS store catalog or null if an error occurred</returns>
-    private async Task<WinGetCatalog> CreateAndConnectMsStoreCatalogAsync()
+    private async Task CreateAndConnectMsStoreCatalogAsync()
     {
         try
         {
             var packageManager = _wingetFactory.CreatePackageManager();
             var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.MicrosoftStore);
-            return new (await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedMsStore);
+            _predefinedMsStoreCatalogId ??= catalog.Info.Id;
+            _predefinedMsStoreCatalog = new (await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedMsStore);
         }
         catch (Exception e)
         {
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create or connect to 'msstore' catalog source.", e);
-            return null;
         }
     }
 
@@ -265,22 +264,21 @@ public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     }
 
     /// <summary>
-    /// Gets the id of the provided predefined catalog
+    /// Check if the provided catalog is alive
     /// </summary>
-    /// <param name="catalog">Predefined catalog</param>
-    /// <returns>Catalog id</returns>
-    private string GetPredefinedCatalogId(PredefinedPackageCatalog catalog)
+    /// <param name="catalog">Target catalog</param>
+    /// <returns>True if the catalog is alive</returns>
+    private bool IsCatalogAlive(WinGetCatalog catalog)
     {
         try
         {
-            var packageManager = _wingetFactory.CreatePackageManager();
-            var packageCatalog = packageManager.GetPredefinedPackageCatalog(catalog);
-            return packageCatalog.Info.Id;
+            // Attempt to access the catalog name to verify that the catalog's out-of-proc object is still alive
+            catalog?.Catalog.Info.Name.ToString();
+            return catalog != null;
         }
-        catch (Exception e)
+        catch
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get catalog id for {catalog}", e);
-            return null;
+            return false;
         }
     }
 

@@ -55,14 +55,12 @@ public interface IWinGetCatalogConnector
     public bool IsWinGetPackage(IWinGetPackage package);
 
     /// <summary>
-    /// Check if the provided catalog is alive
-    /// </summary>
-    /// <param name="catalog">Target catalog</param>
-    /// <returns>True if the catalog is alive</returns>
-    public bool IsCatalogAlive(WinGetCatalog catalog);
-
-    /// <summary>
     /// Create and connect to all catalogs
     /// </summary>
     public Task CreateAndConnectCatalogsAsync();
+
+    /// <summary>
+    /// Recover disconnected catalogs
+    /// </summary>
+    public Task RecoverDisconnectedCatalogsAsync();
 }

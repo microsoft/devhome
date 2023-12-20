@@ -4,10 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services.WinGet;
 using Microsoft.Management.Deployment;
@@ -19,16 +17,13 @@ namespace DevHome.SetupFlow.Services;
 /// </summary>
 public class WindowsPackageManager : IWindowsPackageManager
 {
-    // COM error codes
-    public const int RpcServerUnavailable = unchecked((int)0x800706BA);
-    public const int RpcCallFailed = unchecked((int)0x800706BE);
-
     // WinGet services
     private readonly IWinGetCatalogConnector _catalogConnector;
     private readonly IWinGetPackageFinder _packageFinder;
     private readonly IWinGetPackageInstaller _packageInstaller;
     private readonly IWinGetProtocolParser _protocolParser;
     private readonly IWinGetDeployment _deployment;
+    private readonly IWinGetRecovery _recovery;
 
     public static string AppInstallerProductId => WinGetDeployment.AppInstallerProductId;
 
@@ -39,13 +34,15 @@ public class WindowsPackageManager : IWindowsPackageManager
         IWinGetPackageFinder packageFinder,
         IWinGetPackageInstaller packageInstaller,
         IWinGetProtocolParser protocolParser,
-        IWinGetDeployment deployment)
+        IWinGetDeployment deployment,
+        IWinGetRecovery recovery)
     {
         _catalogConnector = catalogConnector;
         _packageFinder = packageFinder;
         _packageInstaller = packageInstaller;
         _protocolParser = protocolParser;
         _deployment = deployment;
+        _recovery = recovery;
     }
 
     /// <inheritdoc/>
@@ -59,7 +56,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// <inheritdoc/>
     public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package, Guid activityId)
     {
-        return await DoWithRecovery(async () =>
+        return await _recovery.DoWithRecovery(async () =>
         {
             var catalog = await _catalogConnector.GetPackageCatalogAsync(package);
             return await _packageInstaller.InstallPackageAsync(catalog, package.Id);
@@ -69,7 +66,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// <inheritdoc/>
     public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet)
     {
-        return await DoWithRecovery(async () =>
+        return await _recovery.DoWithRecovery(async () =>
         {
             var packageIdsByCatalog = await GroupPackageIdsByCatalogAsync(packageUriSet);
             var result = new List<IWinGetPackage>();
@@ -87,28 +84,12 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// <inheritdoc/>
     public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit = 0)
     {
-        return await DoWithRecovery(async () =>
+        return await _recovery.DoWithRecovery(async () =>
         {
             var searchCatalog = await _catalogConnector.GetCustomSearchCatalogAsync();
             var results = await _packageFinder.SearchAsync(searchCatalog, query, limit);
             return results.Select(p => CreateWinGetPackage(p)).ToList();
         });
-    }
-
-    /// <inheritdoc/>
-    public async Task<bool> CanSearchAsync()
-    {
-        try
-        {
-            // Attempt to access the catalog name to verify that the catalog's out-of-proc object is still alive
-            var searchCatalog = await _catalogConnector.GetCustomSearchCatalogAsync();
-            searchCatalog?.Catalog.Info.Name.ToString();
-            return searchCatalog != null;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     /// <inheritdoc/>
@@ -167,40 +148,5 @@ public class WindowsPackageManager : IWindowsPackageManager
         }
 
         return packageIdsByCatalog;
-    }
-
-    private async Task<T> DoWithRecovery<T>(Func<Task<T>> actionFunc)
-    {
-        const int maxAttempts = 3;
-        const int delayMs = 1_000;
-
-        // Run action in a background thread to avoid blocking the UI thread
-        // Async methods are blocking in WinGet: https://github.com/microsoft/winget-cli/issues/3205
-        return await Task.Run(async () =>
-        {
-            var attempt = 0;
-            while (++attempt <= maxAttempts)
-            {
-                try
-                {
-                    return await actionFunc();
-                }
-                catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
-                {
-                    if (attempt < maxAttempts)
-                    {
-                        // Retry with exponential backoff
-                        var backoffMs = delayMs * (int)Math.Pow(2, attempt);
-                        Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}. Attempting to recover in: {backoffMs} ms");
-                        await Task.Delay(TimeSpan.FromMilliseconds(backoffMs));
-                        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to recover windows package manager at attempt number: {attempt}");
-                        await InitializeAsync();
-                    }
-                }
-            }
-
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Unable to recover windows package manager after {maxAttempts} attempts");
-            throw new WindowsPackageManagerRecoveryException();
-        });
     }
 }
