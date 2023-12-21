@@ -29,6 +29,11 @@ public class WinGetPackageFinder : IWinGetPackageFinder
     /// <inheritdoc/>
     public async Task<IList<CatalogPackage>> SearchAsync(WinGetCatalog catalog, string query, uint limit = 0)
     {
+        if (catalog == null)
+        {
+            throw new CatalogNotInitializedException();
+        }
+
         // Use default filter criteria for searching ('winget search {query}')
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Searching for '{query}'. Result limit: {limit}");
         var filter = _wingetFactory.CreatePackageMatchFilter(PackageMatchField.CatalogDefault, PackageFieldMatchOption.ContainsCaseInsensitive, query);
@@ -41,6 +46,11 @@ public class WinGetPackageFinder : IWinGetPackageFinder
     /// <inheritdoc />
     public async Task<CatalogPackage> GetPackageAsync(WinGetCatalog catalog, string packageId)
     {
+        if (catalog == null)
+        {
+            throw new CatalogNotInitializedException();
+        }
+
         var matches = await GetPackagesAsync(catalog, new HashSet<string> { packageId });
         if (matches.Count > 0)
         {
@@ -53,6 +63,11 @@ public class WinGetPackageFinder : IWinGetPackageFinder
     /// <inheritdoc/>
     public async Task<IList<CatalogPackage>> GetPackagesAsync(WinGetCatalog catalog, ISet<string> packageIds)
     {
+        if (catalog == null)
+        {
+            throw new CatalogNotInitializedException();
+        }
+
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages: [{string.Join(", ", packageIds)}]");
 
         // Skip search if set is empty

@@ -30,6 +30,11 @@ public class WinGetPackageInstaller : IWinGetPackageInstaller
     /// <inheritdoc />
     public async Task<InstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId)
     {
+        if (catalog == null)
+        {
+            throw new CatalogNotInitializedException();
+        }
+
         // 1. Find package
         var package = await _packageFinder.GetPackageAsync(catalog, packageId);
         if (package == null)

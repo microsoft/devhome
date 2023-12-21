@@ -16,7 +16,6 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class PackageCatalogListViewModel : ObservableObject
 {
-    private readonly IWindowsPackageManager _wpm;
     private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
     private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
 
@@ -43,11 +42,9 @@ public partial class PackageCatalogListViewModel : ObservableObject
 
     public PackageCatalogListViewModel(
         CatalogDataSourceLoader catalogDataSourceLoader,
-        IWindowsPackageManager wpm,
         PackageCatalogViewModelFactory packageCatalogViewModelFactory)
     {
         _catalogDataSourceLoader = catalogDataSourceLoader;
-        _wpm = wpm;
         _packageCatalogViewModelFactory = packageCatalogViewModelFactory;
     }
 

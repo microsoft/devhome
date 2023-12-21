@@ -100,10 +100,13 @@ public class CatalogDataSourceLoader : IDisposable
             if (!_catalogsMap.TryGetValue(dataSource, out dataSourceCatalogs))
             {
                 dataSourceCatalogs = await LoadCatalogsFromDataSourceAsync(dataSource);
-                _catalogsMap.TryAdd(dataSource, dataSourceCatalogs);
+                if (dataSourceCatalogs != null)
+                {
+                    _catalogsMap.TryAdd(dataSource, dataSourceCatalogs);
+                }
             }
 
-            yield return dataSourceCatalogs;
+            yield return dataSourceCatalogs ?? new List<PackageCatalog>();
         }
     }
 
@@ -148,14 +151,13 @@ public class CatalogDataSourceLoader : IDisposable
     /// <param name="dataSource">Target data source</param>
     private async Task<IList<PackageCatalog>> LoadCatalogsFromDataSourceAsync(WinGetPackageDataSource dataSource)
     {
-        var dataSourceCatalogs = new List<PackageCatalog>();
         try
         {
             if (dataSource.CatalogCount > 0)
             {
+                var dataSourceCatalogs = new List<PackageCatalog>();
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
-                var catalogs = await Task.Run(async () => await dataSource.LoadCatalogsAsync());
-                dataSourceCatalogs.AddRange(catalogs);
+                return await Task.Run(async () => await dataSource.LoadCatalogsAsync());
             }
         }
         catch (Exception e)
@@ -163,6 +165,6 @@ public class CatalogDataSourceLoader : IDisposable
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while loading data source of type {dataSource.GetType().Name}", e);
         }
 
-        return dataSourceCatalogs;
+        return null;
     }
 }
