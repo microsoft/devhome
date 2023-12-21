@@ -14,7 +14,14 @@ public interface IWinGetProtocolParser
     /// </summary>
     /// <param name="packageUri">Input package uri</param>
     /// <returns>Package id and catalog, or null if the URI protocol is inaccurate</returns>
-    public Task<WinGetProtocolParserResult> ParsePackageUriAsync(Uri packageUri);
+    public WinGetProtocolParserResult ParsePackageUri(Uri packageUri);
+
+    /// <summary>
+    /// Resolve a catalog from a parser result
+    /// </summary>
+    /// <param name="result">Parser result</param>
+    /// <returns>Catalog</returns>
+    public Task<WinGetCatalog> ResolveCatalogAsync(WinGetProtocolParserResult result);
 
     /// <summary>
     /// Create a package uri from a package id and catalog

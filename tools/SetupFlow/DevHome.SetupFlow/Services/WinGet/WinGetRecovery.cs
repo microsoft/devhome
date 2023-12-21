@@ -12,8 +12,8 @@ namespace DevHome.SetupFlow.Services.WinGet;
 public class WinGetRecovery : IWinGetRecovery
 {
     // Recovery configuration
-    private const int MaxAttempts = 3;
-    private const int DelayMs = 1_000;
+    private const int MaxAttempts = 5;
+    private const int DelayMs = 2_000;
 
     // RPC error codes to recover from
     private const int RpcServerUnavailable = unchecked((int)0x800706BA);

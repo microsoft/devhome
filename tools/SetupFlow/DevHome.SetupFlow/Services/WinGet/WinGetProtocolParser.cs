@@ -7,7 +7,7 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-public record class WinGetProtocolParserResult(string packageId, WinGetCatalog catalog);
+public record class WinGetProtocolParserResult(string packageId, string catalogUriName);
 
 /// <summary>
 /// Winget protocol parser
@@ -38,30 +38,37 @@ public class WinGetProtocolParser : IWinGetProtocolParser
     private const string MsStoreCatalogURIName = "msstore";
 
     /// <inheritdoc/>
-    public async Task<WinGetProtocolParserResult> ParsePackageUriAsync(Uri packageUri)
+    public WinGetProtocolParserResult ParsePackageUri(Uri packageUri)
     {
         if (packageUri.Scheme == Scheme && packageUri.Segments.Length == 2)
         {
             var packageId = packageUri.Segments[1];
-            var catalogName = packageUri.Host;
-
-            // 'winget' catalog
-            if (catalogName == WingetCatalogURIName)
-            {
-                return new (packageId, await _catalogConnector.GetPredefinedWingetCatalogAsync());
-            }
-
-            // 'msstore' catalog
-            if (catalogName == MsStoreCatalogURIName)
-            {
-                return new (packageId, await _catalogConnector.GetPredefinedMsStoreCatalogAsync());
-            }
-
-            // custom catalog
-            return new (packageId, await _catalogConnector.GetPackageCatalogByNameAsync(catalogName));
+            var catalogUriName = packageUri.Host;
+            return new (packageId, catalogUriName);
         }
 
         return null;
+    }
+
+    /// <inheritdoc/>
+    public async Task<WinGetCatalog> ResolveCatalogAsync(WinGetProtocolParserResult result)
+    {
+        var catalogName = result.catalogUriName;
+
+        // 'winget' catalog
+        if (catalogName == WingetCatalogURIName)
+        {
+            return await _catalogConnector.GetPredefinedWingetCatalogAsync();
+        }
+
+        // 'msstore' catalog
+        if (catalogName == MsStoreCatalogURIName)
+        {
+            return await _catalogConnector.GetPredefinedMsStoreCatalogAsync();
+        }
+
+        // custom catalog
+        return await _catalogConnector.GetPackageCatalogByNameAsync(catalogName);
     }
 
     /// <inheritdoc/>
