@@ -13,11 +13,11 @@ namespace DevHome.SetupFlow.Services;
 public class AppManagementInitializer : IAppManagementInitializer
 {
     private readonly IWindowsPackageManager _wpm;
-    private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
+    private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
 
     public AppManagementInitializer(
         IWindowsPackageManager wpm,
-        CatalogDataSourceLoader catalogDataSourceLoader)
+        ICatalogDataSourceLoader catalogDataSourceLoader)
     {
         _wpm = wpm;
         _catalogDataSourceLoader = catalogDataSourceLoader;
@@ -34,7 +34,7 @@ public class AppManagementInitializer : IAppManagementInitializer
         // Ensure AppInstaller is registered
         if (await TryRegisterAppInstallerAsync())
         {
-            await InitializeInternalAsync(reinitialize: false);
+            await InitializeInternalAsync();
         }
 
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed {nameof(AppManagementInitializer)} initialization");
@@ -44,14 +44,13 @@ public class AppManagementInitializer : IAppManagementInitializer
     public async Task ReinitializeAsync()
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Reinitializing app management");
-        await InitializeInternalAsync(reinitialize: true);
+        await InitializeInternalAsync();
     }
 
     /// <summary>
     /// Initialize app management services
     /// </summary>
-    /// <param name="reinitialize">True if this is a reinitialization, false otherwise</param>
-    private async Task InitializeInternalAsync(bool reinitialize)
+    private async Task InitializeInternalAsync()
     {
         try
         {
@@ -61,7 +60,7 @@ public class AppManagementInitializer : IAppManagementInitializer
             await _wpm.InitializeAsync();
 
             // Load catalogs from all data sources
-            await (reinitialize ? ReloadCatalogsAsync() : LoadCatalogsAsync());
+            await LoadCatalogsAsync();
 
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Finished ensuring app management initialization");
         }
@@ -89,18 +88,6 @@ public class AppManagementInitializer : IAppManagementInitializer
         await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
         {
             Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
-        }
-    }
-
-    /// <summary>
-    /// Loading catalogs from all data sources(e.g. Restore packages, etc ...)
-    /// </summary>
-    private async Task ReloadCatalogsAsync()
-    {
-        Log.Logger?.ReportInfo($"Reloading catalogs from all data sources");
-        await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.ReloadCatalogsAsync())
-        {
-            Log.Logger?.ReportInfo($"Reloaded {dataSourceCatalogs.Count} catalog(s)");
         }
     }
 

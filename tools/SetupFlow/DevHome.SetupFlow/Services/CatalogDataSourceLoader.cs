@@ -10,11 +10,10 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services;
-public class CatalogDataSourceLoader : IDisposable
+public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
 {
     private readonly SemaphoreSlim _lock = new (initialCount: 1, maxCount: 1);
     private readonly IEnumerable<WinGetPackageDataSource> _dataSources;
-    private readonly Dictionary<WinGetPackageDataSource, IList<PackageCatalog>> _catalogsMap = new ();
     private bool _disposedValue;
 
     public CatalogDataSourceLoader(IEnumerable<WinGetPackageDataSource> dataSources)
@@ -22,11 +21,10 @@ public class CatalogDataSourceLoader : IDisposable
         _dataSources = dataSources;
     }
 
+    /// <inheritdoc />
     public int CatalogCount => _dataSources.Sum(dataSource => dataSource.CatalogCount);
 
-    /// <summary>
-    /// Initialize all data sources
-    /// </summary>
+    /// <inheritdoc />
     public async Task InitializeAsync()
     {
         await _lock.WaitAsync();
@@ -43,90 +41,21 @@ public class CatalogDataSourceLoader : IDisposable
         }
     }
 
-    /// <summary>
-    /// Load catalogs from all data sources
-    /// </summary>
-    /// <returns>Catalogs from all data sources</returns>
+    /// <inheritdoc />
     public async IAsyncEnumerable<IList<PackageCatalog>> LoadCatalogsAsync()
     {
         await _lock.WaitAsync();
         try
         {
-            await foreach (var catalog in LoadCatalogsInternalAsync(clearCache: false))
+            foreach (var dataSource in _dataSources)
             {
-                yield return catalog;
+                yield return await LoadCatalogsFromDataSourceAsync(dataSource) ?? new List<PackageCatalog>();
             }
         }
         finally
         {
             _lock.Release();
         }
-    }
-
-    /// <summary>
-    /// Reload catalogs from all data sources
-    /// </summary>
-    /// <returns>Catalogs from all data sources</returns>
-    public async IAsyncEnumerable<IList<PackageCatalog>> ReloadCatalogsAsync()
-    {
-        await _lock.WaitAsync();
-        try
-        {
-            await foreach (var catalog in LoadCatalogsInternalAsync(clearCache: true))
-            {
-                yield return catalog;
-            }
-        }
-        finally
-        {
-            _lock.Release();
-        }
-    }
-
-    /// <summary>
-    /// Core logic to load catalogs from all data sources
-    /// </summary>
-    /// <returns>Catalogs from all data sources</returns>
-    private async IAsyncEnumerable<IList<PackageCatalog>> LoadCatalogsInternalAsync(bool clearCache)
-    {
-        if (clearCache)
-        {
-            _catalogsMap.Clear();
-        }
-
-        foreach (var dataSource in _dataSources)
-        {
-            IList<PackageCatalog> dataSourceCatalogs;
-            if (!_catalogsMap.TryGetValue(dataSource, out dataSourceCatalogs))
-            {
-                dataSourceCatalogs = await LoadCatalogsFromDataSourceAsync(dataSource);
-                if (dataSourceCatalogs != null)
-                {
-                    _catalogsMap.TryAdd(dataSource, dataSourceCatalogs);
-                }
-            }
-
-            yield return dataSourceCatalogs ?? new List<PackageCatalog>();
-        }
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            if (disposing)
-            {
-                _lock.Dispose();
-            }
-
-            _disposedValue = true;
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
     }
 
     /// <summary>
@@ -155,7 +84,6 @@ public class CatalogDataSourceLoader : IDisposable
         {
             if (dataSource.CatalogCount > 0)
             {
-                var dataSourceCatalogs = new List<PackageCatalog>();
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
                 return await Task.Run(async () => await dataSource.LoadCatalogsAsync());
             }
@@ -166,5 +94,24 @@ public class CatalogDataSourceLoader : IDisposable
         }
 
         return null;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _lock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

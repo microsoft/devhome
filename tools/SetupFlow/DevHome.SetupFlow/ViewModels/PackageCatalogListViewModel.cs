@@ -16,7 +16,7 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class PackageCatalogListViewModel : ObservableObject
 {
-    private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
+    private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
     private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
 
     [ObservableProperty]
@@ -41,7 +41,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
     public ObservableCollection<int> PackageCatalogShimmers { get; } = new ();
 
     public PackageCatalogListViewModel(
-        CatalogDataSourceLoader catalogDataSourceLoader,
+        ICatalogDataSourceLoader catalogDataSourceLoader,
         PackageCatalogViewModelFactory packageCatalogViewModelFactory)
     {
         _catalogDataSourceLoader = catalogDataSourceLoader;
