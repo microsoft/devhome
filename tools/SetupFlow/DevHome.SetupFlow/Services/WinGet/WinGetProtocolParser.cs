@@ -91,4 +91,20 @@ public class WinGetProtocolParser : IWinGetProtocolParser
             _ => CreateCustomCatalogPackageUri(packageId, catalog.UnknownCatalogName),
         };
     }
+
+    /// <inheritdoc/>
+    public Uri CreatePackageUri(IWinGetPackage package)
+    {
+        if (_catalogConnector.IsWinGetPackage(package))
+        {
+            return CreateWinGetCatalogPackageUri(package.Id);
+        }
+
+        if (_catalogConnector.IsMsStorePackage(package))
+        {
+            return CreateMsStoreCatalogPackageUri(package.Id);
+        }
+
+        return CreateCustomCatalogPackageUri(package.Id, package.CatalogName);
+    }
 }

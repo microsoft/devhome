@@ -6,6 +6,7 @@ using System.Threading;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.Services.WinGet;
 using Microsoft.Management.Deployment;
 using Windows.Storage.Streams;
 
@@ -70,6 +71,8 @@ public class WinGetPackage : IWinGetPackage
         ISetupFlowStringResource stringResource,
         WindowsPackageManagerFactory wingetFactory,
         Guid activityId) => new (wpm, stringResource, this, activityId);
+
+    public Uri CreateUri(IWinGetProtocolParser protocolParser) => protocolParser.CreatePackageUri(this);
 
     /// <summary>
     /// Gets the package metadata from the current culture name (e.g. 'en-US')

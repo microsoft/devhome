@@ -32,6 +32,13 @@ public interface IWinGetProtocolParser
     public Uri CreatePackageUri(string packageId, WinGetCatalog catalog);
 
     /// <summary>
+    /// Create a package uri from a package
+    /// </summary>
+    /// <param name="package">Package</param>
+    /// <returns>Package uri</returns>
+    public Uri CreatePackageUri(IWinGetPackage package);
+
+    /// <summary>
     /// Create a winget catalog package uri from a package id
     /// </summary>
     /// <param name="packageId">Package id</param>

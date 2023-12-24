@@ -24,6 +24,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     private readonly IWinGetProtocolParser _protocolParser;
     private readonly IWinGetDeployment _deployment;
     private readonly IWinGetRecovery _recovery;
+    private readonly IWinGetPackageCache _packageCache;
 
     public static string AppInstallerProductId => WinGetDeployment.AppInstallerProductId;
 
@@ -35,7 +36,8 @@ public class WindowsPackageManager : IWindowsPackageManager
         IWinGetPackageInstaller packageInstaller,
         IWinGetProtocolParser protocolParser,
         IWinGetDeployment deployment,
-        IWinGetRecovery recovery)
+        IWinGetRecovery recovery,
+        IWinGetPackageCache packageCache)
     {
         _catalogConnector = catalogConnector;
         _packageFinder = packageFinder;
@@ -43,6 +45,7 @@ public class WindowsPackageManager : IWindowsPackageManager
         _protocolParser = protocolParser;
         _deployment = deployment;
         _recovery = recovery;
+        _packageCache = packageCache;
     }
 
     /// <inheritdoc/>
@@ -66,9 +69,12 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// <inheritdoc/>
     public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet)
     {
+        // Find packages in the cache and packages that need to be queried
+        var cachedPackages = _packageCache.GetPackages(packageUriSet, out var packageUrisToQuery);
+
         // Get packages grouped by catalog
         var getPackagesTasks = new List<Task<List<IWinGetPackage>>>();
-        var parsedUrisByCatalog = GroupParsedUrisByCatalog(packageUriSet);
+        var parsedUrisByCatalog = GroupParsedUrisByCatalog(packageUrisToQuery);
         foreach (var parsedUrisGroup in parsedUrisByCatalog)
         {
             if (parsedUrisGroup.Any())
@@ -79,19 +85,21 @@ public class WindowsPackageManager : IWindowsPackageManager
                     // All parsed uris in the group have the same catalog, resolve catalog from the first entry
                     var firstParsedUri = parsedUrisGroup.First();
                     var packageIds = parsedUrisGroup.Select(p => p.packageId).ToHashSet();
-                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages from parsed uri catalog name: {firstParsedUri.catalogUriName}");
+                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages [{string.Join(", ", packageIds)}] from parsed uri catalog name: {firstParsedUri.catalogUriName}");
 
                     // Get packages from the catalog
                     var catalog = await _protocolParser.ResolveCatalogAsync(firstParsedUri);
-                    var packages = await _packageFinder.GetPackagesAsync(catalog, packageIds);
-                    return packages.Select(p => CreateWinGetPackage(p)).ToList();
+                    var packagesOutOfProc = await _packageFinder.GetPackagesAsync(catalog, packageIds);
+                    var packagesInProc = packagesOutOfProc.Select(p => CreateWinGetPackage(p)).ToList();
+                    packagesInProc.ForEach(p => _packageCache.TryAddPackage(p));
+                    return packagesInProc;
                 }));
             }
         }
 
         // Wait for all packages to be retrieved
         await Task.WhenAll(getPackagesTasks);
-        return getPackagesTasks.SelectMany(p => p.Result).ToList();
+        return cachedPackages.Concat(getPackagesTasks.SelectMany(p => p.Result)).ToList();
     }
 
     /// <inheritdoc/>
@@ -132,7 +140,7 @@ public class WindowsPackageManager : IWindowsPackageManager
     /// </summary>
     /// <param name="packageUriSet">Set of package uris</param>
     /// <returns>Dictionary of package ids by catalog</returns>
-    private List<List<WinGetProtocolParserResult>> GroupParsedUrisByCatalog(ISet<Uri> packageUriSet)
+    private List<List<WinGetProtocolParserResult>> GroupParsedUrisByCatalog(IEnumerable<Uri> packageUriSet)
     {
         var parsedUris = new List<WinGetProtocolParserResult>();
 
