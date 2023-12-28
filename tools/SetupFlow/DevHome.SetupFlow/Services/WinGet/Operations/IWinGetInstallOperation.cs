@@ -6,7 +6,12 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet.Operations;
 
-public interface IWinGetInstallOperation
+internal interface IWinGetInstallOperation
 {
+    /// <summary>
+    /// Install a package on the user's machine.
+    /// </summary>
+    /// <param name="package">Package to install</param>
+    /// <returns>Install package result</returns>
     public Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package);
 }

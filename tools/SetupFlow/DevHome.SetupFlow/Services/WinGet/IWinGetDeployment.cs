@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-public interface IWinGetDeployment
+internal interface IWinGetDeployment
 {
     /// <summary>
     /// Check whether the WindowsPackageManagerServer is available to create

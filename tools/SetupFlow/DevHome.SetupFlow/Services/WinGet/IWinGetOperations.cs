@@ -8,11 +8,14 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet.Operations;
 
-public interface IWinGetOperations
+internal interface IWinGetOperations
 {
+    /// <inheritdoc cref="IWinGetInstallOperation.InstallPackageAsync"/>"
     public Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package);
 
-    public Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet);
+    /// <inheritdoc cref="IWinGetGetPackageOperation.GetPackagesAsync"/>"
+    public Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUris);
 
+    /// <inheritdoc cref="IWinGetSearchOperation.SearchAsync"/>"
     public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit);
 }

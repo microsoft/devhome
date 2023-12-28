@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet.Operations;
-public class WinGetOperations : IWinGetOperations
+
+internal class WinGetOperations : IWinGetOperations
 {
     private readonly IWinGetInstallOperation _installOperation;
     private readonly IWinGetSearchOperation _searchOperation;
@@ -23,16 +24,19 @@ public class WinGetOperations : IWinGetOperations
         _getPackageOperation = getPackageOperation;
     }
 
+    /// <inheritdoc />
     public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package)
     {
         return await _installOperation.InstallPackageAsync(package);
     }
 
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet)
+    /// <inheritdoc />
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUris)
     {
-        return await _getPackageOperation.GetPackagesAsync(packageUriSet);
+        return await _getPackageOperation.GetPackagesAsync(packageUris);
     }
 
+    /// <inheritdoc />
     public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit)
     {
         return await _searchOperation.SearchAsync(query, limit);

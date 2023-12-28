@@ -8,7 +8,7 @@ namespace DevHome.SetupFlow.Models;
 /// <summary>
 /// Internal model for a WinGet catalog.
 /// </summary>
-public class WinGetCatalog
+internal class WinGetCatalog
 {
     public enum CatalogType
     {

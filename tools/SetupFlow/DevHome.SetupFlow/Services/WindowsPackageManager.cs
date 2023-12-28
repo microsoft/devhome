@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services.WinGet;
 using DevHome.SetupFlow.Services.WinGet.Operations;
-using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.Services;
 
 /// <summary>
 /// Windows package manager class is an entry point for using the WinGet COM API.
 /// </summary>
-public class WindowsPackageManager : IWindowsPackageManager
+internal class WindowsPackageManager : IWindowsPackageManager
 {
     // WinGet services
     private readonly IWinGetCatalogConnector _catalogConnector;
     private readonly IWinGetDeployment _deployment;
     private readonly IWinGetOperations _operations;
+    private readonly IWinGetProtocolParser _protocolParser;
 
     public static string AppInstallerProductId => WinGetDeployment.AppInstallerProductId;
 
@@ -28,11 +28,13 @@ public class WindowsPackageManager : IWindowsPackageManager
     public WindowsPackageManager(
         IWinGetCatalogConnector catalogConnector,
         IWinGetDeployment deployment,
-        IWinGetOperations operations)
+        IWinGetOperations operations,
+        IWinGetProtocolParser protocolParser)
     {
         _catalogConnector = catalogConnector;
         _deployment = deployment;
         _operations = operations;
+        _protocolParser = protocolParser;
     }
 
     /// <inheritdoc/>
@@ -44,22 +46,13 @@ public class WindowsPackageManager : IWindowsPackageManager
     }
 
     /// <inheritdoc/>
-    public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package)
-    {
-        return await _operations.InstallPackageAsync(package);
-    }
+    public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package) => await _operations.InstallPackageAsync(package);
 
     /// <inheritdoc/>
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet)
-    {
-        return await _operations.GetPackagesAsync(packageUriSet);
-    }
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUris) => await _operations.GetPackagesAsync(packageUris);
 
     /// <inheritdoc/>
-    public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit)
-    {
-        return await _operations.SearchAsync(query, limit);
-    }
+    public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit) => await _operations.SearchAsync(query, limit);
 
     /// <inheritdoc/>
     public async Task<bool> IsUpdateAvailableAsync() => await _deployment.IsUpdateAvailableAsync();

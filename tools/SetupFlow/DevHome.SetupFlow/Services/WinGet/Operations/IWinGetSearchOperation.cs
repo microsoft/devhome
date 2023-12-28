@@ -7,7 +7,14 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet.Operations;
 
-public interface IWinGetSearchOperation
+internal interface IWinGetSearchOperation
 {
+    /// <summary>
+    /// Search for packages in this catalog.
+    /// Equivalent to <c>"winget search --query {query} --source {this}"</c>
+    /// </summary>
+    /// <param name="query">Search query</param>
+    /// <param name="limit">Maximum number of results to return. Use 0 for infinite results</param>
+    /// <returns>List of winget package matches</returns>
     public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit);
 }

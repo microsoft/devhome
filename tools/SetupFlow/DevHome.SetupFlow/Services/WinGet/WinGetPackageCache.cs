@@ -7,7 +7,7 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-public class WinGetPackageCache : IWinGetPackageCache
+internal class WinGetPackageCache : IWinGetPackageCache
 {
     private readonly IWinGetProtocolParser _protocolParser;
     private readonly Dictionary<Uri, IWinGetPackage> _cache = new ();
@@ -63,7 +63,7 @@ public class WinGetPackageCache : IWinGetPackageCache
     {
         lock (_cache)
         {
-            return _cache.TryAdd(package.CreateUri(_protocolParser), package);
+            return _cache.TryAdd(_protocolParser.CreatePackageUri(package), package);
         }
     }
 

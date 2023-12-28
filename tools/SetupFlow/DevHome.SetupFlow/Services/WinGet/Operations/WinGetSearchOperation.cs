@@ -8,7 +8,10 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet.Operations;
 
-public class WinGetSearchOperation : IWinGetSearchOperation
+/// <summary>
+/// Search for packages using WinGet with recovery
+/// </summary>
+internal class WinGetSearchOperation : IWinGetSearchOperation
 {
     private readonly IWinGetCatalogConnector _catalogConnector;
     private readonly IWinGetPackageFinder _packageFinder;
@@ -24,15 +27,16 @@ public class WinGetSearchOperation : IWinGetSearchOperation
         _recovery = recovery;
     }
 
+    /// <inheritdoc />
     public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit)
     {
-        return await _recovery.DoWithRecovery(async () =>
+        return await _recovery.DoWithRecoveryAsync(async () =>
         {
             var searchCatalog = await _catalogConnector.GetCustomSearchCatalogAsync();
             var results = await _packageFinder.SearchAsync(searchCatalog, query, limit);
             return results
-            .Select(p => new WinGetPackage(p, _packageFinder.IsElevationRequired(p)))
-            .ToList<IWinGetPackage>();
+                .Select(p => new WinGetPackage(p, _packageFinder.IsElevationRequired(p)))
+                .ToList<IWinGetPackage>();
         });
     }
 }

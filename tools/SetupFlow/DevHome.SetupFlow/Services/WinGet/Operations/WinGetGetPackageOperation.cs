@@ -10,7 +10,10 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet.Operations;
 
-public class WinGetGetPackageOperation : IWinGetGetPackageOperation
+/// <summary>
+/// Get packages using WinGet with recovery
+/// </summary>
+internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
 {
     private readonly IWinGetPackageCache _packageCache;
     private readonly IWinGetProtocolParser _protocolParser;
@@ -29,10 +32,11 @@ public class WinGetGetPackageOperation : IWinGetGetPackageOperation
         _recovery = recovery;
     }
 
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet)
+    /// <inheritdoc />
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUris)
     {
         // Find packages in the cache and packages that need to be queried
-        var cachedPackages = _packageCache.GetPackages(packageUriSet, out var packageUrisToQuery);
+        var cachedPackages = _packageCache.GetPackages(packageUris, out var packageUrisToQuery);
 
         // Get packages grouped by catalog
         var getPackagesTasks = new List<Task<List<IWinGetPackage>>>();
@@ -42,7 +46,7 @@ public class WinGetGetPackageOperation : IWinGetGetPackageOperation
             if (parsedUrisGroup.Any())
             {
                 // Get packages from each catalog concurrently
-                getPackagesTasks.Add(_recovery.DoWithRecovery(async () =>
+                getPackagesTasks.Add(_recovery.DoWithRecoveryAsync(async () =>
                 {
                     // All parsed uris in the group have the same catalog, resolve catalog from the first entry
                     var firstParsedUri = parsedUrisGroup.First();

@@ -9,7 +9,7 @@ using DevHome.SetupFlow.Exceptions;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-public class WinGetRecovery : IWinGetRecovery
+internal class WinGetRecovery : IWinGetRecovery
 {
     // Recovery configuration
     private const int MaxAttempts = 5;
@@ -26,7 +26,8 @@ public class WinGetRecovery : IWinGetRecovery
         _catalogConnector = catalogConnector;
     }
 
-    public async Task<T> DoWithRecovery<T>(Func<Task<T>> actionFunc)
+    /// <inheritdoc />
+    public async Task<T> DoWithRecoveryAsync<T>(Func<Task<T>> actionFunc)
     {
         // Run action in a background thread to avoid blocking the UI thread
         // Async methods are blocking in WinGet: https://github.com/microsoft/winget-cli/issues/3205

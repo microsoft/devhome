@@ -14,7 +14,7 @@ using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-public class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
+internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
 {
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly Dictionary<string, WinGetCatalog> _customCatalogs = new ();

@@ -13,7 +13,7 @@ public record class WinGetProtocolParserResult(string packageId, string catalogU
 /// Winget protocol parser
 /// Protocol scheme: x-ms-winget://[catalog]/[packageId]
 /// </summary>
-public class WinGetProtocolParser : IWinGetProtocolParser
+internal class WinGetProtocolParser : IWinGetProtocolParser
 {
     private readonly IWinGetCatalogConnector _catalogConnector;
 

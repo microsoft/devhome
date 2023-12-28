@@ -146,11 +146,4 @@ public interface IWinGetPackage
         ISetupFlowStringResource stringResource,
         WindowsPackageManagerFactory wingetFactory,
         Guid activityId);
-
-    /// <summary>
-    /// Create a package uri for this package
-    /// </summary>
-    /// <param name="protocolParser">WinGet protocol parser</param>
-    /// <returns>Package uri</returns>
-    Uri CreateUri(IWinGetProtocolParser protocolParser);
 }

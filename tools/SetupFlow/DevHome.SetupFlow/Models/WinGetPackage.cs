@@ -72,8 +72,6 @@ public class WinGetPackage : IWinGetPackage
         WindowsPackageManagerFactory wingetFactory,
         Guid activityId) => new (wpm, stringResource, this, activityId);
 
-    public Uri CreateUri(IWinGetProtocolParser protocolParser) => protocolParser.CreatePackageUri(this);
-
     /// <summary>
     /// Gets the package metadata from the current culture name (e.g. 'en-US')
     /// </summary>

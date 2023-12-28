@@ -7,7 +7,7 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-public interface IWinGetPackageCache
+internal interface IWinGetPackageCache
 {
     /// <summary>
     /// Get packages from the cache.

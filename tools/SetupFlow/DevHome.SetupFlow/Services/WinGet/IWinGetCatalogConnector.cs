@@ -6,7 +6,7 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-public interface IWinGetCatalogConnector
+internal interface IWinGetCatalogConnector
 {
     /// <summary>
     /// Get the predefined 'winget' catalog

@@ -8,7 +8,7 @@ using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-public interface IWinGetPackageFinder
+internal interface IWinGetPackageFinder
 {
     /// <summary>
     /// Search for packages in the provided catalog

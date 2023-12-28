@@ -6,7 +6,7 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-public interface IWinGetPackageInstaller
+internal interface IWinGetPackageInstaller
 {
     /// <summary>
     /// Install a package from WinGet catalog
