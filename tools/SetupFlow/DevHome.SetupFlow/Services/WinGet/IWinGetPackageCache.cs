@@ -28,9 +28,10 @@ internal interface IWinGetPackageCache
     /// <summary>
     /// Try to add a package to the cache.
     /// </summary>
+    /// <param name="packageUri">Package URI to add</param>
     /// <param name="package">Package to add</param>
     /// <returns>True if the package was added, false otherwise.</returns>
-    public bool TryAddPackage(IWinGetPackage package);
+    public bool TryAddPackage(Uri packageUri, IWinGetPackage package);
 
     /// <summary>
     /// Clear the cache.

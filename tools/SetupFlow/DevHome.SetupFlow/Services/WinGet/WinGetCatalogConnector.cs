@@ -16,6 +16,7 @@ namespace DevHome.SetupFlow.Services.WinGet;
 
 internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
 {
+    private readonly IWinGetPackageCache _packageCache;
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly Dictionary<string, WinGetCatalog> _customCatalogs = new ();
     private readonly SemaphoreSlim _lock = new (1, 1);
@@ -29,8 +30,11 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
 
     private bool _disposedValue;
 
-    public WinGetCatalogConnector(WindowsPackageManagerFactory wingetFactory)
+    public WinGetCatalogConnector(
+        WindowsPackageManagerFactory wingetFactory,
+        IWinGetPackageCache packageCache)
     {
+        _packageCache = packageCache;
         _wingetFactory = wingetFactory;
     }
 
@@ -125,6 +129,10 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
         await _lock.WaitAsync();
         try
         {
+            // Clear package cache so next time they are fetched from the new
+            // catalogs connected
+            _packageCache.Clear();
+
             // Create and connect to predefined catalogs concurrently
             await Task.WhenAll(
                 CreateAndConnectSearchCatalogAsync(),
@@ -146,6 +154,10 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
         await _lock.WaitAsync();
         try
         {
+            // Clear package cache so next time they are fetched from the new
+            // catalogs connected
+            _packageCache.Clear();
+
             // Recover catalogs that are not alive concurrently
             var recoverSearchCatalog = !IsCatalogAlive(_customSearchCatalog);
             var recoverWinGetCatalog = !IsCatalogAlive(_predefinedWingetCatalog);

@@ -19,7 +19,6 @@ internal class WindowsPackageManager : IWindowsPackageManager
     private readonly IWinGetCatalogConnector _catalogConnector;
     private readonly IWinGetDeployment _deployment;
     private readonly IWinGetOperations _operations;
-    private readonly IWinGetProtocolParser _protocolParser;
 
     public static string AppInstallerProductId => WinGetDeployment.AppInstallerProductId;
 
@@ -28,13 +27,11 @@ internal class WindowsPackageManager : IWindowsPackageManager
     public WindowsPackageManager(
         IWinGetCatalogConnector catalogConnector,
         IWinGetDeployment deployment,
-        IWinGetOperations operations,
-        IWinGetProtocolParser protocolParser)
+        IWinGetOperations operations)
     {
         _catalogConnector = catalogConnector;
         _deployment = deployment;
         _operations = operations;
-        _protocolParser = protocolParser;
     }
 
     /// <inheritdoc/>

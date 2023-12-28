@@ -7,16 +7,13 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
+/// <summary>
+/// Thread-safe cache for packages
+/// </summary>
 internal class WinGetPackageCache : IWinGetPackageCache
 {
-    private readonly IWinGetProtocolParser _protocolParser;
     private readonly Dictionary<Uri, IWinGetPackage> _cache = new ();
     private readonly object _lock = new ();
-
-    public WinGetPackageCache(IWinGetProtocolParser protocolParser)
-    {
-        _protocolParser = protocolParser;
-    }
 
     /// <inheritdoc />
     public IList<IWinGetPackage> GetPackages(IEnumerable<Uri> packageUris, out IEnumerable<Uri> packageUrisNotFound)
@@ -28,7 +25,7 @@ internal class WinGetPackageCache : IWinGetPackageCache
 
             foreach (var packageUri in packageUris)
             {
-                if (_cache.TryGetValue(packageUri, out var foundPackage))
+                if (TryGetPackage(packageUri, out var foundPackage))
                 {
                     foundPackages.Add(foundPackage);
                 }
@@ -59,11 +56,11 @@ internal class WinGetPackageCache : IWinGetPackageCache
     }
 
     /// <inheritdoc />
-    public bool TryAddPackage(IWinGetPackage package)
+    public bool TryAddPackage(Uri packageUri, IWinGetPackage package)
     {
         lock (_cache)
         {
-            return _cache.TryAdd(_protocolParser.CreatePackageUri(package), package);
+            return _cache.TryAdd(packageUri, package);
         }
     }
 

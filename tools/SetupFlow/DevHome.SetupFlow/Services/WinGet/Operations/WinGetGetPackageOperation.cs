@@ -59,7 +59,8 @@ internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
                     var packagesInProc = packagesOutOfProc
                         .Select(p => new WinGetPackage(p, _packageFinder.IsElevationRequired(p)))
                         .ToList<IWinGetPackage>();
-                    packagesInProc.ForEach(p => _packageCache.TryAddPackage(p));
+                    packagesInProc
+                        .ForEach(p => _packageCache.TryAddPackage(_protocolParser.CreatePackageUri(p), p));
                     return packagesInProc;
                 }));
             }
