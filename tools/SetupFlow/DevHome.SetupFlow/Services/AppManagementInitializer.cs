@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
 
@@ -26,7 +27,7 @@ public class AppManagementInitializer : IAppManagementInitializer
     /// <inheritdoc />
     public async Task InitializeAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing {nameof(AppManagementInitializer)}");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing app management");
 
         // Initialize catalogs from all data sources
         await InitializeCatalogsAsync();
@@ -37,7 +38,7 @@ public class AppManagementInitializer : IAppManagementInitializer
             await InitializeInternalAsync();
         }
 
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed {nameof(AppManagementInitializer)} initialization");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed app management initialization");
     }
 
     /// <inheritdoc />
@@ -45,6 +46,7 @@ public class AppManagementInitializer : IAppManagementInitializer
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Reinitializing app management");
         await InitializeInternalAsync();
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed app management reinitialization");
     }
 
     /// <summary>
@@ -87,7 +89,7 @@ public class AppManagementInitializer : IAppManagementInitializer
         Log.Logger?.ReportInfo($"Loading catalogs from all data sources at launch time to reduce the wait time when this information is requested");
         await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
         {
-            Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalog(s)");
+            Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalogs [{string.Join(", ", dataSourceCatalogs.Select(c => c.Name))}]");
         }
     }
 
@@ -102,6 +104,7 @@ public class AppManagementInitializer : IAppManagementInitializer
         // If WinGet COM Server is available, then AppInstaller is registered
         if (await _wpm.IsAvailableAsync())
         {
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, "AppInstaller is already registered");
             return true;
         }
 
@@ -110,6 +113,7 @@ public class AppManagementInitializer : IAppManagementInitializer
         {
             if (await _wpm.IsAvailableAsync())
             {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, "AppInstaller was registered successfully");
                 return true;
             }
 

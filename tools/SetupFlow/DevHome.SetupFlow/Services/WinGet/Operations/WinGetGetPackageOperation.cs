@@ -37,18 +37,19 @@ internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
     {
         // Find packages in the cache and packages that need to be queried
         var cachedPackages = _packageCache.GetPackages(packageUris, out var packageUrisToQuery);
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Packages loaded from cache [{string.Join(", ", cachedPackages.Select(p => $"({p.Id}, {p.CatalogName})"))}]");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Package URIs not found in cache [{string.Join(", ", packageUrisToQuery)}]");
 
         // Get packages grouped by catalog
         var getPackagesTasks = new List<Task<List<IWinGetPackage>>>();
-        var parsedUrisByCatalog = GroupParsedUrisByCatalog(packageUrisToQuery);
-        foreach (var parsedUrisGroup in parsedUrisByCatalog)
+        foreach (var parsedUrisGroup in GroupParsedUrisByCatalog(packageUrisToQuery))
         {
             if (parsedUrisGroup.Any())
             {
                 // Get packages from each catalog concurrently
                 getPackagesTasks.Add(_recovery.DoWithRecoveryAsync(async () =>
                 {
-                    // All parsed uris in the group have the same catalog, resolve catalog from the first entry
+                    // All parsed URIs in the group have the same catalog, resolve catalog from the first entry
                     var firstParsedUri = parsedUrisGroup.First();
                     var packageIds = parsedUrisGroup.Select(p => p.packageId).ToHashSet();
                     Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages [{string.Join(", ", packageIds)}] from parsed uri catalog name: {firstParsedUri.catalogUriName}");
@@ -68,7 +69,7 @@ internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
 
         // Wait for all packages to be retrieved
         await Task.WhenAll(getPackagesTasks);
-        return cachedPackages.Concat(getPackagesTasks.SelectMany(p => p.Result)).ToList();
+        return getPackagesTasks.SelectMany(p => p.Result).Concat(cachedPackages).ToList();
     }
 
     /// <summary>
@@ -80,7 +81,7 @@ internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
     {
         var parsedUris = new List<WinGetProtocolParserResult>();
 
-        // 1. Parse all package uris and log invalid ones
+        // 1. Parse all package URIs and log invalid ones
         foreach (var packageUri in packageUriSet)
         {
             var uriInfo = _protocolParser.ParsePackageUri(packageUri);
@@ -90,7 +91,7 @@ internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
             }
             else
             {
-                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get uri details from '{packageUri}'");
+                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get URI details from '{packageUri}'");
             }
         }
 

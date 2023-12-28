@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 
@@ -14,4 +15,11 @@ internal interface IWinGetInstallOperation
     /// <param name="package">Package to install</param>
     /// <returns>Install package result</returns>
     public Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package);
+
+    /// <summary>
+    /// Installs a package from a URI.
+    /// </summary>
+    /// <param name="packageUri">Uri of the package to install.</param>
+    /// <returns>Result of the installation.</returns>
+    public Task<InstallPackageResult> InstallPackageAsync(Uri packageUri);
 }

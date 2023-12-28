@@ -14,30 +14,33 @@ internal class WinGetInstallOperation : IWinGetInstallOperation
 {
     private readonly IWinGetPackageInstaller _packageInstaller;
     private readonly IWinGetProtocolParser _protocolParser;
+    private readonly IWinGetCatalogConnector _catalogConnector;
     private readonly IWinGetRecovery _recovery;
 
     public WinGetInstallOperation(
         IWinGetPackageInstaller packageInstaller,
         IWinGetProtocolParser protocolParser,
+        IWinGetCatalogConnector catalogConnector,
         IWinGetRecovery recovery)
     {
         _packageInstaller = packageInstaller;
         _protocolParser = protocolParser;
+        _catalogConnector = catalogConnector;
         _recovery = recovery;
     }
 
     /// <inheritdoc />
     public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package)
     {
-        return await InstallPackageAsync(_protocolParser.CreatePackageUri(package));
+        return await _recovery.DoWithRecoveryAsync(async () =>
+        {
+            var catalog = await _catalogConnector.GetPackageCatalogAsync(package);
+            return await _packageInstaller.InstallPackageAsync(catalog, package.Id);
+        });
     }
 
-    /// <summary>
-    /// Installs a package from a URI.
-    /// </summary>
-    /// <param name="packageUri">Uri of the package to install.</param>
-    /// <returns>Result of the installation.</returns>
-    private async Task<InstallPackageResult> InstallPackageAsync(Uri packageUri)
+    /// <inheritdoc />
+    public async Task<InstallPackageResult> InstallPackageAsync(Uri packageUri)
     {
         var parsedPackageUri = _protocolParser.ParsePackageUri(packageUri);
         if (parsedPackageUri == null)

@@ -15,6 +15,5 @@ internal interface IWinGetGetPackageOperation
     /// </summary>
     /// <param name="packageUris">Set of package uri</param>
     /// <returns>List of winget package matches</returns>
-    /// <exception cref="FindPackagesException">Exception thrown if the get packages operation failed</exception>
     public Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUris);
 }

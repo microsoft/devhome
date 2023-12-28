@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 
@@ -99,6 +100,10 @@ public partial class SearchViewModel : ObservableObject
             SearchText = text;
             ResultPackages = await Task.Run(() => matches.Select(m => _packageProvider.CreateOrGet(m)).ToList());
             return (SearchResultStatus.Ok, ResultPackages);
+        }
+        catch (WindowsPackageManagerRecoveryException)
+        {
+            return (SearchResultStatus.CatalogNotConnect, null);
         }
         catch (OperationCanceledException)
         {

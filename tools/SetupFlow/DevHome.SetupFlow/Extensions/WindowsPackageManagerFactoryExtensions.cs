@@ -6,8 +6,17 @@ using DevHome.SetupFlow.Common.WindowsPackageManager;
 using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.Extensions;
+
 public static class WindowsPackageManagerFactoryExtensions
 {
+    /// <summary>
+    /// Creates a new instance of <see cref="PackageMatchFilter"/> with the specified values.
+    /// </summary>
+    /// <param name="factory">Extension method target instance.</param>
+    /// <param name="field">Field to match.</param>
+    /// <param name="option">Match option.</param>
+    /// <param name="value">Value to match.</param>
+    /// <returns>Instance of <see cref="PackageMatchFilter"/>.</returns>
     public static PackageMatchFilter CreatePackageMatchFilter(
         this WindowsPackageManagerFactory factory,
         PackageMatchField field,
@@ -21,6 +30,13 @@ public static class WindowsPackageManagerFactoryExtensions
         return filter;
     }
 
+    /// <summary>
+    /// Creates a new instance of <see cref="PackageMatchFilter"/> with the specified values.
+    /// </summary>
+    /// <param name="factory">Extension method target instance.</param>
+    /// <param name="behavior">Search behavior.</param>
+    /// <param name="catalogReferences">Catalog references.</param>
+    /// <returns>Instance of <see cref="CreateCompositePackageCatalogOptions"/>.</returns>
     public static PackageCatalogReference CreateCompositePackageCatalog(
         this WindowsPackageManagerFactory factory,
         CompositeSearchBehavior behavior,

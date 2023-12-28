@@ -27,7 +27,7 @@ internal class WinGetPackageFinder : IWinGetPackageFinder
     }
 
     /// <inheritdoc/>
-    public async Task<IList<CatalogPackage>> SearchAsync(WinGetCatalog catalog, string query, uint limit = 0)
+    public async Task<IList<CatalogPackage>> SearchAsync(WinGetCatalog catalog, string query, uint limit)
     {
         if (catalog == null)
         {
@@ -46,11 +46,6 @@ internal class WinGetPackageFinder : IWinGetPackageFinder
     /// <inheritdoc />
     public async Task<CatalogPackage> GetPackageAsync(WinGetCatalog catalog, string packageId)
     {
-        if (catalog == null)
-        {
-            throw new CatalogNotInitializedException();
-        }
-
         var matches = await GetPackagesAsync(catalog, new HashSet<string> { packageId });
         if (matches.Count > 0)
         {
@@ -68,7 +63,7 @@ internal class WinGetPackageFinder : IWinGetPackageFinder
             throw new CatalogNotInitializedException();
         }
 
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages: [{string.Join(", ", packageIds)}]");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages: [{string.Join(", ", packageIds)}] from {catalog.GetDescriptiveName()}");
 
         // Skip search if set is empty
         if (!packageIds.Any())
@@ -155,8 +150,7 @@ internal class WinGetPackageFinder : IWinGetPackageFinder
     /// <returns>List of packages</returns>
     private async Task<IList<CatalogPackage>> GetPackagesInternalAsync(WinGetCatalog catalog, FindPackagesOptions options)
     {
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Performing search");
-        var result = new List<CatalogPackage>();
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Performing search on catalog {catalog.GetDescriptiveName()}");
         var findResult = await catalog.Catalog.FindPackagesAsync(options);
         if (findResult.Status != FindPackagesResultStatus.Ok)
         {
@@ -164,16 +158,15 @@ internal class WinGetPackageFinder : IWinGetPackageFinder
             throw new FindPackagesException(findResult.Status);
         }
 
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found {findResult.Matches} results");
-
         // Cannot use foreach or LINQ for out-of-process IVector
         // Bug: https://github.com/microsoft/CsWinRT/issues/1205
+        var result = new List<CatalogPackage>();
         for (var i = 0; i < findResult.Matches.Count; ++i)
         {
-            var catalogPackage = findResult.Matches[i].CatalogPackage;
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found [{catalogPackage.Id}]");
-            result.Add(catalogPackage);
+            result.Add(findResult.Matches[i].CatalogPackage);
         }
+
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found {result.Count} results from catalog {catalog.GetDescriptiveName()} [{string.Join(", ", result.Select(p => p.Id))}]");
 
         return result;
     }

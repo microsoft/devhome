@@ -17,7 +17,7 @@ internal interface IWinGetPackageFinder
     /// <param name="query">Search query</param>
     /// <param name="limit">Maximum number of results to return</param>
     /// <returns>List of packages</returns>
-    public Task<IList<CatalogPackage>> SearchAsync(WinGetCatalog catalog, string query, uint limit = 0);
+    public Task<IList<CatalogPackage>> SearchAsync(WinGetCatalog catalog, string query, uint limit);
 
     /// <summary>
     /// Get packages from the provided catalog

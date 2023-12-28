@@ -39,12 +39,12 @@ internal class WinGetPackageInstaller : IWinGetPackageInstaller
         var package = await _packageFinder.GetPackageAsync(catalog, packageId);
         if (package == null)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Install aborted for package {packageId} because it was not found in the provided catalog");
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Install aborted for package {packageId} because it was not found in the provided catalog {catalog.GetDescriptiveName()}");
             throw new FindPackagesException(FindPackagesResultStatus.CatalogError);
         }
 
         // 2. Install package
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package install for {packageId}");
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
         var installResult = await InstallPackageInternalAsync(package);
         var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
         var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK); // WPM API V4
@@ -56,6 +56,7 @@ internal class WinGetPackageInstaller : IWinGetPackageInstaller
             throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
         }
 
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
         return new InstallPackageResult()
         {
             ExtendedErrorCode = extendedErrorCode,

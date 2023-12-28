@@ -130,7 +130,7 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
         try
         {
             // Clear package cache so next time they are fetched from the new
-            // catalogs connected
+            // catalog connections
             _packageCache.Clear();
 
             // Create and connect to predefined catalogs concurrently
@@ -155,7 +155,7 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
         try
         {
             // Clear package cache so next time they are fetched from the new
-            // catalogs connected
+            // catalog connections
             _packageCache.Clear();
 
             // Recover catalogs that are not alive concurrently

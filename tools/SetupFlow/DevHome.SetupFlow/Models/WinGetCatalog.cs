@@ -12,9 +12,16 @@ internal class WinGetCatalog
 {
     public enum CatalogType
     {
+        // 'winget' source is a predefined catalog that is built-in to WinGet.
         PredefinedWinget,
+
+        // 'msstore' source is a predefined catalog that is built-in to WinGet.
         PredefinedMsStore,
+
+        // A custom catalog used for searching in all catalogs.
         CustomSearch,
+
+        // A custom non-predefined catalog.
         CustomUnknown,
     }
 

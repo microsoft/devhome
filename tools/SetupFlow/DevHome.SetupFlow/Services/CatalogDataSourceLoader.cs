@@ -10,6 +10,7 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services;
+
 public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
 {
     private readonly SemaphoreSlim _lock = new (initialCount: 1, maxCount: 1);

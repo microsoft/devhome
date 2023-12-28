@@ -4,7 +4,6 @@
 using System;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
-using DevHome.SetupFlow.Services.WinGet;
 using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.Models;

@@ -160,5 +160,5 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
     private Uri GetPackageUri(IRestoreApplicationInfo appInfo)
     {
         return _protocolParser.CreateWinGetCatalogPackageUri(appInfo.Id);
-   }
+    }
 }

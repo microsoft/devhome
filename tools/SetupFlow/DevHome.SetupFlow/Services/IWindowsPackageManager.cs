@@ -31,7 +31,6 @@ public interface IWindowsPackageManager
     /// </summary>
     /// <param name="packageUris">Set of package uri</param>
     /// <returns>List of winget package matches</returns>
-    /// <exception cref="FindPackagesException">Exception thrown if the get packages operation failed</exception>
     public Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUris);
 
     /// <summary>
@@ -41,7 +40,6 @@ public interface IWindowsPackageManager
     /// <param name="query">Search query</param>
     /// <param name="limit">Maximum number of results to return. Use 0 for infinite results</param>
     /// <returns>List of winget package matches</returns>
-    /// <exception cref="FindPackagesException">Exception thrown if the search packages operation failed</exception>
     public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit);
 
     /// <summary>

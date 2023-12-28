@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services;
+
 public interface ICatalogDataSourceLoader
 {
     /// <summary>

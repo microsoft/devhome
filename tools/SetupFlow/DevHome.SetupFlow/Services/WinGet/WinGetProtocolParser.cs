@@ -28,14 +28,14 @@ internal class WinGetProtocolParser : IWinGetProtocolParser
     private const string Scheme = "x-ms-winget";
 
     /// <summary>
-    /// Reserved name for the WinGet catalog
+    /// Reserved URI name for the WinGet catalog
     /// </summary>
-    private const string WingetCatalogURIName = "winget";
+    private const string ReservedWingetCatalogURIName = "winget";
 
     /// <summary>
-    /// Reserved name for the Microsoft Store catalog
+    /// Reserved URI name for the Microsoft Store catalog
     /// </summary>
-    private const string MsStoreCatalogURIName = "msstore";
+    private const string ReservedMsStoreCatalogURIName = "msstore";
 
     /// <inheritdoc/>
     public WinGetProtocolParserResult ParsePackageUri(Uri packageUri)
@@ -56,13 +56,13 @@ internal class WinGetProtocolParser : IWinGetProtocolParser
         var catalogName = result.catalogUriName;
 
         // 'winget' catalog
-        if (catalogName == WingetCatalogURIName)
+        if (catalogName == ReservedWingetCatalogURIName)
         {
             return await _catalogConnector.GetPredefinedWingetCatalogAsync();
         }
 
         // 'msstore' catalog
-        if (catalogName == MsStoreCatalogURIName)
+        if (catalogName == ReservedMsStoreCatalogURIName)
         {
             return await _catalogConnector.GetPredefinedMsStoreCatalogAsync();
         }
@@ -72,10 +72,10 @@ internal class WinGetProtocolParser : IWinGetProtocolParser
     }
 
     /// <inheritdoc/>
-    public Uri CreateWinGetCatalogPackageUri(string packageId) => new ($"{Scheme}://{WingetCatalogURIName}/{packageId}");
+    public Uri CreateWinGetCatalogPackageUri(string packageId) => new ($"{Scheme}://{ReservedWingetCatalogURIName}/{packageId}");
 
     /// <inheritdoc/>
-    public Uri CreateMsStoreCatalogPackageUri(string packageId) => new ($"{Scheme}://{MsStoreCatalogURIName}/{packageId}");
+    public Uri CreateMsStoreCatalogPackageUri(string packageId) => new ($"{Scheme}://{ReservedMsStoreCatalogURIName}/{packageId}");
 
     /// <inheritdoc/>
     public Uri CreateCustomCatalogPackageUri(string packageId, string catalogName) => new ($"{Scheme}://{catalogName}/{packageId}");
