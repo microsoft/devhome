@@ -23,9 +23,8 @@ public interface IWindowsPackageManager
     /// Install a package on the user's machine.
     /// </summary>
     /// <param name="package">Package to install</param>
-    /// <param name="activityId">Guid to correlate this task to the setupflow activity.</param>
     /// <returns>Install package result</returns>
-    public Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package, Guid activityId);
+    public Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package);
 
     /// <summary>
     /// Checks if AppInstaller has an available update
@@ -62,7 +61,7 @@ public interface IWindowsPackageManager
     /// <param name="limit">Maximum number of results to return. Use 0 for infinite results</param>
     /// <returns>List of winget package matches</returns>
     /// <exception cref="FindPackagesException">Exception thrown if the search packages operation failed</exception>
-    public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit = 0);
+    public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit);
 
     /// <summary>
     /// Check if the provided package is a 'msstore' package

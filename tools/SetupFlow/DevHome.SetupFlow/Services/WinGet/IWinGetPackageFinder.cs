@@ -34,4 +34,11 @@ public interface IWinGetPackageFinder
     /// <param name="packageId">Package id</param>
     /// <returns>Package. Or <see langword="null"/> if not found.</returns>
     public Task<CatalogPackage> GetPackageAsync(WinGetCatalog catalog, string packageId);
+
+    /// <summary>
+    /// Check if the package requires elevation
+    /// </summary>
+    /// <param name="package">Package to check</param>
+    /// <returns>True if the package requires elevation</returns>
+    public bool IsElevationRequired(CatalogPackage package);
 }
