@@ -33,10 +33,13 @@ internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
     }
 
     /// <inheritdoc />
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUris)
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris)
     {
+        // Remove duplicates (optimization to prevent querying the same package multiple times)
+        var distinctPackageUris = packageUris.Distinct();
+
         // Find packages in the cache and packages that need to be queried
-        var cachedPackages = _packageCache.GetPackages(packageUris, out var packageUrisToQuery);
+        var cachedPackages = _packageCache.GetPackages(distinctPackageUris, out var packageUrisToQuery);
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Packages loaded from cache [{string.Join(", ", cachedPackages.Select(p => $"({p.Id}, {p.CatalogName})"))}]");
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Package URIs not found in cache [{string.Join(", ", packageUrisToQuery)}]");
 
@@ -69,13 +72,32 @@ internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
 
         // Wait for all packages to be retrieved
         await Task.WhenAll(getPackagesTasks);
-        return getPackagesTasks.SelectMany(p => p.Result).Concat(cachedPackages).ToList();
+        var unorderedPackagesMap = getPackagesTasks
+            .SelectMany(p => p.Result)
+            .Concat(cachedPackages)
+            .ToDictionary(p => _protocolParser.CreatePackageUri(p), p => p);
+
+        // Order packages by the order of the input URIs using a dictionary
+        var orderedPackages = new List<IWinGetPackage>();
+        foreach (var packageUri in packageUris)
+        {
+            if (unorderedPackagesMap.TryGetValue(packageUri, out var package))
+            {
+                orderedPackages.Add(package);
+            }
+            else
+            {
+                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to find package URI '{packageUri}'");
+            }
+        }
+
+        return orderedPackages;
     }
 
     /// <summary>
     /// Group packages by their catalogs
     /// </summary>
-    /// <param name="packageUriSet">Set of package uris</param>
+    /// <param name="packageUriSet">Package URIs</param>
     /// <returns>Dictionary of package ids by catalog</returns>
     private List<List<WinGetProtocolParserResult>> GroupParsedUrisByCatalog(IEnumerable<Uri> packageUriSet)
     {

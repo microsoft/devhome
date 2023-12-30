@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
-using DevHome.SetupFlow.Services.WinGet;
 using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Windows.Storage.Streams;
 
@@ -18,19 +17,16 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
 {
     private readonly IRestoreInfo _restoreInfo;
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly IWinGetProtocolParser _protocolParser;
     private IRestoreDeviceInfo _restoreDeviceInfo;
 
     public WinGetPackageRestoreDataSource(
         ISetupFlowStringResource stringResource,
         IWindowsPackageManager wpm,
-        IWinGetProtocolParser protocolParser,
         IRestoreInfo restoreInfo)
         : base(wpm)
     {
         _stringResource = stringResource;
         _restoreInfo = restoreInfo;
-        _protocolParser = protocolParser;
     }
 
     /// <summary>
@@ -70,15 +66,18 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
         try
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, "Finding packages from restore data");
-            var packages = await GetPackagesAsync(
-                _restoreDeviceInfo.WinGetApplicationsInfo,
-                appInfo => GetPackageUri(appInfo),
-                async (package, appInfo) =>
+            var packages = await GetPackagesAsync(_restoreDeviceInfo.WinGetApplicationsInfo.Select(p => GetPackageUri(p)).ToList());
+            foreach (var package in packages)
             {
+                var packageUri = WindowsPackageManager.CreatePackageUri(package);
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for restore package {package.Id}");
-                package.LightThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Light);
-                package.DarkThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Dark);
-            });
+                var appInfo = _restoreDeviceInfo.WinGetApplicationsInfo.FirstOrDefault(p => packageUri == GetPackageUri(p));
+                if (appInfo != null)
+                {
+                    package.LightThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Light);
+                    package.DarkThemeIcon = await GetRestoreApplicationIconAsync(appInfo, RestoreApplicationIconTheme.Dark);
+                }
+            }
 
             if (packages.Any())
             {
@@ -159,6 +158,6 @@ public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
     /// <remarks>All restored applications are from winget catalog</remarks>
     private Uri GetPackageUri(IRestoreApplicationInfo appInfo)
     {
-        return _protocolParser.CreateWinGetCatalogPackageUri(appInfo.Id);
+        return WindowsPackageManager.CreateWinGetCatalogPackageUri(appInfo.Id);
     }
 }

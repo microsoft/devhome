@@ -14,7 +14,7 @@ internal interface IWinGetOperations
     public Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package);
 
     /// <inheritdoc cref="IWinGetGetPackageOperation.GetPackagesAsync"/>"
-    public Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUris);
+    public Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris);
 
     /// <inheritdoc cref="IWinGetSearchOperation.SearchAsync"/>"
     public Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit);

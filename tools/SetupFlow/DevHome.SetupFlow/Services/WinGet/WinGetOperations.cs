@@ -31,7 +31,7 @@ internal class WinGetOperations : IWinGetOperations
     }
 
     /// <inheritdoc />
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUris)
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris)
     {
         return await _getPackageOperation.GetPackagesAsync(packageUris);
     }

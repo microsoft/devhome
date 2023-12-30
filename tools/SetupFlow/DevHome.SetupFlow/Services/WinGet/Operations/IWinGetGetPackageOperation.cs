@@ -11,9 +11,9 @@ namespace DevHome.SetupFlow.Services.WinGet.Operations;
 internal interface IWinGetGetPackageOperation
 {
     /// <summary>
-    /// Get packages from a set of package uri.
+    /// Get packages from a list of package uri.
     /// </summary>
-    /// <param name="packageUris">Set of package uri</param>
+    /// <param name="packageUris">List of package uri</param>
     /// <returns>List of winget package matches</returns>
-    public Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUris);
+    public Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris);
 }
