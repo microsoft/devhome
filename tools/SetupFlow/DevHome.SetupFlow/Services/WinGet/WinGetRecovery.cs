@@ -18,6 +18,7 @@ internal class WinGetRecovery : IWinGetRecovery
     // RPC error codes to recover from
     private const int RpcServerUnavailable = unchecked((int)0x800706BA);
     private const int RpcCallFailed = unchecked((int)0x800706BE);
+    private const int PackageUpdating = unchecked((int)0x80073D00);
 
     private readonly IWinGetCatalogConnector _catalogConnector;
 
@@ -45,7 +46,7 @@ internal class WinGetRecovery : IWinGetRecovery
                     Log.Logger?.ReportError(Log.Component.AppManagement, $"Catalog used by the action is not initialized", e);
                     await RecoveryAsync(attempt);
                 }
-                catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed)
+                catch (COMException e) when (e.HResult == RpcServerUnavailable || e.HResult == RpcCallFailed || e.HResult == PackageUpdating)
                 {
                     Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to operate on out-of-proc object with error code: 0x{e.HResult:x}", e);
                     await RecoveryAsync(attempt);
