@@ -58,7 +58,7 @@ internal class WinGetPackageCache : IWinGetPackageCache
     /// <inheritdoc />
     public bool TryAddPackage(Uri packageUri, IWinGetPackage package)
     {
-        lock (_cache)
+        lock (_lock)
         {
             return _cache.TryAdd(packageUri, package);
         }

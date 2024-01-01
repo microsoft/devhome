@@ -25,20 +25,11 @@ internal class WinGetOperations : IWinGetOperations
     }
 
     /// <inheritdoc />
-    public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package)
-    {
-        return await _installOperation.InstallPackageAsync(package);
-    }
+    public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package) => await _installOperation.InstallPackageAsync(package);
 
     /// <inheritdoc />
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris)
-    {
-        return await _getPackageOperation.GetPackagesAsync(packageUris);
-    }
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris) => await _getPackageOperation.GetPackagesAsync(packageUris);
 
     /// <inheritdoc />
-    public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit)
-    {
-        return await _searchOperation.SearchAsync(query, limit);
-    }
+    public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit) => await _searchOperation.SearchAsync(query, limit);
 }
