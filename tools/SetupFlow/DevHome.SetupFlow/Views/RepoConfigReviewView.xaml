@@ -22,6 +22,7 @@
             <Style x:Key="ListViewItemStretchStyle" TargetType="ListViewItem">
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="Margin" Value="0" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
                 <Setter Property="Padding" Value="0" />
             </Style>
         </ResourceDictionary>
@@ -55,9 +56,6 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="models:CloneRepoTask">
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="40"/>
-                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="1.5*" />
@@ -72,7 +70,7 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <FontIcon Grid.Column="0" FontSize="16" FontFamily="{ThemeResource DevHomeFluentIcons}" Glyph="{x:Bind RepositoryToClone.IsPrivate, Mode=OneWay, Converter={StaticResource BoolToGlyphConverter}}" HorizontalAlignment="Left"/>
-                                <TextBlock Grid.Column="1" Text="{x:Bind RepositoryOwnerAndName}" VerticalAlignment="Center" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis">
+                                <TextBlock Grid.Column="1" Text="{x:Bind RepositoryOwnerAndName}" HorizontalAlignment="Left" TextTrimming="CharacterEllipsis" VerticalAlignment="Center">
                                      <i:Interaction.Behaviors>
                                         <ic:EventTriggerBehavior EventName="IsTextTrimmedChanged">
                                             <ic:InvokeCommandAction Command="{x:Bind RepoNameTrimmedCommand}"/>

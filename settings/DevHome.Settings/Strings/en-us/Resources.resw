@@ -440,6 +440,18 @@
     <value>https://go.microsoft.com/fwlink/?linkid=2236981</value>
     <comment>This is the microsoft code of conduct link.</comment>
   </data>
+  <data name="Settings_Feedback_PhysicalMemory" xml:space="preserve">
+    <value>Physical Memory</value>
+    <comment>Label for displaying device's memory</comment>
+  </data>
+  <data name="Settings_Feedback_ProcessorArchitecture" xml:space="preserve">
+    <value>Processor Architecture</value>
+    <comment>Label for displaying device's processor architecture</comment>
+  </data>
+  <data name="Settings_Feedback_Extensions" xml:space="preserve">
+    <value>Extensions</value>
+    <comment>Label for displaying device's installed extensions</comment>
+  </data>
   <data name="Settings_Accounts_NoProvidersContentDialog_SecondaryButtonText" xml:space="preserve">
     <value>Cancel</value>
   </data>

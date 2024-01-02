@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
@@ -36,6 +37,7 @@ public partial class SearchViewModel : ObservableObject
     private readonly IWindowsPackageManager _wpm;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly PackageProvider _packageProvider;
+    private readonly IScreenReaderService _screenReaderService;
     private const int SearchResultLimit = 20;
 
     /// <summary>
@@ -55,18 +57,19 @@ public partial class SearchViewModel : ObservableObject
     /// <summary>
     /// Gets the localized string for <see cref="StringResourceKey.ResultCount"/>
     /// </summary>
-    public string SearchCountText => _stringResource.GetLocalized(StringResourceKey.ResultCount, ResultPackages.Count);
+    public string SearchCountText => ResultPackages.Count == 1 ? _stringResource.GetLocalized(StringResourceKey.ResultCountSingular, ResultPackages.Count, SearchText) : _stringResource.GetLocalized(StringResourceKey.ResultCountPlural, ResultPackages.Count, SearchText);
 
     /// <summary>
     /// Gets the localized string for <see cref="StringResourceKey.NoSearchResultsFoundTitle"/>
     /// </summary>
     public string NoSearchResultsText => _stringResource.GetLocalized(StringResourceKey.NoSearchResultsFoundTitle, SearchText);
 
-    public SearchViewModel(IWindowsPackageManager wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider)
+    public SearchViewModel(IWindowsPackageManager wpm, ISetupFlowStringResource stringResource, PackageProvider packageProvider, IScreenReaderService screenReaderService)
     {
         _wpm = wpm;
         _stringResource = stringResource;
         _packageProvider = packageProvider;
+        _screenReaderService = screenReaderService;
     }
 
     /// <summary>
@@ -99,6 +102,17 @@ public partial class SearchViewModel : ObservableObject
             // Update the UI only if the operation was successful
             SearchText = text;
             ResultPackages = await Task.Run(() => matches.Select(m => _packageProvider.CreateOrGet(m)).ToList());
+
+            // Announce the results.
+            if (ResultPackages.Any())
+            {
+                _screenReaderService.Announce(SearchCountText);
+            }
+            else
+            {
+                _screenReaderService.Announce(NoSearchResultsText);
+            }
+
             return (SearchResultStatus.Ok, ResultPackages);
         }
         catch (WindowsPackageManagerRecoveryException)

@@ -62,10 +62,10 @@ jobs:
         cmd /c "$env:VSDevCmd" "&" msbuild -t:restore /m /p:Configuration=Release,Platform=${{ matrix.platform }} DevHome.sln
 
     - name: Build_SDK
-      run: cmd /c "$env:VSDevCmd" "&" msbuild /m /p:Configuration=Release,Platform=${{ matrix.platform }} extensionsdk\\DevHomeSDK.sln
+      run: cmd /c "$env:VSDevCmd" "&" msbuild /p:Configuration=Release,Platform=${{ matrix.platform }} extensionsdk\\DevHomeSDK.sln
 
     - name: Build_DevHome
-      run: cmd /c "$env:VSDevCmd" "&" msbuild /m /p:Configuration=${{ matrix.configuration }},Platform=${{ matrix.platform }} DevHome.sln
+      run: cmd /c "$env:VSDevCmd" "&" msbuild /p:Configuration=${{ matrix.configuration }},Platform=${{ matrix.platform }} DevHome.sln
 
     - name: Find vstest.console.exe
       if: ${{ matrix.platform != 'arm64' }}
