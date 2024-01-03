@@ -56,13 +56,6 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
 
             // Update the catalog count in case the extension added or removed groups
             _catalogCount += extensionGroups.Count;
-
-            // Load catalogs from each group
-            if (!isExtensionEnabled)
-            {
-                return;
-            }
-
             foreach (var group in extensionGroups)
             {
                 try
