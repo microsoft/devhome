@@ -83,11 +83,8 @@ public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
     {
         try
         {
-            if (dataSource.CatalogCount > 0)
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
-                return await Task.Run(async () => await dataSource.LoadCatalogsAsync());
-            }
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
+            return await Task.Run(async () => await dataSource.LoadCatalogsAsync());
         }
         catch (Exception e)
         {

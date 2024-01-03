@@ -26,4 +26,6 @@ public interface IExtensionService
     public void EnableExtension(string extensionUniqueId);
 
     public void DisableExtension(string extensionUniqueId);
+
+    public bool IsEnabled(string extensionUniqueId);
 }

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,7 +62,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     protected async override Task OnEachNavigateToAsync()
     {
         SelectDefaultView();
-        await _packageCatalogListViewModel.LoadCatalogsAsync();
+        await Task.CompletedTask;
     }
 
     private void SelectDefaultView()

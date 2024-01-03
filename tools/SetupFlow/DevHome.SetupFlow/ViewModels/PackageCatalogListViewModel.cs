@@ -8,16 +8,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Behaviors;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
+using Microsoft.UI.Dispatching;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class PackageCatalogListViewModel : ObservableObject
 {
     private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
+    private readonly IExtensionService _extensionService;
     private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
+    private readonly DispatcherQueue _dispatcher;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CatalogFullPath))]
@@ -41,9 +46,12 @@ public partial class PackageCatalogListViewModel : ObservableObject
     public ObservableCollection<int> PackageCatalogShimmers { get; } = new ();
 
     public PackageCatalogListViewModel(
+        IExtensionService extensionService,
         ICatalogDataSourceLoader catalogDataSourceLoader,
         PackageCatalogViewModelFactory packageCatalogViewModelFactory)
     {
+        _extensionService = extensionService;
+        _dispatcher = DispatcherQueue.GetForCurrentThread();
         _catalogDataSourceLoader = catalogDataSourceLoader;
         _packageCatalogViewModelFactory = packageCatalogViewModelFactory;
     }
@@ -51,8 +59,9 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// <summary>
     /// Load the package catalogs to display
     /// </summary>
-    public async Task LoadCatalogsAsync()
+    private async Task LoadCatalogsAsync()
     {
+        PackageCatalogs.Clear();
         AddShimmers(_catalogDataSourceLoader.CatalogCount);
         try
         {
@@ -76,7 +85,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
         // Remove any remaining shimmers:
         // This can happen if for example a catalog was detected but not
         // displayed (e.g. catalog with no packages to display)
-        RemoveShimmers(_catalogDataSourceLoader.CatalogCount);
+        RemoveShimmers(PackageCatalogShimmers.Count);
     }
 
     /// <summary>
@@ -118,9 +127,24 @@ public partial class PackageCatalogListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void OnLoaded()
+    private async Task OnLoadedAsync()
     {
+        // Listen for extension changes
+        _extensionService.OnExtensionsChanged += OnExtensionChangedAsync;
+
         // When the view is loaded, ensure we exit the view all packages mode
         ExitViewAllPackages();
+        await LoadCatalogsAsync();
+    }
+
+    [RelayCommand]
+    private void OnUnloaded()
+    {
+        _extensionService.OnExtensionsChanged -= OnExtensionChangedAsync;
+    }
+
+    private async void OnExtensionChangedAsync(object sender, EventArgs e)
+    {
+        await _dispatcher.EnqueueAsync(() => LoadCatalogsAsync());
     }
 }

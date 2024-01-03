@@ -19,95 +19,103 @@ namespace DevHome.SetupFlow.Services;
 public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
 {
     private readonly IExtensionService _extensionService;
-    private readonly IList<IFeaturedApplicationsGroup> _groups;
+    private int _catalogCount;
 
     public WinGetFeaturedApplicationsDataSource(IWindowsPackageManager wpm, IExtensionService extensionService)
         : base(wpm)
     {
         _extensionService = extensionService;
-        _groups = new List<IFeaturedApplicationsGroup>();
     }
 
-    public override int CatalogCount => _groups.Count;
+    /// <inheritdoc />
+    public override int CatalogCount => _catalogCount;
 
+    /// <inheritdoc />
     public async override Task InitializeAsync()
     {
-        var extensions = await _extensionService.GetInstalledExtensionsAsync(ProviderType.FeaturedApplications);
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Initializing featured applications from all extensions");
-        foreach (var extension in extensions)
+        _catalogCount = 0;
+        await ForEachExtensionAsync(async (extensionGroups, isExtensionEnabled) =>
         {
-            var extensionName = extension.Name;
-            try
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting featured applications provider from extension '{extensionName}'");
-                var provider = await extension.GetProviderAsync<IFeaturedApplicationsProvider>();
-                if (provider != null)
-                {
-                    var groupsResult = await provider.GetFeaturedApplicationsGroupsAsync();
-                    if (groupsResult.Result.Status == ProviderOperationStatus.Success)
-                    {
-                        var groups = groupsResult.FeaturedApplicationsGroups;
-                        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found {groups.Count} groups from extension '{extensionName}'");
-
-                        // Cannot use foreach or LINQ for out-of-process IVector
-                        // Bug: https://github.com/microsoft/CsWinRT/issues/1205
-                        for (var i = 0; i < groups.Count; ++i)
-                        {
-                            _groups.Add(groups[i]);
-                        }
-                    }
-                    else
-                    {
-                        Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get featured applications groups from extension '{extensionName}': {groupsResult.Result.DiagnosticText}", groupsResult.Result.ExtendedError);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading featured applications from extension {extensionName}", e);
-            }
-        }
+            // Get the total number of packages from all groups
+            _catalogCount += isExtensionEnabled ? extensionGroups.Count : 0;
+            await Task.CompletedTask;
+        });
     }
 
+    /// <inheritdoc />
     public async override Task<IList<PackageCatalog>> LoadCatalogsAsync()
     {
         var result = new List<PackageCatalog>();
-        var locale = CultureInfo.CurrentCulture.Name;
-        foreach (var group in _groups)
+        _catalogCount = 0;
+        await ForEachExtensionAsync(async (extensionGroups, isExtensionEnabled) =>
         {
-            try
+            if (!isExtensionEnabled)
             {
-                var groupTitle = group.GetTitle(locale);
-                var appsResult = group.GetApplications();
-                if (appsResult.Result.Status == ProviderOperationStatus.Success)
+                return;
+            }
+
+            // Update the catalog count in case the extension added or removed groups
+            _catalogCount += extensionGroups.Count;
+
+            // Load catalogs from each group
+            if (!isExtensionEnabled)
+            {
+                return;
+            }
+
+            foreach (var group in extensionGroups)
+            {
+                try
                 {
-                    var packages = await GetPackagesAsync(ParseURIs(appsResult.FeaturedApplications));
-                    if (packages.Any())
+                    var catalog = await LoadCatalogAsync(group);
+                    if (catalog != null)
                     {
-                        result.Add(new PackageCatalog()
-                        {
-                            Name = groupTitle,
-                            Description = group.GetDescription(locale),
-                            Packages = packages.ToReadOnlyCollection(),
-                        });
-                    }
-                    else
-                    {
-                        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"No packages found in featured applications group '{groupTitle}'");
+                        result.Add(catalog);
                     }
                 }
-                else
+                catch (Exception e)
                 {
-                    Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get featured applications group '{groupTitle}': {appsResult.Result.DiagnosticText}", appsResult.Result.ExtendedError);
+                    Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from featured applications group.", e);
                 }
             }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading packages from featured applications group.", e);
-            }
-        }
+        });
 
         return result;
+    }
+
+    /// <summary>
+    /// Load a catalog from a featured applications group.
+    /// </summary>
+    /// <param name="group">Featured applications group</param>
+    /// <returns>Package catalog, or null if no packages found or an error occurred</returns>
+    private async Task<PackageCatalog> LoadCatalogAsync(IFeaturedApplicationsGroup group)
+    {
+        var locale = CultureInfo.CurrentCulture.Name;
+        var groupTitle = group.GetTitle(locale);
+        var appsResult = group.GetApplications();
+        if (appsResult.Result.Status == ProviderOperationStatus.Success)
+        {
+            var packages = await GetPackagesAsync(ParseURIs(appsResult.FeaturedApplications));
+            if (packages.Any())
+            {
+                return new ()
+                {
+                    Name = groupTitle,
+                    Description = group.GetDescription(locale),
+                    Packages = packages.ToReadOnlyCollection(),
+                };
+            }
+            else
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"No packages found in featured applications group '{groupTitle}'");
+            }
+        }
+        else
+        {
+            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get featured applications group '{groupTitle}': {appsResult.Result.DiagnosticText}", appsResult.Result.ExtendedError);
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -131,5 +139,54 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Execute an action for each featured applications group from all extensions.
+    /// </summary>
+    /// <param name="action">Action to execute</param>
+    private async Task ForEachExtensionAsync(Func<IReadOnlyList<IFeaturedApplicationsGroup>, bool, Task> action)
+    {
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Getting featured applications from all extensions");
+        var extensions = await _extensionService.GetInstalledExtensionsAsync(ProviderType.FeaturedApplications);
+        foreach (var extension in extensions)
+        {
+            var extensionName = extension.Name;
+
+            try
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting featured applications provider from extension '{extensionName}'");
+                var provider = await extension.GetProviderAsync<IFeaturedApplicationsProvider>();
+                if (provider != null)
+                {
+                    var groupsResult = await provider.GetFeaturedApplicationsGroupsAsync();
+                    if (groupsResult.Result.Status == ProviderOperationStatus.Success)
+                    {
+                        var groups = groupsResult.FeaturedApplicationsGroups;
+
+                        // Copy list items to the current process
+                        // Cannot use foreach or LINQ for out-of-process IVector
+                        // Bug: https://github.com/microsoft/CsWinRT/issues/1205
+                        var groupList = new List<IFeaturedApplicationsGroup>();
+                        for (var i = 0; i < groups.Count; ++i)
+                        {
+                            groupList.Add(groups[i]);
+                        }
+
+                        var isEnabled = _extensionService.IsEnabled(extension.ExtensionUniqueId);
+                        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Found {groups.Count} groups from extension '{extensionName}' [Enabled = {isEnabled}]");
+                        await action(groupList, isEnabled);
+                    }
+                    else
+                    {
+                        Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to get featured applications groups from extension '{extensionName}': {groupsResult.Result.DiagnosticText}", groupsResult.Result.ExtendedError);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Logger?.ReportError(Log.Component.AppManagement, $"Error loading featured applications from extension {extensionName}", e);
+            }
+        }
     }
 }
