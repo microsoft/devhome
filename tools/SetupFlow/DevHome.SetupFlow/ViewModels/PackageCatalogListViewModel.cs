@@ -70,7 +70,6 @@ public partial class PackageCatalogListViewModel : ObservableObject
                 foreach (var catalog in dataSourceCatalogs)
                 {
                     var catalogVM = await Task.Run(() => _packageCatalogViewModelFactory(catalog));
-                    catalogVM.CanAddAllPackages = true;
                     PackageCatalogs.Add(catalogVM);
                 }
 
