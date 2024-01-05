@@ -8,7 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
+using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
@@ -21,6 +23,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.System;
+using Log = DevHome.Dashboard.Helpers.Log;
 
 namespace DevHome.Dashboard.Views;
 
@@ -45,6 +48,8 @@ public partial class DashboardView : ToolPage
 
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
+    private readonly ILocalSettingsService _localSettingsService;
+
     private const string DraggedWidget = "DraggedWidget";
     private const string DraggedIndex = "DraggedIndex";
 
@@ -58,6 +63,7 @@ public partial class DashboardView : ToolPage
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
 
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
 
         ActualThemeChanged += OnActualThemeChanged;
 
@@ -125,7 +131,15 @@ public partial class DashboardView : ToolPage
             // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
             await ViewModel.WidgetIconService.CacheAllWidgetIconsAsync();
 
-            await RestorePinnedWidgetsAsync();
+            if (await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun))
+            {
+                await RestorePinnedWidgetsAsync();
+            }
+            else
+            {
+                await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
+                await PinDefaultWidgets();
+            }
         }
         else
         {
@@ -149,6 +163,68 @@ public partial class DashboardView : ToolPage
 
         LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
         ViewModel.IsLoading = false;
+    }
+
+    private async Task PinDefaultWidgets()
+    {
+        string[] defaultWidgetDefinitionIds =
+        {
+#if CANARY_BUILD
+            "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
+            "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
+            "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
+#elif STABLE_BUILD
+            "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
+            "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
+            "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
+#else
+            "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
+            "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
+            "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
+#endif
+        };
+
+        var catalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+
+        if (catalog is null)
+        {
+            Log.Logger()?.ReportError("AddWidgetDialog", $"Trying to pin default widgets, but WidgetCatalog is null.");
+            return;
+        }
+
+        var widgetDefinitions = await Task.Run(() => catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle));
+        foreach (var widgetDefinition in widgetDefinitions)
+        {
+            var id = widgetDefinition.Id;
+            if (defaultWidgetDefinitionIds.Contains(id))
+            {
+                await PinDefaultWidget(widgetDefinition);
+            }
+        }
+    }
+
+    private async Task PinDefaultWidget(WidgetDefinition defaultWidgetDefinition)
+    {
+        try
+        {
+            // Create widget
+            var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
+            var size = WidgetHelpers.GetDefaultWidgetSize(defaultWidgetDefinition.GetWidgetCapabilities());
+            var newWidget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(defaultWidgetDefinition.Id, size));
+
+            // Set custom state on new widget.
+            var position = PinnedWidgets.Count;
+            var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
+            Log.Logger()?.ReportDebug("DashboardView", $"SetCustomState: {newCustomState}");
+            await newWidget.SetCustomStateAsync(newCustomState);
+
+            // Put new widget on the Dashboard.
+            await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError("AddWidgetDialog", $"PinDefaultWidget failed: ", ex);
+        }
     }
 
     private async Task RestorePinnedWidgetsAsync()
