@@ -17,7 +17,6 @@
 
     <Page.Resources>
         <ResourceDictionary>
-            <converters:EmptyStringToObjectConverter x:Key="EmptyStringToVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/LightTheme/Background.png</x:String>
@@ -278,6 +277,7 @@
                                                 VerticalAlignment="Top"
                                                 TextTrimming="WordEllipsis"
                                                 Text="{x:Bind Description}"/>
+
                                             <HyperlinkButton
                                                     Content="{x:Bind Link}"
                                                     Foreground="{ThemeResource LearnMoreForeground}"
