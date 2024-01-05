@@ -136,7 +136,7 @@ public sealed partial class FeedbackPage : Page
             var extensionsInfo = string.Empty;
             if (ReportBugIncludeExtensions.IsChecked.GetValueOrDefault())
             {
-                extensionsInfo = HttpUtility.UrlEncode(GetExtensions());
+                extensionsInfo = HttpUtility.UrlEncode(GetExtensions() + "\n" + GetWidgetService());
             }
 
             var otherSoftwareText = "OS Build Version: " + GetOSVersion() + "\n.NET Version: " + GetDotNetVersion();
@@ -196,6 +196,7 @@ public sealed partial class FeedbackPage : Page
     private void ShowExtensionsInfoExpander_Expanding(Expander sender, ExpanderExpandingEventArgs args)
     {
         ReportBugIncludeExtensionsList.Text = GetExtensions();
+        WidgetServiceInfo.Text = GetWidgetService();
     }
 
     private async void Reload()
@@ -326,6 +327,30 @@ public sealed partial class FeedbackPage : Page
         }
 
         return extensionsStr;
+    }
+
+    private string GetWidgetService()
+    {
+        var stringResource = new StringResource("DevHome.Settings/Resources");
+        var widgetServiceString = stringResource.GetLocalized("Settings_Feedback_WidgetService") + ": \n";
+        var packageDeploymentService = Application.Current.GetService<IPackageDeploymentService>();
+
+        // Only one package is expected in total from these two queries, but print anything just in case.
+        const string webExperienceFamilyName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
+        var webPackages = packageDeploymentService.FindPackagesForCurrentUser(webExperienceFamilyName);
+        foreach (var package in webPackages)
+        {
+            widgetServiceString += package.Id.FullName + "\n";
+        }
+
+        const string widgetServiceFamilyName = "Microsoft.WidgetsPlatformRuntime_8wekyb3d8bbwe";
+        var widgetPackages = packageDeploymentService.FindPackagesForCurrentUser(widgetServiceFamilyName);
+        foreach (var package in widgetPackages)
+        {
+            widgetServiceString += package.Id.FullName + "\n";
+        }
+
+        return widgetServiceString;
     }
 
     private async void BuildExtensionButtonClicked(object sender, RoutedEventArgs e)

@@ -130,6 +130,18 @@
     <value>+ Add new widget</value>
     <comment>The hyperlink to bring the user to the Add Widget dialog. Shows if the user hasn't added any widgets.</comment>
   </data>
+  <data name="RestartDevHomeMessage.Text" xml:space="preserve">
+    <value>We're having trouble displaying widgets. Restarting Dev Home may help.</value>
+    <comment>Message shown when there's no widget service and the user should restart Dev Home.</comment>
+  </data>
+  <data name="UpdateWidgetsMessage.Text" xml:space="preserve">
+    <value>You do not have the required version of the Windows Web Experience Pack to display widgets. Please ensure you have the latest version installed and then restart Dev Home.</value>
+    <comment>Message shown when no widgets have been added to the Dashboard</comment>
+  </data>
+  <data name="UpdateWidgetsMessageLink.Content" xml:space="preserve">
+    <value>Get in Store app</value>
+    <comment>Button text to go to store listing</comment>
+  </data>
   <data name="WidgetErrorCardDisplayText" xml:space="preserve">
     <value>This widget could not be displayed</value>
     <comment>Message shown in the widget if the widget was given bad data and can't be rendered.</comment>

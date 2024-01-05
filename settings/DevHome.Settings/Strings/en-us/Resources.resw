@@ -268,8 +268,8 @@
     <comment>Opt into including experimentation information into your issue template</comment>
   </data>
   <data name="Settings_Feedback_ReportBug_IncludeExtensions.Content" xml:space="preserve">
-    <value>Include installed Dev Home extensions</value>
-    <comment>Opt into including information on extensions into your issue template</comment>
+    <value>Include installed Dev Home extensions and related packages</value>
+    <comment>Opt into including information on extensions and related packages into your issue template</comment>
   </data>
   <data name="Settings_Feedback_ReportBug_IncludeSystemInfo.Content" xml:space="preserve">
     <value>Include my system information</value>
@@ -451,6 +451,10 @@
   <data name="Settings_Feedback_Extensions" xml:space="preserve">
     <value>Extensions</value>
     <comment>Label for displaying device's installed extensions</comment>
+  </data>
+  <data name="Settings_Feedback_WidgetService" xml:space="preserve">
+    <value>Widget Service</value>
+    <comment>Label for displaying device's installed widget service</comment>
   </data>
   <data name="Settings_Accounts_NoProvidersContentDialog_SecondaryButtonText" xml:space="preserve">
     <value>Cancel</value>
