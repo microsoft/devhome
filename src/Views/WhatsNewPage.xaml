@@ -17,7 +17,7 @@
 
     <Page.Resources>
         <ResourceDictionary>
-            <converters:EmptyStringToObjectConverter x:Key="EmptyStringToBoolConverter" EmptyValue="False" NotEmptyValue="True"/>
+            <converters:EmptyStringToObjectConverter x:Key="EmptyStringToVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/LightTheme/Background.png</x:String>
@@ -158,14 +158,12 @@
                                         Text="{x:Bind Description}"/>
 
                                     <HyperlinkButton
-                                        Content="{x:Bind Link}"
-                                        IsTabStop="{x:Bind Link, Converter={StaticResource EmptyStringToBoolConverter}, Mode=OneWay}"
-                                        Foreground="{ThemeResource LearnMoreForeground}"
-                                        NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
-                                        Padding="0"
-                                        Margin="0"
-                                        Visibility="{x:Bind ShouldShowLink}"/>
-
+                                            Content="{x:Bind Link}"
+                                            Foreground="{ThemeResource LearnMoreForeground}"
+                                            NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
+                                            Padding="0"
+                                            Margin="0"
+                                            Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
                                     <Button 
                                         Margin="0 0 0 10"
                                         Padding="50 5 50 5"
@@ -280,16 +278,14 @@
                                                 VerticalAlignment="Top"
                                                 TextTrimming="WordEllipsis"
                                                 Text="{x:Bind Description}"/>
-
                                             <HyperlinkButton
-                                                Content="{x:Bind Link}"
-                                                IsTabStop="{x:Bind Link, Converter={StaticResource EmptyStringToBoolConverter}, Mode=OneWay}"
-                                                Foreground="{ThemeResource LearnMoreForeground}"
-                                                NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
-                                                VerticalAlignment="Top"
-                                                Padding="0"
-                                                Margin="0"
-                                                Visibility="{x:Bind ShouldShowLink}" />
+                                                    Content="{x:Bind Link}"
+                                                    Foreground="{ThemeResource LearnMoreForeground}"
+                                                    NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
+                                                    VerticalAlignment="Top"
+                                                    Padding="0"
+                                                    Margin="0"
+                                                    Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
                                         </controls:WrapPanel>
                                     </StackPanel>
                                 </ScrollViewer>
