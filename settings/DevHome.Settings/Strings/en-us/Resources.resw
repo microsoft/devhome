@@ -433,7 +433,7 @@
   </data>
   <data name="Settings_Feedback_ReportSecurity_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Learn more</value>
-    <comment>Click on this link if you want to learn more and read the security policy. View is an action.</comment>
+    <comment>Click on this link if you want to learn more and read the security policy. View is an action. Narrated by the narrator.</comment>
   </data>
   <data name="Settings_Feedback_LocalizationIssue_LanguageAffected.Header" xml:space="preserve">
     <value>Language</value>
@@ -528,8 +528,10 @@
   </data>
   <data name="Settings_Feedback_BuildExtension_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Learn more</value>
+    <comment>Description or instruction on building an extension. Narrated by the narrator.</comment>
   </data>
   <data name="Settings_Feedback_ReportSecurity_TextBlock.Text" xml:space="preserve">
     <value>Learn more</value>
+    <comment>Click on this link if you want to learn more and read the security policy. View is an action.</comment>
   </data>
 </root>
