@@ -126,7 +126,25 @@ This feature will deliver stable versions of Registry Preview, Hosts File Editor
 
 ![V1 of PowerToys in Dev Home](./v1-pt-in-dev-home.png)
 
-##### V1 settings for each utility
+##### V1 settings page
+
+![V1 of settings page](./v1-settings-page.png)
+
+##### V1 utilities settings page
+
+![V1 of utilities settings page](./v1-utilities-settings-page.png)
+
+##### V1 Registry Preview settings page
+
+![V1 of Registry Preview settings page](./v1-registry-preview-settings.png)
+
+##### V1 Hosts Files Editor settings page
+
+![V1 of Hosts File Editor settings page](./v1-hosts-file-editor-settings.png)
+
+##### V1 Environment Variables settings page
+
+![V1 of Environment Variables settings page](./v1-environment-variables-settings.png)
 
 ##### V2 of Registry Preview being embedded as a page inside Dev Home
 
