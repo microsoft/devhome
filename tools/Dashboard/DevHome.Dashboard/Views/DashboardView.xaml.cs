@@ -45,8 +45,6 @@ public partial class DashboardView : ToolPage
 
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
-    private static bool _widgetHostInitialized;
-
     private const string DraggedWidget = "DraggedWidget";
     private const string DraggedIndex = "DraggedIndex";
 
@@ -114,25 +112,16 @@ public partial class DashboardView : ToolPage
         await InitializeDashboard();
     }
 
-    private async Task<bool> EnsureHostingInitializedAsync()
-    {
-        if (_widgetHostInitialized)
-        {
-            return _widgetHostInitialized;
-        }
-
-        _widgetHostInitialized = ViewModel.EnsureWebExperiencePack() && await SubscribeToWidgetCatalogEventsAsync();
-
-        return _widgetHostInitialized;
-    }
-
-    private async Task<bool> InitializeDashboard()
+    private async Task InitializeDashboard()
     {
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
         ViewModel.IsLoading = true;
 
-        if (await EnsureHostingInitializedAsync())
+        if (await ViewModel.WidgetHostingService.EnsureWidgetServiceAsync())
         {
+            ViewModel.HasWidgetService = true;
+            await SubscribeToWidgetCatalogEventsAsync();
+
             // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
             await ViewModel.WidgetIconService.CacheAllWidgetIconsAsync();
 
@@ -140,13 +129,26 @@ public partial class DashboardView : ToolPage
         }
         else
         {
-            Log.Logger()?.ReportWarn("DashboardView", $"Initialization failed");
+            var widgetServiceState = ViewModel.WidgetHostingService.GetWidgetServiceState();
+            if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion)
+            {
+                // Show error message that restarting Dev Home may help
+                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
+            }
+            else if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasWebExperienceNoOrBadVersion)
+            {
+                // Show error message that updating may help
+                UpdateWidgetsMessageStackPanel.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Log.Logger()?.ReportError("DashboardView", $"Initialization failed, WidgetServiceState unknown");
+                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
+            }
         }
 
         LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
         ViewModel.IsLoading = false;
-
-        return _widgetHostInitialized;
     }
 
     private async Task RestorePinnedWidgetsAsync()
@@ -249,35 +251,14 @@ public partial class DashboardView : ToolPage
     }
 
     [RelayCommand]
+    public async Task GoToWidgetsInStoreAsync()
+    {
+        await Launcher.LaunchUriAsync(new ("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
+    }
+
+    [RelayCommand]
     public async Task AddWidgetClickAsync()
     {
-        // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
-        if (!_widgetHostInitialized)
-        {
-            var initialized = await InitializeDashboard();
-            if (!initialized)
-            {
-                var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-
-                var errorDialog = new ContentDialog()
-                {
-                    XamlRoot = this.XamlRoot,
-                    RequestedTheme = this.ActualTheme,
-                    Content = resourceLoader.GetString("UpdateWebExpContent"),
-                    CloseButtonText = resourceLoader.GetString("UpdateWebExpCancel"),
-                    PrimaryButtonText = resourceLoader.GetString("UpdateWebExpUpdate"),
-                    PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
-                };
-                errorDialog.PrimaryButtonClick += async (ContentDialog sender, ContentDialogButtonClickEventArgs args) =>
-                {
-                    await Launcher.LaunchUriAsync(new ("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
-                    sender.Hide();
-                };
-                _ = await errorDialog.ShowAsync();
-                return;
-            }
-        }
-
         var dialog = new AddWidgetDialog(_dispatcher, ActualTheme)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.

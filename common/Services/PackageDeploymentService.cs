@@ -47,11 +47,13 @@ public class PackageDeploymentService : IPackageDeploymentService
                 var version = package.Id.Version;
                 var major = version.Major;
                 var minor = version.Minor;
+                var build = version.Build;
+                var revision = version.Revision;
 
                 Log.Logger()?.ReportInfo("PackageDeploymentService", $"Found package {package.Id.FullName}");
 
                 // Create System.Version type from PackageVersion to test. System.Version supports CompareTo() for easy comparisons.
-                if (IsVersionSupported(new (major, minor), ranges))
+                if (IsVersionSupported(new (major, minor, build, revision), ranges))
                 {
                     versionedPackages.Add(package);
                 }
@@ -79,6 +81,12 @@ public class PackageDeploymentService : IPackageDeploymentService
 
     private bool IsVersionSupported(Version target, params (Version minVersion, Version? maxVersion)[] ranges)
     {
+        // If a min version wasn't specified, any version is fine.
+        if (ranges.Length == 0)
+        {
+            return true;
+        }
+
         foreach (var (minVersion, maxVersion) in ranges)
         {
             if (maxVersion == null)
