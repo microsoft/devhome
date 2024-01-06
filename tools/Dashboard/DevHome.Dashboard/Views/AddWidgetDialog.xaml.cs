@@ -310,34 +310,34 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
     private void ContentDialog_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        const int ContentDialogMaxHeight = 684;
+        var contentDialogMaxHeight = (double)Resources["ContentDialogMaxHeight"];
         const int SmallThreshold = 324;
         const int MediumThreshold = 360;
 
-        var smallPinMargin = new Thickness(20);
-        var largePinMargin = new Thickness(40);
-        var smallScreenshotMargin = new Thickness(0);
-        var largeScreenshotMargin = new Thickness(45);
+        var smallPinButtonMargin = (Thickness)Resources["SmallPinButtonMargin"];
+        var largePinButtonMargin = (Thickness)Resources["LargePinButtonMargin"];
+        var smallWidgetPreviewTopMargin = (Thickness)Resources["SmallWidgetPreviewTopMargin"];
+        var largeWidgetPreviewTopMargin = (Thickness)Resources["LargeWidgetPreviewTopMargin"];
 
-        AddWidgetNavigationView.Height = Math.Min(this.ActualHeight, ContentDialogMaxHeight) - AddWidgetTitleBar.ActualHeight;
+        AddWidgetNavigationView.Height = Math.Min(this.ActualHeight, contentDialogMaxHeight) - AddWidgetTitleBar.ActualHeight;
 
         var previewHeightAvailable = AddWidgetNavigationView.Height - TitleRow.ActualHeight - PinRow.ActualHeight;
 
         // Adjust margins when the height gets too small to show everything.
         if (previewHeightAvailable < SmallThreshold)
         {
-            ScreenshotRect.Margin = smallScreenshotMargin;
-            PinButton.Margin = smallPinMargin;
+            PreviewRow.Padding = smallWidgetPreviewTopMargin;
+            PinButton.Margin = smallPinButtonMargin;
         }
         else if (previewHeightAvailable < MediumThreshold)
         {
-            ScreenshotRect.Margin = smallScreenshotMargin;
-            PinButton.Margin = largePinMargin;
+            PreviewRow.Padding = smallWidgetPreviewTopMargin;
+            PinButton.Margin = largePinButtonMargin;
         }
         else
         {
-            ScreenshotRect.Margin = largeScreenshotMargin;
-            PinButton.Margin = largePinMargin;
+            PreviewRow.Padding = largeWidgetPreviewTopMargin;
+            PinButton.Margin = largePinButtonMargin;
         }
     }
 }
