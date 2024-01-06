@@ -4,7 +4,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Dashboard.Helpers;
@@ -18,18 +17,17 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.UI.Xaml.Shapes;
 using Microsoft.Windows.Widgets.Hosts;
-using WinUIEx;
 
 namespace DevHome.Dashboard.Views;
 
 public sealed partial class AddWidgetDialog : ContentDialog
 {
-    private Widget _currentWidget;
+    private WidgetDefinition _selectedWidget;
     private static DispatcherQueue _dispatcher;
 
-    public Widget AddedWidget { get; set; }
+    public WidgetDefinition AddedWidget { get; private set; }
 
-    public WidgetViewModel ViewModel { get; set; }
+    public AddWidgetViewModel ViewModel { get; set; }
 
     private readonly IWidgetHostingService _hostingService;
     private readonly IWidgetIconService _widgetIconService;
@@ -38,7 +36,7 @@ public sealed partial class AddWidgetDialog : ContentDialog
         DispatcherQueue dispatcher,
         ElementTheme theme)
     {
-        ViewModel = new WidgetViewModel(null, Microsoft.Windows.Widgets.WidgetSize.Large, null, dispatcher);
+        ViewModel = Application.Current.GetService<AddWidgetViewModel>();
         _hostingService = Application.Current.GetService<IWidgetHostingService>();
         _widgetIconService = Application.Current.GetService<IWidgetIconService>();
 
@@ -49,9 +47,6 @@ public sealed partial class AddWidgetDialog : ContentDialog
         // Strange behavior: just setting the requested theme when we new-up the dialog results in
         // the wrong theme's resources being used. Setting RequestedTheme here fixes the problem.
         RequestedTheme = theme;
-
-        // Get the application root window so we know when it has closed.
-        Application.Current.GetService<WindowEx>().Closed += OnMainWindowClosed;
     }
 
     [RelayCommand]
@@ -125,10 +120,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
             }
         }
 
-        // If there were no available widgets, show a message.
+        // If there were no available widgets, log an error.
+        // This should never happen since Dev Home's core widgets are always available.
         if (!AddWidgetNavigationView.MenuItems.Any())
         {
-            ViewModel.ShowErrorCard("WidgetErrorCardNoWidgetsText");
+            Log.Logger()?.ReportError("AddWidgetDialog", $"FillAvailableWidgetsAsync found no available widgets.");
         }
     }
 
@@ -208,114 +204,62 @@ public sealed partial class AddWidgetDialog : ContentDialog
         NavigationView sender,
         NavigationViewSelectionChangedEventArgs args)
     {
-        // Delete previously shown configuration widget.
-        // Clearing the UI here results in a flash, so don't bother. It will update soon.
-        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Widget selection changed, delete widget if one exists");
-        var clearWidgetTask = ClearCurrentWidget();
-
-        // Selected item could be null if list of widgets became empty.
+        // Selected item could be null if list of widgets became empty, but list should never be empty
+        // since core widgets are always available.
         if (sender.SelectedItem is null)
         {
+            ViewModel.Clear();
             return;
         }
 
-        // Load selected widget configuration.
+        // Get selected widget definition.
         var selectedTag = (sender.SelectedItem as NavigationViewItem).Tag;
         if (selectedTag is null)
         {
             Log.Logger()?.ReportError("AddWidgetDialog", $"Selected widget description did not have a tag");
+            ViewModel.Clear();
             return;
         }
 
-        // If the user has selected a widget, show configuration UI. If they selected a provider, leave space blank.
+        // If the user has selected a widget, show preview. If they selected a provider, leave space blank.
         if (selectedTag as WidgetDefinition is WidgetDefinition selectedWidgetDefinition)
         {
-            var size = WidgetHelpers.GetLargestCapabilitySize(selectedWidgetDefinition.GetWidgetCapabilities());
-
-            // Create the widget for configuration. We will need to delete it if the user closes the dialog
-            // without pinning, or selects a different widget.
-            Widget widget = null;
-            try
-            {
-                var widgetHost = await _hostingService.GetWidgetHostAsync();
-                widget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(selectedWidgetDefinition.Id, size));
-            }
-            catch (Exception ex)
-            {
-                Log.Logger()?.ReportWarn("AddWidgetDialog", $"CreateWidgetAsync failed: ", ex);
-            }
-
-            if (widget is not null)
-            {
-                Log.Logger()?.ReportInfo("AddWidgetDialog", $"Created Widget {widget.Id}");
-
-                ViewModel.Widget = widget;
-                ViewModel.IsInAddMode = true;
-                PinButton.Visibility = Visibility.Visible;
-
-                var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
-                ViewModel.WidgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(widget.DefinitionId));
-
-                clearWidgetTask.Wait();
-            }
-            else
-            {
-                Log.Logger()?.ReportWarn("AddWidgetDialog", $"Widget creation failed.");
-                ViewModel.ShowErrorCard("WidgetErrorCardCreate1Text", "WidgetErrorCardCreate2Text");
-            }
-
-            _currentWidget = widget;
+            _selectedWidget = selectedWidgetDefinition;
+            await ViewModel.SetWidgetDefinition(selectedWidgetDefinition, ActualTheme);
         }
         else if (selectedTag as WidgetProviderDefinition is not null)
         {
-            ConfigurationContentFrame.Content = null;
-            PinButton.Visibility = Visibility.Collapsed;
+            ViewModel.Clear();
         }
     }
 
-    private void PinButton_Click(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    private void PinButtonClick()
     {
-        AddedWidget = _currentWidget;
+        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Pin selected");
+        AddedWidget = _selectedWidget;
 
         HideDialogAsync();
     }
 
-    private async void CancelButton_Click(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    private void CancelButtonClick()
     {
-        // Delete previously shown configuration card.
-        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Canceled dialog, delete widget");
-        await ClearCurrentWidget();
+        Log.Logger()?.ReportDebug("AddWidgetDialog", $"Canceled dialog");
+        AddedWidget = null;
 
         HideDialogAsync();
     }
 
     private async void HideDialogAsync()
     {
-        _currentWidget = null;
+        _selectedWidget = null;
         ViewModel = null;
 
-        Application.Current.GetService<WindowEx>().Closed -= OnMainWindowClosed;
         var widgetCatalog = await _hostingService.GetWidgetCatalogAsync();
         widgetCatalog!.WidgetDefinitionDeleted -= WidgetCatalog_WidgetDefinitionDeleted;
 
         this.Hide();
-    }
-
-    private async void OnMainWindowClosed(object sender, WindowEventArgs args)
-    {
-        Log.Logger()?.ReportInfo("AddWidgetDialog", $"Window Closed, delete partially created widget");
-        await ClearCurrentWidget();
-    }
-
-    private async Task ClearCurrentWidget()
-    {
-        if (_currentWidget != null)
-        {
-            var widgetIdToDelete = _currentWidget.Id;
-            await _currentWidget.DeleteAsync();
-            Log.Logger()?.ReportInfo("AddWidgetDialog", $"Deleted Widget {widgetIdToDelete}");
-            _currentWidget = null;
-        }
     }
 
     private void WidgetCatalog_WidgetDefinitionDeleted(WidgetCatalog sender, WidgetDefinitionDeletedEventArgs args)
@@ -324,12 +268,12 @@ public sealed partial class AddWidgetDialog : ContentDialog
 
         _dispatcher.TryEnqueue(() =>
         {
-            // If we currently have the deleted widget open, show an error message instead.
-            if (_currentWidget is not null &&
-                _currentWidget.DefinitionId.Equals(deletedDefinitionId, StringComparison.Ordinal))
+            // If we currently have the deleted widget open, un-select it.
+            if (_selectedWidget is not null &&
+                _selectedWidget.Id.Equals(deletedDefinitionId, StringComparison.Ordinal))
             {
-                Log.Logger()?.ReportInfo("AddWidgetDialog", $"Widget definition deleted while creating that widget.");
-                ViewModel.ShowErrorCard("WidgetErrorCardCreate1Text", "WidgetErrorCardCreate2Text");
+                Log.Logger()?.ReportInfo("AddWidgetDialog", $"Widget definition deleted while selected.");
+                ViewModel.Clear();
                 AddWidgetNavigationView.SelectedItem = null;
             }
 
@@ -350,10 +294,11 @@ public sealed partial class AddWidgetDialog : ContentDialog
                             {
                                 menuItems.Remove(providerItem);
 
-                                // If we've removed all providers from the list, show a message.
+                                // If we've removed all providers from the list, log an error.
+                                // This should never happen since Dev Home's core widgets are always available.
                                 if (!menuItems.Any())
                                 {
-                                    ViewModel.ShowErrorCard("WidgetErrorCardNoWidgetsText");
+                                    Log.Logger()?.ReportError("AddWidgetDialog", $"WidgetCatalog_WidgetDefinitionDeleted found no available widgets.");
                                 }
                             }
                         }
@@ -366,10 +311,33 @@ public sealed partial class AddWidgetDialog : ContentDialog
     private void ContentDialog_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         const int ContentDialogMaxHeight = 684;
+        const int SmallThreshold = 324;
+        const int MediumThreshold = 360;
+
+        var smallPinMargin = new Thickness(20);
+        var largePinMargin = new Thickness(40);
+        var smallScreenshotMargin = new Thickness(0);
+        var largeScreenshotMargin = new Thickness(45);
 
         AddWidgetNavigationView.Height = Math.Min(this.ActualHeight, ContentDialogMaxHeight) - AddWidgetTitleBar.ActualHeight;
 
-        // Subtract 45 for the margin around ConfigurationContentFrame.
-        ConfigurationContentViewer.Height = AddWidgetNavigationView.Height - PinRow.ActualHeight - 45;
+        var previewHeightAvailable = AddWidgetNavigationView.Height - TitleRow.ActualHeight - PinRow.ActualHeight;
+
+        // Adjust margins when the height gets too small to show everything.
+        if (previewHeightAvailable < SmallThreshold)
+        {
+            ScreenshotRect.Margin = smallScreenshotMargin;
+            PinButton.Margin = smallPinMargin;
+        }
+        else if (previewHeightAvailable < MediumThreshold)
+        {
+            ScreenshotRect.Margin = smallScreenshotMargin;
+            PinButton.Margin = largePinMargin;
+        }
+        else
+        {
+            ScreenshotRect.Margin = largeScreenshotMargin;
+            PinButton.Margin = largePinMargin;
+        }
     }
 }

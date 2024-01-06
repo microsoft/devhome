@@ -15,10 +15,12 @@ public static class ServiceExtensions
         // View-models
         services.AddSingleton<DashboardViewModel>();
         services.AddTransient<DashboardBannerViewModel>();
+        services.AddTransient<AddWidgetViewModel>();
 
         // Services
         services.AddSingleton<IWidgetHostingService, WidgetHostingService>();
         services.AddSingleton<IWidgetIconService, WidgetIconService>();
+        services.AddSingleton<IWidgetScreenshotService, WidgetScreenshotService>();
         services.AddSingleton<IAdaptiveCardRenderingService, AdaptiveCardRenderingService>();
 
         return services;
