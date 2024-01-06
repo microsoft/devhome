@@ -157,12 +157,13 @@
                                         Text="{x:Bind Description}"/>
 
                                     <HyperlinkButton
-                                            Content="{x:Bind Link}"
-                                            Foreground="{ThemeResource LearnMoreForeground}"
-                                            NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
-                                            Padding="0"
-                                            Margin="0"
-                                            Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
+                                        Content="{x:Bind Link}"
+                                        Foreground="{ThemeResource LearnMoreForeground}"
+                                        NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
+                                        Padding="0"
+                                        Margin="0"
+                                        Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
+
                                     <Button 
                                         Margin="0 0 0 10"
                                         Padding="50 5 50 5"
@@ -279,13 +280,13 @@
                                                 Text="{x:Bind Description}"/>
 
                                             <HyperlinkButton
-                                                    Content="{x:Bind Link}"
-                                                    Foreground="{ThemeResource LearnMoreForeground}"
-                                                    NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
-                                                    VerticalAlignment="Top"
-                                                    Padding="0"
-                                                    Margin="0"
-                                                    Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
+                                                Content="{x:Bind Link}"
+                                                Foreground="{ThemeResource LearnMoreForeground}"
+                                                NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
+                                                VerticalAlignment="Top"
+                                                Padding="0"
+                                                Margin="0"
+                                                Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
                                         </controls:WrapPanel>
                                     </StackPanel>
                                 </ScrollViewer>
