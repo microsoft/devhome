@@ -34,10 +34,10 @@ public sealed class ElevatedConfigurationTask
                 taskResult.RebootRequired = result.RequiresReboot;
                 taskResult.UnitResults = result.Result.UnitResults.Select(unitResult =>
                 {
-                    unitResult.Unit.Directives.TryGetValue("description", out var descriptionObj);
+                    unitResult.Unit.Settings.TryGetValue("description", out var descriptionObj);
                     return new ElevatedConfigureUnitTaskResult
                     {
-                        UnitName = unitResult.Unit.UnitName,
+                        UnitName = unitResult.Unit.Type,
                         Id = unitResult.Unit.Identifier,
                         Description = descriptionObj?.ToString() ?? string.Empty,
                         Intent = unitResult.Unit.Intent.ToString(),

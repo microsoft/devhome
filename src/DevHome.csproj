@@ -45,9 +45,6 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
         <PackageReference Include="WinUIEx" Version="1.8.0" />
-        <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
-            <ExcludeAssets>contentFiles</ExcludeAssets>
-        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
@@ -86,21 +83,6 @@
         <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
         <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
     </PropertyGroup>
-
-    <!-- PowerShell requires the content files from their nuget package to be next to System.Management.Automation.dll
-         This won't happen automatically for 'dotnet publish -r <RID>'
-         Here we explicitly exclude the content files, copy them manually to the output directory
-         and then add them as payload to the package to the right location.
-         https://github.com/PowerShell/PowerShell/issues/15274#issuecomment-984028028
-    -->
-    <Target Name="PwshFiles" AfterTargets="BeforeBuild">
-        <ItemGroup>
-            <RefFiles Include="$(PkgMicrosoft_PowerShell_SDK)\contentFiles\any\any\ref\*.*" />
-            <WinModuleFiles Include="$(PkgMicrosoft_PowerShell_SDK)\contentFiles\any\any\runtimes\win\lib\net6.0\Modules\**\*.*" />
-        </ItemGroup>
-        <Copy SourceFiles="@(RefFiles)" DestinationFolder="$(TargetDir)\ref\" />
-        <Copy SourceFiles="@(WinModuleFiles)" DestinationFolder="$(TargetDir)\Modules\%(RecursiveDir)\" />
-    </Target>
 
     <Target Name="ExtraAppxFilesInPackage" AfterTargets="_ComputeAppxPackagePayload">
 

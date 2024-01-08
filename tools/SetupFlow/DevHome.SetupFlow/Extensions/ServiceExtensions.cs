@@ -58,6 +58,7 @@ public static class ServiceExtensions
         services.AddSingleton<IWinGetGetPackageOperation, WinGetGetPackageOperation>();
         services.AddSingleton<IWinGetSearchOperation, WinGetSearchOperation>();
         services.AddSingleton<IWinGetInstallOperation, WinGetInstallOperation>();
+        services.AddSingleton<IDesiredStateConfiguration, DesiredStateConfiguration>();
         return services;
     }
 

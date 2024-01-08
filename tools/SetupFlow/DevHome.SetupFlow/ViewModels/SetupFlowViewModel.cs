@@ -96,12 +96,6 @@ public partial class SetupFlowViewModel : ObservableObject
         TerminateCurrentFlow($"CancelButton_{currentPage}");
     }
 
-    [RelayCommand]
-    private async Task OnLoadedAsync()
-    {
-        await _mainPageViewModel.ValidateAppInstallerAsync();
-    }
-
     public void TerminateCurrentFlow(string callerNameForTelemetry)
     {
         // Report this before touching the pages so the current Activity ID can be obtained.

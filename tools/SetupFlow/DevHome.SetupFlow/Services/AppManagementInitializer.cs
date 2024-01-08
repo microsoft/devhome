@@ -15,12 +15,15 @@ public class AppManagementInitializer : IAppManagementInitializer
 {
     private readonly IWindowsPackageManager _wpm;
     private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
+    private readonly IDesiredStateConfiguration _dsc;
 
     public AppManagementInitializer(
         IWindowsPackageManager wpm,
+        IDesiredStateConfiguration dsc,
         ICatalogDataSourceLoader catalogDataSourceLoader)
     {
         _wpm = wpm;
+        _dsc = dsc;
         _catalogDataSourceLoader = catalogDataSourceLoader;
     }
 
@@ -35,7 +38,7 @@ public class AppManagementInitializer : IAppManagementInitializer
         // Ensure AppInstaller is registered
         if (await TryRegisterAppInstallerAsync())
         {
-            await InitializeInternalAsync();
+            await Task.WhenAll(UnstubConfigurationAsync(), InitializeInternalAsync());
         }
 
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed app management initialization");
@@ -90,6 +93,18 @@ public class AppManagementInitializer : IAppManagementInitializer
         await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
         {
             Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalogs [{string.Join(", ", dataSourceCatalogs.Select(c => c.Name))}]");
+        }
+    }
+
+    private async Task UnstubConfigurationAsync()
+    {
+        var isStubbed = await _dsc.IsStubbedAsync();
+        Log.Logger?.ReportInfo($"Configuration is {(isStubbed ? "stubbed" : "not stubbed")}");
+        if (!isStubbed)
+        {
+            Log.Logger?.ReportInfo($"Starting to unstub configuration");
+            await _dsc.UnstubAsync();
+            Log.Logger?.ReportInfo($"Finished unstubbing configuration");
         }
     }
 
