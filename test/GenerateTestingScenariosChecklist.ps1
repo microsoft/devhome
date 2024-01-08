@@ -55,7 +55,7 @@ For ($i=0;$i -lt $repos.count;$i++) {
     $files = Get-ChildItem $repos[$i] -recurse -Filter *.md | Where-Object {$_.FullName -like "*TestingScenarios*"}
 
     $testNumber = 0
-    $data = "Test No;Test Scenario;Sign Off 1;Sign Off 2;Found Issues`n"
+    $data = "Test No;Test Scenario;Sign Off (Win10);Sign Off (Win11);Additional Sign Offs;Found Issues`n"
 
     ForEach ($file in $files) {
       $content = Get-Content $file.FullName
