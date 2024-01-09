@@ -1,6 +1,8 @@
 ![dev-home-readme-header](https://github.com/microsoft/devhome/blob/main/src/Assets/Preview/StoreDisplay-150.png)
 
-# Welcome to the Dev Home repo
+# Welcome to the Dev Home repo!
+
+Dev Home is a new experience from Microsoft aiming to give developers more power on Windows.
 
 This repository contains the source code for:
 
@@ -10,6 +12,7 @@ This repository contains the source code for:
 Related repositories include:
 
 * [Dev Home GitHub Extension](https://github.com/microsoft/devhomegithubextension)
+* [Dev Home Azure Extension](https://github.com/microsoft/devhomeazureextension)
 
 ## Installing and running Dev Home
 

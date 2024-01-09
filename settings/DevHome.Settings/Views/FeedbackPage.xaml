@@ -141,9 +141,9 @@
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea86;"/>
                         </ctControls:SettingsCard.HeaderIcon>
-                        <Button Click="BuildExtensionButtonClicked" MinWidth="150">
+                        <Button x:Uid="Settings_Feedback_BuildExtension_Button" Click="BuildExtensionButtonClicked" MinWidth="150">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock x:Uid="Settings_Feedback_BuildExtension_Button" />
+                                <TextBlock x:Uid="Settings_Feedback_BuildExtension_TextBlock" />
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE8A7;" FontSize="12" />
                             </StackPanel>
                         </Button>
@@ -153,9 +153,9 @@
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xf552;"/>
                         </ctControls:SettingsCard.HeaderIcon>
-                        <Button Click="ReportSecurityButtonClicked" MinWidth="150">
+                        <Button x:Uid="Settings_Feedback_ReportSecurity_Button" Click="ReportSecurityButtonClicked" MinWidth="150">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock x:Uid="Settings_Feedback_ReportSecurity_Button" />
+                                <TextBlock x:Uid="Settings_Feedback_ReportSecurity_TextBlock" />
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE8A7;" FontSize="12" />
                             </StackPanel>
                         </Button>
