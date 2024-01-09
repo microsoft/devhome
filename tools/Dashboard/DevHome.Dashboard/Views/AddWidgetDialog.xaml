@@ -82,11 +82,13 @@
                             VerticalAlignment="Stretch"
                             HorizontalAlignment="Center"
                             Padding="{StaticResource LargeWidgetPreviewTopMargin}">
-                    <Rectangle x:Name="ScreenshotRect"
-                               Width="300"
-                               Height="304"
-                               VerticalAlignment="Stretch"
-                               Fill="{x:Bind ViewModel.WidgetScreenshot, Mode=OneWay}" />
+                    <Grid CornerRadius="8">
+                        <Rectangle x:Name="ScreenshotRect"
+                                   Width="300"
+                                   Height="304"
+                                   VerticalAlignment="Stretch"
+                                   Fill="{x:Bind ViewModel.WidgetScreenshot, Mode=OneWay}" />
+                    </Grid>
                 </StackPanel>
 
                 <!-- Pin button -->
