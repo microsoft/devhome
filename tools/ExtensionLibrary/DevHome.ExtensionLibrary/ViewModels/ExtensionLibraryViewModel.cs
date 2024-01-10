@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -140,6 +141,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
             return;
         }
 
+        var tempStorePackagesList = new List<StorePackageViewModel>();
+
         var jsonObj = JsonObject.Parse(storeData);
         if (jsonObj != null)
         {
@@ -177,8 +180,14 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
                 Log.Logger()?.ReportError("ExtensionLibraryViewModel", $"Found package: {productId}, {packageFamilyName}");
                 var storePackage = new StorePackageViewModel(productId, title, publisher, packageFamilyName);
-                StorePackagesList.Add(storePackage);
+                tempStorePackagesList.Add(storePackage);
             }
+        }
+
+        tempStorePackagesList = tempStorePackagesList.OrderBy(storePackage => storePackage.Title).ToList();
+        foreach (var storePackage in tempStorePackagesList)
+        {
+            StorePackagesList.Add(storePackage);
         }
     }
 

@@ -286,4 +286,12 @@
     <value>Quickly connect into to your favorite servers from your SSH config file</value>
     <comment>Description for widget that displays shortcuts to different SSH connections.</comment>
   </data>
+  <data name="NavigationPaneOpened" xml:space="preserve">
+    <value>Navigation pane opened</value>
+    <comment>Navigation pane has been opened</comment>
+  </data>
+  <data name="NavigationPaneClosed" xml:space="preserve">
+    <value>Navigation pane closed</value>
+    <comment>Navigation pane has been closed</comment>
+  </data>
 </root>
