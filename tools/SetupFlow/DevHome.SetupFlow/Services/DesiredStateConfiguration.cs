@@ -13,12 +13,10 @@ namespace DevHome.SetupFlow.Services;
 internal class DesiredStateConfiguration : IDesiredStateConfiguration
 {
     private readonly IWinGetDeployment _winGetDeployment;
-    private readonly IWinGetRecovery _winGetRecovery;
 
-    public DesiredStateConfiguration(IWinGetDeployment winGetDeployment, IWinGetRecovery winGetRecovery)
+    public DesiredStateConfiguration(IWinGetDeployment winGetDeployment)
     {
         _winGetDeployment = winGetDeployment;
-        _winGetRecovery = winGetRecovery;
     }
 
     /// <inheritdoc />
