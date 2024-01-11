@@ -38,7 +38,9 @@ public class AppManagementInitializer : IAppManagementInitializer
         // Ensure AppInstaller is registered
         if (await TryRegisterAppInstallerAsync())
         {
-            await Task.WhenAll(UnstubConfigurationAsync(), InitializeInternalAsync());
+            await Task.WhenAll(
+                UnstubConfigurationAsync(),
+                InitializeWindowsPackageManagerAsync());
         }
 
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed app management initialization");
@@ -48,14 +50,14 @@ public class AppManagementInitializer : IAppManagementInitializer
     public async Task ReinitializeAsync()
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Reinitializing app management");
-        await InitializeInternalAsync();
+        await InitializeWindowsPackageManagerAsync();
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed app management reinitialization");
     }
 
     /// <summary>
     /// Initialize app management services
     /// </summary>
-    private async Task InitializeInternalAsync()
+    private async Task InitializeWindowsPackageManagerAsync()
     {
         try
         {

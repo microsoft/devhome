@@ -20,7 +20,7 @@ namespace DevHome.SetupFlow.Models;
 public class ConfigureTask : ISetupTask
 {
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly IDesiredStateConfiguration _desiredStateConfiguration;
+    private readonly IDesiredStateConfiguration _dsc;
     private readonly StorageFile _file;
     private readonly Guid _activityId;
 
@@ -41,12 +41,12 @@ public class ConfigureTask : ISetupTask
 
     public ConfigureTask(
         ISetupFlowStringResource stringResource,
-        IDesiredStateConfiguration desiredStateConfiguration,
+        IDesiredStateConfiguration dsc,
         StorageFile file,
         Guid activityId)
     {
         _stringResource = stringResource;
-        _desiredStateConfiguration = desiredStateConfiguration;
+        _dsc = dsc;
         _file = file;
         _activityId = activityId;
     }
@@ -85,7 +85,7 @@ public class ConfigureTask : ISetupTask
             try
             {
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.ApplyingConfigurationMessage));
-                var result = await _desiredStateConfiguration.ApplyConfigurationAsync(_file.Path, _activityId);
+                var result = await _dsc.ApplyConfigurationAsync(_file.Path, _activityId);
                 RequiresReboot = result.RequiresReboot;
                 UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
                 if (result.Succeeded)

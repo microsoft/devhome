@@ -27,22 +27,27 @@ internal class DesiredStateConfiguration : IDesiredStateConfiguration
     /// <inheritdoc />
     public async Task<bool> UnstubAsync() => await _winGetDeployment.UnstubConfigurationAsync();
 
+    /// <inheritdoc />
     public async Task ValidateConfigurationAsync(string filePath, Guid activityId)
     {
         // Try to open the configuration file to validate it.
         await OpenConfigurationSetAsync(filePath, activityId);
     }
 
+    /// <inheritdoc />
     public async Task<ConfigurationFileHelper.ApplicationResult> ApplyConfigurationAsync(string filePath, Guid activityId)
     {
-        return await _winGetRecovery.DoWithRecoveryAsync(async () =>
-        {
-            // Apply the configuration file after opening it.
-            var openConfigSet = await OpenConfigurationSetAsync(filePath, activityId);
-            return await openConfigSet.ApplyConfigurationAsync();
-        });
+        // Apply the configuration file after opening it.
+        var openConfigSet = await OpenConfigurationSetAsync(filePath, activityId);
+        return await openConfigSet.ApplyConfigurationAsync();
     }
 
+    /// <summary>
+    /// Open the configuration set
+    /// </summary>
+    /// <param name="filePath">Configuration file path</param>
+    /// <param name="activityId">Activity ID</param>
+    /// <returns>Configuration file helper</returns>
     private async Task<ConfigurationFileHelper> OpenConfigurationSetAsync(string filePath, Guid activityId)
     {
         var configFile = new ConfigurationFileHelper(activityId);
