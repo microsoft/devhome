@@ -342,36 +342,31 @@ public partial class DashboardView : ToolPage
             RequestedTheme = this.ActualTheme,
         };
 
-        // If the dialog was closed in a way we don't already handle (for example, pressing Esc),
-        // delete the partially created widget.
-        dialog.Closed += async (sender, args) =>
-        {
-            if (dialog.AddedWidget == null && dialog.ViewModel != null && dialog.ViewModel.Widget != null)
-            {
-                await dialog.ViewModel.Widget.DeleteAsync();
-            }
-        };
-
         _ = await dialog.ShowAsync();
 
-        var newWidget = dialog.AddedWidget;
+        var newWidgetDefinition = dialog.AddedWidget;
 
-        if (newWidget != null)
+        if (newWidgetDefinition != null)
         {
-            // Set custom state on new widget.
-            var position = PinnedWidgets.Count;
-            var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
-            Log.Logger()?.ReportDebug("DashboardView", $"SetCustomState: {newCustomState}");
-            await newWidget.SetCustomStateAsync(newCustomState);
-
-            // Put new widget on the Dashboard.
-            var widgetCatalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
-            var widgetDefinition = await Task.Run(() => widgetCatalog?.GetWidgetDefinition(newWidget.DefinitionId));
-            if (widgetDefinition is not null)
+            Widget newWidget;
+            try
             {
-                var size = WidgetHelpers.GetDefaultWidgetSize(widgetDefinition.GetWidgetCapabilities());
-                await newWidget.SetSizeAsync(size);
+                var size = WidgetHelpers.GetDefaultWidgetSize(newWidgetDefinition.GetWidgetCapabilities());
+                var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
+                newWidget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(newWidgetDefinition.Id, size));
+
+                // Set custom state on new widget.
+                var position = PinnedWidgets.Count;
+                var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
+                Log.Logger()?.ReportDebug("DashboardView", $"SetCustomState: {newCustomState}");
+                await newWidget.SetCustomStateAsync(newCustomState);
+
+                // Put new widget on the Dashboard.
                 await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
+            }
+            catch (Exception ex)
+            {
+                Log.Logger()?.ReportWarn("AddWidgetDialog", $"Creating widget failed: ", ex);
             }
         }
     }
