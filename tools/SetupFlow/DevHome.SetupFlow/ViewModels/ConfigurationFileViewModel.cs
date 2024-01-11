@@ -20,7 +20,7 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
-    private readonly IDesiredStateConfiguration _desiredStateConfiguration;
+    private readonly IDesiredStateConfiguration _dsc;
 
     public List<ConfigureTask> TaskList { get; } = new List<ConfigureTask>();
 
@@ -41,11 +41,11 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
     public ConfigurationFileViewModel(
         ISetupFlowStringResource stringResource,
-        IDesiredStateConfiguration desiredStateConfiguration,
+        IDesiredStateConfiguration dsc,
         SetupFlowOrchestrator orchestrator)
         : base(stringResource, orchestrator)
     {
-        _desiredStateConfiguration = desiredStateConfiguration;
+        _dsc = dsc;
 
         // Configure navigation bar
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
@@ -116,8 +116,8 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
                 Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
                 Configuration = new (file.Path);
                 Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
-                await _desiredStateConfiguration.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
-                TaskList.Add(new (StringResource, _desiredStateConfiguration, file, Orchestrator.ActivityId));
+                await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
+                TaskList.Add(new (StringResource, _dsc, file, Orchestrator.ActivityId));
                 return true;
             }
             catch (OpenConfigurationSetException e)
