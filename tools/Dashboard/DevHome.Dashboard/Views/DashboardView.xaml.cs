@@ -8,7 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common;
+using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Helpers;
 using DevHome.Dashboard.Controls;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
@@ -21,6 +23,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.System;
+using Log = DevHome.Dashboard.Helpers.Log;
 
 namespace DevHome.Dashboard.Views;
 
@@ -45,7 +48,7 @@ public partial class DashboardView : ToolPage
 
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
-    private static bool _widgetHostInitialized;
+    private readonly ILocalSettingsService _localSettingsService;
 
     private const string DraggedWidget = "DraggedWidget";
     private const string DraggedIndex = "DraggedIndex";
@@ -60,6 +63,7 @@ public partial class DashboardView : ToolPage
         PinnedWidgets = new ObservableCollection<WidgetViewModel>();
 
         _dispatcher = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        _localSettingsService = Application.Current.GetService<ILocalSettingsService>();
 
         ActualThemeChanged += OnActualThemeChanged;
 
@@ -114,39 +118,113 @@ public partial class DashboardView : ToolPage
         await InitializeDashboard();
     }
 
-    private async Task<bool> EnsureHostingInitializedAsync()
-    {
-        if (_widgetHostInitialized)
-        {
-            return _widgetHostInitialized;
-        }
-
-        _widgetHostInitialized = ViewModel.EnsureWebExperiencePack() && await SubscribeToWidgetCatalogEventsAsync();
-
-        return _widgetHostInitialized;
-    }
-
-    private async Task<bool> InitializeDashboard()
+    private async Task InitializeDashboard()
     {
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
         ViewModel.IsLoading = true;
 
-        if (await EnsureHostingInitializedAsync())
+        if (await ViewModel.WidgetHostingService.EnsureWidgetServiceAsync())
         {
+            ViewModel.HasWidgetService = true;
+            await SubscribeToWidgetCatalogEventsAsync();
+
             // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
             await ViewModel.WidgetIconService.CacheAllWidgetIconsAsync();
 
-            await RestorePinnedWidgetsAsync();
+            if (await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun))
+            {
+                await RestorePinnedWidgetsAsync();
+            }
+            else
+            {
+                await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
+                await PinDefaultWidgets();
+            }
         }
         else
         {
-            Log.Logger()?.ReportWarn("DashboardView", $"Initialization failed");
+            var widgetServiceState = ViewModel.WidgetHostingService.GetWidgetServiceState();
+            if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion)
+            {
+                // Show error message that restarting Dev Home may help
+                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
+            }
+            else if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasWebExperienceNoOrBadVersion)
+            {
+                // Show error message that updating may help
+                UpdateWidgetsMessageStackPanel.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Log.Logger()?.ReportError("DashboardView", $"Initialization failed, WidgetServiceState unknown");
+                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
+            }
         }
 
         LoadingWidgetsProgressRing.Visibility = Visibility.Collapsed;
         ViewModel.IsLoading = false;
+    }
 
-        return _widgetHostInitialized;
+    private async Task PinDefaultWidgets()
+    {
+        string[] defaultWidgetDefinitionIds =
+        {
+#if CANARY_BUILD
+            "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
+            "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
+            "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
+#elif STABLE_BUILD
+            "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
+            "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
+            "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
+#else
+            "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
+            "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
+            "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
+#endif
+        };
+
+        var catalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
+
+        if (catalog is null)
+        {
+            Log.Logger()?.ReportError("AddWidgetDialog", $"Trying to pin default widgets, but WidgetCatalog is null.");
+            return;
+        }
+
+        var widgetDefinitions = await Task.Run(() => catalog!.GetWidgetDefinitions().OrderBy(x => x.DisplayTitle));
+        foreach (var widgetDefinition in widgetDefinitions)
+        {
+            var id = widgetDefinition.Id;
+            if (defaultWidgetDefinitionIds.Contains(id))
+            {
+                await PinDefaultWidget(widgetDefinition);
+            }
+        }
+    }
+
+    private async Task PinDefaultWidget(WidgetDefinition defaultWidgetDefinition)
+    {
+        try
+        {
+            // Create widget
+            var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
+            var size = WidgetHelpers.GetDefaultWidgetSize(defaultWidgetDefinition.GetWidgetCapabilities());
+            var newWidget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(defaultWidgetDefinition.Id, size));
+
+            // Set custom state on new widget.
+            var position = PinnedWidgets.Count;
+            var newCustomState = WidgetHelpers.CreateWidgetCustomState(position);
+            Log.Logger()?.ReportDebug("DashboardView", $"SetCustomState: {newCustomState}");
+            await newWidget.SetCustomStateAsync(newCustomState);
+
+            // Put new widget on the Dashboard.
+            await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError("AddWidgetDialog", $"PinDefaultWidget failed: ", ex);
+        }
     }
 
     private async Task RestorePinnedWidgetsAsync()
@@ -249,35 +327,14 @@ public partial class DashboardView : ToolPage
     }
 
     [RelayCommand]
+    public async Task GoToWidgetsInStoreAsync()
+    {
+        await Launcher.LaunchUriAsync(new ("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
+    }
+
+    [RelayCommand]
     public async Task AddWidgetClickAsync()
     {
-        // If this is the first time we're initializing the Dashboard, or if initialization failed last time, initialize now.
-        if (!_widgetHostInitialized)
-        {
-            var initialized = await InitializeDashboard();
-            if (!initialized)
-            {
-                var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
-
-                var errorDialog = new ContentDialog()
-                {
-                    XamlRoot = this.XamlRoot,
-                    RequestedTheme = this.ActualTheme,
-                    Content = resourceLoader.GetString("UpdateWebExpContent"),
-                    CloseButtonText = resourceLoader.GetString("UpdateWebExpCancel"),
-                    PrimaryButtonText = resourceLoader.GetString("UpdateWebExpUpdate"),
-                    PrimaryButtonStyle = Application.Current.Resources["AccentButtonStyle"] as Style,
-                };
-                errorDialog.PrimaryButtonClick += async (ContentDialog sender, ContentDialogButtonClickEventArgs args) =>
-                {
-                    await Launcher.LaunchUriAsync(new ("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
-                    sender.Hide();
-                };
-                _ = await errorDialog.ShowAsync();
-                return;
-            }
-        }
-
         var dialog = new AddWidgetDialog(_dispatcher, ActualTheme)
         {
             // XamlRoot must be set in the case of a ContentDialog running in a Desktop app.

@@ -9,14 +9,14 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Labs.WinUI.Shimmer" Version="0.1.230830" />
-    <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.0.230907" />
-    <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.0.230907" />
+    <PackageReference Include="CommunityToolkit.WinUI.Animations" Version="8.0.240109" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.0.240109" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
     <PackageReference Include="Microsoft.WindowsPackageManager.Configuration" Version="0.0.5" />
-    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.0" GeneratePathProperty="true">
         <ExcludeAssets>contentFiles</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">

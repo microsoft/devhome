@@ -44,10 +44,7 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
         DataJson = dataJson ?? DataJson;
         State = state ?? State;
 
-        if (UiUpdate is not null)
-        {
-            UiUpdate.Invoke(this, parseResult.AdaptiveCard);
-        }
+        UiUpdate?.Invoke(this, parseResult.AdaptiveCard);
 
         return new ProviderOperationResult(ProviderOperationStatus.Success, null, "IExtensionAdaptiveCard.Update succeeds", "IExtensionAdaptiveCard.Update succeeds");
     }

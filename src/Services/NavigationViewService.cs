@@ -8,6 +8,7 @@ using DevHome.Contracts.Services;
 using DevHome.Helpers;
 using DevHome.Settings.ViewModels;
 using DevHome.Telemetry;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Services;
@@ -18,6 +19,8 @@ public class NavigationViewService : INavigationViewService
 
     private readonly IPageService _pageService;
 
+    private readonly IScreenReaderService _screenReaderService;
+
     private NavigationView? _navigationView;
 
     public IList<object>? MenuItems => _navigationView?.MenuItems;
@@ -26,10 +29,11 @@ public class NavigationViewService : INavigationViewService
 
     public object? SettingsItem => _navigationView?.SettingsItem;
 
-    public NavigationViewService(INavigationService navigationService, IPageService pageService)
+    public NavigationViewService(INavigationService navigationService, IPageService pageService, IScreenReaderService screenReaderService)
     {
         _navigationService = navigationService;
         _pageService = pageService;
+        _screenReaderService = screenReaderService;
     }
 
     [MemberNotNull(nameof(_navigationView))]
@@ -38,6 +42,15 @@ public class NavigationViewService : INavigationViewService
         _navigationView = navigationView;
         _navigationView.BackRequested += OnBackRequested;
         _navigationView.ItemInvoked += OnItemInvoked;
+
+        _navigationView.RegisterPropertyChangedCallback(NavigationView.IsPaneOpenProperty, OnIsPaneOpenChanged);
+    }
+
+    private void OnIsPaneOpenChanged(DependencyObject sender, DependencyProperty dp)
+    {
+        var announcementText = _navigationView!.IsPaneOpen ? "NavigationPaneOpened" : "NavigationPaneClosed";
+
+        _screenReaderService.Announce(announcementText.GetLocalized());
     }
 
     public void UnregisterEvents()
