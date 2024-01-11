@@ -10,8 +10,8 @@ namespace DevHome.SetupFlow.Services;
 
 public interface IDesiredStateConfiguration
 {
-    /// <inheritdoc cref="IWinGetDeployment.IsConfigurationStubbedAsync" />"
-    public Task<bool> IsStubbedAsync();
+    /// <inheritdoc cref="IWinGetDeployment.IsConfigurationUnstubbedAsync" />"
+    public Task<bool> IsUnstubbedAsync();
 
     /// <inheritdoc cref="IWinGetDeployment.UnstubConfigurationAsync" />"
     public Task<bool> UnstubAsync();

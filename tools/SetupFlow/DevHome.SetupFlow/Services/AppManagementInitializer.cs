@@ -100,9 +100,9 @@ public class AppManagementInitializer : IAppManagementInitializer
 
     private async Task UnstubConfigurationAsync()
     {
-        var isStubbed = await _dsc.IsStubbedAsync();
-        Log.Logger?.ReportInfo($"Configuration is {(isStubbed ? "stubbed" : "not stubbed")}");
-        if (!isStubbed)
+        var isUnstubbed = await _dsc.IsUnstubbedAsync();
+        Log.Logger?.ReportInfo($"Configuration is {(isUnstubbed ? "unstubbed" : "stubbed")}");
+        if (!isUnstubbed)
         {
             Log.Logger?.ReportInfo($"Starting to unstub configuration");
             await _dsc.UnstubAsync();

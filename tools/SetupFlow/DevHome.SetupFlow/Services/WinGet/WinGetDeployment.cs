@@ -97,7 +97,7 @@ internal class WinGetDeployment : IWinGetDeployment
     }
 
     /// <inheritdoc />
-    public async Task<bool> IsConfigurationStubbedAsync()
+    public async Task<bool> IsConfigurationUnstubbedAsync()
     {
         try
         {
@@ -105,7 +105,7 @@ internal class WinGetDeployment : IWinGetDeployment
         }
         catch (Exception e)
         {
-            Log.Logger?.ReportError(Log.Component.AppManagement, "An unexpected error occurred when checking if configuration is stubbed", e);
+            Log.Logger?.ReportError(Log.Component.AppManagement, "An unexpected error occurred when checking if configuration is unstubbed", e);
             return false;
         }
     }

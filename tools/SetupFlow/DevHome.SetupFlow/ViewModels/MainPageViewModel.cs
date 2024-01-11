@@ -208,7 +208,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     private async Task<bool> ValidateConfigurationFileAsync()
     {
-        return EnableConfigurationFileItem = await _dsc.IsStubbedAsync();
+        return EnableConfigurationFileItem = await _dsc.IsUnstubbedAsync();
     }
 
     private async Task<bool> ValidateAppInstallerAsync()

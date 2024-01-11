@@ -20,7 +20,7 @@ internal class DesiredStateConfiguration : IDesiredStateConfiguration
     }
 
     /// <inheritdoc />
-    public async Task<bool> IsStubbedAsync() => await _winGetDeployment.IsConfigurationStubbedAsync();
+    public async Task<bool> IsUnstubbedAsync() => await _winGetDeployment.IsConfigurationUnstubbedAsync();
 
     /// <inheritdoc />
     public async Task<bool> UnstubAsync() => await _winGetDeployment.UnstubConfigurationAsync();
