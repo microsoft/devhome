@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Services;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Log = DevHome.Dashboard.Helpers.Log;
@@ -15,6 +16,8 @@ namespace DevHome.Dashboard.Services;
 public class WidgetHostingService : IWidgetHostingService
 {
     private readonly IPackageDeploymentService _packageDeploymentService;
+
+    private readonly IAppInstallManagerService _appInstallManagerService;
 
     private static readonly string WidgetServiceStorePackageId = "9N3RK8ZV2ZR8";
     private static readonly TimeSpan StoreInstallTimeout = new (0, 0, 60);
@@ -35,9 +38,10 @@ public class WidgetHostingService : IWidgetHostingService
         Unknown,
     }
 
-    public WidgetHostingService(IPackageDeploymentService packageDeploymentService)
+    public WidgetHostingService(IPackageDeploymentService packageDeploymentService, IAppInstallManagerService appInstallManagerService)
     {
         _packageDeploymentService = packageDeploymentService;
+        _appInstallManagerService = appInstallManagerService;
     }
 
     public async Task<bool> EnsureWidgetServiceAsync()
@@ -79,7 +83,7 @@ public class WidgetHostingService : IWidgetHostingService
             {
                 // Try to install and report the outcome.
                 Log.Logger()?.ReportInfo("WidgetHostingService", "On Windows 10, TryInstallWidgetServicePackageAsync...");
-                var installedSuccessfully = await TryInstallWidgetServicePackageAsync();
+                var installedSuccessfully = await _appInstallManagerService.TryInstallPackageAsync(WidgetServiceStorePackageId);
                 _widgetServiceState = installedSuccessfully ? WidgetServiceStates.HasStoreWidgetServiceGoodVersion : WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion;
                 Log.Logger()?.ReportInfo("WidgetHostingService", $"On Windows 10, ...{_widgetServiceState}");
                 return installedSuccessfully;
@@ -109,74 +113,6 @@ public class WidgetHostingService : IWidgetHostingService
         const string packageFamilyName = "Microsoft.WidgetsPlatformRuntime_8wekyb3d8bbwe";
         var packages = _packageDeploymentService.FindPackagesForCurrentUser(packageFamilyName, (minSupportedVersion, null));
         return packages.Any();
-    }
-
-    private async Task<bool> TryInstallWidgetServicePackageAsync()
-    {
-        try
-        {
-            var installTask = InstallWidgetServicePackageAsync(WidgetServiceStorePackageId);
-
-            // Wait for a maximum of StoreInstallTimeout (60 seconds).
-            var completedTask = await Task.WhenAny(installTask, Task.Delay(StoreInstallTimeout));
-
-            if (completedTask.Exception != null)
-            {
-                throw completedTask.Exception;
-            }
-
-            if (completedTask != installTask)
-            {
-                throw new TimeoutException("Store Install task did not finish in time.");
-            }
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Log.Logger()?.ReportError("WidgetService installation Failed", ex);
-        }
-
-        return false;
-    }
-
-    private async Task InstallWidgetServicePackageAsync(string packageId)
-    {
-        await Task.Run(() =>
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            AppInstallItem installItem;
-            try
-            {
-                Log.Logger()?.ReportInfo("WidgetHostingService", "Starting WidgetService install");
-                installItem = new AppInstallManager().StartAppInstallAsync(packageId, null, true, false).GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                Log.Logger()?.ReportInfo("WidgetHostingService", "WidgetService install failure");
-                tcs.SetException(ex);
-                return tcs.Task;
-            }
-
-            installItem.Completed += (sender, args) =>
-            {
-                tcs.SetResult(true);
-            };
-
-            installItem.StatusChanged += (sender, args) =>
-            {
-                if (installItem.GetCurrentStatus().InstallState == AppInstallState.Canceled
-                    || installItem.GetCurrentStatus().InstallState == AppInstallState.Error)
-                {
-                    tcs.TrySetException(new System.Management.Automation.JobFailedException(installItem.GetCurrentStatus().ErrorCode.ToString()));
-                }
-                else if (installItem.GetCurrentStatus().InstallState == AppInstallState.Completed)
-                {
-                    tcs.SetResult(true);
-                }
-            };
-            return tcs.Task;
-        });
     }
 
     public async Task<WidgetHost> GetWidgetHostAsync()
