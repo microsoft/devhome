@@ -23,7 +23,7 @@ public class InitializationViewModel : ObservableObject
 #elif STABLE_BUILD
     private const string GitHubExtensionStorePackageId = "9NZCC27PR6N6";
 #else
-    private const string GitHubExtensionStorePackageId = "";
+    private const string GitHubExtensionStorePackageId = string.Empty;
 #endif
 
     public InitializationViewModel(IThemeSelectorService themeSelector, IWidgetHostingService widgetHostingService, IAppInstallManagerService appInstallManagerService)
