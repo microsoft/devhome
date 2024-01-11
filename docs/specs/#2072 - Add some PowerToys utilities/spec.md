@@ -15,7 +15,7 @@ Dev Home is intended to be a centralized location for developers to help them st
 
 ### 1.2 Introduce the Solution
 
-PowerToys has created a few utilities with the original intent of migrating them into Dev Home. These utilities include Registry Preview, Hosts File Editor, and Environment Variables. We can add these utilities into Dev Home as the "stable" versions of these tools, while maintaining their "preview" versions in PowerToys. By adding these utilities to Dev Home, we can provide developers with more value out of the box in Windows while also provide more awareness to PowerToys.
+[PowerToys](https://github.com/microsoft/powertoys) has created a few utilities with the original intent of migrating them into Dev Home. These utilities include Registry Preview, Hosts File Editor, and Environment Variables. We can add these utilities into Dev Home as the "stable" versions of these tools, while maintaining their "preview" versions in PowerToys. By adding these utilities to Dev Home, we can provide developers with more value out of the box in Windows while also provide more awareness to PowerToys.
 
 ### 1.3 Rough-in Designs
 
