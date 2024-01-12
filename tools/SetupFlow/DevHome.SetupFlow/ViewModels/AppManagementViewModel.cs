@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -41,6 +42,8 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         StringResource.GetLocalized(StringResourceKey.ApplicationsAddedSingular) :
         StringResource.GetLocalized(StringResourceKey.ApplicationsAddedPlural, SelectedPackages.Count);
 
+    public bool EnableRemoveAll => SelectedPackages.Count > 0;
+
     public AppManagementViewModel(
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
@@ -57,6 +60,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         _screenReaderService = host.GetService<IScreenReaderService>();
 
         _packageProvider.PackageSelectionChanged += (_, _) => OnPropertyChanged(nameof(ApplicationsAddedText));
+        _packageProvider.PackageSelectionChanged += (_, _) => OnPropertyChanged(nameof(EnableRemoveAll));
 
         PageTitle = StringResource.GetLocalized(StringResourceKey.ApplicationsPageTitle);
 
@@ -126,6 +130,16 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
             default:
                 // noop
                 break;
+        }
+    }
+
+    [RelayCommand]
+    private void RemoveAllPackages()
+    {
+        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Removing all packages from selected applications for installation");
+        foreach (var package in SelectedPackages.ToList())
+        {
+            package.IsSelected = false;
         }
     }
 }
