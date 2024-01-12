@@ -54,7 +54,7 @@ if ($IsAzurePipelineBuild) {
 }
 
 if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
-  extensionsdk\BuildSDKHelper.ps1 -VersionOfSDK $env:sdk_version -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassError
+  extensionsdk\BuildSDKHelper.ps1 -VersionOfSDK $env:sdk_version -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
 }
 
 $msbuildPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
