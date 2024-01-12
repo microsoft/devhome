@@ -54,9 +54,6 @@ public partial class WidgetViewModel : ObservableObject
     [ObservableProperty]
     private bool _isInEditMode;
 
-    [ObservableProperty]
-    private bool _configuring;
-
     partial void OnWidgetChanging(Widget value)
     {
         if (Widget != null)
@@ -131,13 +128,6 @@ public partial class WidgetViewModel : ObservableObject
             Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
             Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
 
-            // If we're in the Add or Edit dialog, check the cardData to see if the card is in a configuration state
-            // or if it is able to be pinned yet. If still configuring, the Pin button will be disabled.
-            if (IsInAddMode || IsInEditMode)
-            {
-                GetConfiguring(cardData);
-            }
-
             // Use the data to fill in the template.
             AdaptiveCardParseResult card;
             try
@@ -204,20 +194,6 @@ public partial class WidgetViewModel : ObservableObject
                 }
             });
         });
-    }
-
-    // Check if the card data indicates a configuration state. Configuring is bound to the Pin button and will disable it if true.
-    private void GetConfiguring(string cardData)
-    {
-        var jsonObj = JsonObject.Parse(cardData);
-        if (jsonObj != null)
-        {
-            var isConfiguring = jsonObj.GetNamedBoolean("configuring", false);
-            _dispatcher.TryEnqueue(() =>
-            {
-                Configuring = isConfiguring;
-            });
-        }
     }
 
     private async Task<bool> IsWidgetContentAvailable()
