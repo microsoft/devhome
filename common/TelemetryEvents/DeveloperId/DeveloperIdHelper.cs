@@ -31,7 +31,7 @@ public static class DeveloperIdHelper
         {
             loginIdBytes = Encoding.ASCII.GetBytes(loginSessionId);
 
-            hashedLoginId = hasher.ComputeHash(loginIdBytes);
+            hashedLoginId = SHA256.HashData(loginIdBytes);
             if (BitConverter.IsLittleEndian)
             {
                 Array.Reverse(hashedLoginId);
