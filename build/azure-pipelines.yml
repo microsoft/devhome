@@ -21,7 +21,7 @@ parameters:
 
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
-  MSIXVersion: '0.801'
+  MSIXVersion: '0.901'
   VersionOfSDK: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -65,7 +65,7 @@ extends:
         steps:
         - task: NuGetToolInstaller@1
 
-        - task: NuGetAuthenticate@0
+        - task: NuGetAuthenticate@1
           inputs:
             nuGetServiceConnections: 'DevHomeInternal'
 
@@ -132,7 +132,7 @@ extends:
             steps:
             - task: NuGetToolInstaller@1
 
-            - task: NuGetAuthenticate@0
+            - task: NuGetAuthenticate@1
               inputs:
                 nuGetServiceConnections: 'DevHomeInternal'
 

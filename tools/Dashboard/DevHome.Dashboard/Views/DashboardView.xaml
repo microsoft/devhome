@@ -13,8 +13,6 @@
     xmlns:views="using:DevHome.Dashboard.Views"
     xmlns:controls="using:DevHome.Dashboard.Controls"
     xmlns:behaviors="using:DevHome.Common.Behaviors"
-    xmlns:i="using:Microsoft.Xaml.Interactivity"
-    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
@@ -45,13 +43,11 @@
         <Grid Grid.Row="0" Margin="0,0,0,22">
             <TextBlock x:Uid="DashboardPage_Title" Style="{ThemeResource SubtitleTextBlockStyle}" HorizontalAlignment="Left"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="AddWidgetButton" x:Uid="AddWidget" HorizontalAlignment="Right">
-                    <i:Interaction.Behaviors>
-                        <ic:EventTriggerBehavior EventName="Click">
-                            <ic:InvokeCommandAction Command="{x:Bind AddWidgetClickCommand}"/>
-                        </ic:EventTriggerBehavior>
-                    </i:Interaction.Behaviors>
-                </Button>
+                <Button x:Name="AddWidgetButton"
+                        x:Uid="AddWidget"
+                        HorizontalAlignment="Right"
+                        Command="{x:Bind AddWidgetClickCommand}"
+                        IsEnabled="{x:Bind ViewModel.HasWidgetService, Mode=OneWay}"/>
             </StackPanel>
         </Grid>
 
@@ -109,13 +105,19 @@
                 <StackPanel x:Name="NoWidgetsStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0"
                             Visibility="{x:Bind ViewModel.GetNoWidgetMessageVisibility(views:DashboardView.PinnedWidgets.Count, ViewModel.IsLoading), Mode=OneWay}">
                     <TextBlock x:Uid="NoWidgetsAdded" HorizontalAlignment="Center" />
-                    <HyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" HorizontalAlignment="Center">
-                        <i:Interaction.Behaviors>
-                            <ic:EventTriggerBehavior EventName="Click">
-                                <ic:InvokeCommandAction Command="{x:Bind AddWidgetClickCommand}"/>
-                            </ic:EventTriggerBehavior>
-                        </i:Interaction.Behaviors>
-                    </HyperlinkButton>
+                    <HyperlinkButton x:Name="AddFirstWidgetLink" x:Uid="AddFirstWidgetLink" HorizontalAlignment="Center" Command="{x:Bind AddWidgetClickCommand}" />
+                </StackPanel>
+
+                <!-- Widget messages -->
+                <StackPanel x:Name="RestartDevHomeMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
+                    <TextBlock x:Uid="RestartDevHomeMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
+                </StackPanel>
+                <StackPanel x:Name="UpdateWidgetsMessageStackPanel" HorizontalAlignment="Center" Margin="0,150,0,0" Visibility="Collapsed">
+                    <TextBlock x:Uid="UpdateWidgetsMessage" HorizontalAlignment="Center" TextWrapping="WrapWholeWords" HorizontalTextAlignment="Center" />
+                    <HyperlinkButton x:Name="UpdateWidgetsMessageLink"
+                                     x:Uid="UpdateWidgetsMessageLink"
+                                     HorizontalAlignment="Center"
+                                     Command="{x:Bind GoToWidgetsInStoreCommand}" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

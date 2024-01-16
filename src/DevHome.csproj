@@ -5,11 +5,6 @@
     <Import Project="$(SolutionDir)ToolingVersions.props" />
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        
-        <!-- TargetPlatformMinVersion is different here than the other csproj files.
-             User this version instead of the one defined in ToolingVersions.props  -->
-        <TargetPlatformMinVersion>10.0.22000.0</TargetPlatformMinVersion>
-        <SupportedOSPlatformVersion>10.0.22000.0</SupportedOSPlatformVersion>
         <RootNamespace>DevHome</RootNamespace>
         <ApplicationIcon>Assets/DevHome.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -45,7 +40,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
         <PackageReference Include="WinUIEx" Version="1.8.0" />
-        <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
+        <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.0" GeneratePathProperty="true">
             <ExcludeAssets>contentFiles</ExcludeAssets>
         </PackageReference>
     </ItemGroup>

@@ -7,8 +7,6 @@ using DevHome.SetupFlow.Common.Helpers;
 using LibGit2Sharp;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
-using Windows.Win32.Storage.FileSystem;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace DevHome.SetupFlow.Models;
 internal class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
