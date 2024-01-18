@@ -58,6 +58,11 @@ internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
         catch (Exception e)
         {
             Log.Logger()?.ReportError(Name, ShortId, "Error retrieving stats.", e);
+            var content = new JsonObject
+            {
+                { "errorMessage", e.Message },
+            };
+            ContentData = content.ToJsonString();
             DataState = WidgetDataState.Failed;
             return;
         }
