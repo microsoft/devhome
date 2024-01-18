@@ -75,7 +75,6 @@
     {
       "type": "ColumnSet",
       "spacing": "ExtraLarge",
-      "$when": "${$root.savedConfigFile != \"\"}",
       "columns": [
         {
           "type": "Column",
@@ -100,7 +99,8 @@
                     {
                       "type": "Action.Execute",
                       "title": "%Widget_Template_Button/Cancel%",
-                      "verb": "Cancel"
+                      "verb": "Cancel",
+                      "isEnabled": "${$root.savedConfigFile != \"\"}"
                     }
                   ]
                 }

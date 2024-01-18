@@ -9,7 +9,7 @@
         <ApplicationIcon>Assets/DevHome.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <Platforms>x86;x64;arm64</Platforms>
-        <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+        <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
         <PublishProfile Condition="'$(BuildingInsideVisualStudio)' != 'True'">Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
@@ -20,6 +20,16 @@
         <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
+      <None Remove="Assets\Preview\CPUScreenshotDark.png" />
+      <None Remove="Assets\Preview\CPUScreenshotLight.png" />
+      <None Remove="Assets\Preview\GPUScreenshotDark.png" />
+      <None Remove="Assets\Preview\GPUScreenshotLight.png" />
+      <None Remove="Assets\Preview\MemoryScreenshotDark.png" />
+      <None Remove="Assets\Preview\MemoryScreenshotLight.png" />
+      <None Remove="Assets\Preview\NetworkScreenshotDark.png" />
+      <None Remove="Assets\Preview\NetworkScreenshotLight.png" />
+      <None Remove="Assets\Preview\SSHScreenshotDark.png" />
+      <None Remove="Assets\Preview\SSHScreenshotLight.png" />
       <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
       <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
       <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
@@ -32,15 +42,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-        <PackageReference Include="Microsoft.Management.Infrastructure" Version="2.0.0" />
-        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.188-beta">
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
+        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
         <PackageReference Include="WinUIEx" Version="1.8.0" />
-        <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
+        <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.0" GeneratePathProperty="true">
             <ExcludeAssets>contentFiles</ExcludeAssets>
         </PackageReference>
     </ItemGroup>
@@ -101,7 +111,7 @@
 
         <!-- If the binary is not here, then it was a 'dotnet publish' or 'dotnet build' -->
         <PropertyGroup Condition="!Exists('$(TargetDir)\System.Management.Automation.dll')">
-            <ModulePath>runtimes\win\lib\net6.0\</ModulePath>
+            <ModulePath>runtimes\win\lib\net8.0\</ModulePath>
         </PropertyGroup>
 
         <ItemGroup>

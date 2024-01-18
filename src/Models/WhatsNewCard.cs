@@ -59,6 +59,11 @@ public class WhatsNewCard
 
     public bool ShouldShowLink { get; set; } = true;
 
+    public bool? ShouldShowIcon
+    {
+        get; set;
+    }
+
     public bool? IsBig
     {
         get; set;
