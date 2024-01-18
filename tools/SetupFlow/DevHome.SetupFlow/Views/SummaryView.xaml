@@ -52,8 +52,7 @@
     </UserControl.Resources>
     <ScrollViewer 
         VerticalScrollMode="Enabled" 
-        VerticalScrollBarVisibility="Auto"
-        Padding="0,0,10,0">
+        VerticalScrollBarVisibility="Auto">
         <Grid RowSpacing="5" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>

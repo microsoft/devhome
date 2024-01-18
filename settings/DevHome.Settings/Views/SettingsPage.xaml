@@ -13,9 +13,7 @@
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
 
-    <Grid
-        MaxWidth="{ThemeResource MaxPageContentWidth}"
-        Margin="{ThemeResource ContentPageMargin}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -23,12 +21,12 @@
 
         <BreadcrumbBar
             x:Name="BreadcrumbBar"
-            Margin="0,0,0,16"
+            Margin="40,0,40,16"
             ItemClicked="BreadcrumbBar_ItemClicked"
             ItemsSource="{x:Bind Breadcrumbs}" />
 
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
-            <ItemsRepeater ItemsSource="{x:Bind ViewModel.SettingsList, Mode=OneWay}">
+            <ItemsRepeater ItemsSource="{x:Bind ViewModel.SettingsList, Mode=OneWay}" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate x:DataType="settings:SettingViewModel">
                         <ctControls:SettingsCard Header="{x:Bind Header}" Description="{x:Bind Description}"

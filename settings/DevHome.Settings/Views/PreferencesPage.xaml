@@ -13,9 +13,7 @@
     mc:Ignorable="d"
     Loaded="Page_Loaded">
 
-    <Grid
-        MaxWidth="{ThemeResource MaxPageContentWidth}"
-        Margin="{ThemeResource ContentPageMargin}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -23,12 +21,12 @@
 
         <BreadcrumbBar
             x:Name="BreadcrumbBar"
-            Margin="0,0,0,16"
+            Margin="40,0,40,16"
             ItemClicked="BreadcrumbBar_ItemClicked"
             ItemsSource="{x:Bind Breadcrumbs}" />
 
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
-            <ctControls:SettingsCard x:Uid="Settings_Theme">
+            <ctControls:SettingsCard x:Uid="Settings_Theme" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <ctControls:SettingsCard.HeaderIcon>
                     <FontIcon Glyph="&#xE790;" />
                 </ctControls:SettingsCard.HeaderIcon>

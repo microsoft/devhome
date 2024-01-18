@@ -9,9 +9,7 @@
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
 
-    <Grid
-        MaxWidth="{ThemeResource MaxPageContentWidth}"
-        Margin="{ThemeResource ContentPageMargin}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -19,12 +17,12 @@
 
         <BreadcrumbBar
             x:Name="BreadcrumbBar"
-            Margin="0,0,0,16"
+            Margin="40,0,40,16"
             ItemClicked="BreadcrumbBar_ItemClicked"
             ItemsSource="{x:Bind Breadcrumbs}" />
 
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
-            <ctControls:SettingsExpander x:Uid="Settings_About_Card" IsExpanded="True">
+      <ctControls:SettingsExpander x:Uid="Settings_About_Card" IsExpanded="True" MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
                 <ctControls:SettingsExpander.HeaderIcon>
                     <BitmapIcon ShowAsMonochrome="False" UriSource="/Assets/DevHome.ico" />
                 </ctControls:SettingsExpander.HeaderIcon>
