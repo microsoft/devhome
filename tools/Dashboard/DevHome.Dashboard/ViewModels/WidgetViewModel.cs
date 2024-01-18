@@ -247,7 +247,7 @@ public partial class WidgetViewModel : ObservableObject
         });
     }
 
-    private FrameworkElement GetErrorCard(string error, string subError = null)
+    private Grid GetErrorCard(string error, string subError = null)
     {
         var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
 

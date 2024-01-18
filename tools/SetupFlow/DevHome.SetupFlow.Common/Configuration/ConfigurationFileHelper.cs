@@ -151,7 +151,7 @@ public class ConfigurationFileHelper
     /// </summary>
     /// <param name="str">Target string</param>
     /// <returns>Input stream</returns>
-    private IInputStream StringToStream(string str)
+    private InMemoryRandomAccessStream StringToStream(string str)
     {
         InMemoryRandomAccessStream result = new ();
         using (DataWriter writer = new (result))

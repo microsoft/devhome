@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <ApplicationIcon>$(SolutionDir)\src\Assets\DevHome.ico</ApplicationIcon>
     <Platforms>x86;x64;arm64</Platforms>
-    <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
     <PublishProfileFullPath Condition="'$(BuildingInsideVisualStudio)' != 'True'">$(SolutionDir)\src\Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfileFullPath>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
