@@ -20,6 +20,16 @@
         <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
+      <None Remove="Assets\Preview\CPUScreenshotDark.png" />
+      <None Remove="Assets\Preview\CPUScreenshotLight.png" />
+      <None Remove="Assets\Preview\GPUScreenshotDark.png" />
+      <None Remove="Assets\Preview\GPUScreenshotLight.png" />
+      <None Remove="Assets\Preview\MemoryScreenshotDark.png" />
+      <None Remove="Assets\Preview\MemoryScreenshotLight.png" />
+      <None Remove="Assets\Preview\NetworkScreenshotDark.png" />
+      <None Remove="Assets\Preview\NetworkScreenshotLight.png" />
+      <None Remove="Assets\Preview\SSHScreenshotDark.png" />
+      <None Remove="Assets\Preview\SSHScreenshotLight.png" />
       <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
       <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
       <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
