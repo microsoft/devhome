@@ -5,9 +5,11 @@ using System;
 using System.IO;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
+using DevHome.SetupFlow.Models.Environments;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.ViewModels;
+using DevHome.SetupFlow.ViewModels.Environments;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -21,6 +23,7 @@ public static class ServiceExtensions
     public static IServiceCollection AddSetupFlow(this IServiceCollection services, HostBuilderContext context)
     {
         // Project services
+        services.AddSetupTarget();
         services.AddAppManagement();
         services.AddConfigurationFile();
         services.AddDevDrive();
@@ -87,6 +90,9 @@ public static class ServiceExtensions
         // Services
         services.AddTransient<ConfigurationFileTaskGroup>();
 
+        // Builder
+        services.AddSingleton<ConfigurationFileBuilder>();
+
         return services;
     }
 
@@ -146,6 +152,17 @@ public static class ServiceExtensions
     {
         // View models
         services.AddTransient<SummaryViewModel>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddSetupTarget(this IServiceCollection services)
+    {
+        // View models
+        services.AddSingleton<ComputeSystemViewModelFactory>();
+        services.AddTransient<SetupTargetViewModel>();
+        services.AddTransient<SetupTargetReviewViewModel>();
+        services.AddTransient<SetupTargetTaskGroup>();
 
         return services;
     }

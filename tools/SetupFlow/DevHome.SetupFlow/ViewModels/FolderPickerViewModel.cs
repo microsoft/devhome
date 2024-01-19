@@ -183,4 +183,21 @@ public partial class FolderPickerViewModel : ObservableObject
         ShowFolderPickerError = false;
         return true;
     }
+
+    /// <summary>
+    /// Sets the clone location to the default location. For the local machine setup the default is the user's
+    /// profile. For the target machine setup the default is the common documents folder.
+    /// </summary>
+    /// <param name="setupFlowKind">Enum used to decide which folder we should clone to.</param>
+    /// <returns>The full path of the default clone location</returns>
+    public string GetDefaultCloneLocation(SetupFlowKind setupFlowKind)
+    {
+        var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (setupFlowKind == SetupFlowKind.SetupTarget)
+        {
+            userFolder = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments);
+        }
+
+        return Path.Join(userFolder, "source", "repos");
+    }
 }

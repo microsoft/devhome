@@ -19,6 +19,8 @@ public class SetupFlowViewSelector : DataTemplateSelector
 
     public DataTemplate RepoConfigTemplate { get; set; }
 
+    public DataTemplate SetupTargetTemplate { get; set; }
+
     public DataTemplate AppManagementTemplate { get; set; }
 
     public DataTemplate ReviewTemplate { get; set; }
@@ -56,6 +58,7 @@ public class SetupFlowViewSelector : DataTemplateSelector
             LoadingViewModel => LoadingTemplate,
             SummaryViewModel => SummaryTemplate,
             ConfigurationFileViewModel => ConfigurationFileTemplate,
+            SetupTargetViewModel => SetupTargetTemplate,
             _ => defaultDataTemplate(),
         };
     }
