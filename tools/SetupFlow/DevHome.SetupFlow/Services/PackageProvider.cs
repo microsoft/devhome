@@ -25,7 +25,7 @@ namespace DevHome.SetupFlow.Services;
 /// </remarks>
 public class PackageProvider
 {
-    private sealed class PackageCache
+    private class PackageCache
     {
         /// <summary>
         /// Gets or sets the cached package view model

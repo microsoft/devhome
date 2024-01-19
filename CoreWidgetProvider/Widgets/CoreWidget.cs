@@ -125,10 +125,10 @@ internal abstract class CoreWidget : WidgetImpl
 
     protected string GetTemplateForPage(WidgetPageState page)
     {
-        if (Template.TryGetValue(page, out var value))
+        if (Template.ContainsKey(page))
         {
             Log.Logger()?.ReportDebug(Name, ShortId, $"Using cached template for {page}");
-            return value;
+            return Template[page];
         }
 
         try

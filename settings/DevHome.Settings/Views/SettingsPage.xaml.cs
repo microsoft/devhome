@@ -29,7 +29,7 @@ public sealed partial class SettingsPage : Page
         var stringResource = new StringResource("DevHome.Settings/Resources");
         Breadcrumbs = new ObservableCollection<Breadcrumb>
         {
-            new (stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
+            new Breadcrumb(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
         };
     }
 

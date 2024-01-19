@@ -12,7 +12,7 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Helpers;
-internal sealed class WidgetHelpers
+internal class WidgetHelpers
 {
     public const string DevHomeHostName = "DevHome";
 

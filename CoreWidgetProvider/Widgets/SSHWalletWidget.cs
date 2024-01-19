@@ -13,17 +13,17 @@ using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
 
-internal sealed class SSHWalletWidget : CoreWidget
+internal class SSHWalletWidget : CoreWidget
 {
-    private static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
+    protected static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
 
     private static readonly Regex HostRegex = new (@"^Host\s+(\S*)\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
     private FileSystemWatcher? FileWatcher { get; set; }
 
-    private static readonly new string Name = nameof(SSHWalletWidget);
+    protected static readonly new string Name = nameof(SSHWalletWidget);
 
-    private string ConfigFile
+    protected string ConfigFile
     {
         get => State();
 
@@ -405,7 +405,7 @@ internal sealed class SSHWalletWidget : CoreWidget
     }
 }
 
-internal sealed class DataPayload
+internal class DataPayload
 {
     public string? ConfigFile
     {
@@ -415,6 +415,6 @@ internal sealed class DataPayload
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(DataPayload))]
-internal sealed partial class SourceGenerationContext : JsonSerializerContext
+internal partial class SourceGenerationContext : JsonSerializerContext
 {
 }

@@ -8,11 +8,11 @@ using CoreWidgetProvider.Widgets.Enums;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
-internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
+internal class SystemCPUUsageWidget : CoreWidget, IDisposable
 {
     private static Dictionary<string, string> Templates { get; set; } = new ();
 
-    private static readonly new string Name = nameof(SystemCPUUsageWidget);
+    protected static readonly new string Name = nameof(SystemCPUUsageWidget);
 
     private readonly DataManager dataManager;
 

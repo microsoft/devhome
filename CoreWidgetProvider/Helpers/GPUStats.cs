@@ -7,14 +7,14 @@ using Microsoft.Management.Infrastructure;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal sealed class GPUStats : IDisposable
+internal class GPUStats : IDisposable
 {
     // GPU counters
     private readonly Dictionary<int, List<PerformanceCounter>> gpuCounters = new ();
 
     private readonly List<Data> stats = new ();
 
-    public sealed class Data
+    public class Data
     {
         public string? Name { get; set; }
 
@@ -79,13 +79,12 @@ internal sealed class GPUStats : IDisposable
                         continue;
                     }
 
-                    if (!gpuCounters.TryGetValue(phys, out var value))
+                    if (!gpuCounters.ContainsKey(phys))
                     {
-                        value = new ();
-                        gpuCounters.Add(phys, value);
+                        gpuCounters.Add(phys, new ());
                     }
 
-                    value.Add(counter);
+                    gpuCounters[phys].Add(counter);
                 }
             }
         }

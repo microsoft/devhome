@@ -18,7 +18,7 @@ namespace DevHome.Settings.ViewModels;
 
 public class ExperimentalFeaturesViewModel : ObservableObject
 {
-    private readonly ILocalSettingsService _localSettingsService;
+    private ILocalSettingsService _localSettingsService;
 
     public ObservableCollection<ExperimentalFeature> Features { get; } = new ();
 

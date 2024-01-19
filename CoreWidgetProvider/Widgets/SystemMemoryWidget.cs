@@ -8,11 +8,11 @@ using CoreWidgetProvider.Widgets.Enums;
 
 namespace CoreWidgetProvider.Widgets;
 
-internal sealed class SystemMemoryWidget : CoreWidget, IDisposable
+internal class SystemMemoryWidget : CoreWidget, IDisposable
 {
     private static Dictionary<string, string> Templates { get; set; } = new ();
 
-    private static readonly new string Name = nameof(SystemMemoryWidget);
+    protected static readonly new string Name = nameof(SystemMemoryWidget);
 
     private readonly DataManager dataManager;
 

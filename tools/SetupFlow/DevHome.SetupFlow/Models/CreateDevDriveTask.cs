@@ -23,7 +23,7 @@ using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
 
-internal sealed class CreateDevDriveTask : ISetupTask
+internal class CreateDevDriveTask : ISetupTask
 {
     private readonly TaskMessages _taskMessages;
     private readonly ActionCenterMessages _actionCenterMessages = new ();

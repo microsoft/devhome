@@ -5,7 +5,7 @@ using Timer = System.Timers.Timer;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal sealed class DataManager : IDisposable
+internal class DataManager : IDisposable
 {
     private readonly SystemData systemData;
     private readonly DataType dataType;

@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal sealed class NetworkStats : IDisposable
+internal class NetworkStats : IDisposable
 {
     private readonly Dictionary<string, List<PerformanceCounter>> networkCounters = new ();
 
@@ -13,7 +13,7 @@ internal sealed class NetworkStats : IDisposable
 
     private Dictionary<string, List<float>> NetChartValues { get; set; } = new Dictionary<string, List<float>>();
 
-    public sealed class Data
+    public class Data
     {
         public float Usage
         {
@@ -114,12 +114,12 @@ internal sealed class NetworkStats : IDisposable
         }
 
         var currNetworkName = NetChartValues.ElementAt(networkIndex).Key;
-        if (!NetworkUsages.TryGetValue(currNetworkName, out var value))
+        if (!NetworkUsages.ContainsKey(currNetworkName))
         {
             return new Data();
         }
 
-        return value;
+        return NetworkUsages[currNetworkName];
     }
 
     public int GetPrevNetworkIndex(int networkIndex)

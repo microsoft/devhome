@@ -24,7 +24,7 @@ namespace DevHome.SetupFlow.Views;
 /// <summary>
 /// Dialog to allow users to select repositories they want to clone.
 /// </summary>
-internal sealed partial class AddRepoDialog : ContentDialog
+internal partial class AddRepoDialog : ContentDialog
 {
     private readonly string _defaultClonePath;
 

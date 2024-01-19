@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using DevHome.Common.Helpers;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
@@ -20,7 +21,7 @@ public static class SettingsStorageExtensions
     public static async Task SaveAsync<T>(this StorageFolder folder, string name, T content)
     {
         var file = await folder.CreateFileAsync(GetFileName(name), CreationCollisionOption.ReplaceExisting);
-        var fileContent = await Common.Helpers.Json.StringifyAsync(content!);
+        var fileContent = await Json.StringifyAsync(content!);
 
         await FileIO.WriteTextAsync(file, fileContent);
     }
@@ -35,12 +36,12 @@ public static class SettingsStorageExtensions
         var file = await folder.GetFileAsync($"{name}.json");
         var fileContent = await FileIO.ReadTextAsync(file);
 
-        return await Common.Helpers.Json.ToObjectAsync<T>(fileContent);
+        return await Json.ToObjectAsync<T>(fileContent);
     }
 
     public static async Task SaveAsync<T>(this ApplicationDataContainer settings, string key, T value)
     {
-        settings.SaveString(key, await Common.Helpers.Json.StringifyAsync(value!));
+        settings.SaveString(key, await Json.StringifyAsync(value!));
     }
 
     public static void SaveString(this ApplicationDataContainer settings, string key, string value)
@@ -54,7 +55,7 @@ public static class SettingsStorageExtensions
 
         if (settings.Values.TryGetValue(key, out obj))
         {
-            return await Common.Helpers.Json.ToObjectAsync<T>((string)obj);
+            return await Json.ToObjectAsync<T>((string)obj);
         }
 
         return default;
@@ -62,7 +63,10 @@ public static class SettingsStorageExtensions
 
     public static async Task<StorageFile> SaveFileAsync(this StorageFolder folder, byte[] content, string fileName, CreationCollisionOption options = CreationCollisionOption.ReplaceExisting)
     {
-        ArgumentNullException.ThrowIfNull(content);
+        if (content == null)
+        {
+            throw new ArgumentNullException(nameof(content));
+        }
 
         if (string.IsNullOrEmpty(fileName))
         {

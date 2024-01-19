@@ -31,8 +31,8 @@ public sealed partial class AboutPage : Page
         var stringResource = new StringResource("DevHome.Settings/Resources");
         Breadcrumbs = new ObservableCollection<Breadcrumb>
         {
-            new (stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
-            new (stringResource.GetLocalized("Settings_About_Header"), typeof(AboutViewModel).FullName!),
+            new Breadcrumb(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
+            new Breadcrumb(stringResource.GetLocalized("Settings_About_Header"), typeof(AboutViewModel).FullName!),
         };
     }
 

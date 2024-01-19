@@ -3,8 +3,8 @@
 
 using System.IO;
 using System.Text;
-using System.Text.Json;
 using DevHome.Common.Contracts;
+using Newtonsoft.Json;
 
 namespace DevHome.Common.Services;
 
@@ -16,8 +16,8 @@ public class FileService : IFileService
         var path = Path.Combine(folderPath, fileName);
         if (File.Exists(path))
         {
-            using var fileStream = File.OpenText(path);
-            return JsonSerializer.Deserialize<T>(fileStream.BaseStream);
+            var json = File.ReadAllText(path);
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
         return default;
@@ -31,7 +31,7 @@ public class FileService : IFileService
             Directory.CreateDirectory(folderPath);
         }
 
-        var fileContent = JsonSerializer.Serialize(content);
+        var fileContent = JsonConvert.SerializeObject(content);
         File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
     }
 

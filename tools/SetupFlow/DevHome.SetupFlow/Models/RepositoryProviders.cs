@@ -21,7 +21,7 @@ namespace DevHome.SetupFlow.Models;
 /// <remarks>
 /// This class only uses providers that implement IDeveloperIdProvider and IRepositoryProvider.
 /// </remarks>
-internal sealed class RepositoryProviders
+internal class RepositoryProviders
 {
     /// <summary>
     /// Hold all providers and organize by their names.
@@ -53,9 +53,9 @@ internal sealed class RepositoryProviders
     public void StartIfNotRunning(string providerName)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Starting RepositoryProvider {providerName}");
-        if (_providers.TryGetValue(providerName, out var value))
+        if (_providers.ContainsKey(providerName))
         {
-            value.StartIfNotRunning();
+            _providers[providerName].StartIfNotRunning();
         }
     }
 

@@ -31,4 +31,3 @@ StrFormatByteSizeEx
 S_OK
 DetachVirtualDisk 
 OpenVirtualDisk
-FILE_ACCESS_RIGHTS

@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal sealed class CPUStats : IDisposable
+internal class CPUStats : IDisposable
 {
     // CPU counters
     private readonly PerformanceCounter procPerf = new ("Processor Information", "% Processor Utility", "_Total");
@@ -13,7 +13,7 @@ internal sealed class CPUStats : IDisposable
     private readonly PerformanceCounter procFrequency = new ("Processor Information", "Processor Frequency", "_Total");
     private readonly Dictionary<Process, PerformanceCounter> cpuCounters = new ();
 
-    internal sealed class ProcessStats
+    internal class ProcessStats
     {
         public Process? Process { get; set; }
 
@@ -31,12 +31,7 @@ internal sealed class CPUStats : IDisposable
     public CPUStats()
     {
         CpuUsage = 0;
-        ProcessCPUStats =
-        [
-            new ProcessStats(),
-            new ProcessStats(),
-            new ProcessStats()
-        ];
+        ProcessCPUStats = new ProcessStats[3] { new ProcessStats(), new ProcessStats(), new ProcessStats() };
 
         InitCPUPerfCounters();
     }

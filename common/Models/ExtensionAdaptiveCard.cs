@@ -7,6 +7,8 @@ using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Templating;
 using DevHome.Logging;
 using Microsoft.Windows.DevHome.SDK;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DevHome.Common.Models;
 public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
@@ -29,7 +31,7 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
     public ProviderOperationResult Update(string templateJson, string dataJson, string state)
     {
         var template = new AdaptiveCardTemplate(templateJson ?? TemplateJson);
-        var adaptiveCardString = template.Expand(JsonNode.Parse(dataJson ?? DataJson));
+        var adaptiveCardString = template.Expand(JsonConvert.DeserializeObject<JObject>(dataJson ?? DataJson));
         var parseResult = AdaptiveCard.FromJsonString(adaptiveCardString);
 
         if (parseResult.AdaptiveCard is null)

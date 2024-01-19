@@ -51,8 +51,8 @@ public static class Resources
     // These are all the string identifiers that appear in widgets.
     public static string[] GetWidgetResourceIdentifiers()
     {
-        return
-        [
+        return new string[]
+        {
             "Widget_Template/Loading",
             "Widget_Template_Tooltip/Submit",
             "SSH_Widget_Template/Name",
@@ -89,6 +89,6 @@ public static class Resources
             "CPUUsage_Widget_Template/End_Process",
             "Widget_Template_Button/Save",
             "Widget_Template_Button/Cancel",
-        ];
+        };
     }
 }

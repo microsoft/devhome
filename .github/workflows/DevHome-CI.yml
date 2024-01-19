@@ -15,7 +15,7 @@ jobs:
         configuration: [Release, Debug]
         platform: [x64, x86, arm64]
         os: [windows-latest]
-        dotnet-version: ['8.0.x']
+        dotnet-version: ['6.0.x']
         exclude:
         - configuration: Debug
           platform: x64
@@ -77,11 +77,11 @@ jobs:
 
     - name: DevHome UnitTests
       if: ${{ matrix.platform != 'arm64' }}
-      run: cmd /c "$env:VSDevTestCmd" /Platform:${{ matrix.platform }} test\\bin\\${{ matrix.platform }}\\${{ matrix.configuration }}\\net8.0-windows10.0.22000.0\\DevHome.Test.dll
+      run: cmd /c "$env:VSDevTestCmd" /Platform:${{ matrix.platform }} test\\bin\\${{ matrix.platform }}\\${{ matrix.configuration }}\\net6.0-windows10.0.22000.0\\DevHome.Test.dll
 
     - name: Tools UnitTests
       if: ${{ matrix.platform != 'arm64' }}
       run: |
-        foreach ($UnitTestPath in (Get-ChildItem "tools\\*\\*UnitTest\\bin\\${{ matrix.platform }}\\${{ matrix.configuration }}\\net8.0-windows10.0.22000.0\\*.UnitTest.dll")) {
+        foreach ($UnitTestPath in (Get-ChildItem "tools\\*\\*UnitTest\\bin\\${{ matrix.platform }}\\${{ matrix.configuration }}\\net6.0-windows10.0.22000.0\\*.UnitTest.dll")) {
           cmd /c "$env:VSDevTestCmd" /Platform:${{ matrix.platform }} $UnitTestPath.FullName
         }

@@ -69,7 +69,7 @@ public sealed class WidgetServer : IDisposable
         }
     }
 
-    private sealed class Ole32
+    private class Ole32
     {
 #pragma warning disable SA1310 // Field names should not contain underscore
         // https://docs.microsoft.com/windows/win32/api/combaseapi/ne-combaseapi-regcls

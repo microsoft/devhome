@@ -8,13 +8,13 @@ using CoreWidgetProvider.Widgets.Enums;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
-internal sealed class SystemNetworkUsageWidget : CoreWidget, IDisposable
+internal class SystemNetworkUsageWidget : CoreWidget, IDisposable
 {
     private static Dictionary<string, string> Templates { get; set; } = new ();
 
     private int networkIndex;
 
-    private static readonly new string Name = nameof(SystemNetworkUsageWidget);
+    protected static readonly new string Name = nameof(SystemNetworkUsageWidget);
 
     private readonly DataManager dataManager;
 

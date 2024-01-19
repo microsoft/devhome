@@ -623,7 +623,7 @@ public partial class DevDriveViewModel : ObservableObject, IDevDriveWindowViewMo
     {
         DriveLetterError = null;
 
-        if (DriveLetters.Count == 0)
+        if (!DriveLetters.Any())
         {
             DriveLetterError = DevDriveValidationResult.NoDriveLettersAvailable;
         }

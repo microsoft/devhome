@@ -45,7 +45,7 @@ public class SetupFlowStringResource : StringResource, ISetupFlowStringResource
             }
             finally
             {
-                PInvoke.LocalFree((HLOCAL)(IntPtr)formattedMessage.Value);
+                PInvoke.LocalFree((IntPtr)formattedMessage.Value);
             }
         }
     }

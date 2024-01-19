@@ -252,7 +252,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
     /// <summary>
     /// Class for tracking the state of an operation.
     /// </summary>
-    private sealed class OperationState
+    private class OperationState
     {
         /// <summary>
         /// Gets or sets the number of remaining attempts to execute this operation.

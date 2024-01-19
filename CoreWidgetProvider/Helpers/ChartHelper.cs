@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal sealed class ChartHelper
+internal class ChartHelper
 {
     public enum ChartType
     {

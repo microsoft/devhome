@@ -7,7 +7,10 @@ public static class DictionaryExtensions
 {
     public static void DisposeAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
     {
-        ArgumentNullException.ThrowIfNull(dictionary);
+        if (dictionary is null)
+        {
+            throw new ArgumentNullException(nameof(dictionary));
+        }
 
         foreach (var kv in dictionary)
         {

@@ -6,7 +6,7 @@ using DevHome.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Services;
-internal sealed class InfoBarService : IInfoBarService
+internal class InfoBarService : IInfoBarService
 {
     private readonly InfoBarModel _shellInfoBarModel;
 

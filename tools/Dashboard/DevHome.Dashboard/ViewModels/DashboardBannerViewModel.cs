@@ -10,7 +10,7 @@ using Windows.System;
 
 namespace DevHome.Dashboard.ViewModels;
 
-internal sealed partial class DashboardBannerViewModel : ObservableObject
+internal partial class DashboardBannerViewModel : ObservableObject
 {
     private const string _hideDashboardBannerKey = "HideDashboardBanner";
 

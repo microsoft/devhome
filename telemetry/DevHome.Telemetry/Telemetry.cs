@@ -10,7 +10,7 @@ using Microsoft.Diagnostics.Telemetry;
 
 namespace DevHome.Telemetry;
 
-internal sealed class Telemetry : ITelemetry
+internal class Telemetry : ITelemetry
 {
     private const string ProviderName = "Microsoft.Windows.DevHome"; // Generated provider GUID: {2e74ff65-bbda-5e80-4c0a-bd8320d4223b}
 

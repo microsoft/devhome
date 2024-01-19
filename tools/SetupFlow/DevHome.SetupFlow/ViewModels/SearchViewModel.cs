@@ -110,7 +110,7 @@ public partial class SearchViewModel : ObservableObject
             ResultPackages = await Task.Run(() => matches.Select(m => _packageProvider.CreateOrGet(m)).ToList());
 
             // Announce the results.
-            if (ResultPackages.Count != 0)
+            if (ResultPackages.Any())
             {
                 _screenReaderService.Announce(SearchCountText);
             }

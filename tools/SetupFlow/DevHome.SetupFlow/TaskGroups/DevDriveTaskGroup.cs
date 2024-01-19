@@ -39,7 +39,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
     /// </param>
     public void AddDevDriveTask(IDevDrive devDrive)
     {
-        if (_devDriveTasks.Count != 0)
+        if (_devDriveTasks.Any())
         {
             Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Overwriting existing dev drive task");
             _devDriveTasks[0].DevDrive = devDrive;
@@ -61,9 +61,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         _devDriveTasks.Clear();
     }
 
-    private readonly List<CreateDevDriveTask> _devDriveTasks =
-        [
-        ];
+    private readonly IList<CreateDevDriveTask> _devDriveTasks = new List<CreateDevDriveTask>();
 
     public IEnumerable<ISetupTask> SetupTasks
     {

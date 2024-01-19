@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using Windows.Win32;
-using Windows.Win32.Foundation;
 using Windows.Win32.System.Com;
 using WinRT;
 
@@ -249,7 +248,7 @@ public static class IPCSetup
             }
 
             // Read the marshalling object
-            Marshal.ThrowExceptionForHR(PInvoke.CreateStreamOnHGlobal((HGLOBAL)(nint)0, fDeleteOnRelease: true, out var stream));
+            Marshal.ThrowExceptionForHR(PInvoke.CreateStreamOnHGlobal(0, fDeleteOnRelease: true, out var stream));
 
             using (var mappedFileAccessor = mappedFile.CreateViewAccessor())
             {
@@ -337,7 +336,7 @@ public static class IPCSetup
                 unsafe
                 {
                     // Write the object into a stream from which will be copied to the shared memory
-                    Marshal.ThrowExceptionForHR(PInvoke.CreateStreamOnHGlobal((HGLOBAL)(nint)0, fDeleteOnRelease: true, out var stream));
+                    Marshal.ThrowExceptionForHR(PInvoke.CreateStreamOnHGlobal(0, fDeleteOnRelease: true, out var stream));
 
                     var marshaler = MarshalInterface<T>.CreateMarshaler(value);
                     var marshalerAbi = MarshalInterface<T>.GetAbi(marshaler);

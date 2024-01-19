@@ -10,7 +10,7 @@ using Windows.System;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
 
-internal sealed partial class ExtensionLibraryBannerViewModel : ObservableObject
+internal partial class ExtensionLibraryBannerViewModel : ObservableObject
 {
     private const string _hideExtensionsBannerKey = "HideExtensionsBanner";
 

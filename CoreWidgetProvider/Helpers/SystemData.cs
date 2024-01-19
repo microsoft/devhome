@@ -3,7 +3,7 @@
 
 namespace CoreWidgetProvider.Helpers;
 
-internal sealed class SystemData : IDisposable
+internal class SystemData : IDisposable
 {
     public static MemoryStats MemStats { get; set; } = new MemoryStats();
 
