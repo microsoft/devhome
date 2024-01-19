@@ -39,6 +39,9 @@
   </ItemGroup>
   <!-- Needed for reverting back to pre-.NET 8 method of Host using the RID graph to determine assets  -->
   <!-- https://learn.microsoft.com/en-us/dotnet/core/compatibility/deployment/8.0/rid-asset-list -->
+  <PropertyGroup>
+    <UseRidGraph>true</UseRidGraph>
+  </PropertyGroup>
   <ItemGroup>
 	  <RuntimeHostConfigurationOption Include="System.Runtime.Loader.UseRidGraph" Value="true" />
   </ItemGroup>
