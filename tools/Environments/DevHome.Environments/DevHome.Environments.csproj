@@ -9,6 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.WinUI.Collections" Version="8.0.240109" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
 		<PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.0.230907" />
@@ -31,7 +32,6 @@
 		<Folder Include="Extensions\" />
 		<Folder Include="Models\" />
 		<Folder Include="Strings\" />
-		<Folder Include="Styles\" />
 		<Folder Include="Templates\" />
 		<Folder Include="ViewModels\" />
 		<Folder Include="Views\" />

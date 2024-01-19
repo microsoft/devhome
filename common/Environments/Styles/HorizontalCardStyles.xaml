@@ -147,35 +147,35 @@
     </Style>
 
     <Style
-        x:Key="EnvironmentscrollViewerStyle"
+        x:Key="EnvironmentScrollViewerStyle"
         TargetType="ScrollViewer">
         <Setter Property="Margin" Value="0,22,0,0" />
         <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
     </Style>
 
-    <Style 
+    <Style
         x:Key="CardHeaderContainerStyle"
         TargetType="Grid">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="ColumnSpacing" Value="20" />
     </Style>
 
-    <Style 
-        x:Key="ComputeSystemCaptionIconAndTitleContainerStyle" 
+    <Style
+        x:Key="ComputeSystemCaptionIconAndTitleContainerStyle"
         TargetType="Grid">
         <Setter Property="Margin" Value="5,0,10,0" />
         <Setter Property="ColumnSpacing" Value="{StaticResource IconAndTitleSpacing}" />
     </Style>
 
-    <Style 
-        x:Key="ComputeSystemIconStyle" 
+    <Style
+        x:Key="ComputeSystemIconStyle"
         TargetType="Viewbox">
         <Setter Property="Width" Value="{StaticResource ComputeSystemIcon12px}" />
         <Setter Property="Height" Value="{StaticResource ComputeSystemIcon12px}" />
     </Style>
 
-    <Style 
-        x:Key="ComputeSystemIconBackgroundStyle" 
+    <Style
+        x:Key="ComputeSystemIconBackgroundStyle"
         TargetType="Rectangle">
         <Setter Property="Fill" Value="White" />
         <Setter Property="Stroke" Value="Black" />
@@ -186,16 +186,16 @@
         <Setter Property="Height" Value="{StaticResource ComputeSystemIcon12px}" />
     </Style>
 
-    <Style 
-        x:Key="ComputeSystemIconBorderStyle" 
+    <Style
+        x:Key="ComputeSystemIconBorderStyle"
         TargetType="Border">
         <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
         <Setter Property="MaxHeight" Value="{StaticResource ComputeSystemIcon12px}" />
         <Setter Property="MaxWidth" Value="{StaticResource ComputeSystemIcon12px}" />
     </Style>
 
-    <Style 
-        x:Key="ComputeSystemTitleStyle"  
+    <Style
+        x:Key="ComputeSystemTitleStyle"
         BasedOn="{StaticResource CaptionTextBlockStyle}"
         TargetType="TextBlock">
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -205,13 +205,13 @@
 
 
     <Style
-        x:Key="HorizontalThreeDotsContainerStyle" 
+        x:Key="HorizontalThreeDotsContainerStyle"
         TargetType="Grid">
         <Setter Property="HorizontalAlignment" Value="Right" />
     </Style>
 
     <Style
-        x:Key="HorizontalThreeDotsStyle" 
+        x:Key="HorizontalThreeDotsStyle"
         BasedOn="{StaticResource SubtleButtonStyle}"
         TargetType="Button">
         <Setter Property="Content" Value="&#xE712;" />
@@ -220,7 +220,7 @@
     </Style>
 
     <Style
-        x:Key="CardBodyContainerStyle" 
+        x:Key="CardBodyContainerStyle"
         TargetType="Grid">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="ColumnSpacing" Value="10" />
@@ -228,21 +228,21 @@
     </Style>
 
     <Style
-        x:Key="CardBodyStackPanelStyle" 
+        x:Key="CardBodyStackPanelStyle"
         TargetType="StackPanel">
         <Setter Property="Spacing" Value="5" />
         <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
 
-    <Style 
-        x:Key="ComputeSystemImageStyle" 
+    <Style
+        x:Key="ComputeSystemImageStyle"
         TargetType="Viewbox">
         <Setter Property="Width" Value="{StaticResource ComputeSystemImage64px}" />
         <Setter Property="Height" Value="{StaticResource ComputeSystemImage64px}" />
     </Style>
 
-    <Style 
-        x:Key="ComputeSystemImageBackgroundStyle" 
+    <Style
+        x:Key="ComputeSystemImageBackgroundStyle"
         TargetType="Rectangle">
         <Setter Property="Fill" Value="White" />
         <Setter Property="Stroke" Value="Black" />
@@ -253,50 +253,71 @@
         <Setter Property="Height" Value="{StaticResource ComputeSystemImage64px}" />
     </Style>
 
-    <Style 
-        x:Key="ComputeSystemImageBorderStyle" 
+    <Style
+        x:Key="ComputeSystemImageBorderStyle"
         TargetType="Border">
         <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}" />
         <Setter Property="MaxHeight" Value="{StaticResource ComputeSystemImage64px}" />
         <Setter Property="MaxWidth" Value="{StaticResource ComputeSystemImage64px}" />
     </Style>
 
-    <Style 
-        x:Key="CardBodyStackPanelTextBlockStyle"  
+    <Style
+        x:Key="CardBodyStackPanelTextBlockStyle"
         BasedOn="{StaticResource BodyStrongTextBlockStyle}"
         TargetType="TextBlock">
         <Setter Property="Margin" Value="0,0,0,-2" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style
+        x:Key="CardBodyStackPanelAltTextBlockStyle"
+        TargetType="TextBlock">
+        <Setter Property="Margin" Value="3,0,0,0" />
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
     <Style
-        x:Key="CardBodyElipsisStyle" 
+        x:Key="CardBodyElipsisStyle"
         TargetType="Ellipse">
         <Setter Property="Width" Value="4" />
         <Setter Property="Height" Value="4" />
     </Style>
 
-    <Style 
-        x:Key="CardBodyStateTextBlockStyle"  
+    <Style
+        x:Key="CardBodyStateTextBlockStyle"
         BasedOn="{StaticResource CaptionTextBlockStyle}"
         TargetType="TextBlock">
         <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
         <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
-    <Style 
+    <Style
         x:Key="CardBodyComputeSystemPropertiesStyle"
         TargetType="ListView">
         <Setter Property="Padding" Value="-10,-10,0,0" />
     </Style>
 
-    <Style 
+    <Style
         x:Key="CardBodyWrapGridStyle"
         TargetType="ItemsWrapGrid">
         <Setter Property="MaximumRowsOrColumns" Value="6" />
         <Setter Property="GroupPadding" Value="-5,0,0,0" />
         <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="ItemWidth" Value="125" />
+        <Setter Property="Margin" Value="-10 -15 -10 0"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+    </Style>
+
+    <Style
+        x:Key="CardPropertyTextBlockStyle"
+        BasedOn="{StaticResource CaptionTextBlockStyle}"
+        TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
 
 </ResourceDictionary>

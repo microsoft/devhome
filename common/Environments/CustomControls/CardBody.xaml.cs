@@ -31,6 +31,12 @@ public sealed partial class CardBody : UserControl
         set => SetValue(ComputeSystemTitleProperty, value);
     }
 
+    public string ComputeSystemAlternativeTitle
+    {
+        get => (string)GetValue(ComputeSystemAlternativeTitleProperty);
+        set => SetValue(ComputeSystemAlternativeTitleProperty, value);
+    }
+
     public BitmapImage ComputeSystemImage
     {
         get => (BitmapImage)GetValue(ComputeSystemImageProperty);
@@ -63,6 +69,7 @@ public sealed partial class CardBody : UserControl
 
     private static readonly DependencyProperty ActionControlTemplateProperty = DependencyProperty.Register(nameof(ActionControlTemplate), typeof(DataTemplate), typeof(CardBody), new PropertyMetadata(null));
     private static readonly DependencyProperty ComputeSystemTitleProperty = DependencyProperty.Register(nameof(ComputeSystemTitle), typeof(string), typeof(CardBody), new PropertyMetadata(null));
+    private static readonly DependencyProperty ComputeSystemAlternativeTitleProperty = DependencyProperty.Register(nameof(ComputeSystemAlternativeTitle), typeof(string), typeof(CardBody), new PropertyMetadata(null));
     private static readonly DependencyProperty StateColorProperty = DependencyProperty.Register(nameof(StateColor), typeof(CardStateColor), typeof(CardBody), new PropertyMetadata(CardStateColor.Neutral));
     private static readonly DependencyProperty CardStateProperty = DependencyProperty.Register(nameof(CardState), typeof(ComputeSystemState), typeof(CardBody), new PropertyMetadata(ComputeSystemState.Unknown));
     private static readonly DependencyProperty ComputeSystemImageProperty = DependencyProperty.Register(nameof(ComputeSystemImage), typeof(BitmapImage), typeof(CardBody), new PropertyMetadata(new BitmapImage { UriSource = new Uri(DefaultCardBodyImagePath), }));

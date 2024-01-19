@@ -43,7 +43,7 @@
             <TextBlock
                 Grid.Column="1"
                 Style="{StaticResource ComputeSystemTitleStyle}"
-                Text="{x:Bind HeaderCaption}" />
+                Text="{x:Bind HeaderCaption, Mode=OneWay}" />
         </Grid>
         <!-- 
             For an Action control, like a three dots button. Pass a DataTemplate for your control to the CardHeader's ActionControlTemplate in xaml.

@@ -28,8 +28,8 @@
           {
             "identity": "DevHome.Environments",
             "assembly": "DevHome.Environments",
-            "viewFullName": "DevHome.Environments.Views.EnvironmentsView",
-            "viewModelFullName": "DevHome.Environments.ViewModels.EnvironmentsViewModel",
+            "viewFullName": "DevHome.Environments.Views.LandingPage",
+            "viewModelFullName": "DevHome.Environments.ViewModels.LandingPageViewModel",
             "icon": "E83B"
           }
           /*,

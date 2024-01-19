@@ -27,7 +27,7 @@
             <Grid>
                 <!-- Image for card body. -->
                     <Border Style="{StaticResource ComputeSystemImageBorderStyle}">
-                        <Image 
+                        <Image
                             Source="{x:Bind ComputeSystemImage, Mode=OneWay}"
                             Width="{StaticResource ComputeSystemImage64px}"
                             Height="{StaticResource ComputeSystemImage64px}"
@@ -35,16 +35,21 @@
                     </Border>
                 </Grid>
             </Viewbox>
-            <!-- 
-                Stackpanel containing name of compute system, dot indicating status of compute system, state of compute system in text  and a list of 
+            <!--
+                Stackpanel containing name of compute system, dot indicating status of compute system, state of compute system in text  and a list of
                 the compute system properties.
             -->
             <StackPanel
                 Grid.Column="1"
                 Style="{StaticResource CardBodyStackPanelStyle}">
+            <StackPanel Orientation="Horizontal">
                 <TextBlock
                     Style="{StaticResource CardBodyStackPanelTextBlockStyle}"
-                    Text="{x:Bind ComputeSystemTitle}"/>
+                    Text="{x:Bind ComputeSystemTitle, Mode=OneWay}"/>
+                <TextBlock
+                    Style="{StaticResource CardBodyStackPanelAltTextBlockStyle}"
+                    Text="{x:Bind ComputeSystemAlternativeTitle, Mode=OneWay}"/>
+            </StackPanel>
                 <Grid
                     ColumnSpacing="{StaticResource ContainerElementSpacing}">
                     <Grid.ColumnDefinitions>
@@ -73,7 +78,7 @@
                     </ItemsRepeater.Layout>
                 </ItemsRepeater>
             </StackPanel>
-            <!-- 
+            <!--
                 For an action control, like a splitbutton or checkbox. Pass a Datatemplate to the CardBody's ActionControlTemplate in xaml.
             -->
             <ContentControl
