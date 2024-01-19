@@ -1,6 +1,6 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract DevHomeContract {}
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -46,6 +46,14 @@ namespace Microsoft.Windows.DevHome.SDK
         };
     };
 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IRepositoryData
+        requires Windows
+        .Foundation.IClosable
+    {
+        Windows.Foundation.IAsyncOperation<IVectorView<String> > GetSearchFieldNames();
+        Windows.Foundation.IAsyncOperation<IVectorView<String> > GetValuesBasedOn(IMap<String, String> inputValues, String fieldNameToRetrieve);
+    };
+
     // Repository Provider
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
     interface IRepositoryProvider
@@ -70,6 +78,12 @@ namespace Microsoft.Windows.DevHome.SDK
 
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination);
         Windows.Foundation.IAsyncOperation<ProviderOperationResult> CloneRepositoryAsync(IRepository repository, String cloneDestination, IDeveloperId developerId);
+    };
+
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IRepositoryProvider2
+        requires IRepositoryProvider
+    {
+        IIterable<IRepository> GetRepositoriesAsync(IDeveloperId developerId, IMap<String, String> searchTerms);
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
