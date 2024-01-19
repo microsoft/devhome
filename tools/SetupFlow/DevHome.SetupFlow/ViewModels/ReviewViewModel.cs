@@ -25,6 +25,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 {
     private readonly IHost _host;
 
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
+
     [ObservableProperty]
     private IList<ReviewTabViewModelBase> _reviewTabs;
 
@@ -68,6 +70,8 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         PageTitle = StringResource.GetLocalized(StringResourceKey.ReviewPageTitle);
+
+        _setupFlowOrchestrator = orchestrator;
     }
 
     protected async override Task OnEachNavigateToAsync()
@@ -82,6 +86,7 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
         NextPageButtonToolTipText = HasTasksToSetUp ? null : StringResource.GetLocalized(StringResourceKey.ReviewNothingToSetUpToolTip);
         UpdateCanSetUp();
+
         await Task.CompletedTask;
     }
 
@@ -89,7 +94,9 @@ public partial class ReviewViewModel : SetupPageViewModelBase
 
     public void UpdateCanSetUp()
     {
-        CanSetUp = HasTasksToSetUp && IsValidTermsAgreement();
+        // TODO: Temporarily prevent user from setting up a target flow on the review page. Remove this when we've coded
+        // loading page for configuration of a target.
+        CanSetUp = HasTasksToSetUp && IsValidTermsAgreement() && !_setupFlowOrchestrator.IsInSetupTargetFlow;
     }
 
     /// <summary>
@@ -106,7 +113,13 @@ public partial class ReviewViewModel : SetupPageViewModelBase
     {
         try
         {
-            await Orchestrator.InitializeElevatedServerAsync();
+            // If we are in the setup target flow, we don't need to initialize the elevated server.
+            // as work will be done in a remote machine.
+            if (!Orchestrator.IsInSetupTargetFlow)
+            {
+                await Orchestrator.InitializeElevatedServerAsync();
+            }
+
             await Orchestrator.GoToNextPage();
         }
         catch (Exception e)

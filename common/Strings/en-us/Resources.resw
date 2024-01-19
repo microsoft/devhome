@@ -66,6 +66,14 @@
     <value>Close</value>
     <comment>Name of the button that closes a view</comment>
   </data>
+  <data name="ComputeSystemAssignedMemory" xml:space="preserve">
+    <value>RAM:</value>
+    <comment>Title for the ram property of a compute system</comment>
+  </data>
+  <data name="ComputeSystemCpu" xml:space="preserve">
+    <value>vCPU:</value>
+    <comment>Title for the virtual cpu property of a compute system</comment>
+  </data>
   <data name="ComputeSystemCreated" xml:space="preserve">
     <value>Created</value>
     <comment>Text for state of the compute system when it is created</comment>
@@ -118,8 +126,20 @@
     <value>Stopping</value>
     <comment>Text for state of the compute system when it is stopping</comment>
   </data>
+  <data name="ComputeSystemStorage" xml:space="preserve">
+    <value>Storage:</value>
+    <comment>Title for the storage property of the compute system. (The amount of disk space it has).</comment>
+  </data>
   <data name="ComputeSystemUnknown" xml:space="preserve">
     <value>Unknown</value>
     <comment>Text for the state of the compute system when it is unknown</comment>
+  </data>
+  <data name="ComputeSystemUnknownWithColon" xml:space="preserve">
+    <value>Unknown:</value>
+    <comment>Title for a property of the compute system that is unknown.</comment>
+  </data>
+  <data name="ComputeSystemUptime" xml:space="preserve">
+    <value>Uptime:</value>
+    <comment>Title for the uptime property of a compute system. (The amount of time its been running)</comment>
   </data>
 </root>

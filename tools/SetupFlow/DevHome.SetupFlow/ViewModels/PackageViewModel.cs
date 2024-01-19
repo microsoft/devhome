@@ -66,7 +66,8 @@ public partial class PackageViewModel : ObservableObject
         IThemeSelectorService themeSelector,
         IScreenReaderService screenReaderService,
         WindowsPackageManagerFactory wingetFactory,
-        IHost host)
+        IHost host,
+        SetupFlowOrchestrator orchestrator)
     {
         _stringResource = stringResource;
         _wpm = wpm;
@@ -80,7 +81,9 @@ public partial class PackageViewModel : ObservableObject
         // frequently requesting the values from the proxy COM object
         Version = _package.Version;
         Name = _package.Name;
-        IsInstalled = _package.IsInstalled;
+
+        // When in setup target flow don't disable installed packaged.
+        IsInstalled = orchestrator.IsInSetupTargetFlow ? false : _package.IsInstalled;
         CatalogName = _package.CatalogName;
         PublisherName = !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
         InstallationNotes = _package.InstallationNotes;

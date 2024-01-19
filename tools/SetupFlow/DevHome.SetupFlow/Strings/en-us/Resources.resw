@@ -518,8 +518,16 @@
     <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="MainPage_SetupFlow.Header" xml:space="preserve">
-    <value>End-to-end setup</value>
-    <comment>Header for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
+    <value>Setup local machine</value>
+    <comment>Header for a card that when clicked takes the user to a multi-step flow for setting up their machine</comment>
+  </data>
+  <data name="MainPage_SetupFlow_For_target.Header" xml:space="preserve">
+    <value>Setup a target</value>
+    <comment>Header for a card that when clicked takes the user to a multi-step flow for setting up for a remote machine</comment>
+  </data>
+  <data name="MainPage_SetupFlow_For_target.Description" xml:space="preserve">
+    <value>Set up a select target</value>
+    <comment>Body text description for a card than when clicked takes the user to a multi-step flow for setting up their machine</comment>
   </data>
   <data name="NoAppsToInstall.Text" xml:space="preserve">
     <value>No apps to install</value>
@@ -672,6 +680,10 @@
   <data name="SetupShell_RepoConfig.Description" xml:space="preserve">
     <value>Add private or public repositories to clone to your machine.</value>
     <comment>Description for the repo config page</comment>
+  </data>
+  <data name="SetupShell_SetupTarget.Description" xml:space="preserve">
+    <value>Select a target machine to setup.</value>
+    <comment>Description for the setup target page</comment>
   </data>
   <data name="SetupShell_Review.Description" xml:space="preserve">
     <value>Review the terms and setup details below before applying these changes to your computer.</value>
@@ -1347,5 +1359,73 @@
   </data>
   <data name="ConfigurationUnitNotRunDueToFailedAssert" xml:space="preserve">
     <value>This configuration unit was not run because an assert failed or was false.</value>
+  </data>
+  <data name="SetupTargetPageTitle" xml:space="preserve">
+    <value>Setup target</value>
+    <comment>Title of the 'Setup Target' page where users can select a remote machine to setup using Dev Home.</comment>
+  </data>
+  <data name="SetupTargetAllComboBoxOption" xml:space="preserve">
+    <value>All</value>
+    <comment>value in combo box that will allow the user to view all the Dev Home extensions that are for interacting with remote machines or virtual machines</comment>
+  </data>
+  <data name="SetupTarget_Filter.PlaceholderText" xml:space="preserve">
+    <value>Filter</value>
+    <comment>placeholder text for the textbox where users will be able to filter results from a list displayed in the UI.</comment>
+  </data>
+  <data name="SetupTarget_TargetProvider.Text" xml:space="preserve">
+    <value>Target provider</value>
+    <comment>Textblock that appears on the side of the combo box that will contain the names of Dev Home extensions that are for interacting with remote machines or virtual machines.</comment>
+  </data>
+  <data name="SetupTarget_TargetProvider_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Target provider</value>
+    <comment>Label for combo box that will contain the names of Dev Home extensions that are for interacting with remote machines or virtual machines.</comment>
+  </data>
+  <data name="SetupTarget_SyncButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Sync your compute systems</value>
+    <comment>Label for the sync button that allows users to refresh the list of remote machines and virtual machines. Dev Home calls these Compute systems.</comment>
+  </data>
+  <data name="SetupTargetErrorLoading.Text" xml:space="preserve">
+    <value>We couldn't retrieve your compute systems due to an error</value>
+    <comment>Error string that we display in the setup target environment page when we are unable to query a Dev Home extension for its compute systems. Compute systems mean a remote machine or virtual machine.</comment>
+  </data>
+  <data name="SetupTargetNoEnvironmentsFound.Text" xml:space="preserve">
+    <value>No compute systems were found that support configuration</value>
+    <comment>Label for when there are no compute systems available for a Dev Home extension. A compute system can be a remote machine or virtual machine.</comment>
+  </data>
+  <data name="SetupTargetLoadingAllComputeSystems.Text" xml:space="preserve">
+    <value>Loading compute systems</value>
+    <comment>Label for when we're loading compute systems from a Dev Home extension. A compute system can be a remote machine or virtual machine.</comment>
+  </data>
+  <data name="SetupTargetCloneRepositoryInfoBar.Message" xml:space="preserve">
+    <value>Only public Git repositories are supported at this time for the setup target flow</value>
+    <comment>Message text advising the use that Dev Home currently only supports cloning public Git repositories in the setup target flow.</comment>
+  </data>
+  <data name="SetupTargetCloneRepositoryInfoBar.Title" xml:space="preserve">
+    <value>Public Git repositories only</value>
+    <comment>Title text for an info bar that tells the user that they can only public git repositories in the setup target flow</comment>
+  </data>
+  <data name="SetupTargetFlowUnderConstruction.Message" xml:space="preserve">
+    <value>The setup target's configuration step is still under construction. Until its complete we've disabled the setup button.</value>
+    <comment>Message in info bar to show that the setup target's configuration page is still being worked on.</comment>
+  </data>
+  <data name="SetupTargetFlowUnderConstruction.Title" xml:space="preserve">
+    <value>Warning</value>
+    <comment>Title of info bar to show that the setup target's configuration page is still being worked on.</comment>
+  </data>
+  <data name="SetupTargetReviewPageComputeSystemVersion.Text" xml:space="preserve">
+    <value>Version:</value>
+    <comment>The operating system version of the compute system.</comment>
+  </data>
+  <data name="SetupTargetReviewPageInfoBar.Message" xml:space="preserve">
+    <value>Proceeding with the next step may result in the target machine being rebooted and re-logging in may be required.</value>
+    <comment>Message that explicitly tells the user that if they proceed we may reboot their machine and they may need to log back in.</comment>
+  </data>
+  <data name="SetupTargetReviewPageInfoBar.Title" xml:space="preserve">
+    <value>Warning</value>
+    <comment>Title for info bar that will warn users that proceeding with the setup may result in the restart and re-login of the targetted remote machine or virtual machine.</comment>
+  </data>
+  <data name="SetupTargetReviewPageProviderName.Text" xml:space="preserve">
+    <value>Provider name:</value>
+    <comment>The name of the technology platform that the compute system belongs to.</comment>
   </data>
 </root>

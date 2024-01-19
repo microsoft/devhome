@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:devEnvConverters="using:DevHome.Common.Environments.Converters"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     mc:Ignorable="d">
     <UserControl.Resources>
         <devEnvConverters:CardStateColorToBrushConverter x:Key="CardStateColorToBrushConverter"/>
@@ -23,10 +24,8 @@
             <Viewbox
                 Grid.Column="0"
                 Style="{StaticResource ComputeSystemImageStyle}">
-                <Grid>
-                    <!-- Background rectangle that we will fallback into if an image is not passed to the card body. -->
-                    <Rectangle Style="{StaticResource ComputeSystemImageBackgroundStyle}" />
-                    <!-- Image for card body. -->
+            <Grid>
+                <!-- Image for card body. -->
                     <Border Style="{StaticResource ComputeSystemImageBorderStyle}">
                         <Image 
                             Source="{x:Bind ComputeSystemImage, Mode=OneWay}"
@@ -63,17 +62,16 @@
                         Text="{x:Bind CardState, Converter={StaticResource CardStateToLocalizedTextConverter}, Mode=OneWay}"
                         Style="{StaticResource CardBodyStateTextBlockStyle}"/>
                 </Grid>
-                <ListView
-                    Style="{StaticResource CardBodyComputeSystemPropertiesStyle}"
-                    ItemsSource="{x:Bind ComputeSystemProperties, Mode=OneWay}"
+                <!-- Wrap panel from community toolkit that will display properties of variable length. -->
+                <ItemsRepeater 
+                    ItemsSource="{x:Bind ComputeSystemProperties, Mode=OneWay}" 
                     ItemTemplate="{x:Bind ComputeSystemPropertyTemplate, Mode=OneWay}">
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ItemsWrapGrid Style="{StaticResource CardBodyWrapGridStyle}"/>
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-
-                </ListView>
+                    <ItemsRepeater.Layout>
+                        <controls:WrapLayout 
+                            Orientation="Horizontal"  
+                            HorizontalSpacing="15"/>
+                    </ItemsRepeater.Layout>
+                </ItemsRepeater>
             </StackPanel>
             <!-- 
                 For an action control, like a splitbutton or checkbox. Pass a Datatemplate to the CardBody's ActionControlTemplate in xaml.

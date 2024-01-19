@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using System;
+using Microsoft.UI.Xaml.Media.Imaging;
+
 namespace DevHome.Common.Environments.Models;
 
 /// <summary>
@@ -29,17 +32,21 @@ public enum CardStateColor
 public interface ICardProperty
 {
     /// <summary>
-    /// Gets or sets the title for the property.
+    /// Gets the title for the property.
     /// </summary>
-    public string Title { get; set; }
+    public string? Title { get; }
 
     /// <summary>
-    /// Gets or sets the value of the property.
+    /// Gets the value of the property.
     /// </summary>
-    public object Value { get; set; }
+    public object? Value { get; }
 
     /// <summary>
-    /// Gets or sets an object that contains both light and dark icons to be used by Dev Home, for property icons provided by the compute system extensions.
+    /// Gets a bitmap image that was created from a Uri which contains the path to a icon resource in an extension packages .pri file.
     /// </summary>
-    /// public ExtensionIcon ExtensionProvidedIcon { get; set; }
+    public BitmapImage? Icon { get; }
+
+    /// <summary>
+    /// Gets glyphs in Segoe Fluent icons to be shown in the UI.
+    public string? Glyph { get; }
 }

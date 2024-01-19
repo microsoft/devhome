@@ -4,6 +4,7 @@
 using DevHome.Activation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Contracts.Services;
+using DevHome.Common.Environments.Services;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
@@ -105,6 +106,7 @@ public partial class App : Application, IApp
             services.AddSingleton<IPackageDeploymentService, PackageDeploymentService>();
             services.AddSingleton<IScreenReaderService, ScreenReaderService>();
             services.AddSingleton<IComputeSystemService, ComputeSystemService>();
+            services.AddSingleton<IComputeSystemManager, ComputeSystemManager>();
 
             // Core Services
             services.AddSingleton<IFileService, FileService>();
