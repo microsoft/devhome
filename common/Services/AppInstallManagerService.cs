@@ -17,7 +17,7 @@ public class AppInstallManagerService : IAppInstallManagerService
 {
     private readonly AppInstallManager _appInstallManager;
 
-    private static readonly TimeSpan StoreInstallTimeout = new (0, 0, 60);
+    private static readonly TimeSpan StoreInstallTimeout = new(0, 0, 60);
 
     public event TypedEventHandler<AppInstallManager, AppInstallManagerItemEventArgs> ItemCompleted
     {

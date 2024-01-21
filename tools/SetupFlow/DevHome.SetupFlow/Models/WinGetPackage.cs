@@ -26,11 +26,11 @@ public class WinGetPackage : IWinGetPackage
     public WinGetPackage(CatalogPackage package)
     {
         _package = package;
-        _packageUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null));
-        _publisherUrl = new (() => GetMetadataValue(metadata => new Uri(metadata.PublisherUrl), nameof(CatalogPackageMetadata.PublisherUrl), null));
-        _publisherName = new (() => GetMetadataValue(metadata => metadata.Publisher, nameof(CatalogPackageMetadata.Publisher), null));
-        _installationNotes = new (() => GetMetadataValue(metadata => metadata.InstallationNotes, nameof(CatalogPackageMetadata.InstallationNotes), null));
-        _uniqueKey = new (Id, CatalogId);
+        _packageUrl = new(() => GetMetadataValue(metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null));
+        _publisherUrl = new(() => GetMetadataValue(metadata => new Uri(metadata.PublisherUrl), nameof(CatalogPackageMetadata.PublisherUrl), null));
+        _publisherName = new(() => GetMetadataValue(metadata => metadata.Publisher, nameof(CatalogPackageMetadata.Publisher), null));
+        _installationNotes = new(() => GetMetadataValue(metadata => metadata.InstallationNotes, nameof(CatalogPackageMetadata.InstallationNotes), null));
+        _uniqueKey = new(Id, CatalogId);
     }
 
     public CatalogPackage CatalogPackage => _package;
@@ -71,7 +71,7 @@ public class WinGetPackage : IWinGetPackage
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
         WindowsPackageManagerFactory wingetFactory,
-        Guid activityId) => new (wpm, stringResource, wingetFactory, this, activityId);
+        Guid activityId) => new(wpm, stringResource, wingetFactory, this, activityId);
 
     /// <summary>
     /// Check if the package requires elevation

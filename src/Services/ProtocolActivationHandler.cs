@@ -12,6 +12,7 @@ using DevHome.Settings.ViewModels;
 using Windows.ApplicationModel.Activation;
 
 namespace DevHome.Services;
+
 public class ProtocolActivationHandler : ActivationHandler<ProtocolActivatedEventArgs>
 {
     private const string SettingsAccountsUri = "settings/accounts";

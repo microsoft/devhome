@@ -5,6 +5,7 @@ using DevHome.SetupFlow.Models;
 using Moq;
 
 namespace DevHome.SetupFlow.UnitTest.Helpers;
+
 public class PackageHelper
 {
     public static Mock<IWinGetPackage> CreatePackage(string id, string catalogId = "mock catalog id")

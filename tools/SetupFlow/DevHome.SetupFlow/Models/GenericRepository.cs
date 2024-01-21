@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
+// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
 using System;
@@ -9,6 +9,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
+
 internal sealed class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
 {
     private readonly string _displayName;

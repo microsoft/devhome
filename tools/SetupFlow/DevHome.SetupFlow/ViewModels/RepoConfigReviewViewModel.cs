@@ -15,7 +15,7 @@ public partial class RepoConfigReviewViewModel : ReviewTabViewModelBase
     private readonly RepoConfigTaskGroup _repoTaskGroup;
 
     public ReadOnlyObservableCollection<CloneRepoTask> RepositoriesToClone =>
-        new (new ObservableCollection<CloneRepoTask>(_repoTaskGroup.CloneTasks));
+        new(new ObservableCollection<CloneRepoTask>(_repoTaskGroup.CloneTasks));
 
     public override bool HasItems => RepositoriesToClone.Any();
 

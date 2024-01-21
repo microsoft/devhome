@@ -8,9 +8,10 @@ using CoreWidgetProvider.Widgets.Enums;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
+
 internal sealed class SystemNetworkUsageWidget : CoreWidget, IDisposable
 {
-    private static Dictionary<string, string> Templates { get; set; } = new ();
+    private static Dictionary<string, string> Templates { get; set; } = new();
 
     private int networkIndex;
 
@@ -21,7 +22,7 @@ internal sealed class SystemNetworkUsageWidget : CoreWidget, IDisposable
     public SystemNetworkUsageWidget()
         : base()
     {
-        dataManager = new (DataType.Network, UpdateWidget);
+        dataManager = new(DataType.Network, UpdateWidget);
     }
 
     private string SpeedToString(float cpuSpeed)

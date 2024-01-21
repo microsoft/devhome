@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
+// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
 using DevHome.Common.Services;
@@ -6,6 +6,7 @@ using DevHome.ViewModels;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Services;
+
 internal sealed class InfoBarService : IInfoBarService
 {
     private readonly InfoBarModel _shellInfoBarModel;

@@ -17,7 +17,7 @@ public partial class AccountsProviderViewModel : ObservableObject
 
     public string ProviderName => DeveloperIdProvider.DisplayName;
 
-    public ObservableCollection<Account> LoggedInAccounts { get; } = new ();
+    public ObservableCollection<Account> LoggedInAccounts { get; } = new();
 
     public AccountsProviderViewModel(IDeveloperIdProvider devIdProvider)
     {

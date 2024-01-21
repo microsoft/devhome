@@ -67,7 +67,7 @@ public class InstallPackageTask : ISetupTask
         _stringResource = stringResource;
         _wingetFactory = wingetFactory;
         _package = package;
-        _requiresElevation = new (RequiresElevation);
+        _requiresElevation = new(RequiresElevation);
         _activityId = activityId;
     }
 
@@ -84,7 +84,7 @@ public class InstallPackageTask : ISetupTask
 
     public ActionCenterMessages GetErrorMessages()
     {
-        return new ()
+        return new()
         {
             PrimaryMessage = GetInstallResultMessage(),
         };
@@ -92,7 +92,7 @@ public class InstallPackageTask : ISetupTask
 
     public ActionCenterMessages GetRebootMessage()
     {
-        return new ()
+        return new()
         {
             PrimaryMessage = _extendedErrorCode == HRESULT.S_OK ?
                 _stringResource.GetLocalized(StringResourceKey.InstalledPackageReboot, _package.Name) :

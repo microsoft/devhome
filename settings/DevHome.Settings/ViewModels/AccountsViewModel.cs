@@ -13,7 +13,7 @@ namespace DevHome.Settings.ViewModels;
 
 public class AccountsViewModel : ObservableObject
 {
-    public ObservableCollection<AccountsProviderViewModel> AccountsProviders { get; } = new ();
+    public ObservableCollection<AccountsProviderViewModel> AccountsProviders { get; } = new();
 
     public AccountsViewModel()
     {

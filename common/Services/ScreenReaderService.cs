@@ -4,6 +4,7 @@
 using System;
 
 namespace DevHome.Common.Services;
+
 public class ScreenReaderService : IScreenReaderService
 {
     /// <inheritdoc/>

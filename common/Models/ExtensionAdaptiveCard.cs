@@ -9,6 +9,7 @@ using DevHome.Logging;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Common.Models;
+
 public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 {
     public event EventHandler<AdaptiveCard>? UiUpdate;

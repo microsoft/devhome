@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using System;
 using System.Linq;
@@ -12,6 +12,7 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Helpers;
+
 internal sealed class WidgetHelpers
 {
     public const string DevHomeHostName = "DevHome";

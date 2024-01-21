@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using System;
 using System.Collections.Generic;
@@ -49,8 +49,8 @@ public sealed partial class FeedbackPage : Page
         var stringResource = new StringResource("DevHome.Settings/Resources");
         Breadcrumbs = new ObservableCollection<Breadcrumb>
         {
-            new (stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
-            new (stringResource.GetLocalized("Settings_Feedback_Header"), typeof(ExtensionsViewModel).FullName!),
+            new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
+            new(stringResource.GetLocalized("Settings_Feedback_Header"), typeof(ExtensionsViewModel).FullName!),
         };
     }
 
@@ -355,11 +355,11 @@ public sealed partial class FeedbackPage : Page
 
     private async void BuildExtensionButtonClicked(object sender, RoutedEventArgs e)
     {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2234795"));
+        await Launcher.LaunchUriAsync(new("https://go.microsoft.com/fwlink/?linkid=2234795"));
     }
 
     private async void ReportSecurityButtonClicked(object sender, RoutedEventArgs e)
     {
-        await Launcher.LaunchUriAsync(new ("https://github.com/microsoft/devhome/security/policy"));
+        await Launcher.LaunchUriAsync(new("https://github.com/microsoft/devhome/security/policy"));
     }
 }

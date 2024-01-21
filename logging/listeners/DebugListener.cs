@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Text;
 
 namespace DevHome.Logging.Listeners;
+
 public class DebugListener : ListenerBase
 {
     public DebugListener(string name)

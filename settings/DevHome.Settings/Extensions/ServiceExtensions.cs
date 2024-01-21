@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.Settings.Extensions;
+
 public static class ServiceExtensions
 {
     public static IServiceCollection AddSettings(this IServiceCollection services, HostBuilderContext context)

@@ -7,6 +7,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel;
 
 namespace DevHome.Common.Services;
+
 public interface IExtensionWrapper
 {
     /// <summary>

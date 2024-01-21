@@ -6,6 +6,7 @@ using DevHome.Logging;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
+
 public abstract class WidgetImpl
 {
 #pragma warning disable SA1310 // Field names should not contain underscore

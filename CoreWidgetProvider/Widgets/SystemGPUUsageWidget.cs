@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json.Nodes;
 using CoreWidgetProvider.Helpers;
@@ -9,9 +8,10 @@ using CoreWidgetProvider.Widgets.Enums;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
+
 internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
 {
-    private static Dictionary<string, string> Templates { get; set; } = new ();
+    private static Dictionary<string, string> Templates { get; set; } = new();
 
     private static readonly new string Name = nameof(SystemGPUUsageWidget);
 
@@ -24,7 +24,7 @@ internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
     public SystemGPUUsageWidget()
         : base()
     {
-        dataManager = new (DataType.GPU, UpdateWidget);
+        dataManager = new(DataType.GPU, UpdateWidget);
     }
 
     private string SpeedToString(float cpuSpeed)

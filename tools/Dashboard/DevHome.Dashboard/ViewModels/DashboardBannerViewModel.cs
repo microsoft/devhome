@@ -25,7 +25,7 @@ internal sealed partial class DashboardBannerViewModel : ObservableObject
     [RelayCommand]
     private async Task DashboardBannerButtonAsync()
     {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2234395"));
+        await Launcher.LaunchUriAsync(new("https://go.microsoft.com/fwlink/?linkid=2234395"));
     }
 
     [RelayCommand]

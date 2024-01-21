@@ -18,6 +18,7 @@ using Windows.ApplicationModel;
 using Windows.System;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
+
 public partial class InstalledExtensionViewModel : ObservableObject
 {
     [ObservableProperty]
@@ -115,20 +116,20 @@ public partial class InstalledPackageViewModel : ObservableObject
         _packageFamilyName = packageFamilyName;
         _installedDate = installedDate;
         _version = version;
-        InstalledExtensionsList = new ();
+        InstalledExtensionsList = new();
     }
 
     [RelayCommand]
     public async Task LaunchStoreButton(string packageId)
     {
         var linkString = $"ms-windows-store://pdp/?ProductId={packageId}&mode=mini";
-        await Launcher.LaunchUriAsync(new (linkString));
+        await Launcher.LaunchUriAsync(new(linkString));
     }
 
     [RelayCommand]
     public async Task UninstallButton()
     {
-        await Launcher.LaunchUriAsync(new ("ms-settings:appsfeatures"));
+        await Launcher.LaunchUriAsync(new("ms-settings:appsfeatures"));
     }
 
     public string GeneratePackageDetails(PackageVersion version, string publisher, DateTimeOffset installedDate)

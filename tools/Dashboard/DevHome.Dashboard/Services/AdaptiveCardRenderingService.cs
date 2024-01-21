@@ -20,7 +20,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
 
     private readonly IThemeSelectorService _themeSelectorService;
 
-    private readonly SemaphoreSlim _rendererLock = new (1, 1);
+    private readonly SemaphoreSlim _rendererLock = new(1, 1);
 
     private AdaptiveCardRenderer _renderer;
 

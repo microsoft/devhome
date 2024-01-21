@@ -7,6 +7,7 @@ using DevHome.UITest.Pages;
 using OpenQA.Selenium.Appium.Windows;
 
 namespace DevHome.UITest.Dialogs;
+
 public abstract class PageDialog<T>
     where T : ApplicationPage
 {

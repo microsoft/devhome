@@ -1,11 +1,12 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using System.Windows.Input;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Common.Views;
+
 public sealed partial class Banner : UserControl
 {
     /// <summary>

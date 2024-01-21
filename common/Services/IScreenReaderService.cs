@@ -4,6 +4,7 @@
 using System;
 
 namespace DevHome.Common.Services;
+
 public interface IScreenReaderService
 {
     /// <summary>

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Helpers;
 
 namespace DevHome.SetupFlow.Services;
+
 public class AppManagementInitializer : IAppManagementInitializer
 {
     private readonly IWindowsPackageManager _wpm;

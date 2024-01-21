@@ -14,6 +14,7 @@ using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 
 namespace DevHome.SetupFlow.ViewModels;
+
 public partial class SearchViewModel : ObservableObject
 {
     public enum SearchResultStatus
@@ -52,7 +53,7 @@ public partial class SearchViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SearchCountText))]
     [NotifyPropertyChangedFor(nameof(NoSearchResultsText))]
-    private List<PackageViewModel> _resultPackages = new ();
+    private List<PackageViewModel> _resultPackages = new();
 
     /// <summary>
     /// Gets the localized string for <see cref="StringResourceKey.ResultCount"/>

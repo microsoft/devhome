@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using DevHome.Common;
 using DevHome.Common.Extensions;

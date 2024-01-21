@@ -5,6 +5,7 @@ using System;
 using WinRT;
 
 namespace DevHome.SetupFlow.Common.Extensions;
+
 public static class WinRTObjectExtensions
 {
     public static TOutput GetValueOrDefault<TProjectedClass, TOutput>(

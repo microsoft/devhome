@@ -20,7 +20,7 @@ public class Log
         }
     }
 
-    private static readonly ComponentLogger _logger = new (RunningAsAdmin ? "SetupFlow-Elevated" : "SetupFlow", "SetupFlow");
+    private static readonly ComponentLogger _logger = new(RunningAsAdmin ? "SetupFlow-Elevated" : "SetupFlow", "SetupFlow");
 
     public static Logger? Logger => _logger.Logger;
 

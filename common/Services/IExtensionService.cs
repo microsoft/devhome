@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.AppExtensions;
 
 namespace DevHome.Common.Services;
+
 public interface IExtensionService
 {
     Task<IEnumerable<IExtensionWrapper>> GetInstalledExtensionsAsync(bool includeDisabledExtensions = false);

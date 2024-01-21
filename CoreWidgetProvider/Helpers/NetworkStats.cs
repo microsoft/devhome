@@ -7,7 +7,7 @@ namespace CoreWidgetProvider.Helpers;
 
 internal sealed class NetworkStats : IDisposable
 {
-    private readonly Dictionary<string, List<PerformanceCounter>> networkCounters = new ();
+    private readonly Dictionary<string, List<PerformanceCounter>> networkCounters = new();
 
     private Dictionary<string, Data> NetworkUsages { get; set; } = new Dictionary<string, Data>();
 

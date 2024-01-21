@@ -20,7 +20,7 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
 {
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly CreateCompositePackageCatalogOptions _compositeCatalogOptions;
-    private readonly SemaphoreSlim _connectionLock = new (1, 1);
+    private readonly SemaphoreSlim _connectionLock = new(1, 1);
     private Microsoft.Management.Deployment.PackageCatalog _catalog;
     private bool _disposedValue;
 

@@ -20,7 +20,7 @@ public class WidgetHostingService : IWidgetHostingService
     private readonly IAppInstallManagerService _appInstallManagerService;
 
     private static readonly string WidgetServiceStorePackageId = "9N3RK8ZV2ZR8";
-    private static readonly TimeSpan StoreInstallTimeout = new (0, 0, 60);
+    private static readonly TimeSpan StoreInstallTimeout = new(0, 0, 60);
 
     private WidgetHost _widgetHost;
     private WidgetCatalog _widgetCatalog;

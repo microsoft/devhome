@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using System.Collections.ObjectModel;
 using DevHome.Common.Services;
@@ -29,8 +29,8 @@ public sealed partial class ExtensionsPage : Page
         var stringResource = new StringResource("DevHome.Settings/Resources");
         Breadcrumbs = new ObservableCollection<Breadcrumb>
         {
-            new (stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
-            new (stringResource.GetLocalized("Settings_Extensions_Header"), typeof(ExtensionsViewModel).FullName!),
+            new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
+            new(stringResource.GetLocalized("Settings_Extensions_Header"), typeof(ExtensionsViewModel).FullName!),
         };
     }
 

@@ -72,7 +72,7 @@ public abstract class WinGetPackageDataSource
         PackageUriCallback<T> packageUriCallback,
         PackageProcessorCallback<T> packageProcessorCallback = null)
     {
-        List<IWinGetPackage> result = new ();
+        List<IWinGetPackage> result = new();
 
         // Skip search if package data source is empty
         if (!items.Any())

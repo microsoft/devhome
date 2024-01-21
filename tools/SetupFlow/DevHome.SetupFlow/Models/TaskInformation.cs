@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DevHome.SetupFlow.Models;
+
 public partial class TaskInformation : ObservableObject
 {
     public int TaskIndex

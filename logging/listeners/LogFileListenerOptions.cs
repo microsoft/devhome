@@ -2,6 +2,7 @@
 // Licensed under the MIT license.
 
 namespace DevHome.Logging;
+
 public partial class Options
 {
     private const string LogFileNameDefault = "PG.log";

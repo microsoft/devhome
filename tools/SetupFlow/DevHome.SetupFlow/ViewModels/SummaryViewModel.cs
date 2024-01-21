@@ -32,8 +32,8 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class SummaryViewModel : SetupPageViewModelBase
 {
-    private static readonly BitmapImage DarkError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
-    private static readonly BitmapImage LightError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
+    private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
+    private static readonly BitmapImage LightError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
 
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly SetupFlowViewModel _setupFlowViewModel;
@@ -45,7 +45,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
 
     [ObservableProperty]
-    private List<SummaryErrorMessageViewModel> _failedTasks = new ();
+    private List<SummaryErrorMessageViewModel> _failedTasks = new();
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -78,7 +78,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 {
                     if (task is CloneRepoTask repoTask && repoTask.WasCloningSuccessful)
                     {
-                        repositoriesCloned.Add(new (repoTask.RepositoryToClone));
+                        repositoriesCloned.Add(new(repoTask.RepositoryToClone));
                     }
                 }
             }
@@ -192,7 +192,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _wpm = wpm;
         _packageProvider = packageProvider;
         _catalogDataSourceLoader = catalogDataSourceLoader;
-        _configurationUnitResults = new (GetConfigurationUnitResults);
+        _configurationUnitResults = new(GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
 
         IsNavigationBarVisible = true;
@@ -264,7 +264,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     /// <returns>List of configuration unit result</returns>
     private List<ConfigurationUnitResultViewModel> GetConfigurationUnitResults()
     {
-        List<ConfigurationUnitResultViewModel> unitResults = new ();
+        List<ConfigurationUnitResultViewModel> unitResults = new();
         var configTaskGroup = _orchestrator.GetTaskGroup<ConfigurationFileTaskGroup>();
         if (configTaskGroup?.ConfigureTask?.UnitResults != null)
         {

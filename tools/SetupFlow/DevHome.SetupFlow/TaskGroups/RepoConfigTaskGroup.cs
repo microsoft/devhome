@@ -33,8 +33,8 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         _stringResource = stringResource;
 
         // TODO https://github.com/microsoft/devhome/issues/631
-        _repoConfigViewModel = new (() => new RepoConfigViewModel(stringResource, setupFlowOrchestrator, devDriveManager, this, host));
-        _repoConfigReviewViewModel = new (() => new RepoConfigReviewViewModel(stringResource, this));
+        _repoConfigViewModel = new(() => new RepoConfigViewModel(stringResource, setupFlowOrchestrator, devDriveManager, this, host));
+        _repoConfigReviewViewModel = new(() => new RepoConfigReviewViewModel(stringResource, this));
         _activityId = setupFlowOrchestrator.ActivityId;
     }
 
@@ -61,7 +61,7 @@ public class RepoConfigTaskGroup : ISetupTaskGroup
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Saving cloning information to task group");
         CloneTasks.Clear();
 
-        List<FinalRepoResult> allAddedRepos = new ();
+        List<FinalRepoResult> allAddedRepos = new();
 
         foreach (var cloningInformation in cloningInformations)
         {

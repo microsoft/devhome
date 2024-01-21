@@ -9,11 +9,11 @@ namespace CoreWidgetProvider.Helpers;
 
 internal sealed class MemoryStats : IDisposable
 {
-    private readonly PerformanceCounter memCommitted = new ("Memory", "Committed Bytes", string.Empty);
-    private readonly PerformanceCounter memCached = new ("Memory", "Cache Bytes", string.Empty);
-    private readonly PerformanceCounter memCommittedLimit = new ("Memory", "Commit Limit", string.Empty);
-    private readonly PerformanceCounter memPoolPaged = new ("Memory", "Pool Paged Bytes", string.Empty);
-    private readonly PerformanceCounter memPoolNonPaged = new ("Memory", "Pool Nonpaged Bytes", string.Empty);
+    private readonly PerformanceCounter memCommitted = new("Memory", "Committed Bytes", string.Empty);
+    private readonly PerformanceCounter memCached = new("Memory", "Cache Bytes", string.Empty);
+    private readonly PerformanceCounter memCommittedLimit = new("Memory", "Commit Limit", string.Empty);
+    private readonly PerformanceCounter memPoolPaged = new("Memory", "Pool Paged Bytes", string.Empty);
+    private readonly PerformanceCounter memPoolNonPaged = new("Memory", "Pool Nonpaged Bytes", string.Empty);
 
     public float MemUsage
     {
@@ -59,7 +59,7 @@ internal sealed class MemoryStats : IDisposable
 
     public void GetData()
     {
-        Windows.Win32.System.SystemInformation.MEMORYSTATUSEX memStatus = new ();
+        Windows.Win32.System.SystemInformation.MEMORYSTATUSEX memStatus = default;
         memStatus.dwLength = (uint)Marshal.SizeOf(typeof(Windows.Win32.System.SystemInformation.MEMORYSTATUSEX));
         if (PInvoke.GlobalMemoryStatusEx(out memStatus))
         {

@@ -4,6 +4,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace DevHome.SetupFlow.ViewModels;
+
 public partial class ShimmerSearchViewModel : ObservableObject
 {
 }

@@ -20,7 +20,7 @@ public class ExperimentalFeaturesViewModel : ObservableObject
 {
     private readonly ILocalSettingsService _localSettingsService;
 
-    public ObservableCollection<ExperimentalFeature> Features { get; } = new ();
+    public ObservableCollection<ExperimentalFeature> Features { get; } = new();
 
     public ExperimentalFeaturesViewModel(ILocalSettingsService localSettingsService)
     {

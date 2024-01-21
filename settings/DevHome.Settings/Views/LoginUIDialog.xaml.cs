@@ -1,10 +1,11 @@
-// Copyright (c) Microsoft Corporation and Contributors.
-// Licensed under the MIT License.
+// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Settings.Views;
+
 public sealed partial class LoginUIDialog : ContentDialog
 {
     public LoginUIDialog(StackPanel extensionAdaptiveCardPanel)

@@ -16,16 +16,16 @@ public class PackageCatalog
 {
     public string Name
     {
-        init; get;
+        get; init;
     }
 
     public string Description
     {
-        init; get;
+        get; init;
     }
 
     public IReadOnlyCollection<IWinGetPackage> Packages
     {
-        init; get;
+        get; init;
     }
 }
