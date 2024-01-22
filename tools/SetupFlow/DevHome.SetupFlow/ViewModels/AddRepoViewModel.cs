@@ -433,7 +433,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
-    internal AddRepoViewModel(
+    public AddRepoViewModel(
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
         IHost host,
