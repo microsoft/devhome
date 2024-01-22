@@ -29,13 +29,13 @@ public class EntryPointEvent : EventBase
     }
 
     private readonly string[] entryPointNames =
-    {
+    [
         string.Empty,
         "Settings",
         "SetupFlow",
         "WhatsNewPage",
         "Widget",
-    };
+    ];
 
     public EntryPointEvent(EntryPoint entryPoint)
     {

@@ -21,7 +21,7 @@ parameters:
 
 variables:
  # MSIXVersion's second part should always be odd to account for stub app's version
-  MSIXVersion: '0.901'
+  MSIXVersion: '0.1001'
   VersionOfSDK: '0.100'
   solution: '**/DevHome.sln'
   appxPackageDir: 'AppxPackages'
@@ -251,22 +251,23 @@ extends:
                 MaxConcurrency: '50'
                 MaxRetryAttempts: '5'
 
-            - task: AzureKeyVault@1
-              inputs:
-                azureSubscription: 'DevHomeAzureServiceConnection'
-                KeyVaultName: 'DevHomeKeyVault'
-                SecretsFilter: 'ApiScanConnectionString'
-                RunAsPreJob: false
+            # Commented out until our implementation is fixed
+            # - task: AzureKeyVault@1
+            #   inputs:
+            #     azureSubscription: 'DevHomeAzureServiceConnection'
+            #     KeyVaultName: 'DevHomeKeyVault'
+            #     SecretsFilter: 'ApiScanConnectionString'
+            #     RunAsPreJob: false
 
-            - task: APIScan@2
-              inputs:
-                softwareFolder: '$(Build.StagingDirectory)'
-                softwareName: 'Dev Home'
-                softwareVersionNum: '1.0'
-                softwareBuildNum: '$(Build.BuildId)'
-                symbolsFolder: 'SRV*http://symweb'
-              env:
-                AzureServicesAuthConnectionString: $(ApiScanConnectionString)
+            # - task: APIScan@2
+            #   inputs:
+            #     softwareFolder: '$(Build.StagingDirectory)'
+            #     softwareName: 'Dev Home'
+            #     softwareVersionNum: '1.0'
+            #     softwareBuildNum: '$(Build.BuildId)'
+            #     symbolsFolder: 'SRV*http://symweb'
+            #   env:
+            #     AzureServicesAuthConnectionString: $(ApiScanConnectionString)
 
             - task: Windows Application Driver@0
               condition: and(always(), ne('${{ platform}}', 'arm64'))

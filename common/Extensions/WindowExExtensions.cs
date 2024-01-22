@@ -153,7 +153,7 @@ public static class WindowExExtensions
                 // "It is the responsibility of the caller to free the string pointed to by ppszName
                 // when it is no longer needed. Call CoTaskMemFree on *ppszName to free the memory."
                 PWSTR pFileName;
-                ppsi.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, &pFileName);
+                ppsi.GetDisplayName(SIGDN.SIGDN_FILESYSPATH, out pFileName);
                 fileName = new string(pFileName);
                 Marshal.FreeCoTaskMem((IntPtr)pFileName.Value);
             }

@@ -212,7 +212,7 @@ public sealed class DevDriveStorageOperator
         Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(CreatePartition), $"Starting CreateFile from physical path");
         var diskHandle = PInvoke.CreateFile(
             virtDiskPhysicalPath,
-            FILE_ACCESS_FLAGS.FILE_GENERIC_READ | FILE_ACCESS_FLAGS.FILE_GENERIC_WRITE,
+            (uint)(FILE_ACCESS_RIGHTS.FILE_GENERIC_READ | FILE_ACCESS_RIGHTS.FILE_GENERIC_WRITE),
             FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
             null,
             FILE_CREATION_DISPOSITION.OPEN_EXISTING,

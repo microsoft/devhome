@@ -390,7 +390,7 @@ public partial class AddRepoViewModel : ObservableObject
         // _previouslySelectedRepos will be empty.  The result is the repos in account 1 will not be selected if the user navigates
         // to account 1 after logging into account 2.
         // Save the repos here in that case.
-        if (!_previouslySelectedRepos.Any())
+        if (_previouslySelectedRepos.Count == 0)
         {
             _previouslySelectedRepos.AddRange(EverythingToClone);
         }
@@ -433,7 +433,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
-    public AddRepoViewModel(
+    internal AddRepoViewModel(
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
         IHost host,

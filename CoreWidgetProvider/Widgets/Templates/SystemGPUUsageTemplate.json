@@ -2,70 +2,89 @@
   "type": "AdaptiveCard",
   "body": [
     {
-      "type": "Image",
-      "url": "${gpuGraphUrl}",
-      "height": "${chartHeight}",
-      "width": "${chartWidth}",
-      "horizontalAlignment": "center"
+      "type": "Container",
+      "$when": "${errorMessage != null}",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "${errorMessage}",
+          "wrap": true,
+          "size": "small"
+        }
+      ],
+      "style": "warning"
     },
     {
-      "type": "ColumnSet",
-      "columns": [
+      "type": "Container",
+      "$when": "${errorMessage == null}",
+      "items": [
         {
-          "type": "Column",
-          "items": [
+          "type": "Image",
+          "url": "${gpuGraphUrl}",
+          "height": "${chartHeight}",
+          "width": "${chartWidth}",
+          "horizontalAlignment": "center"
+        },
+        {
+          "type": "ColumnSet",
+          "columns": [
             {
-              "text": "%GPUUsage_Widget_Template/GPU_Usage%",
-              "type": "TextBlock",
-              "size": "small",
-              "isSubtle": true
+              "type": "Column",
+              "items": [
+                {
+                  "text": "%GPUUsage_Widget_Template/GPU_Usage%",
+                  "type": "TextBlock",
+                  "size": "small",
+                  "isSubtle": true
+                },
+                {
+                  "text": "${gpuUsage}",
+                  "type": "TextBlock",
+                  "size": "large",
+                  "weight": "bolder"
+                }
+              ]
             },
             {
-              "text": "${gpuUsage}",
-              "type": "TextBlock",
-              "size": "large",
-              "weight": "bolder"
+              "type": "Column",
+              "items": [
+                {
+                  "text": "%GPUUsage_Widget_Template/GPU_Temperature%",
+                  "type": "TextBlock",
+                  "size": "small",
+                  "isSubtle": true,
+                  "horizontalAlignment": "right"
+                },
+                {
+                  "text": "${gpuTemp}",
+                  "type": "TextBlock",
+                  "size": "large",
+                  "weight": "bolder",
+                  "horizontalAlignment": "right"
+                }
+              ]
             }
           ]
         },
         {
-          "type": "Column",
-          "items": [
-            {
-              "text": "%GPUUsage_Widget_Template/GPU_Temperature%",
-              "type": "TextBlock",
-              "size": "small",
-              "isSubtle": true,
-              "horizontalAlignment": "right"
-            },
-            {
-              "text": "${gpuTemp}",
-              "type": "TextBlock",
-              "size": "large",
-              "weight": "bolder",
-              "horizontalAlignment": "right"
-            }
-          ]
+          "text": "%GPUUsage_Widget_Template/GPU_Name%",
+          "type": "TextBlock",
+          "size": "small",
+          "isSubtle": true
+        },
+        {
+          "text": "${gpuName}",
+          "type": "TextBlock",
+          "size": "medium"
+        }
+      ],
+      "actions": [
+        {
+          "type": "Action.Execute",
+          "title": "%GPUUsage_Widget_Template/Next_GPU%",
+          "verb": "NextItem"
         }
       ]
-    },
-    {
-      "text": "%GPUUsage_Widget_Template/GPU_Name%",
-      "type": "TextBlock",
-      "size": "small",
-      "isSubtle": true
-    },
-    {
-      "text": "${gpuName}",
-      "type": "TextBlock",
-      "size": "medium"
-    }
-  ],
-  "actions": [
-    {
-      "type": "Action.Execute",
-      "title": "%GPUUsage_Widget_Template/Next_GPU%",
-      "verb": "NextItem"
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",

@@ -13,17 +13,17 @@ using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
 
-internal class SSHWalletWidget : CoreWidget
+internal sealed class SSHWalletWidget : CoreWidget
 {
-    protected static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
+    private static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
 
     private static readonly Regex HostRegex = new (@"^Host\s+(\S*)\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
     private FileSystemWatcher? FileWatcher { get; set; }
 
-    protected static readonly new string Name = nameof(SSHWalletWidget);
+    private static readonly new string Name = nameof(SSHWalletWidget);
 
-    protected string ConfigFile
+    private string ConfigFile
     {
         get => State();
 
@@ -86,6 +86,11 @@ internal class SSHWalletWidget : CoreWidget
         catch (Exception e)
         {
             Log.Logger()?.ReportError(Name, ShortId, "Error retrieving data.", e);
+            var content = new JsonObject
+            {
+                { "errorMessage", e.Message },
+            };
+            ContentData = content.ToJsonString();
             DataState = WidgetDataState.Failed;
             return;
         }
@@ -400,7 +405,7 @@ internal class SSHWalletWidget : CoreWidget
     }
 }
 
-internal class DataPayload
+internal sealed class DataPayload
 {
     public string? ConfigFile
     {
@@ -410,6 +415,6 @@ internal class DataPayload
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(DataPayload))]
-internal partial class SourceGenerationContext : JsonSerializerContext
+internal sealed partial class SourceGenerationContext : JsonSerializerContext
 {
 }

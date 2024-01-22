@@ -8,11 +8,11 @@ using CoreWidgetProvider.Widgets.Enums;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
-internal class SystemCPUUsageWidget : CoreWidget, IDisposable
+internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
 {
     private static Dictionary<string, string> Templates { get; set; } = new ();
 
-    protected static readonly new string Name = nameof(SystemCPUUsageWidget);
+    private static readonly new string Name = nameof(SystemCPUUsageWidget);
 
     private readonly DataManager dataManager;
 
@@ -58,6 +58,11 @@ internal class SystemCPUUsageWidget : CoreWidget, IDisposable
         catch (Exception e)
         {
             Log.Logger()?.ReportError(Name, ShortId, "Error retrieving stats.", e);
+            var content = new JsonObject
+            {
+                { "errorMessage", e.Message },
+            };
+            ContentData = content.ToJsonString();
             DataState = WidgetDataState.Failed;
             return;
         }

@@ -20,7 +20,7 @@ public partial class TaskInformation : ObservableObject
     }
 
     /// <summary>
-    /// The message to display in the loading screen.
+    /// Gets or sets the message to display in the loading screen.
     /// </summary>
     public string MessageToShow
     {

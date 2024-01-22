@@ -23,9 +23,9 @@ public static class Deployment
             try
             {
                 var localSettings = ApplicationData.Current.LocalSettings;
-                if (localSettings.Values.ContainsKey(DeploymentIdentifierKeyName))
+                if (localSettings.Values.TryGetValue(DeploymentIdentifierKeyName, out var value))
                 {
-                    return (Guid)localSettings.Values[DeploymentIdentifierKeyName];
+                    return (Guid)value;
                 }
 
                 var newGuid = Guid.NewGuid();

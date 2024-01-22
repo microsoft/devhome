@@ -255,10 +255,9 @@ public class GitFileWatcher : IGitFileWatcher
         lock (modificationLock)
         {
             var key = repository.ToLower(CultureInfo.InvariantCulture);
-            if (!watchers.ContainsKey(key))
+            if (watchers.TryAdd(key, watcher))
             {
                 watcher.EnableRaisingEvents = true;
-                watchers.Add(key, watcher);
             }
         }
     }

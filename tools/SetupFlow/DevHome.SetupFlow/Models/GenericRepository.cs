@@ -9,7 +9,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 
 namespace DevHome.SetupFlow.Models;
-internal class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
+internal sealed class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
 {
     private readonly string _displayName;
 
