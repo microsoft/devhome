@@ -36,7 +36,7 @@ internal class RepositoryProvider
     private readonly IExtensionWrapper _extensionWrapper;
 
     /// <summary>
-    /// All the repositories for an account.
+    /// Dictionary with all the repositories per account.
     /// </summary>
     private Dictionary<IDeveloperId, IEnumerable<IRepository>> _repositories = new ();
 
