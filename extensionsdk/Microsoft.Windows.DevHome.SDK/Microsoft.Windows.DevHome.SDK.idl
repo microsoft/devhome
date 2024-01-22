@@ -50,8 +50,8 @@ namespace Microsoft.Windows.DevHome.SDK
         requires Windows
         .Foundation.IClosable
     {
-        Windows.Foundation.IAsyncOperation<IVectorView<String> > GetSearchFieldNames();
-        Windows.Foundation.IAsyncOperation<IVectorView<String> > GetValuesBasedOn(IMap<String, String> inputValues, String fieldNameToRetrieve);
+        IVectorView<String> GetSearchFieldNames();
+        IVectorView<String> GetValuesBasedOn(IMap<String, String> inputValues, String fieldNameToRetrieve);
     };
 
     // Repository Provider
