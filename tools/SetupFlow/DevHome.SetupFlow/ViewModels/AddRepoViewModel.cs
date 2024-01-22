@@ -337,18 +337,14 @@ public partial class AddRepoViewModel : ObservableObject
     /// <summary>
     /// Switches the repos shown to the account selected.
     /// </summary>
-    /// <param name="sender">The object sending the event.</param>
-    /// <param name="e">The arguments</param>
-    private async void MenuItemClick(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    private async Task MenuItemClick(string selectedItemName)
     {
-        if (sender is MenuFlyoutItem selectedItem)
-        {
-            SelectedAccount = selectedItem.Text;
-            await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
+        SelectedAccount = selectedItemName;
+        await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
 
-            var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
-            _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
-        }
+        var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
+        _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
     }
 
     /// <summary>
@@ -356,7 +352,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     /// <returns>The MenuFlyout to display.</returns>
     /// <remarks>
-    /// The MenuFlyout is constructed in code to apply the correct callback methods on the Menu Items.
+    /// The layout is a list of added accounts.  A line seperator.  One menu item to add an account.
     /// </remarks>
     private MenuFlyout ConstructFlyout()
     {
@@ -364,18 +360,19 @@ public partial class AddRepoViewModel : ObservableObject
         var newMenu = new MenuFlyout();
         foreach (var account in Accounts)
         {
-            var thisMenuItem = new MenuFlyoutItem();
-            thisMenuItem.Name = account;
-            thisMenuItem.Text = account;
-            thisMenuItem.Click += MenuItemClick;
-            newMenu.Items.Add(thisMenuItem);
+            var accountMenuItem = new MenuFlyoutItem();
+            accountMenuItem.Name = account;
+            accountMenuItem.Text = account;
+            accountMenuItem.Command = MenuItemClickCommand;
+            accountMenuItem.CommandParameter = accountMenuItem.Text;
+            newMenu.Items.Add(accountMenuItem);
         }
 
         newMenu.Items.Add(new MenuFlyoutSeparator());
-        var thatMenuItem = new MenuFlyoutItem();
-        thatMenuItem.Text = _stringResource.GetLocalized("RepoToolAddAnotherAccount");
-        thatMenuItem.Click += AddAccountClicked;
-        newMenu.Items.Add(thatMenuItem);
+        var addAccountMenuItem = new MenuFlyoutItem();
+        addAccountMenuItem.Text = _stringResource.GetLocalized("RepoToolAddAnotherAccount");
+        addAccountMenuItem.Command = AddAccountClickedCommand;
+        newMenu.Items.Add(addAccountMenuItem);
 
         return newMenu;
     }
@@ -383,60 +380,56 @@ public partial class AddRepoViewModel : ObservableObject
     /// <summary>
     /// The bottom of the MenuFlyout has a button to log into another account.  Handle logging the user in.
     /// </summary>
-    /// <param name="sender">The object that sent this event.</param>
-    /// <param name="e">The arguments</param>
     /// <remarks>
     /// This calls MenuItemClick to poulate the list of repos if a new account is detected.
     /// </remarks>
-    private async void AddAccountClicked(object sender, RoutedEventArgs e)
+    [RelayCommand]
+    private async Task AddAccountClicked()
     {
-        if (sender is MenuFlyoutItem selectedItem &&
-            selectedItem.Text.Equals(_stringResource.GetLocalized("RepoToolAddAnotherAccount"), StringComparison.OrdinalIgnoreCase))
+        // If the user selects repos from account 1, then logs into account 2 and does not save between those two actions
+        // _previouslySelectedRepos will be empty.  The result is the repos in account 1 will not be selected if the user navigates
+        // to account 1 after logging into account 2.
+        // Save the repos here in that case.
+        if (!_previouslySelectedRepos.Any())
         {
-            // If the user selects repos from account 1, then logs into account 2 and does not save between those two actions
-            // _previouslySelectedRepos will be empty.  The result is the repos in account 1 will not be selected if the user navigates
-            // to account 1 after logging into account 2.
-            // Save the repos here in that case.
-            if (!_previouslySelectedRepos.Any())
+            _previouslySelectedRepos.AddRange(EverythingToClone);
+        }
+
+        ShowRepoPage = Visibility.Collapsed;
+
+        // Store the logged in accounts to help figure out what account the user logged into.
+        var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
+        await LogUserIn(_selectedRepoProvider, _addRepoDialog.GetLoginUiContent(), true);
+        var loggedInAccountsWithNewAccount = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
+
+        ShowRepoPage = Visibility.Visible;
+        Accounts = new ObservableCollection<string>(loggedInAccountsWithNewAccount.Select(x => x.LoginId));
+        AccountsToShow = ConstructFlyout();
+
+        // The dialog makes a user log in if they have no accounts.
+        // keep this here just in case.
+        if (Accounts.Any())
+        {
+            var newAccount = loggedInAccountsWithNewAccount.Except(loggedInAccounts);
+
+            // Logging in should allow only one account to log in at a time.
+            if (newAccount.Count() > 1)
             {
-                _previouslySelectedRepos.AddRange(EverythingToClone);
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"{newAccount.Count()} accounts logged in at once.  Choosing the first alphabetically");
             }
 
-            ShowRepoPage = Visibility.Collapsed;
-
-            // Store the logged in accounts to help figure out what account the user logged into.
-            var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
-            await LogUserIn(_selectedRepoProvider, _addRepoDialog.GetLoginUiContent(), true);
-            var loggedInAccountsWithNewAccount = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
-
-            ShowRepoPage = Visibility.Visible;
-            Accounts = new ObservableCollection<string>(loggedInAccountsWithNewAccount.Select(x => x.LoginId));
-            AccountsToShow = ConstructFlyout();
-
-            // The dialog makes a user log in if they have no accounts.
-            // keep this here just in case.
-            if (Accounts.Any())
+            if (newAccount.Any())
             {
-                var newAccount = loggedInAccountsWithNewAccount.Except(loggedInAccounts);
-
-                // Logging in should allow only one account to log in at a time.
-                if (newAccount.Count() > 1)
-                {
-                    Log.Logger?.ReportError(Log.Component.RepoConfig, $"{newAccount.Count()} accounts logged in at once.  Choosing the first alphabetically");
-                }
-
-                if (newAccount.Any())
-                {
-                    SelectedAccount = newAccount.OrderByDescending(x => x.LoginId).FirstOrDefault().LoginId;
-                }
-                else
-                {
-                    SelectedAccount = Accounts.First();
-                }
-
-                IsCancelling = false;
-                MenuItemClick(AccountsToShow.Items.FirstOrDefault(x => x.Name.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase)), null);
+                SelectedAccount = newAccount.OrderByDescending(x => x.LoginId).FirstOrDefault().LoginId;
             }
+            else
+            {
+                SelectedAccount = Accounts.First();
+            }
+
+            IsCancelling = false;
+            var firstItem = AccountsToShow.Items.FirstOrDefault(x => x.Name.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase));
+            await MenuItemClick((firstItem as MenuFlyoutItem).Text);
         }
     }
 
@@ -646,7 +639,7 @@ public partial class AddRepoViewModel : ObservableObject
         if (Accounts.Any())
         {
             SelectedAccount = Accounts.First();
-            MenuItemClick(AccountsToShow.Items[0], null);
+            await MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
         }
     }
 

@@ -3,25 +3,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Views;
 using DevHome.Logging;
-using DevHome.Settings.Views;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 using Windows.Storage;
-using Windows.UI.ViewManagement;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -63,6 +58,8 @@ internal class RepositoryProvider
     public string DisplayName => _repositoryProvider.DisplayName;
 
     public string ExtensionDisplayName => _extensionWrapper.Name;
+
+    private readonly object _getRepoLock = new ();
 
     /// <summary>
     /// Starts the extension if it isn't running.
@@ -249,17 +246,21 @@ internal class RepositoryProvider
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
     {
         IEnumerable<IRepository> repositoriesForAccount;
-        if (!_repositories.TryGetValue(developerId, out repositoriesForAccount))
+
+        lock (_getRepoLock)
         {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
-            var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
-            if (result.Result.Status != ProviderOperationStatus.Success)
+            if (!_repositories.TryGetValue(developerId, out repositoriesForAccount))
             {
-                _repositories.Add(developerId, new List<IRepository>());
-            }
-            else
-            {
-                _repositories.Add(developerId, result.Repositories);
+                TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
+                var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+                if (result.Result.Status != ProviderOperationStatus.Success)
+                {
+                    _repositories.Add(developerId, new List<IRepository>());
+                }
+                else
+                {
+                    _repositories.Add(developerId, result.Repositories);
+                }
             }
         }
 
