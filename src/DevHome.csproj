@@ -50,7 +50,7 @@
         </PackageReference>
         <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
         <PackageReference Include="WinUIEx" Version="1.8.0" />
-        <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.4.0" GeneratePathProperty="true">
+        <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
             <ExcludeAssets>contentFiles</ExcludeAssets>
         </PackageReference>
     </ItemGroup>
@@ -111,7 +111,7 @@
 
         <!-- If the binary is not here, then it was a 'dotnet publish' or 'dotnet build' -->
         <PropertyGroup Condition="!Exists('$(TargetDir)\System.Management.Automation.dll')">
-            <ModulePath>runtimes\win\lib\net8.0\</ModulePath>
+            <ModulePath>runtimes\win\lib\net6.0\</ModulePath>
         </PropertyGroup>
 
         <ItemGroup>
