@@ -29,7 +29,12 @@ public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
     public ProviderOperationResult Update(string templateJson, string dataJson, string state)
     {
         var template = new AdaptiveCardTemplate(templateJson ?? TemplateJson);
-        var adaptiveCardString = template.Expand(JsonNode.Parse(dataJson ?? DataJson));
+
+        // Need to use Newtonsoft.Json here because System.Text.Json is missing a set of wrapping brackets
+        // which causes AdaptiveCardTemplate.Expand to fail.  System.Text.Json also does not support parsing
+        // an empty string.
+        var adaptiveCardString = template.Expand(Newtonsoft.Json.JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(dataJson ?? DataJson));
+
         var parseResult = AdaptiveCard.FromJsonString(adaptiveCardString);
 
         if (parseResult.AdaptiveCard is null)
