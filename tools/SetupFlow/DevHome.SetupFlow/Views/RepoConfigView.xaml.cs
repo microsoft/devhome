@@ -118,7 +118,7 @@ public sealed partial class RepoConfigView : UserControl
                 foreach (var cloneInfo in everythingToClone)
                 {
                     cloneInfo.CloneToDevDrive = true;
-                    cloneInfo.CloneLocationAlias = _addRepoDialog.FolderPickerViewModel.CloneLocationAlias;
+                    cloneInfo.CloneLocationAlias = _addRepoDialog.AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias;
                 }
 
                 // The cloning location may have changed e.g The original Drive clone path for Dev Drives was the F: drive for items
