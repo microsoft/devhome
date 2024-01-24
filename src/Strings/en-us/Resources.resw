@@ -142,7 +142,7 @@
     <value>Create a Dev Drive</value>
   </data>
   <data name="WhatsNewPage_Description.Text" xml:space="preserve">
-    <value>Use the streamlined end-to-end setup to clone multiple repositories and install all the applications you need.</value>
+    <value>Set up your machine, monitor your workflows, and access development utilities all from one centralized location.</value>
   </data>
   <data name="WhatsNewPage_DevDashCard.Description" xml:space="preserve">
     <value>Get the info you need in one place—add widgets to track issues, pull requests, and system performance.</value>
@@ -181,7 +181,7 @@
     <value>Dev Home is getting things ready for you...</value>
   </data>
   <data name="WhatsNewPage_Title.Text" xml:space="preserve">
-    <value>Set up your dev environment</value>
+    <value>Your development control center</value>
   </data>
   <data name="Feedback_Title.Text" xml:space="preserve">
     <value>Feedback</value>
