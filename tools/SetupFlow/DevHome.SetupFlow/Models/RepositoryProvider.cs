@@ -38,7 +38,7 @@ internal sealed class RepositoryProvider
     /// <summary>
     /// Dictionary with all the repositories per account.
     /// </summary>
-    private Dictionary<IDeveloperId, IEnumerable<IRepository>> _repositories = new ();
+    private Dictionary<IDeveloperId, IEnumerable<IRepository>> _repositories = new();
 
     /// <summary>
     /// The DeveloperId provider used to log a user into an account.
@@ -59,7 +59,7 @@ internal sealed class RepositoryProvider
 
     public string ExtensionDisplayName => _extensionWrapper.Name;
 
-    private readonly object _getRepoLock = new ();
+    private readonly object _getRepoLock = new();
 
     /// <summary>
     /// Starts the extension if it isn't running.
