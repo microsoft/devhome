@@ -2,7 +2,7 @@
 // Licensed under the MIT license.
 
 namespace DevHome.SetupFlow.Models;
-internal class Common
+internal sealed class Common
 {
     /// <summary>
     /// Used to keep track of what page the user is on.

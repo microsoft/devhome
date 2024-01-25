@@ -29,7 +29,7 @@ namespace DevHome.SetupFlow.Models;
 /// Object that holds a reference to the providers in a extension.
 /// This needs to be changed to handle multiple accounts per provider.
 /// </summary>
-internal class RepositoryProvider
+internal sealed class RepositoryProvider
 {
     /// <summary>
     /// Wrapper for the extension that is providing a repository and developer id.

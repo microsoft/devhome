@@ -20,6 +20,16 @@
         <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
+      <None Remove="Assets\Preview\CPUScreenshotDark.png" />
+      <None Remove="Assets\Preview\CPUScreenshotLight.png" />
+      <None Remove="Assets\Preview\GPUScreenshotDark.png" />
+      <None Remove="Assets\Preview\GPUScreenshotLight.png" />
+      <None Remove="Assets\Preview\MemoryScreenshotDark.png" />
+      <None Remove="Assets\Preview\MemoryScreenshotLight.png" />
+      <None Remove="Assets\Preview\NetworkScreenshotDark.png" />
+      <None Remove="Assets\Preview\NetworkScreenshotLight.png" />
+      <None Remove="Assets\Preview\SSHScreenshotDark.png" />
+      <None Remove="Assets\Preview\SSHScreenshotLight.png" />
       <None Remove="Assets\WhatsNewPage\DarkTheme\Extensions.png" />
       <None Remove="Assets\WhatsNewPage\DarkTheme\ExtensionsBig.png" />
       <None Remove="Assets\WhatsNewPage\LightTheme\Extensions.png" />
@@ -32,13 +42,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-        <PackageReference Include="Microsoft.Management.Infrastructure" Version="2.0.0" />
-        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.2.188-beta">
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
+        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
+        <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
         <PackageReference Include="WinUIEx" Version="1.8.0" />
         <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.8" GeneratePathProperty="true">
             <ExcludeAssets>contentFiles</ExcludeAssets>

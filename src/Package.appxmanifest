@@ -18,7 +18,7 @@
     <desktop6:RegistryWriteVirtualization>disabled</desktop6:RegistryWriteVirtualization>
   </Properties>
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19045.0" MaxVersionTested="10.0.22000.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.22000.0" />
     <PackageDependency Name="Microsoft.VCLibs.140.00.UWPDesktop" MinVersion="14.0.24217.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
   </Dependencies>
   <Resources>
@@ -102,12 +102,15 @@
                         <Icon Path="Widgets\Assets\ssh_keychain_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Preview\StoreDisplay-300.png" DisplayAltText="Dev Home icon" />
+                        <Screenshot Path="Assets\Preview\SSHScreenshotLight.png" DisplayAltText="Dev Home icon" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Widgets\Assets\ssh_keychain_icon_dark.png" />
                         </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Preview\SSHScreenshotDark.png" DisplayAltText="Dev Home icon" />
+                        </Screenshots>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
@@ -129,12 +132,15 @@
                         <Icon Path="Widgets\Assets\mem_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Preview\StoreDisplay-300.png" DisplayAltText="Dev Home icon" />
+                        <Screenshot Path="Assets\Preview\MemoryScreenshotLight.png" DisplayAltText="Dev Home icon" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Widgets\Assets\mem_icon_dark.png" />
                         </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Preview\MemoryScreenshotDark.png" DisplayAltText="Dev Home icon" />
+                        </Screenshots>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
@@ -156,12 +162,15 @@
                         <Icon Path="Widgets\Assets\net_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Preview\StoreDisplay-300.png" DisplayAltText="Dev Home icon" />
+                        <Screenshot Path="Assets\Preview\NetworkScreenshotLight.png" DisplayAltText="Dev Home icon" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Widgets\Assets\net_icon_dark.png" />
                         </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Preview\NetworkScreenshotDark.png" DisplayAltText="Dev Home icon" />
+                        </Screenshots>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
@@ -183,12 +192,15 @@
                         <Icon Path="Widgets\Assets\gpu_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Preview\StoreDisplay-300.png" DisplayAltText="Dev Home icon" />
+                        <Screenshot Path="Assets\Preview\GPUScreenshotLight.png" DisplayAltText="Dev Home icon" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Widgets\Assets\gpu_icon_dark.png" />
                         </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Preview\GPUScreenshotDark.png" DisplayAltText="Dev Home icon" />
+                        </Screenshots>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>
@@ -210,12 +222,15 @@
                         <Icon Path="Widgets\Assets\cpu_icon_light.png" />
                       </Icons>
                       <Screenshots>
-                        <Screenshot Path="Assets\Preview\StoreDisplay-300.png" DisplayAltText="Dev Home icon" />
+                        <Screenshot Path="Assets\Preview\CPUScreenshotLight.png" DisplayAltText="Dev Home icon" />
                       </Screenshots>
                       <DarkMode>
                         <Icons>
                           <Icon Path="Widgets\Assets\cpu_icon_dark.png" />
                         </Icons>
+                        <Screenshots>
+                          <Screenshot Path="Assets\Preview\CPUScreenshotDark.png" DisplayAltText="Dev Home icon" />
+                        </Screenshots>
                       </DarkMode>
                       <LightMode />
                     </ThemeResources>

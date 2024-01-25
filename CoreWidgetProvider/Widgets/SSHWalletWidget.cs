@@ -13,17 +13,17 @@ using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
 
-internal class SSHWalletWidget : CoreWidget
+internal sealed class SSHWalletWidget : CoreWidget
 {
-    protected static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
+    private static readonly string DefaultConfigFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\.ssh\\config";
 
     private static readonly Regex HostRegex = new (@"^Host\s+(\S*)\s*$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
     private FileSystemWatcher? FileWatcher { get; set; }
 
-    protected static readonly new string Name = nameof(SSHWalletWidget);
+    private static readonly new string Name = nameof(SSHWalletWidget);
 
-    protected string ConfigFile
+    private string ConfigFile
     {
         get => State();
 
@@ -48,7 +48,7 @@ internal class SSHWalletWidget : CoreWidget
         // Widget will remain in configuring state, waiting for config file path input.
         if (string.IsNullOrWhiteSpace(ConfigFile))
         {
-            ContentData = new JsonObject { { "configuring", true } }.ToJsonString();
+            ContentData = EmptyJson;
             DataState = WidgetDataState.Okay;
             return;
         }
@@ -86,6 +86,11 @@ internal class SSHWalletWidget : CoreWidget
         catch (Exception e)
         {
             Log.Logger()?.ReportError(Name, ShortId, "Error retrieving data.", e);
+            var content = new JsonObject
+            {
+                { "errorMessage", e.Message },
+            };
+            ContentData = content.ToJsonString();
             DataState = WidgetDataState.Failed;
             return;
         }
@@ -246,7 +251,7 @@ internal class SSHWalletWidget : CoreWidget
         UpdateWidget();
     }
 
-    private JsonObject FillConfigurationData(bool hasConfiguration, string configFile, int numOfEntries = 0, bool configuring = true, string errorMessage = "")
+    private JsonObject FillConfigurationData(bool hasConfiguration, string configFile, int numOfEntries = 0, string errorMessage = "")
     {
         var configurationData = new JsonObject();
 
@@ -265,7 +270,6 @@ internal class SSHWalletWidget : CoreWidget
                 { "numOfEntries", numOfEntries.ToString(CultureInfo.InvariantCulture) },
             };
 
-        configurationData.Add("configuring", configuring);
         configurationData.Add("hasConfiguration", hasConfiguration);
         configurationData.Add("configuration", sshConfigData);
         configurationData.Add("savedConfigFile", _savedConfigFile);
@@ -298,18 +302,18 @@ internal class SSHWalletWidget : CoreWidget
 
                     var numberOfEntries = GetNumberOfHostEntries();
 
-                    configurationData = FillConfigurationData(true, ConfigFile, numberOfEntries, false);
+                    configurationData = FillConfigurationData(true, ConfigFile, numberOfEntries);
                 }
                 else
                 {
-                    configurationData = FillConfigurationData(false, data, 0, true, Resources.GetResource(@"SSH_Widget_Template/ConfigFileNotFound", Logger()));
+                    configurationData = FillConfigurationData(false, data, 0, Resources.GetResource(@"SSH_Widget_Template/ConfigFileNotFound", Logger()));
                 }
             }
             catch (Exception ex)
             {
                 Log.Logger()?.ReportError(Name, ShortId, $"Failed getting configuration information for input config file path: {data}", ex);
 
-                configurationData = FillConfigurationData(false, data, 0, true, Resources.GetResource(@"SSH_Widget_Template/ErrorProcessingConfigFile", Logger()));
+                configurationData = FillConfigurationData(false, data, 0, Resources.GetResource(@"SSH_Widget_Template/ErrorProcessingConfigFile", Logger()));
 
                 return configurationData.ToString();
             }
@@ -365,7 +369,7 @@ internal class SSHWalletWidget : CoreWidget
         {
             WidgetPageState.Configure => GetConfiguration(ConfigFile),
             WidgetPageState.Content => ContentData,
-            WidgetPageState.Loading => new JsonObject { { "configuring", true } }.ToJsonString(),
+            WidgetPageState.Loading => EmptyJson,
 
             // In case of unknown state default to empty data
             _ => EmptyJson,
@@ -401,7 +405,7 @@ internal class SSHWalletWidget : CoreWidget
     }
 }
 
-internal class DataPayload
+internal sealed class DataPayload
 {
     public string? ConfigFile
     {
@@ -411,6 +415,6 @@ internal class DataPayload
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(DataPayload))]
-internal partial class SourceGenerationContext : JsonSerializerContext
+internal sealed partial class SourceGenerationContext : JsonSerializerContext
 {
 }
