@@ -1,7 +1,8 @@
 Param(
-  [string]$Configuration = "Release",
+  [string]$Configuration = "Debug",
   [string]$VersionOfSDK,
   [bool]$IsAzurePipelineBuild = $false,
+  [switch]$BypassWarning = $false,
   [switch]$Help = $false
 )
 
@@ -28,6 +29,14 @@ Options:
   -Help
       Display this usage message.
 "@
+  Exit
+}
+
+if (-not $BypassWarning) {
+  Write-Host @"
+This script is not meant to be run directly.  To build the sdk, please run the following from the root directory:
+build -BuildStep "sdk"
+"@ -ForegroundColor RED
   Exit
 }
 

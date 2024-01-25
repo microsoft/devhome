@@ -151,8 +151,6 @@
                                     <TextBlock
                                         Margin="0 8 0 10"
                                         TextWrapping="Wrap"
-                                        MaxWidth="400"
-                                        FontSize="12"
                                         HorizontalAlignment="Left"
                                         Text="{x:Bind Description}"/>
 
@@ -168,7 +166,6 @@
                                         Margin="0 0 0 10"
                                         Padding="50 5 50 5"
                                         DataContext="{x:Bind PageKey}"
-                                        FontSize="12"
                                         Click="Button_ClickAsync"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Bottom"
