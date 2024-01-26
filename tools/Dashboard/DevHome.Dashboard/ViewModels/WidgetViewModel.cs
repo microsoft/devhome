@@ -102,17 +102,6 @@ public partial class WidgetViewModel : ObservableObject
             var cardTemplate = await Widget.GetCardTemplateAsync();
             var cardData = await Widget.GetCardDataAsync();
 
-            if (string.IsNullOrEmpty(cardTemplate))
-            {
-                // TODO CreateWidgetAsync doesn't always seem to be "done", and returns blank templates and data.
-                // Put in small wait to avoid this.
-                // https://github.com/microsoft/devhome/issues/643
-                Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardTemplateAsync returned empty, try wait");
-                await System.Threading.Tasks.Task.Delay(100);
-                cardTemplate = await Widget.GetCardTemplateAsync();
-                cardData = await Widget.GetCardDataAsync();
-            }
-
             if (string.IsNullOrEmpty(cardData) || string.IsNullOrEmpty(cardTemplate))
             {
                 Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
