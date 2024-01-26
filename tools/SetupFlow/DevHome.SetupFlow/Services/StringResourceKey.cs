@@ -24,11 +24,6 @@ public static class StringResourceKey
     public static readonly string ConfigurationFileApplySuccess = nameof(ConfigurationFileApplySuccess);
     public static readonly string ConfigurationFileApplySuccessReboot = nameof(ConfigurationFileApplySuccessReboot);
     public static readonly string ConfigurationFileApplying = nameof(ConfigurationFileApplying);
-    public static readonly string ConfigurationFieldInvalid = nameof(ConfigurationFieldInvalid);
-    public static readonly string ConfigurationFileInvalid = nameof(ConfigurationFileInvalid);
-    public static readonly string ConfigurationFileOpenUnknownError = nameof(ConfigurationFileOpenUnknownError);
-    public static readonly string ConfigurationFileVersionUnknown = nameof(ConfigurationFileVersionUnknown);
-    public static readonly string ConfigurationFileTypeNotSupported = nameof(ConfigurationFileTypeNotSupported);
     public static readonly string ConfigurationUnitFailed = nameof(ConfigurationUnitFailed);
     public static readonly string ConfigurationUnitSkipped = nameof(ConfigurationUnitSkipped);
     public static readonly string ConfigurationUnitSuccess = nameof(ConfigurationUnitSuccess);
@@ -176,4 +171,33 @@ public static class StringResourceKey
     public static readonly string InstallPackageErrorNoApplicableInstallers = nameof(InstallPackageErrorNoApplicableInstallers);
     public static readonly string InstallPackageErrorUnknownErrorWithErrorCode = nameof(InstallPackageErrorUnknownErrorWithErrorCode);
     public static readonly string InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode = nameof(InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode);
+
+    // WinGet Configuration
+    public static readonly string ConfigurationFieldInvalidType = nameof(ConfigurationFieldInvalidType);
+    public static readonly string ConfigurationFieldInvalidValue = nameof(ConfigurationFieldInvalidValue);
+    public static readonly string ConfigurationFieldMissing = nameof(ConfigurationFieldMissing);
+    public static readonly string ConfigurationFileInvalid = nameof(ConfigurationFileInvalid);
+    public static readonly string ConfigurationFileOpenUnknownError = nameof(ConfigurationFileOpenUnknownError);
+    public static readonly string ConfigurationFileVersionUnknown = nameof(ConfigurationFileVersionUnknown);
+    public static readonly string ConfigurationUnitHasDuplicateIdentifier = nameof(ConfigurationUnitHasDuplicateIdentifier);
+    public static readonly string ConfigurationUnitHasMissingDependency = nameof(ConfigurationUnitHasMissingDependency);
+    public static readonly string ConfigurationUnitAssertHadNegativeResult = nameof(ConfigurationUnitAssertHadNegativeResult);
+    public static readonly string ConfigurationUnitNotFoundInModule = nameof(ConfigurationUnitNotFoundInModule);
+    public static readonly string ConfigurationUnitNotFound = nameof(ConfigurationUnitNotFound);
+    public static readonly string ConfigurationUnitMultipleMatches = nameof(ConfigurationUnitMultipleMatches);
+    public static readonly string ConfigurationUnitFailedDuringGet = nameof(ConfigurationUnitFailedDuringGet);
+    public static readonly string ConfigurationUnitFailedDuringTest = nameof(ConfigurationUnitFailedDuringTest);
+    public static readonly string ConfigurationUnitFailedDuringSet = nameof(ConfigurationUnitFailedDuringSet);
+    public static readonly string ConfigurationUnitModuleConflict = nameof(ConfigurationUnitModuleConflict);
+    public static readonly string ConfigurationUnitModuleImportFailed = nameof(ConfigurationUnitModuleImportFailed);
+    public static readonly string ConfigurationUnitReturnedInvalidResult = nameof(ConfigurationUnitReturnedInvalidResult);
+    public static readonly string ConfigurationUnitManuallySkipped = nameof(ConfigurationUnitManuallySkipped);
+    public static readonly string ConfigurationUnitNotRunDueToDependency = nameof(ConfigurationUnitNotRunDueToDependency);
+    public static readonly string WinGetConfigUnitSettingConfigRoot = nameof(WinGetConfigUnitSettingConfigRoot);
+    public static readonly string WinGetConfigUnitImportModuleAdmin = nameof(WinGetConfigUnitImportModuleAdmin);
+    public static readonly string ConfigurationUnitFailedConfigSet = nameof(ConfigurationUnitFailedConfigSet);
+    public static readonly string ConfigurationUnitFailedInternal = nameof(ConfigurationUnitFailedInternal);
+    public static readonly string ConfigurationUnitFailedPrecondition = nameof(ConfigurationUnitFailedPrecondition);
+    public static readonly string ConfigurationUnitFailedSystemState = nameof(ConfigurationUnitFailedSystemState);
+    public static readonly string ConfigurationUnitFailedUnitProcessing = nameof(ConfigurationUnitFailedUnitProcessing);
 }

@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
-using System.Globalization;
+using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using Microsoft.Management.Configuration;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -41,15 +42,9 @@ public class ConfigurationUnitResultViewModel
 
     private string GetApplyResult()
     {
-        var hresult = $"0x{_unitResult.HResult:X}";
-        if (IsSkipped)
+        if (IsSkipped || IsError)
         {
-            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSkipped, hresult);
-        }
-
-        if (IsError)
-        {
-            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailed, hresult);
+            return GetUnitMessage();
         }
 
         return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSuccess);
@@ -73,5 +68,67 @@ public class ConfigurationUnitResultViewModel
         }
 
         return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, _unitResult.Intent, _unitResult.UnitName, _unitResult.Id, _unitResult.Description);
+    }
+
+    private string GetUnitMessage()
+    {
+        var resultCode = _unitResult.HResult;
+        switch (resultCode)
+        {
+            case WinGetConfigurationException.WingetConfigErrorDuplicateIdentifier:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitHasDuplicateIdentifier, _unitResult.Id);
+            case WinGetConfigurationException.WingetConfigErrorMissingDependency:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitHasMissingDependency, _unitResult.Details);
+            case WinGetConfigurationException.WingetConfigErrorAssertionFailed:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitAssertHadNegativeResult);
+            case WinGetConfigurationException.WinGetConfigUnitNotFound:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitNotFoundInModule);
+            case WinGetConfigurationException.WinGetConfigUnitNotFoundRepository:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitNotFound);
+            case WinGetConfigurationException.WinGetConfigUnitMultipleMatches:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitMultipleMatches);
+            case WinGetConfigurationException.WinGetConfigUnitInvokeGet:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedDuringGet);
+            case WinGetConfigurationException.WinGetConfigUnitInvokeTest:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedDuringTest);
+            case WinGetConfigurationException.WinGetConfigUnitInvokeSet:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedDuringSet);
+            case WinGetConfigurationException.WinGetConfigUnitModuleConflict:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitModuleConflict);
+            case WinGetConfigurationException.WinGetConfigUnitImportModule:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitModuleImportFailed);
+            case WinGetConfigurationException.WinGetConfigUnitInvokeInvalidResult:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitReturnedInvalidResult);
+            case WinGetConfigurationException.WingetConfigErrorManuallySkipped:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitManuallySkipped);
+            case WinGetConfigurationException.WingetConfigErrorDependencyUnsatisfied:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitNotRunDueToDependency);
+            case WinGetConfigurationException.WinGetConfigUnitSettingConfigRoot:
+                return _stringResource.GetLocalized(StringResourceKey.WinGetConfigUnitSettingConfigRoot);
+            case WinGetConfigurationException.WinGetConfigUnitImportModuleAdmin:
+                return _stringResource.GetLocalized(StringResourceKey.WinGetConfigUnitImportModuleAdmin);
+        }
+
+        var resultCodeHex = $"0x{resultCode:X}";
+        switch (_unitResult.ResultSource)
+        {
+            case ConfigurationUnitResultSource.ConfigurationSet:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedConfigSet, resultCodeHex);
+            case ConfigurationUnitResultSource.Internal:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedInternal, resultCodeHex);
+            case ConfigurationUnitResultSource.Precondition:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedPrecondition, resultCodeHex);
+            case ConfigurationUnitResultSource.SystemState:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedSystemState, resultCodeHex);
+            case ConfigurationUnitResultSource.UnitProcessing:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedUnitProcessing, resultCodeHex);
+        }
+
+        if (IsSkipped)
+        {
+            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSkipped, resultCodeHex);
+        }
+
+        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailed, resultCodeHex);
     }
 }
