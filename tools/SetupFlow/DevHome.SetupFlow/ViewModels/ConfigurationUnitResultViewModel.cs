@@ -42,9 +42,14 @@ public class ConfigurationUnitResultViewModel
 
     private string GetApplyResult()
     {
-        if (IsSkipped || IsError)
+        if (IsSkipped)
         {
-            return GetUnitMessage();
+            return GetUnitSkipMessage();
+        }
+
+        if (IsError)
+        {
+            return GetUnitErrorMessage();
         }
 
         return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSuccess);
@@ -70,7 +75,24 @@ public class ConfigurationUnitResultViewModel
         return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, _unitResult.Intent, _unitResult.UnitName, _unitResult.Id, _unitResult.Description);
     }
 
-    private string GetUnitMessage()
+    private string GetUnitSkipMessage()
+    {
+        var resultCode = _unitResult.HResult;
+        switch (resultCode)
+        {
+            case WinGetConfigurationException.WingetConfigErrorManuallySkipped:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitManuallySkipped);
+            case WinGetConfigurationException.WingetConfigErrorDependencyUnsatisfied:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitNotRunDueToDependency);
+            case WinGetConfigurationException.WingetConfigErrorAssertionFailed:
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitNotRunDueToFailedAssert);
+        }
+
+        var resultCodeHex = $"0x{resultCode:X}";
+        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSkipped, resultCodeHex);
+    }
+
+    private string GetUnitErrorMessage()
     {
         var resultCode = _unitResult.HResult;
         switch (resultCode)
@@ -122,11 +144,6 @@ public class ConfigurationUnitResultViewModel
                 return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedSystemState, resultCodeHex);
             case ConfigurationUnitResultSource.UnitProcessing:
                 return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedUnitProcessing, resultCodeHex);
-        }
-
-        if (IsSkipped)
-        {
-            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSkipped, resultCodeHex);
         }
 
         return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailed, resultCodeHex);

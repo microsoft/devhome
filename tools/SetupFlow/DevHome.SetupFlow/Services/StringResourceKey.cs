@@ -200,4 +200,5 @@ public static class StringResourceKey
     public static readonly string ConfigurationUnitFailedPrecondition = nameof(ConfigurationUnitFailedPrecondition);
     public static readonly string ConfigurationUnitFailedSystemState = nameof(ConfigurationUnitFailedSystemState);
     public static readonly string ConfigurationUnitFailedUnitProcessing = nameof(ConfigurationUnitFailedUnitProcessing);
+    public static readonly string ConfigurationUnitNotRunDueToFailedAssert = nameof(ConfigurationUnitNotRunDueToFailedAssert);
 }
