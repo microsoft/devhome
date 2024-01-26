@@ -49,11 +49,6 @@ public partial class WidgetViewModel : ObservableObject
     [ObservableProperty]
     private FrameworkElement _widgetFrameworkElement;
 
-    public bool IsInAddMode { get; set; }
-
-    [ObservableProperty]
-    private bool _isInEditMode;
-
     partial void OnWidgetChanging(Widget value)
     {
         if (Widget != null)
