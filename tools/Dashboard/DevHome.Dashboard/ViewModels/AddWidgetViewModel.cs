@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Dashboard.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.ViewModels;
