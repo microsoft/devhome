@@ -28,20 +28,13 @@ public partial class DashboardView : ToolPage
 {
     public override string ShortName => "Dashboard";
 
-    public DashboardViewModel ViewModel
-    {
-        get;
-    }
+    public DashboardViewModel ViewModel { get; }
 
-    internal DashboardBannerViewModel BannerViewModel
-    {
-        get;
-    }
+    internal DashboardBannerViewModel BannerViewModel { get; }
 
-    public static ObservableCollection<WidgetViewModel> PinnedWidgets
-    {
-        get; set;
-    }
+    private readonly WidgetViewModelFactory _widgetViewModelFactory;
+
+    public static ObservableCollection<WidgetViewModel> PinnedWidgets { get; set; }
 
     private static Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
@@ -52,6 +45,7 @@ public partial class DashboardView : ToolPage
     {
         ViewModel = Application.Current.GetService<DashboardViewModel>();
         BannerViewModel = Application.Current.GetService<DashboardBannerViewModel>();
+        _widgetViewModelFactory = Application.Current.GetService<WidgetViewModelFactory>();
 
         this.InitializeComponent();
 
@@ -313,7 +307,7 @@ public partial class DashboardView : ToolPage
                     LogLevel.Critical,
                     new ReportPinnedWidgetEvent(widgetDefinition.ProviderDefinition.Id, widgetDefinitionId));
 
-                var wvm = new WidgetViewModel(widget, size, widgetDefinition, _dispatcher);
+                var wvm = _widgetViewModelFactory(widget, size, widgetDefinition);
                 _dispatcher.TryEnqueue(() =>
                 {
                     try

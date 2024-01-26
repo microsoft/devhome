@@ -17,6 +17,12 @@ public static class ServiceExtensions
         services.AddTransient<DashboardBannerViewModel>();
         services.AddTransient<AddWidgetViewModel>();
 
+        // DI factory pattern for creating instances with certain parameters
+        // determined at runtime
+        services.AddSingleton<WidgetViewModelFactory>(
+            sp => (widget, widgetSize, widgetDefinition) =>
+                ActivatorUtilities.CreateInstance<WidgetViewModel>(sp, widget, widgetSize, widgetDefinition));
+
         // Services
         services.AddSingleton<IWidgetHostingService, WidgetHostingService>();
         services.AddSingleton<IWidgetIconService, WidgetIconService>();
