@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using Microsoft.Management.Configuration;
+
 namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
 
 /// <summary>
@@ -19,4 +21,8 @@ public sealed class ElevatedConfigureUnitTaskResult
     public bool IsSkipped { get; set; }
 
     public int HResult { get; set; }
+
+    public int ResultSource { get; set; }
+
+    public string? Details { get; set; }
 }

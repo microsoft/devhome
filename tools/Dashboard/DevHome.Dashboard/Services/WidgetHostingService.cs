@@ -8,7 +8,6 @@ using DevHome.Common.Helpers;
 using DevHome.Common.Services;
 using DevHome.Services;
 using Microsoft.Windows.Widgets.Hosts;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Log = DevHome.Dashboard.Helpers.Log;
 
 namespace DevHome.Dashboard.Services;
