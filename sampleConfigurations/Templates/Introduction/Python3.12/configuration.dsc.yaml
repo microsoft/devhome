@@ -38,7 +38,7 @@ properties:
       dependsOn:
         - Visual Studio
       directives:
-        description: Install required VS Workloads (Universal)
+        description: Install required VS Workloads (Python)
         allowPrerelease: true
       settings:
         productId: Microsoft.VisualStudio.Product.Community
