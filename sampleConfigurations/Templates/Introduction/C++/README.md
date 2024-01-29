@@ -3,7 +3,7 @@ This folder contains a WinGet Configuration File (*configuration.dsc.yaml*) that
 
 When run, the `configuration.dsc.yaml` file will install the following list of applications:
 * Microsoft Visual Studio Community 2022
-    * Required Visual Studio Workloads (ManagedDesktop, Universal)
+    * Required Visual Studio Workloads (NAtiveDesktop, Universal)
 * GitHub Desktop
 
 
