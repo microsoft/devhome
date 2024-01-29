@@ -43,6 +43,7 @@ public sealed class ElevatedConfigurationTask
                         Intent = unitResult.Unit.Intent.ToString(),
                         IsSkipped = unitResult.State == ConfigurationUnitState.Skipped,
                         HResult = unitResult.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK,
+                        ResultSource = (int)(unitResult.ResultInformation?.ResultSource ?? ConfigurationUnitResultSource.None),
                     };
                 }).ToList();
 

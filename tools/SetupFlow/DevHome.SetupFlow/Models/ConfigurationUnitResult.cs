@@ -19,6 +19,8 @@ public class ConfigurationUnitResult
         Intent = result.Unit.Intent.ToString();
         IsSkipped = result.State == ConfigurationUnitState.Skipped;
         HResult = result.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK;
+        ResultSource = result.ResultInformation?.ResultSource ?? ConfigurationUnitResultSource.None;
+        Details = result.ResultInformation?.Details;
     }
 
     public ConfigurationUnitResult(ElevatedConfigureUnitTaskResult result)
@@ -29,6 +31,8 @@ public class ConfigurationUnitResult
         Intent = result.Intent;
         IsSkipped = result.IsSkipped;
         HResult = result.HResult;
+        ResultSource = (ConfigurationUnitResultSource)result.ResultSource;
+        Details = result.Details;
     }
 
     public string UnitName { get; }
@@ -42,4 +46,8 @@ public class ConfigurationUnitResult
     public bool IsSkipped { get; }
 
     public int HResult { get; }
+
+    public ConfigurationUnitResultSource ResultSource { get; }
+
+    public string Details { get; }
 }

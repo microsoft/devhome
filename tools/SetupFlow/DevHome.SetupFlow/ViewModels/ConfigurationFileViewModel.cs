@@ -141,13 +141,20 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
     private string GetErrorMessage(OpenConfigurationSetException exception)
     {
-        return exception.ResultCode?.HResult switch
+        switch (exception.ResultCode.HResult)
         {
-            OpenConfigurationSetException.WingetConfigErrorInvalidField =>
-                StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalid, exception.Field),
-            OpenConfigurationSetException.WingetConfigErrorUnknownConfigurationFileVersion =>
-                StringResource.GetLocalized(StringResourceKey.ConfigurationFileVersionUnknown, exception.Field),
-            _ => StringResource.GetLocalized(StringResourceKey.ConfigurationFileInvalid),
-        };
+            case WinGetConfigurationException.WingetConfigErrorInvalidFieldType:
+                return StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalidType, exception.Field);
+            case WinGetConfigurationException.WingetConfigErrorInvalidFieldValue:
+                return StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalidValue, exception.Field, exception.Value);
+            case WinGetConfigurationException.WingetConfigErrorMissingField:
+                return StringResource.GetLocalized(StringResourceKey.ConfigurationFieldMissing, exception.Field);
+            case WinGetConfigurationException.WingetConfigErrorUnknownConfigurationFileVersion:
+                return StringResource.GetLocalized(StringResourceKey.ConfigurationFileVersionUnknown, exception.Value);
+            case WinGetConfigurationException.WingetConfigErrorInvalidConfigurationFile:
+            case WinGetConfigurationException.WingetConfigErrorInvalidYaml:
+            default:
+                return StringResource.GetLocalized(StringResourceKey.ConfigurationFileInvalid);
+        }
     }
 }
