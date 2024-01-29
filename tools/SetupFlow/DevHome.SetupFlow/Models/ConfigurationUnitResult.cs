@@ -20,7 +20,7 @@ public class ConfigurationUnitResult
         IsSkipped = result.State == ConfigurationUnitState.Skipped;
         HResult = result.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK;
         ResultSource = result.ResultInformation?.ResultSource ?? ConfigurationUnitResultSource.None;
-        Details = result.ResultInformation.Details;
+        Details = result.ResultInformation?.Details;
     }
 
     public ConfigurationUnitResult(ElevatedConfigureUnitTaskResult result)
