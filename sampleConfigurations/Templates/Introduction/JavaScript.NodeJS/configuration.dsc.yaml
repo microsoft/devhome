@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
-# Reference: https://github.com/microsoft/PowerToys/blob/main/doc/devdocs/readme.md#compiling-powertoys
+# Reference: https://github.com/microsoft/winget-create#building-the-client
 properties:
   resources:
     - resource: Microsoft.Windows.Developer/DeveloperMode
@@ -10,19 +10,11 @@ properties:
         Ensure: Present
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
-        description: Install Python 3.12
-        allowPrerelease: true
-      settings:
-        id: 9NCVDN91XZQP
-        source: msstore
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
         description: Install GitHub Desktop
         allowPrerelease: true
       settings:
         id: GitHub.GitHubDesktop
-        source: winget
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
+        source: winget- resource: Microsoft.WinGet.DSC/WinGetPackage
       id: vsPackage
       directives:
         description: Install Visual Studio 2022 Community
@@ -34,12 +26,12 @@ properties:
       dependsOn:
         - vsPackage
       directives:
-        description: Install required VS Workloads (Python, Universal)
+        description: Install required VS Workloads (NodeJS, Universal)
         allowPrerelease: true
       settings:
         productId: Microsoft.VisualStudio.Product.Community
         channelId: VisualStudio.17.Release                  
         components:
-          - Microsoft.VisualStudio.Workload.Python
+          - Microsoft.Microsoft.VisualStudio.Workload.Node
           - Microsoft.VisualStudio.Workload.Universal
   configurationVersion: 0.2.0

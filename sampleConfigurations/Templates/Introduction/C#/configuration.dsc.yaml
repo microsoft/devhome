@@ -9,9 +9,16 @@ properties:
       settings:
         Ensure: Present
     - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install GitHub Desktop
+        allowPrerelease: true
+      settings:
+        id: GitHub.GitHubDesktop
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
       id: vsPackage
       directives:
-        description: Install Visual Studio 2022
+        description: Install Visual Studio 2022 Community
         allowPrerelease: true
       settings:
         id: Microsoft.VisualStudio.2022.Community
@@ -20,13 +27,12 @@ properties:
       dependsOn:
         - vsPackage
       directives:
-        description: Install required VS workloads
+        description: Install required VS Components (Managed Desktop, Universal)
         allowPrerelease: true
       settings:
         productId: Microsoft.VisualStudio.Product.Community
-        channelId: VisualStudio.17.Release
-        IncludeRecommended: true
-        Components: [
-            "Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools"
-        ]
+        channelId: VisualStudio.17.Release                  
+        components:
+          - Microsoft.VisualStudio.Workload.ManagedDesktop
+          - Microsoft.VisualStudio.Workload.Universal
   configurationVersion: 0.2.0
