@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
-using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.TaskGroups;
