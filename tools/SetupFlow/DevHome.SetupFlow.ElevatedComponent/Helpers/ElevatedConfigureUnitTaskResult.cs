@@ -25,4 +25,6 @@ public sealed class ElevatedConfigureUnitTaskResult
     public int ResultSource { get; set; }
 
     public string? Details { get; set; }
+
+    public string? ErrorDescription { get; set; }
 }

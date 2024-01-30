@@ -150,7 +150,7 @@
                                 <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
                                     <StackPanel>
                                         <TextBlock Text="{x:Bind Title}"/>
-                                        <TextBlock Margin="20,0,0,0" Text="{x:Bind ApplyResult}" IsTextSelectionEnabled="{x:Bind IsError}">
+                                        <TextBlock TextWrapping="Wrap" Margin="20,0,0,0" Text="{x:Bind ApplyResult}" IsTextSelectionEnabled="{x:Bind IsError}">
                                             <i:Interaction.Behaviors>
                                                 <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
                                                     <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}"/>

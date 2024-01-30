@@ -5,6 +5,7 @@ using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Management.Configuration;
+using Windows.UI.WebUI;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.ViewModels;
@@ -57,22 +58,22 @@ public class ConfigurationUnitResultViewModel
 
     private string BuildTitle()
     {
-        if (string.IsNullOrEmpty(_unitResult.Id) && string.IsNullOrEmpty(_unitResult.Description))
+        if (string.IsNullOrEmpty(_unitResult.Id) && string.IsNullOrEmpty(_unitResult.UnitDescription))
         {
             return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryMinimal, _unitResult.Intent, _unitResult.UnitName);
         }
 
         if (string.IsNullOrEmpty(_unitResult.Id))
         {
-            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoId, _unitResult.Intent, _unitResult.UnitName, _unitResult.Description);
+            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoId, _unitResult.Intent, _unitResult.UnitName, _unitResult.UnitDescription);
         }
 
-        if (string.IsNullOrEmpty(_unitResult.Description))
+        if (string.IsNullOrEmpty(_unitResult.UnitDescription))
         {
             return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoDescription, _unitResult.Intent, _unitResult.UnitName, _unitResult.Id);
         }
 
-        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, _unitResult.Intent, _unitResult.UnitName, _unitResult.Id, _unitResult.Description);
+        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, _unitResult.Intent, _unitResult.UnitName, _unitResult.Id, _unitResult.UnitDescription);
     }
 
     private string GetUnitSkipMessage()
@@ -110,11 +111,11 @@ public class ConfigurationUnitResultViewModel
             case WinGetConfigurationException.WinGetConfigUnitMultipleMatches:
                 return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitMultipleMatches);
             case WinGetConfigurationException.WinGetConfigUnitInvokeGet:
-                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedDuringGet);
+                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedDuringGet);
             case WinGetConfigurationException.WinGetConfigUnitInvokeTest:
-                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedDuringTest);
+                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedDuringTest);
             case WinGetConfigurationException.WinGetConfigUnitInvokeSet:
-                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedDuringSet);
+                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedDuringSet);
             case WinGetConfigurationException.WinGetConfigUnitModuleConflict:
                 return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitModuleConflict);
             case WinGetConfigurationException.WinGetConfigUnitImportModule:
@@ -135,17 +136,37 @@ public class ConfigurationUnitResultViewModel
         switch (_unitResult.ResultSource)
         {
             case ConfigurationUnitResultSource.ConfigurationSet:
-                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedConfigSet, resultCodeHex);
+                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedConfigSet, resultCodeHex);
             case ConfigurationUnitResultSource.Internal:
-                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedInternal, resultCodeHex);
+                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedInternal, resultCodeHex);
             case ConfigurationUnitResultSource.Precondition:
-                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedPrecondition, resultCodeHex);
+                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedPrecondition, resultCodeHex);
             case ConfigurationUnitResultSource.SystemState:
-                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedSystemState, resultCodeHex);
+                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedSystemState, resultCodeHex);
             case ConfigurationUnitResultSource.UnitProcessing:
-                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedUnitProcessing, resultCodeHex);
+                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedUnitProcessing, resultCodeHex);
         }
 
-        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailed, resultCodeHex);
+        return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailed, resultCodeHex);
+    }
+
+    private string LocalizeErrorMessageWithDescription(string resourceKey, string resultCodeHex = null)
+    {
+        if (resultCodeHex == null)
+        {
+            return AppendErrorDescription(_stringResource.GetLocalized(resourceKey));
+        }
+
+        return AppendErrorDescription(_stringResource.GetLocalized(resourceKey, resultCodeHex));
+    }
+
+    private string AppendErrorDescription(string errorMessage)
+    {
+        if (string.IsNullOrEmpty(_unitResult.ErrorDescription))
+        {
+            return errorMessage;
+        }
+
+        return $"{errorMessage}\n{_unitResult.ErrorDescription}";
     }
 }
