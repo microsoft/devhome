@@ -24,6 +24,13 @@
             "viewFullName": "DevHome.ExtensionLibrary.Views.ExtensionLibraryView",
             "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
             "icon": "ea86"
+          },
+          {
+            "identity": "DevHome.AppsPackages",
+            "assembly": "DevHome.AppsPackages",
+            "viewFullName": "DevHome.AppsPackages.Views.AppsPackagesView",
+            "viewModelFullName": "DevHome.AppsPackages.ViewModels.AppsPackagesViewModel",
+            "icon": "E7B8"
           }
           /*,
           {
@@ -41,5 +48,6 @@
   },
   "experiments": [ /*
   "ExperimentalFeature_1"
-  */ ]
+  */
+  ]
 }
