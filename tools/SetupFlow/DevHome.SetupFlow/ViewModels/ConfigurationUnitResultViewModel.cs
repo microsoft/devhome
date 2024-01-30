@@ -158,6 +158,9 @@ public class ConfigurationUnitResultViewModel
             return string.Empty;
         }
 
+        // If the localized configuration error message requires additional
+        // context, display the error description from the resource module directly.
+        // Code reference: https://github.com/microsoft/winget-cli/blob/master/src/AppInstallerCLICore/Workflows/ConfigurationFlow.cpp
         switch (_unitResult.HResult)
         {
             case WinGetConfigurationException.WingetConfigErrorDuplicateIdentifier:
