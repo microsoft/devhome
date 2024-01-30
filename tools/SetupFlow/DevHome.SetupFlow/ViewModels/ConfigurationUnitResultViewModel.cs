@@ -34,6 +34,8 @@ public class ConfigurationUnitResultViewModel
 
     public string ApplyResult => GetApplyResult();
 
+    public string ErrorDescription => GetErrorDescription();
+
     public bool IsSkipped => _unitResult.IsSkipped;
 
     public bool IsError => !IsSkipped && _unitResult.HResult != HRESULT.S_OK;
@@ -110,11 +112,11 @@ public class ConfigurationUnitResultViewModel
             case WinGetConfigurationException.WinGetConfigUnitMultipleMatches:
                 return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitMultipleMatches);
             case WinGetConfigurationException.WinGetConfigUnitInvokeGet:
-                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedDuringGet);
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedDuringGet);
             case WinGetConfigurationException.WinGetConfigUnitInvokeTest:
-                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedDuringTest);
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedDuringTest);
             case WinGetConfigurationException.WinGetConfigUnitInvokeSet:
-                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedDuringSet);
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedDuringSet);
             case WinGetConfigurationException.WinGetConfigUnitModuleConflict:
                 return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitModuleConflict);
             case WinGetConfigurationException.WinGetConfigUnitImportModule:
@@ -135,37 +137,43 @@ public class ConfigurationUnitResultViewModel
         switch (_unitResult.ResultSource)
         {
             case ConfigurationUnitResultSource.ConfigurationSet:
-                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedConfigSet, resultCodeHex);
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedConfigSet, resultCodeHex);
             case ConfigurationUnitResultSource.Internal:
-                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedInternal, resultCodeHex);
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedInternal, resultCodeHex);
             case ConfigurationUnitResultSource.Precondition:
-                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedPrecondition, resultCodeHex);
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedPrecondition, resultCodeHex);
             case ConfigurationUnitResultSource.SystemState:
-                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedSystemState, resultCodeHex);
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedSystemState, resultCodeHex);
             case ConfigurationUnitResultSource.UnitProcessing:
-                return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailedUnitProcessing, resultCodeHex);
+                return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailedUnitProcessing, resultCodeHex);
         }
 
-        return LocalizeErrorMessageWithDescription(StringResourceKey.ConfigurationUnitFailed, resultCodeHex);
+        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailed, resultCodeHex);
     }
 
-    private string LocalizeErrorMessageWithDescription(string resourceKey, string resultCodeHex = null)
-    {
-        if (resultCodeHex == null)
-        {
-            return AppendErrorDescription(_stringResource.GetLocalized(resourceKey));
-        }
-
-        return AppendErrorDescription(_stringResource.GetLocalized(resourceKey, resultCodeHex));
-    }
-
-    private string AppendErrorDescription(string errorMessage)
+    private string GetErrorDescription()
     {
         if (string.IsNullOrEmpty(_unitResult.ErrorDescription))
         {
-            return errorMessage;
+            return string.Empty;
         }
 
-        return $"{errorMessage}\n{_unitResult.ErrorDescription}";
+        switch (_unitResult.HResult)
+        {
+            case WinGetConfigurationException.WingetConfigErrorDuplicateIdentifier:
+            case WinGetConfigurationException.WingetConfigErrorMissingDependency:
+            case WinGetConfigurationException.WingetConfigErrorAssertionFailed:
+            case WinGetConfigurationException.WinGetConfigUnitNotFound:
+            case WinGetConfigurationException.WinGetConfigUnitNotFoundRepository:
+            case WinGetConfigurationException.WinGetConfigUnitMultipleMatches:
+            case WinGetConfigurationException.WinGetConfigUnitModuleConflict:
+            case WinGetConfigurationException.WinGetConfigUnitImportModule:
+            case WinGetConfigurationException.WinGetConfigUnitInvokeInvalidResult:
+            case WinGetConfigurationException.WinGetConfigUnitSettingConfigRoot:
+            case WinGetConfigurationException.WinGetConfigUnitImportModuleAdmin:
+                return string.Empty;
+            default:
+                return _unitResult.ErrorDescription;
+        }
     }
 }
