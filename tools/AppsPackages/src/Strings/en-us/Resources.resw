@@ -119,10 +119,14 @@
   </resheader>
   <data name="ContentArea.Text" xml:space="preserve">
     <value>This is Apps &amp; Packages</value>
-    <comment>The name is Sample Tool</comment>
+    <comment>The name is Apps &amp; Packages</comment>
   </data>
   <data name="NavigationPane.Content" xml:space="preserve">
     <value>Apps &amp; Packages</value>
-    <comment>The name of our sample tool</comment>
+    <comment>The name of our Apps &amp; Packages</comment>
+  </data>
+  <data name="SearchBox.Text" xml:space="preserve">
+    <value>Search all Apps and Packages</value>
+    <comment>This is the text for the searchbox</comment>
   </data>
 </root>
