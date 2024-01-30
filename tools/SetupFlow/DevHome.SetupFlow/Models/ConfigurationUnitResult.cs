@@ -28,7 +28,7 @@ public class ConfigurationUnitResult
     {
         UnitName = result.UnitName;
         Id = result.Id;
-        UnitDescription = result.Description;
+        UnitDescription = result.UnitDescription;
         Intent = result.Intent;
         IsSkipped = result.IsSkipped;
         HResult = result.HResult;

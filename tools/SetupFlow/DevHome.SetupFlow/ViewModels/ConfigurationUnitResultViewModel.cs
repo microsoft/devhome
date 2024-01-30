@@ -5,7 +5,6 @@ using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Management.Configuration;
-using Windows.UI.WebUI;
 using Windows.Win32.Foundation;
 
 namespace DevHome.SetupFlow.ViewModels;

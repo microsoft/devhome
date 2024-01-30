@@ -14,7 +14,7 @@ public sealed class ElevatedConfigureUnitTaskResult
 
     public string? Id { get; set; }
 
-    public string? Description { get; set; }
+    public string? UnitDescription { get; set; }
 
     public string? Intent { get; set; }
 
