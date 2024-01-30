@@ -10,3 +10,4 @@ properties:
       settings:
         id: Microsoft.VisualStudioCode
         source: winget
+  configurationVersion: 0.2.0
