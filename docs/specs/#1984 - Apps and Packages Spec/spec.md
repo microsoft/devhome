@@ -1,8 +1,8 @@
 ---
-author: Sharla Soennichsen @shakersMSFT & Jordi Adoumie @joadoumie
-created on: <2024-01-30>
-last updated: <2024-01-30>
-issue id: [#1984](https://github.com/microsoft/devhome/issues/1984) 
+author: Sharla Soennichsen @shakersMSFT and Jordi Adoumie @joadoumie
+created on: 2024-01-30
+last updated: 2024-01-30
+issue id: #1984
 ---
 
 # Apps & Packages
@@ -112,7 +112,7 @@ This feature specification outlines the addition of a unified package management
 | 12  |     Packages can be imported with their settings with a Winget Configuration file   |  0   |
 | 12  |     Packages can be imported with a winget import file [import Command](https://learn.microsoft.com/en-us/windows/package-manager/winget/import) |  1   |
 | 13  |     Packages can be exported to a winget export file [export Command](https://learn.microsoft.com/en-us/windows/package-manager/winget/export)  |  1   |
-| 14  |     Packages can be pinned so that they do not update or recommend new updates in the UI (dependent on [Add support for pinning to the COM API · Issue #4058 · microsoft/winget-cli](https://github.com/microsoft/winget-cli/issues/4058)  |  0   |
-| 15  |     Packages can be exported with their settings to a Winget Configuration file [WinGet Settings export and import user settings · Issue #3693 · microsoft/winget-cli](https://github.com/microsoft/winget-cli/issues/3693) | 2 |
-| 16  |     Other package managers can integrate into the UI (dependent on [Add support for other package managers · Issue #20 · microsoft/devhome](https://github.com/microsoft/devhome/issues/20)
-| 17  |     Side by side support for apps (dependent on [Better support for Side by Side packages · Issue #2129 · microsoft/winget-cli](https://github.com/microsoft/winget-cli/issues/2129) | 2 |
+| 14  |     Packages can be pinned so that they do not update or recommend new updates in the UI (dependent on [Add support for pinning to the COM API · Issue #4058 · microsoft/winget-cli](https://github.com/microsoft/winget-cli/issues/4058))  |  0   |
+| 15  |     Packages can be exported with their settings to a Winget Configuration file [WinGet Settings export and import user settings · Issue #3693 · microsoft/winget-cli](https://github.com/microsoft/winget-cli/issues/3693) | 1 |
+| 16  |     Other package managers can integrate into the UI (dependent on [Add support for other package managers · Issue #20 · microsoft/devhome](https://github.com/microsoft/devhome/issues/20)) | 2 |
+| 17  |     Side by side support for apps (dependent on [Better support for Side by Side packages · Issue #2129 · microsoft/winget-cli](https://github.com/microsoft/winget-cli/issues/2129)) | 2 |
