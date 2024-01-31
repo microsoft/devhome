@@ -34,6 +34,8 @@ public class ConfigurationUnitResultViewModel
 
     public string ApplyResult => GetApplyResult();
 
+    public string ErrorDescription => GetErrorDescription();
+
     public bool IsSkipped => _unitResult.IsSkipped;
 
     public bool IsError => !IsSkipped && _unitResult.HResult != HRESULT.S_OK;
@@ -57,22 +59,22 @@ public class ConfigurationUnitResultViewModel
 
     private string BuildTitle()
     {
-        if (string.IsNullOrEmpty(_unitResult.Id) && string.IsNullOrEmpty(_unitResult.Description))
+        if (string.IsNullOrEmpty(_unitResult.Id) && string.IsNullOrEmpty(_unitResult.UnitDescription))
         {
             return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryMinimal, _unitResult.Intent, _unitResult.UnitName);
         }
 
         if (string.IsNullOrEmpty(_unitResult.Id))
         {
-            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoId, _unitResult.Intent, _unitResult.UnitName, _unitResult.Description);
+            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoId, _unitResult.Intent, _unitResult.UnitName, _unitResult.UnitDescription);
         }
 
-        if (string.IsNullOrEmpty(_unitResult.Description))
+        if (string.IsNullOrEmpty(_unitResult.UnitDescription))
         {
             return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoDescription, _unitResult.Intent, _unitResult.UnitName, _unitResult.Id);
         }
 
-        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, _unitResult.Intent, _unitResult.UnitName, _unitResult.Id, _unitResult.Description);
+        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, _unitResult.Intent, _unitResult.UnitName, _unitResult.Id, _unitResult.UnitDescription);
     }
 
     private string GetUnitSkipMessage()
@@ -147,5 +149,34 @@ public class ConfigurationUnitResultViewModel
         }
 
         return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitFailed, resultCodeHex);
+    }
+
+    private string GetErrorDescription()
+    {
+        if (string.IsNullOrEmpty(_unitResult.ErrorDescription))
+        {
+            return string.Empty;
+        }
+
+        // If the localized configuration error message requires additional
+        // context, display the error description from the resource module directly.
+        // Code reference: https://github.com/microsoft/winget-cli/blob/master/src/AppInstallerCLICore/Workflows/ConfigurationFlow.cpp
+        switch (_unitResult.HResult)
+        {
+            case WinGetConfigurationException.WingetConfigErrorDuplicateIdentifier:
+            case WinGetConfigurationException.WingetConfigErrorMissingDependency:
+            case WinGetConfigurationException.WingetConfigErrorAssertionFailed:
+            case WinGetConfigurationException.WinGetConfigUnitNotFound:
+            case WinGetConfigurationException.WinGetConfigUnitNotFoundRepository:
+            case WinGetConfigurationException.WinGetConfigUnitMultipleMatches:
+            case WinGetConfigurationException.WinGetConfigUnitModuleConflict:
+            case WinGetConfigurationException.WinGetConfigUnitImportModule:
+            case WinGetConfigurationException.WinGetConfigUnitInvokeInvalidResult:
+            case WinGetConfigurationException.WinGetConfigUnitSettingConfigRoot:
+            case WinGetConfigurationException.WinGetConfigUnitImportModuleAdmin:
+                return string.Empty;
+            default:
+                return _unitResult.ErrorDescription;
+        }
     }
 }

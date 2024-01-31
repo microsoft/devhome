@@ -20,6 +20,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml"/>
                 <ResourceDictionary>
+                    <converters:StringVisibilityConverter x:Key="StringVisibilityConverter" />
                     <converters:CollectionVisibilityConverter x:Key="CollectionVisibilityConverter" EmptyValue="Collapsed" NotEmptyValue="Visible"/>
                     <converters:CollectionVisibilityConverter x:Key="NegatedCollectionVisibilityConverter" EmptyValue="Visible" NotEmptyValue="Collapsed"/>
                     <converters:EmptyCollectionToObjectConverter x:Key="EmptyCollectionWillNotSpanColumnsConverter" EmptyValue="0" NotEmptyValue="*"/>
@@ -144,22 +145,29 @@
                                     <Setter Property="FontFamily" Value="{StaticResource CascadiaMonoFontFamily}"/>
                                     <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}"/>
                                     <Setter Property="LineHeight" Value="20"/>
+                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                    <Setter Property="IsTextSelectionEnabled" Value="True"/>
                                 </Style>
                             </ItemsRepeater.Resources>
                             <ItemsRepeater.ItemTemplate>
                                 <DataTemplate x:DataType="viewModels:ConfigurationUnitResultViewModel">
                                     <StackPanel>
                                         <TextBlock Text="{x:Bind Title}"/>
-                                        <TextBlock Margin="20,0,0,0" Text="{x:Bind ApplyResult}" IsTextSelectionEnabled="{x:Bind IsError}">
-                                            <i:Interaction.Behaviors>
-                                                <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
-                                                    <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}"/>
-                                                </ic:DataTriggerBehavior>
-                                                <ic:DataTriggerBehavior Binding="{x:Bind IsSkipped}" Value="True">
-                                                    <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCautionBrush}"/>
-                                                </ic:DataTriggerBehavior>
-                                            </i:Interaction.Behaviors>
-                                        </TextBlock>
+                                        <StackPanel Margin="20,0,0,0">
+                                            <TextBlock Text="{x:Bind ApplyResult}">
+                                                <i:Interaction.Behaviors>
+                                                    <ic:DataTriggerBehavior Binding="{x:Bind IsError}" Value="True">
+                                                        <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCriticalBrush}"/>
+                                                    </ic:DataTriggerBehavior>
+                                                    <ic:DataTriggerBehavior Binding="{x:Bind IsSkipped}" Value="True">
+                                                        <ic:ChangePropertyAction PropertyName="Foreground" Value="{ThemeResource SystemFillColorCautionBrush}"/>
+                                                    </ic:DataTriggerBehavior>
+                                                </i:Interaction.Behaviors>
+                                            </TextBlock>
+                                            <TextBlock Text="{x:Bind ErrorDescription}"
+                                                       Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                       Visibility="{x:Bind ErrorDescription, Converter={StaticResource StringVisibilityConverter}}"/>
+                                        </StackPanel>
                                     </StackPanel>
                                 </DataTemplate>
                             </ItemsRepeater.ItemTemplate>

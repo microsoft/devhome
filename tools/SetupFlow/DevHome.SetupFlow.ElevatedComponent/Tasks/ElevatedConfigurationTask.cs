@@ -39,11 +39,12 @@ public sealed class ElevatedConfigurationTask
                     {
                         UnitName = unitResult.Unit.UnitName,
                         Id = unitResult.Unit.Identifier,
-                        Description = descriptionObj?.ToString() ?? string.Empty,
+                        UnitDescription = descriptionObj?.ToString() ?? string.Empty,
                         Intent = unitResult.Unit.Intent.ToString(),
                         IsSkipped = unitResult.State == ConfigurationUnitState.Skipped,
                         HResult = unitResult.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK,
                         ResultSource = (int)(unitResult.ResultInformation?.ResultSource ?? ConfigurationUnitResultSource.None),
+                        ErrorDescription = unitResult.ResultInformation?.Description,
                     };
                 }).ToList();
 
