@@ -100,6 +100,7 @@ public class QuietBackgroundProcessesViewModel : INotifyPropertyChanged
                 try
                 {
                     DevHome.QuietBackgroundProcesses.QuietBackgroundProcessesManager.Stop();
+                    TimeLeft = "Session ended";
                 }
                 catch
                 {
