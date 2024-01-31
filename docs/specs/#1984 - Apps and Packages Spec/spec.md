@@ -2,7 +2,7 @@
 author: Sharla Soennichsen @shakersMSFT and Jordi Adoumie @joadoumie
 created on: 2024-01-30
 last updated: 2024-01-30
-issue id: #1984
+issue id: [#1984](https://github.com/microsoft/devhome/issues/1984)
 ---
 
 # Apps & Packages
