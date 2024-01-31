@@ -8,6 +8,13 @@
     xmlns:pg="using:DevHome.Common"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///DevHome.AppsPackages/Styles/AppsPackagesStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -35,7 +42,6 @@
                     <controls:DataGridTextColumn Binding="{Binding Version}" Header="Version" />
                     <controls:DataGridTextColumn Binding="{Binding Source}" Header="Source" />
                 </controls:DataGrid.Columns>
-
             </controls:DataGrid>
         </StackPanel>
     </Grid>
