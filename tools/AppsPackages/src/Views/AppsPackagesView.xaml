@@ -34,13 +34,25 @@
                 QueryIcon="Find" />
         </Grid>
         <StackPanel Grid.Row="1">
-            <controls:DataGrid>
+            <controls:DataGrid AutoGenerateColumns="False">
                 <controls:DataGrid.Columns>
-                    <controls:DataGridCheckBoxColumn />
-                    <controls:DataGridTextColumn Binding="{Binding Name}" Header="Name" />
-                    <controls:DataGridTextColumn Binding="{Binding Size}" Header="Size" />
-                    <controls:DataGridTextColumn Binding="{Binding Version}" Header="Version" />
-                    <controls:DataGridTextColumn Binding="{Binding Source}" Header="Source" />
+                    <controls:DataGridCheckBoxColumn Width="1" />
+                    <controls:DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Name}"
+                        Header="Name" />
+                    <controls:DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Size}"
+                        Header="Size" />
+                    <controls:DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Version}"
+                        Header="Version" />
+                    <controls:DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Source}"
+                        Header="Source" />
                 </controls:DataGrid.Columns>
             </controls:DataGrid>
         </StackPanel>
