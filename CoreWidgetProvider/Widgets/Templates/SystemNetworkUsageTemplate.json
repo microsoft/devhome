@@ -80,12 +80,37 @@
           "size": "medium"
         },
         {
-          "type": "ActionSet",
-          "actions": [
+          "type": "ColumnSet",
+          "spacing": "Medium",
+          "columns": [
             {
-              "type": "Action.Execute",
-              "title": "%NetworkUsage_Widget_Template/Next_Network%",
-              "verb": "NextItem"
+              "type": "Column",
+              "width": "stretch"
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "Container",
+                  "items": [
+                    {
+                      "type": "ActionSet",
+                      "actions": [
+                        {
+                          "type": "Action.Execute",
+                          "title": "%NetworkUsage_Widget_Template/Next_Network%",
+                          "verb": "NextItem"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch"
             }
           ]
         }
