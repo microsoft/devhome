@@ -20,6 +20,14 @@ properties:
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       id: Visual Studio
       directives:
+        description: Install Windows SDK
+        allowPrerelease: true
+      settings:
+        id: Microsoft.WindowsSDK.10.0.22621
+        source: winget
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Visual Studio
+      directives:
         description: Install Visual Studio 2022 Community
         allowPrerelease: true
       settings:
