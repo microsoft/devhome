@@ -76,13 +76,16 @@
           "text": "${gpuName}",
           "type": "TextBlock",
           "size": "medium"
-        }
-      ],
-      "actions": [
+        },
         {
-          "type": "Action.Execute",
-          "title": "%GPUUsage_Widget_Template/Next_GPU%",
-          "verb": "NextItem"
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Execute",
+              "title": "%GPUUsage_Widget_Template/Next_GPU%",
+              "verb": "NextItem"
+            }
+          ]
         }
       ]
     }

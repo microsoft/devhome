@@ -78,13 +78,16 @@
           "text": "${networkName}",
           "type": "TextBlock",
           "size": "medium"
-        }
-      ],
-      "actions": [
+        },
         {
-          "type": "Action.Execute",
-          "title": "%NetworkUsage_Widget_Template/Next_Network%",
-          "verb": "NextItem"
+          "type": "ActionSet",
+          "actions": [
+            {
+              "type": "Action.Execute",
+              "title": "%NetworkUsage_Widget_Template/Next_Network%",
+              "verb": "NextItem"
+            }
+          ]
         }
       ]
     }
