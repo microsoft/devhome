@@ -1,5 +1,19 @@
 # yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
-# Reference: https://github.com/microsoft/PowerToys/blob/main/doc/devdocs/readme.md#compiling-powertoys
+
+##########################################################################################################
+# This configuration will install the tools necessary to get started with C++ development on Windows     #
+# Reference: https://learn.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-170         #
+#                                                                                                        #
+# This will:                                                                                             #
+#     * Enable Developer Mode                                                                            #
+#     * Install GitHub Desktop                                                                           #
+#     * Install Windows SDK 10.2.22621                                                                   #
+#     * Install Visual Studio Community 2022                                                             #
+#     * Install the Universal workload to Visual Studio Community 2022                                   #
+#     * Instal the NativeDesktop workload to Visual Studio Community 2022                                #
+#                                                                                                        #
+##########################################################################################################
+
 properties:
   resources:
     - resource: Microsoft.Windows.Developer/DeveloperMode
