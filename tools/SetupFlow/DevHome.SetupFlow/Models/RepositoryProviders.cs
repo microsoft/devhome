@@ -59,6 +59,36 @@ internal class RepositoryProviders
         }
     }
 
+    public List<string> GetSearchTerms(string providerName, IDeveloperId developerId)
+    {
+        if (_providers.ContainsKey(providerName))
+        {
+            return _providers[providerName].GetSearchTerms(developerId);
+        }
+
+        return new ();
+    }
+
+    public List<string> GetValuesFor(string providerName, IDeveloperId developerId, Dictionary<string, string> searchTerms, string fieldName)
+    {
+        if (_providers.ContainsKey(providerName))
+        {
+            return _providers[providerName].GetValuesFor(developerId, searchTerms, fieldName);
+        }
+
+        return new ();
+    }
+
+    public string GetDefaultFor(string providerName, IDeveloperId developerId, string fieldName)
+    {
+        if (_providers.ContainsKey(providerName))
+        {
+            return _providers[providerName].GetDefaultFor(developerId, fieldName);
+        }
+
+        return string.Empty;
+    }
+
     /// <summary>
     /// Goes through all providers to figure out if they can make a repo from a Uri.
     /// </summary>
@@ -170,9 +200,9 @@ internal class RepositoryProviders
     /// <param name="providerName">The specific provider.  Must match the display name of a provider</param>
     /// <param name="developerId">The account to look for.  May not be logged in.</param>
     /// <returns>All the repositories for an account and provider.</returns>
-    public IEnumerable<IRepository> GetAllRepositories(string providerName, IDeveloperId developerId)
+    public IEnumerable<IRepository> GetAllRepositories(string providerName, IDeveloperId developerId, Dictionary<string, string> metadataSearchInput)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all repositories for repository provider {providerName}");
-        return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId) ?? new List<IRepository>();
+        return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId, metadataSearchInput) ?? new List<IRepository>();
     }
 }

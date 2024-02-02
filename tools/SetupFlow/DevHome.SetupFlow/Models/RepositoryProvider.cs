@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
@@ -29,8 +30,10 @@ namespace DevHome.SetupFlow.Models;
 /// Object that holds a reference to the providers in a extension.
 /// This needs to be changed to handle multiple accounts per provider.
 /// </summary>
-internal class RepositoryProvider
+internal class RepositoryProvider : IDisposable
 {
+    private readonly CancellationTokenSource _tokenSource;
+
     /// <summary>
     /// Wrapper for the extension that is providing a repository and developer id.
     /// </summary>
@@ -55,9 +58,14 @@ internal class RepositoryProvider
     /// </summary>
     private IRepositoryProvider _repositoryProvider;
 
+    private IRepositoryProvider2 _repositoryProvider2;
+
+    private IRepositoryData _repositoryData;
+
     public RepositoryProvider(IExtensionWrapper extensionWrapper)
     {
         _extensionWrapper = extensionWrapper;
+        _tokenSource = new CancellationTokenSource();
     }
 
     public string DisplayName => _repositoryProvider.DisplayName;
@@ -74,11 +82,31 @@ internal class RepositoryProvider
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider extensions");
         _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
         _repositoryProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
+
+        // 'as' returns null if the conversion can't be made.
+        _repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
+        _repositoryData = _repositoryProvider as IRepositoryData;
     }
 
     public IRepositoryProvider GetProvider()
     {
         return _repositoryProvider;
+    }
+
+    public List<string> GetSearchTerms(IDeveloperId developerId)
+    {
+        var repoData = _repositoryProvider as IRepositoryData;
+        return repoData.GetSearchFieldNames.ToList();
+    }
+
+    public List<string> GetValuesFor(IDeveloperId developerId, Dictionary<string, string> input, string fieldName)
+    {
+        return _repositoryData?.GetValuesForField(fieldName, input, developerId).AsTask().Result.ToList();
+    }
+
+    public string GetDefaultFor(IDeveloperId developerId, string fieldName)
+    {
+        return _repositoryData?.GetFieldSearchValue(fieldName, developerId);
     }
 
     /// <summary>
@@ -241,18 +269,23 @@ internal class RepositoryProvider
         return developerIdsResult.DeveloperIds;
     }
 
-    /// <summary>
-    /// Gets all the repositories an account has for this provider.
-    /// </summary>
-    /// <param name="developerId">The account to search in.</param>
-    /// <returns>A collection of repositories.  May be empty</returns>
-    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
+    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId, Dictionary<string, string> metadataSearchInput)
     {
         if (!_repositories.IsValueCreated)
         {
+            _tokenSource.Cancel();
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
 
-            var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+            RepositoriesResult result = null;
+            if (_repositoryProvider2 != null)
+            {
+                result = _repositoryProvider2.GetRepositoriesAsync(metadataSearchInput, developerId).AsTask(_tokenSource.Token).Result;
+            }
+            else
+            {
+                result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask(_tokenSource.Token).Result;
+            }
+
             if (result.Result.Status != ProviderOperationStatus.Success)
             {
                 _repositories = new Lazy<IEnumerable<IRepository>>(new List<IRepository>());
@@ -266,5 +299,20 @@ internal class RepositoryProvider
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
         return _repositories.Value;
+    }
+
+        /// <summary>
+        /// Gets all the repositories an account has for this provider.
+        /// </summary>
+        /// <param name="developerId">The account to search in.</param>
+        /// <returns>A collection of repositories.  May be empty</returns>
+    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
+    {
+        return GetAllRepositories(developerId, new ());
+    }
+
+    public void Dispose()
+    {
+        _tokenSource.Dispose();
     }
 }

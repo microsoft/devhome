@@ -13,5 +13,6 @@ internal class Common
         AddViaUrl,
         AddViaAccount,
         Repositories,
+        SelectingSearchTerms,
     }
 }

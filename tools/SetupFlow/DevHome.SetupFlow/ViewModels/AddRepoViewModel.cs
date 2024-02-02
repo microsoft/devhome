@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Timers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
@@ -24,6 +25,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 using WinUIEx;
@@ -36,7 +38,7 @@ namespace DevHome.SetupFlow.ViewModels;
 /// 1. Repo Review
 /// 2. Switching between account, repositories, and url page
 /// </summary>
-public partial class AddRepoViewModel : ObservableObject
+public partial class AddRepoViewModel : ObservableObject, IDisposable
 {
     private readonly IHost _host;
 
@@ -45,6 +47,10 @@ public partial class AddRepoViewModel : ObservableObject
     private readonly ISetupFlowStringResource _stringResource;
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
+
+    private readonly Timer _takingTooLongMessageTimer = new (30000);
+
+    private Dictionary<string, string> _metadataSearchInputs = new ();
 
     private ElementTheme SelectedTheme => _host.GetService<IThemeSelectorService>().Theme;
 
@@ -108,19 +114,22 @@ public partial class AddRepoViewModel : ObservableObject
     /// Should the URL page be visible?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showUrlPage;
+    private bool _showUrlPage;
 
     /// <summary>
     /// Should the account page be visible?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showAccountPage;
+    private bool _showAccountPage;
 
     /// <summary>
     /// Should the repositories page be visible?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showRepoPage;
+    private bool _showRepoPage;
+
+    [ObservableProperty]
+    private bool _shouldShowSelectingSearchTerms;
 
     /// <summary>
     /// Should the error text be shown?
@@ -171,6 +180,15 @@ public partial class AddRepoViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isCancelling;
+
+    [ObservableProperty]
+    private string _takingTooLongMessage;
+
+    [ObservableProperty]
+    private bool _shouldShowTakingTooLongMessage;
+
+    [ObservableProperty]
+    private Storyboard _takeTooLongMessageStoryboard;
 
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
@@ -316,6 +334,17 @@ public partial class AddRepoViewModel : ObservableObject
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
         _activityId = activityId;
+
+        _takingTooLongMessageTimer.Elapsed += (_, _) =>
+        {
+            _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+            {
+                TakingTooLongMessage = "Sorry, this is taking a while";
+                ShouldShowTakingTooLongMessage = true;
+            });
+        };
+
+        _takingTooLongMessageTimer.AutoReset = false;
     }
 
     /// <summary>
@@ -353,9 +382,10 @@ public partial class AddRepoViewModel : ObservableObject
     public void ChangeToUrlPage()
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Url page");
-        ShowUrlPage = Visibility.Visible;
-        ShowAccountPage = Visibility.Collapsed;
-        ShowRepoPage = Visibility.Collapsed;
+        ShowUrlPage = true;
+        ShowAccountPage = false;
+        ShowRepoPage = false;
+        ShouldShowSelectingSearchTerms = false;
         IsUrlAccountButtonChecked = true;
         IsAccountToggleButtonChecked = false;
         CurrentPage = PageKind.AddViaUrl;
@@ -367,9 +397,10 @@ public partial class AddRepoViewModel : ObservableObject
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Account page");
         ShouldShowUrlError = Visibility.Collapsed;
-        ShowUrlPage = Visibility.Collapsed;
-        ShowAccountPage = Visibility.Visible;
-        ShowRepoPage = Visibility.Collapsed;
+        ShowUrlPage = false;
+        ShowAccountPage = true;
+        ShowRepoPage = false;
+        ShouldShowSelectingSearchTerms = false;
         IsUrlAccountButtonChecked = false;
         IsAccountToggleButtonChecked = true;
         CurrentPage = PageKind.AddViaAccount;
@@ -389,18 +420,55 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
-    public void ChangeToRepoPage()
+    public void ChangeToRepoPage(Dictionary<string, string> metadataSearchInputs)
     {
+        _metadataSearchInputs = metadataSearchInputs;
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
-        ShowUrlPage = Visibility.Collapsed;
-        ShowAccountPage = Visibility.Collapsed;
-        ShowRepoPage = Visibility.Visible;
+        ShowUrlPage = false;
+        ShowAccountPage = false;
+        ShowRepoPage = true;
+        ShouldShowSelectingSearchTerms = false;
         CurrentPage = PageKind.Repositories;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
         ShouldShowLoginUi = false;
 
         // The only way to get the repo page is through the account page.
         // No need to change toggle buttons.
+    }
+
+    public void ChangeToRepoPage()
+    {
+        ChangeToRepoPage(new ());
+    }
+
+    public void ChangeToSelectSearchTermsPage()
+    {
+        Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to select search terms page");
+        ShowUrlPage = false;
+        ShowAccountPage = false;
+        ShowRepoPage = false;
+        ShouldShowSelectingSearchTerms = true;
+    }
+
+    public List<string> GetSearchTerms(string providerName, string loginId)
+    {
+        var loggedInDeveloper = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId == loginId);
+
+        return _providers.GetSearchTerms(providerName, loggedInDeveloper);
+    }
+
+    public List<string> GetSuggestionsFor(string providerName, string loginId, Dictionary<string, string> inputFields, string fieldName)
+    {
+        var loggedInDeveloper = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId == loginId);
+
+        return _providers.GetValuesFor(providerName, loggedInDeveloper, inputFields, fieldName);
+    }
+
+    public string GetDefaultFor(string providerName, string loginId, string fieldName)
+    {
+        var loggedInDeveloper = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId == loginId);
+
+        return _providers.GetDefaultFor(providerName, loggedInDeveloper, fieldName);
     }
 
     /// <summary>
@@ -761,15 +829,18 @@ public partial class AddRepoViewModel : ObservableObject
     {
         _selectedAccount = loginId;
         IsFetchingRepos = true;
+        _takingTooLongMessageTimer.Enabled = true;
+        _takingTooLongMessageTimer.Start();
         await Task.Run(() =>
         {
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllLoggedInAccounts"), _activityId);
             var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
 
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetRepos_Event", LogLevel.Critical, new RepoToolEvent("GettingAllRepos"), _activityId);
-            _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper);
+            _repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper, _metadataSearchInputs);
         });
         IsFetchingRepos = false;
+        _takingTooLongMessageTimer.Enabled = false;
     }
 
     /// <summary>
@@ -803,5 +874,10 @@ public partial class AddRepoViewModel : ObservableObject
                 cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
             }
         }
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
     }
 }

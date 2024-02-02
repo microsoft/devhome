@@ -47,11 +47,78 @@ namespace Microsoft.Windows.DevHome.SDK
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IRepositoryData
-        requires Windows
-        .Foundation.IClosable
+        requires IRepositoryProvider2
     {
-        IVectorView<String> GetSearchFieldNames();
-        IVectorView<String> GetValuesBasedOn(IMap<String, String> inputValues, String fieldNameToRetrieve);
+        String[] GetSearchFieldNames
+        {
+            get;
+        };
+
+        // I realize that this can go many different ways.  Right?
+        // Lets say I'm using ADO and the hierarchy is server/organization/project.
+        // If the user sends in server as fieldNameToRetrieve and passes in a server name, what should happen?
+        // This was made to go, you ask for one field and I'll give you back everything else, given the input values.
+        // So, if the user said give me all values based on server.  I would only look at project and organization.
+        // What is this method for, really?  Lets back up.  The reason from the DevHome standpoint is to get values in a hierarchy.
+        // I want to get all projects for this organization.  Or, I want all organizations for this server.
+        // How would I represent that?
+        // What if server was passed in and a project name was given?  Get all servers with the project?
+        //  Right?  We can either go "Do what makes sense" or "Anything goes"  I mean, we can provide a good way forward
+        // but don't block them if they do something differnt.
+        // Really, what is the goal?  The goal is to figure out search criteria for repositories.
+        // This method is to say "Given the value of this field, get me the values for other fields"
+        // The way this method is structured it is "Given the value of these fields" give me all applicable values for another field.
+        // This was for hierarchy.  I'm giving you an  organization, I want all projects under this organization.
+        // What if they go "I'm giving you a project" and I want organizations.
+        // Right.  I can go two directions.
+        // Given the value of this one field, give me all possible values for all other fields, or
+        // Given the input of all fields, give me all possible values for another field.
+        // So, really.  We need two things, I think.
+        // 1 is, given the field name, field value, and the field name of the field I want to get, get me all values.
+        //  So, If I give you the server name, and organization, give me all organizations.
+        // Here is all the inputs I have, give me all possible values for another field.
+        // So.  Given the server name, get me all organizations.  Given this organization, get me this project.
+        // Given this organization, get me all servers.
+        // This is to get suggestions.
+        // Why not just have that?  Given a field name, field value and a field name, give me all possible values for another
+        // field name.
+        //  How would we getall suggestions?  Lets say organization is top level.  How would I get all organizations?
+        //  Why can't we use the other one?  List<string> GetValuesFor(string field, string value, string fieldToGet);
+        // List<string> GetSuggestionsFor(string field, string fieldValue, string fieldToGet);
+        // That makes no sense.  Both do the same thing.  What if we want all organizations and don't want to provider a value?
+        // asking the person call GetValuesFor(string.empty, string.empty, "Organization") isn't the best.
+        // However, this brings up another point.  What if we just want all values for a field?  What if someone says
+        // get me all projects?  How would I communicate the hierachy?  DevHome would need to deal with this.
+        // The UI needs to hold the hierarchy.  Because for ADO, asking for all projects makes no sense unless it is paired with
+        // an organization.  Well, I need to remmeber, the host handles the hierarchy.  The implementer does not care.
+        // This means that, if ADO is asked for all projects, it should just return all projects.
+        // GetValuesFor(string field name, string fieldValue, string fieldNameToGet); and
+        // GetValuesFor(string fieldNameToGet);
+        // But, what if the user wants to put in two values and get something out.
+        // That is where I got GetValuesBasedOn(IMapView<string, string> fieldandValue, string fieldToGet);
+        // so, if fieldAndValue has nothing, just everything will be returned.
+        // if fieldAndValue is empty then all values for fieldToGet is returned.
+        // ADO needs to handle...odd input.  "(Project, hello), Project" should return all projects.  
+        // "(Server, Hi) and (Organization, Hello), Project" should return all projects in the server and organization.
+        // But, we get to the same thing.  Well, maybe.  Will I get different projectcs if I
+        // 1.  Get all servers with the server name, then get all organiztions with the organization name.
+        // 2.  Get all organizations with the name and then all servers with the name.
+        // Dictionary<string, List<string>> GetValues(Dictionary<string, string> input);
+        // List<string> GetValues(Dictionary<string, string> input, string fieldName);
+
+        // If a developer wants all values for a field call GetFieldValues("Server", new Dictionary<string, string>(), developerid);
+        // this will get all values for the server field.
+        // If they want to get all possible values for project and organization, two other calls need to be made.
+        // Then, as the user selects things, this'll need to be called again, but fieldValues need to be supplied.
+        // Unfortunantly, the hierarchy data can't be passed though.  If a hierarchy is needed, the implementer needs to keep track of that.
+        // So, like I said, the implementer needs to understand what are valid and invalid combonations.
+        Windows.Foundation.IAsyncOperation<IVector<String> > GetValuesForField(String fieldName, IMapView<String, String> fieldValues, IDeveloperId developerId);
+
+        // Do we need this?  GetRepositoriesAsync(new Dictionary<string, string>(), developerId) returns  good default.
+        // But, do these values need to be saved?  I don't think so.  Not saved, but do these values need to be returned?
+        //  for ADO I get a specific org, server, and project.  But, if the user does not like it
+        // should everything be blank?  If it is, it means the user needs to 
+        String GetFieldSearchValue(String field, IDeveloperId developerId);
     };
 
     // Repository Provider
@@ -83,7 +150,7 @@ namespace Microsoft.Windows.DevHome.SDK
         [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IRepositoryProvider2
         requires IRepositoryProvider
     {
-        IIterable<IRepository> GetRepositoriesAsync(IDeveloperId developerId, IMap<String, String> searchTerms);
+        Windows.Foundation.IAsyncOperation<RepositoriesResult> GetRepositoriesAsync(IMapView<String, String> searchTerms, IDeveloperId developerId);
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]

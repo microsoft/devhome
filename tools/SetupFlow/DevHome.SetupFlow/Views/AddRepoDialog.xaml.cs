@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CommunityToolkit.WinUI.UI.Controls;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
@@ -17,6 +18,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.Windows.DevHome.SDK;
+using WinUIEx;
 using static DevHome.SetupFlow.Models.Common;
 
 namespace DevHome.SetupFlow.Views;
@@ -360,6 +362,26 @@ internal partial class AddRepoDialog : ContentDialog
         }
     }
 
+    private void SwitchToSelectSearchTermsPage()
+    {
+        AddRepoViewModel.ChangeToSelectSearchTermsPage();
+        FolderPickerViewModel.ShouldShowFolderPicker = Visibility.Collapsed;
+        EditDevDriveViewModel.ShowDevDriveInformation = Visibility.Collapsed;
+    }
+
+    private async void SwitchToRepoPage(string repositoryProviderName, Dictionary<string, string> inputValues)
+    {
+        await AddRepoViewModel.GetAccountsAsync(repositoryProviderName, LoginUIContent);
+        if (AddRepoViewModel.Accounts.Any())
+        {
+            AddRepoViewModel.ChangeToRepoPage(inputValues);
+            FolderPickerViewModel.ShowFolderPicker();
+            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+            AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+            AddRepoViewModel.ShouldEnablePrimaryButton = false;
+        }
+    }
+
     private async void SwitchToRepoPage(string repositoryProviderName)
     {
         await AddRepoViewModel.GetAccountsAsync(repositoryProviderName, LoginUIContent);
@@ -477,5 +499,69 @@ internal partial class AddRepoDialog : ContentDialog
         FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
         FolderPickerViewModel.InDevDriveScenario = true;
         EditDevDriveViewModel.IsDevDriveCheckboxChecked = true;
+    }
+
+    private async void ShowMessage()
+    {
+        await Task.Delay(5000);
+        MetadataSearchingTakingTooLongTextBox.Text = "Sorry.  This might take some time.";
+
+        await Task.Delay(30000);
+        MetadataSearchingTakingTooLongTextBox.Text = "This is taking a while.  Still working.";
+    }
+
+    private async void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+    {
+        SwitchToSelectSearchTermsPage();
+
+        SearchForMoreReposWaitingProgressRing.Visibility = Visibility.Visible;
+        MetadataSearchingTakingTooLongTextBox.Visibility = Visibility.Visible;
+        ShowMessage();
+        var loginId = (string)AccountsComboBox.SelectedValue;
+        var providerName = (string)RepositoryProviderComboBox.SelectedValue;
+        var searchTerms = AddRepoViewModel.GetSearchTerms(providerName, loginId);
+        SearchForMoreReposGrid.RowSpacing = 10;
+
+        var searchTermRow = 0;
+        for (var termIndex = 0; termIndex < searchTerms.Count - 1; termIndex++)
+        {
+            var localTermIndex = termIndex;
+            SearchForMoreReposGrid.RowDefinitions.Add(new RowDefinition());
+
+            var suggestBox = new AutoSuggestBox();
+            suggestBox.Header = searchTerms[localTermIndex];
+            suggestBox.ItemsSource = await Task.Run(() => AddRepoViewModel.GetSuggestionsFor(providerName, loginId, new (), searchTerms[localTermIndex]));
+            suggestBox.Text = await Task.Run(() => AddRepoViewModel.GetDefaultFor(providerName, loginId, searchTerms[localTermIndex]));
+            SearchForMoreReposGrid.Children.Add(suggestBox);
+            Grid.SetRow(suggestBox, searchTermRow++);
+        }
+
+        SearchForMoreReposGrid.RowDefinitions.Add(new RowDefinition());
+        var selectButton = new Button();
+        selectButton.Content = "This pleases me.";
+        selectButton.Click += (s, e) => { SearchForRepos(); };
+        SearchForMoreReposGrid.Children.Add(selectButton);
+
+        Grid.SetRow(selectButton, searchTermRow);
+        SearchForMoreReposWaitingProgressRing.Visibility = Visibility.Collapsed;
+        MetadataSearchingTakingTooLongTextBox.Visibility = Visibility.Collapsed;
+    }
+
+    private void SearchForRepos()
+    {
+        var loginId = (string)AccountsComboBox.SelectedValue;
+        var providerName = (string)RepositoryProviderComboBox.SelectedValue;
+        var searchTerms = AddRepoViewModel.GetSearchTerms(providerName, loginId);
+
+        Dictionary<string, string> searchInput = new ();
+        foreach (var searchBox in SearchForMoreReposGrid.Children)
+        {
+            if (searchBox is AutoSuggestBox suggestBox)
+            {
+                searchInput.Add(suggestBox.Header as string, suggestBox.Text);
+            }
+        }
+
+        SwitchToRepoPage(AddRepoViewModel.ProviderNames[0], searchInput);
     }
 }
