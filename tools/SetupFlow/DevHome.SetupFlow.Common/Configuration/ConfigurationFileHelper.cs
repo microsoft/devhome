@@ -85,7 +85,7 @@ public class ConfigurationFileHelper
             _configSet = openResult.Set;
             if (_configSet == null)
             {
-                throw new OpenConfigurationSetException(openResult.ResultCode, openResult.Field);
+                throw new OpenConfigurationSetException(openResult.ResultCode, openResult.Field, openResult.Value);
             }
 
             // Set input file path in the configuration set to inform the

@@ -95,12 +95,11 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1.5*"/>
                     </Grid.ColumnDefinitions>
-                    <ComboBox x:Name="AccountsComboBox" IsEnabled="{x:Bind AddRepoViewModel.IsAccountComboBoxEnabled, Mode=OneWay}" AutomationProperties.Name="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AccountComboBox_Description" Grid.Column="0" SelectionChanged="AccountsComboBox_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Accounts, Mode=OneWay}" />
-                    <TextBox x:Name="FilterTextBox" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegateBoolConverter}}" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
-                    <HyperlinkButton Click="HyperlinkButton_Click" Grid.Row="1" Content="I don't like these repos."/>
+                    <SplitButton x:Name="AccountSplitButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Grid.Row="0" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}"/>
+                    <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
                 </Grid>
                 <Grid Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay}" Height="300" Width="300">
                     <Grid.RowDefinitions>
@@ -110,6 +109,10 @@
                     <ProgressRing Grid.Row="0"/>
                     <TextBlock Grid.Row="1" Visibility="{x:Bind AddRepoViewModel.ShouldShowTakingTooLongMessage, Mode=OneWay}" Text="{x:Bind AddRepoViewModel.TakingTooLongMessage, Mode=OneWay}" HorizontalAlignment="Center"/>
                 </Grid>
+                <!-- Removing the SelectionChanged event into a command has far reaching changes because the item that was selected can't be passed
+                into the command.  I tried converting this to use a command on SelectionChanged and pass SelectedItems into the command.
+                I ran into issues because the viewmodel expects one repository at a time.  Not a list.
+                Another issue is .SelectRange() needs to be called to "select" repos when the dialog is opened more than once. -->
                 <ListView x:Name="RepositoriesListView" Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}" SelectionMode="Multiple" Height="300" HorizontalAlignment="Stretch" SelectionChanged="RepositoriesListView_SelectionChanged" ItemsSource="{x:Bind AddRepoViewModel.Repositories, Mode=OneWay}" Margin="0, 12, 0, 12">
                     <ListView.Header>
                         <TextBlock Style="{ThemeResource BodyStrongTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepositoriesList" Margin="0, 0, 0, 8"/>
@@ -149,7 +152,7 @@
             
             <TextBlock x:Name="ErrorTextBlock" Style="{ThemeResource BodyStrongTextBlockStyle}" Visibility="{x:Bind AddRepoViewModel.ShowErrorTextBox, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Repo_ToolClonePathError"/>
             <!-- Repo page and URL page both have clonepath + dev drive check box-->
-            <Grid Visibility="{x:Bind FolderPickerViewModel.ShouldShowFolderPicker, Mode=OneWay}">
+            <Grid Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.ShouldShowFolderPicker, Mode=OneWay}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="5*"/>
                     <ColumnDefinition Width="auto"/>
@@ -162,28 +165,28 @@
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePathForTextBlock" />
                     <TextBox
                         TextChanged="CloneLocation_TextChanged"
-                        Text="{x:Bind FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
+                        Text="{x:Bind AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias, Mode=TwoWay}"
                         IsEnabled="False"
-                        Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay}"
+                        Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario, Mode=OneWay}"
                         x:Name="DevDriveCloneLocationAliasTextBox" />
                 </StackPanel>
                 <TextBox x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath"
                      TextChanged="CloneLocation_TextChanged" Grid.Column="0" 
-                     Text="{x:Bind FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
-                     IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
-                     Visibility="{x:Bind FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
+                     Text="{x:Bind AddRepoViewModel.FolderPickerViewModel.CloneLocation, Mode=TwoWay}"
+                     IsEnabled="{x:Bind AddRepoViewModel.FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}"
+                     Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
                 <Grid Grid.Column="1">
                     <!-- Workaround to show a tooltip on a disabled button.
                          https://github.com/microsoft/microsoft-ui-xaml/issues/2262 -->
                     <TextBlock>
                     <ToolTipService.ToolTip>
-                        <ToolTip x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClearCheckboxToBrowse" Visibility="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
+                        <ToolTip x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClearCheckboxToBrowse" Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay, Converter={StaticResource NegatedBoolToVisibilityConverter}}"/>
                     </ToolTipService.ToolTip>
                     </TextBlock>
-                    <Button IsEnabled="{x:Bind FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click" Margin="5, 27, 0, 0"/>
+                    <Button IsEnabled="{x:Bind AddRepoViewModel.FolderPickerViewModel.IsBrowseButtonEnabled, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/ClonePath_Button" Click="ChooseCloneLocationButton_Click" Margin="5, 27, 0, 0"/>
                 </Grid>
             </Grid>
-            <TextBlock Text="{x:Bind FolderPickerViewModel.FolderPickerErrorMessage, Mode=OneWay}" Visibility="{x:Bind FolderPickerViewModel.ShowFolderPickerError, Mode=OneWay}"/>
+            <TextBlock Text="{x:Bind AddRepoViewModel.FolderPickerViewModel.FolderPickerErrorMessage, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.ShowFolderPickerError, Mode=OneWay}"/>
             <Grid
                     Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" 
                     Margin="0 10 0 10"

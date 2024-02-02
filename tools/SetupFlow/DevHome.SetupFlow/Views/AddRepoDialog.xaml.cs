@@ -26,10 +26,12 @@ namespace DevHome.SetupFlow.Views;
 /// <summary>
 /// Dialog to allow users to select repositories they want to clone.
 /// </summary>
-internal partial class AddRepoDialog : ContentDialog
+/// <remarks>
+/// AddRepoViewModel stores a reference to this class for the purpos of slowly migreating code from here
+/// to the view model.  The refrence the view model has will be removed once the code migration is complete.
+/// </remarks>
+public partial class AddRepoDialog : ContentDialog
 {
-    private readonly string _defaultClonePath;
-
     private readonly IHost _host;
 
     private readonly List<CloningInformation> _previouslySelectedRepos = new ();
@@ -51,14 +53,6 @@ internal partial class AddRepoDialog : ContentDialog
     }
 
     /// <summary>
-    /// Gets or sets the view model to handle the folder picker.
-    /// </summary>
-    public FolderPickerViewModel FolderPickerViewModel
-    {
-        get; set;
-    }
-
-    /// <summary>
     /// Hold the clone location in case the user decides not to add a dev drive.
     /// </summary>
     private string _oldCloneLocation;
@@ -72,18 +66,17 @@ internal partial class AddRepoDialog : ContentDialog
     {
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId);
-        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
-        FolderPickerViewModel = new FolderPickerViewModel(stringResource);
 
         var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        _defaultClonePath = Path.Join(userFolder, "source", "repos");
-        FolderPickerViewModel.CloneLocation = _defaultClonePath;
+        var defaultClonePath = Path.Join(userFolder, "source", "repos");
+
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId, defaultClonePath, this);
+        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
 
         EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
         {
-            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-            FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
+            AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+            AddRepoViewModel.FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
         };
 
         // Changing view to account so the selection changed event for Segment correctly shows URL.
@@ -144,7 +137,7 @@ internal partial class AddRepoDialog : ContentDialog
             if (EditDevDriveViewModel.DevDrive != null &&
                 EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
             {
-                FolderPickerViewModel.InDevDriveScenario = true;
+                AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario = true;
                 EditDevDriveViewModel.ClonePathUpdated();
             }
         });
@@ -153,7 +146,7 @@ internal partial class AddRepoDialog : ContentDialog
     private void ChangeToAccountPage()
     {
         AddRepoViewModel.ChangeToAccountPage();
-        FolderPickerViewModel.CloseFolderPicker();
+        AddRepoViewModel.FolderPickerViewModel.CloseFolderPicker();
         EditDevDriveViewModel.HideDevDriveUI();
 
         // If DevHome has 1 provider installed and the provider has 1 logged in account
@@ -172,7 +165,7 @@ internal partial class AddRepoDialog : ContentDialog
     {
         RepositoryProviderComboBox.SelectedIndex = -1;
         AddRepoViewModel.ChangeToUrlPage();
-        FolderPickerViewModel.ShowFolderPicker();
+        AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
         EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
         ToggleCloneButton();
     }
@@ -182,7 +175,7 @@ internal partial class AddRepoDialog : ContentDialog
     /// </summary>
     private async void ChooseCloneLocationButton_Click(object sender, RoutedEventArgs e)
     {
-        await FolderPickerViewModel.ChooseCloneLocation();
+        await AddRepoViewModel.FolderPickerViewModel.ChooseCloneLocation();
         ToggleCloneButton();
     }
 
@@ -201,35 +194,12 @@ internal partial class AddRepoDialog : ContentDialog
             }
 
             // In cases where location is empty don't update the cloneLocation. Only update when there are actual values.
-            FolderPickerViewModel.CloneLocation = string.IsNullOrEmpty(location) ? FolderPickerViewModel.CloneLocation : location;
+            AddRepoViewModel.FolderPickerViewModel.CloneLocation = string.IsNullOrEmpty(location) ? AddRepoViewModel.FolderPickerViewModel.CloneLocation : location;
         }
 
-        FolderPickerViewModel.ValidateCloneLocation();
+        AddRepoViewModel.FolderPickerViewModel.ValidateCloneLocation();
 
         ToggleCloneButton();
-    }
-
-    /// <summary>
-    /// Removes all shows repositories from the list view and replaces them with a new set of repositories from a
-    /// different account.
-    /// </summary>
-    /// <remarks>
-    /// Fired when a user changes their account on a provider.
-    /// </remarks>
-    private async void AccountsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        // This gets fired when events are removed from the account combo box.
-        // When the provider combo box is changed all accounts are removed from the account combo box
-        // and new accounts are added. This method fires twice.
-        // Once to remove all accounts and once to add all logged in accounts.
-        // GetRepositories sets the repositories list view.
-        if (e.AddedItems.Count > 0)
-        {
-            var loginId = (string)AccountsComboBox.SelectedValue;
-            var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-            await AddRepoViewModel.GetRepositoriesAsync(providerName, loginId);
-            SelectRepositories(AddRepoViewModel.SetRepositories(providerName, loginId));
-        }
     }
 
     /// <summary>
@@ -238,7 +208,7 @@ internal partial class AddRepoDialog : ContentDialog
     /// IsCallingSelectRange is used to prevent modifying EverythingToClone when repos are being re-selected after filtering.
     /// </summary>
     /// <param name="reposToSelect">The repos to select in the UI.</param>
-    private void SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
+    public void SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
     {
         AddRepoViewModel.IsCallingSelectRange = true;
         var onlyRepoNames = AddRepoViewModel.Repositories.Select(x => x.RepoName).ToList();
@@ -272,11 +242,20 @@ internal partial class AddRepoDialog : ContentDialog
     /// </summary>
     private void RepositoriesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        var loginId = (string)AccountsComboBox.SelectedValue;
+        var loginId = AddRepoViewModel.SelectedAccount;
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
 
         AddRepoViewModel.AddOrRemoveRepository(providerName, loginId, e.AddedItems, e.RemovedItems);
         ToggleCloneButton();
+    }
+
+    /// <summary>
+    /// Gets the frame used for logging in a user.  This can go away when the frame is moved to the view model.
+    /// </summary>
+    /// <returns>The frame used to log users in.</returns>
+    public Frame GetLoginUiContent()
+    {
+        return LoginUIContent;
     }
 
     /// <summary>
@@ -298,7 +277,7 @@ internal partial class AddRepoDialog : ContentDialog
             // Get the number of repos already selected to clone in a previous instance.
             // Used to figure out if the repo was added after the user logged into an account.
             var numberOfReposToCloneCount = AddRepoViewModel.EverythingToClone.Count;
-            AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation, LoginUIContent);
+            AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation, LoginUIContent);
 
             // On the first run, ignore any warnings.
             // If this is set to visible and the user needs to log in they'll see an error message after the log-in
@@ -339,7 +318,7 @@ internal partial class AddRepoDialog : ContentDialog
             // and the number of repos to clone will not be changed.
             if (numberOfReposToCloneCount == AddRepoViewModel.EverythingToClone.Count)
             {
-                AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, FolderPickerViewModel.CloneLocation, LoginUIContent);
+                AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation, LoginUIContent);
             }
 
             if (AddRepoViewModel.ShouldShowUrlError == Visibility.Visible)
@@ -388,9 +367,9 @@ internal partial class AddRepoDialog : ContentDialog
         if (AddRepoViewModel.Accounts.Any())
         {
             AddRepoViewModel.ChangeToRepoPage();
-            FolderPickerViewModel.ShowFolderPicker();
+            AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
             EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-            AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+            AddRepoViewModel.SelectedAccount = AddRepoViewModel.Accounts.First();
             AddRepoViewModel.ShouldEnablePrimaryButton = false;
         }
     }
@@ -411,11 +390,11 @@ internal partial class AddRepoDialog : ContentDialog
         }
         else
         {
-            FolderPickerViewModel.CloneLocationAlias = string.Empty;
-            FolderPickerViewModel.InDevDriveScenario = false;
+            AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = string.Empty;
+            AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario = false;
             EditDevDriveViewModel.RemoveNewDevDrive();
-            FolderPickerViewModel.EnableBrowseButton();
-            FolderPickerViewModel.CloneLocation = _oldCloneLocation;
+            AddRepoViewModel.FolderPickerViewModel.EnableBrowseButton();
+            AddRepoViewModel.FolderPickerViewModel.CloneLocation = _oldCloneLocation;
         }
     }
 
@@ -433,7 +412,7 @@ internal partial class AddRepoDialog : ContentDialog
     /// </summary>
     private void ToggleCloneButton()
     {
-        var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && FolderPickerViewModel.ValidateCloneLocation();
+        var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && AddRepoViewModel.FolderPickerViewModel.ValidateCloneLocation();
         if (EditDevDriveViewModel.DevDrive != null && EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
         {
             isEverythingGood &= EditDevDriveViewModel.IsDevDriveValid();
@@ -444,7 +423,7 @@ internal partial class AddRepoDialog : ContentDialog
         // Fill in EverythingToClone with the location
         if (isEverythingGood)
         {
-            AddRepoViewModel.SetCloneLocation(FolderPickerViewModel.CloneLocation);
+            AddRepoViewModel.SetCloneLocation(AddRepoViewModel.FolderPickerViewModel.CloneLocation);
         }
     }
 
@@ -493,11 +472,11 @@ internal partial class AddRepoDialog : ContentDialog
     public void UpdateDevDriveInfo()
     {
         EditDevDriveViewModel.MakeDefaultDevDrive();
-        FolderPickerViewModel.DisableBrowseButton();
-        _oldCloneLocation = FolderPickerViewModel.CloneLocation;
-        FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
-        FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-        FolderPickerViewModel.InDevDriveScenario = true;
+        AddRepoViewModel.FolderPickerViewModel.DisableBrowseButton();
+        _oldCloneLocation = AddRepoViewModel.FolderPickerViewModel.CloneLocation;
+        AddRepoViewModel.FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
+        AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+        AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario = true;
         EditDevDriveViewModel.IsDevDriveCheckboxChecked = true;
     }
 

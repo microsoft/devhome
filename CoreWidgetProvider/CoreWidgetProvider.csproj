@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(SolutionDir)ToolingVersions.props"/>
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputType>Exe</OutputType>
   </PropertyGroup>
@@ -37,11 +37,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Widgets\Templates\SSHWalletTemplate.json">
-     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Widgets\Templates\SystemMemoryTemplate.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -57,9 +54,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Widgets\Assets\ssh_wallet_icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Update="Widgets\Assets\arrow.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -313,6 +313,12 @@ extends:
             templateContext:
               outputs:
               - output: pipelineArtifact
+                displayName: 'Publish Artifact: Binaries'
+                artifactName: Binaries_${{ platform }}_${{ configuration }}
+                targetPath: $(Build.SourcesDirectory)\BuildOutput
+                sbomPackageName: devhome.binaries
+                sbomPackageVersion: $(MSIXVersion)
+              - output: pipelineArtifact
                 displayName: 'Publish Artifact: LocOutput'
                 condition: and(eq(variables['EnableLocalization'], 'true'), eq(variables['UpdateLocalization'], 'true'))
                 artifactName: LocOutput_${{ platform }}_${{ configuration }}
@@ -617,5 +623,5 @@ extends:
           outputs:
           - output: pipelineArtifact
             displayName: 'Publish vpack\app artifact with vpack manifest'
-            targetPath: $(XES_VPACKMANIFESTDIRECTORY)\$(XES_VPACKMANIFESTNAME)
+            targetPath: $(XES_VPACKMANIFESTDIRECTORY)
             artifactName: vpackManifest
