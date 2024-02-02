@@ -17,7 +17,7 @@ namespace DevHome.SetupFlow.Services.WinGet;
 /// <summary>
 /// Finds packages using the Windows Package Manager (WinGet).
 /// </summary>
-internal class WinGetPackageFinder : IWinGetPackageFinder
+internal sealed class WinGetPackageFinder : IWinGetPackageFinder
 {
     private readonly WindowsPackageManagerFactory _wingetFactory;
 

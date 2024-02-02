@@ -60,6 +60,10 @@ public sealed partial class WhatsNewPage : Page
                     card.ShouldShowLink = false;
                 }
             }
+            else
+            {
+                card.ShouldShowIcon = false;
+            }
 
             ViewModel.AddCard(card);
         }

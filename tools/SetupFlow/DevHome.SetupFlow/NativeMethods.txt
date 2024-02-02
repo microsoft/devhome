@@ -10,3 +10,4 @@ LocalFree
 FormatMessage
 S_OK
 IsApiSetImplemented
+FILE_ACCESS_RIGHTS

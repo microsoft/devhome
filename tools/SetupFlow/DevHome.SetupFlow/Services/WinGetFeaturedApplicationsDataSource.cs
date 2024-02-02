@@ -19,7 +19,7 @@ namespace DevHome.SetupFlow.Services;
 public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
 {
     private readonly IExtensionService _extensionService;
-    private readonly IList<IFeaturedApplicationsGroup> _groups;
+    private readonly List<IFeaturedApplicationsGroup> _groups;
 
     public WinGetFeaturedApplicationsDataSource(IWindowsPackageManager wpm, IExtensionService extensionService)
         : base(wpm)
@@ -115,7 +115,7 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
     /// </summary>
     /// <param name="uriStrings">List of package URI strings</param>
     /// <returns>List of package URIs</returns>
-    private IList<Uri> ParseURIs(IReadOnlyList<string> uriStrings)
+    private List<Uri> ParseURIs(IReadOnlyList<string> uriStrings)
     {
         var result = new List<Uri>();
         foreach (var app in uriStrings)

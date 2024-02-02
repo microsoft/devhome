@@ -173,7 +173,7 @@ public class GitWatcherTests
 
         // Test file modification
         testFile2 = File.OpenWrite(pathToTargetFile2);
-        testFile2.Write(new byte[4] { 1, 2, 3, 4 });
+        testFile2.Write([1, 2, 3, 4]);
         testFile2.Close();
         Assert.IsTrue(eventFired.WaitOne(1000));
         eventFired.Reset();
@@ -205,7 +205,7 @@ public class GitWatcherTests
 
         // Test file modification
         testFile3 = File.OpenWrite(pathToTargetFile3);
-        testFile3.Write(new byte[4] { 1, 2, 3, 4 });
+        testFile3.Write([1, 2, 3, 4]);
         testFile3.Close();
         Assert.IsTrue(eventFired.WaitOne(1000));
         eventFired.Reset();

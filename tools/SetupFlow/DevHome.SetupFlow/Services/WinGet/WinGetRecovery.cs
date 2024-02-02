@@ -9,7 +9,7 @@ using DevHome.SetupFlow.Exceptions;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-internal class WinGetRecovery : IWinGetRecovery
+internal sealed class WinGetRecovery : IWinGetRecovery
 {
     // Recovery configuration
     private const int MaxAttempts = 5;

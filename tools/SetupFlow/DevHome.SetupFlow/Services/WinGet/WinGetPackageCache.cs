@@ -10,7 +10,7 @@ namespace DevHome.SetupFlow.Services.WinGet;
 /// <summary>
 /// Thread-safe cache for packages
 /// </summary>
-internal class WinGetPackageCache : IWinGetPackageCache
+internal sealed class WinGetPackageCache : IWinGetPackageCache
 {
     private readonly Dictionary<Uri, IWinGetPackage> _cache = new ();
     private readonly object _lock = new ();

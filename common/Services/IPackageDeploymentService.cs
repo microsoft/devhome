@@ -26,6 +26,7 @@ public interface IPackageDeploymentService
     /// <summary>
     /// Find packages for the current user. If maxVersion is specified, package versions must be
     /// between minVersion and maxVersion. If maxVersion is null, packages must be above minVersion.
+    /// If no minVersion is specified, returns packages of any version.
     /// </summary>
     /// <returns>An IEnumerable containing the installed packages that meet the version criteria.</returns>
     public IEnumerable<Package> FindPackagesForCurrentUser(string packageFamilyName, params (Version minVersion, Version? maxVersion)[] ranges);

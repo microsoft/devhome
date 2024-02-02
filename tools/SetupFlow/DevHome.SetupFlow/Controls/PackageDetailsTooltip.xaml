@@ -12,6 +12,7 @@
     <ToolTip.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondary}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
     </ToolTip.Resources>
     <StackPanel>

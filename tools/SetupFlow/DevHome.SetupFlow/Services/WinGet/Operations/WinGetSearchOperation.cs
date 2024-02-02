@@ -11,7 +11,7 @@ namespace DevHome.SetupFlow.Services.WinGet.Operations;
 /// <summary>
 /// Search for packages using WinGet with recovery
 /// </summary>
-internal class WinGetSearchOperation : IWinGetSearchOperation
+internal sealed class WinGetSearchOperation : IWinGetSearchOperation
 {
     private readonly IWinGetCatalogConnector _catalogConnector;
     private readonly IWinGetPackageFinder _packageFinder;

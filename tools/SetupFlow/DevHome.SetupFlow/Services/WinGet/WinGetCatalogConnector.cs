@@ -14,7 +14,7 @@ using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
+internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
 {
     private readonly IWinGetPackageCache _packageCache;
     private readonly WindowsPackageManagerFactory _wingetFactory;
@@ -320,7 +320,7 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
         }
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (!_disposedValue)
         {

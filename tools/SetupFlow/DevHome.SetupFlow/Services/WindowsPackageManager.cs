@@ -13,7 +13,7 @@ namespace DevHome.SetupFlow.Services;
 /// <summary>
 /// Windows package manager class is an entry point for using the WinGet COM API.
 /// </summary>
-internal class WindowsPackageManager : IWindowsPackageManager
+internal sealed class WindowsPackageManager : IWindowsPackageManager
 {
     // WinGet services
     private readonly IWinGetCatalogConnector _catalogConnector;

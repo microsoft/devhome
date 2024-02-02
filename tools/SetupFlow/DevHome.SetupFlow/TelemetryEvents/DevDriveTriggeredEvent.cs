@@ -11,7 +11,7 @@ using Microsoft.Diagnostics.Telemetry.Internal;
 namespace DevHome.SetupFlow.Common.TelemetryEvents;
 
 [EventData]
-internal class DevDriveTriggeredEvent : EventBase
+internal sealed class DevDriveTriggeredEvent : EventBase
 {
     public DevDriveTriggeredEvent(IDevDrive devDrive, long duration, int hr)
     {

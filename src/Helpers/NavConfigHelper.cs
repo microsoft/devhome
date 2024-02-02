@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace DevHome.Helpers;
 
-internal class NavConfig
+internal sealed class NavConfig
 {
     [JsonPropertyName("navMenu")]
     public NavMenu NavMenu { get; set; }
@@ -16,13 +16,13 @@ internal class NavConfig
     public string[] ExperimentIds { get; set; }
 }
 
-internal class NavMenu
+internal sealed class NavMenu
 {
     [JsonPropertyName("groups")]
     public Group[] Groups { get; set; }
 }
 
-internal class Group
+internal sealed class Group
 {
     [JsonPropertyName("identity")]
     public string Identity { get; set; }
@@ -31,7 +31,7 @@ internal class Group
     public Tool[] Tools { get; set; }
 }
 
-internal class Tool
+internal sealed class Tool
 {
     [JsonPropertyName("identity")]
     public string Identity { get; set; }
@@ -55,7 +55,7 @@ internal class Tool
 // Uses .NET's JSON source generator support for serializing / deserializing NavConfig to get some perf gains at startup.
 [JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(NavConfig))]
-internal partial class SourceGenerationContext : JsonSerializerContext
+internal sealed partial class SourceGenerationContext : JsonSerializerContext
 {
 }
 

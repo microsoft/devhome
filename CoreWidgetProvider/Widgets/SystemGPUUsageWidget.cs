@@ -9,11 +9,11 @@ using CoreWidgetProvider.Widgets.Enums;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
-internal class SystemGPUUsageWidget : CoreWidget, IDisposable
+internal sealed class SystemGPUUsageWidget : CoreWidget, IDisposable
 {
     private static Dictionary<string, string> Templates { get; set; } = new ();
 
-    protected static readonly new string Name = nameof(SystemGPUUsageWidget);
+    private static readonly new string Name = nameof(SystemGPUUsageWidget);
 
     private readonly DataManager dataManager;
 
@@ -61,6 +61,11 @@ internal class SystemGPUUsageWidget : CoreWidget, IDisposable
         catch (Exception e)
         {
             Log.Logger()?.ReportError(Name, ShortId, "Error retrieving data.", e);
+            var content = new JsonObject
+            {
+                { "errorMessage", e.Message },
+            };
+            ContentData = content.ToJsonString();
             DataState = WidgetDataState.Failed;
             return;
         }

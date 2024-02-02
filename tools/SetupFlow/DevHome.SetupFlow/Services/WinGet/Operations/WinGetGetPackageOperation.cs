@@ -13,7 +13,7 @@ namespace DevHome.SetupFlow.Services.WinGet.Operations;
 /// <summary>
 /// Get packages using WinGet with recovery
 /// </summary>
-internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
+internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
 {
     private readonly IWinGetPackageCache _packageCache;
     private readonly IWinGetProtocolParser _protocolParser;
@@ -47,7 +47,7 @@ internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
         var getPackagesTasks = new List<Task<List<IWinGetPackage>>>();
         foreach (var parsedUrisGroup in GroupParsedUrisByCatalog(packageUrisToQuery))
         {
-            if (parsedUrisGroup.Any())
+            if (parsedUrisGroup.Count != 0)
             {
                 // Get packages from each catalog concurrently
                 getPackagesTasks.Add(_recovery.DoWithRecoveryAsync(async () =>
