@@ -528,9 +528,6 @@ public partial class AddRepoDialog : ContentDialog
 
     private void SearchForRepos()
     {
-        var loginId = (string)AddRepoViewModel.SelectedAccount;
-        var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-
         Dictionary<string, string> searchInput = new ();
         foreach (var searchBox in SearchForMoreReposGrid.Children)
         {
