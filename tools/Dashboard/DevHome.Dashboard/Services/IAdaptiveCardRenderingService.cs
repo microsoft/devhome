@@ -6,7 +6,7 @@ using AdaptiveCards.Rendering.WinUI3;
 
 namespace DevHome.Dashboard.Services;
 
-internal interface IAdaptiveCardRenderingService
+public interface IAdaptiveCardRenderingService
 {
     public Task<AdaptiveCardRenderer> GetRenderer();
 

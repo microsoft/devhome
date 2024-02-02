@@ -15,6 +15,7 @@ using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.Windows;
+using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Management.Infrastructure;
 using Microsoft.Win32.SafeHandles;
@@ -266,6 +267,10 @@ public class DevDriveManager : IDevDriveManager
             if (DevDriveUtil.MinDevDriveSizeInBytes > (ulong)drive.AvailableFreeSpace)
             {
                 Log.Logger?.ReportError(Log.Component.DevDrive, "Not enough space available to create a Dev Drive");
+                TelemetryFactory.Get<ITelemetry>().Log(
+                                              "DevDrive_Insufficient_DiskSpace",
+                                              LogLevel.Critical,
+                                              new EmptyEvent());
                 validationSuccessful = false;
             }
         }

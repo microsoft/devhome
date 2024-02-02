@@ -14,7 +14,7 @@ public sealed class ElevatedConfigureUnitTaskResult
 
     public string? Id { get; set; }
 
-    public string? Description { get; set; }
+    public string? UnitDescription { get; set; }
 
     public string? Intent { get; set; }
 
@@ -25,4 +25,6 @@ public sealed class ElevatedConfigureUnitTaskResult
     public int ResultSource { get; set; }
 
     public string? Details { get; set; }
+
+    public string? ErrorDescription { get; set; }
 }

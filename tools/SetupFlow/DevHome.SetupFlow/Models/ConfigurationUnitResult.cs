@@ -16,31 +16,35 @@ public class ConfigurationUnitResult
         UnitName = result.Unit.UnitName;
         Id = result.Unit.Identifier;
         result.Unit.Directives.TryGetValue("description", out var descriptionObj);
-        Description = descriptionObj?.ToString() ?? string.Empty;
+        UnitDescription = descriptionObj?.ToString() ?? string.Empty;
         Intent = result.Unit.Intent.ToString();
         IsSkipped = result.State == ConfigurationUnitState.Skipped;
         HResult = result.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK;
         ResultSource = result.ResultInformation?.ResultSource ?? ConfigurationUnitResultSource.None;
         Details = result.ResultInformation?.Details;
+        ErrorDescription = result.ResultInformation?.Description;
     }
 
     public ConfigurationUnitResult(ElevatedConfigureUnitTaskResult result)
     {
         UnitName = result.UnitName;
         Id = result.Id;
-        Description = result.Description;
+        UnitDescription = result.UnitDescription;
         Intent = result.Intent;
         IsSkipped = result.IsSkipped;
         HResult = result.HResult;
         ResultSource = (ConfigurationUnitResultSource)result.ResultSource;
         Details = result.Details;
+        ErrorDescription = result.ErrorDescription;
     }
 
     public string UnitName { get; }
 
     public string Id { get; }
 
-    public string Description { get; }
+    public string UnitDescription { get; }
+
+    public string ErrorDescription { get; }
 
     public string Intent { get; }
 
