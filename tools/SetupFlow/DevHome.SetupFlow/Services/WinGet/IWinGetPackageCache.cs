@@ -7,6 +7,9 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
+/// <summary>
+/// Thread -safe cache for packages
+/// </summary>
 internal interface IWinGetPackageCache
 {
     /// <summary>

@@ -79,5 +79,5 @@ internal class WindowsPackageManager : IWindowsPackageManager
     public Uri CreateMsStoreCatalogPackageUri(string packageId) => _protocolParser.CreateMsStoreCatalogPackageUri(packageId);
 
     /// <inheritdoc />
-    public Uri CreateCustomCatalogPackageUri(string packageId, string catalogName) => CreateCustomCatalogPackageUri(packageId, catalogName);
+    public Uri CreateCustomCatalogPackageUri(string packageId, string catalogName) => _protocolParser.CreateCustomCatalogPackageUri(packageId, catalogName);
 }

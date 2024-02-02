@@ -18,6 +18,7 @@ internal class WinGetPackageCache : IWinGetPackageCache
     /// <inheritdoc />
     public IList<IWinGetPackage> GetPackages(IEnumerable<Uri> packageUris, out IEnumerable<Uri> packageUrisNotFound)
     {
+        // Lock to ensure all packages fetched are from the same cache state
         lock (_lock)
         {
             var foundPackages = new List<IWinGetPackage>();
