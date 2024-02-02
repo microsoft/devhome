@@ -49,6 +49,8 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
+    private readonly Timer _takingTooLongMessageTimer = new (30000);
+
     /// <summary>
     /// Because logic is split between the back-end and the view model, incrementally migrating code from the view
     /// to the view model is impossible.
@@ -60,6 +62,8 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
     /// this class.
     /// </remarks>
     private readonly AddRepoDialog _addRepoDialog;
+
+    private Dictionary<string, string> _metadataSearchInputs = new ();
 
     /// <summary>
     /// Gets the folder picker view model.
@@ -409,14 +413,14 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
             _previouslySelectedRepos.AddRange(EverythingToClone);
         }
 
-        ShowRepoPage = Visibility.Collapsed;
+        ShowRepoPage = false;
 
         // Store the logged in accounts to help figure out what account the user logged into.
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
         await LogUserIn(_selectedRepoProvider, _addRepoDialog.GetLoginUiContent(), true);
         var loggedInAccountsWithNewAccount = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
 
-        ShowRepoPage = Visibility.Visible;
+        ShowRepoPage = true;
         Accounts = new ObservableCollection<string>(loggedInAccountsWithNewAccount.Select(x => x.LoginId));
         AccountsToShow = ConstructFlyout();
 
@@ -470,6 +474,17 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
         _activityId = activityId;
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
         FolderPickerViewModel.CloneLocation = defaultClonePath;
+
+        _takingTooLongMessageTimer.Elapsed += (_, _) =>
+        {
+            _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
+            {
+                TakingTooLongMessage = "Sorry, this is taking a while";
+                ShouldShowTakingTooLongMessage = true;
+            });
+        };
+
+        _takingTooLongMessageTimer.AutoReset = false;
     }
 
     /// <summary>

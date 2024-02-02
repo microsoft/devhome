@@ -344,7 +344,7 @@ public partial class AddRepoDialog : ContentDialog
     private void SwitchToSelectSearchTermsPage()
     {
         AddRepoViewModel.ChangeToSelectSearchTermsPage();
-        FolderPickerViewModel.ShouldShowFolderPicker = Visibility.Collapsed;
+        AddRepoViewModel.FolderPickerViewModel.ShouldShowFolderPicker = Visibility.Collapsed;
         EditDevDriveViewModel.ShowDevDriveInformation = Visibility.Collapsed;
     }
 
@@ -354,9 +354,9 @@ public partial class AddRepoDialog : ContentDialog
         if (AddRepoViewModel.Accounts.Any())
         {
             AddRepoViewModel.ChangeToRepoPage(inputValues);
-            FolderPickerViewModel.ShowFolderPicker();
+            AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
             EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-            AccountsComboBox.SelectedValue = AddRepoViewModel.Accounts.First();
+            AddRepoViewModel.SelectedAccount = AddRepoViewModel.Accounts.First();
             AddRepoViewModel.ShouldEnablePrimaryButton = false;
         }
     }
@@ -496,7 +496,7 @@ public partial class AddRepoDialog : ContentDialog
         SearchForMoreReposWaitingProgressRing.Visibility = Visibility.Visible;
         MetadataSearchingTakingTooLongTextBox.Visibility = Visibility.Visible;
         ShowMessage();
-        var loginId = (string)AccountsComboBox.SelectedValue;
+        var loginId = (string)AddRepoViewModel.SelectedAccount;
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
         var searchTerms = AddRepoViewModel.GetSearchTerms(providerName, loginId);
         SearchForMoreReposGrid.RowSpacing = 10;
@@ -528,9 +528,8 @@ public partial class AddRepoDialog : ContentDialog
 
     private void SearchForRepos()
     {
-        var loginId = (string)AccountsComboBox.SelectedValue;
+        var loginId = (string)AddRepoViewModel.SelectedAccount;
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-        var searchTerms = AddRepoViewModel.GetSearchTerms(providerName, loginId);
 
         Dictionary<string, string> searchInput = new ();
         foreach (var searchBox in SearchForMoreReposGrid.Children)

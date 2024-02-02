@@ -99,7 +99,8 @@
                         <ColumnDefinition Width="1.5*"/>
                     </Grid.ColumnDefinitions>
                     <SplitButton x:Name="AccountSplitButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Grid.Row="0" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}"/>
-                    <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
+                    <TextBox x:Name="FilterTextBox" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegateBoolConverter}}" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
+                    <HyperlinkButton Click="HyperlinkButton_Click" Grid.Row="1" Content="I don't like these repos."/>
                 </Grid>
                 <Grid Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay}" Height="300" Width="300">
                     <Grid.RowDefinitions>
