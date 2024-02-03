@@ -26,6 +26,7 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml"/>
                 <ResourceDictionary>
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
+                    <converters:BoolToObjectConverter x:Key="NegateBoolConverter" TrueValue="False" FalseValue="True"/>
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
@@ -89,15 +90,25 @@
             <!-- Show Repositories -->
             <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
                 <Grid ColumnSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="1.5*"/>
                     </Grid.ColumnDefinitions>
                     <SplitButton x:Name="AccountSplitButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Grid.Row="0" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}"/>
-                    <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
+                    <TextBox x:Name="FilterTextBox" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegateBoolConverter}}" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
+                    <HyperlinkButton Click="HyperlinkButton_Click" Grid.Row="1" Content="I don't like these repos."/>
                 </Grid>
                 <Grid Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay}" Height="300" Width="300">
-                    <ProgressRing/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ProgressRing Grid.Row="0"/>
+                    <TextBlock Grid.Row="1" Visibility="{x:Bind AddRepoViewModel.ShouldShowTakingTooLongMessage, Mode=OneWay}" Text="{x:Bind AddRepoViewModel.TakingTooLongMessage, Mode=OneWay}" HorizontalAlignment="Center"/>
                 </Grid>
                 <!-- Removing the SelectionChanged event into a command has far reaching changes because the item that was selected can't be passed
                 into the command.  I tried converting this to use a command on SelectionChanged and pass SelectedItems into the command.
@@ -130,6 +141,16 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </StackPanel>
+
+            <Grid x:Name="SearchForMoreReposGrid" Visibility="{x:Bind AddRepoViewModel.ShouldShowSelectingSearchTerms, Mode=OneWay}">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <ProgressRing x:Name="SearchForMoreReposWaitingProgressRing" Grid.Row="0"/>
+                <TextBlock x:Name="MetadataSearchingTakingTooLongTextBox" Grid.Row="1" HorizontalAlignment="Center"/>
+            </Grid>
+
             <TextBlock x:Name="ErrorTextBlock" Style="{ThemeResource BodyStrongTextBlockStyle}" Visibility="{x:Bind AddRepoViewModel.ShowErrorTextBox, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Repo_ToolClonePathError"/>
             <!-- Repo page and URL page both have clonepath + dev drive check box-->
             <Grid Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.ShouldShowFolderPicker, Mode=OneWay}">

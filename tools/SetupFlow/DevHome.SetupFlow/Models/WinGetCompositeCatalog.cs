@@ -112,7 +112,11 @@ public class WinGetCompositeCatalog : IWinGetCatalog, IDisposable
                 return new List<IWinGetPackage>();
             }
 
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting package set from catalog {_catalog.Info.Name}");
+            if (_catalog != null)
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting package set from catalog {_catalog.Info.Name}");
+            }
+
             var options = _wingetFactory.CreateFindPackagesOptions();
             foreach (var packageId in packageIdSet)
             {

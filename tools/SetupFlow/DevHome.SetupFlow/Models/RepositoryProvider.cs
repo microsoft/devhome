@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Management.Automation.Language;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
@@ -50,6 +52,8 @@ internal sealed class RepositoryProvider
     /// </summary>
     private IRepositoryProvider _repositoryProvider;
 
+    private IRepositoryProvider2 _repositoryProvider2;
+
     public RepositoryProvider(IExtensionWrapper extensionWrapper)
     {
         _extensionWrapper = extensionWrapper;
@@ -71,11 +75,28 @@ internal sealed class RepositoryProvider
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider extensions");
         _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
         _repositoryProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
+        _repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
     }
 
     public IRepositoryProvider GetProvider()
     {
         return _repositoryProvider;
+    }
+
+    public List<string> GetSearchTerms(IDeveloperId developerId)
+    {
+        var repoData = _repositoryProvider as IRepositoryProvider2;
+        return repoData.GetSearchFieldNames.ToList();
+    }
+
+    public List<string> GetValuesFor(IDeveloperId developerId, Dictionary<string, string> input, string fieldName)
+    {
+        return _repositoryProvider2?.GetValuesForField(fieldName, input, developerId).AsTask().Result.ToList();
+    }
+
+    public string GetDefaultFor(IDeveloperId developerId, string fieldName)
+    {
+        return _repositoryProvider2?.GetFieldSearchValue(fieldName, developerId);
     }
 
     /// <summary>
@@ -243,7 +264,7 @@ internal sealed class RepositoryProvider
     /// </summary>
     /// <param name="developerId">The account to search in.</param>
     /// <returns>A collection of repositories.  May be empty</returns>
-    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
+    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId, Dictionary<string, string> searchInputs)
     {
         IEnumerable<IRepository> repositoriesForAccount;
 
@@ -270,5 +291,15 @@ internal sealed class RepositoryProvider
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
         return repositoriesForAccount;
+    }
+
+    /// <summary>
+    /// Gets all the repositories an account has for this provider.
+    /// </summary>
+    /// <param name="developerId">The account to search in.</param>
+    /// <returns>A collection of repositories.  May be empty</returns>
+    public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
+    {
+        return GetAllRepositories(developerId, new ());
     }
 }
