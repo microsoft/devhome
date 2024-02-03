@@ -130,6 +130,9 @@ public partial class App : Application, IApp
             // Dashboard
             services.AddDashboard(context);
 
+            // Apps and Packages
+            services.AddAppAndPackages();
+
             // ExtensionLibrary
             services.AddExtensionLibrary(context);
         }).

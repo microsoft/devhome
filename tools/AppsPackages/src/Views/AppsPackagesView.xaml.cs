@@ -3,6 +3,8 @@
 
 using DevHome.AppsPackages.ViewModels;
 using DevHome.Common;
+using DevHome.Common.Extensions;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.AppsPackages.Views;
 
@@ -17,7 +19,7 @@ public partial class AppsPackagesView : ToolPage
 
     public AppsPackagesView()
     {
-        ViewModel = new AppsPackagesViewModel();
+        ViewModel = Application.Current.GetService<AppsPackagesViewModel>();
         this.InitializeComponent();
     }
 }
