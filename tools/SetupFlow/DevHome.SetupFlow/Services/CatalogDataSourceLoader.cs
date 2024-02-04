@@ -10,11 +10,11 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services;
-public class CatalogDataSourceLoader : IDisposable
+
+public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
 {
     private readonly SemaphoreSlim _lock = new (initialCount: 1, maxCount: 1);
     private readonly IEnumerable<WinGetPackageDataSource> _dataSources;
-    private readonly Dictionary<WinGetPackageDataSource, IList<PackageCatalog>> _catalogsMap = new ();
     private bool _disposedValue;
 
     public CatalogDataSourceLoader(IEnumerable<WinGetPackageDataSource> dataSources)
@@ -22,8 +22,10 @@ public class CatalogDataSourceLoader : IDisposable
         _dataSources = dataSources;
     }
 
+    /// <inheritdoc />
     public int CatalogCount => _dataSources.Sum(dataSource => dataSource.CatalogCount);
 
+    /// <inheritdoc />
     public async Task InitializeAsync()
     {
         await _lock.WaitAsync();
@@ -40,6 +42,7 @@ public class CatalogDataSourceLoader : IDisposable
         }
     }
 
+    /// <inheritdoc />
     public async IAsyncEnumerable<IList<PackageCatalog>> LoadCatalogsAsync()
     {
         await _lock.WaitAsync();
@@ -47,44 +50,13 @@ public class CatalogDataSourceLoader : IDisposable
         {
             foreach (var dataSource in _dataSources)
             {
-                IList<PackageCatalog> dataSourceCatalogs;
-                if (!_catalogsMap.TryGetValue(dataSource, out dataSourceCatalogs))
-                {
-                    dataSourceCatalogs = await LoadCatalogsFromDataSourceAsync(dataSource);
-                    _catalogsMap.TryAdd(dataSource, dataSourceCatalogs);
-                }
-
-                yield return dataSourceCatalogs;
+                yield return await LoadCatalogsFromDataSourceAsync(dataSource) ?? new List<PackageCatalog>();
             }
         }
         finally
         {
             _lock.Release();
         }
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            if (disposing)
-            {
-                _lock.Dispose();
-            }
-
-            _disposedValue = true;
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    public void Clear()
-    {
-        _catalogsMap.Clear();
     }
 
     /// <summary>
@@ -109,14 +81,12 @@ public class CatalogDataSourceLoader : IDisposable
     /// <param name="dataSource">Target data source</param>
     private async Task<IList<PackageCatalog>> LoadCatalogsFromDataSourceAsync(WinGetPackageDataSource dataSource)
     {
-        var dataSourceCatalogs = new List<PackageCatalog>();
         try
         {
             if (dataSource.CatalogCount > 0)
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
-                var catalogs = await Task.Run(async () => await dataSource.LoadCatalogsAsync());
-                dataSourceCatalogs.AddRange(catalogs);
+                return await Task.Run(async () => await dataSource.LoadCatalogsAsync());
             }
         }
         catch (Exception e)
@@ -124,6 +94,25 @@ public class CatalogDataSourceLoader : IDisposable
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while loading data source of type {dataSource.GetType().Name}", e);
         }
 
-        return dataSourceCatalogs;
+        return null;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _lock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }

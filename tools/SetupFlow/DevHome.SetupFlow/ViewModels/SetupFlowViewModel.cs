@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
@@ -93,6 +94,12 @@ public partial class SetupFlowViewModel : ObservableObject
     {
         var currentPage = Orchestrator.CurrentPageViewModel.GetType().Name;
         TerminateCurrentFlow($"CancelButton_{currentPage}");
+    }
+
+    [RelayCommand]
+    private async Task OnLoadedAsync()
+    {
+        await _mainPageViewModel.ValidateAppInstallerAsync();
     }
 
     public void TerminateCurrentFlow(string callerNameForTelemetry)

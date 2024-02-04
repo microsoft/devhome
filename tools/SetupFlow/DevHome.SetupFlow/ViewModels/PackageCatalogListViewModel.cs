@@ -16,10 +16,8 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class PackageCatalogListViewModel : ObservableObject
 {
-    private readonly IWindowsPackageManager _wpm;
-    private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
+    private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
     private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
-    private bool _initialized;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CatalogFullPath))]
@@ -43,12 +41,10 @@ public partial class PackageCatalogListViewModel : ObservableObject
     public ObservableCollection<int> PackageCatalogShimmers { get; } = new ();
 
     public PackageCatalogListViewModel(
-        CatalogDataSourceLoader catalogDataSourceLoader,
-        IWindowsPackageManager wpm,
+        ICatalogDataSourceLoader catalogDataSourceLoader,
         PackageCatalogViewModelFactory packageCatalogViewModelFactory)
     {
         _catalogDataSourceLoader = catalogDataSourceLoader;
-        _wpm = wpm;
         _packageCatalogViewModelFactory = packageCatalogViewModelFactory;
     }
 
@@ -57,35 +53,30 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// </summary>
     public async Task LoadCatalogsAsync()
     {
-        if (!_initialized)
+        AddShimmers(_catalogDataSourceLoader.CatalogCount);
+        try
         {
-            _initialized = true;
-            AddShimmers(_catalogDataSourceLoader.CatalogCount);
-            try
+            await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
             {
-                await Task.Run(async () => await _wpm.WinGetCatalog.ConnectAsync());
-                await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
+                foreach (var catalog in dataSourceCatalogs)
                 {
-                    foreach (var catalog in dataSourceCatalogs)
-                    {
-                        var catalogVM = await Task.Run(() => _packageCatalogViewModelFactory(catalog));
-                        catalogVM.CanAddAllPackages = true;
-                        PackageCatalogs.Add(catalogVM);
-                    }
-
-                    RemoveShimmers(dataSourceCatalogs.Count);
+                    var catalogVM = await Task.Run(() => _packageCatalogViewModelFactory(catalog));
+                    catalogVM.CanAddAllPackages = true;
+                    PackageCatalogs.Add(catalogVM);
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {nameof(_wpm.WinGetCatalog)}. Skipping catalogs loading operation.", e);
-            }
 
-            // Remove any remaining shimmers:
-            // This can happen if for example a catalog was detected but not
-            // displayed (e.g. catalog with no packages to display)
-            RemoveShimmers(_catalogDataSourceLoader.CatalogCount);
+                RemoveShimmers(dataSourceCatalogs.Count);
+            }
         }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to load catalogs.", e);
+        }
+
+        // Remove any remaining shimmers:
+        // This can happen if for example a catalog was detected but not
+        // displayed (e.g. catalog with no packages to display)
+        RemoveShimmers(_catalogDataSourceLoader.CatalogCount);
     }
 
     /// <summary>

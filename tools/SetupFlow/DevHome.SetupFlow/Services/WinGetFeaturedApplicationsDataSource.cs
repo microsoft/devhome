@@ -81,7 +81,7 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
                 var appsResult = group.GetApplications();
                 if (appsResult.Result.Status == ProviderOperationStatus.Success)
                 {
-                    var packages = await GetPackagesAsync(ParseURIs(appsResult.FeaturedApplications), uri => uri);
+                    var packages = await GetPackagesAsync(ParseURIs(appsResult.FeaturedApplications));
                     if (packages.Any())
                     {
                         result.Add(new PackageCatalog()
