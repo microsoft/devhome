@@ -54,8 +54,8 @@ internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
                 {
                     // All parsed URIs in the group have the same catalog, resolve catalog from the first entry
                     var firstParsedUri = parsedUrisGroup.First();
-                    var packageIds = parsedUrisGroup.Select(p => p.packageId).ToHashSet();
-                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages [{string.Join(", ", packageIds)}] from parsed uri catalog name: {firstParsedUri.catalogUriName}");
+                    var packageIds = parsedUrisGroup.Select(p => p.PackageId).ToHashSet();
+                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages [{string.Join(", ", packageIds)}] from parsed uri catalog name: {firstParsedUri.CatalogUriName}");
 
                     // Get packages from the catalog
                     var catalog = await _protocolParser.ResolveCatalogAsync(firstParsedUri);
@@ -118,6 +118,6 @@ internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
         }
 
         // 2. Group package ids by catalog
-        return parsedUris.GroupBy(p => p.catalogUriName).Select(p => p.ToList()).ToList();
+        return parsedUris.GroupBy(p => p.CatalogUriName).Select(p => p.ToList()).ToList();
     }
 }

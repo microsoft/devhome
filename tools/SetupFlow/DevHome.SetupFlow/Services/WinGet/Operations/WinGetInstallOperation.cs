@@ -51,7 +51,7 @@ internal sealed class WinGetInstallOperation : IWinGetInstallOperation
         return await _recovery.DoWithRecoveryAsync(async () =>
         {
             var catalog = await _protocolParser.ResolveCatalogAsync(parsedPackageUri);
-            return await _packageInstaller.InstallPackageAsync(catalog, parsedPackageUri.packageId);
+            return await _packageInstaller.InstallPackageAsync(catalog, parsedPackageUri.PackageId);
         });
     }
 }

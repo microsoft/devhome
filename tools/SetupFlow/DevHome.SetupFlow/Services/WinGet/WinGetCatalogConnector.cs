@@ -18,8 +18,8 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
 {
     private readonly IWinGetPackageCache _packageCache;
     private readonly WindowsPackageManagerFactory _wingetFactory;
-    private readonly Dictionary<string, WinGetCatalog> _customCatalogs = new ();
-    private readonly SemaphoreSlim _lock = new (1, 1);
+    private readonly Dictionary<string, WinGetCatalog> _customCatalogs = new();
+    private readonly SemaphoreSlim _lock = new(1, 1);
 
     private WinGetCatalog _predefinedWingetCatalog;
     private WinGetCatalog _predefinedMsStoreCatalog;
@@ -218,7 +218,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
         {
             var packageManager = _wingetFactory.CreatePackageManager();
             var catalogs = packageManager.GetPackageCatalogs();
-            _customSearchCatalog = new (await CreateAndConnectCatalogInternalAsync(catalogs), WinGetCatalog.CatalogType.CustomSearch);
+            _customSearchCatalog = new(await CreateAndConnectCatalogInternalAsync(catalogs), WinGetCatalog.CatalogType.CustomSearch);
         }
         catch (Exception e)
         {
@@ -236,7 +236,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
             var packageManager = _wingetFactory.CreatePackageManager();
             var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
             _predefinedWingetCatalogId ??= catalog.Info.Id;
-            _predefinedWingetCatalog = new (await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedWinget);
+            _predefinedWingetCatalog = new(await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedWinget);
         }
         catch (Exception e)
         {
@@ -254,7 +254,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
             var packageManager = _wingetFactory.CreatePackageManager();
             var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.MicrosoftStore);
             _predefinedMsStoreCatalogId ??= catalog.Info.Id;
-            _predefinedMsStoreCatalog = new (await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedMsStore);
+            _predefinedMsStoreCatalog = new(await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedMsStore);
         }
         catch (Exception e)
         {
@@ -273,7 +273,7 @@ internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposa
         {
             var packageManager = _wingetFactory.CreatePackageManager();
             var customCatalog = packageManager.GetPackageCatalogByName(catalogName);
-            return new (await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { customCatalog }), WinGetCatalog.CatalogType.CustomUnknown, catalogName);
+            return new(await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { customCatalog }), WinGetCatalog.CatalogType.CustomUnknown, catalogName);
         }
         catch (Exception e)
         {

@@ -12,8 +12,8 @@ namespace DevHome.SetupFlow.Services.WinGet;
 /// </summary>
 internal sealed class WinGetPackageCache : IWinGetPackageCache
 {
-    private readonly Dictionary<Uri, IWinGetPackage> _cache = new ();
-    private readonly object _lock = new ();
+    private readonly Dictionary<Uri, IWinGetPackage> _cache = new();
+    private readonly object _lock = new();
 
     /// <inheritdoc />
     public IList<IWinGetPackage> GetPackages(IEnumerable<Uri> packageUris, out IEnumerable<Uri> packageUrisNotFound)
