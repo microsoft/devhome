@@ -8,8 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 
@@ -87,18 +87,12 @@ public partial class SearchViewModel : ObservableObject
             return (SearchResultStatus.EmptySearchQuery, null);
         }
 
-        // Connect is required before searching
-        if (!_wpm.AllCatalogs.IsConnected)
-        {
-            return (SearchResultStatus.CatalogNotConnect, null);
-        }
-
         try
         {
             // Run the search on a separate (non-UI) thread to prevent lagging the UI.
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Running package search for query [{text}]");
             TelemetryFactory.Get<ITelemetry>().LogCritical("Search_SerchingForApplication_Event");
-            var matches = await Task.Run(async () => await _wpm.AllCatalogs.SearchAsync(text, SearchResultLimit), cancellationToken);
+            var matches = await Task.Run(async () => await _wpm.SearchAsync(text, SearchResultLimit), cancellationToken);
 
             // Don't update the UI if the operation was canceled
             if (cancellationToken.IsCancellationRequested)
@@ -121,6 +115,10 @@ public partial class SearchViewModel : ObservableObject
             }
 
             return (SearchResultStatus.Ok, ResultPackages);
+        }
+        catch (WindowsPackageManagerRecoveryException)
+        {
+            return (SearchResultStatus.CatalogNotConnect, null);
         }
         catch (OperationCanceledException)
         {

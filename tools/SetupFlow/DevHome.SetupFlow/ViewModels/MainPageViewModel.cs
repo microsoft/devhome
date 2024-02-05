@@ -67,18 +67,27 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         BannerViewModel = bannerViewModel;
     }
 
+    public async Task<bool> ValidateAppInstallerAsync()
+    {
+        return EnablePackageInstallerItem = await _wpm.IsAvailableAsync();
+    }
+
     protected async override Task OnFirstNavigateToAsync()
     {
-        EnablePackageInstallerItem = await _wpm.IsCOMServerAvailableAsync();
-        if (EnablePackageInstallerItem)
+        if (await ValidateAppInstallerAsync())
         {
             Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");
-            ShowAppInstallerUpdateNotification = await _wpm.IsAppInstallerUpdateAvailableAsync();
+            ShowAppInstallerUpdateNotification = await _wpm.IsUpdateAvailableAsync();
         }
         else
         {
             Log.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available. Package install item is hidden.");
         }
+    }
+
+    protected async override Task OnEachNavigateToAsync()
+    {
+        await ValidateAppInstallerAsync();
     }
 
     /// <summary>

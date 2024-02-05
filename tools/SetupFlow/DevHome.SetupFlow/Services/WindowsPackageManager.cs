@@ -1,318 +1,83 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
+// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DevHome.Common.Exceptions;
-using DevHome.Common.Services;
-using DevHome.Services;
-using DevHome.SetupFlow.Common.Extensions;
-using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.WindowsPackageManager;
-using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Models;
-using Microsoft.Management.Deployment;
-using Windows.Win32.Foundation;
+using DevHome.SetupFlow.Services.WinGet;
+using DevHome.SetupFlow.Services.WinGet.Operations;
 
 namespace DevHome.SetupFlow.Services;
 
 /// <summary>
 /// Windows package manager class is an entry point for using the WinGet COM API.
 /// </summary>
-public class WindowsPackageManager : IWindowsPackageManager
+internal sealed class WindowsPackageManager : IWindowsPackageManager
 {
-    public const int AppInstallerErrorFacility = 0xA15;
-    public const string AppInstallerProductId = "9NBLGGH4NNS1";
-    public const string AppInstallerPackageFamilyName = "Microsoft.DesktopAppInstaller_8wekyb3d8bbwe";
+    // WinGet services
+    private readonly IWinGetCatalogConnector _catalogConnector;
+    private readonly IWinGetDeployment _deployment;
+    private readonly IWinGetOperations _operations;
+    private readonly IWinGetProtocolParser _protocolParser;
 
-    // Package manager URI constants:
-    // - x-ms-winget: is a custom scheme for WinGet package manager
-    // - winget: is a reserved URI name for the winget catalog
-    public const string Scheme = "x-ms-winget";
-    public const string WingetCatalogURIName = "winget";
+    public static string AppInstallerProductId => WinGetDeployment.AppInstallerProductId;
 
-    private readonly WindowsPackageManagerFactory _wingetFactory;
-    private readonly IAppInstallManagerService _appInstallManagerService;
-    private readonly IPackageDeploymentService _packageDeploymentService;
-
-    // Custom composite catalogs
-    private readonly Lazy<WinGetCompositeCatalog> _allCatalogs;
-    private readonly Lazy<WinGetCompositeCatalog> _wingetCatalog;
-
-    // Predefined catalog ids
-    private readonly Lazy<string> _wingetCatalogId;
-    private readonly Lazy<string> _msStoreCatalogId;
+    public static int AppInstallerErrorFacility => WinGetDeployment.AppInstallerErrorFacility;
 
     public WindowsPackageManager(
-        WindowsPackageManagerFactory wingetFactory,
-        IAppInstallManagerService appInstallManagerService,
-        IPackageDeploymentService packageDeploymentService)
+        IWinGetCatalogConnector catalogConnector,
+        IWinGetDeployment deployment,
+        IWinGetOperations operations,
+        IWinGetProtocolParser protocolParser)
     {
-        _wingetFactory = wingetFactory;
-        _appInstallManagerService = appInstallManagerService;
-        _packageDeploymentService = packageDeploymentService;
-
-        // Lazy-initialize custom composite catalogs
-        _allCatalogs = new(CreateAllCatalogs);
-        _wingetCatalog = new(CreateWinGetCatalog);
-
-        // Lazy-initialize predefined catalog ids
-        _wingetCatalogId = new(() => GetPredefinedCatalogId(PredefinedPackageCatalog.OpenWindowsCatalog));
-        _msStoreCatalogId = new(() => GetPredefinedCatalogId(PredefinedPackageCatalog.MicrosoftStore));
+        _catalogConnector = catalogConnector;
+        _deployment = deployment;
+        _operations = operations;
+        _protocolParser = protocolParser;
     }
 
-    public string WinGetCatalogId => _wingetCatalogId.Value;
-
-    public string MsStoreId => _msStoreCatalogId.Value;
-
-    public IWinGetCatalog AllCatalogs => _allCatalogs.Value;
-
-    public IWinGetCatalog WinGetCatalog => _wingetCatalog.Value;
-
-    public async Task ConnectToAllCatalogsAsync(bool force)
+    /// <inheritdoc/>
+    public async Task InitializeAsync()
     {
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs");
-
-        // Connect predefined winget catalog to enable loading
-        // package with a known source (e.g. for restoring packages)
-        var wingetConnect = Task.Run(async () =>
-        {
-            try
-            {
-                await WinGetCatalog.ConnectAsync(force);
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {WinGetCatalog} when connecting to all catalogs", e);
-            }
-        });
-
-        // Connect composite catalog for all local and remote catalogs to
-        // enable searching for packages from any source
-        var allCatalogsConnect = Task.Run(async () =>
-        {
-            try
-            {
-                await AllCatalogs.ConnectAsync(force);
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {AllCatalogs} (search) when connecting to all catalogs", e);
-            }
-        });
-
-        await Task.WhenAll(wingetConnect, allCatalogsConnect);
-
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to all catalogs completed");
+        // Run action in a background thread to avoid blocking the UI thread
+        // Async methods are blocking in WinGet: https://github.com/microsoft/winget-cli/issues/3205
+        await Task.Run(async () => await _catalogConnector.CreateAndConnectCatalogsAsync());
     }
 
-    public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackage package, Guid activityId)
-    {
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var options = _wingetFactory.CreateInstallOptions();
-        options.PackageInstallMode = PackageInstallMode.Silent;
+    /// <inheritdoc/>
+    public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package) => await _operations.InstallPackageAsync(package);
 
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package install for {package.Id}");
-        var installResult = await packageManager.InstallPackageAsync(package.CatalogPackage, options).AsTask();
-        var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
+    /// <inheritdoc/>
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris) => await _operations.GetPackagesAsync(packageUris);
 
-        // Contract version 4
-        var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK);
+    /// <inheritdoc/>
+    public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit) => await _operations.SearchAsync(query, limit);
 
-        Log.Logger?.ReportInfo(
-            Log.Component.AppManagement,
-            $"Install result: Status={installResult.Status}, InstallerErrorCode={installErrorCode}, ExtendedErrorCode={extendedErrorCode}, RebootRequired={installResult.RebootRequired}");
+    /// <inheritdoc/>
+    public async Task<bool> IsUpdateAvailableAsync() => await _deployment.IsUpdateAvailableAsync();
 
-        if (installResult.Status != InstallResultStatus.Ok)
-        {
-            throw new InstallPackageException(installResult.Status, extendedErrorCode, installErrorCode);
-        }
+    /// <inheritdoc/>
+    public async Task<bool> RegisterAppInstallerAsync() => await _deployment.RegisterAppInstallerAsync();
 
-        return new()
-        {
-            ExtendedErrorCode = extendedErrorCode,
-            RebootRequired = installResult.RebootRequired,
-        };
-    }
+    /// <inheritdoc/>
+    public async Task<bool> IsAvailableAsync() => await _deployment.IsAvailableAsync();
 
-    public async Task<bool> IsAppInstallerUpdateAvailableAsync()
-    {
-        try
-        {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Checking if AppInstaller has an update ...");
-            var appInstallerUpdateAvailable = await _appInstallManagerService.IsAppUpdateAvailableAsync(AppInstallerProductId);
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller update available = {appInstallerUpdateAvailable}");
-            return appInstallerUpdateAvailable;
-        }
-        catch (Exception e)
-        {
-            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to check if AppInstaller has an update, defaulting to false", e);
-            return false;
-        }
-    }
+    /// <inheritdoc/>
+    public bool IsMsStorePackage(IWinGetPackage package) => _catalogConnector.IsMsStorePackage(package);
 
-    public async Task<bool> StartAppInstallerUpdateAsync()
-    {
-        try
-        {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting AppInstaller update ...");
-            var updateStarted = await _appInstallManagerService.StartAppUpdateAsync(AppInstallerProductId);
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Start AppInstaller update = {updateStarted}");
-            return updateStarted;
-        }
-        catch (Exception e)
-        {
-            Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to start AppInstaller update", e);
-            return false;
-        }
-    }
+    /// <inheritdoc/>
+    public bool IsWinGetPackage(IWinGetPackage package) => _catalogConnector.IsWinGetPackage(package);
 
-    public async Task<bool> RegisterAppInstallerAsync()
-    {
-        try
-        {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, "Starting AppInstaller registration ...");
-            await _packageDeploymentService.RegisterPackageForCurrentUserAsync(AppInstallerPackageFamilyName);
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"AppInstaller registered successfully");
-            return true;
-        }
-        catch (RegisterPackageException e)
-        {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to register AppInstaller", e);
-            return false;
-        }
-        catch (Exception e)
-        {
-            Log.Logger?.ReportError(Log.Component.AppManagement, "An unexpected error occurred when registering AppInstaller", e);
-            return false;
-        }
-    }
+    /// <inheritdoc />
+    public Uri CreatePackageUri(IWinGetPackage package) => _protocolParser.CreatePackageUri(package);
 
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(ISet<Uri> packageUriSet)
-    {
-        // TODO Add support for other catalogs (e.g. `msstore` and custom).
-        // https://github.com/microsoft/devhome/issues/1521
-        HashSet<string> wingetPackageIds = new();
-        foreach (var packageUri in packageUriSet)
-        {
-            if (TryGetPackageId(packageUri, out var packageId))
-            {
-                wingetPackageIds.Add(packageId);
-            }
-            else
-            {
-                Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package id from uri '{packageUri}'");
-            }
-        }
+    /// <inheritdoc />
+    public Uri CreateWinGetCatalogPackageUri(string packageId) => _protocolParser.CreateWinGetCatalogPackageUri(packageId);
 
-        return await WinGetCatalog.GetPackagesAsync(wingetPackageIds);
-    }
+    /// <inheritdoc />
+    public Uri CreateMsStoreCatalogPackageUri(string packageId) => _protocolParser.CreateMsStoreCatalogPackageUri(packageId);
 
-    /// <summary>
-    /// Gets the id of the provided predefined catalog
-    /// </summary>
-    /// <param name="catalog">Predefined catalog</param>
-    /// <returns>Catalog id</returns>
-    private string GetPredefinedCatalogId(PredefinedPackageCatalog catalog)
-    {
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var packageCatalog = packageManager.GetPredefinedPackageCatalog(catalog);
-        return packageCatalog.Info.Id;
-    }
-
-    /// <summary>
-    /// Create a composite catalog that can be used for finding packages in all
-    /// remote and local packages
-    /// </summary>
-    /// <returns>Catalog composed of all remote and local catalogs</returns>
-    private WinGetCompositeCatalog CreateAllCatalogs()
-    {
-        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory);
-        compositeCatalog.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var catalogs = packageManager.GetPackageCatalogs();
-
-        // Cannot use foreach or LINQ for out-of-process IVector
-        // Bug: https://github.com/microsoft/CsWinRT/issues/1205
-        for (var i = 0; i < catalogs.Count; ++i)
-        {
-            compositeCatalog.AddPackageCatalog(catalogs[i]);
-        }
-
-        return compositeCatalog;
-    }
-
-    /// <summary>
-    /// Create a composite catalog that can be used for finding packages in
-    /// winget and local catalogs
-    /// </summary>
-    /// <returns>Catalog composed of winget and local catalogs</returns>
-    private WinGetCompositeCatalog CreateWinGetCatalog()
-    {
-        return CreatePredefinedCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
-    }
-
-    /// <summary>
-    /// Create a composite catalog that can be used for finding packages in
-    /// a predefined and local catalogs
-    /// </summary>
-    /// <param name="predefinedPackageCatalog">Predefined package catalog</param>
-    /// <returns>Catalog composed of the provided and local catalogs</returns>
-    private WinGetCompositeCatalog CreatePredefinedCatalog(PredefinedPackageCatalog predefinedPackageCatalog)
-    {
-        var compositeCatalog = new WinGetCompositeCatalog(_wingetFactory);
-        compositeCatalog.CompositeSearchBehavior = CompositeSearchBehavior.RemotePackagesFromAllCatalogs;
-        var packageManager = _wingetFactory.CreatePackageManager();
-        var catalog = packageManager.GetPredefinedPackageCatalog(predefinedPackageCatalog);
-        compositeCatalog.AddPackageCatalog(catalog);
-        return compositeCatalog;
-    }
-
-    /// <summary>
-    /// Check if WindowsPackageManager COM Server is available by creating a
-    /// dummy out-of-proc object
-    /// </summary>
-    /// <returns>True if server is available, false otherwise.</returns>
-    public async Task<bool> IsCOMServerAvailableAsync()
-    {
-        try
-        {
-            await Task.Run(() =>
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Attempting to create a dummy out-of-proc {nameof(PackageManager)} COM object to test if the COM server is available");
-                _wingetFactory.CreatePackageManager();
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"WinGet COM Server is available");
-            });
-
-            return true;
-        }
-        catch (Exception e)
-        {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to create dummy {nameof(PackageManager)} COM object. WinGet COM Server is not available.", e);
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// Try get the package id from a package uri
-    /// </summary>
-    /// <param name="packageUri">Input package uri</param>
-    /// <param name="packageId">Output package id</param>
-    /// <returns>True if the package uri is valid and a package id was identified, false otherwise.</returns>
-    private bool TryGetPackageId(Uri packageUri, out string packageId)
-    {
-        // TODO Add support for other catalogs (e.g. `msstore` and custom).
-        // https://github.com/microsoft/devhome/issues/1521
-        if (packageUri.Scheme == Scheme &&
-            packageUri.Host == WingetCatalogURIName &&
-            packageUri.Segments.Length == 2)
-        {
-            packageId = packageUri.Segments[1];
-            return true;
-        }
-
-        packageId = null;
-        return false;
-    }
+    /// <inheritdoc />
+    public Uri CreateCustomCatalogPackageUri(string packageId, string catalogName) => _protocolParser.CreateCustomCatalogPackageUri(packageId, catalogName);
 }

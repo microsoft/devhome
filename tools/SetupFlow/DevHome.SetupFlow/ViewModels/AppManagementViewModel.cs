@@ -33,9 +33,6 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     [ObservableProperty]
     private ObservableObject _currentView;
 
-    [ObservableProperty]
-    private bool _searchBoxEnabled;
-
     public ReadOnlyObservableCollection<PackageViewModel> SelectedPackages => _packageProvider.SelectedPackages;
 
     public string ApplicationsAddedText => SelectedPackages.Count == 1 ?
@@ -67,37 +64,10 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
         SelectDefaultView();
     }
 
-    protected async override Task OnFirstNavigateToAsync()
-    {
-        // Load catalogs from all data sources
-        Log.Logger?.ReportInfo(Log.Component.AppManagement, "Loading package catalogs from all sources");
-        var loadCatalogs = _packageCatalogListViewModel.LoadCatalogsAsync();
-
-        // Connect to composite catalog used for searching on a separate
-        // (non-UI) thread to prevent lagging the UI.
-        var allCatalogsConnect = Task.Run(async () =>
-        {
-            try
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, "Connecting to composite catalog to enable searching for packages");
-                await Task.Run(async () => await _wpm.AllCatalogs.ConnectAsync());
-
-                // Enable search box after catalog connection is complete
-                _dispatcherQueue.TryEnqueue(() => SearchBoxEnabled = _wpm.AllCatalogs.IsConnected);
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.AppManagement, "Failed to connect to composite catalog to  enable searching. Search will be disabled.", e);
-            }
-        });
-
-        await Task.WhenAll(allCatalogsConnect, loadCatalogs);
-    }
-
     protected async override Task OnEachNavigateToAsync()
     {
         SelectDefaultView();
-        await Task.CompletedTask;
+        await _packageCatalogListViewModel.LoadCatalogsAsync();
     }
 
     private void SelectDefaultView()

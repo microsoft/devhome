@@ -1,0 +1,19 @@
+﻿// Copyright (c) Microsoft Corporation and Contributors
+// Licensed under the MIT license.
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using DevHome.SetupFlow.Models;
+
+namespace DevHome.SetupFlow.Services.WinGet.Operations;
+
+internal interface IWinGetGetPackageOperation
+{
+    /// <summary>
+    /// Get packages from a list of package uri.
+    /// </summary>
+    /// <param name="packageUris">List of package uri</param>
+    /// <returns>List of winget package matches</returns>
+    public Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris);
+}

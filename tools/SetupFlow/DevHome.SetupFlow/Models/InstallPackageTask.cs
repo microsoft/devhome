@@ -1,15 +1,13 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
+// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
 extern alias Projection;
 
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Exceptions;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
@@ -27,8 +25,6 @@ public class InstallPackageTask : ISetupTask
     private readonly IWindowsPackageManager _wpm;
     private readonly WinGetPackage _package;
     private readonly ISetupFlowStringResource _stringResource;
-    private readonly WindowsPackageManagerFactory _wingetFactory;
-    private readonly Lazy<bool> _requiresElevation;
     private readonly Guid _activityId;
 
     private InstallResultStatus _installResultStatus;
@@ -37,7 +33,7 @@ public class InstallPackageTask : ISetupTask
 
     public event ISetupTask.ChangeMessageHandler AddMessage;
 
-    public bool RequiresAdmin => _requiresElevation.Value;
+    public bool RequiresAdmin => _package.IsElevationRequired;
 
     public bool IsFromMSStore => string.Equals(_package.CatalogId, MSStoreCatalogId, StringComparison.Ordinal);
 
@@ -59,15 +55,12 @@ public class InstallPackageTask : ISetupTask
     public InstallPackageTask(
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory,
         WinGetPackage package,
         Guid activityId)
     {
         _wpm = wpm;
         _stringResource = stringResource;
-        _wingetFactory = wingetFactory;
         _package = package;
-        _requiresElevation = new(RequiresElevation);
         _activityId = activityId;
     }
 
@@ -122,7 +115,7 @@ public class InstallPackageTask : ISetupTask
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id));
-                var installResult = await _wpm.InstallPackageAsync(_package, _activityId);
+                var installResult = await _wpm.InstallPackageAsync(_package);
                 RequiresReboot = installResult.RebootRequired;
                 WasInstallSuccessful = true;
 
@@ -268,13 +261,6 @@ public class InstallPackageTask : ISetupTask
                     _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownErrorWithErrorCode, packageName, $"0x{_extendedErrorCode:X}") :
                     _stringResource.GetLocalized(StringResourceKey.InstallPackageErrorUnknownErrorWithErrorCodeAndExitCode, packageName, $"0x{_extendedErrorCode:X}", _installerErrorCode),
         };
-    }
-
-    private bool RequiresElevation()
-    {
-        var options = _wingetFactory.CreateInstallOptions();
-        options.PackageInstallScope = PackageInstallScope.Any;
-        return _package.RequiresElevation(options);
     }
 
     private void ReportAppSelectedForInstallEvent()

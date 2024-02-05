@@ -6,6 +6,7 @@ using DevHome.Common.Services;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.Services.WinGet;
 using DevHome.SetupFlow.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -75,7 +76,7 @@ public class BaseSetupFlowTest
                 services.AddSingleton<WindowsPackageManagerFactory>(new WindowsPackageManagerDefaultFactory());
                 services.AddSingleton<IAppManagementInitializer, AppManagementInitializer>();
                 services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
-                services.AddSingleton<CatalogDataSourceLoader>();
+                services.AddSingleton<ICatalogDataSourceLoader, CatalogDataSourceLoader>();
                 services.AddSingleton<IScreenReaderService>(new Mock<IScreenReaderService>().Object);
 
                 // DI factory pattern
