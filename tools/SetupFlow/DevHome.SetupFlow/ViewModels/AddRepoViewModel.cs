@@ -338,13 +338,16 @@ public partial class AddRepoViewModel : ObservableObject
     /// Switches the repos shown to the account selected.
     /// </summary>
     [RelayCommand]
-    private async Task MenuItemClick(string selectedItemName)
+    private void MenuItemClick(string selectedItemName)
     {
-        SelectedAccount = selectedItemName;
-        await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
+        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(async () =>
+        {
+            SelectedAccount = selectedItemName;
+            await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
 
-        var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
-        _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
+            var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
+            _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
+        });
     }
 
     /// <summary>
@@ -429,7 +432,7 @@ public partial class AddRepoViewModel : ObservableObject
 
             IsCancelling = false;
             var firstItem = AccountsToShow.Items.FirstOrDefault(x => x.Name.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase));
-            await MenuItemClick((firstItem as MenuFlyoutItem).Text);
+            MenuItemClick((firstItem as MenuFlyoutItem).Text);
         }
     }
 
@@ -639,7 +642,7 @@ public partial class AddRepoViewModel : ObservableObject
         if (Accounts.Any())
         {
             SelectedAccount = Accounts.First();
-            await MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
+            MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
         }
     }
 
