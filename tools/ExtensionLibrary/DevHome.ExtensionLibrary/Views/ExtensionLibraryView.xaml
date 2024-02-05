@@ -69,7 +69,7 @@
                                                    Description="{x:Bind GeneratePackageDetails(Version,Publisher , InstalledDate), Mode=OneWay}"
                                                    Margin="{ThemeResource SettingsCardMargin}"
                                                    ItemsSource="{x:Bind InstalledExtensionsList}"
-                                                   IsExpanded="True">
+                                                   IsExpanded="False">
                                 <ctControls:SettingsExpander.HeaderIcon>
                                     <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xea86;"/>
                                 </ctControls:SettingsExpander.HeaderIcon>

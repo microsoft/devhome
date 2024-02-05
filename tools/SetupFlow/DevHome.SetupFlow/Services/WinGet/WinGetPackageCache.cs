@@ -10,7 +10,7 @@ namespace DevHome.SetupFlow.Services.WinGet;
 /// <summary>
 /// Thread-safe cache for packages
 /// </summary>
-internal class WinGetPackageCache : IWinGetPackageCache
+internal sealed class WinGetPackageCache : IWinGetPackageCache
 {
     private readonly Dictionary<Uri, IWinGetPackage> _cache = new ();
     private readonly object _lock = new ();
@@ -18,6 +18,7 @@ internal class WinGetPackageCache : IWinGetPackageCache
     /// <inheritdoc />
     public IList<IWinGetPackage> GetPackages(IEnumerable<Uri> packageUris, out IEnumerable<Uri> packageUrisNotFound)
     {
+        // Lock to ensure all packages fetched are from the same cache state
         lock (_lock)
         {
             var foundPackages = new List<IWinGetPackage>();

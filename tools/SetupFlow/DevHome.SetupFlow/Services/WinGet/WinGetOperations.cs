@@ -8,7 +8,7 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet.Operations;
 
-internal class WinGetOperations : IWinGetOperations
+internal sealed class WinGetOperations : IWinGetOperations
 {
     private readonly IWinGetInstallOperation _installOperation;
     private readonly IWinGetSearchOperation _searchOperation;

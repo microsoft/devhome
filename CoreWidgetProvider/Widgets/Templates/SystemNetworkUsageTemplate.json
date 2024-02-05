@@ -2,72 +2,119 @@
   "type": "AdaptiveCard",
   "body": [
     {
-      "type": "Image",
-      "url": "${netGraphUrl}",
-      "height": "${chartHeight}",
-      "width": "${chartWidth}",
-      "horizontalAlignment": "center"
+      "type": "Container",
+      "$when": "${errorMessage != null}",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "${errorMessage}",
+          "wrap": true,
+          "size": "small"
+        }
+      ],
+      "style": "warning"
     },
     {
-      "type": "ColumnSet",
-      "columns": [
+      "type": "Container",
+      "$when": "${errorMessage == null}",
+      "items": [
         {
-          "type": "Column",
-          "items": [
+          "type": "Image",
+          "url": "${netGraphUrl}",
+          "height": "${chartHeight}",
+          "width": "${chartWidth}",
+          "horizontalAlignment": "center"
+        },
+        {
+          "type": "ColumnSet",
+          "columns": [
             {
-              "text": "%NetworkUsage_Widget_Template/Sent%",
-              "type": "TextBlock",
-              "spacing": "none",
-              "size": "small",
-              "isSubtle": true
+              "type": "Column",
+              "items": [
+                {
+                  "text": "%NetworkUsage_Widget_Template/Sent%",
+                  "type": "TextBlock",
+                  "spacing": "none",
+                  "size": "small",
+                  "isSubtle": true
+                },
+                {
+                  "text": "${netSent}",
+                  "type": "TextBlock",
+                  "size": "large",
+                  "weight": "bolder"
+                }
+              ]
             },
             {
-              "text": "${netSent}",
-              "type": "TextBlock",
-              "size": "large",
-              "weight": "bolder"
+              "type": "Column",
+              "items": [
+                {
+                  "text": "%NetworkUsage_Widget_Template/Received%",
+                  "type": "TextBlock",
+                  "spacing": "none",
+                  "size": "small",
+                  "isSubtle": true,
+                  "horizontalAlignment": "right"
+                },
+                {
+                  "text": "${netReceived}",
+                  "type": "TextBlock",
+                  "size": "large",
+                  "weight": "bolder",
+                  "horizontalAlignment": "right"
+                }
+              ]
             }
           ]
         },
         {
-          "type": "Column",
-          "items": [
+          "text": "%NetworkUsage_Widget_Template/Network_Name%",
+          "type": "TextBlock",
+          "size": "small",
+          "isSubtle": true
+        },
+        {
+          "text": "${networkName}",
+          "type": "TextBlock",
+          "size": "medium"
+        },
+        {
+          "type": "ColumnSet",
+          "spacing": "Medium",
+          "columns": [
             {
-              "text": "%NetworkUsage_Widget_Template/Received%",
-              "type": "TextBlock",
-              "spacing": "none",
-              "size": "small",
-              "isSubtle": true,
-              "horizontalAlignment": "right"
+              "type": "Column",
+              "width": "stretch"
             },
             {
-              "text": "${netReceived}",
-              "type": "TextBlock",
-              "size": "large",
-              "weight": "bolder",
-              "horizontalAlignment": "right"
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "Container",
+                  "items": [
+                    {
+                      "type": "ActionSet",
+                      "actions": [
+                        {
+                          "type": "Action.Execute",
+                          "title": "%NetworkUsage_Widget_Template/Next_Network%",
+                          "verb": "NextItem"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch"
             }
           ]
         }
       ]
-    },
-    {
-      "text": "%NetworkUsage_Widget_Template/Network_Name%",
-      "type": "TextBlock",
-      "size": "small",
-      "isSubtle": true
-    },
-    {
-      "text": "${networkName}",
-      "type": "TextBlock",
-      "size": "medium"
-    }
-  ],
-  "actions": [
-    {
-      "type": "Action.Execute",
-      "title": "%NetworkUsage_Widget_Template/Next_Network%",
-      "verb": "NextItem"
     }
   ],
   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",

@@ -246,7 +246,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     /// configuration file task.
     /// </summary>
     /// <returns>List of configuration unit result</returns>
-    private IList<ConfigurationUnitResultViewModel> GetConfigurationUnitResults()
+    private List<ConfigurationUnitResultViewModel> GetConfigurationUnitResults()
     {
         List<ConfigurationUnitResultViewModel> unitResults = new ();
         var configTaskGroup = _orchestrator.GetTaskGroup<ConfigurationFileTaskGroup>();

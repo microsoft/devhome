@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation and Contributors
 // Licensed under the MIT license.
 
+using Microsoft.UI.Xaml;
+
 namespace DevHome.Models;
 
 public class WhatsNewCard
@@ -55,7 +57,9 @@ public class WhatsNewCard
         get; set;
     }
 
-    public bool? ShouldShowLink
+    public bool ShouldShowLink { get; set; } = true;
+
+    public bool? ShouldShowIcon
     {
         get; set;
     }
@@ -63,5 +67,17 @@ public class WhatsNewCard
     public bool? IsBig
     {
         get; set;
+    }
+
+    public Visibility HasLinkAndShouldShowIt(string? link, bool shouldShowLink)
+    {
+        if (link != null && shouldShowLink)
+        {
+            return Visibility.Visible;
+        }
+        else
+        {
+            return Visibility.Collapsed;
+        }
     }
 }

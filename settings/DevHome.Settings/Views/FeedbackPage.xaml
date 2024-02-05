@@ -43,9 +43,9 @@
                                     </Expander.Header>
                                     <Expander.Content>
                                         <StackPanel>
-                                            <TextBlock x:Name="CpuID"/>
-                                            <TextBlock x:Name="PhysicalMemory"/>
-                                            <TextBlock x:Name="ProcessorArchitecture"/>
+                                            <TextBlock x:Name="CpuID" TextWrapping="Wrap"/>
+                                            <TextBlock x:Name="PhysicalMemory" TextWrapping="Wrap"/>
+                                            <TextBlock x:Name="ProcessorArchitecture" TextWrapping="Wrap"/>
                                         </StackPanel>
                                     </Expander.Content>
                                 </Expander>
@@ -55,7 +55,8 @@
                                     </Expander.Header>
                                     <Expander.Content>
                                         <StackPanel>
-                                            <TextBlock x:Name="ReportBugIncludeExtensionsList" />
+                                            <TextBlock x:Name="ReportBugIncludeExtensionsList" TextWrapping="Wrap"/>
+                                            <TextBlock x:Name="WidgetServiceInfo" TextWrapping="Wrap"/>
                                         </StackPanel>
                                     </Expander.Content>
                                 </Expander>
@@ -95,7 +96,7 @@
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel>
                                 <TextBox x:Name="DocumentationIssueTitle" x:Uid="Settings_Feedback_DocumentationIssue_IssueTitle" AcceptsReturn="True"/>
-                                <TextBox x:Name="DocumentationIssueDescription" x:Uid="Settings_Feedback_DocumentationIssue_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" Height="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
+                                <TextBox x:Name="DocumentationIssueDescription" x:Uid="Settings_Feedback_DocumentationIssue_Description" TextWrapping="Wrap" Margin="{StaticResource SmallTopMargin}" MinHeight="{StaticResource FeedbackTextBoxHeight}" AcceptsReturn="True"/>
                             </StackPanel>
                         </ScrollViewer>
                     </Grid>
@@ -140,9 +141,9 @@
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xea86;"/>
                         </ctControls:SettingsCard.HeaderIcon>
-                        <Button Click="BuildExtensionButtonClicked" MinWidth="150">
+                        <Button x:Uid="Settings_Feedback_BuildExtension_Button" Click="BuildExtensionButtonClicked" MinWidth="150">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock x:Uid="Settings_Feedback_BuildExtension_Button" />
+                                <TextBlock x:Uid="Settings_Feedback_BuildExtension_TextBlock" />
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE8A7;" FontSize="12" />
                             </StackPanel>
                         </Button>
@@ -152,9 +153,9 @@
                             <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" 
                                   Glyph="&#xf552;"/>
                         </ctControls:SettingsCard.HeaderIcon>
-                        <Button Click="ReportSecurityButtonClicked" MinWidth="150">
+                        <Button x:Uid="Settings_Feedback_ReportSecurity_Button" Click="ReportSecurityButtonClicked" MinWidth="150">
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock x:Uid="Settings_Feedback_ReportSecurity_Button" />
+                                <TextBlock x:Uid="Settings_Feedback_ReportSecurity_TextBlock" />
                                 <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="&#xE8A7;" FontSize="12" />
                             </StackPanel>
                         </Button>

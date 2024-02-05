@@ -10,7 +10,7 @@ namespace DevHome.SetupFlow.Services.WinGet.Operations;
 /// <summary>
 /// Install packages using WinGet with recovery
 /// </summary>
-internal class WinGetInstallOperation : IWinGetInstallOperation
+internal sealed class WinGetInstallOperation : IWinGetInstallOperation
 {
     private readonly IWinGetPackageInstaller _packageInstaller;
     private readonly IWinGetProtocolParser _protocolParser;

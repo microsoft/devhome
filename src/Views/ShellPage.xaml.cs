@@ -38,6 +38,8 @@ public sealed partial class ShellPage : Page
         App.MainWindow.Activated += MainWindow_Activated;
 
         ActualThemeChanged += OnActualThemeChanged;
+
+        PointerPressed += OnPointerPressed;
     }
 
     private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -46,6 +48,8 @@ public sealed partial class ShellPage : Page
 
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
+        KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Right, VirtualKeyModifiers.Menu));
+        KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoForward));
 
         await ViewModel.OnLoaded();
     }
@@ -89,11 +93,33 @@ public sealed partial class ShellPage : Page
 
     private static void OnKeyboardAcceleratorInvoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
-        var navigationService = Application.Current.GetService<INavigationService>();
+        if ((sender.Key == VirtualKey.GoBack) ||
+            ((sender.Key == VirtualKey.Left) && sender.Modifiers.HasFlag(VirtualKeyModifiers.Menu)))
+        {
+            args.Handled = Application.Current.GetService<INavigationService>().GoBack();
+        }
+        else if ((sender.Key == VirtualKey.GoForward) ||
+            ((sender.Key == VirtualKey.Right) && sender.Modifiers.HasFlag(VirtualKeyModifiers.Menu)))
+        {
+            args.Handled = Application.Current.GetService<INavigationService>().GoForward();
+        }
+    }
 
-        var result = navigationService.GoBack();
+    private static void OnPointerPressed(object sender, PointerRoutedEventArgs args)
+    {
+        var handled = false;
 
-        args.Handled = result;
+        // Handle mouse forward and back navigation.
+        if (args.GetCurrentPoint(null).Properties.IsXButton1Pressed)
+        {
+            handled = Application.Current.GetService<INavigationService>().GoBack();
+        }
+        else if (args.GetCurrentPoint(null).Properties.IsXButton2Pressed)
+        {
+            handled = Application.Current.GetService<INavigationService>().GoForward();
+        }
+
+        args.Handled = handled;
     }
 
     public static readonly DependencyProperty ExperimentalFeatureProperty = DependencyProperty.Register(

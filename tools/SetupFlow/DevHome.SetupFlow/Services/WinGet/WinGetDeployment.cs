@@ -12,7 +12,7 @@ using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-internal class WinGetDeployment : IWinGetDeployment
+internal sealed class WinGetDeployment : IWinGetDeployment
 {
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;

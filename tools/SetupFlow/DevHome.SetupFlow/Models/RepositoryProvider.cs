@@ -3,25 +3,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
 using DevHome.Common.Services;
-using DevHome.Common.TelemetryEvents.DeveloperId;
 using DevHome.Common.TelemetryEvents.SetupFlow;
 using DevHome.Common.Views;
 using DevHome.Logging;
-using DevHome.Settings.Views;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.Telemetry;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 using Windows.Storage;
-using Windows.UI.ViewManagement;
 
 namespace DevHome.SetupFlow.Models;
 
@@ -29,7 +24,7 @@ namespace DevHome.SetupFlow.Models;
 /// Object that holds a reference to the providers in a extension.
 /// This needs to be changed to handle multiple accounts per provider.
 /// </summary>
-internal class RepositoryProvider
+internal sealed class RepositoryProvider
 {
     /// <summary>
     /// Wrapper for the extension that is providing a repository and developer id.
@@ -41,9 +36,9 @@ internal class RepositoryProvider
     private readonly IExtensionWrapper _extensionWrapper;
 
     /// <summary>
-    /// All the repositories for an account.
+    /// Dictionary with all the repositories per account.
     /// </summary>
-    private Lazy<IEnumerable<IRepository>> _repositories = new ();
+    private Dictionary<IDeveloperId, IEnumerable<IRepository>> _repositories = new ();
 
     /// <summary>
     /// The DeveloperId provider used to log a user into an account.
@@ -63,6 +58,8 @@ internal class RepositoryProvider
     public string DisplayName => _repositoryProvider.DisplayName;
 
     public string ExtensionDisplayName => _extensionWrapper.Name;
+
+    private readonly object _getRepoLock = new ();
 
     /// <summary>
     /// Starts the extension if it isn't running.
@@ -248,23 +245,30 @@ internal class RepositoryProvider
     /// <returns>A collection of repositories.  May be empty</returns>
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
     {
-        if (!_repositories.IsValueCreated)
-        {
-            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
+        IEnumerable<IRepository> repositoriesForAccount;
 
-            var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
-            if (result.Result.Status != ProviderOperationStatus.Success)
+        lock (_getRepoLock)
+        {
+            if (!_repositories.TryGetValue(developerId, out repositoriesForAccount))
             {
-                _repositories = new Lazy<IEnumerable<IRepository>>(new List<IRepository>());
-            }
-            else
-            {
-                _repositories = new Lazy<IEnumerable<IRepository>>(result.Repositories);
+                TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
+                var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+                if (result.Result.Status != ProviderOperationStatus.Success)
+                {
+                    _repositories.Add(developerId, new List<IRepository>());
+                }
+                else
+                {
+                    _repositories.Add(developerId, result.Repositories);
+                }
             }
         }
 
+        // _repositories should have an entry for developerId by now.
+        repositoriesForAccount ??= _repositories[developerId];
+
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
-        return _repositories.Value;
+        return repositoriesForAccount;
     }
 }
