@@ -25,7 +25,7 @@ public class FeaturedApplicationsProvider : IFeaturedApplicationsProvider
     /// <summary>
     /// Sample implementation of IFeaturedApplicationsGroup.
     /// </summary>
-    private class FeaturedApplicationsGroup : IFeaturedApplicationsGroup
+    private sealed class FeaturedApplicationsGroup : IFeaturedApplicationsGroup
     {
         public GetFeaturedApplicationsResult GetApplications()
         {
