@@ -4,6 +4,8 @@
 
 [*.cs]
 
+file_header_template = Copyright (c) Microsoft Corporation.\r\nLicensed under the MIT License.
+
 #Core editorconfig formatting - indentation
 
 #use soft tabs (spaces) for indentation
