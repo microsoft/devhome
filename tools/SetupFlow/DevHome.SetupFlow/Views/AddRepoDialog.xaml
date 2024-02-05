@@ -26,7 +26,7 @@
                 <ResourceDictionary Source="ms-appx:///DevHome.SetupFlow/Styles/SetupFlowStyles.xaml"/>
                 <ResourceDictionary>
                     <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible"/>
-                    <converters:BoolToObjectConverter x:Key="NegateBoolConverter" TrueValue="False" FalseValue="True"/>
+                    <converters:BoolToVisibilityConverter x:Key="NegateBoolConverter" TrueValue="False" FalseValue="True"/>
                     <converters:BoolToObjectConverter x:Key="BoolToGlyphConverter" TrueValue="&#xF0BD;" FalseValue="&#xF03F;"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>

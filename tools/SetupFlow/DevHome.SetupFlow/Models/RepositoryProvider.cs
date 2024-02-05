@@ -273,7 +273,7 @@ internal sealed class RepositoryProvider
             if (!_repositories.TryGetValue(developerId, out repositoriesForAccount))
             {
                 TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
-                var result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+                var result = _repositoryProvider2.GetRepositoriesAsync(developerId).AsTask().Result;
                 if (result.Result.Status != ProviderOperationStatus.Success)
                 {
                     _repositories.Add(developerId, new List<IRepository>());
