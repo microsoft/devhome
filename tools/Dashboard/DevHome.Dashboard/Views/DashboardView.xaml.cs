@@ -41,6 +41,9 @@ public partial class DashboardView : ToolPage
     private const string DraggedWidget = "DraggedWidget";
     private const string DraggedIndex = "DraggedIndex";
 
+    private static readonly string WebExperiencePackPackageId = "9MSSGKG348SP";
+    private static readonly string WidgetServiceStorePackageId = "9N3RK8ZV2ZR8";
+
     public DashboardView()
     {
         ViewModel = Application.Current.GetService<DashboardViewModel>();
@@ -111,7 +114,7 @@ public partial class DashboardView : ToolPage
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
         ViewModel.IsLoading = true;
 
-        if (await ViewModel.WidgetHostingService.EnsureWidgetServiceAsync())
+        if (ViewModel.WidgetHostingService.CheckForWidgetServiceAsync())
         {
             ViewModel.HasWidgetService = true;
             await SubscribeToWidgetCatalogEventsAsync();
@@ -247,7 +250,14 @@ public partial class DashboardView : ToolPage
     [RelayCommand]
     public async Task GoToWidgetsInStoreAsync()
     {
-        await Launcher.LaunchUriAsync(new("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
+        if (Common.Helpers.RuntimeHelper.IsOnWindows11)
+        {
+            await Launcher.LaunchUriAsync(new ($"ms-windows-store://pdp/?productid={WebExperiencePackPackageId}"));
+        }
+        else
+        {
+            await Launcher.LaunchUriAsync(new ($"ms-windows-store://pdp/?productid={WidgetServiceStorePackageId}"));
+        }
     }
 
     [RelayCommand]
