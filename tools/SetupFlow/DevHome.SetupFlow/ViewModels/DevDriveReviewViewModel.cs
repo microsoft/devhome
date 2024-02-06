@@ -36,7 +36,7 @@ public partial class DevDriveReviewViewModel : ReviewTabViewModelBase
     {
         get
         {
-            ObservableCollection<DevDriveReviewTabItem> devDriveReviewTabItem = new ();
+            ObservableCollection<DevDriveReviewTabItem> devDriveReviewTabItem = new();
             var manager = Application.Current.GetService<IDevDriveManager>();
             if (manager.RepositoriesUsingDevDrive > 0)
             {

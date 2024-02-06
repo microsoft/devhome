@@ -109,14 +109,14 @@ public partial class AddRepoViewModel : ObservableObject
     /// Names of all providers.  This is shown to the user on the accounts page.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<string> _providerNames = new ();
+    private ObservableCollection<string> _providerNames = new();
 
     /// <summary>
     /// Names of all accounts the user has logged into for a particular provider.
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsAccountComboBoxEnabled))]
-    private ObservableCollection<string> _accounts = new ();
+    private ObservableCollection<string> _accounts = new();
 
     /// <summary>
     /// The currently selected account.
@@ -128,7 +128,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// All repositories currently shown on the screen.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<RepoViewListItem> _repositories = new ();
+    private ObservableCollection<RepoViewListItem> _repositories = new();
 
     /// <summary>
     /// Should the URL page be visible?

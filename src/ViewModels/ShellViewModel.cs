@@ -34,7 +34,7 @@ public partial class ShellViewModel : ObservableObject
     private object? _selected;
 
     [ObservableProperty]
-    private InfoBarModel _shellInfoBarModel = new ();
+    private InfoBarModel _shellInfoBarModel = new();
 
     public ShellViewModel(
         INavigationService navigationService,

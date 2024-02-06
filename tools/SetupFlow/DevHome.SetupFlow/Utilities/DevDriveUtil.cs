@@ -62,7 +62,7 @@ public static class DevDriveUtil
     /// </summary>
     public static IList<char> DriveLetterCharArray => new List<char>("CDEFGHIJKLMNOPQRSTUVWXYZ");
 
-    public static readonly List<char> InvalidCharactersNotInGetInvalidPathChars = new () { '*', '?', '\"', '<', '>', '|' };
+    public static readonly List<char> InvalidCharactersNotInGetInvalidPathChars = new() { '*', '?', '\"', '<', '>', '|' };
 
     private enum DEVELOPER_DRIVE_ENABLEMENT_STATE
     {

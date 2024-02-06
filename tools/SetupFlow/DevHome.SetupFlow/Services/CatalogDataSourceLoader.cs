@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
@@ -13,7 +13,7 @@ namespace DevHome.SetupFlow.Services;
 
 public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
 {
-    private readonly SemaphoreSlim _lock = new (initialCount: 1, maxCount: 1);
+    private readonly SemaphoreSlim _lock = new(initialCount: 1, maxCount: 1);
     private readonly IEnumerable<WinGetPackageDataSource> _dataSources;
     private bool _disposedValue;
 

@@ -13,6 +13,7 @@ using Microsoft.Internal.Windows.DevHome.Helpers.Restore;
 using Windows.Storage.Streams;
 
 namespace DevHome.SetupFlow.Services;
+
 public class WinGetPackageRestoreDataSource : WinGetPackageDataSource
 {
     private readonly IRestoreInfo _restoreInfo;

@@ -44,14 +44,14 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         extensionService.OnExtensionsChanged -= OnExtensionsChanged;
         extensionService.OnExtensionsChanged += OnExtensionsChanged;
 
-        StorePackagesList = new ();
-        InstalledPackagesList = new ();
+        StorePackagesList = new();
+        InstalledPackagesList = new();
     }
 
     [RelayCommand]
     public async Task GetUpdatesButtonAsync()
     {
-        await Launcher.LaunchUriAsync(new ("ms-windows-store://downloadsandupdates"));
+        await Launcher.LaunchUriAsync(new("ms-windows-store://downloadsandupdates"));
     }
 
     [RelayCommand]

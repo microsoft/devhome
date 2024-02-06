@@ -7,26 +7,6 @@ using WinRT;
 
 namespace COM;
 
-internal static class Guids
-{
-    public const string IClassFactory = "00000001-0000-0000-C000-000000000046";
-    public const string IUnknown = "00000000-0000-0000-C000-000000000046";
-}
-
-// IClassFactory declaration
-[ComImport]
-[ComVisible(false)]
-[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-[Guid(COM.Guids.IClassFactory)]
-internal interface IClassFactory
-{
-    [PreserveSig]
-    int CreateInstance(IntPtr pUnkOuter, ref Guid riid, out IntPtr ppvObject);
-
-    [PreserveSig]
-    int LockServer(bool fLock);
-}
-
 [ComVisible(true)]
 public class WidgetProviderFactory<T> : IClassFactory
 where T : IWidgetProvider
@@ -69,4 +49,24 @@ where T : IWidgetProvider
 
     private const int CLASSENOAGGREGATION = unchecked((int)0x80040110);
     private const int ENOINTERFACE = unchecked((int)0x80004002);
+}
+
+internal static class Guids
+{
+    public const string IClassFactory = "00000001-0000-0000-C000-000000000046";
+    public const string IUnknown = "00000000-0000-0000-C000-000000000046";
+}
+
+// IClassFactory declaration
+[ComImport]
+[ComVisible(false)]
+[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+[Guid(COM.Guids.IClassFactory)]
+internal interface IClassFactory
+{
+    [PreserveSig]
+    int CreateInstance(IntPtr pUnkOuter, ref Guid riid, out IntPtr ppvObject);
+
+    [PreserveSig]
+    int LockServer(bool fLock);
 }

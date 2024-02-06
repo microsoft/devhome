@@ -4,6 +4,7 @@
 using DevHome.Logging.Listeners;
 
 namespace DevHome.Logging;
+
 public interface ILoggerHost : IDisposable
 {
     string Name

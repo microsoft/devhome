@@ -1,4 +1,5 @@
-﻿﻿// Licensed under the MIT License.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -81,7 +82,7 @@ public class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource
                 var appsResult = group.GetApplications();
                 if (appsResult.Result.Status == ProviderOperationStatus.Success)
                 {
-                    var packages = await GetPackagesAsync(ParseURIs(appsResult.FeaturedApplications));
+                    var packages = await GetPackagesAsync(ParseURIs(appsResult.FeaturedApplications));
                     if (packages.Any())
                     {
                         result.Add(new PackageCatalog()

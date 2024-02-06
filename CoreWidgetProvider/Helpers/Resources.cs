@@ -5,6 +5,7 @@ using DevHome.Logging;
 using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace CoreWidgetProvider.Helpers;
+
 public static class Resources
 {
     private static ResourceLoader? _resourceLoader;

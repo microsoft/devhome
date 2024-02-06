@@ -5,25 +5,6 @@ using System.Collections.ObjectModel;
 
 namespace DevHome.Contracts.Services;
 
-public enum GitRepositoryChangeType
-{
-    Created,
-    Deleted,
-}
-
-public class GitRepositoryChangedEventArgs : EventArgs
-{
-    public GitRepositoryChangedEventArgs(GitRepositoryChangeType changeType, string repositoryPath)
-    {
-        RepositoryPath = repositoryPath;
-        ChangeType = changeType;
-    }
-
-    public string RepositoryPath { get; }
-
-    public GitRepositoryChangeType ChangeType { get; }
-}
-
 public interface IGitWatcher
 {
     /// <summary>
@@ -101,6 +82,25 @@ public interface IGitWatcher
     /// </param>
     /// <returns>An IGitFileWatcher watching for changes to the specified file(s)</returns>
     public IGitFileWatcher CreateFileWatcher(string filePattern);
+}
+
+public enum GitRepositoryChangeType
+{
+    Created,
+    Deleted,
+}
+
+public class GitRepositoryChangedEventArgs : EventArgs
+{
+    public GitRepositoryChangedEventArgs(GitRepositoryChangeType changeType, string repositoryPath)
+    {
+        RepositoryPath = repositoryPath;
+        ChangeType = changeType;
+    }
+
+    public string RepositoryPath { get; }
+
+    public GitRepositoryChangeType ChangeType { get; }
 }
 
 public enum GitFileChangeType

@@ -40,7 +40,7 @@ public class PackageProvider
     }
 
     private readonly PackageViewModelFactory _packageViewModelFactory;
-    private readonly object _lock = new ();
+    private readonly object _lock = new();
 
     /// <summary>
     /// Dictionary for caching package view models
@@ -55,18 +55,18 @@ public class PackageProvider
     ///   * Example: A package that appears in the two different search queries
     ///     should have the same visual state when selected or unselected.
     /// </remarks>
-    private readonly Dictionary<PackageUniqueKey, PackageCache> _packageViewModelCache = new ();
+    private readonly Dictionary<PackageUniqueKey, PackageCache> _packageViewModelCache = new();
 
     /// <summary>
     /// Observable collection containing the list of selected packages in the
     /// order they were added
     /// </summary>
-    private readonly ObservableCollection<PackageViewModel> _selectedPackages = new ();
+    private readonly ObservableCollection<PackageViewModel> _selectedPackages = new();
 
     /// <summary>
     /// Gets a read-only wrapper around the selected package observable collection
     /// </summary>
-    public ReadOnlyObservableCollection<PackageViewModel> SelectedPackages => new (_selectedPackages);
+    public ReadOnlyObservableCollection<PackageViewModel> SelectedPackages => new(_selectedPackages);
 
     /// <summary>
     /// Occurs when a package selection has changed

@@ -26,7 +26,7 @@ internal sealed class RepositoryProviders
     /// <summary>
     /// Hold all providers and organize by their names.
     /// </summary>
-    private readonly Dictionary<string, RepositoryProvider> _providers = new ();
+    private readonly Dictionary<string, RepositoryProvider> _providers = new();
 
     public string DisplayName(string providerName)
     {

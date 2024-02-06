@@ -183,7 +183,7 @@ public class SecondaryWindow : WindowEx
         UseAppTheme = true;
 
         // Initialize window content template
-        _windowTemplate = new (this);
+        _windowTemplate = new(this);
         WindowContent = _windowTemplate;
 
         // Register secondary window events handlers

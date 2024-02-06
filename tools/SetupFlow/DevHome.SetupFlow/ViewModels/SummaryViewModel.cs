@@ -1,11 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -30,8 +29,8 @@ namespace DevHome.SetupFlow.ViewModels;
 
 public partial class SummaryViewModel : SetupPageViewModelBase
 {
-    private static readonly BitmapImage DarkError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
-    private static readonly BitmapImage LightError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
+    private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
+    private static readonly BitmapImage LightError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
 
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly SetupFlowViewModel _setupFlowViewModel;
@@ -42,7 +41,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     private readonly IAppManagementInitializer _appManagementInitializer;
 
     [ObservableProperty]
-    private List<SummaryErrorMessageViewModel> _failedTasks = new ();
+    private List<SummaryErrorMessageViewModel> _failedTasks = new();
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -75,7 +74,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 {
                     if (task is CloneRepoTask repoTask && repoTask.WasCloningSuccessful)
                     {
-                        repositoriesCloned.Add(new (repoTask.RepositoryToClone));
+                        repositoriesCloned.Add(new(repoTask.RepositoryToClone));
                     }
                 }
             }
@@ -186,7 +185,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         _host = host;
         _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
         _packageProvider = packageProvider;
-        _configurationUnitResults = new (GetConfigurationUnitResults);
+        _configurationUnitResults = new(GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
         _appManagementInitializer = appManagementInitializer;
 
@@ -248,7 +247,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     /// <returns>List of configuration unit result</returns>
     private List<ConfigurationUnitResultViewModel> GetConfigurationUnitResults()
     {
-        List<ConfigurationUnitResultViewModel> unitResults = new ();
+        List<ConfigurationUnitResultViewModel> unitResults = new();
         var configTaskGroup = _orchestrator.GetTaskGroup<ConfigurationFileTaskGroup>();
         if (configTaskGroup?.ConfigureTask?.UnitResults != null)
         {

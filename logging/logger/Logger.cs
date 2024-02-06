@@ -5,6 +5,7 @@ using DevHome.Logging.Helpers;
 using DevHome.Logging.Listeners;
 
 namespace DevHome.Logging;
+
 public class Logger : ILoggerHost, IDisposable
 {
     public Logger(string name, Options options)

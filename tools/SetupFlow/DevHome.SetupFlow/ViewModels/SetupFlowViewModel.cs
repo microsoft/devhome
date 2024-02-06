@@ -61,7 +61,7 @@ public partial class SetupFlowViewModel : ObservableObject
     public void SetFlowPagesFromCurrentTaskGroups()
     {
         _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
-        List<SetupPageViewModelBase> flowPages = new ();
+        List<SetupPageViewModelBase> flowPages = new();
         flowPages.AddRange(Orchestrator.TaskGroups.Select(flow => flow.GetSetupPageViewModel()).Where(page => page is not null));
 
         // Check if the review page should be added as a step

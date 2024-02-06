@@ -73,7 +73,7 @@ public class DevDriveFormatter
                     break;
                 }
 
-                var notCorrectDriveLetter = (letter is char ) ? ((char)letter).ToString() : "none";
+                var notCorrectDriveLetter = (letter is char) ? ((char)letter).ToString() : "none";
                 Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"CimSession.QueryInstances found ObjectId: {objectId} but its DriveLetter: {notCorrectDriveLetter}: is not correct, continuing search...");
             }
 

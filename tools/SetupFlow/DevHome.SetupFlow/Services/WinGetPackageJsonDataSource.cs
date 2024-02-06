@@ -45,7 +45,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 
     private readonly ISetupFlowStringResource _stringResource;
     private readonly string _fileName;
-    private readonly JsonSerializerOptions jsonSerializerOptions = new () { ReadCommentHandling = JsonCommentHandling.Skip };
+    private readonly JsonSerializerOptions jsonSerializerOptions = new() { ReadCommentHandling = JsonCommentHandling.Skip };
     private IList<JsonWinGetPackageCatalog> _jsonCatalogs = new List<JsonWinGetPackageCatalog>();
 
     public override int CatalogCount => _jsonCatalogs.Count;

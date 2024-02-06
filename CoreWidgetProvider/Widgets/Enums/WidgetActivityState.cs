@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 namespace CoreWidgetProvider.Widgets.Enums;
+
 public enum WidgetActivityState
 {
     /// <summary>

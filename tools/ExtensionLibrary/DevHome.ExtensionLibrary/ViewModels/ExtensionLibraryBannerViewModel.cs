@@ -25,7 +25,7 @@ internal sealed partial class ExtensionLibraryBannerViewModel : ObservableObject
     [RelayCommand]
     private async Task ExtensionsBannerButtonAsync()
     {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2247301"));
+        await Launcher.LaunchUriAsync(new("https://go.microsoft.com/fwlink/?linkid=2247301"));
     }
 
     [RelayCommand]

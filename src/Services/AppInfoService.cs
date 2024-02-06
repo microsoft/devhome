@@ -9,6 +9,7 @@ using DevHome.Helpers;
 using Windows.ApplicationModel;
 
 namespace DevHome.Services;
+
 public class AppInfoService : IAppInfoService
 {
     public string IconPath { get; } = Path.Combine(AppContext.BaseDirectory, "Assets/DevHome.ico");
@@ -29,7 +30,7 @@ public class AppInfoService : IAppInfoService
         if (RuntimeHelper.IsMSIX)
         {
             var packageVersion = Package.Current.Id.Version;
-            return new (packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
+            return new(packageVersion.Major, packageVersion.Minor, packageVersion.Build, packageVersion.Revision);
         }
         else
         {

@@ -4,6 +4,7 @@
 using System.Globalization;
 
 namespace DevHome.Logging.Listeners;
+
 public class LogFileListener : ListenerBase, IDisposable
 {
     private readonly TextWriter? writer;
