@@ -10,8 +10,8 @@
 	<None Remove="Styles\AppsPackagesStyles.xaml" />
   </ItemGroup>
   <ItemGroup>
-	  <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
-	  <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.Primitives" Version="7.1.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
+    <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.Primitives" Version="7.1.2" />
   </ItemGroup>
 
   <ItemGroup>

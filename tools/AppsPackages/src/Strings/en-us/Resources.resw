@@ -125,8 +125,8 @@
     <value>Apps &amp; Packages</value>
     <comment>The name of our Apps &amp; Packages</comment>
   </data>
-  <data name="SearchBox.Text" xml:space="preserve">
-    <value>Search all Apps and Packages</value>
-    <comment>This is the text for the searchbox</comment>
+  <data name="SearchBox.PlaceholderText" xml:space="preserve">
+    <value>Search all apps and packages</value>
+    <comment>This is the placeholder text inside the searchbox</comment>
   </data>
 </root>

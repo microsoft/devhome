@@ -12,7 +12,7 @@ namespace DevHome.Settings.Extensions;
 
 public static class ServiceExtensions
 {
-    public static IServiceCollection AddAppAndPackages(this IServiceCollection services)
+    public static IServiceCollection AddAppsAndPackages(this IServiceCollection services)
     {
         // View models
         services.AddTransient<AppsPackagesViewModel>();
