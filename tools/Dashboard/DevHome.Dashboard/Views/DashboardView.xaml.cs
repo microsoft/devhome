@@ -127,12 +127,8 @@ public partial class DashboardView : ToolPage
         else
         {
             var widgetServiceState = ViewModel.WidgetHostingService.GetWidgetServiceState();
-            if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion)
-            {
-                // Show error message that restarting Dev Home may help
-                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
-            }
-            else if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasWebExperienceNoOrBadVersion)
+            if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion ||
+                widgetServiceState == WidgetHostingService.WidgetServiceStates.HasWebExperienceNoOrBadVersion)
             {
                 // Show error message that updating may help
                 UpdateWidgetsMessageStackPanel.Visibility = Visibility.Visible;
