@@ -6,8 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using DevHome.Common.Helpers;
 using DevHome.Common.Services;
+using DevHome.Dashboard.Helpers;
 using DevHome.Services;
 using Microsoft.Windows.Widgets.Hosts;
+using Log = DevHome.Dashboard.Helpers.Log;
 
 namespace DevHome.Dashboard.Services;
 
@@ -15,8 +17,6 @@ public class WidgetHostingService : IWidgetHostingService
 {
     private readonly IPackageDeploymentService _packageDeploymentService;
     private readonly IAppInstallManagerService _appInstallManagerService;
-
-    private static readonly string WidgetServiceStorePackageId = "9N3RK8ZV2ZR8";
 
     private WidgetHost _widgetHost;
     private WidgetCatalog _widgetCatalog;
@@ -79,7 +79,7 @@ public class WidgetHostingService : IWidgetHostingService
     public async Task<bool> TryInstallingWidgetService()
     {
         Log.Logger()?.ReportInfo("WidgetHostingService", "Try installing widget service...");
-        var installedSuccessfully = await _appInstallManagerService.TryInstallPackageAsync(WidgetServiceStorePackageId);
+        var installedSuccessfully = await _appInstallManagerService.TryInstallPackageAsync(WidgetHelpers.WidgetServiceStorePackageId);
         _widgetServiceState = installedSuccessfully ? WidgetServiceStates.HasStoreWidgetServiceGoodVersion : WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion;
         Log.Logger()?.ReportInfo("WidgetHostingService", $"InstalledSuccessfully == {installedSuccessfully}, {_widgetServiceState}");
         return installedSuccessfully;
@@ -92,9 +92,8 @@ public class WidgetHostingService : IWidgetHostingService
         var version500 = new Version(500, 0);
 
         // Ensure the application is installed, and the version is high enough.
-        const string packageFamilyName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
         var packages = _packageDeploymentService.FindPackagesForCurrentUser(
-            packageFamilyName,
+            WidgetHelpers.WebExperiencePackageFamilyName,
             (minSupportedVersion400, version500),
             (minSupportedVersion500, null));
         return packages.Any();
@@ -104,8 +103,7 @@ public class WidgetHostingService : IWidgetHostingService
     {
         var minSupportedVersion = new Version(1, 0, 0, 0);
 
-        const string packageFamilyName = "Microsoft.WidgetsPlatformRuntime_8wekyb3d8bbwe";
-        var packages = _packageDeploymentService.FindPackagesForCurrentUser(packageFamilyName, (minSupportedVersion, null));
+        var packages = _packageDeploymentService.FindPackagesForCurrentUser(WidgetHelpers.WidgetServicePackageFamilyName, (minSupportedVersion, null));
         return packages.Any();
     }
 

@@ -41,9 +41,6 @@ public partial class DashboardView : ToolPage
     private const string DraggedWidget = "DraggedWidget";
     private const string DraggedIndex = "DraggedIndex";
 
-    private static readonly string WebExperiencePackPackageId = "9MSSGKG348SP";
-    private static readonly string WidgetServiceStorePackageId = "9N3RK8ZV2ZR8";
-
     public DashboardView()
     {
         ViewModel = Application.Current.GetService<DashboardViewModel>();
@@ -248,11 +245,11 @@ public partial class DashboardView : ToolPage
     {
         if (Common.Helpers.RuntimeHelper.IsOnWindows11)
         {
-            await Launcher.LaunchUriAsync(new ($"ms-windows-store://pdp/?productid={WebExperiencePackPackageId}"));
+            await Launcher.LaunchUriAsync(new ($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
         }
         else
         {
-            await Launcher.LaunchUriAsync(new ($"ms-windows-store://pdp/?productid={WidgetServiceStorePackageId}"));
+            await Launcher.LaunchUriAsync(new ($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
         }
     }
 

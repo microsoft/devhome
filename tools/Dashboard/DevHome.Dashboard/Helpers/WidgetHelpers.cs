@@ -15,6 +15,11 @@ namespace DevHome.Dashboard.Helpers;
 
 internal sealed class WidgetHelpers
 {
+    public const string WebExperiencePackPackageId = "9MSSGKG348SP";
+    public const string WebExperiencePackageFamilyName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
+    public const string WidgetServiceStorePackageId = "9N3RK8ZV2ZR8";
+    public const string WidgetServicePackageFamilyName = "Microsoft.WidgetsPlatformRuntime_8wekyb3d8bbwe";
+
     public const string DevHomeHostName = "DevHome";
 
     private const double WidgetPxHeightSmall = 146;
