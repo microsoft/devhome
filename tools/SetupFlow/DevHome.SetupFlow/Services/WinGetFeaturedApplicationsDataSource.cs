@@ -30,7 +30,7 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
     /// For <see cref="WinGetFeaturedApplicationsDataSource"/> this is an
     /// estimate because the count may change at runtime
     /// </remarks>
-    private volatile int _estimatedCatalogCount;
+    private int _estimatedCatalogCount;
 
     public WinGetFeaturedApplicationsDataSource(IWindowsPackageManager wpm, IExtensionService extensionService)
         : base(wpm)
