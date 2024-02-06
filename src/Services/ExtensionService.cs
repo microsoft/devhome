@@ -329,9 +329,4 @@ public class ExtensionService : IExtensionService, IDisposable
         var extension = _enabledExtensions.Where(extension => extension.ExtensionUniqueId == extensionUniqueId);
         _enabledExtensions.Remove(extension.First());
     }
-
-    public bool IsEnabled(string extensionUniqueId)
-    {
-        return _enabledExtensions.Any(extension => extension.ExtensionUniqueId == extensionUniqueId);
-    }
 }
