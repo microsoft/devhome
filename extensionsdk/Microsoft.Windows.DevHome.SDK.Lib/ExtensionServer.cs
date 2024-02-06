@@ -8,7 +8,7 @@ namespace Microsoft.Windows.DevHome.SDK;
 
 public sealed class ExtensionServer : IDisposable
 {
-    private readonly HashSet<int> registrationCookies = new ();
+    private readonly HashSet<int> registrationCookies = new();
 
     public void RegisterExtension<T>(Func<T> createExtension, bool restrictToMicrosoftExtensionHosts = false)
         where T : IExtension
