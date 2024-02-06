@@ -7,12 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using DevHome.AppsPackages.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace DevHome.Settings.Extensions;
 
 public static class ServiceExtensions
 {
-    public static IServiceCollection AddAppsAndPackages(this IServiceCollection services)
+    public static IServiceCollection AddAppsAndPackages(this IServiceCollection services, HostBuilderContext context)
     {
         // View models
         services.AddTransient<AppsPackagesViewModel>();

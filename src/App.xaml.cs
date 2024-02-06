@@ -131,7 +131,7 @@ public partial class App : Application, IApp
             services.AddDashboard(context);
 
             // Apps and Packages
-            services.AddAppAndPackages();
+            services.AddAppsAndPackages(context);
 
             // ExtensionLibrary
             services.AddExtensionLibrary(context);
