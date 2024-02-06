@@ -9,7 +9,7 @@ $StartTime = Get-Date
 
 if ($Help) {
     Write-Host @"
-Copyright (c) Microsoft Corporation and Contributors.
+Copyright (c) Microsoft Corporation.
 Licensed under the MIT License.
 
 Syntax:
