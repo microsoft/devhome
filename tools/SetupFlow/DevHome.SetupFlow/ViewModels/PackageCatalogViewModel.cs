@@ -29,9 +29,6 @@ public partial class PackageCatalogViewModel : ObservableObject
     private readonly ISetupFlowStringResource _stringResource;
     private readonly PackageCatalog _packageCatalog;
 
-    [ObservableProperty]
-    private bool _canAddAllPackages;
-
     public string Name => _packageCatalog.Name;
 
     public string Description => _packageCatalog.Description;

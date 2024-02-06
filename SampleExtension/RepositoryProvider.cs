@@ -7,7 +7,7 @@ using Windows.Foundation;
 using Windows.Storage.Streams;
 
 namespace SampleExtension;
-internal class RepositoryProvider : IRepositoryProvider
+internal sealed class RepositoryProvider : IRepositoryProvider
 {
     public string DisplayName => $"Sample {nameof(RepositoryProvider)}";
 

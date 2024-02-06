@@ -8,7 +8,7 @@ using Windows.Foundation;
 
 namespace SampleExtension;
 
-internal class DeveloperIdProvider : IDeveloperIdProvider
+internal sealed class DeveloperIdProvider : IDeveloperIdProvider
 {
     public string DisplayName => $"Sample {nameof(DeveloperIdProvider)}";
 

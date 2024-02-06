@@ -98,10 +98,10 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         try
         {
             var packages = await GetPackagesAsync(jsonCatalog.WinGetPackages.Select(p => p.Uri).ToList());
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for JSON packages: [{string.Join(", ", packages.Select(p => $"({p.Name}, {p.CatalogName})"))}]");
             foreach (var package in packages)
             {
                 var packageUri = WindowsPackageManager.CreatePackageUri(package);
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for JSON package {packageUri}");
                 var jsonPackage = jsonCatalog.WinGetPackages.FirstOrDefault(p => packageUri == p.Uri);
                 if (jsonPackage != null)
                 {
