@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation..
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
@@ -247,7 +247,7 @@ public partial class DashboardView : ToolPage
     [RelayCommand]
     public async Task GoToWidgetsInStoreAsync()
     {
-        await Launcher.LaunchUriAsync(new ("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
+        await Launcher.LaunchUriAsync(new("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
     }
 
     [RelayCommand]

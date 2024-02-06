@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System.Diagnostics;
@@ -10,9 +10,9 @@ namespace CoreWidgetProvider.Helpers;
 internal sealed class GPUStats : IDisposable
 {
     // GPU counters
-    private readonly Dictionary<int, List<PerformanceCounter>> gpuCounters = new ();
+    private readonly Dictionary<int, List<PerformanceCounter>> gpuCounters = new();
 
-    private readonly List<Data> stats = new ();
+    private readonly List<Data> stats = new();
 
     public sealed class Data
     {
@@ -81,7 +81,7 @@ internal sealed class GPUStats : IDisposable
 
                     if (!gpuCounters.TryGetValue(phys, out var value))
                     {
-                        value = new ();
+                        value = new();
                         gpuCounters.Add(phys, value);
                     }
 

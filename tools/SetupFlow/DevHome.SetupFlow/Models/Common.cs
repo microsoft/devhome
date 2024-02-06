@@ -1,7 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 namespace DevHome.SetupFlow.Models;
+
 internal sealed class Common
 {
     /// <summary>

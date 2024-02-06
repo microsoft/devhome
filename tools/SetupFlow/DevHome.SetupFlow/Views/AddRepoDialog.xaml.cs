@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation..
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
@@ -32,7 +32,7 @@ public partial class AddRepoDialog : ContentDialog
 {
     private readonly IHost _host;
 
-    private readonly List<CloningInformation> _previouslySelectedRepos = new ();
+    private readonly List<CloningInformation> _previouslySelectedRepos = new();
 
     /// <summary>
     /// Gets or sets the view model to handle selecting and de-selecting repositories.

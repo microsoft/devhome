@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation;
 
 namespace DevHome.Dashboard.Controls;
+
 public sealed class WidgetBoard : Panel
 {
     private double _columnWidth;

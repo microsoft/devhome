@@ -1,4 +1,5 @@
-﻿﻿// Licensed under the MIT License.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace DevHome.SetupFlow.Services;
 public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSource, IDisposable
 {
     private readonly IExtensionService _extensionService;
-    private readonly SemaphoreSlim _lock = new (1, 1);
+    private readonly SemaphoreSlim _lock = new(1, 1);
     private bool disposedValue;
 
     /// <summary>
@@ -116,7 +117,7 @@ public sealed class WinGetFeaturedApplicationsDataSource : WinGetPackageDataSour
             var packages = await GetPackagesAsync(ParseURIs(appsResult.FeaturedApplications));
             if (packages.Any())
             {
-                return new ()
+                return new()
                 {
                     Name = groupTitle,
                     Description = group.GetDescription(locale),

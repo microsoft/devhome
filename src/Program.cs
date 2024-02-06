@@ -4,6 +4,7 @@
 using Microsoft.UI.Dispatching;
 
 namespace DevHome;
+
 public static class Program
 {
     private static App? _app;

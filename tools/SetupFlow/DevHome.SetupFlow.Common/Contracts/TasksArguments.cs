@@ -44,7 +44,7 @@ public class TasksArguments
     /// <returns>Tasks arguments object</returns>
     public static TasksArguments FromArgumentList(IList<string> argumentList)
     {
-        TasksArguments tasksArguments = new ()
+        TasksArguments tasksArguments = new()
         {
             InstallPackages = new List<InstallPackageTaskArguments>(),
         };
@@ -105,7 +105,7 @@ public class TasksArguments
     /// <returns>Returns all tasks arguments in a list format.</returns>
     public List<ITaskArguments> GetAllTasksArguments()
     {
-        List<ITaskArguments> result = new ();
+        List<ITaskArguments> result = new();
         if (InstallPackages != null)
         {
             result.AddRange(InstallPackages);

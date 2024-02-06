@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 namespace DevHome.Logging;
+
 public enum SeverityLevel
 {
     Debug,

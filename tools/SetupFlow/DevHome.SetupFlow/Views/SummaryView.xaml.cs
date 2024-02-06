@@ -1,11 +1,10 @@
-// Copyright (c) Microsoft Corporation..
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.Windows;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 namespace DevHome.SetupFlow.Views;
 

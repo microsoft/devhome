@@ -4,6 +4,7 @@
 using OpenQA.Selenium.Appium.Windows;
 
 namespace DevHome.UITest.Pages;
+
 public class RepoConfigPage : ApplicationPage
 {
     private WindowsElement AddRepoButton => Driver.FindElementByName("AddRepositoriesButton");

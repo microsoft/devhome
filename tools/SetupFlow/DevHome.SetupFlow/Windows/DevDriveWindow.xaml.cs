@@ -6,6 +6,7 @@ using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.Views;
 
 namespace DevHome.SetupFlow.Windows;
+
 public sealed partial class DevDriveWindow : SecondaryWindow
 {
     public DevDriveWindow(DevDriveViewModel viewModel)

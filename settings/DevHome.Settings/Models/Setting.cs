@@ -8,6 +8,7 @@ using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.Models;
+
 public class Setting
 {
     private bool _isExtensionEnabled;

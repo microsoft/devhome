@@ -28,7 +28,7 @@ public partial class PackageCatalogListViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CatalogFullPath))]
     private PackageCatalogViewModel _viewAllCatalog;
 
-    public List<string> CatalogFullPath => new ()
+    public List<string> CatalogFullPath => new()
     {
         AppManagementBehavior.Title,
         ViewAllCatalog?.Name ?? string.Empty,
@@ -37,13 +37,13 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// <summary>
     /// Gets a list of package catalogs to display
     /// </summary>
-    public ObservableCollection<PackageCatalogViewModel> PackageCatalogs { get; } = new ();
+    public ObservableCollection<PackageCatalogViewModel> PackageCatalogs { get; } = new();
 
     /// <summary>
     /// Gets a list of shimmer indices.
     /// This list is used to repeat the shimmer control {Count} times
     /// </summary>
-    public ObservableCollection<int> PackageCatalogShimmers { get; } = new ();
+    public ObservableCollection<int> PackageCatalogShimmers { get; } = new();
 
     public PackageCatalogListViewModel(
         IExtensionService extensionService,

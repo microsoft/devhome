@@ -9,7 +9,7 @@ namespace CoreWidgetProvider.Helpers;
 
 public class Log
 {
-    private static readonly ComponentLogger _logger = new ("CoreWidgetProvider");
+    private static readonly ComponentLogger _logger = new("CoreWidgetProvider");
 
     public static Logger? Logger() => _logger.Logger;
 }

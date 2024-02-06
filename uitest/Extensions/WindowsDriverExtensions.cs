@@ -6,6 +6,7 @@ using OpenQA.Selenium.Appium.Windows;
 using OpenQA.Selenium.Support.UI;
 
 namespace DevHome.UITest.Extensions;
+
 public static class WindowsDriverExtensions
 {
     private const int DefaultTimeoutInMS = 60_000;
@@ -23,7 +24,7 @@ public static class WindowsDriverExtensions
         TimeSpan timeout,
         TimeSpan pollingInterval)
     {
-        return new (driver)
+        return new(driver)
         {
             Timeout = timeout,
             PollingInterval = pollingInterval,

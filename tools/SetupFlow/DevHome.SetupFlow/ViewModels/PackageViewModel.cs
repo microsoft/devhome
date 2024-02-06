@@ -33,8 +33,8 @@ public partial class PackageViewModel : ObservableObject
 {
     private const string PublisherNameNotAvailable = "-";
 
-    private static readonly BitmapImage DefaultLightPackageIconSource = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultLightPackageIcon.png"));
-    private static readonly BitmapImage DefaultDarkPackageIconSource = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultDarkPackageIcon.png"));
+    private static readonly BitmapImage DefaultLightPackageIconSource = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultLightPackageIcon.png"));
+    private static readonly BitmapImage DefaultDarkPackageIconSource = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultDarkPackageIcon.png"));
 
     private readonly Lazy<BitmapImage> _packageDarkThemeIcon;
     private readonly Lazy<BitmapImage> _packageLightThemeIcon;

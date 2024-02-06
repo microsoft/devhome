@@ -4,6 +4,7 @@
 using DevHome.Common.Windows;
 
 namespace DevHome.SetupFlow.Windows;
+
 public sealed partial class InstallationNotesWindow : SecondaryWindow
 {
     private string PackageTitle { get; }

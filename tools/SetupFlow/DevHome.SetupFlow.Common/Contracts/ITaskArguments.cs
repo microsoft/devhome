@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 
 namespace DevHome.SetupFlow.Common.Contracts;
+
 public interface ITaskArguments
 {
     /// <summary>

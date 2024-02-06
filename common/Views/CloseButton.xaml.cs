@@ -4,6 +4,7 @@
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Common.Views;
+
 public sealed partial class CloseButton : Button
 {
     public CloseButton()

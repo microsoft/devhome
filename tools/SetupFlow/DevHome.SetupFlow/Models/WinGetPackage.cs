@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
@@ -26,7 +26,7 @@ public class WinGetPackage : IWinGetPackage
         Id = package.Id;
         CatalogId = package.DefaultInstallVersion.PackageCatalog.Info.Id;
         CatalogName = package.DefaultInstallVersion.PackageCatalog.Info.Name;
-        UniqueKey = new (Id, CatalogId);
+        UniqueKey = new(Id, CatalogId);
         Name = package.Name;
         Version = package.DefaultInstallVersion.Version;
         IsInstalled = package.InstalledVersion != null;
@@ -69,7 +69,7 @@ public class WinGetPackage : IWinGetPackage
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
         WindowsPackageManagerFactory wingetFactory,
-        Guid activityId) => new (wpm, stringResource, this, activityId);
+        Guid activityId) => new(wpm, stringResource, this, activityId);
 
     /// <summary>
     /// Gets the package metadata from the current culture name (e.g. 'en-US')

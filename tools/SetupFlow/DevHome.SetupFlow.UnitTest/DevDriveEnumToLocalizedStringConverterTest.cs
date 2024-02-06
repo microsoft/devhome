@@ -15,10 +15,10 @@ namespace DevHome.SetupFlow.UnitTest;
 [TestClass]
 public class DevDriveEnumToLocalizedStringConverterTest : BaseSetupFlowTest
 {
-    public DevDriveEnumToLocalizedStringConverter Converter => new (StringResource.Object);
+    public DevDriveEnumToLocalizedStringConverter Converter => new(StringResource.Object);
 
     // These are results that are not localized and are just used in the code.
-    public List<DevDriveValidationResult> ResultsToIgnore => new ()
+    public List<DevDriveValidationResult> ResultsToIgnore => new()
     {
         DevDriveValidationResult.Successful,
         DevDriveValidationResult.ObjectWasNull,

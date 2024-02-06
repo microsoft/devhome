@@ -153,8 +153,8 @@ public class ConfigurationFileHelper
     /// <returns>Input stream</returns>
     private InMemoryRandomAccessStream StringToStream(string str)
     {
-        InMemoryRandomAccessStream result = new ();
-        using (DataWriter writer = new (result))
+        InMemoryRandomAccessStream result = new();
+        using (DataWriter writer = new(result))
         {
             writer.UnicodeEncoding = UnicodeEncoding.Utf8;
             writer.WriteString(str);

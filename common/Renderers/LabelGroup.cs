@@ -11,6 +11,7 @@ using Windows.Data.Json;
 using Windows.UI;
 
 namespace DevHome.Common.Renderers;
+
 public class LabelGroup : IAdaptiveCardElement
 {
     public LabelGroup()
