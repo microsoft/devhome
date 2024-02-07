@@ -115,8 +115,5 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
         }
     }
 
-    private async void OnThemeChanged(object sender, ElementTheme e)
-    {
-        await UpdateHostConfig();
-    }
+    private async void OnThemeChanged(object sender, ElementTheme e) => await UpdateHostConfig();
 }

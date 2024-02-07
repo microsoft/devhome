@@ -29,11 +29,6 @@ public partial class DashboardViewModel : ObservableObject
 
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
     {
-        if (widgetCount == 0 && !isLoading && HasWidgetService)
-        {
-            return Visibility.Visible;
-        }
-
-        return Visibility.Collapsed;
+        return (widgetCount == 0 && !isLoading && HasWidgetService) ? Visibility.Visible : Visibility.Collapsed;
     }
 }

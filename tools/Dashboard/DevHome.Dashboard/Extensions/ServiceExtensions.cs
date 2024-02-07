@@ -6,7 +6,7 @@ using DevHome.Dashboard.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace DevHome.Settings.Extensions;
+namespace DevHome.Dashboard.Extensions;
 
 public static class ServiceExtensions
 {
