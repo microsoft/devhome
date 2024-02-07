@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 extern alias Projection;
 
@@ -77,7 +77,7 @@ public class InstallPackageTask : ISetupTask
 
     public ActionCenterMessages GetErrorMessages()
     {
-        return new ()
+        return new()
         {
             PrimaryMessage = GetInstallResultMessage(),
         };
@@ -85,7 +85,7 @@ public class InstallPackageTask : ISetupTask
 
     public ActionCenterMessages GetRebootMessage()
     {
-        return new ()
+        return new()
         {
             PrimaryMessage = _extendedErrorCode == HRESULT.S_OK ?
                 _stringResource.GetLocalized(StringResourceKey.InstalledPackageReboot, _package.Name) :

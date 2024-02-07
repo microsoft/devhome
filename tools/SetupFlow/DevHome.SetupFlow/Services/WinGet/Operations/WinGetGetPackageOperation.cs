@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace DevHome.SetupFlow.Services.WinGet.Operations;
 /// <summary>
 /// Get packages using WinGet with recovery
 /// </summary>
-internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
+internal sealed class WinGetGetPackageOperation : IWinGetGetPackageOperation
 {
     private readonly IWinGetPackageCache _packageCache;
     private readonly IWinGetProtocolParser _protocolParser;
@@ -47,15 +47,15 @@ internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
         var getPackagesTasks = new List<Task<List<IWinGetPackage>>>();
         foreach (var parsedUrisGroup in GroupParsedUrisByCatalog(packageUrisToQuery))
         {
-            if (parsedUrisGroup.Any())
+            if (parsedUrisGroup.Count != 0)
             {
                 // Get packages from each catalog concurrently
                 getPackagesTasks.Add(_recovery.DoWithRecoveryAsync(async () =>
                 {
                     // All parsed URIs in the group have the same catalog, resolve catalog from the first entry
                     var firstParsedUri = parsedUrisGroup.First();
-                    var packageIds = parsedUrisGroup.Select(p => p.packageId).ToHashSet();
-                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages [{string.Join(", ", packageIds)}] from parsed uri catalog name: {firstParsedUri.catalogUriName}");
+                    var packageIds = parsedUrisGroup.Select(p => p.PackageId).ToHashSet();
+                    Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Getting packages [{string.Join(", ", packageIds)}] from parsed uri catalog name: {firstParsedUri.CatalogUriName}");
 
                     // Get packages from the catalog
                     var catalog = await _protocolParser.ResolveCatalogAsync(firstParsedUri);
@@ -118,6 +118,6 @@ internal class WinGetGetPackageOperation : IWinGetGetPackageOperation
         }
 
         // 2. Group package ids by catalog
-        return parsedUris.GroupBy(p => p.catalogUriName).Select(p => p.ToList()).ToList();
+        return parsedUris.GroupBy(p => p.CatalogUriName).Select(p => p.ToList()).ToList();
     }
 }

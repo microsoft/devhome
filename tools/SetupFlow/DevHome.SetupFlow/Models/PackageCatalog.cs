@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.Generic;
 
@@ -16,16 +16,16 @@ public class PackageCatalog
 {
     public string Name
     {
-        init; get;
+        get; init;
     }
 
     public string Description
     {
-        init; get;
+        get; init;
     }
 
     public IReadOnlyCollection<IWinGetPackage> Packages
     {
-        init; get;
+        get; init;
     }
 }

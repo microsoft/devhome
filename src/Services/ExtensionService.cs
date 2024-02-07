@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
@@ -20,15 +20,15 @@ public class ExtensionService : IExtensionService, IDisposable
     public event EventHandler OnExtensionsChanged = (_, _) => { };
 
     private static readonly PackageCatalog _catalog = PackageCatalog.OpenForCurrentUser();
-    private static readonly object _lock = new ();
-    private readonly SemaphoreSlim _getInstalledExtensionsLock = new (1, 1);
-    private readonly SemaphoreSlim _getInstalledWidgetsLock = new (1, 1);
+    private static readonly object _lock = new();
+    private readonly SemaphoreSlim _getInstalledExtensionsLock = new(1, 1);
+    private readonly SemaphoreSlim _getInstalledWidgetsLock = new(1, 1);
     private bool _disposedValue;
 
 #pragma warning disable IDE0044 // Add readonly modifier
-    private static List<IExtensionWrapper> _installedExtensions = new ();
-    private static List<IExtensionWrapper> _enabledExtensions = new ();
-    private static List<string> _installedWidgetsPackageFamilyNames = new ();
+    private static List<IExtensionWrapper> _installedExtensions = new();
+    private static List<IExtensionWrapper> _enabledExtensions = new();
+    private static List<string> _installedWidgetsPackageFamilyNames = new();
 #pragma warning restore IDE0044 // Add readonly modifier
 
     public ExtensionService()
@@ -276,7 +276,7 @@ public class ExtensionService : IExtensionService, IDisposable
     {
         var installedExtensions = await GetInstalledExtensionsAsync(includeDisabledExtensions);
 
-        List<IExtensionWrapper> filteredExtensions = new ();
+        List<IExtensionWrapper> filteredExtensions = new();
         foreach (var installedExtension in installedExtensions)
         {
             if (installedExtension.HasProviderType(providerType))

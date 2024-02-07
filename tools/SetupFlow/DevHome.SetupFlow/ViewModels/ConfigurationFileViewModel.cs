@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -114,7 +114,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
             try
             {
                 Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
-                Configuration = new (file.Path);
+                Configuration = new(file.Path);
                 Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
                 await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
                 TaskList.Add(new (StringResource, _dsc, file, Orchestrator.ActivityId));
@@ -144,13 +144,20 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
     private string GetErrorMessage(OpenConfigurationSetException exception)
     {
-        return exception.ResultCode?.HResult switch
+        switch (exception.ResultCode.HResult)
         {
-            OpenConfigurationSetException.WingetConfigErrorInvalidField =>
-                StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalid, exception.Field),
-            OpenConfigurationSetException.WingetConfigErrorUnknownConfigurationFileVersion =>
-                StringResource.GetLocalized(StringResourceKey.ConfigurationFileVersionUnknown, exception.Field),
-            _ => StringResource.GetLocalized(StringResourceKey.ConfigurationFileInvalid),
-        };
+            case WinGetConfigurationException.WingetConfigErrorInvalidFieldType:
+                return StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalidType, exception.Field);
+            case WinGetConfigurationException.WingetConfigErrorInvalidFieldValue:
+                return StringResource.GetLocalized(StringResourceKey.ConfigurationFieldInvalidValue, exception.Field, exception.Value);
+            case WinGetConfigurationException.WingetConfigErrorMissingField:
+                return StringResource.GetLocalized(StringResourceKey.ConfigurationFieldMissing, exception.Field);
+            case WinGetConfigurationException.WingetConfigErrorUnknownConfigurationFileVersion:
+                return StringResource.GetLocalized(StringResourceKey.ConfigurationFileVersionUnknown, exception.Value);
+            case WinGetConfigurationException.WingetConfigErrorInvalidConfigurationFile:
+            case WinGetConfigurationException.WingetConfigErrorInvalidYaml:
+            default:
+                return StringResource.GetLocalized(StringResourceKey.ConfigurationFileInvalid);
+        }
     }
 }

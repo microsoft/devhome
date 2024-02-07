@@ -1,8 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Models;
+using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
+using Microsoft.UI.Xaml;
 
 namespace DevHome.SetupFlow.UnitTest;
 
@@ -20,5 +23,29 @@ public class AddRepoDialogTests : BaseSetupFlowTest
 
         addRepoViewModel.RepoProviderSelectedCommand.Execute("ThisIsATest");
         Assert.IsTrue(addRepoViewModel.ShouldEnablePrimaryButton);
+    }
+
+    [TestMethod]
+    public void SwitchToUrlScreenTest()
+    {
+        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), string.Empty, null);
+        addRepoViewModel.ChangeToUrlPage();
+        Assert.AreEqual(Visibility.Visible, addRepoViewModel.ShowUrlPage);
+        Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowAccountPage);
+        Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowRepoPage);
+        Assert.IsTrue(addRepoViewModel.IsUrlAccountButtonChecked);
+        Assert.IsFalse(addRepoViewModel.IsAccountToggleButtonChecked);
+        Assert.IsFalse(addRepoViewModel.ShouldShowLoginUi);
+    }
+
+    [TestMethod]
+    public void SwitchToRepoScreenTest()
+    {
+        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), string.Empty, null);
+        addRepoViewModel.ChangeToRepoPage();
+        Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowUrlPage);
+        Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowAccountPage);
+        Assert.AreEqual(Visibility.Visible, addRepoViewModel.ShowRepoPage);
+        Assert.IsFalse(addRepoViewModel.ShouldShowLoginUi);
     }
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -21,12 +21,12 @@ namespace DevHome.SetupFlow.Models;
 /// <remarks>
 /// This class only uses providers that implement IDeveloperIdProvider and IRepositoryProvider.
 /// </remarks>
-internal class RepositoryProviders
+internal sealed class RepositoryProviders
 {
     /// <summary>
     /// Hold all providers and organize by their names.
     /// </summary>
-    private readonly Dictionary<string, RepositoryProvider> _providers = new ();
+    private readonly Dictionary<string, RepositoryProvider> _providers = new();
 
     public string DisplayName(string providerName)
     {
@@ -53,9 +53,9 @@ internal class RepositoryProviders
     public void StartIfNotRunning(string providerName)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Starting RepositoryProvider {providerName}");
-        if (_providers.ContainsKey(providerName))
+        if (_providers.TryGetValue(providerName, out var value))
         {
-            _providers[providerName].StartIfNotRunning();
+            value.StartIfNotRunning();
         }
     }
 

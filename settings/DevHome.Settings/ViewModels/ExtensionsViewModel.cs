@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.ObjectModel;
@@ -58,7 +58,7 @@ public partial class ExtensionsViewModel : ObservableObject
     private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
 
     [ObservableProperty]
-    private ObservableCollection<ExtensionViewModel> _settingsList = new ();
+    private ObservableCollection<ExtensionViewModel> _settingsList = new();
 
     public ExtensionsViewModel()
     {

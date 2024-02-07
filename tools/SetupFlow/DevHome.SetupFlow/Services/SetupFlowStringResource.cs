@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using DevHome.Common.Services;
@@ -10,6 +10,7 @@ using Windows.Win32.Foundation;
 using Windows.Win32.System.Diagnostics.Debug;
 
 namespace DevHome.SetupFlow.Services;
+
 public class SetupFlowStringResource : StringResource, ISetupFlowStringResource
 {
     public SetupFlowStringResource(IOptions<SetupFlowOptions> setupFlowOptions)
@@ -45,7 +46,7 @@ public class SetupFlowStringResource : StringResource, ISetupFlowStringResource
             }
             finally
             {
-                PInvoke.LocalFree((IntPtr)formattedMessage.Value);
+                PInvoke.LocalFree((HLOCAL)(IntPtr)formattedMessage.Value);
             }
         }
     }

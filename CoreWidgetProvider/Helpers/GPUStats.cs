@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics;
 using System.Globalization;
@@ -7,14 +7,14 @@ using Microsoft.Management.Infrastructure;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal class GPUStats : IDisposable
+internal sealed class GPUStats : IDisposable
 {
     // GPU counters
-    private readonly Dictionary<int, List<PerformanceCounter>> gpuCounters = new ();
+    private readonly Dictionary<int, List<PerformanceCounter>> gpuCounters = new();
 
-    private readonly List<Data> stats = new ();
+    private readonly List<Data> stats = new();
 
-    public class Data
+    public sealed class Data
     {
         public string? Name { get; set; }
 
@@ -79,12 +79,13 @@ internal class GPUStats : IDisposable
                         continue;
                     }
 
-                    if (!gpuCounters.ContainsKey(phys))
+                    if (!gpuCounters.TryGetValue(phys, out var value))
                     {
-                        gpuCounters.Add(phys, new ());
+                        value = new();
+                        gpuCounters.Add(phys, value);
                     }
 
-                    gpuCounters[phys].Add(counter);
+                    value.Add(counter);
                 }
             }
         }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace DevHome.SetupFlow.Services;
 
 public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
 {
-    private readonly SemaphoreSlim _lock = new (initialCount: 1, maxCount: 1);
+    private readonly SemaphoreSlim _lock = new(initialCount: 1, maxCount: 1);
     private readonly IEnumerable<WinGetPackageDataSource> _dataSources;
     private bool _disposedValue;
 
@@ -59,18 +59,83 @@ public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
         }
     }
 
-    /// <summary>
-    /// Initialize data source
-    /// </summary>
-    private async Task InitializeDataSourceAsync(WinGetPackageDataSource dataSource)
+    protected virtual void Dispose(bool disposing)
     {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _lock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    public void Clear()
+    {
+        _catalogsMap.Clear();
+    }
+
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
+            return await Task.Run(async () => await dataSource.LoadCatalogsAsync());
+            {
+                _lock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+        return null;
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _lock.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    public void Clear()
+    {
+        _catalogsMap.Clear();
+    }
+
+            if (dataSource.CatalogCount > 0)
+            {
+                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
+                var catalogs = await Task.Run(async () => await dataSource.LoadCatalogsAsync());
+                dataSourceCatalogs.AddRange(catalogs);
+            }
         try
         {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing package list from data source {dataSource.GetType().Name}");
             await dataSource.InitializeAsync();
         }
         catch (Exception e)
-        {
+        return dataSourceCatalogs;
             Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while initializing data source of type {dataSource.GetType().Name}", e);
         }
     }
@@ -86,28 +151,16 @@ public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
             if (dataSource.CatalogCount > 0)
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
-                return await Task.Run(async () => await dataSource.LoadCatalogsAsync());
+                var catalogs = await Task.Run(async () => await dataSource.LoadCatalogsAsync());
+                dataSourceCatalogs.AddRange(catalogs);
             }
-        }
-        catch (Exception e)
-        {
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while loading data source of type {dataSource.GetType().Name}", e);
-        }
-
-        return null;
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            if (disposing)
-            {
+            }
+            }
+            }
+            }
+            }
                 _lock.Dispose();
-            }
-
-            _disposedValue = true;
-        }
+        return dataSourceCatalogs;
     }
 
     public void Dispose()

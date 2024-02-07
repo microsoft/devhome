@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -14,12 +14,12 @@ using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
+internal sealed class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
 {
     private readonly IWinGetPackageCache _packageCache;
     private readonly WindowsPackageManagerFactory _wingetFactory;
-    private readonly Dictionary<string, WinGetCatalog> _customCatalogs = new ();
-    private readonly SemaphoreSlim _lock = new (1, 1);
+    private readonly Dictionary<string, WinGetCatalog> _customCatalogs = new();
+    private readonly SemaphoreSlim _lock = new(1, 1);
 
     private WinGetCatalog _predefinedWingetCatalog;
     private WinGetCatalog _predefinedMsStoreCatalog;
@@ -41,6 +41,12 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     /// <inheritdoc/>
     public async Task<WinGetCatalog> GetPredefinedWingetCatalogAsync()
     {
+        // Use SemaphoreSlim on catalog to:
+        // 1. ensure reading the latest written value
+        // 2. block other threads from reading the catalog while it's being written
+        // 3. ReaderWriterLockSlim is not used here to prevent threading issues
+        //    such as entering and exiting locks from different threads after
+        //    awaiting on a task.
         await _lock.WaitAsync();
         try
         {
@@ -55,6 +61,12 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     /// <inheritdoc/>
     public async Task<WinGetCatalog> GetPredefinedMsStoreCatalogAsync()
     {
+        // Use SemaphoreSlim on catalog to:
+        // 1. ensure reading the latest written value
+        // 2. block other threads from reading the catalog while it's being written
+        // 3. ReaderWriterLockSlim is not used here to prevent threading issues
+        //    such as entering and exiting locks from different threads after
+        //    awaiting on a task.
         await _lock.WaitAsync();
         try
         {
@@ -69,6 +81,12 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     /// <inheritdoc/>
     public async Task<WinGetCatalog> GetCustomSearchCatalogAsync()
     {
+        // Use SemaphoreSlim on catalog to:
+        // 1. ensure reading the latest written value
+        // 2. block other threads from reading the catalog while it's being written
+        // 3. ReaderWriterLockSlim is not used here to prevent threading issues
+        //    such as entering and exiting locks from different threads after
+        //    awaiting on a task.
         await _lock.WaitAsync();
         try
         {
@@ -83,7 +101,12 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     /// <inheritdoc/>
     public async Task<WinGetCatalog> GetPackageCatalogByNameAsync(string catalogName)
     {
-        // Get custom catalog from cache or connect to it then cache it
+        // Use SemaphoreSlim on catalog to:
+        // 1. ensure reading the latest written value
+        // 2. block other threads from reading the catalog while it's being written
+        // 3. ReaderWriterLockSlim is not used here to prevent threading issues
+        //    such as entering and exiting locks from different threads after
+        //    awaiting on a task.
         await _lock.WaitAsync();
         try
         {
@@ -129,18 +152,13 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
         await _lock.WaitAsync();
         try
         {
-            // Clear package cache so next time they are fetched from the new
-            // catalog connections
-            _packageCache.Clear();
+            ClearAllCaches();
 
             // Create and connect to predefined catalogs concurrently
             await Task.WhenAll(
                 CreateAndConnectSearchCatalogAsync(),
                 CreateAndConnectWinGetCatalogAsync(),
                 CreateAndConnectMsStoreCatalogAsync());
-
-            // Clear custom catalogs
-            _customCatalogs.Clear();
         }
         finally
         {
@@ -154,9 +172,7 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
         await _lock.WaitAsync();
         try
         {
-            // Clear package cache so next time they are fetched from the new
-            // catalog connections
-            _packageCache.Clear();
+            ClearAllCaches();
 
             // Recover catalogs that are not alive concurrently
             var recoverSearchCatalog = !IsCatalogAlive(_customSearchCatalog);
@@ -167,9 +183,6 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
                 recoverSearchCatalog ? CreateAndConnectSearchCatalogAsync() : Task.CompletedTask,
                 recoverWinGetCatalog ? CreateAndConnectWinGetCatalogAsync() : Task.CompletedTask,
                 recoverMsStoreCatalog ? CreateAndConnectMsStoreCatalogAsync() : Task.CompletedTask);
-
-            // Clear custom catalogs so they are re-created and connected on demand
-            _customCatalogs.Clear();
         }
         finally
         {
@@ -184,6 +197,19 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
     public bool IsWinGetPackage(IWinGetPackage package) => package.CatalogId == _predefinedWingetCatalogId;
 
     /// <summary>
+    /// Clear all caches
+    /// </summary>
+    private void ClearAllCaches()
+    {
+        // Clear package cache so next time they are fetched from the new
+        // catalog connections
+        _packageCache.Clear();
+
+        // Clear custom catalogs so they are re-created and connected on demand
+        _customCatalogs.Clear();
+    }
+
+    /// <summary>
     /// Create and connect to the search catalog consisting of all the package catalogs.
     /// </summary>
     private async Task CreateAndConnectSearchCatalogAsync()
@@ -192,7 +218,7 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
         {
             var packageManager = _wingetFactory.CreatePackageManager();
             var catalogs = packageManager.GetPackageCatalogs();
-            _customSearchCatalog = new (await CreateAndConnectCatalogInternalAsync(catalogs), WinGetCatalog.CatalogType.CustomSearch);
+            _customSearchCatalog = new(await CreateAndConnectCatalogInternalAsync(catalogs), WinGetCatalog.CatalogType.CustomSearch);
         }
         catch (Exception e)
         {
@@ -210,7 +236,7 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
             var packageManager = _wingetFactory.CreatePackageManager();
             var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.OpenWindowsCatalog);
             _predefinedWingetCatalogId ??= catalog.Info.Id;
-            _predefinedWingetCatalog = new (await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedWinget);
+            _predefinedWingetCatalog = new(await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedWinget);
         }
         catch (Exception e)
         {
@@ -228,7 +254,7 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
             var packageManager = _wingetFactory.CreatePackageManager();
             var catalog = packageManager.GetPredefinedPackageCatalog(PredefinedPackageCatalog.MicrosoftStore);
             _predefinedMsStoreCatalogId ??= catalog.Info.Id;
-            _predefinedMsStoreCatalog = new (await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedMsStore);
+            _predefinedMsStoreCatalog = new(await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { catalog }), WinGetCatalog.CatalogType.PredefinedMsStore);
         }
         catch (Exception e)
         {
@@ -247,7 +273,7 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
         {
             var packageManager = _wingetFactory.CreatePackageManager();
             var customCatalog = packageManager.GetPackageCatalogByName(catalogName);
-            return new (await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { customCatalog }), WinGetCatalog.CatalogType.CustomUnknown, catalogName);
+            return new(await CreateAndConnectCatalogInternalAsync(new List<PackageCatalogReference>() { customCatalog }), WinGetCatalog.CatalogType.CustomUnknown, catalogName);
         }
         catch (Exception e)
         {
@@ -294,7 +320,7 @@ internal class WinGetCatalogConnector : IWinGetCatalogConnector, IDisposable
         }
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (!_disposedValue)
         {

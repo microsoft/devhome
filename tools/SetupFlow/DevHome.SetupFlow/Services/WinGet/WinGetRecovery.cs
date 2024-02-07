@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Runtime.InteropServices;
@@ -9,7 +9,7 @@ using DevHome.SetupFlow.Exceptions;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-internal class WinGetRecovery : IWinGetRecovery
+internal sealed class WinGetRecovery : IWinGetRecovery
 {
     // Recovery configuration
     private const int MaxAttempts = 5;

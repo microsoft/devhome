@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Linq;
@@ -157,10 +157,10 @@ public class ConfigurationFileHelper
     /// </summary>
     /// <param name="str">Target string</param>
     /// <returns>Input stream</returns>
-    private IInputStream StringToStream(string str)
+    private InMemoryRandomAccessStream StringToStream(string str)
     {
-        InMemoryRandomAccessStream result = new ();
-        using (DataWriter writer = new (result))
+        InMemoryRandomAccessStream result = new();
+        using (DataWriter writer = new(result))
         {
             writer.UnicodeEncoding = UnicodeEncoding.Utf8;
             writer.WriteString(str);

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Threading.Tasks;
@@ -10,7 +10,7 @@ using Windows.System;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
 
-internal partial class ExtensionLibraryBannerViewModel : ObservableObject
+internal sealed partial class ExtensionLibraryBannerViewModel : ObservableObject
 {
     private const string _hideExtensionsBannerKey = "HideExtensionsBanner";
 
@@ -25,7 +25,7 @@ internal partial class ExtensionLibraryBannerViewModel : ObservableObject
     [RelayCommand]
     private async Task ExtensionsBannerButtonAsync()
     {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2247301"));
+        await Launcher.LaunchUriAsync(new("https://go.microsoft.com/fwlink/?linkid=2247301"));
     }
 
     [RelayCommand]

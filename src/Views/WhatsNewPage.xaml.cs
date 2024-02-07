@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
@@ -19,8 +19,8 @@ namespace DevHome.Views;
 
 public sealed partial class WhatsNewPage : Page
 {
-    private readonly Uri _devDrivePageKeyUri = new ("ms-settings:disksandvolumes");
-    private readonly Uri _devDriveLearnMoreLinkUri = new ("https://go.microsoft.com/fwlink/?linkid=2236041");
+    private readonly Uri _devDrivePageKeyUri = new("ms-settings:disksandvolumes");
+    private readonly Uri _devDriveLearnMoreLinkUri = new("https://go.microsoft.com/fwlink/?linkid=2236041");
     private const string _devDriveLinkResourceKey = "WhatsNewPage_DevDriveCard/Link";
     private const string _accountsPageNavigationLink = "DevHome.Settings.ViewModels.AccountsViewModel";
 
@@ -59,6 +59,10 @@ public sealed partial class WhatsNewPage : Page
                     card.Button = Application.Current.GetService<IStringResource>().GetLocalized(_devDriveLinkResourceKey);
                     card.ShouldShowLink = false;
                 }
+            }
+            else
+            {
+                card.ShouldShowIcon = false;
             }
 
             ViewModel.AddCard(card);

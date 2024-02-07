@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using DevHome.SetupFlow.Models;
 
 namespace DevHome.SetupFlow.Services.WinGet.Operations;
 
-internal class WinGetOperations : IWinGetOperations
+internal sealed class WinGetOperations : IWinGetOperations
 {
     private readonly IWinGetInstallOperation _installOperation;
     private readonly IWinGetSearchOperation _searchOperation;

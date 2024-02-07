@@ -1,7 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,14 +44,14 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         extensionService.OnExtensionsChanged -= OnExtensionsChanged;
         extensionService.OnExtensionsChanged += OnExtensionsChanged;
 
-        StorePackagesList = new ();
-        InstalledPackagesList = new ();
+        StorePackagesList = new();
+        InstalledPackagesList = new();
     }
 
     [RelayCommand]
     public async Task GetUpdatesButtonAsync()
     {
-        await Launcher.LaunchUriAsync(new ("ms-windows-store://downloadsandupdates"));
+        await Launcher.LaunchUriAsync(new("ms-windows-store://downloadsandupdates"));
     }
 
     [RelayCommand]
@@ -140,6 +141,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
             return;
         }
 
+        var tempStorePackagesList = new List<StorePackageViewModel>();
+
         var jsonObj = JsonObject.Parse(storeData);
         if (jsonObj != null)
         {
@@ -177,8 +180,14 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
                 Log.Logger()?.ReportError("ExtensionLibraryViewModel", $"Found package: {productId}, {packageFamilyName}");
                 var storePackage = new StorePackageViewModel(productId, title, publisher, packageFamilyName);
-                StorePackagesList.Add(storePackage);
+                tempStorePackagesList.Add(storePackage);
             }
+        }
+
+        tempStorePackagesList = tempStorePackagesList.OrderBy(storePackage => storePackage.Title).ToList();
+        foreach (var storePackage in tempStorePackagesList)
+        {
+            StorePackagesList.Add(storePackage);
         }
     }
 

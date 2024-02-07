@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 extern alias Projection;
 
@@ -33,12 +33,12 @@ public partial class LoadingViewModel : SetupPageViewModelBase
 
     private readonly Guid _activityId;
 
-    private static readonly BitmapImage DarkCaution = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
-    private static readonly BitmapImage DarkError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
-    private static readonly BitmapImage DarkSuccess = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkSuccess.png"));
-    private static readonly BitmapImage LightCaution = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightCaution.png"));
-    private static readonly BitmapImage LightError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
-    private static readonly BitmapImage LightSuccess = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightSuccess.png"));
+    private static readonly BitmapImage DarkCaution = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkCaution.png"));
+    private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
+    private static readonly BitmapImage DarkSuccess = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkSuccess.png"));
+    private static readonly BitmapImage LightCaution = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightCaution.png"));
+    private static readonly BitmapImage LightError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
+    private static readonly BitmapImage LightSuccess = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightSuccess.png"));
 
 #pragma warning disable SA1310 // Field names should not contain underscore
     private const int NUMBER_OF_PARALLEL_RUNNING_TASKS = 5;
@@ -66,7 +66,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
     /// <summary>
     /// Keep track of all failed tasks so they can be re-ran if the user wishes.
     /// </summary>
-    private readonly IList<TaskInformation> _failedTasks;
+    private readonly List<TaskInformation> _failedTasks;
 
     public IList<TaskInformation> FailedTasks => _failedTasks;
 
@@ -194,7 +194,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         : base(stringResource, orchestrator)
     {
         _host = host;
-        _tasksToRun = new ();
+        _tasksToRun = new();
 
         // Assuming that the theme can't change while the user is in the loading screen.
         _currentTheme = _host.GetService<IThemeSelectorService>().Theme;
@@ -204,8 +204,8 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         NextPageButtonText = stringResource.GetLocalized(StringResourceKey.LoadingScreenGoToSummaryButtonContent);
         ShowRetryButton = Visibility.Collapsed;
         _failedTasks = new List<TaskInformation>();
-        ActionCenterItems = new ();
-        Messages = new ();
+        ActionCenterItems = new();
+        Messages = new();
         _activityId = orchestrator.ActivityId;
     }
 
@@ -394,7 +394,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
         });
 
         // All the tasks are done.  Re-try logic follows.
-        if (!_failedTasks.Any())
+        if (_failedTasks.Count == 0)
         {
             Log.Logger?.ReportInfo(Log.Component.Loading, "All tasks succeeded.  Moving to next page");
             ExecutionFinished.Invoke(null, null);
@@ -415,7 +415,7 @@ public partial class LoadingViewModel : SetupPageViewModelBase
             IsNavigationBarVisible = true;
         }
 
-        if (_failedTasks.Any())
+        if (_failedTasks.Count != 0)
         {
             TelemetryFactory.Get<ITelemetry>().Log("Loading_FailedTasks_Event", LogLevel.Critical, new LoadingRetryEvent(_failedTasks.Count), _activityId);
         }

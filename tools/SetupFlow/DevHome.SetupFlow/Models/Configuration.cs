@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.IO;
@@ -18,7 +18,7 @@ public class Configuration
     public Configuration(string filePath)
     {
         _fileInfo = new FileInfo(filePath);
-        _lazyContent = new (LoadContent);
+        _lazyContent = new(LoadContent);
     }
 
     /// <summary>

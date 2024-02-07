@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -19,6 +19,7 @@ using DevHome.Logging;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
+using DevHome.SetupFlow.Views;
 using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI;
@@ -45,6 +46,30 @@ public partial class AddRepoViewModel : ObservableObject
     private readonly ISetupFlowStringResource _stringResource;
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
+
+    /// <summary>
+    /// Because logic is split between the back-end and the view model, incrementally migrating code from the view
+    /// to the view model is impossible.
+    /// This member is here to support this partial migration.  Once all the code-behind logic is out of the view
+    /// _addRepoDialog can be removed.
+    /// </summary>
+    /// <remarks>
+    /// This is only to help reference back to the view's code-behind.  Please do not change anything inside
+    /// this class.
+    /// </remarks>
+    private readonly AddRepoDialog _addRepoDialog;
+
+    /// <summary>
+    /// Gets the folder picker view model.
+    /// </summary>
+    /// <remarks>
+    /// Currently public because EditDevDriveViewModel needs access to it.
+    /// THis can be made private when EditDevDriveViewModel is in this class.
+    /// </remarks>
+    public FolderPickerViewModel FolderPickerViewModel
+    {
+        get; private set;
+    }
 
     private ElementTheme SelectedTheme => _host.GetService<IThemeSelectorService>().Theme;
 
@@ -84,25 +109,26 @@ public partial class AddRepoViewModel : ObservableObject
     /// Names of all providers.  This is shown to the user on the accounts page.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<string> _providerNames = new ();
+    private ObservableCollection<string> _providerNames = new();
 
     /// <summary>
     /// Names of all accounts the user has logged into for a particular provider.
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsAccountComboBoxEnabled))]
-    private ObservableCollection<string> _accounts = new ();
+    private ObservableCollection<string> _accounts = new();
 
     /// <summary>
     /// The currently selected account.
     /// </summary>
+    [ObservableProperty]
     private string _selectedAccount;
 
     /// <summary>
     /// All repositories currently shown on the screen.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<RepoViewListItem> _repositories = new ();
+    private ObservableCollection<RepoViewListItem> _repositories = new();
 
     /// <summary>
     /// Should the URL page be visible?
@@ -197,7 +223,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// the flag _isFiltering is used to prevent modifications to EverythingToClone.
     /// Once filtering is done SelectRange is called on each item in EverythingToClone to re-select them.
     /// </summary>
-    /// <param name="text">The text to use with .StartsWith</param>
+    /// <param name="text">The text to use with .Contains</param>
     public void FilterRepositories(string text)
     {
         IEnumerable<IRepository> filteredRepositories;
@@ -208,7 +234,7 @@ public partial class AddRepoViewModel : ObservableObject
         else
         {
             filteredRepositories = _repositoriesForAccount
-                .Where(x => x.DisplayName.StartsWith(text, StringComparison.OrdinalIgnoreCase));
+                .Where(x => x.DisplayName.Contains(text, StringComparison.OrdinalIgnoreCase));
         }
 
         _isFiltering = true;
@@ -227,11 +253,11 @@ public partial class AddRepoViewModel : ObservableObject
     /// <returns>An enumerable collection of items ready to be put into the ListView</returns>
     private IEnumerable<RepoViewListItem> OrderRepos(IEnumerable<IRepository> repos)
     {
-        var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase))
+        var organizationRepos = repos.Where(x => !x.OwningAccountName.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
 
-        var userRepos = repos.Where(x => x.OwningAccountName.Equals(_selectedAccount, StringComparison.OrdinalIgnoreCase));
+        var userRepos = repos.Where(x => x.OwningAccountName.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase));
         var userPublicRepos = userRepos.Where(x => !x.IsPrivate)
             .OrderByDescending(x => x.LastUpdated)
             .Select(x => new RepoViewListItem(x));
@@ -269,6 +295,8 @@ public partial class AddRepoViewModel : ObservableObject
 
     private TypedEventHandler<IDeveloperIdProvider, IDeveloperId> _developerIdChangedEvent;
 
+    private string _selectedRepoProvider = string.Empty;
+
     /// <summary>
     /// Logs the user into the provider if they aren't already.
     /// Changes the page to show all repositories for the user.
@@ -289,6 +317,8 @@ public partial class AddRepoViewModel : ObservableObject
             StyleForPrimaryButton = Application.Current.Resources["DefaultButtonStyle"] as Style;
             ShouldEnablePrimaryButton = false;
         }
+
+        _selectedRepoProvider = repositoryProviderName;
     }
 
     [RelayCommand]
@@ -298,12 +328,120 @@ public partial class AddRepoViewModel : ObservableObject
         IsCancelling = true;
     }
 
+    /// <summary>
+    /// The accounts the user is logged into is stored here.
+    /// </summary>
+    [ObservableProperty]
+    private MenuFlyout _accountsToShow;
+
+    /// <summary>
+    /// Switches the repos shown to the account selected.
+    /// </summary>
+    [RelayCommand]
+    private async Task MenuItemClick(string selectedItemName)
+    {
+        SelectedAccount = selectedItemName;
+        await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
+
+        var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
+        _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
+    }
+
+    /// <summary>
+    /// Makes the MenuFlyout object used to display multple accounts in the repo tool.
+    /// </summary>
+    /// <returns>The MenuFlyout to display.</returns>
+    /// <remarks>
+    /// The layout is a list of added accounts.  A line seperator.  One menu item to add an account.
+    /// </remarks>
+    private MenuFlyout ConstructFlyout()
+    {
+        AccountsToShow = new MenuFlyout();
+        var newMenu = new MenuFlyout();
+        foreach (var account in Accounts)
+        {
+            var accountMenuItem = new MenuFlyoutItem();
+            accountMenuItem.Name = account;
+            accountMenuItem.Text = account;
+            accountMenuItem.Command = MenuItemClickCommand;
+            accountMenuItem.CommandParameter = accountMenuItem.Text;
+            newMenu.Items.Add(accountMenuItem);
+        }
+
+        newMenu.Items.Add(new MenuFlyoutSeparator());
+        var addAccountMenuItem = new MenuFlyoutItem();
+        addAccountMenuItem.Text = _stringResource.GetLocalized("RepoToolAddAnotherAccount");
+        addAccountMenuItem.Command = AddAccountClickedCommand;
+        newMenu.Items.Add(addAccountMenuItem);
+
+        return newMenu;
+    }
+
+    /// <summary>
+    /// The bottom of the MenuFlyout has a button to log into another account.  Handle logging the user in.
+    /// </summary>
+    /// <remarks>
+    /// This calls MenuItemClick to poulate the list of repos if a new account is detected.
+    /// </remarks>
+    [RelayCommand]
+    private async Task AddAccountClicked()
+    {
+        // If the user selects repos from account 1, then logs into account 2 and does not save between those two actions
+        // _previouslySelectedRepos will be empty.  The result is the repos in account 1 will not be selected if the user navigates
+        // to account 1 after logging into account 2.
+        // Save the repos here in that case.
+        if (_previouslySelectedRepos.Count == 0)
+        {
+            _previouslySelectedRepos.AddRange(EverythingToClone);
+        }
+
+        ShowRepoPage = Visibility.Collapsed;
+
+        // Store the logged in accounts to help figure out what account the user logged into.
+        var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
+        await LogUserIn(_selectedRepoProvider, _addRepoDialog.GetLoginUiContent(), true);
+        var loggedInAccountsWithNewAccount = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
+
+        ShowRepoPage = Visibility.Visible;
+        Accounts = new ObservableCollection<string>(loggedInAccountsWithNewAccount.Select(x => x.LoginId));
+        AccountsToShow = ConstructFlyout();
+
+        // The dialog makes a user log in if they have no accounts.
+        // keep this here just in case.
+        if (Accounts.Any())
+        {
+            var newAccount = loggedInAccountsWithNewAccount.Except(loggedInAccounts);
+
+            // Logging in should allow only one account to log in at a time.
+            if (newAccount.Count() > 1)
+            {
+                Log.Logger?.ReportError(Log.Component.RepoConfig, $"{newAccount.Count()} accounts logged in at once.  Choosing the first alphabetically");
+            }
+
+            if (newAccount.Any())
+            {
+                SelectedAccount = newAccount.OrderByDescending(x => x.LoginId).FirstOrDefault().LoginId;
+            }
+            else
+            {
+                SelectedAccount = Accounts.First();
+            }
+
+            IsCancelling = false;
+            var firstItem = AccountsToShow.Items.FirstOrDefault(x => x.Name.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase));
+            await MenuItemClick((firstItem as MenuFlyoutItem).Text);
+        }
+    }
+
     public AddRepoViewModel(
         ISetupFlowStringResource stringResource,
         List<CloningInformation> previouslySelectedRepos,
         IHost host,
-        Guid activityId)
+        Guid activityId,
+        string defaultClonePath,
+        AddRepoDialog addRepoDialog)
     {
+        _addRepoDialog = addRepoDialog;
         _stringResource = stringResource;
         _host = host;
         ChangeToUrlPage();
@@ -316,6 +454,8 @@ public partial class AddRepoViewModel : ObservableObject
         _previouslySelectedRepos = previouslySelectedRepos ?? new List<CloningInformation>();
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
         _activityId = activityId;
+        FolderPickerViewModel = new FolderPickerViewModel(stringResource);
+        FolderPickerViewModel.CloneLocation = defaultClonePath;
     }
 
     /// <summary>
@@ -446,6 +586,27 @@ public partial class AddRepoViewModel : ObservableObject
         }
     }
 
+    private async Task LogUserIn(string repositoryProviderName, Frame loginFrame, bool shouldShowXCancelButton = false)
+    {
+        IsLoggingIn = true;
+        ShouldShowLoginUi = true;
+
+        // AddRepoDialog can handle the close button click.  Don't show the x button.
+        ShouldShowXButtonInLoginUi = shouldShowXCancelButton;
+        InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), loginFrame);
+
+        // Wait 30 seconds for user to log in.
+        var maxIterationsToWait = 30;
+        var currentIteration = 0;
+        var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
+        while ((IsLoggingIn && !IsCancelling) && currentIteration++ <= maxIterationsToWait)
+        {
+            await Task.Delay(waitDelay);
+        }
+
+        ShouldShowLoginUi = false;
+    }
+
     /// <summary>
     /// Gets all the accounts for a provider and updates the UI.
     /// </summary>
@@ -456,23 +617,7 @@ public partial class AddRepoViewModel : ObservableObject
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
         if (!loggedInAccounts.Any())
         {
-            IsLoggingIn = true;
-            ShouldShowLoginUi = true;
-
-            // AddRepoDialog can handle the close button click.  Don't show the x button.
-            ShouldShowXButtonInLoginUi = false;
-            InitiateAddAccountUserExperienceAsync(_providers.GetProvider(repositoryProviderName), loginFrame);
-
-            // Wait 30 seconds for user to log in.
-            var maxIterationsToWait = 30;
-            var currentIteration = 0;
-            var waitDelay = Convert.ToInt32(new TimeSpan(0, 0, 1).TotalMilliseconds);
-            while ((IsLoggingIn && !IsCancelling) && currentIteration++ <= maxIterationsToWait)
-            {
-                await Task.Delay(waitDelay);
-            }
-
-            ShouldShowLoginUi = false;
+            await LogUserIn(repositoryProviderName, loginFrame);
             loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(repositoryProviderName));
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: false), _activityId);
         }
@@ -481,7 +626,21 @@ public partial class AddRepoViewModel : ObservableObject
             TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAccount_Event", LogLevel.Critical, new RepoDialogGetAccountEvent(repositoryProviderName, alreadyLoggedIn: true), _activityId);
         }
 
+        // At least with the github extension, LoginId is the account name and does not include
+        // @github.com.  I could try parsing the host of the URL and append that to the login id.
+        // But, if other extensions included the @something.com to the loginid, the solution mentioned above
+        // would produce [username]@[something.com]@[something.com].  Not good.
+        // To avoid this, just store the login id.
         Accounts = new ObservableCollection<string>(loggedInAccounts.Select(x => x.LoginId));
+        AccountsToShow = ConstructFlyout();
+
+        // The dialog makes a user log in if they have no accounts.
+        // keep this here just in case.
+        if (Accounts.Any())
+        {
+            SelectedAccount = Accounts.First();
+            await MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
+        }
     }
 
     /// <summary>
@@ -759,7 +918,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <param name="loginId">The login Id to get the repositories for</param>
     public async Task GetRepositoriesAsync(string repositoryProvider, string loginId)
     {
-        _selectedAccount = loginId;
+        SelectedAccount = loginId;
         IsFetchingRepos = true;
         await Task.Run(() =>
         {

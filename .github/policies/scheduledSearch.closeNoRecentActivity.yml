@@ -13,7 +13,6 @@ configuration:
           * Issue is Open
           * Issue has the label Needs-Author-Feedback
           * Issue has the label Status-No recent activity
-          * Issue does not have the label Issue-Feature
           * Has not had activity in the last 5 days
           Then -
           * Close the Issue
@@ -27,8 +26,6 @@ configuration:
           label: Needs-Author-Feedback
       - hasLabel:
           label: Status-No recent activity
-      - isNotLabeledWith:
-          label: Issue-Feature
       - noActivitySince:
           days: 5
       actions:

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace DevHome.SetupFlow.Services.WinGet;
 /// <summary>
 /// Finds packages using the Windows Package Manager (WinGet).
 /// </summary>
-internal class WinGetPackageFinder : IWinGetPackageFinder
+internal sealed class WinGetPackageFinder : IWinGetPackageFinder
 {
     private readonly WindowsPackageManagerFactory _wingetFactory;
 

@@ -1,19 +1,19 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal class NetworkStats : IDisposable
+internal sealed class NetworkStats : IDisposable
 {
-    private readonly Dictionary<string, List<PerformanceCounter>> networkCounters = new ();
+    private readonly Dictionary<string, List<PerformanceCounter>> networkCounters = new();
 
     private Dictionary<string, Data> NetworkUsages { get; set; } = new Dictionary<string, Data>();
 
     private Dictionary<string, List<float>> NetChartValues { get; set; } = new Dictionary<string, List<float>>();
 
-    public class Data
+    public sealed class Data
     {
         public float Usage
         {
@@ -114,12 +114,12 @@ internal class NetworkStats : IDisposable
         }
 
         var currNetworkName = NetChartValues.ElementAt(networkIndex).Key;
-        if (!NetworkUsages.ContainsKey(currNetworkName))
+        if (!NetworkUsages.TryGetValue(currNetworkName, out var value))
         {
             return new Data();
         }
 
-        return NetworkUsages[currNetworkName];
+        return value;
     }
 
     public int GetPrevNetworkIndex(int networkIndex)

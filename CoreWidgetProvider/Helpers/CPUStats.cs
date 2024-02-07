@@ -1,19 +1,19 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal class CPUStats : IDisposable
+internal sealed class CPUStats : IDisposable
 {
     // CPU counters
-    private readonly PerformanceCounter procPerf = new ("Processor Information", "% Processor Utility", "_Total");
-    private readonly PerformanceCounter procPerformance = new ("Processor Information", "% Processor Performance", "_Total");
-    private readonly PerformanceCounter procFrequency = new ("Processor Information", "Processor Frequency", "_Total");
-    private readonly Dictionary<Process, PerformanceCounter> cpuCounters = new ();
+    private readonly PerformanceCounter procPerf = new("Processor Information", "% Processor Utility", "_Total");
+    private readonly PerformanceCounter procPerformance = new("Processor Information", "% Processor Performance", "_Total");
+    private readonly PerformanceCounter procFrequency = new("Processor Information", "Processor Frequency", "_Total");
+    private readonly Dictionary<Process, PerformanceCounter> cpuCounters = new();
 
-    internal class ProcessStats
+    internal sealed class ProcessStats
     {
         public Process? Process { get; set; }
 
@@ -31,7 +31,12 @@ internal class CPUStats : IDisposable
     public CPUStats()
     {
         CpuUsage = 0;
-        ProcessCPUStats = new ProcessStats[3] { new ProcessStats(), new ProcessStats(), new ProcessStats() };
+        ProcessCPUStats =
+        [
+            new ProcessStats(),
+            new ProcessStats(),
+            new ProcessStats()
+        ];
 
         InitCPUPerfCounters();
     }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using DevHome.Logging;
@@ -23,9 +23,9 @@ public static class Deployment
             try
             {
                 var localSettings = ApplicationData.Current.LocalSettings;
-                if (localSettings.Values.ContainsKey(DeploymentIdentifierKeyName))
+                if (localSettings.Values.TryGetValue(DeploymentIdentifierKeyName, out var value))
                 {
-                    return (Guid)localSettings.Values[DeploymentIdentifierKeyName];
+                    return (Guid)value;
                 }
 
                 var newGuid = Guid.NewGuid();

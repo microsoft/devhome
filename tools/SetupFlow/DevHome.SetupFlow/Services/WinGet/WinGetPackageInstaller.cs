@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ namespace DevHome.SetupFlow.Services.WinGet;
 /// <summary>
 /// Installs a package using the Windows Package Manager (WinGet).
 /// </summary>
-internal class WinGetPackageInstaller : IWinGetPackageInstaller
+internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
 {
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IWinGetPackageFinder _packageFinder;

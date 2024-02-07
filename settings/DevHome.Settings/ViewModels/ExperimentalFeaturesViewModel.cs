@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -18,9 +18,9 @@ namespace DevHome.Settings.ViewModels;
 
 public class ExperimentalFeaturesViewModel : ObservableObject
 {
-    private ILocalSettingsService _localSettingsService;
+    private readonly ILocalSettingsService _localSettingsService;
 
-    public ObservableCollection<ExperimentalFeature> Features { get; } = new ();
+    public ObservableCollection<ExperimentalFeature> Features { get; } = new();
 
     public ExperimentalFeaturesViewModel(ILocalSettingsService localSettingsService)
     {

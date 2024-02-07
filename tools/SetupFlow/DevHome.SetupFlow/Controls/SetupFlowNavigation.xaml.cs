@@ -1,10 +1,11 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.SetupFlow.Controls;
+
 public sealed partial class SetupFlowNavigation : UserControl
 {
     public SetupFlowNavigation()

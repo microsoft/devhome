@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using WPMPackageCatalog = Microsoft.Management.Deployment.PackageCatalog;
 
@@ -8,7 +8,7 @@ namespace DevHome.SetupFlow.Models;
 /// <summary>
 /// Internal model for a WinGet catalog.
 /// </summary>
-internal class WinGetCatalog
+internal sealed class WinGetCatalog
 {
     public enum CatalogType
     {

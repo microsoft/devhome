@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using Microsoft.UI;
@@ -8,7 +8,7 @@ using Windows.Foundation;
 
 namespace SampleExtension;
 
-internal class DeveloperIdProvider : IDeveloperIdProvider
+internal sealed class DeveloperIdProvider : IDeveloperIdProvider
 {
     public string DisplayName => $"Sample {nameof(DeveloperIdProvider)}";
 

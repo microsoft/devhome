@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -71,6 +71,11 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         ShowDevDriveItem = DevDriveUtil.IsDevDriveFeatureEnabled;
 
         BannerViewModel = bannerViewModel;
+    }
+
+    public async Task<bool> ValidateAppInstallerAsync()
+    {
+        return EnablePackageInstallerItem = await _wpm.IsAvailableAsync();
     }
 
     protected async override Task OnFirstNavigateToAsync()

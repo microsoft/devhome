@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Diagnostics.Tracing;
@@ -11,7 +11,7 @@ using Microsoft.Management.Configuration;
 namespace DevHome.SetupFlow.Common.TelemetryEvents;
 
 [EventData]
-internal class ConfigurationSetResultEvent : EventBase
+internal sealed class ConfigurationSetResultEvent : EventBase
 {
     private readonly ConfigurationSet _configSet;
 

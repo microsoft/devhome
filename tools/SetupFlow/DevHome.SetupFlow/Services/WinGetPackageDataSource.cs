@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ public abstract class WinGetPackageDataSource
     /// <returns>List of packages</returns>
     protected async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris)
     {
-        List<IWinGetPackage> result = new ();
+        List<IWinGetPackage> result = new();
 
         // Skip search if package data source is empty
         if (!packageUris.Any())

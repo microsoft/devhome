@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Threading.Tasks;
@@ -10,7 +10,7 @@ namespace DevHome.SetupFlow.Services.WinGet.Operations;
 /// <summary>
 /// Install packages using WinGet with recovery
 /// </summary>
-internal class WinGetInstallOperation : IWinGetInstallOperation
+internal sealed class WinGetInstallOperation : IWinGetInstallOperation
 {
     private readonly IWinGetPackageInstaller _packageInstaller;
     private readonly IWinGetProtocolParser _protocolParser;
@@ -51,7 +51,7 @@ internal class WinGetInstallOperation : IWinGetInstallOperation
         return await _recovery.DoWithRecoveryAsync(async () =>
         {
             var catalog = await _protocolParser.ResolveCatalogAsync(parsedPackageUri);
-            return await _packageInstaller.InstallPackageAsync(catalog, parsedPackageUri.packageId);
+            return await _packageInstaller.InstallPackageAsync(catalog, parsedPackageUri.PackageId);
         });
     }
 }

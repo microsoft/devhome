@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Globalization;
 using System.Text.Json.Nodes;
@@ -8,20 +8,21 @@ using CoreWidgetProvider.Widgets.Enums;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
-internal class SystemNetworkUsageWidget : CoreWidget, IDisposable
+
+internal sealed class SystemNetworkUsageWidget : CoreWidget, IDisposable
 {
-    private static Dictionary<string, string> Templates { get; set; } = new ();
+    private static Dictionary<string, string> Templates { get; set; } = new();
 
     private int networkIndex;
 
-    protected static readonly new string Name = nameof(SystemNetworkUsageWidget);
+    private static readonly new string Name = nameof(SystemNetworkUsageWidget);
 
     private readonly DataManager dataManager;
 
     public SystemNetworkUsageWidget()
         : base()
     {
-        dataManager = new (DataType.Network, UpdateWidget);
+        dataManager = new(DataType.Network, UpdateWidget);
     }
 
     private string SpeedToString(float cpuSpeed)
@@ -78,6 +79,11 @@ internal class SystemNetworkUsageWidget : CoreWidget, IDisposable
         catch (Exception e)
         {
             Log.Logger()?.ReportError(Name, ShortId, "Error retrieving data.", e);
+            var content = new JsonObject
+            {
+                { "errorMessage", e.Message },
+            };
+            ContentData = content.ToJsonString();
             DataState = WidgetDataState.Failed;
             return;
         }

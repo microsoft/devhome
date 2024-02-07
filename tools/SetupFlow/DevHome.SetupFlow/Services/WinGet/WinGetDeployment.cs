@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Threading.Tasks;
@@ -13,7 +13,7 @@ using Microsoft.Management.Deployment;
 
 namespace DevHome.SetupFlow.Services.WinGet;
 
-internal class WinGetDeployment : IWinGetDeployment
+internal sealed class WinGetDeployment : IWinGetDeployment
 {
     private readonly WindowsPackageManagerFactory _wingetFactory;
     private readonly IAppInstallManagerService _appInstallManagerService;

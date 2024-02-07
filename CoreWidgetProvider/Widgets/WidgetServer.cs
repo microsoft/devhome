@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -11,9 +11,10 @@ using Windows.Win32;
 using Windows.Win32.System.Com;
 
 namespace CoreWidgetProvider.Widgets;
+
 public sealed class WidgetServer : IDisposable
 {
-    private readonly HashSet<uint> registrationCookies = new ();
+    private readonly HashSet<uint> registrationCookies = new();
 
     [UnconditionalSuppressMessage(
         "ReflectionAnalysis",
@@ -69,7 +70,7 @@ public sealed class WidgetServer : IDisposable
         }
     }
 
-    private class Ole32
+    private sealed class Ole32
     {
 #pragma warning disable SA1310 // Field names should not contain underscore
         // https://docs.microsoft.com/windows/win32/api/combaseapi/ne-combaseapi-regcls

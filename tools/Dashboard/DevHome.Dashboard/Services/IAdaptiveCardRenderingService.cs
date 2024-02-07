@@ -1,12 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 
 namespace DevHome.Dashboard.Services;
 
-internal interface IAdaptiveCardRenderingService
+public interface IAdaptiveCardRenderingService
 {
     public Task<AdaptiveCardRenderer> GetRenderer();
 

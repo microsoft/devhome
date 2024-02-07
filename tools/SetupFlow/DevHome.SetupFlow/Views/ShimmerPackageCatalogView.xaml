@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <UserControl
@@ -16,16 +16,14 @@
             <ItemsRepeater.Layout>
                 <UniformGridLayout
                     Orientation="Horizontal"
-                    MinItemWidth="190"
                     MaximumRowsOrColumns="3"
                     MinRowSpacing="4"
                     MinColumnSpacing="4"
-                    MinItemHeight="140"
                     ItemsStretch="Fill" />
             </ItemsRepeater.Layout>
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate>
-                    <labs:Shimmer Height="140" />
+                    <labs:Shimmer MinHeight="140" />
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
         </ItemsRepeater>

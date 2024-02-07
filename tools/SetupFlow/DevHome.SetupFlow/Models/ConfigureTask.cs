@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 extern alias Projection;
 
@@ -53,7 +53,7 @@ public class ConfigureTask : ISetupTask
 
     TaskMessages ISetupTask.GetLoadingMessages()
     {
-        return new ()
+        return new()
         {
             Executing = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplying),
             Error = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplyError),
@@ -64,7 +64,7 @@ public class ConfigureTask : ISetupTask
 
     public ActionCenterMessages GetErrorMessages()
     {
-        return new ()
+        return new()
         {
             PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplyError),
         };
@@ -72,7 +72,7 @@ public class ConfigureTask : ISetupTask
 
     public ActionCenterMessages GetRebootMessage()
     {
-        return new ()
+        return new()
         {
             PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplySuccessReboot),
         };

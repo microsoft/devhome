@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Diagnostics.Tracing;
@@ -29,13 +29,13 @@ public class EntryPointEvent : EventBase
     }
 
     private readonly string[] entryPointNames =
-    {
+    [
         string.Empty,
         "Settings",
         "SetupFlow",
         "WhatsNewPage",
         "Widget",
-    };
+    ];
 
     public EntryPointEvent(EntryPoint entryPoint)
     {

@@ -1,6 +1,6 @@
 Param(
     [string]$Platform = "x64",
-    [string]$Configuration = "Debug",
+    [string]$Configuration = "debug",
     [string]$VersionOfSDK,
     [string]$SDKNugetSource,
     [string]$Version,
@@ -14,7 +14,7 @@ $StartTime = Get-Date
 
 if ($Help) {
     Write-Host @"
-Copyright (c) Microsoft Corporation and Contributors.
+Copyright (c) Microsoft Corporation.
 Licensed under the MIT License.
 
 Syntax:
@@ -53,8 +53,12 @@ if ($IsAzurePipelineBuild) {
   Copy-Item (Join-Path $env:Build_RootDirectory "build\nuget.config.internal") -Destination (Join-Path $env:Build_RootDirectory "nuget.config")
 }
 
+$ErrorActionPreference = "Stop"
+
 if (($BuildStep -ieq "all") -Or ($BuildStep -ieq "sdk")) {
-  extensionsdk\Build.ps1 -VersionOfSDK $env:sdk_version -IsAzurePipelineBuild $IsAzurePipelineBuild
+  foreach ($configuration in $env:Build_Configuration.Split(",")) {
+    extensionsdk\BuildSDKHelper.ps1 -Configuration $configuration -VersionOfSDK $env:sdk_version -IsAzurePipelineBuild $IsAzurePipelineBuild -BypassWarning
+  }
 }
 
 $msbuildPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
@@ -63,8 +67,6 @@ if ($IsAzurePipelineBuild) {
 } else {
   $nugetPath = (Join-Path $env:Build_RootDirectory "build\NugetWrapper.cmd")
 }
-
-$ErrorActionPreference = "Stop"
 
 # Install NuGet Cred Provider
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

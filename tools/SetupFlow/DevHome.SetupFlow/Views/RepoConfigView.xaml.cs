@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
@@ -103,12 +103,12 @@ public sealed partial class RepoConfigView : UserControl
         }
 
         // Handle the case the user de-selected all repos.
-        if (result == ContentDialogResult.Primary && !everythingToClone.Any())
+        if (result == ContentDialogResult.Primary && everythingToClone.Count == 0)
         {
             ViewModel.SaveSetupTaskInformation(everythingToClone);
         }
 
-        if (result == ContentDialogResult.Primary && everythingToClone.Any())
+        if (result == ContentDialogResult.Primary && everythingToClone.Count != 0)
         {
             // Currently clone path supports either a local path or a new Dev Drive. Only one can be selected
             // during the add repo dialog flow. If multiple repositories are selected and the user chose to clone them to a Dev Drive
@@ -118,7 +118,7 @@ public sealed partial class RepoConfigView : UserControl
                 foreach (var cloneInfo in everythingToClone)
                 {
                     cloneInfo.CloneToDevDrive = true;
-                    cloneInfo.CloneLocationAlias = _addRepoDialog.FolderPickerViewModel.CloneLocationAlias;
+                    cloneInfo.CloneLocationAlias = _addRepoDialog.AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias;
                 }
 
                 // The cloning location may have changed e.g The original Drive clone path for Dev Drives was the F: drive for items
@@ -165,7 +165,7 @@ public sealed partial class RepoConfigView : UserControl
 
         // Only 1 provider can be selected per repo dialog session.
         // Okay to use EverythingToClone[0].ProviderName here.
-        var providerName = _addRepoDialog.AddRepoViewModel.EverythingToClone.Any() ? _addRepoDialog.AddRepoViewModel.EverythingToClone[0].ProviderName : string.Empty;
+        var providerName = _addRepoDialog.AddRepoViewModel.EverythingToClone.Count != 0 ? _addRepoDialog.AddRepoViewModel.EverythingToClone[0].ProviderName : string.Empty;
 
         // If needs be, this can run inside a foreach loop to capture details on each repo.
         if (cloneLocationKind == CloneLocationKind.DevDrive)

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Threading.Tasks;
@@ -7,7 +7,6 @@ using AdaptiveCards.ObjectModel.WinUI3;
 using AdaptiveCards.Rendering.WinUI3;
 using AdaptiveCards.Templating;
 using CommunityToolkit.Mvvm.ComponentModel;
-using DevHome.Common.Extensions;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
@@ -18,12 +17,25 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.Data.Json;
 using Windows.System;
+using WinUIEx;
 
 namespace DevHome.Dashboard.ViewModels;
 
+/// <summary>
+/// Delegate factory for creating widget view models
+/// </summary>
+/// <param name="widget">Widget</param>
+/// <param name="widgetSize">WidgetSize</param>
+/// <param name="widgetDefinition">WidgetDefinition</param>
+/// <returns>Widget view model</returns>
+public delegate WidgetViewModel WidgetViewModelFactory(
+    Widget widget,
+    WidgetSize widgetSize,
+    WidgetDefinition widgetDefinition);
+
 public partial class WidgetViewModel : ObservableObject
 {
-    private readonly Microsoft.UI.Dispatching.DispatcherQueue _dispatcher;
+    private readonly WindowEx _windowEx;
     private readonly IAdaptiveCardRenderingService _renderingService;
 
     private RenderedAdaptiveCard _renderedCard;
@@ -48,14 +60,6 @@ public partial class WidgetViewModel : ObservableObject
 
     [ObservableProperty]
     private FrameworkElement _widgetFrameworkElement;
-
-    public bool IsInAddMode { get; set; }
-
-    [ObservableProperty]
-    private bool _isInEditMode;
-
-    [ObservableProperty]
-    private bool _configuring;
 
     partial void OnWidgetChanging(Widget value)
     {
@@ -88,10 +92,11 @@ public partial class WidgetViewModel : ObservableObject
         Widget widget,
         WidgetSize widgetSize,
         WidgetDefinition widgetDefinition,
-        Microsoft.UI.Dispatching.DispatcherQueue dispatcher)
+        IAdaptiveCardRenderingService adaptiveCardRenderingService,
+        WindowEx windowEx)
     {
-        _renderingService = Application.Current.GetService<IAdaptiveCardRenderingService>();
-        _dispatcher = dispatcher;
+        _renderingService = adaptiveCardRenderingService;
+        _windowEx = windowEx;
 
         Widget = widget;
         WidgetSize = widgetSize;
@@ -110,17 +115,6 @@ public partial class WidgetViewModel : ObservableObject
             var cardTemplate = await Widget.GetCardTemplateAsync();
             var cardData = await Widget.GetCardDataAsync();
 
-            if (string.IsNullOrEmpty(cardTemplate))
-            {
-                // TODO CreateWidgetAsync doesn't always seem to be "done", and returns blank templates and data.
-                // Put in small wait to avoid this.
-                // https://github.com/microsoft/devhome/issues/643
-                Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardTemplateAsync returned empty, try wait");
-                await System.Threading.Tasks.Task.Delay(100);
-                cardTemplate = await Widget.GetCardTemplateAsync();
-                cardData = await Widget.GetCardDataAsync();
-            }
-
             if (string.IsNullOrEmpty(cardData) || string.IsNullOrEmpty(cardTemplate))
             {
                 Log.Logger()?.ReportWarn("WidgetViewModel", "Widget.GetCardDataAsync returned empty, cannot render card.");
@@ -130,13 +124,6 @@ public partial class WidgetViewModel : ObservableObject
 
             Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
             Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
-
-            // If we're in the Add or Edit dialog, check the cardData to see if the card is in a configuration state
-            // or if it is able to be pinned yet. If still configuring, the Pin button will be disabled.
-            if (IsInAddMode || IsInEditMode)
-            {
-                GetConfiguring(cardData);
-            }
 
             // Use the data to fill in the template.
             AdaptiveCardParseResult card;
@@ -180,7 +167,7 @@ public partial class WidgetViewModel : ObservableObject
             }
 
             // Render card on the UI thread.
-            _dispatcher.TryEnqueue(async () =>
+            _windowEx.DispatcherQueue.TryEnqueue(async () =>
             {
                 try
                 {
@@ -204,20 +191,6 @@ public partial class WidgetViewModel : ObservableObject
                 }
             });
         });
-    }
-
-    // Check if the card data indicates a configuration state. Configuring is bound to the Pin button and will disable it if true.
-    private void GetConfiguring(string cardData)
-    {
-        var jsonObj = JsonObject.Parse(cardData);
-        if (jsonObj != null)
-        {
-            var isConfiguring = jsonObj.GetNamedBoolean("configuring", false);
-            _dispatcher.TryEnqueue(() =>
-            {
-                Configuring = isConfiguring;
-            });
-        }
     }
 
     private async Task<bool> IsWidgetContentAvailable()
@@ -256,7 +229,7 @@ public partial class WidgetViewModel : ObservableObject
     public void ShowLoadingCard()
     {
         Log.Logger()?.ReportDebug("WidgetViewModel", "Show loading card.");
-        _dispatcher.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             WidgetFrameworkElement = new ProgressRing();
         });
@@ -265,13 +238,13 @@ public partial class WidgetViewModel : ObservableObject
     // Used to show a message instead of Adaptive Card content in a widget.
     public void ShowErrorCard(string error, string subError = null)
     {
-        _dispatcher.TryEnqueue(() =>
+        _windowEx.DispatcherQueue.TryEnqueue(() =>
         {
             WidgetFrameworkElement = GetErrorCard(error, subError);
         });
     }
 
-    private FrameworkElement GetErrorCard(string error, string subError = null)
+    private Grid GetErrorCard(string error, string subError = null)
     {
         var resourceLoader = new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader("DevHome.Dashboard.pri", "DevHome.Dashboard/Resources");
 

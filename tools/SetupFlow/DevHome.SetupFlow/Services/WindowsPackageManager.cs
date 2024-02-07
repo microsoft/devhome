@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace DevHome.SetupFlow.Services;
 /// <summary>
 /// Windows package manager class is an entry point for using the WinGet COM API.
 /// </summary>
-internal class WindowsPackageManager : IWindowsPackageManager
+internal sealed class WindowsPackageManager : IWindowsPackageManager
 {
     // WinGet services
     private readonly IWinGetCatalogConnector _catalogConnector;
@@ -79,5 +79,5 @@ internal class WindowsPackageManager : IWindowsPackageManager
     public Uri CreateMsStoreCatalogPackageUri(string packageId) => _protocolParser.CreateMsStoreCatalogPackageUri(packageId);
 
     /// <inheritdoc />
-    public Uri CreateCustomCatalogPackageUri(string packageId, string catalogName) => CreateCustomCatalogPackageUri(packageId, catalogName);
+    public Uri CreateCustomCatalogPackageUri(string packageId, string catalogName) => _protocolParser.CreateCustomCatalogPackageUri(packageId, catalogName);
 }

@@ -7,52 +7,76 @@ issue id: <github issue id>
 
 # Spec Title
 
-## Abstract
+## 1. Overview
 
-[comment]: # Outline what this spec describes
+### 1.1 Establish the Problem
 
-## Inspiration
+[comment]: # What is the problem? Consider an interesting hook; think of this like the start of an elevator pitch.
 
-[comment]: # What were the drivers/inspiration behind the creation of this spec.
+### 1.2 Introduce the Solution
 
-## Solution Design
+[comment]: # How does this idea help fix the problem above? What is the benefit/value of doing this? Which customer(s) is your feature focused on specifically?
 
-[comment]: # Outline the design of the solution. Feel free to include ASCII-art diagrams, etc.
+### 1.3 Rough-in Designs
 
-## UI/UX Design
+[comment]: # Show, don’t just tell. It’s fine for these to be “low fidelity” – but help us understand the flow. 
 
-[comment]: # What will this fix/feature look like? How will it affect the end user?
+## 2. Goals & User Cans
 
-## Capabilities
+### 2.1 Goals
 
-[comment]: # Discuss how the proposed fixes/features impact the following key considerations:
+[comment]: # What are the main goals of this feature (usually between 2-7 goals)? This section can be used for scoping and should help the reader get a sense of why we are building the feature. There is no need to list obvious goals, such as meeting compliance goals.
 
-### Accessibility
+### 2.2 Non-Goals
 
-[comment]: # How will the proposed change impact accessibility for users of screen readers, assistive input devices, etc.
+[comment]: # Are there any explicit non-goals for this feature? This section can be helpful for scoping and to help readers get an understanding of what will not be covered by this feature.
 
-### Security
+### 2.3 User Cans Summary Table
 
-[comment]: # How will the proposed change impact security?
+[comment]: # What are the high-level User Cans needed to complete this feature? A User Can is written as something a user can do. For example: A user can turn the feature on in settings. The focus of this section is to ensure that the dev team has enough information to do high level swag costing.
 
-### Reliability
+## 3. User Stories
 
-[comment]: # Will the proposed change improve reliability? If not, why make the change?
+[comment]: # What are the user stories for their jobs-to-be-done? What is the user experience within this feature for the user to complete their job? What are the golden paths for getting the user to complete their job? What are the edge cases for this scenario?
 
-### Compatibility
+### 3.1 User story - XXX
 
-[comment]: # Will the proposed change break existing code/behaviors? If so, how, and is the breaking change "worth it"?
+#### Job-to-be-done
 
-### Performance, Power, and Efficiency
+#### User experience
 
-## Potential Issues
+#### Golden paths (with images to guide)
 
-[comment]: # What are some of the things that might cause problems with the fixes/features proposed? Consider how the user might be negatively impacted.
+#### Edge cases
 
-## Future considerations
+### 3.2 User story - XXX
 
-[comment]: # What are some of the things that the fixes/features might unlock in the future? Does the implementation of this spec enable scenarios?
+#### Job-to-be-done
 
-## Resources
+#### User experience
 
-[comment]: # Be sure to add links to references, resources, footnotes, etc.
+#### Golden paths (with images to guide)
+
+#### Edge cases
+
+## 4. Requirements
+
+### 4.1 Functional Requirements
+
+#### Summary
+
+[comment]: # Write a paragraph that can be copy/pasted into an email explaining the use case & core behavior covered by this spec. Assume that your audience understands the customer and business value of your feature (which is outlined in the Overview section of this doc for reference). Focus on describing the functionality. Limit yourself to a max of 4-5 sentences.
+
+#### Detailed Experience Walkthrough
+
+[comment]: # Include images pulled from the Figma doc and place them directly into this document.
+
+#### Detailed Functional Requirements
+
+[comment]: # Priority definitions: P0 = must have for WIP (minimum initial experiment), P1 = must have for GA, P2 = nice to have for GA, P3 = GA+
+
+| No. | Requirement | Pri |
+| --- | ----------- | --- |
+| 1   |             |     |
+| 2   |             |     |
+

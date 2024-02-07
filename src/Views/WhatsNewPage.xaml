@@ -17,7 +17,6 @@
 
     <Page.Resources>
         <ResourceDictionary>
-            <converters:EmptyStringToObjectConverter x:Key="EmptyStringToBoolConverter" EmptyValue="False" NotEmptyValue="True"/>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
                     <x:String x:Key="Background">/Assets/WhatsNewPage/LightTheme/Background.png</x:String>
@@ -152,25 +151,21 @@
                                     <TextBlock
                                         Margin="0 8 0 10"
                                         TextWrapping="Wrap"
-                                        MaxWidth="400"
-                                        FontSize="12"
                                         HorizontalAlignment="Left"
                                         Text="{x:Bind Description}"/>
 
                                     <HyperlinkButton
                                         Content="{x:Bind Link}"
-                                        IsTabStop="{x:Bind Link, Converter={StaticResource EmptyStringToBoolConverter}, Mode=OneWay}"
                                         Foreground="{ThemeResource LearnMoreForeground}"
                                         NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
                                         Padding="0"
                                         Margin="0"
-                                        Visibility="{x:Bind ShouldShowLink}"/>
+                                        Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
 
                                     <Button 
                                         Margin="0 0 0 10"
                                         Padding="50 5 50 5"
                                         DataContext="{x:Bind PageKey}"
-                                        FontSize="12"
                                         Click="Button_ClickAsync"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Bottom"
@@ -283,26 +278,34 @@
 
                                             <HyperlinkButton
                                                 Content="{x:Bind Link}"
-                                                IsTabStop="{x:Bind Link, Converter={StaticResource EmptyStringToBoolConverter}, Mode=OneWay}"
                                                 Foreground="{ThemeResource LearnMoreForeground}"
                                                 NavigateUri="https://go.microsoft.com/fwlink/?linkid=2236041"
                                                 VerticalAlignment="Top"
                                                 Padding="0"
                                                 Margin="0"
-                                                Visibility="{x:Bind ShouldShowLink}" />
+                                                Visibility="{x:Bind HasLinkAndShouldShowIt(Link, ShouldShowLink), Mode=OneWay}" />
                                         </controls:WrapPanel>
                                     </StackPanel>
                                 </ScrollViewer>
 
-                                <Button 
+                                <Button
                                     Grid.Row="2"
                                     Margin="15 0 15 10"
                                     DataContext="{x:Bind PageKey}"
                                     Click="Button_ClickAsync"
                                     HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Bottom"
-                                    Content="{x:Bind Button}" />
-
+                                    VerticalAlignment="Bottom">
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{x:Bind Button}" Margin="0 0 5 0" />
+                                            <!-- The open new window icon -->
+                                            <FontIcon 
+                                                Glyph="&#xE8A7;" 
+                                                Visibility="{x:Bind ShouldShowIcon}" 
+                                                FontSize="12"/>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
                             </Grid>
                         </DataTemplate>
                     </muxc:ItemsRepeater.ItemTemplate>

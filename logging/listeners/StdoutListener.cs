@@ -1,9 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Globalization;
 
 namespace DevHome.Logging.Listeners;
+
 public class StdoutListener : ListenerBase
 {
     private static readonly ConsoleColor CDefaultColor = ConsoleColor.White;

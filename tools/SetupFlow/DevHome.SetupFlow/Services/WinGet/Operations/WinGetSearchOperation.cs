@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ namespace DevHome.SetupFlow.Services.WinGet.Operations;
 /// <summary>
 /// Search for packages using WinGet with recovery
 /// </summary>
-internal class WinGetSearchOperation : IWinGetSearchOperation
+internal sealed class WinGetSearchOperation : IWinGetSearchOperation
 {
     private readonly IWinGetCatalogConnector _catalogConnector;
     private readonly IWinGetPackageFinder _packageFinder;

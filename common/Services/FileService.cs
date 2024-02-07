@@ -1,10 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using DevHome.Common.Contracts;
-using Newtonsoft.Json;
 
 namespace DevHome.Common.Services;
 
@@ -16,8 +16,8 @@ public class FileService : IFileService
         var path = Path.Combine(folderPath, fileName);
         if (File.Exists(path))
         {
-            var json = File.ReadAllText(path);
-            return JsonConvert.DeserializeObject<T>(json);
+            using var fileStream = File.OpenText(path);
+            return JsonSerializer.Deserialize<T>(fileStream.BaseStream);
         }
 
         return default;
@@ -31,7 +31,7 @@ public class FileService : IFileService
             Directory.CreateDirectory(folderPath);
         }
 
-        var fileContent = JsonConvert.SerializeObject(content);
+        var fileContent = JsonSerializer.Serialize(content);
         File.WriteAllText(Path.Combine(folderPath, fileName), fileContent, Encoding.UTF8);
     }
 

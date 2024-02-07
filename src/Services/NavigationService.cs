@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics.CodeAnalysis;
 using DevHome.Common.Services;
@@ -55,6 +55,9 @@ public class NavigationService : INavigationService
     [MemberNotNullWhen(true, nameof(Frame), nameof(_frame))]
     public bool CanGoBack => Frame != null && Frame.CanGoBack;
 
+    [MemberNotNullWhen(true, nameof(Frame), nameof(_frame))]
+    public bool CanGoForward => Frame != null && Frame.CanGoForward;
+
     public NavigationService(IPageService pageService)
     {
         _pageService = pageService;
@@ -82,6 +85,23 @@ public class NavigationService : INavigationService
         {
             var vmBeforeNavigation = _frame.GetPageViewModel();
             _frame.GoBack();
+            if (vmBeforeNavigation is INavigationAware navigationAware)
+            {
+                navigationAware.OnNavigatedFrom();
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool GoForward()
+    {
+        if (CanGoForward)
+        {
+            var vmBeforeNavigation = _frame.GetPageViewModel();
+            _frame.GoForward();
             if (vmBeforeNavigation is INavigationAware navigationAware)
             {
                 navigationAware.OnNavigatedFrom();

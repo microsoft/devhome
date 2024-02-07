@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
@@ -29,7 +29,7 @@ public sealed partial class SettingsPage : Page
         var stringResource = new StringResource("DevHome.Settings/Resources");
         Breadcrumbs = new ObservableCollection<Breadcrumb>
         {
-            new Breadcrumb(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
+            new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
         };
     }
 
