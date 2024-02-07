@@ -245,11 +245,11 @@ public partial class DashboardView : ToolPage
     {
         if (Common.Helpers.RuntimeHelper.IsOnWindows11)
         {
-            await Launcher.LaunchUriAsync(new ($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
+            await Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
         }
         else
         {
-            await Launcher.LaunchUriAsync(new ($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
+            await Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
         }
     }
 
