@@ -10,7 +10,7 @@ namespace DevHome.SetupFlow.ElevatedComponent.Helpers;
 /// </summary>
 public sealed class ElevatedConfigureUnitTaskResult
 {
-    public string? UnitName { get; set; }
+    public string? Type { get; set; }
 
     public string? Id { get; set; }
 

@@ -15,7 +15,7 @@ internal sealed class ConfigurationUnitResultEvent : EventBase
 {
     private readonly ApplyConfigurationUnitResult _unitResult;
 
-    public string UnitName => _unitResult.Unit.Type;
+    public string Type => _unitResult.Unit.Type;
 
     public int ExceptionHResult => _unitResult.ResultInformation.ResultCode?.HResult ?? 0;
 

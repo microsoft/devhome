@@ -37,7 +37,7 @@ public sealed class ElevatedConfigurationTask
                     unitResult.Unit.Settings.TryGetValue("description", out var descriptionObj);
                     return new ElevatedConfigureUnitTaskResult
                     {
-                        UnitName = unitResult.Unit.Type,
+                        Type = unitResult.Unit.Type,
                         Id = unitResult.Unit.Identifier,
                         UnitDescription = descriptionObj?.ToString() ?? string.Empty,
                         Intent = unitResult.Unit.Intent.ToString(),
