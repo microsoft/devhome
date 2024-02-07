@@ -105,8 +105,8 @@ public class AppManagementInitializer : IAppManagementInitializer
         if (!isUnstubbed)
         {
             Log.Logger?.ReportInfo($"Starting to unstub configuration");
-            await _dsc.UnstubAsync();
-            Log.Logger?.ReportInfo($"Finished unstubbing configuration");
+            var unstubResult = await _dsc.UnstubAsync();
+            Log.Logger?.ReportInfo($"Finished unstubbing configuration with result: {unstubResult}");
         }
     }
 
