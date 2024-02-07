@@ -117,7 +117,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
                 Configuration = new(file.Path);
                 Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
                 await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
-                TaskList.Add(new (StringResource, _dsc, file, Orchestrator.ActivityId));
+                TaskList.Add(new(StringResource, _dsc, file, Orchestrator.ActivityId));
                 return true;
             }
             catch (OpenConfigurationSetException e)

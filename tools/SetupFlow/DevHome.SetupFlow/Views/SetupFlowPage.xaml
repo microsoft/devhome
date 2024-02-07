@@ -22,12 +22,6 @@
         <converters:BoolToVisibilityConverter x:Key="NegatedBoolToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
     </Page.Resources>
 
-    <i:Interaction.Behaviors>
-        <ic:EventTriggerBehavior EventName="Loaded">
-            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
-        </ic:EventTriggerBehavior>
-    </i:Interaction.Behaviors>
-
     <Grid MaxWidth="{ThemeResource MaxPageContentWidth}" Margin="{ThemeResource ContentPageMargin}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />

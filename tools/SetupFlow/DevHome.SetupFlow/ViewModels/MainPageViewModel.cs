@@ -73,11 +73,6 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         BannerViewModel = bannerViewModel;
     }
 
-    public async Task<bool> ValidateAppInstallerAsync()
-    {
-        return EnablePackageInstallerItem = await _wpm.IsAvailableAsync();
-    }
-
     protected async override Task OnFirstNavigateToAsync()
     {
         if (await ValidateAppInstallerAsync())

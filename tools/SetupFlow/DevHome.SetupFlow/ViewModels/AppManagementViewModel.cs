@@ -66,7 +66,7 @@ public partial class AppManagementViewModel : SetupPageViewModelBase
     protected async override Task OnEachNavigateToAsync()
     {
         SelectDefaultView();
-        await _packageCatalogListViewModel.LoadCatalogsAsync();
+        await Task.CompletedTask;
     }
 
     private void SelectDefaultView()

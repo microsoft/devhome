@@ -59,38 +59,38 @@ public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
         }
     }
 
-    protected virtual void Dispose(bool disposing)
+    /// <summary>
+    /// Initialize data source
+    /// </summary>
+    private async Task InitializeDataSourceAsync(WinGetPackageDataSource dataSource)
     {
-        if (!_disposedValue)
+        try
         {
-            if (disposing)
-            {
-                _lock.Dispose();
-            }
-
-            _disposedValue = true;
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing package list from data source {dataSource.GetType().Name}");
+            await dataSource.InitializeAsync();
+        }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while initializing data source of type {dataSource.GetType().Name}", e);
         }
     }
 
-    public void Dispose()
+    /// <summary>
+    /// Load catalogs from the provided data source
+    /// </summary>
+    /// <param name="dataSource">Target data source</param>
+    private async Task<IList<PackageCatalog>> LoadCatalogsFromDataSourceAsync(WinGetPackageDataSource dataSource)
     {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    public void Clear()
-    {
-        _catalogsMap.Clear();
-    }
-
+        try
+        {
             Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
             return await Task.Run(async () => await dataSource.LoadCatalogsAsync());
-            {
-                _lock.Dispose();
-            }
-
-            _disposedValue = true;
         }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while loading data source of type {dataSource.GetType().Name}", e);
+        }
+
         return null;
     }
 
@@ -105,62 +105,6 @@ public class CatalogDataSourceLoader : ICatalogDataSourceLoader, IDisposable
 
             _disposedValue = true;
         }
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    public void Clear()
-    {
-        _catalogsMap.Clear();
-    }
-
-            if (dataSource.CatalogCount > 0)
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
-                var catalogs = await Task.Run(async () => await dataSource.LoadCatalogsAsync());
-                dataSourceCatalogs.AddRange(catalogs);
-            }
-        try
-        {
-            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initializing package list from data source {dataSource.GetType().Name}");
-            await dataSource.InitializeAsync();
-        }
-        catch (Exception e)
-        return dataSourceCatalogs;
-            Log.Logger?.ReportError(Log.Component.AppManagement, $"Exception thrown while initializing data source of type {dataSource.GetType().Name}", e);
-        }
-    }
-
-    /// <summary>
-    /// Load catalogs from the provided data source
-    /// </summary>
-    /// <param name="dataSource">Target data source</param>
-    private async Task<IList<PackageCatalog>> LoadCatalogsFromDataSourceAsync(WinGetPackageDataSource dataSource)
-    {
-        try
-        {
-            if (dataSource.CatalogCount > 0)
-            {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Loading winget packages from data source {dataSource.GetType().Name}");
-                var catalogs = await Task.Run(async () => await dataSource.LoadCatalogsAsync());
-                dataSourceCatalogs.AddRange(catalogs);
-            }
-            }
-            }
-            }
-            }
-            }
-                _lock.Dispose();
-        return dataSourceCatalogs;
     }
 
     public void Dispose()

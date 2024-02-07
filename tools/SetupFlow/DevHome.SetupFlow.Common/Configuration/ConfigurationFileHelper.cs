@@ -76,7 +76,7 @@ public class ConfigurationFileHelper
         var inputStream = StringToStream(content);
 
         var openConfigResult = processor.OpenConfigurationSet(inputStream);
-        var configSet = openConfigResult.Set ?? throw new OpenConfigurationSetException(openConfigResult.ResultCode, openConfigResult.Field);
+        var configSet = openConfigResult.Set ?? throw new OpenConfigurationSetException(openConfigResult.ResultCode, openConfigResult.Field, openConfigResult.Value);
 
         // Set input file path in the configuration set to inform the
         // processor about the working directory when applying the
@@ -114,7 +114,7 @@ public class ConfigurationFileHelper
     /// <returns>Configuration processor</returns>
     private async Task<ConfigurationProcessor> CreateConfigurationProcessorAsync()
     {
-        ConfigurationStaticFunctions config = new ();
+        ConfigurationStaticFunctions config = new();
         var factory = await config.CreateConfigurationSetProcessorFactoryAsync(PowerShellHandlerIdentifier).AsTask();
 
         // Create and configure the configuration processor.

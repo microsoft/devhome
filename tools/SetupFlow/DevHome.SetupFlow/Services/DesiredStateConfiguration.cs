@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.IO;
@@ -10,7 +10,7 @@ using Windows.Storage;
 
 namespace DevHome.SetupFlow.Services;
 
-internal class DesiredStateConfiguration : IDesiredStateConfiguration
+internal sealed class DesiredStateConfiguration : IDesiredStateConfiguration
 {
     private readonly IWinGetDeployment _winGetDeployment;
 
