@@ -4,7 +4,6 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Xml;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;

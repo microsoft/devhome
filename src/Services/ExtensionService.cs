@@ -4,7 +4,7 @@
 using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Dashboard.TelemetryEvents;
+using DevHome.ExtensionLibrary.TelemetryEvents;
 using DevHome.Models;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;

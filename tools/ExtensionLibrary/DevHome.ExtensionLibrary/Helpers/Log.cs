@@ -3,7 +3,7 @@
 
 using DevHome.Logging;
 
-namespace DevHome.Dashboard.Helpers;
+namespace DevHome.ExtensionLibrary.Helpers;
 
 public class Log
 {
