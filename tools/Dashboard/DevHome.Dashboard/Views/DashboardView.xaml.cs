@@ -111,7 +111,7 @@ public partial class DashboardView : ToolPage
         LoadingWidgetsProgressRing.Visibility = Visibility.Visible;
         ViewModel.IsLoading = true;
 
-        if (await ViewModel.WidgetHostingService.EnsureWidgetServiceAsync())
+        if (ViewModel.WidgetHostingService.CheckForWidgetServiceAsync())
         {
             ViewModel.HasWidgetService = true;
             await SubscribeToWidgetCatalogEventsAsync();
@@ -124,12 +124,8 @@ public partial class DashboardView : ToolPage
         else
         {
             var widgetServiceState = ViewModel.WidgetHostingService.GetWidgetServiceState();
-            if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion)
-            {
-                // Show error message that restarting Dev Home may help
-                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
-            }
-            else if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasWebExperienceNoOrBadVersion)
+            if (widgetServiceState == WidgetHostingService.WidgetServiceStates.HasStoreWidgetServiceNoOrBadVersion ||
+                widgetServiceState == WidgetHostingService.WidgetServiceStates.HasWebExperienceNoOrBadVersion)
             {
                 // Show error message that updating may help
                 UpdateWidgetsMessageStackPanel.Visibility = Visibility.Visible;
@@ -247,7 +243,14 @@ public partial class DashboardView : ToolPage
     [RelayCommand]
     public async Task GoToWidgetsInStoreAsync()
     {
-        await Launcher.LaunchUriAsync(new("ms-windows-store://pdp/?productid=9MSSGKG348SP"));
+        if (Common.Helpers.RuntimeHelper.IsOnWindows11)
+        {
+            await Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WebExperiencePackPackageId}"));
+        }
+        else
+        {
+            await Launcher.LaunchUriAsync(new($"ms-windows-store://pdp/?productid={WidgetHelpers.WidgetServiceStorePackageId}"));
+        }
     }
 
     [RelayCommand]

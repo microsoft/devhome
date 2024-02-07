@@ -193,8 +193,6 @@ public partial class ExtensionLibraryViewModel : ObservableObject
 
     private bool IsAlreadyInstalled(string packageFamilyName)
     {
-        // PackageFullName = Microsoft.Windows.DevHome.Dev_0.0.0.0_x64__8wekyb3d8bbwe
-        // PackageFamilyName = Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe
         return InstalledPackagesList.Any(package => packageFamilyName == package.PackageFamilyName);
     }
 

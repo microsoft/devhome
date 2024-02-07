@@ -9,7 +9,9 @@ namespace DevHome.Dashboard.Services;
 
 public interface IWidgetHostingService
 {
-    public Task<bool> EnsureWidgetServiceAsync();
+    public bool CheckForWidgetServiceAsync();
+
+    public Task<bool> TryInstallingWidgetService();
 
     public WidgetServiceStates GetWidgetServiceState();
 

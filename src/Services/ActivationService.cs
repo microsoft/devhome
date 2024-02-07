@@ -38,13 +38,10 @@ public class ActivationService : IActivationService
             // Execute tasks before activation.
             await InitializeAsync();
 
-            // We can skip the initialization page if it's not our first run and we're on Windows 11.
-            // If we're on Windows 10, we need to go to the initialization page to install the WidgetService if we don't have it already.
-            var skipInitialization = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun)
-                && RuntimeHelper.IsOnWindows11;
-
             // Set the MainWindow Content.
-            App.MainWindow.Content = skipInitialization
+            // We can skip the initialization page if it's not our first run.
+            // If it is the first run, we may have to install an extension or the widget service.
+            App.MainWindow.Content = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun)
                 ? Application.Current.GetService<ShellPage>()
                 : Application.Current.GetService<InitializationPage>();
 
