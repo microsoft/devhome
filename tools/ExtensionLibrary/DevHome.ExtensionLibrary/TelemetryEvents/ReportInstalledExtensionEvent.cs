@@ -8,7 +8,7 @@ using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Dashboard.TelemetryEvents;
+namespace DevHome.ExtensionLibrary.TelemetryEvents;
 
 [EventData]
 public class ReportInstalledExtensionEvent : EventBase
