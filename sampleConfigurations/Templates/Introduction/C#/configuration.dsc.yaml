@@ -1,5 +1,17 @@
 # yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
-# Reference: https://github.com/microsoft/PowerToys/blob/main/doc/devdocs/readme.md#compiling-powertoys
+
+##########################################################################################################
+# This configuration will install the tools necessary to get started with C# development on Windows      #
+# Reference: https://learn.microsoft.com/en-us/visualstudio/get-started/csharp/tutorial-console          #
+#                                                                                                        #
+# This will:                                                                                             #
+#     * Enable Developer Mode                                                                            #
+#     * Install GitHub Desktop                                                                           #
+#     * Install Visual Studio Community 2022                                                             #
+#     * Install Managed Desktop Workload to Visual Studio Community 2022                                 #
+#     * Install Universal Workload to Visual Studio Community 2022                                       #
+#                                                                                                        #
+##########################################################################################################
 properties:
   resources:
     - resource: Microsoft.Windows.Developer/DeveloperMode
