@@ -6,7 +6,9 @@
     xmlns:behaviors="using:DevHome.Common.Behaviors"
     xmlns:controls="using:CommunityToolkit.WinUI.Controls"
     xmlns:converters="using:CommunityToolkit.WinUI.Converters"
-    xmlns:settings="using:DevHome.Settings"
+    xmlns:models="using:DevHome.Common.Models"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never">
     <Page.Resources>
         <converters:DoubleToVisibilityConverter x:Key="CountToVisibilityConverter" GreaterThan="0" FalseValue="Visible" TrueValue="Collapsed"/>
@@ -29,9 +31,15 @@
             <StackPanel Orientation="Vertical">
                 <ItemsRepeater ItemsSource="{x:Bind ViewModel.Features}">
                     <ItemsRepeater.ItemTemplate>
-                        <DataTemplate x:DataType="settings:ExperimentalFeature">
-                            <controls:SettingsCard Header="{x:Bind Name, Mode=OneWay}" Description="{x:Bind Description, Mode=OneWay}" Margin="{ThemeResource SettingsCardMargin}">
-                                <ToggleSwitch IsOn="{x:Bind IsEnabled,Mode=TwoWay}" Grid.Column="1"/>
+                        <DataTemplate x:DataType="models:ExperimentalFeature">
+                            <controls:SettingsCard Header="{x:Bind Name, Mode=OneWay}" Description="{x:Bind Description, Mode=OneWay}" Margin="{ThemeResource SettingsCardMargin}" Visibility="{x:Bind IsVisible, Mode=OneWay}">
+                                <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=TwoWay}" Grid.Column="1">
+                                    <i:Interaction.Behaviors>
+                                        <ic:EventTriggerBehavior EventName="Toggled">
+                                            <ic:InvokeCommandAction Command="{x:Bind ToggledCommand}" />
+                                        </ic:EventTriggerBehavior>
+                                    </i:Interaction.Behaviors>
+                                </ToggleSwitch>
                             </controls:SettingsCard>
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>

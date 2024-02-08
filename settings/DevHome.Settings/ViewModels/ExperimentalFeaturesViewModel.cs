@@ -3,28 +3,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using DevHome.Common.Contracts;
-using DevHome.Common.Extensions;
-using DevHome.Contracts.Services;
-using Microsoft.UI.Xaml;
+using DevHome.Common.Models;
+using DevHome.Common.Services;
 
 namespace DevHome.Settings.ViewModels;
 
 public class ExperimentalFeaturesViewModel : ObservableObject
 {
-    private readonly ILocalSettingsService _localSettingsService;
+    public List<ExperimentalFeature> Features { get; } = new();
 
-    public ObservableCollection<ExperimentalFeature> Features { get; } = new();
-
-    public ExperimentalFeaturesViewModel(ILocalSettingsService localSettingsService)
+    public ExperimentalFeaturesViewModel(IExperimentationService experimentationService)
     {
-        _localSettingsService = localSettingsService;
-        ExperimentalFeature.LocalSettingsService = localSettingsService;
+        Features = experimentationService!.Features.OrderBy(x => x.Id).ToList();
     }
 }

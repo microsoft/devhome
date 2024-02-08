@@ -2,19 +2,30 @@
 // Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
+using DevHome.Common.Models;
+using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.Settings;
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
 using DevHome.ViewModels;
 using DevHome.Views;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Services;
 
 public class PageService : IPageService
 {
+#if CANARY_BUILD
+    private const string BuildType = "canary";
+#elif STABLE_BUILD
+    private const string BuildType = "stable";
+#else
+    private const string BuildType = "dev";
+#endif
+
     private readonly Dictionary<string, Type> _pages = new();
 
     public PageService()
@@ -42,10 +53,24 @@ public class PageService : IPageService
             }
         }
 
-        var experimentalFeaturesVM = App.Current.GetService<ExperimentalFeaturesViewModel>();
-        foreach (var experimentId in App.NavConfig.ExperimentIds ?? Array.Empty<string>())
+        var experimentationService = Application.Current.GetService<IExperimentationService>();
+        ExperimentalFeature.ExperimentationService = experimentationService;
+        ExperimentalFeature.LocalSettingsService = Application.Current.GetService<ILocalSettingsService>();
+        foreach (var experimentalFeature in App.NavConfig.ExperimentFeatures ?? Array.Empty<DevHome.Helpers.ExperimentalFeatures>())
         {
-            experimentalFeaturesVM.Features.Add(new ExperimentalFeature(experimentId));
+            var enabledByDefault = experimentalFeature.EnabledByDefault;
+            var isVisible = true;
+            foreach (var buildTypeOverride in experimentalFeature.BuildTypeOverrides ?? Array.Empty<DevHome.Helpers.BuildTypeOverrides>())
+            {
+                if (buildTypeOverride.BuildType == BuildType)
+                {
+                    enabledByDefault = buildTypeOverride.EnabledByDefault;
+                    isVisible = buildTypeOverride.Visible;
+                    break;
+                }
+            }
+
+            experimentationService.AddExperimentalFeature(new ExperimentalFeature(experimentalFeature.Identity, enabledByDefault, isVisible));
         }
     }
 
