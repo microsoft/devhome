@@ -33,16 +33,16 @@
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-      <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
-      <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
-      <PackageReference Include="WinUIEx" Version="1.8.0" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Management.Infrastructure" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.49-beta">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.2428" />
+    <PackageReference Include="WinUIEx" Version="1.8.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\common\DevHome.Common.csproj" />
@@ -82,7 +82,7 @@
     <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
   </PropertyGroup>
 
-    <Target Name="ExtraAppxFilesInPackage" AfterTargets="_ComputeAppxPackagePayload">
+  <Target Name="ExtraAppxFilesInPackage" AfterTargets="_ComputeAppxPackagePayload">
 
     <!-- If the binary is not here, then it was a 'dotnet publish' or 'dotnet build' -->
     <PropertyGroup Condition="!Exists('$(TargetDir)\System.Management.Automation.dll')">
