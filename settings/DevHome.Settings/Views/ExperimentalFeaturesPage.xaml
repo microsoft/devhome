@@ -29,11 +29,11 @@
 
         <ScrollViewer Grid.Row="1" VerticalAlignment="Top">
             <StackPanel Orientation="Vertical">
-                <ItemsRepeater ItemsSource="{x:Bind ViewModel.Features}">
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.ExperimentalFeatures}">
                     <ItemsRepeater.ItemTemplate>
                         <DataTemplate x:DataType="models:ExperimentalFeature">
                             <controls:SettingsCard Header="{x:Bind Name, Mode=OneWay}" Description="{x:Bind Description, Mode=OneWay}" Margin="{ThemeResource SettingsCardMargin}" Visibility="{x:Bind IsVisible, Mode=OneWay}">
-                                <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=TwoWay}" Grid.Column="1">
+                                <ToggleSwitch IsOn="{x:Bind IsEnabled, Mode=OneWay}" Grid.Column="1">
                                     <i:Interaction.Behaviors>
                                         <ic:EventTriggerBehavior EventName="Toggled">
                                             <ic:InvokeCommandAction Command="{x:Bind ToggledCommand}" />
@@ -44,7 +44,7 @@
                         </DataTemplate>
                     </ItemsRepeater.ItemTemplate>
                 </ItemsRepeater>
-                <TextBlock x:Uid="Settings_ExperimentalFeatures_NoExperimentalFeatures" Visibility="{x:Bind ViewModel.Features.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}"/>
+                <TextBlock x:Uid="Settings_ExperimentalFeatures_NoExperimentalFeatures" Visibility="{x:Bind ViewModel.ExperimentalFeatures.Count, Converter={StaticResource CountToVisibilityConverter}, Mode=OneWay}"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>

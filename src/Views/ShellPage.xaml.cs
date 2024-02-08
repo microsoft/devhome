@@ -155,7 +155,7 @@ public sealed partial class ShellPage : Page
         {
             foreach (var tool in group.Tools)
             {
-                var expFeature = expVM.Features.FirstOrDefault(x => x.Id == tool.ExperimentFeatureIdentity);
+                var expFeature = expVM.ExperimentalFeatures.FirstOrDefault(x => x.Id == tool.ExperimentalFeatureIdentity);
 
                 var navigationViewItemString = $@"
                     <NavigationViewItem

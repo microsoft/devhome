@@ -48,8 +48,8 @@ internal sealed class Tool
     [JsonPropertyName("icon")]
     public string Icon { get; set; }
 
-    [JsonPropertyName("experimentFeatureIdentity")]
-    public string ExperimentFeatureIdentity { get; set; }
+    [JsonPropertyName("experimentalFeatureIdentity")]
+    public string ExperimentalFeatureIdentity { get; set; }
 }
 
 internal sealed class ExperimentalFeatures

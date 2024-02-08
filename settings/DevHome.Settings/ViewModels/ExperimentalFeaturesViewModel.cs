@@ -12,10 +12,10 @@ namespace DevHome.Settings.ViewModels;
 
 public class ExperimentalFeaturesViewModel : ObservableObject
 {
-    public List<ExperimentalFeature> Features { get; } = new();
+    public List<ExperimentalFeature> ExperimentalFeatures { get; } = new();
 
     public ExperimentalFeaturesViewModel(IExperimentationService experimentationService)
     {
-        Features = experimentationService!.Features.OrderBy(x => x.Id).ToList();
+        ExperimentalFeatures = experimentationService!.ExperimentalFeatures.OrderBy(x => x.Id).ToList();
     }
 }

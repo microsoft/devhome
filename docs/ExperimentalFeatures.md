@@ -46,7 +46,7 @@ This is useful for features that are not ready for general use, but can be teste
 ## Making a tool page visible only when the feature is enabled
 
 In `navConfig.jsonc`, add the following in the tool's definition:
-`"experimentFeatureId": "MyExperimentalFeature"`
+`"experimentalFeatureIdentity": "MyExperimentalFeature"`
 
 ## Checking if a feature is enabled
 

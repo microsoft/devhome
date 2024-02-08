@@ -6,12 +6,18 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents;
+using DevHome.Telemetry;
+using Newtonsoft.Json.Linq;
 
 namespace DevHome.Common.Models;
 
 public partial class ExperimentalFeature : ObservableObject
 {
     private readonly bool _isEnabledByDefault;
+
+    [ObservableProperty]
+    private bool _isEnabled;
 
     public string Id { get; init; }
 
@@ -30,7 +36,7 @@ public partial class ExperimentalFeature : ObservableObject
         IsEnabled = CalculateEnabled();
     }
 
-    private bool CalculateEnabled()
+    public bool CalculateEnabled()
     {
         if (LocalSettingsService!.HasSettingAsync($"ExperimentalFeature_{Id}").Result)
         {
@@ -58,23 +64,14 @@ public partial class ExperimentalFeature : ObservableObject
         }
     }
 
-    [ObservableProperty]
-    private bool isEnabled;
-
-    public bool GetIsEnabled()
-    {
-        return ExperimentationService!.IsEnabled(Id);
-    }
-
-    partial void OnIsEnabledChanging(bool value)
-    {
-        return;
-    }
-
     [RelayCommand]
     public async Task OnToggledAsync()
     {
-        ExperimentationService!.SetIsEnabled(Id, !IsEnabled);
+        IsEnabled = !IsEnabled;
+
+        LocalSettingsService!.SaveSettingAsync($"ExperimentalFeature_{Id}", IsEnabled).Wait();
+
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_SearchForExtensions_Event", LogLevel.Critical, new ExperimentalFeatureEvent(Id, IsEnabled));
 
         await Task.CompletedTask;
     }
