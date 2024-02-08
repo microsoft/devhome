@@ -24,103 +24,10 @@
             "viewFullName": "DevHome.ExtensionLibrary.Views.ExtensionLibraryView",
             "viewModelFullName": "DevHome.ExtensionLibrary.ViewModels.ExtensionLibraryViewModel",
             "icon": "ea86"
-          },
-          {
-            "identity": "DevHome.TestExperiment",
-            "assembly": "DevHome.Experiments",
-            "viewFullName": "DevHome.Experiments.Views.TestExperimentPage",
-            "viewModelFullName": "DevHome.Experiments.ViewModels.TestExperimentViewModel",
-            "icon": "f0f7",
-            "experimentFeatureIdentity": "TestExperiment"
           }
         ]
       }
     ]
   },
-  "experimentalFeatures": [
-    {
-      "identity": "TestExperiment4",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": false,
-          "visible": false
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": true
-        },
-        {
-          "buildType": "release",
-          "enabledByDefault": false,
-          "visible": false
-        }
-      ]
-    },
-    {
-      "identity": "TestExperiment3",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": false,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": true
-        },
-        {
-          "buildType": "release",
-          "enabledByDefault": false,
-          "visible": false
-        }
-      ]
-    },
-    {
-      "identity": "TestExperiment2",
-      "enabledByDefault": false,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": true,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": true
-        },
-        {
-          "buildType": "release",
-          "enabledByDefault": false,
-          "visible": false
-        }
-      ]
-    },
-    {
-      "identity": "TestExperiment",
-      "enabledByDefault": true,
-      "buildTypeOverrides": [
-        {
-          "buildType": "dev",
-          "enabledByDefault": false,
-          "visible": true
-        },
-        {
-          "buildType": "canary",
-          "enabledByDefault": false,
-          "visible": true
-        },
-        {
-          "buildType": "release",
-          "enabledByDefault": false,
-          "visible": false
-        }
-      ]
-    }
-  ]
+  "experimentalFeatures": []
 }
