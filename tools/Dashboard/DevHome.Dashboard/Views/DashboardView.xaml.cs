@@ -160,7 +160,7 @@ public partial class DashboardView : ToolPage
         {
             // If it's the first time the Dashboard has been displayed and we have no other widgets pinned to a
             // different version of Dev Home, pin some default widgets.
-            await PinDefaultWidgets();
+            await PinDefaultWidgetsAsync();
             return;
         }
 
@@ -274,7 +274,7 @@ public partial class DashboardView : ToolPage
         await WidgetHelpers.SetPositionCustomStateAsync(widget, finalPlace);
     }
 
-    private async Task PinDefaultWidgets()
+    private async Task PinDefaultWidgetsAsync()
     {
         var catalog = await ViewModel.WidgetHostingService.GetWidgetCatalogAsync();
 
@@ -290,12 +290,12 @@ public partial class DashboardView : ToolPage
             var id = widgetDefinition.Id;
             if (WidgetHelpers.DefaultWidgetDefinitionIds.Contains(id))
             {
-                await PinDefaultWidget(widgetDefinition);
+                await PinDefaultWidgetAsync(widgetDefinition);
             }
         }
     }
 
-    private async Task PinDefaultWidget(WidgetDefinition defaultWidgetDefinition)
+    private async Task PinDefaultWidgetAsync(WidgetDefinition defaultWidgetDefinition)
     {
         try
         {
