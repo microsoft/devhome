@@ -28,7 +28,7 @@ public class PageService : IPageService
 
     private readonly Dictionary<string, Type> _pages = new();
 
-    public PageService()
+    public PageService(ILocalSettingsService localSettingsService, IExperimentationService experimentationService)
     {
         Configure<SettingsViewModel, SettingsPage>();
         Configure<PreferencesViewModel, PreferencesPage>();
@@ -53,9 +53,7 @@ public class PageService : IPageService
             }
         }
 
-        var experimentationService = Application.Current.GetService<IExperimentationService>();
-        ExperimentalFeature.ExperimentationService = experimentationService;
-        ExperimentalFeature.LocalSettingsService = Application.Current.GetService<ILocalSettingsService>();
+        ExperimentalFeature.LocalSettingsService = localSettingsService;
         foreach (var experimentalFeature in App.NavConfig.ExperimentFeatures ?? Array.Empty<DevHome.Helpers.ExperimentalFeatures>())
         {
             var enabledByDefault = experimentalFeature.EnabledByDefault;

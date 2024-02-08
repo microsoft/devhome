@@ -8,7 +8,6 @@ using DevHome.Common.Contracts;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents;
 using DevHome.Telemetry;
-using Newtonsoft.Json.Linq;
 
 namespace DevHome.Common.Models;
 
@@ -24,8 +23,6 @@ public partial class ExperimentalFeature : ObservableObject
     public bool IsVisible { get; init; }
 
     public static ILocalSettingsService? LocalSettingsService { get; set; }
-
-    public static IExperimentationService? ExperimentationService { get; set; }
 
     public ExperimentalFeature(string id, bool enabledByDefault, bool visible = true)
     {
