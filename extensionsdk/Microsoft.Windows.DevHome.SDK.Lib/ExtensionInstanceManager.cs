@@ -15,7 +15,7 @@ using WinRT;
 namespace Microsoft.Windows.DevHome.SDK;
 
 [ComVisible(true)]
-internal class ExtensionInstanceManager<T> : IClassFactory
+internal sealed class ExtensionInstanceManager<T> : IClassFactory
     where T : IExtension
 {
 #pragma warning disable SA1310 // Field names should not contain underscore
