@@ -59,11 +59,11 @@ internal sealed class RepositoryProviders
         }
     }
 
-    public List<string> GetSearchTerms(string providerName, IDeveloperId developerId)
+    public List<string> GetSearchTerms(string providerName)
     {
         if (_providers.TryGetValue(providerName, out var repoProvider))
         {
-            return repoProvider.GetSearchTerms(developerId);
+            return repoProvider.GetSearchTerms();
         }
 
         return new ();
@@ -79,11 +79,11 @@ internal sealed class RepositoryProviders
         return new ();
     }
 
-    public string GetDefaultFor(string providerName, IDeveloperId developerId, string fieldName)
+    public string GetFieldSearchValue(string providerName, IDeveloperId developerId, string fieldName)
     {
         if (_providers.TryGetValue(providerName, out var repoProvider))
         {
-            return repoProvider.GetDefaultFor(developerId, fieldName);
+            return repoProvider.GetFieldSearchValue(developerId, fieldName);
         }
 
         return string.Empty;
@@ -204,5 +204,10 @@ internal sealed class RepositoryProviders
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, $"Getting all repositories for repository provider {providerName}");
         return _providers.GetValueOrDefault(providerName)?.GetAllRepositories(developerId, searchInputs) ?? new List<IRepository>();
+    }
+
+    public bool IsSearchingEnabled(string providerName)
+    {
+        return _providers.GetValueOrDefault(providerName)?.IsSearchingEnabled() ?? false;
     }
 }

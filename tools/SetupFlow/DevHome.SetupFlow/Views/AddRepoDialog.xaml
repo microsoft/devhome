@@ -95,12 +95,32 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-                    <SplitButton x:Name="AccountSplitButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Grid.Row="0" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}"/>
-                    <TextBox x:Name="FilterTextBox" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegateBoolConverter}}" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
-                    <HyperlinkButton Click="HyperlinkButton_Click" Grid.Row="1" Content="I don't like these repos."/>
+                    <Grid x:Name="AccountAndFilterGrid" Grid.Row="0" Grid.ColumnSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                        </Grid.ColumnDefinitions>
+                        <SplitButton x:Name="AccountSplitButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Grid.Row="0" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}"/>
+                        <TextBox x:Name="FilterTextBox" IsEnabled="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay, Converter={StaticResource NegateBoolConverter}}" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
+                    </Grid>
+                    <Grid x:Name="PathAndChangePathGrid" Grid.Row="1" Visibility="{x:Bind AddRepoViewModel.ShouldShowPathGrid, Mode=OneWay}" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind AddRepoViewModel.PathToRepos, Mode=OneWay}" VerticalAlignment="Center"/>
+                        <ComboBox x:Name="LastPathPartComboBox" Grid.Column="1" ItemsSource="{x:Bind AddRepoViewModel.LastPathPart, Mode=OneWay}" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+                            <i:Interaction.Behaviors>
+                                <ic:EventTriggerBehavior EventName="SelectionChanged">
+                                    <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.LastPathPartChangedCommand}" CommandParameter="{x:Bind LastPathPartComboBox.SelectedItem, Mode=OneWay}"/>
+                                </ic:EventTriggerBehavior>
+                            </i:Interaction.Behaviors>
+                        </ComboBox>
+                    </Grid>
+                    <HyperlinkButton Visibility="{x:Bind AddRepoViewModel.ShouldShowChangePathHyperlinkButton, Mode=OneWay}" Grid.Row="1" Grid.Column="2" Click="HyperlinkButton_Click" Content="Change Path" HorizontalAlignment="Right"/>
                 </Grid>
                 <Grid Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay}" Height="300" Width="300">
                     <Grid.RowDefinitions>
@@ -143,12 +163,15 @@
             </StackPanel>
 
             <Grid x:Name="SearchForMoreReposGrid" Visibility="{x:Bind AddRepoViewModel.ShouldShowSelectingSearchTerms, Mode=OneWay}">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <ProgressRing x:Name="SearchForMoreReposWaitingProgressRing" Grid.Row="0"/>
-                <TextBlock x:Name="MetadataSearchingTakingTooLongTextBox" Grid.Row="1" HorizontalAlignment="Center"/>
+                <Grid x:Name="GatheringSearchValuesGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ProgressRing x:Name="SearchForMoreReposWaitingProgressRing" Grid.Row="0" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="MetadataSearchingTakingTooLongTextBox" Grid.Row="1" HorizontalAlignment="Center"/>
+                </Grid>
+                <Grid x:Name="ShowingSearchTermsGrid"/>
             </Grid>
 
             <TextBlock x:Name="ErrorTextBlock" Style="{ThemeResource BodyStrongTextBlockStyle}" Visibility="{x:Bind AddRepoViewModel.ShowErrorTextBox, Mode=OneWay}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/Repo_ToolClonePathError"/>

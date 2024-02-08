@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Management.Automation.Language;
 using System.Threading.Tasks;
 using AdaptiveCards.Rendering.WinUI3;
 using DevHome.Common.Renderers;
@@ -52,6 +51,9 @@ internal sealed class RepositoryProvider
     /// </summary>
     private IRepositoryProvider _repositoryProvider;
 
+    /// <summary>
+    /// Used to enable searching for repos with a query.
+    /// </summary>
     private IRepositoryProvider2 _repositoryProvider2;
 
     public RepositoryProvider(IExtensionWrapper extensionWrapper)
@@ -63,8 +65,6 @@ internal sealed class RepositoryProvider
 
     public string ExtensionDisplayName => _extensionWrapper.Name;
 
-    private readonly object _getRepoLock = new ();
-
     /// <summary>
     /// Starts the extension if it isn't running.
     /// </summary>
@@ -75,6 +75,8 @@ internal sealed class RepositoryProvider
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Starting DevId and Repository provider extensions");
         _devIdProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IDeveloperIdProvider>()).Result;
         _repositoryProvider = Task.Run(() => _extensionWrapper.GetProviderAsync<IRepositoryProvider>()).Result;
+
+        // _repositoryProvider2 == null is used to modify behavior.
         _repositoryProvider2 = _repositoryProvider as IRepositoryProvider2;
     }
 
@@ -83,20 +85,19 @@ internal sealed class RepositoryProvider
         return _repositoryProvider;
     }
 
-    public List<string> GetSearchTerms(IDeveloperId developerId)
+    public List<string> GetSearchTerms()
     {
-        var repoData = _repositoryProvider as IRepositoryProvider2;
-        return repoData.GetSearchFieldNames.ToList();
+        return _repositoryProvider2?.GetSearchFieldNames.ToList() ?? new List<string>();
     }
 
     public List<string> GetValuesFor(IDeveloperId developerId, Dictionary<string, string> input, string fieldName)
     {
-        return _repositoryProvider2?.GetValuesForField(fieldName, input, developerId).AsTask().Result.ToList();
+        return _repositoryProvider2?.GetValuesForField(fieldName, input, developerId).AsTask().Result.ToList() ?? new List<string>();
     }
 
-    public string GetDefaultFor(IDeveloperId developerId, string fieldName)
+    public string GetFieldSearchValue(IDeveloperId developerId, string fieldName)
     {
-        return _repositoryProvider2?.GetFieldSearchValue(fieldName, developerId);
+        return _repositoryProvider2?.GetFieldSearchValue(fieldName, developerId) ?? string.Empty;
     }
 
     /// <summary>
@@ -266,31 +267,62 @@ internal sealed class RepositoryProvider
     /// <returns>A collection of repositories.  May be empty</returns>
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId, Dictionary<string, string> searchInputs)
     {
-        IEnumerable<IRepository> repositoriesForAccount;
+        TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
 
-        lock (_getRepoLock)
+        RepositoriesResult result;
+        try
         {
-            if (!_repositories.TryGetValue(developerId, out repositoriesForAccount))
+            if (IsSearchingEnabled())
             {
-                TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("CallingExtension", _repositoryProvider.DisplayName, developerId));
-                var result = _repositoryProvider2.GetRepositoriesAsync(developerId).AsTask().Result;
-                if (result.Result.Status != ProviderOperationStatus.Success)
-                {
-                    _repositories.Add(developerId, new List<IRepository>());
-                }
-                else
-                {
-                    _repositories.Add(developerId, result.Repositories);
-                }
+                result = _repositoryProvider2.GetRepositoriesAsync(searchInputs, developerId).AsTask().Result;
+            }
+            else
+            {
+                result = _repositoryProvider.GetRepositoriesAsync(developerId).AsTask().Result;
+            }
+        }
+        catch (AggregateException aggregateException)
+        {
+            // Because tasks can be cancled DevHome should emit different logs.
+            if (aggregateException.InnerException is OperationCanceledException)
+            {
+                GlobalLog.Logger?.ReportInfo($"Get Repos operation was cancalled.");
+            }
+            else
+            {
+                GlobalLog.Logger?.ReportInfo($"{aggregateException.ToString()}");
+            }
+
+            _repositories[developerId] = new List<IRepository>();
+            return _repositories[developerId];
+        }
+
+        if (result.Result.Status != ProviderOperationStatus.Success)
+        {
+            if (_repositories.TryGetValue(developerId, out var _))
+            {
+                _repositories[developerId] = new List<IRepository>();
+            }
+            else
+            {
+                _repositories.Add(developerId, new List<IRepository>());
+            }
+        }
+        else
+        {
+            if (_repositories.TryGetValue(developerId, out var _))
+            {
+                _repositories[developerId] = result.Repositories;
+            }
+            else
+            {
+                _repositories.Add(developerId, result.Repositories);
             }
         }
 
-        // _repositories should have an entry for developerId by now.
-        repositoriesForAccount ??= _repositories[developerId];
-
         TelemetryFactory.Get<ITelemetry>().Log("RepoTool_GetAllRepos_Event", LogLevel.Critical, new GetReposEvent("FoundRepos", _repositoryProvider.DisplayName, developerId));
 
-        return repositoriesForAccount;
+        return _repositories[developerId];
     }
 
     /// <summary>
@@ -301,5 +333,10 @@ internal sealed class RepositoryProvider
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
     {
         return GetAllRepositories(developerId, new ());
+    }
+
+    public bool IsSearchingEnabled()
+    {
+        return _repositoryProvider2 != null;
     }
 }

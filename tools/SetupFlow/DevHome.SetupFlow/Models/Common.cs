@@ -13,5 +13,6 @@ internal sealed class Common
         AddViaUrl,
         AddViaAccount,
         Repositories,
+        SearchFields,
     }
 }
