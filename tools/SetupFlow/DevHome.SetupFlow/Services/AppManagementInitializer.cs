@@ -15,12 +15,15 @@ public class AppManagementInitializer : IAppManagementInitializer
 {
     private readonly IWindowsPackageManager _wpm;
     private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
+    private readonly IDesiredStateConfiguration _dsc;
 
     public AppManagementInitializer(
         IWindowsPackageManager wpm,
+        IDesiredStateConfiguration dsc,
         ICatalogDataSourceLoader catalogDataSourceLoader)
     {
         _wpm = wpm;
+        _dsc = dsc;
         _catalogDataSourceLoader = catalogDataSourceLoader;
     }
 
@@ -35,7 +38,9 @@ public class AppManagementInitializer : IAppManagementInitializer
         // Ensure AppInstaller is registered
         if (await TryRegisterAppInstallerAsync())
         {
-            await InitializeInternalAsync();
+            await Task.WhenAll(
+                UnstubConfigurationAsync(),
+                InitializeWindowsPackageManagerAsync());
         }
 
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed app management initialization");
@@ -45,14 +50,14 @@ public class AppManagementInitializer : IAppManagementInitializer
     public async Task ReinitializeAsync()
     {
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Reinitializing app management");
-        await InitializeInternalAsync();
+        await InitializeWindowsPackageManagerAsync();
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Completed app management reinitialization");
     }
 
     /// <summary>
     /// Initialize app management services
     /// </summary>
-    private async Task InitializeInternalAsync()
+    private async Task InitializeWindowsPackageManagerAsync()
     {
         try
         {
@@ -90,6 +95,18 @@ public class AppManagementInitializer : IAppManagementInitializer
         await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
         {
             Log.Logger?.ReportInfo($"Loaded {dataSourceCatalogs.Count} catalogs [{string.Join(", ", dataSourceCatalogs.Select(c => c.Name))}]");
+        }
+    }
+
+    private async Task UnstubConfigurationAsync()
+    {
+        var isUnstubbed = await _dsc.IsUnstubbedAsync();
+        Log.Logger?.ReportInfo($"Configuration is {(isUnstubbed ? "unstubbed" : "stubbed")}");
+        if (!isUnstubbed)
+        {
+            Log.Logger?.ReportInfo($"Starting to unstub configuration");
+            var unstubResult = await _dsc.UnstubAsync();
+            Log.Logger?.ReportInfo($"Finished unstubbing configuration with result: {unstubResult}");
         }
     }
 

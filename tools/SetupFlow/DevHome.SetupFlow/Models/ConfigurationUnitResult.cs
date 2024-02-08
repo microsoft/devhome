@@ -13,9 +13,9 @@ public class ConfigurationUnitResult
 {
     public ConfigurationUnitResult(ApplyConfigurationUnitResult result)
     {
-        UnitName = result.Unit.UnitName;
+        Type = result.Unit.Type;
         Id = result.Unit.Identifier;
-        result.Unit.Directives.TryGetValue("description", out var descriptionObj);
+        result.Unit.Settings.TryGetValue("description", out var descriptionObj);
         UnitDescription = descriptionObj?.ToString() ?? string.Empty;
         Intent = result.Unit.Intent.ToString();
         IsSkipped = result.State == ConfigurationUnitState.Skipped;
@@ -27,7 +27,7 @@ public class ConfigurationUnitResult
 
     public ConfigurationUnitResult(ElevatedConfigureUnitTaskResult result)
     {
-        UnitName = result.UnitName;
+        Type = result.Type;
         Id = result.Id;
         UnitDescription = result.UnitDescription;
         Intent = result.Intent;
@@ -38,7 +38,7 @@ public class ConfigurationUnitResult
         ErrorDescription = result.ErrorDescription;
     }
 
-    public string UnitName { get; }
+    public string Type { get; }
 
     public string Id { get; }
 

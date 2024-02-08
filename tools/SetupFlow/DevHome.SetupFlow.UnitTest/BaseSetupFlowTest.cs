@@ -78,6 +78,7 @@ public class BaseSetupFlowTest
                 services.AddSingleton<WinGetPackageDataSource, WinGetPackageRestoreDataSource>();
                 services.AddSingleton<ICatalogDataSourceLoader, CatalogDataSourceLoader>();
                 services.AddSingleton<IScreenReaderService>(new Mock<IScreenReaderService>().Object);
+                services.AddSingleton<IDesiredStateConfiguration>(new Mock<IDesiredStateConfiguration>().Object);
 
                 // DI factory pattern
                 services.AddSingleton<PackageViewModelFactory>(sp => package => ActivatorUtilities.CreateInstance<PackageViewModel>(sp, package));

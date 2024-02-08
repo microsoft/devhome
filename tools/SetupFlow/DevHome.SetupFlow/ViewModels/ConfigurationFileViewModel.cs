@@ -14,13 +14,14 @@ using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
-using Windows.Storage;
 using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 {
+    private readonly IDesiredStateConfiguration _dsc;
+
     public List<ConfigureTask> TaskList { get; } = new List<ConfigureTask>();
 
     /// <summary>
@@ -40,9 +41,12 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
     public ConfigurationFileViewModel(
         ISetupFlowStringResource stringResource,
+        IDesiredStateConfiguration dsc,
         SetupFlowOrchestrator orchestrator)
         : base(stringResource, orchestrator)
     {
+        _dsc = dsc;
+
         // Configure navigation bar
         NextPageButtonText = StringResource.GetLocalized(StringResourceKey.SetUpButton);
         IsStepPage = false;
@@ -112,9 +116,8 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
                 Log.Logger?.ReportInfo(Log.Component.Configuration, $"Selected file: {file.Path}");
                 Configuration = new(file.Path);
                 Orchestrator.FlowTitle = StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, Configuration.Name);
-                var task = new ConfigureTask(StringResource, file, Orchestrator.ActivityId);
-                await task.OpenConfigurationSetAsync();
-                TaskList.Add(task);
+                await _dsc.ValidateConfigurationAsync(file.Path, Orchestrator.ActivityId);
+                TaskList.Add(new(StringResource, _dsc, file, Orchestrator.ActivityId));
                 return true;
             }
             catch (OpenConfigurationSetException e)
