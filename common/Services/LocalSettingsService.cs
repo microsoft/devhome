@@ -51,6 +51,25 @@ public class LocalSettingsService : ILocalSettingsService
         }
     }
 
+    public async Task<bool> HasSettingAsync(string key)
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return ApplicationData.Current.LocalSettings.Values.ContainsKey(key);
+        }
+        else
+        {
+            await InitializeAsync();
+
+            if (_settings != null)
+            {
+                return _settings.ContainsKey(key);
+            }
+        }
+
+        return false;
+    }
+
     public async Task<T?> ReadSettingAsync<T>(string key)
     {
         if (RuntimeHelper.IsMSIX)
