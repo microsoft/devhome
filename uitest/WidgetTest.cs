@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.UITest.Common;
 using DevHome.UITest.Dialogs;
@@ -7,6 +7,7 @@ using DevHome.UITest.Pages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DevHome.Tests.UITest;
+
 [TestClass]
 public class WidgetTest : DevHomeTestBase
 {
@@ -40,7 +41,7 @@ public class WidgetTest : DevHomeTestBase
     public void AddWidgetsTest(string[] widgetTitles)
     {
         // Arrange
-        Dictionary<string, Func<AddWidgetDialog, DashboardPage.WidgetControl>> widgetMap = new ()
+        Dictionary<string, Func<AddWidgetDialog, DashboardPage.WidgetControl>> widgetMap = new()
         {
             ["GPU"] = dialog => dialog.AddGPUUsageWidget(),
             ["CPU"] = dialog => dialog.AddCPUUsageWidget(),

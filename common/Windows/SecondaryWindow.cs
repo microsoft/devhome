@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Runtime.InteropServices;
@@ -183,7 +183,7 @@ public class SecondaryWindow : WindowEx
         UseAppTheme = true;
 
         // Initialize window content template
-        _windowTemplate = new (this);
+        _windowTemplate = new(this);
         WindowContent = _windowTemplate;
 
         // Register secondary window events handlers

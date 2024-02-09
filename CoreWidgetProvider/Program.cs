@@ -1,11 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using CoreWidgetProvider.Helpers;
 using Microsoft.Windows.AppLifecycle;
 using Windows.ApplicationModel.Activation;
 
 namespace CoreWidgetProvider;
+
 public sealed class Program
 {
     [MTAThread]

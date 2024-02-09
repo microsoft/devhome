@@ -1,10 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Settings;
 using DevHome.Settings.ViewModels;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
@@ -155,7 +155,7 @@ public sealed partial class ShellPage : Page
         {
             foreach (var tool in group.Tools)
             {
-                var expFeature = expVM.Features.FirstOrDefault(x => x.Id == tool.ExperimentId);
+                var expFeature = expVM.ExperimentalFeatures.FirstOrDefault(x => x.Id == tool.ExperimentalFeatureIdentity);
 
                 var navigationViewItemString = $@"
                     <NavigationViewItem

@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Globalization;
 using System.Text.Json.Nodes;
@@ -10,7 +10,7 @@ namespace CoreWidgetProvider.Widgets;
 
 internal sealed class SystemMemoryWidget : CoreWidget, IDisposable
 {
-    private static Dictionary<string, string> Templates { get; set; } = new ();
+    private static Dictionary<string, string> Templates { get; set; } = new();
 
     private static readonly new string Name = nameof(SystemMemoryWidget);
 
@@ -19,7 +19,7 @@ internal sealed class SystemMemoryWidget : CoreWidget, IDisposable
     public SystemMemoryWidget()
         : base()
     {
-        dataManager = new (DataType.Memory, UpdateWidget);
+        dataManager = new(DataType.Memory, UpdateWidget);
     }
 
     private string FloatToPercentString(float value)

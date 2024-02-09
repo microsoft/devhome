@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Linq;
@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Controls;
 using Windows.Foundation;
 
 namespace DevHome.Dashboard.Controls;
+
 public sealed class WidgetBoard : Panel
 {
     private double _columnWidth;

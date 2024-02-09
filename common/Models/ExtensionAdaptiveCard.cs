@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Text.Json.Nodes;
@@ -9,6 +9,7 @@ using DevHome.Logging;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Common.Models;
+
 public class ExtensionAdaptiveCard : IExtensionAdaptiveCard
 {
     public event EventHandler<AdaptiveCard>? UiUpdate;

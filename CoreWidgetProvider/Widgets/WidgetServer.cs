@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -11,9 +11,10 @@ using Windows.Win32;
 using Windows.Win32.System.Com;
 
 namespace CoreWidgetProvider.Widgets;
+
 public sealed class WidgetServer : IDisposable
 {
-    private readonly HashSet<uint> registrationCookies = new ();
+    private readonly HashSet<uint> registrationCookies = new();
 
     [UnconditionalSuppressMessage(
         "ReflectionAnalysis",

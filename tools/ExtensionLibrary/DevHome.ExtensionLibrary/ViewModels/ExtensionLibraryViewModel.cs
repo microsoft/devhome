@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.WinUI;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
-using DevHome.Dashboard.Helpers;
+using DevHome.ExtensionLibrary.Helpers;
 using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
@@ -44,14 +44,14 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         extensionService.OnExtensionsChanged -= OnExtensionsChanged;
         extensionService.OnExtensionsChanged += OnExtensionsChanged;
 
-        StorePackagesList = new ();
-        InstalledPackagesList = new ();
+        StorePackagesList = new();
+        InstalledPackagesList = new();
     }
 
     [RelayCommand]
     public async Task GetUpdatesButtonAsync()
     {
-        await Launcher.LaunchUriAsync(new ("ms-windows-store://downloadsandupdates"));
+        await Launcher.LaunchUriAsync(new("ms-windows-store://downloadsandupdates"));
     }
 
     [RelayCommand]
@@ -191,12 +191,8 @@ public partial class ExtensionLibraryViewModel : ObservableObject
         }
     }
 
-    private bool IsAlreadyInstalled(string packageFamilyName)
-    {
-        // PackageFullName = Microsoft.Windows.DevHome.Dev_0.0.0.0_x64__8wekyb3d8bbwe
-        // PackageFamilyName = Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe
-        return InstalledPackagesList.Any(package => packageFamilyName == package.PackageFamilyName);
-    }
+    private bool IsAlreadyInstalled(string packageFamilyName) =>
+        InstalledPackagesList.Any(package => packageFamilyName == package.PackageFamilyName);
 
     /// <summary>
     /// Determine whether to show a message that there are no more packages with Dev Home extensions available to
@@ -205,12 +201,7 @@ public partial class ExtensionLibraryViewModel : ObservableObject
     /// </summary>
     public Visibility GetNoAvailablePackagesVisibility(int availablePackagesCount, bool shouldShowStoreError)
     {
-        if (availablePackagesCount == 0 && !shouldShowStoreError)
-        {
-            return Visibility.Visible;
-        }
-
-        return Visibility.Collapsed;
+        return (availablePackagesCount == 0 && !shouldShowStoreError) ? Visibility.Visible : Visibility.Collapsed;
     }
 
     [RelayCommand]

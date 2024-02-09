@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Linq;
 using DevHome.Common.Services;
@@ -15,10 +15,10 @@ namespace DevHome.SetupFlow.UnitTest;
 [TestClass]
 public class DevDriveEnumToLocalizedStringConverterTest : BaseSetupFlowTest
 {
-    public DevDriveEnumToLocalizedStringConverter Converter => new (StringResource.Object);
+    public DevDriveEnumToLocalizedStringConverter Converter => new(StringResource.Object);
 
     // These are results that are not localized and are just used in the code.
-    public List<DevDriveValidationResult> ResultsToIgnore => new ()
+    public List<DevDriveValidationResult> ResultsToIgnore => new()
     {
         DevDriveValidationResult.Successful,
         DevDriveValidationResult.ObjectWasNull,

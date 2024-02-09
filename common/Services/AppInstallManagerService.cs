@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Runtime.InteropServices;
@@ -17,7 +17,7 @@ public class AppInstallManagerService : IAppInstallManagerService
 {
     private readonly AppInstallManager _appInstallManager;
 
-    private static readonly TimeSpan StoreInstallTimeout = new (0, 0, 60);
+    private static readonly TimeSpan StoreInstallTimeout = new(0, 0, 60);
 
     public event TypedEventHandler<AppInstallManager, AppInstallManagerItemEventArgs> ItemCompleted
     {
