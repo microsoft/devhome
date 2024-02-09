@@ -1,7 +1,13 @@
-This section is reflective of the type of software development that will be performed. If you are new to software development, or are looking for an introduction to the software development language, we recommend visiting the *Introduction* section.
+This section is reflective of the type of software development workloads that will be performed. If you are new to software development, or are looking for an introduction to the software development language, we recommend visiting the *Introduction* section.
+
+## Android Apps
+This directory focuses on software development languages used for developing Android Apps, with a device setup that is focused on creating and testing Android apps.
 
 ## Introduction
-The WinGet Configuration Files that are contained within the *Introduction* folder are provided as an initial starting location to a specific software development language. This section will provide you with guidance on what you need, and how to install the software and dependency requirements. Allowing you to focus on learning/experiencing the software development language of your choice.
+This directory focuses on Getting Started with a particular language. The device setup flows will focus on the base requirements needed for creating a *Hello World* or similar project. This directory is recommended for individuals interested in learning how to develop software.
 
 ## Web Development
-The WinGet Configuration Files that are contained within the *Web Development* folder are provided to help get your device setup for a specific language with the goals of performing web development.
+This directory focuses on software development languages used for developing websites and web apps. The device setup flows will focus on web app development.
+
+## Xbox Games
+This directory focuses on software development languages used for developing Xbox games. The device setup flows will focus on any development / testing requirements.
