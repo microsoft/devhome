@@ -145,7 +145,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// All repositories currently shown on the screen.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<RepoViewListItem> _repositories = new();
+    private ObservableCollection<RepoViewListItem> _repositoriesToDisplay = new();
 
     private List<RepoViewListItem> _allRepositories = new();
 
@@ -267,6 +267,9 @@ public partial class AddRepoViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private ObservableCollection<string> _lastPathPartsList;
+
+    [ObservableProperty]
+    private string _lastPathPartPlaceholderText;
 
     /// <summary>
     /// Don't show the oath selector UI when querying repos and when selecting search terms.
@@ -406,7 +409,7 @@ public partial class AddRepoViewModel : ObservableObject
 #pragma warning restore CA1309 // Use ordinal string comparison
         }
 
-        Repositories = new ObservableCollection<RepoViewListItem>(reposWithPathPart);
+        RepositoriesToDisplay = new ObservableCollection<RepoViewListItem>(reposWithPathPart);
     }
 
     /// <summary>
@@ -487,7 +490,7 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         _isFiltering = true;
-        Repositories = new ObservableCollection<RepoViewListItem>(filteredRepositories);
+        RepositoriesToDisplay = new ObservableCollection<RepoViewListItem>(filteredRepositories);
         _isFiltering = false;
     }
 
@@ -546,6 +549,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         PathToRepos = string.Empty;
         LastPathPartsList = new();
+        LastPathPartPlaceholderText = string.Empty;
     }
 
     /// <summary>
@@ -1152,6 +1156,8 @@ public partial class AddRepoViewModel : ObservableObject
                 var lastPathPart = parts[parts.Length - 1];
                 lastPathParts.Add(lastPathPart);
             }
+
+            LastPathPartPlaceholderText = searchFields[searchFields.Count - 1];
         }
 
         // If at least two parts are present make a string with all but the last part.
@@ -1213,7 +1219,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <returns>All previously selected repos excluding any added via URL.</returns>
     public IEnumerable<RepoViewListItem> SetRepositories(string repositoryProvider, string loginId)
     {
-        Repositories = new ObservableCollection<RepoViewListItem>(_repositoriesForAccount.Select(x => new RepoViewListItem(x)));
+        RepositoriesToDisplay = new ObservableCollection<RepoViewListItem>(_repositoriesForAccount.Select(x => new RepoViewListItem(x)));
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
             .Where(x => x.ProviderName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)

@@ -212,7 +212,7 @@ public partial class AddRepoDialog : ContentDialog
     public void SelectRepositories(IEnumerable<RepoViewListItem> reposToSelect)
     {
         AddRepoViewModel.IsCallingSelectRange = true;
-        var onlyRepoNames = AddRepoViewModel.Repositories.Select(x => x.RepoName).ToList();
+        var onlyRepoNames = AddRepoViewModel.RepositoriesToDisplay.Select(x => x.RepoName).ToList();
         foreach (var repoToSelect in reposToSelect)
         {
             var index = onlyRepoNames.IndexOf(repoToSelect.RepoName);
