@@ -315,7 +315,7 @@ extends:
               - output: pipelineArtifact
                 displayName: 'Publish Artifact: Binaries'
                 artifactName: Binaries_${{ platform }}_${{ configuration }}
-                targetPath: $(Build.SourcesDirectory)\BuildOutput
+                targetPath: $(Build.SourcesDirectory)\src\bin
                 sbomPackageName: devhome.binaries
                 sbomPackageVersion: $(MSIXVersion)
               - output: pipelineArtifact
