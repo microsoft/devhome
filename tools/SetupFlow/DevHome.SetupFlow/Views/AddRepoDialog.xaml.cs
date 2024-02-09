@@ -85,7 +85,7 @@ public partial class AddRepoDialog : ContentDialog
         AddViaUrlSegmentedItem.IsSelected = true;
         SwitchViewsSegmentedView.SelectedIndex = 1;
         _host = host;
-        _searchFieldsAndValues = new ();
+        _searchFieldsAndValues = new();
     }
 
     /// <summary>
@@ -343,7 +343,7 @@ public partial class AddRepoDialog : ContentDialog
         else if (AddRepoViewModel.CurrentPage == PageKind.SearchFields)
         {
             args.Cancel = true;
-            Dictionary<string, string> searchInput = new ();
+            Dictionary<string, string> searchInput = new();
             foreach (var searchBox in ShowingSearchTermsGrid.Children)
             {
                 if (searchBox is AutoSuggestBox suggestBox)
@@ -383,7 +383,7 @@ public partial class AddRepoDialog : ContentDialog
         await AddRepoViewModel.GetAccountsAsync(repositoryProviderName, LoginUIContent);
         if (AddRepoViewModel.Accounts.Any())
         {
-            AddRepoViewModel.ChangeToRepoPage(new ());
+            AddRepoViewModel.ChangeToRepoPage(new());
             AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
             EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
             AddRepoViewModel.SelectedAccount = AddRepoViewModel.Accounts.First();
@@ -417,7 +417,7 @@ public partial class AddRepoDialog : ContentDialog
             ShowingSearchTermsGrid.RowDefinitions.Add(new RowDefinition());
 
             var searchFieldName = await Task.Run(() => AddRepoViewModel.GetFieldSearchValue(providerName, loginId, searchTerms[localTermIndex]));
-            var searchFieldSuggestions = await Task.Run(() => AddRepoViewModel.GetSuggestionsFor(providerName, loginId, new (), searchTerms[localTermIndex]));
+            var searchFieldSuggestions = await Task.Run(() => AddRepoViewModel.GetSuggestionsFor(providerName, loginId, new(), searchTerms[localTermIndex]));
 
             _searchFieldsAndValues.Add(searchTerms[localTermIndex], searchFieldSuggestions);
             var suggestBox = new AutoSuggestBox();

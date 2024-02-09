@@ -349,7 +349,7 @@ internal sealed class RepositoryProvider
     /// <returns>A collection of repositories.  May be empty</returns>
     public IEnumerable<IRepository> GetAllRepositories(IDeveloperId developerId)
     {
-        return GetAllRepositories(developerId, new ());
+        return GetAllRepositories(developerId, new());
     }
 
     public bool IsSearchingEnabled()

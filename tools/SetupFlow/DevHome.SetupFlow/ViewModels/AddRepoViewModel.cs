@@ -53,7 +53,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// Used to match a Task against _taskToUseForResults to make sure the results of the most recently executed task
     /// is shows in the UI.
     /// </summary>
-    private readonly List<Task> _runningGetReposTasks = new ();
+    private readonly List<Task> _runningGetReposTasks = new();
 
     /// <summary>
     /// Because logic is split between the back-end and the view model, incrementally migrating code from the view
@@ -75,7 +75,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// <summary>
     /// Used to store the search fields and their values when querying for repos.
     /// </summary>
-    private Dictionary<string, string> _repoSearchInputs = new ();
+    private Dictionary<string, string> _repoSearchInputs = new();
 
     /// <summary>
     /// Gets the folder picker view model.
@@ -147,7 +147,7 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<RepoViewListItem> _repositories = new();
 
-    private List<RepoViewListItem> _allRepositories = new ();
+    private List<RepoViewListItem> _allRepositories = new();
 
     /// <summary>
     /// Should the URL page be visible?
@@ -393,7 +393,7 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        List<RepoViewListItem> reposWithPathPart = new ();
+        List<RepoViewListItem> reposWithPathPart = new();
         foreach (var repo in _allRepositories)
         {
             var pathParts = repo.OwningAccountName.Split(Path.DirectorySeparatorChar);
@@ -545,7 +545,7 @@ public partial class AddRepoViewModel : ObservableObject
         FolderPickerViewModel.CloneLocation = defaultClonePath;
 
         PathToRepos = string.Empty;
-        LastPathPartsList = new ();
+        LastPathPartsList = new();
     }
 
     /// <summary>

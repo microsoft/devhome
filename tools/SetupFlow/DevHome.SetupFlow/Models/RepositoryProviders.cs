@@ -71,7 +71,7 @@ internal sealed class RepositoryProviders
             return repoProvider.GetSearchTerms();
         }
 
-        return new ();
+        return new();
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ internal sealed class RepositoryProviders
             return repoProvider.GetValuesFor(developerId, searchTerms, fieldName);
         }
 
-        return new ();
+        return new();
     }
 
     /// <summary>
