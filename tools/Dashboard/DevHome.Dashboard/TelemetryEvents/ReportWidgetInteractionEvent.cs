@@ -11,7 +11,7 @@ using Microsoft.Diagnostics.Telemetry.Internal;
 namespace DevHome.Dashboard.TelemetryEvents;
 
 [EventData]
-public class ReportPinnedWidgetEvent : EventBase
+public class ReportWidgetInteractionEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
@@ -21,11 +21,14 @@ public class ReportPinnedWidgetEvent : EventBase
 
     public string WidgetDefinitionId { get; }
 
-    public ReportPinnedWidgetEvent(string widgetProviderDefinitionId, string widgetDefinitionId)
+    public string ActionType { get; }
+
+    public ReportWidgetInteractionEvent(string widgetProviderDefinitionId, string widgetDefinitionId, string actionType)
     {
         DeploymentIdentifier = Deployment.Identifier;
         WidgetProviderDefinitionId = widgetProviderDefinitionId;
         WidgetDefinitionId = widgetDefinitionId;
+        ActionType = actionType;
     }
 
     public override void ReplaceSensitiveStrings(Func<string, string> replaceSensitiveStrings)
