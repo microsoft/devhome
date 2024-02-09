@@ -32,6 +32,7 @@ public class FeaturedApplicationsProvider : IFeaturedApplicationsProvider
             // Sample list of featured applications
             return new GetFeaturedApplicationsResult(new List<string>()
             {
+                "x-ms-winget://winget/Postman.Postman?version=10.20.0",
                 "x-ms-winget://winget/Microsoft.VisualStudio.2022.Community",
                 "x-ms-winget://winget/Microsoft.VisualStudioCode",
                 "x-ms-winget://winget/Microsoft.PowerShell",
