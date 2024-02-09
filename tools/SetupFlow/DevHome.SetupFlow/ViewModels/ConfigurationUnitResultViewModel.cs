@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.SetupFlow.Common.Exceptions;
 using DevHome.SetupFlow.Models;
@@ -61,20 +61,20 @@ public class ConfigurationUnitResultViewModel
     {
         if (string.IsNullOrEmpty(_unitResult.Id) && string.IsNullOrEmpty(_unitResult.UnitDescription))
         {
-            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryMinimal, _unitResult.Intent, _unitResult.UnitName);
+            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryMinimal, _unitResult.Intent, _unitResult.Type);
         }
 
         if (string.IsNullOrEmpty(_unitResult.Id))
         {
-            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoId, _unitResult.Intent, _unitResult.UnitName, _unitResult.UnitDescription);
+            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoId, _unitResult.Intent, _unitResult.Type, _unitResult.UnitDescription);
         }
 
         if (string.IsNullOrEmpty(_unitResult.UnitDescription))
         {
-            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoDescription, _unitResult.Intent, _unitResult.UnitName, _unitResult.Id);
+            return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryNoDescription, _unitResult.Intent, _unitResult.Type, _unitResult.Id);
         }
 
-        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, _unitResult.Intent, _unitResult.UnitName, _unitResult.Id, _unitResult.UnitDescription);
+        return _stringResource.GetLocalized(StringResourceKey.ConfigurationUnitSummaryFull, _unitResult.Intent, _unitResult.Type, _unitResult.Id, _unitResult.UnitDescription);
     }
 
     private string GetUnitSkipMessage()

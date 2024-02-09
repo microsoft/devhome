@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -90,7 +90,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
     /// All repositories the user wants to clone.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<CloningInformation> _repoReviewItems = new ();
+    private ObservableCollection<CloningInformation> _repoReviewItems = new();
 
     public IDevDriveManager DevDriveManager => _devDriveManager;
 

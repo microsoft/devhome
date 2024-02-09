@@ -1,9 +1,10 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
@@ -62,7 +63,7 @@ public partial class SetupFlowViewModel : ObservableObject
     public void SetFlowPagesFromCurrentTaskGroups()
     {
         _host.GetService<IDevDriveManager>().RemoveAllDevDrives();
-        List<SetupPageViewModelBase> flowPages = new ();
+        List<SetupPageViewModelBase> flowPages = new();
         flowPages.AddRange(Orchestrator.TaskGroups.Select(flow => flow.GetSetupPageViewModel()).Where(page => page is not null));
 
         // Check if the review page should be added as a step

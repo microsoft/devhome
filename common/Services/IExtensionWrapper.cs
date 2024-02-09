@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Windows.ApplicationModel;
 
 namespace DevHome.Common.Services;
+
 public interface IExtensionWrapper
 {
     /// <summary>

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
@@ -15,7 +15,7 @@ namespace DevHome.Services;
 
 public class PageService : IPageService
 {
-    private readonly Dictionary<string, Type> _pages = new ();
+    private readonly Dictionary<string, Type> _pages = new();
 
     public PageService()
     {

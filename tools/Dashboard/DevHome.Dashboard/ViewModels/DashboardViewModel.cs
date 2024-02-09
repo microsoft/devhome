@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Dashboard.Services;
@@ -29,11 +29,6 @@ public partial class DashboardViewModel : ObservableObject
 
     public Visibility GetNoWidgetMessageVisibility(int widgetCount, bool isLoading)
     {
-        if (widgetCount == 0 && !isLoading && HasWidgetService)
-        {
-            return Visibility.Visible;
-        }
-
-        return Visibility.Collapsed;
+        return (widgetCount == 0 && !isLoading && HasWidgetService) ? Visibility.Visible : Visibility.Collapsed;
     }
 }

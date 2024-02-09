@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -48,7 +48,7 @@ public class DevDriveManager : IDevDriveManager
     /// <summary>
     /// Set that holds Dev Drives that have been created through the Dev Drive manager.
     /// </summary>
-    private readonly HashSet<IDevDrive> _devDrives = new ();
+    private readonly HashSet<IDevDrive> _devDrives = new();
 
     private DevDriveViewModel _devDriveViewModel;
 

@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <UserControl
@@ -55,7 +55,6 @@
                     HorizontalAlignment="Left"
                     Width="400"
                     Margin="0,0,0,20"
-                    IsEnabled="{x:Bind ViewModel.SearchBoxEnabled, Mode=OneWay}"
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SearchBox">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="TextChanged">

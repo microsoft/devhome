@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
 using CoreWidgetProvider.Helpers;
@@ -12,8 +12,8 @@ namespace CoreWidgetProvider.Widgets;
 [Guid("F8B2DBB9-3687-4C6E-99B2-B92C82905937")]
 internal sealed class WidgetProvider : IWidgetProvider, IWidgetProvider2
 {
-    private readonly Dictionary<string, IWidgetImplFactory> widgetDefinitionRegistry = new ();
-    private readonly Dictionary<string, WidgetImpl> runningWidgets = new ();
+    private readonly Dictionary<string, IWidgetImplFactory> widgetDefinitionRegistry = new();
+    private readonly Dictionary<string, WidgetImpl> runningWidgets = new();
 
     public WidgetProvider()
     {

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -30,6 +30,7 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 {
     private readonly IHost _host;
     private readonly IWindowsPackageManager _wpm;
+    private readonly IDesiredStateConfiguration _dsc;
 
     public MainPageBannerViewModel BannerViewModel { get; }
 
@@ -38,6 +39,9 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     [ObservableProperty]
     private bool _enablePackageInstallerItem;
+
+    [ObservableProperty]
+    private bool _enableConfigurationFileItem;
 
     [ObservableProperty]
     private bool _showAppInstallerUpdateNotification;
@@ -53,12 +57,14 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         ISetupFlowStringResource stringResource,
         SetupFlowOrchestrator orchestrator,
         IWindowsPackageManager wpm,
+        IDesiredStateConfiguration dsc,
         IHost host,
         MainPageBannerViewModel bannerViewModel)
         : base(stringResource, orchestrator)
     {
         _host = host;
         _wpm = wpm;
+        _dsc = dsc;
 
         IsNavigationBarVisible = false;
         IsStepPage = false;
@@ -69,16 +75,20 @@ public partial class MainPageViewModel : SetupPageViewModelBase
 
     protected async override Task OnFirstNavigateToAsync()
     {
-        EnablePackageInstallerItem = await _wpm.IsCOMServerAvailableAsync();
-        if (EnablePackageInstallerItem)
+        if (await ValidateAppInstallerAsync())
         {
             Log.Logger?.ReportInfo($"{nameof(WindowsPackageManager)} COM Server is available. Showing package install item");
-            ShowAppInstallerUpdateNotification = await _wpm.IsAppInstallerUpdateAvailableAsync();
+            ShowAppInstallerUpdateNotification = await _wpm.IsUpdateAvailableAsync();
         }
         else
         {
             Log.Logger?.ReportWarn($"{nameof(WindowsPackageManager)} COM Server is not available. Package install item is hidden.");
         }
+    }
+
+    protected async override Task OnEachNavigateToAsync()
+    {
+        await ValidateAppInstallerAsync();
     }
 
     /// <summary>
@@ -203,5 +213,21 @@ public partial class MainPageViewModel : SetupPageViewModelBase
         HideAppInstallerUpdateNotification();
         Log.Logger?.ReportInfo(Log.Component.MainPage, "Opening AppInstaller in the Store app");
         await Launcher.LaunchUriAsync(new Uri($"ms-windows-store://pdp/?productid={WindowsPackageManager.AppInstallerProductId}"));
+    }
+
+    [RelayCommand]
+    private async Task OnLoadedAsync()
+    {
+        await Task.WhenAll(ValidateAppInstallerAsync(), ValidateConfigurationFileAsync());
+    }
+
+    private async Task<bool> ValidateConfigurationFileAsync()
+    {
+        return EnableConfigurationFileItem = await _dsc.IsUnstubbedAsync();
+    }
+
+    private async Task<bool> ValidateAppInstallerAsync()
+    {
+        return EnablePackageInstallerItem = await _wpm.IsAvailableAsync();
     }
 }

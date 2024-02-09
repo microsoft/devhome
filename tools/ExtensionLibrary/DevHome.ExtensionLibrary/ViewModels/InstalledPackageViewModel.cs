@@ -1,10 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Xml;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Contracts;
@@ -18,6 +17,7 @@ using Windows.ApplicationModel;
 using Windows.System;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
+
 public partial class InstalledExtensionViewModel : ObservableObject
 {
     [ObservableProperty]
@@ -115,20 +115,20 @@ public partial class InstalledPackageViewModel : ObservableObject
         _packageFamilyName = packageFamilyName;
         _installedDate = installedDate;
         _version = version;
-        InstalledExtensionsList = new ();
+        InstalledExtensionsList = new();
     }
 
     [RelayCommand]
     public async Task LaunchStoreButton(string packageId)
     {
         var linkString = $"ms-windows-store://pdp/?ProductId={packageId}&mode=mini";
-        await Launcher.LaunchUriAsync(new (linkString));
+        await Launcher.LaunchUriAsync(new(linkString));
     }
 
     [RelayCommand]
     public async Task UninstallButton()
     {
-        await Launcher.LaunchUriAsync(new ("ms-settings:appsfeatures"));
+        await Launcher.LaunchUriAsync(new("ms-settings:appsfeatures"));
     }
 
     public string GeneratePackageDetails(PackageVersion version, string publisher, DateTimeOffset installedDate)

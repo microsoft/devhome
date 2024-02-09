@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Threading;
@@ -20,7 +20,7 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
 
     private readonly IThemeSelectorService _themeSelectorService;
 
-    private readonly SemaphoreSlim _rendererLock = new (1, 1);
+    private readonly SemaphoreSlim _rendererLock = new(1, 1);
 
     private AdaptiveCardRenderer _renderer;
 
@@ -115,8 +115,5 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
         }
     }
 
-    private async void OnThemeChanged(object sender, ElementTheme e)
-    {
-        await UpdateHostConfig();
-    }
+    private async void OnThemeChanged(object sender, ElementTheme e) => await UpdateHostConfig();
 }

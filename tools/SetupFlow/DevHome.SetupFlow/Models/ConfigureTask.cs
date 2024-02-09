@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 extern alias Projection;
 
@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using DevHome.SetupFlow.Common.Configuration;
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
@@ -21,9 +20,9 @@ namespace DevHome.SetupFlow.Models;
 public class ConfigureTask : ISetupTask
 {
     private readonly ISetupFlowStringResource _stringResource;
+    private readonly IDesiredStateConfiguration _dsc;
     private readonly StorageFile _file;
     private readonly Guid _activityId;
-    private ConfigurationFileHelper _configurationFileHelper;
 
     public event ISetupTask.ChangeMessageHandler AddMessage;
 
@@ -40,31 +39,21 @@ public class ConfigureTask : ISetupTask
         get; private set;
     }
 
-    public ConfigureTask(ISetupFlowStringResource stringResource, StorageFile file, Guid activityId)
+    public ConfigureTask(
+        ISetupFlowStringResource stringResource,
+        IDesiredStateConfiguration dsc,
+        StorageFile file,
+        Guid activityId)
     {
         _stringResource = stringResource;
+        _dsc = dsc;
         _file = file;
         _activityId = activityId;
     }
 
-    public async Task OpenConfigurationSetAsync()
-    {
-        try
-        {
-            var fileData = GetFileData();
-            _configurationFileHelper = new ConfigurationFileHelper(_activityId);
-            await _configurationFileHelper.OpenConfigurationSetAsync(fileData.FilePath, fileData.Content);
-        }
-        catch (Exception e)
-        {
-            Log.Logger?.ReportError(Log.Component.Configuration, $"Failed to open configuration set.", e);
-            throw;
-        }
-    }
-
     TaskMessages ISetupTask.GetLoadingMessages()
     {
-        return new ()
+        return new()
         {
             Executing = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplying),
             Error = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplyError),
@@ -75,7 +64,7 @@ public class ConfigureTask : ISetupTask
 
     public ActionCenterMessages GetErrorMessages()
     {
-        return new ()
+        return new()
         {
             PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplyError),
         };
@@ -83,7 +72,7 @@ public class ConfigureTask : ISetupTask
 
     public ActionCenterMessages GetRebootMessage()
     {
-        return new ()
+        return new()
         {
             PrimaryMessage = _stringResource.GetLocalized(StringResourceKey.ConfigurationFileApplySuccessReboot),
         };
@@ -96,7 +85,7 @@ public class ConfigureTask : ISetupTask
             try
             {
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.ApplyingConfigurationMessage));
-                var result = await _configurationFileHelper.ApplyConfigurationAsync();
+                var result = await _dsc.ApplyConfigurationAsync(_file.Path, _activityId);
                 RequiresReboot = result.RequiresReboot;
                 UnitResults = result.Result.UnitResults.Select(unitResult => new ConfigurationUnitResult(unitResult)).ToList();
                 if (result.Succeeded)

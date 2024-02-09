@@ -1,9 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Logging.Listeners;
 
 namespace DevHome.Logging;
+
 public interface ILoggerHost : IDisposable
 {
     string Name

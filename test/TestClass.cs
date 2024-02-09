@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics;
 
@@ -51,7 +51,7 @@ public class TestClass
     [TestMethod]
     public void TestHelpersIngestion()
     {
-        Microsoft.Internal.Windows.DevHome.Helpers.Helpers helpers = new ();
+        Microsoft.Internal.Windows.DevHome.Helpers.Helpers helpers = new();
         Assert.AreEqual("This is a test", helpers.Test());
     }
 }

@@ -1,6 +1,6 @@
 namespace Microsoft.Windows.DevHome.SDK
 {
-    [contractversion(1)]
+    [contractversion(2)]
     apicontract DevHomeContract {}
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
@@ -14,7 +14,10 @@ namespace Microsoft.Windows.DevHome.SDK
         Repository = 0,
         DeveloperId = 1,
         Settings = 2,
-        FeaturedApplications = 3
+        FeaturedApplications = 3,
+        
+        [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+        ComputeSystem = 4 
     };
 
     // Definitions for exceptions.
@@ -322,4 +325,739 @@ namespace Microsoft.Windows.DevHome.SDK
         String GetDescription(String preferredLocale);
         GetFeaturedApplicationsResult GetApplications();
     };
+
+    // Adaptive card additions for DevHomeContract v2. 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    interface IExtensionAdaptiveCardSession2 requires IExtensionAdaptiveCardSession
+    {
+        // Event used to signal to Dev Home that the status of the Adaptive Card session changed.
+        event Windows.Foundation.TypedEventHandler<IExtensionAdaptiveCardSession2, ExtensionAdaptiveCardSessionData> SessionStatusChanged;
+    };
+
+    // Event enum to represent the status of the adaptive card session.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    enum ExtensionAdaptiveCardSessionEventKind
+    {
+        SessionStarted,
+        SessionEnded,
+    };
+    
+    // The event data that is sent back to Dev Home at the start and end of an adaptive card session.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ExtensionAdaptiveCardSessionData
+    {
+        ExtensionAdaptiveCardSessionData(ExtensionAdaptiveCardSessionEventKind eventKind, ProviderOperationResult result);
+
+        ExtensionAdaptiveCardSessionData(ExtensionAdaptiveCardSessionEventKind eventKind, String SessionData, ProviderOperationResult result);
+
+        // The change event type that occurred.
+        ExtensionAdaptiveCardSessionEventKind EventKind
+        {
+            get;
+        };
+
+        // The json data the extention wants to send back based on the interaction with the user, or based on the
+        // eventKind.
+        String SessionData
+        {
+            get;
+        };
+
+        // Useful for debugging purposes.
+        Windows.Foundation.DateTime TimeStamp
+        {
+            get;
+        };
+
+        // The result for the session event. The session ending with ProviderOperationStatus.Success signals
+        // that the session ended without error.
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    }
+
+    // Compute System related interfaces/runtime classes. 
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass CreateComputeSystemResult
+    {
+        CreateComputeSystemResult(IComputeSystem computeSystem);
+
+        CreateComputeSystemResult(HRESULT e, String displayText, String diagnosticText);
+
+        // The newly created compute system.
+        IComputeSystem ComputeSystem
+        {
+            get;
+        };
+
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+    // These enums are used specifically for requesting an adaptive card sessions from the compute system
+    // provider.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    enum ComputeSystemAdaptiveCardKind
+    {
+        CreateComputeSystem = 0,
+        ModifyComputeSystemProperties = 1,
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    enum ComputeSystemProviderOperations
+    {
+        CreateComputeSystem = 0x00000001,
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    interface ICreateComputeSystemOperation
+    {
+        event Windows.Foundation.TypedEventHandler<ICreateComputeSystemOperation, ComputeSystemOperationData> Progress;
+        
+        event Windows.Foundation.TypedEventHandler<ICreateComputeSystemOperation, CreateComputeSystemResult> Completed;
+
+        CreateComputeSystemResult CompletionResult;
+
+        ComputeSystemOperationData ProgressData;
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ComputeSystemAdaptiveCardResult
+    {
+        ComputeSystemAdaptiveCardResult(IExtensionAdaptiveCardSession2 cardSession);
+
+        ComputeSystemAdaptiveCardResult(HRESULT e, String diagnosticText);
+
+        IExtensionAdaptiveCardSession2 ComputeSystemCardSession
+        {
+            get;
+        };
+
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    interface IComputeSystemProvider
+    {
+        String DisplayName
+        {
+            get;
+        };
+
+        String Id
+        {
+            get;
+        };
+
+        Windows.Foundation.Uri Icon
+        {
+            get;
+        };
+
+        ComputeSystemProviderOperations SupportedOperations
+        {
+            get;
+        };
+
+        [default_overload]
+        [method_name("CreateAdaptiveCardSessionWithDeveloperId")]
+        ComputeSystemAdaptiveCardResult CreateAdaptiveCardSession(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind);
+
+        [method_name("CreateAdaptiveCardSessionWithComputeSystem")]
+        ComputeSystemAdaptiveCardResult CreateAdaptiveCardSession(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind);
+
+        ICreateComputeSystemOperation CreateComputeSystem(IDeveloperId developerId, String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId developerId, String options);
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    enum ComputeSystemOperations
+    {
+        Start = 0x00000001,
+        ShutDown = 0x00000002,
+        Terminate = 0x00000004,
+        Delete = 0x00000008,
+        Save = 0x00000010,
+        Pause = 0x00000020,
+        Resume = 0x00000040,
+        Restart = 0x00000080,
+        CreateSnapshot = 0x00000100,
+        RevertSnapshot = 0x00000200,
+        DeleteSnapshot = 0x00000400,
+        ApplyConfiguration = 0x00000800,
+        ModifyProperties = 0x00001000,
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    enum ComputeSystemState
+    {
+        Unknown = 0,
+        Creating = 1,
+        Created = 2,
+        Starting = 3,
+        Running = 4,
+        Pausing = 5,
+        Paused = 6,
+        Saving = 7,
+        Saved = 8,
+        Stopping = 9,
+        Stopped = 10,
+        Restarting = 11,
+        Deleting = 12,
+        Deleted = 13,
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ComputeSystemsResult
+    {
+        ComputeSystemsResult(IIterable<IComputeSystem> computeSystems);
+
+        ComputeSystemsResult(HRESULT e, String diagnosticText);
+
+        IIterable<IComputeSystem> ComputeSystems
+        {
+            get;
+        };
+
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ComputeSystemStateResult
+    {
+        ComputeSystemStateResult(ComputeSystemState computeSystemState);
+
+        ComputeSystemStateResult(HRESULT e, String diagnosticText);
+
+        ComputeSystemState State
+        {
+            get;
+        };
+
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ComputeSystemOperationResult
+    {
+        ComputeSystemOperationResult();
+
+        ComputeSystemOperationResult(HRESULT e, String diagnosticText);
+
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ComputeSystemThumbnailResult
+    {
+        ComputeSystemThumbnailResult(UInt8[] thumbnailInBytes);
+
+        ComputeSystemThumbnailResult(HRESULT e, String diagnosticText);
+
+        UInt8[] ThumbnailInBytes
+        {
+            get;
+        };
+
+        ProviderOperationResult Result
+        {
+            get;
+        };
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    enum ComputeSystemPropertyKind
+    {
+
+        Generic = 0,
+        CpuCount = 1,
+        StorageSizeInBytes = 2,
+        AssignedMemorySizeInBytes = 3,
+        UptimeIn100ns = 4,
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ComputeSystemProperty
+    {
+        ComputeSystemProperty(Windows.Foundation.Uri icon, String propertyName, Object propertyValue, ComputeSystemPropertyKind propertyKind);
+
+        ComputeSystemProperty(String propertyName, Object propertyValue, ComputeSystemPropertyKind propertyKind);
+
+        ComputeSystemProperty(Object propertyValue, ComputeSystemPropertyKind propertyKind);
+
+        Windows.Foundation.Uri Icon
+        {
+            get;
+        };
+
+        String Name
+        {
+            get;
+        };
+
+        Object Value
+        {
+            get;
+        };
+
+        ComputeSystemPropertyKind PropertyKind
+        {
+            get;
+        };
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ComputeSystemOperationData
+    {
+        ComputeSystemOperationData(String operationStatus, UInt32 operationProgress);
+
+        // Allows extensions to provide intermediary status for the operation e.g Downloading image file.
+        String Status
+        {
+            get;
+        };
+
+        // Allows extensions to provide progress percentage for the operation.
+        UInt32 Progress
+        {
+            get;
+        };
+    };
+
+    // Defined in the apply configuration result support section.
+    interface IApplyConfigurationOperation;
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    interface IComputeSystem
+    {
+        String Name
+        {
+            get;
+        };
+
+        String AlternativeDisplayName
+        {
+            get;
+        };
+
+        String AssociatedProviderId
+        {
+            get;
+        };
+
+        String Id
+        {
+            get;
+        };
+
+        IDeveloperId AssociatedDeveloperId
+        {
+            get;
+        };
+
+        ComputeSystemOperations SupportedOperations
+        {
+            get;
+        };
+
+        // We recommend hosts subscribe to these events and for extensions to implement the StateChanged event.
+        // With that said, it is important to note that there can be a disconnect between the underlying
+        // platform for the compute system and the extension. The underlying platform may not know that the
+        // extension exists and may have other means other than through the extension, for users to perform
+        // operations that may change a compute system's state.However, Due to performance considerations we
+        // don't recommend polling the platform.
+        event Windows.Foundation.TypedEventHandler<IComputeSystem, ComputeSystemState> StateChanged;
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemStateResult> GetStateAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> StartAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> ShutDownAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> RestartAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> TerminateAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> DeleteAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> SaveAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> PauseAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> ResumeAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> CreateSnapshotAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> RevertSnapshotAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> DeleteSnapshotAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> ModifyPropertiesAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemThumbnailResult> GetComputeSystemThumbnailAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<IIterable<ComputeSystemProperty> > GetComputeSystemPropertiesAsync(String options);
+
+        Windows.Foundation.IAsyncOperation<ComputeSystemOperationResult> ConnectAsync(String options);
+
+        IApplyConfigurationOperation ApplyConfiguration(String configuration);
+    };
+
+    // Start of apply configuration result support
+    // The current state of a configuration set.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    enum ConfigurationSetState
+    {
+        // The state of the configuration set is unknown.
+        Unknown,
+        
+        // The configuration set is in the queue to be applied.
+        Pending,
+
+        // The configuration set is actively being applied.
+        InProgress,
+
+        // The configuration set has completed being applied.
+        Completed,
+
+        // Shutting down device (e.g. for offline provisioning)
+        ShuttingDownDevice,
+
+        // Starting device (e.g. after offline provisioning)
+        StartingDevice,
+
+        // Restarting device (e.g. after online provisioning that requires restart)
+        RestartingDevice,
+
+        // Provisioning device with binaries needed for Configure operation.
+        ProvisioningDevice,
+
+        // Waiting for an admin logon (e.g. to complete operation that requires admin user)
+        WaitingForAdminUserLogon,
+
+        // Waiting for user's logon (e.g. to run WinGet configure)
+        WaitingForUserLogon
+    };
+
+    // The current state of a configuration unit.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    enum ConfigurationUnitState
+    {
+        // The state of the configuration unit is unknown.
+        Unknown,
+
+        // The configuration unit is in the queue to be applied.
+        Pending,
+
+        // The configuration unit is actively being applied.
+        InProgress,
+
+        // The configuration unit has completed being applied.
+        Completed,
+
+        // The configuration unit was not applied due to external factors.
+        Skipped,
+    };
+
+    // The source of a result; for instance, the part of the system that generated a failure.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    enum ConfigurationUnitResultSource
+    {
+        // The source is not known, or more likely, there was no failure.
+        None,
+
+        // The result came from inside the configuration system; this is likely a bug.
+        Internal,
+
+        // The configuration set was ill formed. For instance, referencing a configuration unit
+        // that does not exist or a dependency that is not present.
+        ConfigurationSet,
+
+        // The external module that processes the configuration unit generated the result.
+        UnitProcessing,
+
+        // The system state is causing the error.
+        SystemState,
+
+        // The configuration unit was not run due to a precondition not being met.
+        // For example, if a dependency fails to be applied, this will be set.
+        Precondition,
+    };
+
+    // Information on a result for a single unit of configuration.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ConfigurationUnitResultInformation
+    {
+        ConfigurationUnitResultInformation(HRESULT result, String description, String details, ConfigurationUnitResultSource resultSource);
+
+        // The error code of the failure.
+        HRESULT ResultCode
+        {
+            get;
+        };
+
+        // The short description of the failure.
+        String Description
+        {
+            get;
+        };
+
+        // A more detailed error message appropriate for diagnosing the root cause of an error.
+        String Details
+        {
+            get;
+        };
+
+        // The source of the result.
+        ConfigurationUnitResultSource ResultSource
+        {
+            get;
+        };
+    }
+
+    // The result of calling OpenConfigurationSet, containing either the set or details about the failure.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass OpenConfigurationSetResult
+    {
+        OpenConfigurationSetResult(HRESULT result, String field, String fieldValue, UInt32 line, UInt32 column);
+
+        // The result from opening the set.
+        HRESULT ResultCode
+        {
+            get;
+        };
+
+        // The field that is missing/invalid, if appropriate for the specific ResultCode.
+        String Field
+        {
+            get;
+        };
+
+        // The value of the field, if appropriate for the specific ResultCode.
+        String Value
+        {
+            get;
+        };
+
+        // The line number for the failure reason, if determined.
+        UInt32 Line
+        {
+            get;
+        };
+
+        // The column number for the failure reason, if determined.
+        UInt32 Column
+        {
+            get;
+        };
+    }
+
+    // A single unit of configuration.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ConfigurationUnit
+    {
+        ConfigurationUnit(String type, String identifier, ConfigurationUnitState state, Boolean isGroup, Windows.Foundation.Collections.IVector<ConfigurationUnit> units);
+
+        // The type of the unit being configured; not a name for this instance.
+        String Type
+        {
+            get;
+        };
+
+        // The identifier name of this instance within the set.
+        String Identifier
+        {
+            get;
+        };
+
+        // The current state of the configuration unit.
+        ConfigurationUnitState State
+        {
+            get;
+        };
+
+        // Determines if this configuration unit should be treated as a group.
+        // A configuration unit group treats its `Settings` as the definition of child units.
+        Boolean IsGroup
+        {
+            get;
+        };
+
+        // The configuration units that are part of this unit (if IsGroup is true).
+        Windows.Foundation.Collections.IVector<ConfigurationUnit> Units
+        {
+            get;
+        };
+    }
+
+    // The change event type that has occurred for a configuration set change.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    enum ConfigurationSetChangeEventType
+    {
+        Unknown,
+
+        // The change event was for the set state. Only ConfigurationSetChangeData.SetState is valid.
+        SetStateChanged,
+
+        // The change event was for the unit state. All ConfigurationSetChangeData properties are valid.
+        UnitStateChanged,
+    };    
+
+    // The change data sent about changes to a specific set.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ConfigurationSetChangeData
+    {
+        ConfigurationSetChangeData(ConfigurationSetChangeEventType change, ConfigurationSetState setState, ConfigurationUnitState unitState, ConfigurationUnitResultInformation resultInformation, ConfigurationUnit unit, IExtensionAdaptiveCardSession2 correctiveActionCardSession);
+
+        // The change event type that occurred.
+        ConfigurationSetChangeEventType Change
+        {
+            get;
+        };
+
+        // The state of the configuration set for this event (the ConfigurationSet can be used to get the current state, which may be different).
+        ConfigurationSetState SetState
+        {
+            get;
+        };
+
+        // The state of the configuration unit for this event (the ConfigurationUnit can be used to get the current state, which may be different).
+        ConfigurationUnitState UnitState
+        {
+            get;
+        };
+
+        // Contains information on the result of the attempt to apply the configuration unit.
+        ConfigurationUnitResultInformation ResultInformation
+        {
+            get;
+        };
+
+        // The configuration unit whose state changed.
+        ConfigurationUnit Unit
+        {
+            get;
+        };
+
+        // An adaptive card that the extension can send to Dev Home to allow the user to perform an action.
+        IExtensionAdaptiveCardSession2 CorrectiveActionCardSession
+        {
+            get;
+        };
+    }
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ApplyConfigurationUnitResult
+    {
+        ApplyConfigurationUnitResult(ConfigurationUnit unit, Boolean previouslyInDesiredState, Boolean rebootRequired, ConfigurationUnitResultInformation resultInformation);
+
+        // The configuration unit that was applied.
+        ConfigurationUnit Unit
+        {
+            get;
+        };
+
+        // Will be true if the configuration unit was in the desired state (Test returns true) prior to the apply action.
+        Boolean PreviouslyInDesiredState
+        {
+            get;
+        };
+
+        // Indicates whether a reboot is required after the configuration unit was applied.
+        Boolean RebootRequired
+        {
+            get;
+        };
+
+        // The result of applying the configuration unit.
+        ConfigurationUnitResultInformation ResultInformation
+        {
+            get;
+        };
+    }
+
+    // The result of applying the settings for a configuration set.
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ApplyConfigurationSetResult
+    {
+        ApplyConfigurationSetResult(HRESULT result, Windows.Foundation.Collections.IVectorView<ApplyConfigurationUnitResult> unitResults);
+
+        // Results for each configuration unit in the set.
+        Windows.Foundation.Collections.IVectorView<ApplyConfigurationUnitResult> UnitResults
+        {
+            get;
+        };
+
+        // The overall result from applying the configuration set.
+        HRESULT ResultCode
+        {
+            get;
+        };
+    }
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    runtimeclass ApplyConfigurationResult
+    {
+        ApplyConfigurationResult(HRESULT result, String resultDescription, OpenConfigurationSetResult openConfigurationSetResult, ApplyConfigurationSetResult applyConfigurationSetResult);
+
+        // The overall result from applying the configuration set (Open configuration, apply configuration and anything in between).
+        HRESULT ResultCode
+        {
+            get;
+        };
+
+        // Result description to get more context in case of an error outside of OpenConfigurationSetResult or ApplyConfigurationSetResult
+        String ResultDescription
+        {
+            get;
+        };
+
+        OpenConfigurationSetResult OpenConfigurationSetResult
+        {
+            get;
+        };
+
+        ApplyConfigurationSetResult ApplyConfigurationSetResult
+        {
+            get;
+        };
+    };
+
+    [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)]
+    interface IApplyConfigurationOperation
+    {
+        event Windows.Foundation.TypedEventHandler<IComputeSystem, ApplyConfigurationResult> Completed;
+
+        event Windows.Foundation.TypedEventHandler<IComputeSystem, ConfigurationSetChangeData> Progress;
+
+        ApplyConfigurationResult CompletionStatus
+        {
+            get;
+        };
+
+        ConfigurationSetChangeData ProgressData
+        {
+            get;
+        };
+
+        void Cancel();
+    };
+
+    // End of apply configuration result support
 }

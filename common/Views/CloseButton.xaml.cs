@@ -1,9 +1,10 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using Microsoft.UI.Xaml.Controls;
 
 namespace DevHome.Common.Views;
+
 public sealed partial class CloseButton : Button
 {
     public CloseButton()

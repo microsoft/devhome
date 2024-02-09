@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Linq;
@@ -190,7 +190,7 @@ public partial class EditDevDriveViewModel : ObservableObject
             IsDevDriveCheckboxEnabled = false;
 
             // Convert the wait for closed event into an async task
-            TaskCompletionSource<IDevDrive> devDriveWindowTask = new ();
+            TaskCompletionSource<IDevDrive> devDriveWindowTask = new();
             EventHandler<IDevDrive> eventHandler = (_, devDrive) => devDriveWindowTask.SetResult(devDrive);
             _devDriveManager.ViewModelWindowClosed += eventHandler;
             var devDriveFromWindow = await devDriveWindowTask.Task;

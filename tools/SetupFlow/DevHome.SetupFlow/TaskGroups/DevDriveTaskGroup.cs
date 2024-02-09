@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         _host = host;
 
         // TODO https://github.com/microsoft/devhome/issues/631
-        _devDriveReviewViewModel = new (() => new DevDriveReviewViewModel(host, stringResource, this));
+        _devDriveReviewViewModel = new(() => new DevDriveReviewViewModel(host, stringResource, this));
         _stringResource = stringResource;
     }
 

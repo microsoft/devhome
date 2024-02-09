@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Text;
 using System.Text.Json.Nodes;
@@ -28,7 +28,7 @@ internal abstract class CoreWidget : WidgetImpl
         get; set;
     }
 
-    protected Dictionary<WidgetPageState, string> Template { get; set; } = new ();
+    protected Dictionary<WidgetPageState, string> Template { get; set; } = new();
 
     public CoreWidget()
     {
@@ -102,7 +102,7 @@ internal abstract class CoreWidget : WidgetImpl
     {
         LoadContentData();
 
-        WidgetUpdateRequestOptions updateOptions = new (Id)
+        WidgetUpdateRequestOptions updateOptions = new(Id)
         {
             Data = GetData(Page),
             Template = GetTemplateForPage(Page),

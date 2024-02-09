@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Security.Principal;
 using DevHome.Logging;
@@ -20,7 +20,7 @@ public class Log
         }
     }
 
-    private static readonly ComponentLogger _logger = new (RunningAsAdmin ? "SetupFlow-Elevated" : "SetupFlow", "SetupFlow");
+    private static readonly ComponentLogger _logger = new(RunningAsAdmin ? "SetupFlow-Elevated" : "SetupFlow", "SetupFlow");
 
     public static Logger? Logger => _logger.Logger;
 

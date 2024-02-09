@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace DevHome.Common.Services;
 
 public class PackageDeploymentService : IPackageDeploymentService
 {
-    private readonly PackageManager _packageManager = new ();
+    private readonly PackageManager _packageManager = new();
 
     /// <inheritdoc />
     public async Task RegisterPackageForCurrentUserAsync(string packageFamilyName, RegisterPackageOptions? options = null)
@@ -53,7 +53,7 @@ public class PackageDeploymentService : IPackageDeploymentService
                 Log.Logger()?.ReportInfo("PackageDeploymentService", $"Found package {package.Id.FullName}");
 
                 // Create System.Version type from PackageVersion to test. System.Version supports CompareTo() for easy comparisons.
-                if (IsVersionSupported(new (major, minor, build, revision), ranges))
+                if (IsVersionSupported(new(major, minor, build, revision), ranges))
                 {
                     versionedPackages.Add(package);
                 }
