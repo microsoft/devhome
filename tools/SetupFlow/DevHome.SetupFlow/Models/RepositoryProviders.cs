@@ -59,6 +59,11 @@ internal sealed class RepositoryProviders
         }
     }
 
+    /// <summary>
+    /// Asks the provider for search terms for querying repositories.
+    /// </summary>
+    /// <param name="providerName">The provider to ask</param>
+    /// <returns>The names of the search fields.  An empty string is returned if the provider isn't found.</returns>
     public List<string> GetSearchTerms(string providerName)
     {
         if (_providers.TryGetValue(providerName, out var repoProvider))
@@ -69,6 +74,13 @@ internal sealed class RepositoryProviders
         return new ();
     }
 
+    /// <summary>
+    /// Asks the provider for a list of suggestions, given values of other search terms.
+    /// </summary>
+    /// <param name="providerName">The provider to ask</param>
+    /// <param name="searchTerms">All information found in the search grid</param>
+    /// <param name="fieldName">The field to request data for</param>
+    /// <returns>A list of names that can be used for the field.  An empty list is returned if the provider isn't found</returns>
     public List<string> GetValuesFor(string providerName, IDeveloperId developerId, Dictionary<string, string> searchTerms, string fieldName)
     {
         if (_providers.TryGetValue(providerName, out var repoProvider))
@@ -79,6 +91,13 @@ internal sealed class RepositoryProviders
         return new ();
     }
 
+    /// <summary>
+    /// Asks the provider, given the fieldName, what was the value of the most recent search.
+    /// </summary>
+    /// <param name="providerName">The provider to use.</param>
+    /// <param name="fieldName">The search field to ask for</param>
+    /// <returns>A string representing the term used in the most recent search.  If the provider can't be found
+    /// string.empty is returned.</returns>
     public string GetFieldSearchValue(string providerName, IDeveloperId developerId, string fieldName)
     {
         if (_providers.TryGetValue(providerName, out var repoProvider))

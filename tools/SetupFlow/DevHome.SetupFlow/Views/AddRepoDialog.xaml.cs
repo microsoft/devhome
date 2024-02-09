@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using DevHome.Common.Extensions;
 using DevHome.Common.Models;
@@ -35,6 +34,8 @@ public partial class AddRepoDialog : ContentDialog
 
     private readonly List<CloningInformation> _previouslySelectedRepos = new ();
 
+    private readonly Dictionary<string, List<string>> _searchFieldsAndValues;
+
     /// <summary>
     /// Gets or sets the view model to handle selecting and de-selecting repositories.
     /// </summary>
@@ -55,8 +56,6 @@ public partial class AddRepoDialog : ContentDialog
     /// Hold the clone location in case the user decides not to add a dev drive.
     /// </summary>
     private string _oldCloneLocation;
-
-    private Dictionary<string, List<string>> _searchFieldsAndValues;
 
     public AddRepoDialog(
         IDevDriveManager devDriveManager,
@@ -344,9 +343,17 @@ public partial class AddRepoDialog : ContentDialog
         else if (AddRepoViewModel.CurrentPage == PageKind.SearchFields)
         {
             args.Cancel = true;
-            var deferral = args.GetDeferral();
-            await SearchForRepos();
-            deferral.Complete();
+            Dictionary<string, string> searchInput = new ();
+            foreach (var searchBox in ShowingSearchTermsGrid.Children)
+            {
+                if (searchBox is AutoSuggestBox suggestBox)
+                {
+                    searchInput.Add(suggestBox.Header as string, suggestBox.Text);
+                }
+            }
+
+            // switching to the repo page causes repos to be queried.
+            SwitchToRepoPage(AddRepoViewModel.ProviderNames[0], searchInput);
         }
     }
 
@@ -376,25 +383,12 @@ public partial class AddRepoDialog : ContentDialog
         await AddRepoViewModel.GetAccountsAsync(repositoryProviderName, LoginUIContent);
         if (AddRepoViewModel.Accounts.Any())
         {
-            AddRepoViewModel.ChangeToRepoPage();
+            AddRepoViewModel.ChangeToRepoPage(new ());
             AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
             EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
             AddRepoViewModel.SelectedAccount = AddRepoViewModel.Accounts.First();
             AddRepoViewModel.ShouldEnablePrimaryButton = false;
-            ShowMessage();
         }
-    }
-
-    private async void ShowMessage()
-    {
-        MetadataSearchingTakingTooLongTextBox.Visibility = Visibility.Collapsed;
-        await Task.Delay(5000);
-
-        MetadataSearchingTakingTooLongTextBox.Visibility = Visibility.Visible;
-        MetadataSearchingTakingTooLongTextBox.Text = "Sorry.  This might take some time.";
-
-        await Task.Delay(30000);
-        MetadataSearchingTakingTooLongTextBox.Text = "This is taking a while.  Still working.";
     }
 
     private void FilterSuggestions(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -411,7 +405,6 @@ public partial class AddRepoDialog : ContentDialog
         GatheringSearchValuesGrid.Visibility = Visibility.Visible;
         ShowingSearchTermsGrid.Visibility = Visibility.Collapsed;
 
-        ShowMessage();
         var loginId = (string)AddRepoViewModel.SelectedAccount;
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
         var searchTerms = AddRepoViewModel.GetSearchTerms(providerName);
@@ -438,24 +431,6 @@ public partial class AddRepoDialog : ContentDialog
 
         GatheringSearchValuesGrid.Visibility = Visibility.Collapsed;
         ShowingSearchTermsGrid.Visibility = Visibility.Visible;
-    }
-
-    private async Task SearchForRepos()
-    {
-        Dictionary<string, string> searchInput = new ();
-        foreach (var searchBox in ShowingSearchTermsGrid.Children)
-        {
-            if (searchBox is AutoSuggestBox suggestBox)
-            {
-                searchInput.Add(suggestBox.Header as string, suggestBox.Text);
-            }
-        }
-
-        // switching to the repo page causes repos to be queried.
-        SwitchToRepoPage(AddRepoViewModel.ProviderNames[0], searchInput);
-        var loginId = (string)AddRepoViewModel.SelectedAccount;
-        var providerName = (string)RepositoryProviderComboBox.SelectedValue;
-        await AddRepoViewModel.GetRepositoriesAsync(providerName, loginId);
     }
 
     /// <summary>

@@ -8,9 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
@@ -28,7 +26,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 using WinUIEx;
@@ -41,7 +38,7 @@ namespace DevHome.SetupFlow.ViewModels;
 /// 1. Repo Review
 /// 2. Switching between account, repositories, and url page
 /// </summary>
-public partial class AddRepoViewModel : ObservableObject, IDisposable
+public partial class AddRepoViewModel : ObservableObject
 {
     private readonly IHost _host;
 
@@ -50,11 +47,6 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
     private readonly ISetupFlowStringResource _stringResource;
 
     private readonly List<CloningInformation> _previouslySelectedRepos;
-
-    /// <summary>
-    /// Once elapsed, a message will show letting the user know the query is still executing.
-    /// </summary>
-    private readonly System.Timers.Timer _takingTooLongMessageTimer = new (30000);
 
     /// <summary>
     /// Holds all the currently executing tasks to GetRepositories.
@@ -154,6 +146,8 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
     /// </summary>
     [ObservableProperty]
     private ObservableCollection<RepoViewListItem> _repositories = new ();
+
+    private List<RepoViewListItem> _allRepositories = new ();
 
     /// <summary>
     /// Should the URL page be visible?
@@ -262,18 +256,6 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
     private bool _isCancelling;
 
     /// <summary>
-    /// Sometimes the query takes a while. What is the text?
-    /// </summary>
-    [ObservableProperty]
-    private string _takingTooLongMessage;
-
-    /// <summary>
-    /// Sometimes the query takes a while. Should a message be shown to the user?
-    /// </summary>
-    [ObservableProperty]
-    private bool _shouldShowTakingTooLongMessage;
-
-    /// <summary>
     /// The remote path to the repo.  Example, at a minimum each repo has a path of [server]/[RepoName]
     /// Everything before [RepoName] is in this string.
     /// </summary>
@@ -284,7 +266,7 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
     /// The last path part before [RepoName].  All strings in here will be in a combobox.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<string> _lastPathPart;
+    private ObservableCollection<string> _lastPathPartsList;
 
     /// <summary>
     /// Don't show the oath selector UI when querying repos and when selecting search terms.
@@ -412,14 +394,14 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
         }
 
         List<RepoViewListItem> reposWithPathPart = new ();
-        foreach (var repo in _repositoriesForAccount)
+        foreach (var repo in _allRepositories)
         {
             var pathParts = repo.OwningAccountName.Split(Path.DirectorySeparatorChar);
             var partToCompareAgainst = pathParts[pathParts.Length - 1];
 #pragma warning disable CA1309 // Use ordinal string comparison
             if (selectedItem.Equals(partToCompareAgainst))
             {
-                reposWithPathPart.Add(new RepoViewListItem(repo));
+                reposWithPathPart.Add(repo);
             }
 #pragma warning restore CA1309 // Use ordinal string comparison
         }
@@ -496,13 +478,12 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
         IEnumerable<RepoViewListItem> filteredRepositories;
         if (text.Equals(string.Empty, StringComparison.OrdinalIgnoreCase))
         {
-            filteredRepositories = _repositoriesForAccount.Select(x => new RepoViewListItem(x));
+            filteredRepositories = _allRepositories;
         }
         else
         {
-            filteredRepositories = _repositoriesForAccount
-                .Where(x => x.DisplayName.Contains(text, StringComparison.OrdinalIgnoreCase))
-                .Select(x => new RepoViewListItem(x));
+            filteredRepositories = _allRepositories
+                .Where(x => x.RepoDisplayName.Contains(text, StringComparison.OrdinalIgnoreCase));
         }
 
         _isFiltering = true;
@@ -519,7 +500,6 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
     /// </remarks>
     private MenuFlyout ConstructFlyout()
     {
-        AccountsToShow = new MenuFlyout();
         var newMenu = new MenuFlyout();
         foreach (var account in Accounts)
         {
@@ -564,18 +544,8 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
         FolderPickerViewModel.CloneLocation = defaultClonePath;
 
-        _takingTooLongMessageTimer.Elapsed += (_, _) =>
-        {
-            _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
-            {
-                TakingTooLongMessage = "Sorry, this is taking a while";
-                ShouldShowTakingTooLongMessage = true;
-            });
-        };
-
-        _takingTooLongMessageTimer.AutoReset = false;
         PathToRepos = string.Empty;
-        LastPathPart = new ();
+        LastPathPartsList = new ();
     }
 
     /// <summary>
@@ -651,11 +621,6 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
         }
     }
 
-    public void ChangeToRepoPage()
-    {
-        ChangeToRepoPage(new ());
-    }
-
     public void ChangeToRepoPage(Dictionary<string, string> searchInputs)
     {
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
@@ -688,8 +653,6 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
     {
         CurrentPage = PageKind.SearchFields;
         IsFetchingRepos = false;
-        ShouldShowTakingTooLongMessage = false;
-        _takingTooLongMessageTimer.Stop();
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to select search terms page");
         ShowUrlPage = false;
         ShowAccountPage = false;
@@ -698,11 +661,24 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
         PrimaryButtonText = "Connect";
     }
 
+    /// <summary>
+    /// Asks the provider for search terms for querying repositories.
+    /// </summary>
+    /// <param name="providerName">The provider to ask</param>
+    /// <returns>The names of the search fields.</returns>
     public List<string> GetSearchTerms(string providerName)
     {
         return _providers.GetSearchTerms(providerName);
     }
 
+    /// <summary>
+    /// Asks the provider for a list of suggestions, given values of other search terms.
+    /// </summary>
+    /// <param name="providerName">The provider to ask</param>
+    /// <param name="loginId">The account of the user</param>
+    /// <param name="inputFields">All information found in the search grid</param>
+    /// <param name="fieldName">The field to request data for</param>
+    /// <returns>A list of names that can be used for the field.</returns>
     public List<string> GetSuggestionsFor(string providerName, string loginId, Dictionary<string, string> inputFields, string fieldName)
     {
         var loggedInDeveloper = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId == loginId);
@@ -710,6 +686,13 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
         return _providers.GetValuesFor(providerName, loggedInDeveloper, inputFields, fieldName);
     }
 
+    /// <summary>
+    /// Asks the provider, given the fieldName, what was the value of the most recent search.
+    /// </summary>
+    /// <param name="providerName">The provider to use.</param>
+    /// <param name="loginId">The account of the user</param>
+    /// <param name="fieldName">The search field to ask for</param>
+    /// <returns>A string representing the term used in the most recent search.</returns>
     public string GetFieldSearchValue(string providerName, string loginId, string fieldName)
     {
         var loggedInDeveloper = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId == loginId);
@@ -1093,6 +1076,7 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
     /// </summary>
     /// <remarks>
     /// The side effect of this method is _repositoriesForAccount is populated with repositories.
+    /// If _isSearchingEnabled is true, the path string, and combobox will be populated with values.
     /// </remarks>
     /// <param name="repositoryProvider">The provider.  This should match the display name of the extension</param>
     /// <param name="loginId">The login Id to get the repositories for</param>
@@ -1100,8 +1084,6 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
     {
         SelectedAccount = loginId;
         IsFetchingRepos = true;
-        _takingTooLongMessageTimer.Enabled = true;
-        _takingTooLongMessageTimer.Start();
 
         IEnumerable<IRepository> repositoriesForAccount = new List<IRepository>();
         var localTask = Task.Run(
@@ -1114,6 +1096,10 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
               repositoriesForAccount = _providers.GetAllRepositories(repositoryProvider, loggedInDeveloper, _repoSearchInputs);
           });
 
+        // Multiple calls can execute at the same time.  However, DevHome uses the results of the
+        // most recent query.  A list of tasks is used to keep track of all running queries.
+        // When a query is done, it is compared with the id of the most recently executed task.
+        // if a match, DevHome uses that.
         _taskToUseForResults = localTask;
         _runningGetReposTasks.Add(localTask);
 
@@ -1127,84 +1113,94 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
         }
 
         // If the provider does not provider search, don't worry about generating the search UI.
+        _allRepositories = repositoriesForAccount.Select(x => new RepoViewListItem(x)).ToList();
+        _repositoriesForAccount = repositoriesForAccount;
         if (!_isSearchingEnabled)
         {
-            _repositoriesForAccount = repositoriesForAccount;
-
             _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
             {
                 ShouldShowPathSelector = false;
                 IsFetchingRepos = false;
-                _takingTooLongMessageTimer.Enabled = false;
-                ShouldShowTakingTooLongMessage = false;
-                TakingTooLongMessage = string.Empty;
                 ShouldShowPathGrid = false;
             });
 
             return;
         }
 
-        // build up the textblock with the path
-        // [selection1]/[selection2]/[selectionN-1]
+        // Repositories are assumed to have a "path" of sorts before their name.
+        // For example [Server]\[Project]\[Cluster]\[RepoName].  Where the number of parts before [RepoName] matches the number
+        // of search terms returned from the provider.
+        // DevHome's repo page displays the current path, and allows users to select the last path part they want to use.
+        // In the above example [Server] and [Project] can't be changed in the repo page, but [Cluster] can.
+        // The code does three things.
+        // 1. Generates and saves the [Server]\[Project] string.  Example www.MyServer.com\Contoso.
+        //     1.A If [Server] or [Project] have more than 1 unique value * will be used.
+        // 2. Generates and saves the list of all unique [Cluster] values.
+        // 3. Changes the UI back to the Repo page, but showing the textblock and combo box.
         var provider = _providers.GetProvider(repositoryProvider);
         var searchFields = provider.GetSearchTerms();
-        var searchFieldsAndValues = new Dictionary<string, HashSet<string>>();
-        foreach (var searchField in searchFields)
-        {
-            searchFieldsAndValues.Add(searchField, new HashSet<string>());
-        }
+        var pathString = string.Empty;
+        var lastPathParts = new HashSet<string>();
 
-        foreach (var repo in repositoriesForAccount)
+        // If at least one search field is present make a list of the last part.
+        if (searchFields.Count > 0)
         {
-            var parts = repo.OwningAccountName.Split(Path.DirectorySeparatorChar);
-            for (var searchFieldIndex = 0; searchFieldIndex < parts.Length; searchFieldIndex++)
+            // Get all unique end path parts.
+            foreach (var repo in repositoriesForAccount)
             {
-                searchFieldsAndValues[searchFields[searchFieldIndex]].Add(parts[searchFieldIndex]);
+                var parts = repo.OwningAccountName.Split(Path.DirectorySeparatorChar);
+                var lastPathPart = parts[parts.Length - 1];
+                lastPathParts.Add(lastPathPart);
             }
         }
 
-        StringBuilder builder = new StringBuilder();
-        for (var searchFieldIndex = 0; searchFieldIndex < searchFields.Count - 1; searchFieldIndex++)
+        // If at least two parts are present make a string with all but the last part.
+        if (searchFields.Count > 1)
         {
-            var values = searchFieldsAndValues[searchFields[searchFieldIndex]];
-            if (values.Count == 1)
+            var searchFieldsAndValues = searchFields.ToDictionary(x => x, y => new HashSet<string>());
+
+            // Determine all unique values for each part of the path.
+            foreach (var repo in repositoriesForAccount)
             {
-                builder.Append(values.First());
-            }
-            else
-            {
-                builder.Append('*');
+                var pathParts = repo.OwningAccountName.Split(Path.DirectorySeparatorChar);
+                for (var searchFieldIndex = 0; searchFieldIndex < pathParts.Length; searchFieldIndex++)
+                {
+                    searchFieldsAndValues[searchFields[searchFieldIndex]].Add(pathParts[searchFieldIndex]);
+                }
             }
 
-            builder.Append(Path.DirectorySeparatorChar);
+            // Go through all search terms to build the string.
+            StringBuilder builder = new StringBuilder();
+            for (var searchFieldIndex = 0; searchFieldIndex < searchFields.Count - 1; searchFieldIndex++)
+            {
+                var values = searchFieldsAndValues[searchFields[searchFieldIndex]];
+                if (values.Count == 1)
+                {
+                    builder.Append(values.First());
+                }
+                else
+                {
+                    builder.Append('*');
+                }
+
+                builder.Append(Path.DirectorySeparatorChar);
+            }
+
+            pathString = builder.ToString();
         }
 
-        HashSet<string> projectNames = new ();
-        foreach (var repo in repositoriesForAccount)
-        {
-            var parts = repo.OwningAccountName.Split(Path.DirectorySeparatorChar);
-            var project = parts[parts.Length - 1];
-            projectNames.Add(project);
-        }
-
+        // Update the UI.
         _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
         {
-            PathToRepos = builder.ToString();
-            LastPathPart.Clear();
-            foreach (var projectName in projectNames.Order())
+            PathToRepos = pathString;
+            LastPathPartsList.Clear();
+            foreach (var lastPathPart in lastPathParts.Order())
             {
-                LastPathPart.Add(projectName);
+                LastPathPartsList.Add(lastPathPart);
             }
-        });
 
-        _repositoriesForAccount = repositoriesForAccount;
-        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(() =>
-        {
             ShouldShowPathSelector = repositoriesForAccount.Any();
             IsFetchingRepos = false;
-            _takingTooLongMessageTimer.Enabled = false;
-            ShouldShowTakingTooLongMessage = false;
-            TakingTooLongMessage = string.Empty;
             ShouldShowPathGrid = true;
         });
     }
@@ -1240,11 +1236,5 @@ public partial class AddRepoViewModel : ObservableObject, IDisposable
                 cloningInformation.CloningLocation = new DirectoryInfo(cloneLocation);
             }
         }
-    }
-
-    public void Dispose()
-    {
-        _takingTooLongMessageTimer.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

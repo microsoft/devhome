@@ -42,7 +42,7 @@ public class AddRepoDialogTests : BaseSetupFlowTest
     public void SwitchToRepoScreenTest()
     {
         var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), string.Empty, null);
-        addRepoViewModel.ChangeToRepoPage();
+        addRepoViewModel.ChangeToRepoPage(new ());
         Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowUrlPage);
         Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowAccountPage);
         Assert.AreEqual(Visibility.Visible, addRepoViewModel.ShowRepoPage);
