@@ -81,27 +81,4 @@
     <DefineConstants Condition="'$(BuildRing)'=='Canary'">$(DefineConstants);CANARY_BUILD</DefineConstants>
     <DefineConstants Condition="'$(BuildRing)'=='Stable'">$(DefineConstants);STABLE_BUILD</DefineConstants>
   </PropertyGroup>
-
-  <Target Name="ExtraAppxFilesInPackage" AfterTargets="_ComputeAppxPackagePayload">
-
-    <!-- If the binary is not here, then it was a 'dotnet publish' or 'dotnet build' -->
-    <PropertyGroup Condition="!Exists('$(TargetDir)\System.Management.Automation.dll')">
-      <ModulePath>runtimes\win\lib\net6.0\</ModulePath>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <AdditionalPackageFile Include="$(TargetDir)\ref\*.*">
-        <PackagePath>ref</PackagePath>
-      </AdditionalPackageFile>
-      <AdditionalPackageFile Include="$(TargetDir)\Modules\**\*.*">
-        <PackagePath>$(ModulePath)Modules</PackagePath>
-      </AdditionalPackageFile>
-    </ItemGroup>
-
-    <ItemGroup>
-      <AppxPackagePayload Include="%(AdditionalPackageFile.Identity)" KeepDuplicates="false">
-        <TargetPath>%(AdditionalPackageFile.PackagePath)\%(AdditionalPackageFile.RecursiveDir)%(AdditionalPackageFile.Filename)%(AdditionalPackageFile.Extension)</TargetPath>
-      </AppxPackagePayload>
-    </ItemGroup>
-  </Target>
 </Project>
