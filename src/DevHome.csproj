@@ -44,30 +44,30 @@
     <PackageReference Include="WinUIEx" Version="1.8.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\common\DevHome.Common.csproj" />
-    <ProjectReference Include="..\CoreWidgetProvider\CoreWidgetProvider.csproj" />
-    <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
-    <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
-    <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
-    <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
-    <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="NavConfig.jsonc">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Page Update="Styles\WindowTitleBar_ThemeResources.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Update="Styles\BreadcrumbBar.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\common\DevHome.Common.csproj" />
+        <ProjectReference Include="..\CoreWidgetProvider\CoreWidgetProvider.csproj" />
+        <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
+        <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
+        <ProjectReference Include="..\tools\Environments\DevHome.Environments\DevHome.Environments.csproj" />
+        <ProjectReference Include="..\tools\Experiments\src\DevHome.Experiments.csproj" />
+        <ProjectReference Include="..\tools\SetupFlow\DevHome.SetupFlow\DevHome.SetupFlow.csproj" />
+        <ProjectReference Include="..\tools\ExtensionLibrary\DevHome.ExtensionLibrary\DevHome.ExtensionLibrary.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="NavConfig.jsonc">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <Page Update="Styles\WindowTitleBar_ThemeResources.xaml">
+          <Generator>MSBuild:Compile</Generator>
+        </Page>
+        <Page Update="Styles\BreadcrumbBar.xaml">
+          <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
+    </ItemGroup>
 
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />

@@ -65,17 +65,17 @@ public partial class AddRepoDialog : ContentDialog
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
 
-        var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        var defaultClonePath = Path.Join(userFolder, "source", "repos");
-
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId, defaultClonePath, this);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId, this);
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
 
-        EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
+        if (AddRepoViewModel.IsSettingUpLocalMachine)
         {
-            AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-            AddRepoViewModel.FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
-        };
+            EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
+            {
+                AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+                AddRepoViewModel.FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
+            };
+        }
 
         // Changing view to account so the selection changed event for Segment correctly shows URL.
         AddRepoViewModel.CurrentPage = PageKind.AddViaAccount;

@@ -130,6 +130,21 @@ public partial class MainPageViewModel : SetupPageViewModelBase
     }
 
     /// <summary>
+    /// Starts the setup target flow for remote machines.
+    /// </summary>
+    [RelayCommand]
+    private void StartSetupForTargetEnvironment(string flowTitle)
+    {
+        Log.Logger?.ReportInfo(Log.Component.MainPage, "Starting setup for target environment");
+        StartSetupFlowForTaskGroups(
+            flowTitle,
+            "SetupTargetEnvironment",
+            _host.GetService<SetupTargetTaskGroup>(),
+            _host.GetService<RepoConfigTaskGroup>(),
+            _host.GetService<AppManagementTaskGroup>());
+    }
+
+    /// <summary>
     /// Starts a setup flow that only includes repo config.
     /// </summary>
     [RelayCommand]

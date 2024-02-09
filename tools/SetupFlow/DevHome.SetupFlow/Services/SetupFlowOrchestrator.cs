@@ -19,6 +19,12 @@ using Projection::DevHome.SetupFlow.ElevatedComponent;
 
 namespace DevHome.SetupFlow.Services;
 
+public enum SetupFlowKind
+{
+    LocalMachine,
+    SetupTarget,
+}
+
 /// <summary>
 /// Orchestrator for the Setup Flow, in charge of functionality across multiple pages.
 /// </summary>
@@ -59,6 +65,8 @@ public partial class SetupFlowOrchestrator : ObservableObject
     {
         get; private set;
     }
+
+    public bool IsInSetupTargetFlow => CurrentSetupFlowKind == SetupFlowKind.SetupTarget;
 
     /// <summary>
     /// Occurs right before a page changes
@@ -143,6 +151,8 @@ public partial class SetupFlowOrchestrator : ObservableObject
         RemoteElevatedOperation?.Dispose();
         RemoteElevatedOperation = null;
     }
+
+    public SetupFlowKind CurrentSetupFlowKind { get; set; }
 
     /// <summary>
     /// Determines whether a given page is one that was shown previously on the flow.

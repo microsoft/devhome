@@ -46,6 +46,7 @@ public partial class PackageViewModel : ObservableObject
     private readonly IThemeSelectorService _themeSelector;
     private readonly IScreenReaderService _screenReaderService;
     private readonly WindowsPackageManagerFactory _wingetFactory;
+    private readonly SetupFlowOrchestrator _setupFlowOrchestrator;
 
     /// <summary>
     /// Occurs after the package selection changes
@@ -66,7 +67,8 @@ public partial class PackageViewModel : ObservableObject
         IThemeSelectorService themeSelector,
         IScreenReaderService screenReaderService,
         WindowsPackageManagerFactory wingetFactory,
-        IHost host)
+        IHost host,
+        SetupFlowOrchestrator orchestrator)
     {
         _stringResource = stringResource;
         _wpm = wpm;
@@ -74,6 +76,7 @@ public partial class PackageViewModel : ObservableObject
         _themeSelector = themeSelector;
         _screenReaderService = screenReaderService;
         _wingetFactory = wingetFactory;
+        _setupFlowOrchestrator = orchestrator;
 
         // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
@@ -91,7 +94,8 @@ public partial class PackageViewModel : ObservableObject
 
     public string Version => _package.Version;
 
-    public bool IsInstalled => _package.IsInstalled;
+    // When in setup target flow don't disable installed packaged.
+    public bool IsInstalled => _setupFlowOrchestrator.IsInSetupTargetFlow ? false : _package.IsInstalled;
 
     public string CatalogName => _package.CatalogName;
 

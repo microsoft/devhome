@@ -201,4 +201,8 @@ public static class StringResourceKey
     public static readonly string ConfigurationUnitFailedSystemState = nameof(ConfigurationUnitFailedSystemState);
     public static readonly string ConfigurationUnitFailedUnitProcessing = nameof(ConfigurationUnitFailedUnitProcessing);
     public static readonly string ConfigurationUnitNotRunDueToFailedAssert = nameof(ConfigurationUnitNotRunDueToFailedAssert);
+
+    // Setup target page
+    public static readonly string SetupTargetPageTitle = nameof(SetupTargetPageTitle);
+    public static readonly string SetupTargetAllComboBoxOption = nameof(SetupTargetAllComboBoxOption);
 }
