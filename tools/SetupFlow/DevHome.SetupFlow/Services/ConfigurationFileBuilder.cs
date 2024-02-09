@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -12,6 +12,7 @@ using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace DevHome.SetupFlow.Services;
+
 public class ConfigurationFileBuilder
 {
     private readonly SetupFlowOrchestrator _orchestrator;
@@ -77,7 +78,7 @@ public class ConfigurationFileBuilder
             .Select(task => task as CloneRepoTask)
             .ToList();
 
-        if (repoConfigTasks.Any())
+        if (repoConfigTasks.Count != 0)
         {
             listOfResources.Add(CreateWinGetInstallForGitPreReq());
         }
@@ -126,7 +127,7 @@ public class ConfigurationFileBuilder
         {
             Resource = DscHelpers.WinGetDscResource,
             Id = arguments.PackageId,
-            Directives = new () { AllowPrerelease = true, Description = $"Installing {arguments.PackageId}" },
+            Directives = new() { AllowPrerelease = true, Description = $"Installing {arguments.PackageId}" },
             Settings = new WinGetDscSettings() { Id = arguments.PackageId, Source = DscHelpers.DscSourceNameForWinGet },
         };
     }
@@ -143,8 +144,8 @@ public class ConfigurationFileBuilder
         {
             Resource = DscHelpers.GitCloneDscResource,
             Id = webAddress.AbsolutePath,
-            Directives = new () { AllowPrerelease = true, Description = $"Cloning: {task.RepositoryName}" },
-            DependsOn = new[] { DscHelpers.GitDscWinGetId },
+            Directives = new() { AllowPrerelease = true, Description = $"Cloning: {task.RepositoryName}" },
+            DependsOn = [DscHelpers.GitDscWinGetId],
             Settings = new GitDscSettings() { HttpsUrl = webAddress.AbsoluteUri, RootDirectory = task.CloneLocation.FullName },
         };
     }
@@ -160,7 +161,7 @@ public class ConfigurationFileBuilder
         {
             Resource = DscHelpers.WinGetDscResource,
             Id = DscHelpers.GitDscWinGetId,
-            Directives = new () { AllowPrerelease = true, Description = $"Installing {DscHelpers.GitName}" },
+            Directives = new() { AllowPrerelease = true, Description = $"Installing {DscHelpers.GitName}" },
             Settings = new WinGetDscSettings() { Id = DscHelpers.GitDscWinGetId, Source = DscHelpers.DscSourceNameForWinGet },
         };
     }

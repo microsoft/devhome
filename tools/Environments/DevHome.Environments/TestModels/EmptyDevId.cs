@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace DevHome.Environments.TestModels;
 /// <summary>
 /// Class to support compute systems providers that don't need a developer ID.
 /// </summary>
-internal class EmptyDevId : IDeveloperId
+public class EmptyDevId : IDeveloperId
 {
     public string LoginId { get; }
 

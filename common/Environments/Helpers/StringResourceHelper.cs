@@ -1,5 +1,5 @@
-﻿// Copyright(c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 using DevHome.Common.Services;
 
 namespace DevHome.Common.Environments.Helpers;
+
 public static class StringResourceHelper
 {
-    private static readonly IStringResource _stringResource = new StringResource("DevHome.Common/Resources");
+    private static readonly StringResource _stringResource = new("DevHome.Common/Resources");
     private const string ComputeSystemCpu = "ComputeSystemCpu";
     private const string ComputeSystemAssignedMemory = "ComputeSystemAssignedMemory";
     private const string ComputeSystemUptime = "ComputeSystemUptime";

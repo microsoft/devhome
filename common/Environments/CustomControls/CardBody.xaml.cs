@@ -1,5 +1,5 @@
-// Copyright(c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.ObjectModel;
@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Common.Environments.CustomControls;
+
 public sealed partial class CardBody : UserControl
 {
     public const string DefaultCardBodyImagePath = "ms-appx:///DevHome.Common/Environments/Assets/EnvironmentsDefaultWallpaper.png";

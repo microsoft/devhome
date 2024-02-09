@@ -1,5 +1,5 @@
-﻿// Copyright(c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -52,7 +52,7 @@ public class ComputeSystemManager : IComputeSystemManager
                 var results = new List<ComputeSystemsResult>();
                 var wrapperDictionary = new Dictionary<ComputeSystemProvider, List<DeveloperIdWrapper>>
                 {
-                    { provider, new () },
+                    { provider, new() },
                 };
 
                 foreach (var devId in providerAndDevIdKeyPair.Value)

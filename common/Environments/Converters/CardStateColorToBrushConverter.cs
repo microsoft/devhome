@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using DevHome.Common.Environments.Models;
@@ -16,7 +16,7 @@ public class CardStateColorToBrushConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, string language)
     {
-        SolidColorBrush signalBrush = new ();
+        SolidColorBrush signalBrush = new();
 
         if (value is CardStateColor status)
         {

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
@@ -23,11 +23,11 @@ public class TestComputeSystemProviderImpl : IComputeSystemProvider
 
     public ComputeSystemProviderOperations SupportedOperations => ComputeSystemProviderOperations.CreateComputeSystem;
 
+    public Uri Icon => throw new NotImplementedException();
+
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSession(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind) => throw new NotImplementedException();
 
     public ComputeSystemAdaptiveCardResult CreateAdaptiveCardSession(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind) => throw new NotImplementedException();
-
-    public IAsyncOperationWithProgress<CreateComputeSystemResult, ComputeSystemOperationData> CreateComputeSystemAsync(IDeveloperId developerId, string options) => throw new NotImplementedException();
 
     public IAsyncOperation<ComputeSystemsResult> GetComputeSystemsAsync(IDeveloperId? developerId, string options)
     {
@@ -43,4 +43,6 @@ public class TestComputeSystemProviderImpl : IComputeSystemProvider
             return new ComputeSystemsResult(new List<IComputeSystem> { new TestComputeSystemImpl(Id) });
         }).AsAsyncOperation();
     }
+
+    public ICreateComputeSystemOperation CreateComputeSystem(IDeveloperId developerId, string options) => throw new NotImplementedException();
 }

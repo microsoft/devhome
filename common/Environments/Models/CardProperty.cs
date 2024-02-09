@@ -1,5 +1,5 @@
-﻿// Copyright(c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Globalization;
@@ -17,6 +17,7 @@ using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
 
 namespace DevHome.Common.Environments.Models;
+
 public class CardProperty : ICardProperty
 {
     public BitmapImage? Icon { get; private set; }

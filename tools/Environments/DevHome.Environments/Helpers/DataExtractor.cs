@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ public class DataExtractor
     /// <summary>
     /// Converts the compute computeSystem thumbnail (byte array) to a BitmapImage.
     /// </summary>
-    /// <param name="computeSystem"></param>
+    /// <param name="computeSystem">Compute system to retrieve thumbnail from.</param>
     public static BitmapImage GetCardBodyImage(IComputeSystem computeSystem)
     {
         var bitmap = new BitmapImage();
@@ -45,13 +45,13 @@ public class DataExtractor
         }
     }
 
-    // ToDo: Use resources instead of literals
-    // ToDo: Add a pause after each operation
     /// <summary>
     /// Checks for supported operations and adds the text, icon, and function associated with the operation.
     /// Returns the list of operations to be added to the dot button.
+    /// ToDo: Use resources instead of literals
+    /// ToDo: Add a pause after each operation
     /// </summary>
-    /// <param name="computeSystem"></param>
+    /// <param name="computeSystem">Compute system used to fill OperationsViewModel's callback function.</param>
     public static List<OperationsViewModel> FillDotButtonOperations(IComputeSystem computeSystem)
     {
         var operations = new List<OperationsViewModel>();
@@ -77,7 +77,7 @@ public class DataExtractor
     /// Checks for supported operations and adds the text, icon, and function associated with the operation.
     /// Returns the list of operations to be added to the launch button.
     /// </summary>
-    /// <param name="computeSystem"></param>
+    // <param name="computeSystem">Compute system used to fill OperationsViewModel's callback function.</param>
     public static List<OperationsViewModel> FillLaunchButtonOperations(IComputeSystem computeSystem)
     {
         var operations = new List<OperationsViewModel>();
@@ -127,7 +127,7 @@ public class DataExtractor
     /// TODO: remove this in favor of using the shared CardProperty class as this doesn't handle
     /// buffer overflows, and other data types other than ints for the value propery.
     /// </summary>
-    /// <param name="computeSystem"></param>
+    /// <param name="computeSystem">Compute system that the properties will be retrieved from.</param>
     public static List<PropertyViewModel> FillPropertiesAsync(IComputeSystem computeSystem)
     {
         var result = new List<PropertyViewModel>();
@@ -151,12 +151,12 @@ public class DataExtractor
                         break;
 
                     case ComputeSystemPropertyKind.AssignedMemorySizeInBytes:
-                        int memory = (int)((long)value / (1024 * 1024 * 1024));
+                        var memory = (int)((long)value / (1024 * 1024 * 1024));
                         result.Add(new PropertyViewModel("GB RAM", memory, "\uEEA0"));
                         break;
 
                     case ComputeSystemPropertyKind.StorageSizeInBytes:
-                        int storage = (int)((long)value / (1024 * 1024 * 1024));
+                        var storage = (int)((long)value / (1024 * 1024 * 1024));
                         result.Add(new PropertyViewModel("GB Storage", storage, "\uEDA2"));
                         break;
 

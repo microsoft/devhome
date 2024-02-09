@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -34,7 +34,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
     private readonly SetupFlowViewModel _setupFlowViewModel;
 
-    private readonly ObservableCollection<ComputeSystemsListViewModel> _computeSystemViewModelList = new ();
+    private readonly ObservableCollection<ComputeSystemsListViewModel> _computeSystemViewModelList = new();
 
     private readonly ISetupFlowStringResource _setupFlowStringResource;
 
@@ -85,7 +85,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
 
         // Add the "All" option to the combo box and make sure its always sorted.
         SelectedComputeSystemProviderComboBoxName = _allKeyWordLocalized;
-        _computeSystemProviderComboBoxNames = new () { SelectedComputeSystemProviderComboBoxName, };
+        _computeSystemProviderComboBoxNames = new() { SelectedComputeSystemProviderComboBoxName, };
         ComboBoxNamesCollectionView = new AdvancedCollectionView(_computeSystemProviderComboBoxNames, true);
         ComboBoxNamesCollectionView.SortDescriptions.Add(new SortDescription(SortDirection.Ascending));
 
@@ -224,7 +224,7 @@ public partial class SetupTargetViewModel : SetupPageViewModelBase
             }
         }
 
-        ComputeSystemManagerObj.ComputeSystemSetupItem = new (computeSystem, senderlistViewModel.Provider);
+        ComputeSystemManagerObj.ComputeSystemSetupItem = new(computeSystem, senderlistViewModel.Provider);
         UpdateNextButtonState();
     }
 

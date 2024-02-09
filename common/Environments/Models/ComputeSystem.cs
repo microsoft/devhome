@@ -1,5 +1,5 @@
-﻿// Copyright(c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -266,7 +266,7 @@ public class ComputeSystem
 
     public override string ToString()
     {
-        StringBuilder builder = new ();
+        StringBuilder builder = new();
         builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem ID: {Id} ");
         builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem name: {Name} ");
         builder.AppendLine(CultureInfo.InvariantCulture, $"ComputeSystem alternativeDisplayName: {AlternativeDisplayName} ");

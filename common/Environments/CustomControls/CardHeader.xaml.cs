@@ -1,11 +1,12 @@
-// Copyright(c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace DevHome.Common.Environments.CustomControls;
+
 public sealed partial class CardHeader : UserControl
 {
     public CardHeader()

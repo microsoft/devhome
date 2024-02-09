@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using Windows.Foundation;
 
 namespace DevHome.Environments.Models;
 
-internal class TestSystemProvider : IComputeSystemProvider
+public class TestSystemProvider : IComputeSystemProvider
 {
     public string DefaultComputeSystemProperties
     {
@@ -22,8 +22,6 @@ internal class TestSystemProvider : IComputeSystemProvider
     public string Id => "DevHome.Test.IComputeSystemProvider";
 
     public string Properties => throw new NotImplementedException();
-
-    public ExtensionIcon Icon => throw new NotImplementedException();
 
     public IEnumerable<IComputeSystem> GetComputeSystemsAsync(IDeveloperId developerId)
     {
@@ -47,13 +45,15 @@ internal class TestSystemProvider : IComputeSystemProvider
     }
 
     // Unimplemented APIs
-    ComputeSystemProviderOperations IComputeSystemProvider.SupportedOperations => throw new NotImplementedException();
+    public ComputeSystemProviderOperations SupportedOperations => throw new NotImplementedException();
 
-    public IAsyncOperation<ComputeSystemAdaptiveCardResult> CreateAdaptiveCardSession(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind) => throw new NotImplementedException();
-
-    public IAsyncOperation<ComputeSystemAdaptiveCardResult> CreateAdaptiveCardSession(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind) => throw new NotImplementedException();
-
-    public IAsyncOperation<CreateComputeSystemResult> CreateComputeSystemAsync(string options) => throw new NotImplementedException();
+    public Uri Icon => throw new NotImplementedException();
 
     public IAsyncOperationWithProgress<CreateComputeSystemResult, ComputeSystemOperationData> CreateComputeSystemAsync(IDeveloperId developerId, string options) => throw new NotImplementedException();
+
+    ComputeSystemAdaptiveCardResult IComputeSystemProvider.CreateAdaptiveCardSession(IDeveloperId developerId, ComputeSystemAdaptiveCardKind sessionKind) => throw new NotImplementedException();
+
+    ComputeSystemAdaptiveCardResult IComputeSystemProvider.CreateAdaptiveCardSession(IComputeSystem computeSystem, ComputeSystemAdaptiveCardKind sessionKind) => throw new NotImplementedException();
+
+    public ICreateComputeSystemOperation CreateComputeSystem(IDeveloperId developerId, string options) => throw new NotImplementedException();
 }

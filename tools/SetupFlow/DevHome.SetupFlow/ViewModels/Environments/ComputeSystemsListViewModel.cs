@@ -1,5 +1,5 @@
-﻿// Copyright(c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -34,7 +34,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
     [ObservableProperty]
     private object _selectedItem;
 
-    public ObservableCollection<ComputeSystemCardViewModel> ComputeSystemCardCollection { get; private set; } = new ();
+    public ObservableCollection<ComputeSystemCardViewModel> ComputeSystemCardCollection { get; private set; } = new();
 
     public AdvancedCollectionView ComputeSystemCardAdvancedCollectionView { get; private set; }
 
@@ -48,7 +48,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
 
     public ComputeSystemsResult CurrentResult { get; set; }
 
-    public List<ComputeSystem> ComputeSystemWrappers { get; set; } = new ();
+    public List<ComputeSystem> ComputeSystemWrappers { get; set; } = new();
 
     /// <summary>
     /// Gets the Formatted the developerId login string that will be displayed in the UI.
@@ -102,7 +102,7 @@ public partial class ComputeSystemsListViewModel : ObservableObject
         }
 
         // Create a new AdvancedCollectionView for the ComputeSystemCards collection.
-        ComputeSystemCardAdvancedCollectionView = new (ComputeSystemCardCollection);
+        ComputeSystemCardAdvancedCollectionView = new(ComputeSystemCardCollection);
 
         // Always Sort the cards by the compute system title.
         ComputeSystemCardAdvancedCollectionView.SortDescriptions.Add(new SortDescription(SortByComputeSystemTitle, SortDirection.Ascending));

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -43,7 +43,7 @@ public class ComputeSystemService : IComputeSystemService
                     devIdList.AddRange(_accountService.GetDeveloperIds(extensionObj));
                 }
 
-                if (!devIdList.Any())
+                if (devIdList.Count == 0)
                 {
                     // If we don't have a developer id for the extension, add an empty one so we can still get the compute systems.
                     devIdList.Add(new EmptyDeveloperId());

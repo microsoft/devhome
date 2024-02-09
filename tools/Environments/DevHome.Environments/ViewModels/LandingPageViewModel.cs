@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,7 @@ public partial class LandingPageViewModel : ObservableObject
 {
     private readonly EnvironmentsExtensionsService _extensionsService;
 
-    public ObservableCollection<ComputeSystemViewModel> ComputeSystems { get; set; } = new ();
+    public ObservableCollection<ComputeSystemViewModel> ComputeSystems { get; set; } = new();
 
     public AdvancedCollectionView ComputeSystemsView { get; set; }
 
@@ -82,7 +82,7 @@ public partial class LandingPageViewModel : ObservableObject
                 }
                 catch (Exception e)
                 {
-                    string err = e.Message;
+                    var err = e.Message;
 
                     // ToDo: Remove this and add logging
                     Debug.WriteLine(err);

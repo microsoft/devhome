@@ -1,8 +1,9 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Linq;
 using DevHome.Common;
+using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Environments.Helpers;
@@ -74,7 +75,7 @@ public sealed partial class LandingPage : ToolPage
         onlyRemoteButton.Click += RemoteLoadButton_Click;
         SyncButtonGrid.Children.Add(onlyRemoteButton);
 
-        int column = Grid.GetColumn(Titlebar);
+        var column = Grid.GetColumn(Titlebar);
         Grid.SetColumn(onlyLocalButton, column + 1);
         Grid.SetColumn(onlyRemoteButton, column + 2);
     }

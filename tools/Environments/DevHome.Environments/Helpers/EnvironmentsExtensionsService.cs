@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Environments.Helpers;
+
 public class EnvironmentsExtensionsService
 {
     private readonly IComputeSystemService _computeSystemService;

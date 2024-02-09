@@ -1,4 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Test.Environments.Helpers;
 using Microsoft.Windows.DevHome.SDK;
@@ -45,8 +46,6 @@ public class TestComputeSystemImpl : IComputeSystem
         AlternativeDisplayName = TestHelpers.ComputeSystemAlternativeDisplayName;
     }
 
-    public IAsyncOperationWithProgress<ComputeSystemOperationResult, ComputeSystemOperationData> ApplyConfigurationAsync(string configuration) => throw new NotImplementedException();
-
     public IAsyncOperation<ComputeSystemOperationResult> ConnectAsync(string options) => throw new NotImplementedException();
 
     public IAsyncOperation<ComputeSystemOperationResult> CreateSnapshotAsync(string options) => throw new NotImplementedException();
@@ -78,4 +77,6 @@ public class TestComputeSystemImpl : IComputeSystem
     public IAsyncOperation<ComputeSystemOperationResult> StartAsync(string options) => throw new NotImplementedException();
 
     public IAsyncOperation<ComputeSystemOperationResult> TerminateAsync(string options) => throw new NotImplementedException();
+
+    public IApplyConfigurationOperation ApplyConfiguration(string configuration) => throw new NotImplementedException();
 }

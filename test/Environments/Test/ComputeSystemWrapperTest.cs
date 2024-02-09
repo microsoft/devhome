@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Environments.Models;
 using DevHome.Test.Environments.Helpers;
@@ -7,6 +7,7 @@ using DevHome.Test.Environments.Models;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Test.Environments.Test;
+
 [TestClass]
 public class ComputeSystemWrapperTest
 {

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -58,7 +58,6 @@ public class TestSystems : IComputeSystem
     {
         var rand = new Random();
         var p1 = new ComputeSystemProperty(rand.Next(1, 6), ComputeSystemPropertyKind.CpuCount);
-        var p2 = new ComputeSystemProperty(rand.Next(786000, 1000000), ComputeSystemPropertyKind.UptimeIn100ns);
         var p3 = new ComputeSystemProperty(rand.Next(128, 512) * 1073741824L, ComputeSystemPropertyKind.StorageSizeInBytes);
         var p4 = new ComputeSystemProperty(rand.Next(8, 64) * 1073741824L, ComputeSystemPropertyKind.AssignedMemorySizeInBytes);
         var properties = new List<ComputeSystemProperty>() { p1, p4, p3 };
@@ -74,7 +73,7 @@ public class TestSystems : IComputeSystem
             var randomAccessStream = await storageFile.OpenReadAsync();
 
             // Convert the stream to a byte array
-            byte[] bytes = new byte[randomAccessStream.Size];
+            var bytes = new byte[randomAccessStream.Size];
             await randomAccessStream.ReadAsync(bytes.AsBuffer(), (uint)randomAccessStream.Size, InputStreamOptions.None);
 
             return new ComputeSystemThumbnailResult(bytes);
@@ -145,5 +144,5 @@ public class TestSystems : IComputeSystem
 
     public IAsyncOperation<ComputeSystemOperationResult> ConnectAsync(string options) => throw new NotImplementedException();
 
-    public IAsyncOperationWithProgress<ComputeSystemOperationResult, ComputeSystemOperationData> ApplyConfigurationAsync(string configuration) => throw new NotImplementedException();
+    public IApplyConfigurationOperation ApplyConfiguration(string configuration) => throw new NotImplementedException();
 }
