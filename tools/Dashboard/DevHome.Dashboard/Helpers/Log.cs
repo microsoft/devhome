@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Logging;
 
@@ -9,7 +9,7 @@ namespace DevHome.Dashboard.Helpers;
 
 public class Log
 {
-    private static readonly ComponentLogger _logger = new ("Dashboard");
+    private static readonly ComponentLogger _logger = new("Dashboard");
 
     public static Logger? Logger() => _logger.Logger;
 }

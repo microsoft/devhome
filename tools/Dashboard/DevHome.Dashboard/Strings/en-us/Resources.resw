@@ -135,7 +135,7 @@
     <comment>Message shown when there's no widget service and the user should restart Dev Home.</comment>
   </data>
   <data name="UpdateWidgetsMessage.Text" xml:space="preserve">
-    <value>You do not have the required version of the Windows Web Experience Pack to display widgets. Please ensure you have the latest version installed and then restart Dev Home.</value>
+    <value>You do not have the required dependency installed to display widgets. Please install or update the package from the Store and then restart Dev Home.</value>
     <comment>Message shown when no widgets have been added to the Dashboard</comment>
   </data>
   <data name="UpdateWidgetsMessageLink.Content" xml:space="preserve">

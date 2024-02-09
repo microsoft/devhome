@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ internal sealed class RepositoryProviders
     /// <summary>
     /// Hold all providers and organize by their names.
     /// </summary>
-    private readonly Dictionary<string, RepositoryProvider> _providers = new ();
+    private readonly Dictionary<string, RepositoryProvider> _providers = new();
 
     public string DisplayName(string providerName)
     {

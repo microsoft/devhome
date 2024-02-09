@@ -1,10 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.SetupFlow.Models;
 using Moq;
 
 namespace DevHome.SetupFlow.UnitTest.Helpers;
+
 public class PackageHelper
 {
     public static Mock<IWinGetPackage> CreatePackage(string id, string catalogId = "mock catalog id")

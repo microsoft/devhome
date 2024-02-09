@@ -1,10 +1,9 @@
-// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using AdaptiveCards.Rendering.WinUI3;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
@@ -46,8 +45,8 @@ public sealed partial class AccountsPage : Page
         var stringResource = new StringResource("DevHome.Settings/Resources");
         Breadcrumbs = new ObservableCollection<Breadcrumb>
         {
-            new (stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
-            new (stringResource.GetLocalized("Settings_Accounts_Header"), typeof(AccountsViewModel).FullName!),
+            new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
+            new(stringResource.GetLocalized("Settings_Accounts_Header"), typeof(AccountsViewModel).FullName!),
         };
     }
 

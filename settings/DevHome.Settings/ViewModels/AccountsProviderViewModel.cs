@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.ObjectModel;
@@ -17,7 +17,7 @@ public partial class AccountsProviderViewModel : ObservableObject
 
     public string ProviderName => DeveloperIdProvider.DisplayName;
 
-    public ObservableCollection<Account> LoggedInAccounts { get; } = new ();
+    public ObservableCollection<Account> LoggedInAccounts { get; } = new();
 
     public AccountsProviderViewModel(IDeveloperIdProvider devIdProvider)
     {

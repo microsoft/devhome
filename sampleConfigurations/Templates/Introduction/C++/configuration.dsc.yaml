@@ -1,5 +1,19 @@
 # yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
-# Reference: https://github.com/microsoft/PowerToys/blob/main/doc/devdocs/readme.md#compiling-powertoys
+
+##########################################################################################################
+# This configuration will install the tools necessary to get started with C++ development on Windows     #
+# Reference: https://learn.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-170         #
+#                                                                                                        #
+# This will:                                                                                             #
+#     * Enable Developer Mode                                                                            #
+#     * Install GitHub Desktop                                                                           #
+#     * Install Windows SDK 10.2.22621                                                                   #
+#     * Install Visual Studio Community 2022                                                             #
+#     * Install the Universal workload to Visual Studio Community 2022                                   #
+#     * Instal the NativeDesktop workload to Visual Studio Community 2022                                #
+#                                                                                                        #
+##########################################################################################################
+
 properties:
   resources:
     - resource: Microsoft.Windows.Developer/DeveloperMode
@@ -18,7 +32,7 @@ properties:
         id: GitHub.GitHubDesktop
         source: winget
     - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Visual Studio
+      id: VisualStudio
       directives:
         description: Install Visual Studio 2022 Community
         allowPrerelease: true
@@ -28,7 +42,7 @@ properties:
     - resource: Microsoft.VisualStudio.DSC/VSComponents
       id: Workloads NativeDesktop
       dependsOn:
-        - Visual Studio
+        - VisualStudio
       directives:
         description: Install required VS Workloads (NativeDesktop)
         allowPrerelease: true
@@ -40,7 +54,8 @@ properties:
     - resource: Microsoft.VisualStudio.DSC/VSComponents
       id: Workloads Universal
       dependsOn:
-        - Visual Studio
+        - VisualStudio
+        - Workloads NativeDesktop
       directives:
         description: Install required VS Workloads (Universal)
         allowPrerelease: true
@@ -49,4 +64,14 @@ properties:
         channelId: VisualStudio.17.Release                  
         components:
           - Microsoft.VisualStudio.Workload.Universal
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Windows SDK
+      DependsOn:
+        - VisualStudio
+      directives:
+        description: Install Windows SDK
+        allowPrerelease: true
+      settings:
+        id: Microsoft.WindowsSDK.10.0.22621
+        source: winget
   configurationVersion: 0.2.0

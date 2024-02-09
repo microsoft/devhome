@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -109,14 +109,14 @@ public partial class AddRepoViewModel : ObservableObject
     /// Names of all providers.  This is shown to the user on the accounts page.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<string> _providerNames = new ();
+    private ObservableCollection<string> _providerNames = new();
 
     /// <summary>
     /// Names of all accounts the user has logged into for a particular provider.
     /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsAccountComboBoxEnabled))]
-    private ObservableCollection<string> _accounts = new ();
+    private ObservableCollection<string> _accounts = new();
 
     /// <summary>
     /// The currently selected account.
@@ -128,7 +128,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// All repositories currently shown on the screen.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<RepoViewListItem> _repositories = new ();
+    private ObservableCollection<RepoViewListItem> _repositories = new();
 
     /// <summary>
     /// Should the URL page be visible?
@@ -338,13 +338,16 @@ public partial class AddRepoViewModel : ObservableObject
     /// Switches the repos shown to the account selected.
     /// </summary>
     [RelayCommand]
-    private async Task MenuItemClick(string selectedItemName)
+    private void MenuItemClick(string selectedItemName)
     {
-        SelectedAccount = selectedItemName;
-        await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
+        _host.GetService<WindowEx>().DispatcherQueue.TryEnqueue(async () =>
+        {
+            SelectedAccount = selectedItemName;
+            await GetRepositoriesAsync(_selectedRepoProvider, SelectedAccount);
 
-        var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
-        _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
+            var sdkDisplayName = _providers.GetSDKProvider(_selectedRepoProvider).DisplayName;
+            _addRepoDialog.SelectRepositories(SetRepositories(sdkDisplayName, SelectedAccount));
+        });
     }
 
     /// <summary>
@@ -429,7 +432,7 @@ public partial class AddRepoViewModel : ObservableObject
 
             IsCancelling = false;
             var firstItem = AccountsToShow.Items.FirstOrDefault(x => x.Name.Equals(SelectedAccount, StringComparison.OrdinalIgnoreCase));
-            await MenuItemClick((firstItem as MenuFlyoutItem).Text);
+            MenuItemClick((firstItem as MenuFlyoutItem).Text);
         }
     }
 
@@ -639,7 +642,7 @@ public partial class AddRepoViewModel : ObservableObject
         if (Accounts.Any())
         {
             SelectedAccount = Accounts.First();
-            await MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
+            MenuItemClick((AccountsToShow.Items[0] as MenuFlyoutItem).Text);
         }
     }
 

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Threading.Tasks;
 
@@ -12,7 +12,12 @@ namespace DevHome.SetupFlow.Services;
 public interface IAppManagementInitializer
 {
     /// <summary>
-    /// Ensure all services and deployments are initialized
+    /// Initialize app management services
     /// </summary>
     public Task InitializeAsync();
+
+    /// <summary>
+    /// Reinitialize app management services
+    /// </summary>
+    public Task ReinitializeAsync();
 }

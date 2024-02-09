@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Security.Cryptography;
@@ -8,6 +8,7 @@ using System.Text;
 using Microsoft.Windows.DevHome.SDK;
 
 namespace DevHome.Common.TelemetryEvents.DeveloperId;
+
 public static class DeveloperIdHelper
 {
     public static string GetHashedDeveloperId(string providerName, IDeveloperId devId)

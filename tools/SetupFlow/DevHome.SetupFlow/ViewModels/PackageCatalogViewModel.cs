@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.Generic;
 using System.Linq;
@@ -28,9 +28,6 @@ public partial class PackageCatalogViewModel : ObservableObject
     private readonly IScreenReaderService _screenReaderService;
     private readonly ISetupFlowStringResource _stringResource;
     private readonly PackageCatalog _packageCatalog;
-
-    [ObservableProperty]
-    private bool _canAddAllPackages;
 
     public string Name => _packageCatalog.Name;
 

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -57,8 +57,8 @@ public class GitWatcherTests
         var newRepoEventFired = new ManualResetEvent(false);
         var repoDeletedEventFired = new ManualResetEvent(false);
 
-        GitRepositoryChangedEventArgs newResult = new (GitRepositoryChangeType.Deleted, "Invalid");
-        GitRepositoryChangedEventArgs deletedResult = new (GitRepositoryChangeType.Created, "Invalid");
+        GitRepositoryChangedEventArgs newResult = new(GitRepositoryChangeType.Deleted, "Invalid");
+        GitRepositoryChangedEventArgs deletedResult = new(GitRepositoryChangeType.Created, "Invalid");
 
         GitWatcher.Instance.GitRepositoryCreated += (_, e) =>
         {
@@ -128,7 +128,7 @@ public class GitWatcherTests
         var pathToGitFolder3 = Path.Combine(testRepoPath3, ".git");
         var pathToTargetFile3 = Path.Combine(testRepoPath3, WatcherTargetFile);
 
-        GitFileChangedEventArgs eventArgs = new (GitFileChangeType.Deleted, "Invalid", "Invalid");
+        GitFileChangedEventArgs eventArgs = new(GitFileChangeType.Deleted, "Invalid", "Invalid");
         var eventFired = new ManualResetEvent(false);
 
         Directory.CreateDirectory(pathToGitFolder2);

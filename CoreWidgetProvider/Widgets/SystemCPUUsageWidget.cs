@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Globalization;
 using System.Text.Json.Nodes;
@@ -8,9 +8,10 @@ using CoreWidgetProvider.Widgets.Enums;
 using Microsoft.Windows.Widgets.Providers;
 
 namespace CoreWidgetProvider.Widgets;
+
 internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
 {
-    private static Dictionary<string, string> Templates { get; set; } = new ();
+    private static Dictionary<string, string> Templates { get; set; } = new();
 
     private static readonly new string Name = nameof(SystemCPUUsageWidget);
 
@@ -19,7 +20,7 @@ internal sealed class SystemCPUUsageWidget : CoreWidget, IDisposable
     public SystemCPUUsageWidget()
         : base()
     {
-        dataManager = new (DataType.CPU, UpdateWidget);
+        dataManager = new(DataType.CPU, UpdateWidget);
     }
 
     private string SpeedToString(float cpuSpeed)

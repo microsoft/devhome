@@ -1,5 +1,5 @@
 Param(
-  [string]$Configuration = "Debug",
+  [string]$Configuration = "release",
   [string]$VersionOfSDK,
   [bool]$IsAzurePipelineBuild = $false,
   [switch]$BypassWarning = $false,
@@ -10,7 +10,7 @@ $StartTime = Get-Date
 
 if ($Help) {
   Write-Host @"
-Copyright (c) Microsoft Corporation and Contributors.
+Copyright (c) Microsoft Corporation.
 Licensed under the MIT License.
 
 Syntax:
@@ -74,7 +74,17 @@ Try {
   Exit 1
 }
 
-& $nugetPath pack (Join-Path $PSScriptRoot "nuget\Microsoft.Windows.DevHome.SDK.nuspec") -Version $VersionOfSDK -OutputDirectory "$PSScriptRoot\_build"
+foreach ($config in $Configuration.Split(",")) {
+  if ($config -eq "release")
+  {
+    & $nugetPath pack (Join-Path $PSScriptRoot "nuget\Microsoft.Windows.DevHome.SDK.nuspec") -Version $VersionOfSDK -OutputDirectory "$PSScriptRoot\_build"
+  } else {
+Write-Host @"
+WARNING: You are currently building as '$config' configuration.
+DevHomeSDK nuget creation only supports 'release' configuration right now.
+"@ -ForegroundColor YELLOW
+  }
+}
 
 if ($IsAzurePipelineBuild) {
   Write-Host "##vso[task.setvariable variable=VersionOfSDK;]$VersionOfSDK"

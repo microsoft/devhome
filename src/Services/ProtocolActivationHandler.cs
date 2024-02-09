@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -12,6 +12,7 @@ using DevHome.Settings.ViewModels;
 using Windows.ApplicationModel.Activation;
 
 namespace DevHome.Services;
+
 public class ProtocolActivationHandler : ActivationHandler<ProtocolActivatedEventArgs>
 {
     private const string SettingsAccountsUri = "settings/accounts";
