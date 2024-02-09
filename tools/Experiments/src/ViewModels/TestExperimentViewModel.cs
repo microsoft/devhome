@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DevHome.Experiments.ViewModels;
+
 public class TestExperimentViewModel
 {
     public TestExperimentViewModel()

@@ -1,10 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Logging;
 using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace CoreWidgetProvider.Helpers;
+
 public static class Resources
 {
     private static ResourceLoader? _resourceLoader;

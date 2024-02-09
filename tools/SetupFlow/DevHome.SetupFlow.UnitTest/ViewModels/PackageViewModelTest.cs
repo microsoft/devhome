@@ -1,7 +1,8 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.UnitTest.Helpers;
 using DevHome.SetupFlow.ViewModels;
@@ -39,9 +40,8 @@ public class PackageViewModelTest : BaseSetupFlowTest
     public void LearnMore_PackageFromWinGetOrCustomCatalog_ReturnsExpectedUri(string packageUrl, string publisherUrl, string expectedUrl)
     {
         // Arrange
-        WindowsPackageManager!.Setup(wpm => wpm.MsStoreId).Returns("mockMsStoreId");
+        WindowsPackageManager!.Setup(wpm => wpm.IsMsStorePackage(It.IsAny<IWinGetPackage>())).Returns(false);
         var package = PackageHelper.CreatePackage("mockId");
-        package.Setup(p => p.CatalogId).Returns("mockWinGetCatalogId");
         package.Setup<Uri?>(p => p.PackageUrl).Returns(string.IsNullOrEmpty(packageUrl) ? null : new Uri(packageUrl));
         package.Setup<Uri?>(p => p.PublisherUrl).Returns(string.IsNullOrEmpty(publisherUrl) ? null : new Uri(publisherUrl));
 
@@ -59,9 +59,8 @@ public class PackageViewModelTest : BaseSetupFlowTest
     public void LearnMore_PackageFromMsStoreCatalog_ReturnsExpectedUri(string packageUrl, string publisherUrl, string expectedUrl)
     {
         // Arrange
-        WindowsPackageManager!.Setup(wpm => wpm.MsStoreId).Returns("mockMsStoreId");
+        WindowsPackageManager!.Setup(wpm => wpm.IsMsStorePackage(It.IsAny<IWinGetPackage>())).Returns(true);
         var package = PackageHelper.CreatePackage("mockId");
-        package.Setup(p => p.CatalogId).Returns(WindowsPackageManager!.Object.MsStoreId);
         package.Setup<Uri?>(p => p.PackageUrl).Returns(string.IsNullOrEmpty(packageUrl) ? null : new Uri(packageUrl));
         package.Setup<Uri?>(p => p.PublisherUrl).Returns(string.IsNullOrEmpty(publisherUrl) ? null : new Uri(publisherUrl));
 
@@ -84,7 +83,7 @@ public class PackageViewModelTest : BaseSetupFlowTest
         string expectedDescription)
     {
         // Arrange
-        WindowsPackageManager.Setup(wpm => wpm.MsStoreId).Returns("mockMsStore");
+        WindowsPackageManager.Setup(wpm => wpm.IsMsStorePackage(It.IsAny<IWinGetPackage>())).Returns(source == "mockMsStore");
         var package = PackageHelper.CreatePackage("mockId");
         package.Setup(p => p.CatalogId).Returns(source);
         package.Setup(p => p.CatalogName).Returns(source);

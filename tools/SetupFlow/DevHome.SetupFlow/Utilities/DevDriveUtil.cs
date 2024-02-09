@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -62,7 +62,7 @@ public static class DevDriveUtil
     /// </summary>
     public static IList<char> DriveLetterCharArray => new List<char>("CDEFGHIJKLMNOPQRSTUVWXYZ");
 
-    public static readonly List<char> InvalidCharactersNotInGetInvalidPathChars = new () { '*', '?', '\"', '<', '>', '|' };
+    public static readonly List<char> InvalidCharactersNotInGetInvalidPathChars = new() { '*', '?', '\"', '<', '>', '|' };
 
     private enum DEVELOPER_DRIVE_ENABLEMENT_STATE
     {

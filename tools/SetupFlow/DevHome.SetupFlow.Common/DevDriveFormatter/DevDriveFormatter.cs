@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.SetupFlow.Common.Helpers;
 using Microsoft.Management.Infrastructure;
@@ -73,7 +73,7 @@ public class DevDriveFormatter
                     break;
                 }
 
-                var notCorrectDriveLetter = (letter is char ) ? ((char)letter).ToString() : "none";
+                var notCorrectDriveLetter = (letter is char) ? ((char)letter).ToString() : "none";
                 Log.Logger?.ReportInfo(Log.Component.DevDrive, nameof(FormatPartitionAsDevDrive), $"CimSession.QueryInstances found ObjectId: {objectId} but its DriveLetter: {notCorrectDriveLetter}: is not correct, continuing search...");
             }
 

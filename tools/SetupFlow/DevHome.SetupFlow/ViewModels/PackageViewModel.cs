@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Threading.Tasks;
@@ -33,8 +33,8 @@ public partial class PackageViewModel : ObservableObject
 {
     private const string PublisherNameNotAvailable = "-";
 
-    private static readonly BitmapImage DefaultLightPackageIconSource = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultLightPackageIcon.png"));
-    private static readonly BitmapImage DefaultDarkPackageIconSource = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultDarkPackageIcon.png"));
+    private static readonly BitmapImage DefaultLightPackageIconSource = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultLightPackageIcon.png"));
+    private static readonly BitmapImage DefaultDarkPackageIconSource = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DefaultDarkPackageIcon.png"));
 
     private readonly Lazy<BitmapImage> _packageDarkThemeIcon;
     private readonly Lazy<BitmapImage> _packageLightThemeIcon;
@@ -75,17 +75,6 @@ public partial class PackageViewModel : ObservableObject
         _screenReaderService = screenReaderService;
         _wingetFactory = wingetFactory;
 
-        // Initialize package view model properties in the constructor to
-        // accelerate fetching the data when bound in the view and to avoid
-        // frequently requesting the values from the proxy COM object
-        Version = _package.Version;
-        Name = _package.Name;
-        IsInstalled = _package.IsInstalled;
-        CatalogName = _package.CatalogName;
-        PublisherName = !string.IsNullOrEmpty(_package.PublisherName) ? _package.PublisherName : PublisherNameNotAvailable;
-        InstallationNotes = _package.InstallationNotes;
-        PackageDescription = GetPackageDescription();
-
         // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
@@ -98,19 +87,19 @@ public partial class PackageViewModel : ObservableObject
 
     public BitmapImage Icon => _themeSelector.IsDarkTheme() ? _packageDarkThemeIcon.Value : _packageLightThemeIcon.Value;
 
-    public string Name { get; }
+    public string Name => _package.Name;
 
-    public string Version { get; }
+    public string Version => _package.Version;
 
-    public bool IsInstalled { get; }
+    public bool IsInstalled => _package.IsInstalled;
 
-    public string CatalogName { get; }
+    public string CatalogName => _package.CatalogName;
 
-    public string PublisherName { get; }
+    public string PublisherName => _package.PublisherName;
 
-    public string InstallationNotes { get; }
+    public string InstallationNotes => _package.InstallationNotes;
 
-    public string PackageDescription { get; }
+    public string PackageDescription => GetPackageDescription();
 
     public string PackageTitle => Name;
 
@@ -151,7 +140,7 @@ public partial class PackageViewModel : ObservableObject
             return _package.PackageUrl;
         }
 
-        if (_package.CatalogId == _wpm.MsStoreId)
+        if (_wpm.IsMsStorePackage(_package))
         {
             return new Uri($"ms-windows-store://pdp/?productid={_package.Id}");
         }
@@ -216,13 +205,13 @@ public partial class PackageViewModel : ObservableObject
     private string GetPackageDescription()
     {
         // Version | Source | Publisher name
-        if (_package.CatalogId != _wpm.MsStoreId && !string.IsNullOrEmpty(_package.PublisherName))
+        if (!_wpm.IsMsStorePackage(_package) && !string.IsNullOrEmpty(_package.PublisherName))
         {
             return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, Version, CatalogName, PublisherName);
         }
 
         // Version | Source
-        if (_package.CatalogId != _wpm.MsStoreId)
+        if (!_wpm.IsMsStorePackage(_package))
         {
             return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, Version, CatalogName);
         }

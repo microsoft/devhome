@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Diagnostics.Tracing;
@@ -8,7 +8,7 @@ using DevHome.Telemetry;
 using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
-namespace DevHome.Dashboard.TelemetryEvents;
+namespace DevHome.ExtensionLibrary.TelemetryEvents;
 
 [EventData]
 public class ReportInstalledExtensionEvent : EventBase

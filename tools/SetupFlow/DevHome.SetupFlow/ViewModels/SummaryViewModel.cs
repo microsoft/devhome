@@ -1,11 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -24,28 +23,25 @@ using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Windows.Storage.Pickers;
 using Windows.System;
-using WinUIEx;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class SummaryViewModel : SetupPageViewModelBase
 {
-    private static readonly BitmapImage DarkError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
-    private static readonly BitmapImage LightError = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
+    private static readonly BitmapImage DarkError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/DarkError.png"));
+    private static readonly BitmapImage LightError = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/LightError.png"));
 
     private readonly SetupFlowOrchestrator _orchestrator;
     private readonly SetupFlowViewModel _setupFlowViewModel;
     private readonly IHost _host;
     private readonly Lazy<IList<ConfigurationUnitResultViewModel>> _configurationUnitResults;
     private readonly ConfigurationUnitResultViewModelFactory _configurationUnitResultViewModelFactory;
-    private readonly IWindowsPackageManager _wpm;
     private readonly PackageProvider _packageProvider;
-    private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
+    private readonly IAppManagementInitializer _appManagementInitializer;
 
     [ObservableProperty]
-    private List<SummaryErrorMessageViewModel> _failedTasks = new ();
+    private List<SummaryErrorMessageViewModel> _failedTasks = new();
 
     [ObservableProperty]
     private Visibility _showRestartNeeded;
@@ -78,7 +74,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
                 {
                     if (task is CloneRepoTask repoTask && repoTask.WasCloningSuccessful)
                     {
-                        repositoriesCloned.Add(new (repoTask.RepositoryToClone));
+                        repositoriesCloned.Add(new(repoTask.RepositoryToClone));
                     }
                 }
             }
@@ -180,20 +176,18 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         SetupFlowViewModel setupFlowViewModel,
         IHost host,
         ConfigurationUnitResultViewModelFactory configurationUnitResultViewModelFactory,
-        IWindowsPackageManager wpm,
-        PackageProvider packageProvider,
-        CatalogDataSourceLoader catalogDataSourceLoader)
+        IAppManagementInitializer appManagementInitializer,
+        PackageProvider packageProvider)
         : base(stringResource, orchestrator)
     {
         _orchestrator = orchestrator;
         _setupFlowViewModel = setupFlowViewModel;
         _host = host;
         _configurationUnitResultViewModelFactory = configurationUnitResultViewModelFactory;
-        _wpm = wpm;
         _packageProvider = packageProvider;
-        _catalogDataSourceLoader = catalogDataSourceLoader;
-        _configurationUnitResults = new (GetConfigurationUnitResults);
+        _configurationUnitResults = new(GetConfigurationUnitResults);
         _showRestartNeeded = Visibility.Collapsed;
+        _appManagementInitializer = appManagementInitializer;
 
         IsNavigationBarVisible = true;
         IsStepPage = false;
@@ -242,18 +236,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
         Log.Logger?.ReportInfo(Log.Component.Summary, $"Checking if a new catalog connections should be established");
         if (_packageProvider.SelectedPackages.Any(package => package.InstallPackageTask.WasInstallSuccessful))
         {
-            await Task.Run(async () =>
-            {
-                Log.Logger?.ReportInfo(Log.Component.Summary, $"Creating a new catalog connections");
-                await _wpm.ConnectToAllCatalogsAsync(force: true);
-
-                Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloading catalogs from all data sources");
-                _catalogDataSourceLoader.Clear();
-                await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
-                {
-                    Log.Logger?.ReportInfo(Log.Component.Summary, $"Reloaded {dataSourceCatalogs.Count} catalog(s)");
-                }
-            });
+            await _appManagementInitializer.ReinitializeAsync();
         }
     }
 
@@ -264,7 +247,7 @@ public partial class SummaryViewModel : SetupPageViewModelBase
     /// <returns>List of configuration unit result</returns>
     private List<ConfigurationUnitResultViewModel> GetConfigurationUnitResults()
     {
-        List<ConfigurationUnitResultViewModel> unitResults = new ();
+        List<ConfigurationUnitResultViewModel> unitResults = new();
         var configTaskGroup = _orchestrator.GetTaskGroup<ConfigurationFileTaskGroup>();
         if (configTaskGroup?.ConfigureTask?.UnitResults != null)
         {

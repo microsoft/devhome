@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.IO;
@@ -20,9 +20,9 @@ namespace DevHome.SetupFlow.Models;
 public partial class CloningInformation : ObservableObject, IEquatable<CloningInformation>
 {
     // Use git icons for the generic provider.
-    private static readonly BitmapImage LightGit = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitLight.png"));
+    private static readonly BitmapImage LightGit = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitLight.png"));
 
-    private static readonly BitmapImage DarkGit = new (new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitDark.png"));
+    private static readonly BitmapImage DarkGit = new(new Uri("ms-appx:///DevHome.SetupFlow/Assets/GitDark.png"));
 
     /// <summary>
     /// Gets a value indicating whether the repo is a private repo.  If changed to "IsPublic" the

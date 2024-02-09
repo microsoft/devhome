@@ -1,11 +1,12 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
 namespace DevHome.Logging.Listeners;
+
 public class DebugListener : ListenerBase
 {
     public DebugListener(string name)

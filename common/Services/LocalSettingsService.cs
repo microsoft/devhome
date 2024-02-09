@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -49,6 +49,25 @@ public class LocalSettingsService : ILocalSettingsService
 
             _isInitialized = true;
         }
+    }
+
+    public async Task<bool> HasSettingAsync(string key)
+    {
+        if (RuntimeHelper.IsMSIX)
+        {
+            return ApplicationData.Current.LocalSettings.Values.ContainsKey(key);
+        }
+        else
+        {
+            await InitializeAsync();
+
+            if (_settings != null)
+            {
+                return _settings.ContainsKey(key);
+            }
+        }
+
+        return false;
     }
 
     public async Task<T?> ReadSettingAsync<T>(string key)

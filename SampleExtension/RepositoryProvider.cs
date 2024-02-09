@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using Microsoft.Windows.DevHome.SDK;
@@ -7,7 +7,7 @@ using Windows.Foundation;
 using Windows.Storage.Streams;
 
 namespace SampleExtension;
-internal class RepositoryProvider : IRepositoryProvider
+internal sealed class RepositoryProvider : IRepositoryProvider
 {
     public string DisplayName => $"Sample {nameof(RepositoryProvider)}";
 

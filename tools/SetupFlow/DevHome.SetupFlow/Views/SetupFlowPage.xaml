@@ -1,4 +1,4 @@
-﻿<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+﻿<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <pg:ToolPage
@@ -15,6 +15,7 @@
     xmlns:views="using:DevHome.SetupFlow.Views"
     xmlns:controls="using:DevHome.SetupFlow.Controls"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
     <Page.Resources>

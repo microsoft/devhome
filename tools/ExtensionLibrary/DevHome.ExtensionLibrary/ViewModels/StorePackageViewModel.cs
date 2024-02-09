@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Threading.Tasks;
@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using Windows.System;
 
 namespace DevHome.ExtensionLibrary.ViewModels;
+
 public partial class StorePackageViewModel : ObservableObject
 {
     [ObservableProperty]
@@ -34,6 +35,6 @@ public partial class StorePackageViewModel : ObservableObject
     public async Task LaunchStoreButton(string packageId)
     {
         var linkString = $"ms-windows-store://pdp/?ProductId={packageId}&mode=mini";
-        await Launcher.LaunchUriAsync(new (linkString));
+        await Launcher.LaunchUriAsync(new(linkString));
     }
 }

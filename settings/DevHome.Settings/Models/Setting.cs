@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Threading.Tasks;
 using DevHome.Common.Contracts;
@@ -8,6 +8,7 @@ using DevHome.Common.Services;
 using Microsoft.UI.Xaml;
 
 namespace DevHome.Settings.Models;
+
 public class Setting
 {
     private bool _isExtensionEnabled;

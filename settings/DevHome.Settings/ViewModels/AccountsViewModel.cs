@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace DevHome.Settings.ViewModels;
 
 public class AccountsViewModel : ObservableObject
 {
-    public ObservableCollection<AccountsProviderViewModel> AccountsProviders { get; } = new ();
+    public ObservableCollection<AccountsProviderViewModel> AccountsProviders { get; } = new();
 
     public AccountsViewModel()
     {
