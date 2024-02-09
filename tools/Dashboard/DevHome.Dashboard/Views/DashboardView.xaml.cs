@@ -20,6 +20,7 @@ using DevHome.Telemetry;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.System;
@@ -587,6 +588,17 @@ public partial class DashboardView : ToolPage
         }
 
         Log.Logger()?.ReportDebug("DashboardView", $"Drop ended");
+    }
+
+    protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+    {
+        Log.Logger()?.ReportDebug("DashboardView", $"Leaving Dashboard, deactivating widgets.");
+
+        // Deactivate widgets if we're not on the Dashboard.
+        foreach (var widget in PinnedWidgets)
+        {
+            widget.UnsubscribeFromWidgetUpdates();
+        }
     }
 
 #if DEBUG

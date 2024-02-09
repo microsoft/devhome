@@ -323,4 +323,9 @@ public partial class WidgetViewModel : ObservableObject
         Log.Logger()?.ReportDebug("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
         await RenderWidgetFrameworkElementAsync();
     }
+
+    public void UnsubscribeFromWidgetUpdates()
+    {
+        Widget.WidgetUpdated -= HandleWidgetUpdated;
+    }
 }
