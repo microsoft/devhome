@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,9 @@ namespace HyperVExtension.DevSetupEngine;
 /// </summary>
 /// <typeparam name="T">Class with a GUID matching COM class GUID.</typeparam>
 [ComVisible(true)]
-internal class DevSetupEngineClassFactory<T> : IClassFactory
+#pragma warning disable SA1649 // File name should match first type name
+internal sealed class DevSetupEngineClassFactory<T> : IClassFactory
+#pragma warning restore SA1649 // File name should match first type name
 {
 #pragma warning disable SA1310 // Field names should not contain underscore
 

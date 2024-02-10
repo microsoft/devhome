@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Helpers;
@@ -11,7 +11,7 @@ namespace HyperVExtension.UnitTest.HyperVExtensionTests.Services;
 [TestClass]
 public class PowerShellServiceTest : HyperVExtensionTestsBase
 {
-    private readonly PSCustomObjectMock _powerShellSessionReturnObject = new ();
+    private readonly PSCustomObjectMock _powerShellSessionReturnObject = new();
 
     [TestMethod]
     public void PowerShellServiceCanRunASingleCommand()
@@ -36,7 +36,7 @@ public class PowerShellServiceTest : HyperVExtensionTestsBase
 
         // Assert
         Assert.IsNotNull(result);
-        Assert.IsFalse(result.CommandOutputErrorMessage?.Any());
+        Assert.IsFalse(result.CommandOutputErrorMessage?.Length > 0);
         var helper = new PsObjectHelper(result.PsObjects.First());
         var actualValue = helper.MemberNameToValue<string>(propertyName);
         Assert.AreEqual(expectedDate, actualValue);
@@ -68,7 +68,7 @@ public class PowerShellServiceTest : HyperVExtensionTestsBase
 
         // Assert
         Assert.IsNotNull(result);
-        Assert.IsFalse(result.CommandOutputErrorMessage?.Any());
+        Assert.IsFalse(result.CommandOutputErrorMessage?.Length > 0);
         var helper = new PsObjectHelper(result.PsObjects.First());
         var actualValue = helper.MemberNameToValue<string>(propertyName);
         Assert.AreEqual(expectedValueTimeZone, actualValue);
@@ -101,7 +101,7 @@ public class PowerShellServiceTest : HyperVExtensionTestsBase
 
         // Assert
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.CommandOutputErrorMessage?.Any());
+        Assert.IsTrue(result.CommandOutputErrorMessage?.Length > 0);
         var actualValue = result.CommandOutputErrorMessage;
         Assert.AreEqual(expectedValueError, actualValue);
     }

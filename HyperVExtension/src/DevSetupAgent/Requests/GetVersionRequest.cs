@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
 
@@ -8,7 +8,7 @@ namespace HyperVExtension.DevSetupAgent;
 /// <summary>
 /// Class used to handle request for service version (RequestType = GetVersion).
 /// </summary>
-internal class GetVersionRequest : RequestBase
+internal sealed class GetVersionRequest : RequestBase
 {
     public GetVersionRequest(IRequestMessage requestMessage, JsonNode jsonData)
         : base(requestMessage, jsonData)

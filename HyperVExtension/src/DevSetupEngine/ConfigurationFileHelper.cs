@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using Microsoft.Management.Configuration.Processor;
 using Windows.Storage.Streams;
@@ -75,7 +75,7 @@ public class ConfigurationFileHelper
         catch (OpenConfigurationSetException ex)
         {
             ConfigurationResultTypes.OpenConfigurationSetResult result =
-                new (ex.OpenConfigurationSetResult.ResultCode, ex.OpenConfigurationSetResult.Field, ex.OpenConfigurationSetResult.Value, ex.OpenConfigurationSetResult.Line, ex.OpenConfigurationSetResult.Column);
+                new(ex.OpenConfigurationSetResult.ResultCode, ex.OpenConfigurationSetResult.Field, ex.OpenConfigurationSetResult.Value, ex.OpenConfigurationSetResult.Line, ex.OpenConfigurationSetResult.Column);
 
             _processor = null;
             _configSet = null;
@@ -84,7 +84,7 @@ public class ConfigurationFileHelper
         catch (Exception ex)
         {
             ConfigurationResultTypes.OpenConfigurationSetResult result =
-                new (ex, string.Empty, string.Empty, 0, 0);
+                new(ex, string.Empty, string.Empty, 0, 0);
 
             _processor = null;
             _configSet = null;
@@ -179,10 +179,12 @@ public class ConfigurationFileHelper
     /// </summary>
     /// <param name="str">Target string</param>
     /// <returns>Input stream</returns>
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
     private IInputStream StringToStream(string str)
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
     {
-        InMemoryRandomAccessStream result = new ();
-        using (DataWriter writer = new (result))
+        InMemoryRandomAccessStream result = new();
+        using (DataWriter writer = new(result))
         {
             writer.UnicodeEncoding = UnicodeEncoding.Utf8;
             writer.WriteString(str);

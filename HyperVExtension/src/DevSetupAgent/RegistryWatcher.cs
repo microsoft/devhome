@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.ComponentModel;
 using System.Reflection;
@@ -23,7 +23,7 @@ internal delegate void RegistryChangedEventHandler();
 /// Utilizes RegNotifyChangeKeyValue Win32 API to watch for registry changes.
 /// Calls RegistryChangedEventHandler delegate when registry change is detected.
 /// </summary>
-internal class RegistryWatcher : IDisposable
+internal sealed class RegistryWatcher : IDisposable
 {
     public event RegistryChangedEventHandler RegistryChanged;
 

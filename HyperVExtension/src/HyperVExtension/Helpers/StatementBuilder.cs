@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using HyperVExtension.Models;
 
@@ -10,7 +10,7 @@ namespace HyperVExtension.Helpers;
 /// </summary>
 public class StatementBuilder
 {
-    private readonly List<PowerShellCommandlineStatement> _powerShellCommandLineStatements = new ();
+    private readonly List<PowerShellCommandlineStatement> _powerShellCommandLineStatements = new();
 
     /// <summary> Adds a new PowerShell commandline statement with only a single command inside.</summary>
     /// <returns>The StatementBuilder object that is being used to contain the commandline statements</returns>
@@ -32,7 +32,7 @@ public class StatementBuilder
             throw new ArgumentException($"Cannot add parameter to the last {nameof(PowerShellCommandlineStatement)} because it was null");
         }
 
-        statement.Parameters.Add(propertyName, propertyValue );
+        statement.Parameters.Add(propertyName, propertyValue);
         return this;
     }
 

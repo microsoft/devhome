@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
 
@@ -8,7 +8,9 @@ namespace HyperVExtension.DevSetupAgent;
 /// <summary>
 /// Class used to handle requests that have no request type. It creates an error response to send back to the client.
 /// </summary>
+#pragma warning disable CA1852 // Seal internal types
 internal class ErrorNoTypeRequest : IHostRequest
+#pragma warning restore CA1852 // Seal internal types
 {
     public ErrorNoTypeRequest(IRequestMessage requestMessage, JsonNode jsonData)
     {

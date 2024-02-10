@@ -1,9 +1,9 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 namespace HyperVExtension;
 
-internal class Constants
+internal sealed class Constants
 {
     public const string WindowsThumbnail = "ms-appx:///HyperVExtension/Assets/hyper-v-windows-default-image.jpg";
 

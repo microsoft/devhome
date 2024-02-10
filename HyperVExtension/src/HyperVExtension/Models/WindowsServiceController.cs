@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.ServiceProcess;
 using DevHome.Logging;
@@ -24,7 +24,7 @@ public class WindowsServiceController : IWindowsServiceController, IDisposable
 
     public WindowsServiceController()
     {
-        _serviceController = new ();
+        _serviceController = new();
     }
 
     public WindowsServiceController(string serviceName)

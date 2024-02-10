@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -14,7 +14,7 @@ public class RequestFactory : IRequestFactory
 {
     public delegate IHostRequest CreateRequestDelegate(IRequestMessage message, JsonNode json);
 
-    private static readonly Dictionary<string, CreateRequestDelegate> _requestFactories = new ()
+    private static readonly Dictionary<string, CreateRequestDelegate> _requestFactories = new()
     {
         // TODO: Define request type constants in one place
         { "GetVersion", (message, json) => new GetVersionRequest(message, json) },

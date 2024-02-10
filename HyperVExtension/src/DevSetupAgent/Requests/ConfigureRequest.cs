@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
 using System.Text.Json.Nodes;
@@ -20,7 +20,7 @@ namespace HyperVExtension.DevSetupAgent;
 ///   "Configure":<WinGet configure yaml>
 /// }
 /// </summary>
-internal class ConfigureRequest : RequestBase
+internal sealed class ConfigureRequest : RequestBase
 {
     public ConfigureRequest(IRequestMessage requestMessage, JsonNode jsonData)
         : base(requestMessage, jsonData)

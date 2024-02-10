@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -13,7 +13,7 @@ namespace HyperVExtension.DevSetupEngine;
 /// </summary>
 internal sealed class ComServer : IDisposable
 {
-    private readonly HashSet<uint> registrationCookies = new ();
+    private readonly HashSet<uint> registrationCookies = new();
 
     public void RegisterComServer<T>(Func<T> createExtension)
     {

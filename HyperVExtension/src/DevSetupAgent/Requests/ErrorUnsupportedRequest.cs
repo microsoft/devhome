@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
 
@@ -8,7 +8,7 @@ namespace HyperVExtension.DevSetupAgent;
 /// <summary>
 /// Class used to handle unsupported requests.
 /// </summary>
-internal class ErrorUnsupportedRequest : RequestBase
+internal sealed class ErrorUnsupportedRequest : RequestBase
 {
     public ErrorUnsupportedRequest(IRequestMessage requestMessage, JsonNode jsonData, string requestType)
         : base(requestMessage, jsonData)

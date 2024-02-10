@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -14,7 +14,7 @@ namespace HyperVExtension.DevSetupEngine;
 [ComVisible(true)]
 [Guid("82E86C64-A8B9-44F9-9323-C37982F2D8BE")]
 [ComDefaultInterface(typeof(IDevSetupEngine))]
-internal class DevSetupEngineImpl : IDevSetupEngine, IDisposable
+internal sealed class DevSetupEngineImpl : IDevSetupEngine, IDisposable
 {
     private bool _disposed;
 
@@ -22,7 +22,7 @@ internal class DevSetupEngineImpl : IDevSetupEngine, IDisposable
     /// Gets the synchronization object that is used to prevent the main program from exiting
     /// until the object is disposed.
     /// </summary>
-    public ManualResetEvent ComServerDisposedEvent { get; } = new (false);
+    public ManualResetEvent ComServerDisposedEvent { get; } = new(false);
 
     public IAsyncOperationWithProgress<IApplyConfigurationResult, IConfigurationSetChangeData> ApplyConfigurationAsync(string content)
     {

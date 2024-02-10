@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,7 +19,7 @@ public class PowerShellService : IPowerShellService, IDisposable
 
     private readonly IPowerShellSession _powerShellSession;
 
-    private readonly object _powerShellSessionLock = new ();
+    private readonly object _powerShellSessionLock = new();
 
     private bool _disposed;
 
@@ -107,13 +107,13 @@ public class PowerShellService : IPowerShellService, IDisposable
     /// <param name="commandLineStatements"> A list of statements that houses a PowerShell command and its parameters or a script.</param>
     private Collection<PSObject> ExecuteIndividualStatements(IEnumerable<PowerShellCommandlineStatement> commandLineStatements)
     {
-        Collection<PSObject> result = new ();
+        Collection<PSObject> result = new();
 
         foreach (var statement in commandLineStatements)
         {
             AddStatementToCommandLine(statement);
             result = _powerShellSession.Invoke();
-            if (_powerShellSession.GetErrorMessages().Any())
+            if (_powerShellSession.GetErrorMessages().Length != 0)
             {
                 break;
             }
@@ -154,7 +154,7 @@ public class PowerShellService : IPowerShellService, IDisposable
             _powerShellSession.AddCommand(statement.Command);
 
             // Add the parameters for the command if any.
-            if (statement.Parameters.Any())
+            if (statement.Parameters.Count != 0)
             {
                 _powerShellSession.AddParameters(statement.Parameters);
             }

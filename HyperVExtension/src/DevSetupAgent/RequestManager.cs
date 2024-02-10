@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using static System.Reflection.Metadata.BlobBuilder;
 
@@ -13,7 +13,7 @@ public class RequestManager : IRequestManager
     private const uint MaxRequestQueueSize = 3;
     private readonly IRequestFactory _requestFactory;
     private readonly IHostChannel _hostChannel;
-    private readonly Queue<IHostRequest> _requestQueue = new ();
+    private readonly Queue<IHostRequest> _requestQueue = new();
     private bool _asyncRequestRunning;
 
     public RequestManager(IRequestFactory requestFactory, IHostChannel hostChannel)

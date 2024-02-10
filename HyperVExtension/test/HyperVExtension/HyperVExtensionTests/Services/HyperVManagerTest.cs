@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.ServiceProcess;
 using HyperVExtension.Common.Extensions;
@@ -141,7 +141,7 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
             {
                 // get two virtual machines.
                 var collectionPsObjects = CreatePSObjectCollection(new PSCustomObjectMock());
-                collectionPsObjects!.Add(new (new PSCustomObjectMock()));
+                collectionPsObjects!.Add(new(new PSCustomObjectMock()));
                 return collectionPsObjects;
             });
 
@@ -329,12 +329,12 @@ public class HyperVManagerTest : HyperVExtensionTestsBase
         var hyperVManager = TestHost.GetService<IHyperVManager>();
         var expectedCheckpointGuid = Guid.NewGuid();
         var checkpoint = CreatePSObjectCollection(new PSCustomObjectMock
-            {
-                Id = expectedCheckpointGuid,
-                Name = "TestCheckpoint",
-                ParentCheckpointId = Guid.NewGuid(),
-                ParentCheckpointName = "TestCheckpointParent",
-            });
+        {
+            Id = expectedCheckpointGuid,
+            Name = "TestCheckpoint",
+            ParentCheckpointId = Guid.NewGuid(),
+            ParentCheckpointName = "TestCheckpointParent",
+        });
         SetupPowerShellSessionInvokeResults()
             .Returns(() => { return CreatePSObjectCollection(PowerShellHyperVModule); })
             .Returns(() =>

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Data;
@@ -92,7 +92,7 @@ public class HyperVVirtualMachine : IComputeSystem
     public HyperVVirtualMachine(IHyperVManager hyperVManager, PSObject psObject)
     {
         _hyperVManager = hyperVManager;
-        _psObjectHelper = new (psObject);
+        _psObjectHelper = new(psObject);
     }
 
     public IEnumerable<HyperVVirtualMachineHardDisk> GetHardDrives()
@@ -499,13 +499,13 @@ public class HyperVVirtualMachine : IComputeSystem
                 // Only specific properties are supported for now.
                 var properties = new List<ComputeSystemProperty>
                 {
-                    new (ProcessorCount, ComputeSystemPropertyKind.CpuCount),
-                    new (MemoryAssigned, ComputeSystemPropertyKind.AssignedMemorySizeInBytes),
-                    new (totalDiskSize, ComputeSystemPropertyKind.StorageSizeInBytes),
-                    new (Uptime, ComputeSystemPropertyKind.UptimeIn100ns),
+                    new(ProcessorCount, ComputeSystemPropertyKind.CpuCount),
+                    new(MemoryAssigned, ComputeSystemPropertyKind.AssignedMemorySizeInBytes),
+                    new(totalDiskSize, ComputeSystemPropertyKind.StorageSizeInBytes),
+                    new(Uptime, ComputeSystemPropertyKind.UptimeIn100ns),
 
                     // TODO: localize this property name.
-                    new ("Current Checkpoint", ParentCheckpointName, ComputeSystemPropertyKind.Generic),
+                    new("Current Checkpoint", ParentCheckpointName, ComputeSystemPropertyKind.Generic),
                 };
 
                 return properties.AsEnumerable();
@@ -534,7 +534,7 @@ public class HyperVVirtualMachine : IComputeSystem
 
     public override string ToString()
     {
-        StringBuilder builder = new ();
+        StringBuilder builder = new();
         builder.AppendLine(CultureInfo.InvariantCulture, $"VM Id: {Id} ");
         builder.AppendLine(CultureInfo.InvariantCulture, $"VM Name: {Name} ");
         builder.AppendLine(CultureInfo.InvariantCulture, $"VM CreationTime: {CreationTime} ");

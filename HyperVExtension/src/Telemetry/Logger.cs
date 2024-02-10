@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ using Microsoft.Win32;
 
 namespace HyperVExtension.Telemetry;
 
-internal class Logger : ILogger
+public class Logger : ILogger
 {
     private const string ProviderName = "Microsoft.HyperVExtension";
 
@@ -42,48 +42,48 @@ internal class Logger : ILogger
     /// Logs telemetry locally, but shouldn't upload it.  Similar to an ETW event.
     /// Should be the same as EventSourceOptions(), as Verbose is the default level.
     /// </summary>
-    private static readonly EventSourceOptions LocalOption = new () { Level = EventLevel.Verbose };
+    private static readonly EventSourceOptions LocalOption = new() { Level = EventLevel.Verbose };
 
     /// <summary>
     /// Logs error telemetry locally, but shouldn't upload it.  Similar to an ETW event.
     /// </summary>
-    private static readonly EventSourceOptions LocalErrorOption = new () { Level = EventLevel.Error };
+    private static readonly EventSourceOptions LocalErrorOption = new() { Level = EventLevel.Error };
 
     /// <summary>
     /// Logs telemetry.
     /// Currently this is at 0% sampling for both internal and external retail devices.
     /// </summary>
-    private static readonly EventSourceOptions InfoOption = new () { Keywords = TelemetryEventSource.TelemetryKeyword };
+    private static readonly EventSourceOptions InfoOption = new() { Keywords = TelemetryEventSource.TelemetryKeyword };
 
     /// <summary>
     /// Logs error telemetry.
     /// Currently this is at 0% sampling for both internal and external retail devices.
     /// </summary>
-    private static readonly EventSourceOptions InfoErrorOption = new () { Level = EventLevel.Error, Keywords = TelemetryEventSource.TelemetryKeyword };
+    private static readonly EventSourceOptions InfoErrorOption = new() { Level = EventLevel.Error, Keywords = TelemetryEventSource.TelemetryKeyword };
 
     /// <summary>
     /// Logs measure telemetry.
     /// This should be sent back on internal devices, and a small, sampled % of external retail devices.
     /// </summary>
-    private static readonly EventSourceOptions MeasureOption = new () { Keywords = TelemetryEventSource.MeasuresKeyword };
+    private static readonly EventSourceOptions MeasureOption = new() { Keywords = TelemetryEventSource.MeasuresKeyword };
 
     /// <summary>
     /// Logs measure error telemetry.
     /// This should be sent back on internal devices, and a small, sampled % of external retail devices.
     /// </summary>
-    private static readonly EventSourceOptions MeasureErrorOption = new () { Level = EventLevel.Error, Keywords = TelemetryEventSource.MeasuresKeyword };
+    private static readonly EventSourceOptions MeasureErrorOption = new() { Level = EventLevel.Error, Keywords = TelemetryEventSource.MeasuresKeyword };
 
     /// <summary>
     /// Logs critical telemetry.
     /// This should be sent back on all devices sampled at 100%.
     /// </summary>
-    private static readonly EventSourceOptions CriticalDataOption = new () { Keywords = TelemetryEventSource.CriticalDataKeyword };
+    private static readonly EventSourceOptions CriticalDataOption = new() { Keywords = TelemetryEventSource.CriticalDataKeyword };
 
     /// <summary>
     /// Logs critical error telemetry.
     /// This should be sent back on all devices sampled at 100%.
     /// </summary>
-    private static readonly EventSourceOptions CriticalDataErrorOption = new () { Level = EventLevel.Error, Keywords = TelemetryEventSource.CriticalDataKeyword };
+    private static readonly EventSourceOptions CriticalDataErrorOption = new() { Level = EventLevel.Error, Keywords = TelemetryEventSource.CriticalDataKeyword };
 
     /// <summary>
     /// ActivityId so we can correlate all events in the same run
@@ -93,7 +93,7 @@ internal class Logger : ILogger
     /// <summary>
     /// List of strings we should try removing for sensitivity reasons.
     /// </summary>
-    private readonly List<KeyValuePair<string, string>> sensitiveStrings = new ();
+    private readonly List<KeyValuePair<string, string>> sensitiveStrings = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Logger"/> class.

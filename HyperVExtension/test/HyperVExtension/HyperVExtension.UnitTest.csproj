@@ -2,6 +2,7 @@
   <Import Project="$(SolutionDir)ToolingVersions.props" />
   <PropertyGroup>
     <RootNamespace>HyperVExtension.UnitTest</RootNamespace>
+	<RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
     <Platforms>x86;x64;arm64</Platforms>
     <IsPackable>false</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -21,7 +22,7 @@
     <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230331000" />
     <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Update="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.4">

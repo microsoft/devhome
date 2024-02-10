@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Security.Claims;
 using System.Security.Principal;
@@ -11,9 +11,9 @@ namespace HyperVExtension.UnitTest.Mocks;
 
 public class WindowsIdentityServiceMock : IWindowsIdentityService
 {
-    public Mock<WindowsIdentityWrapper> WindowsIdentityWrapperMock { get; set; } = new ();
+    public Mock<WindowsIdentityWrapper> WindowsIdentityWrapperMock { get; set; } = new();
 
-    public IdentityReferenceCollection WindowsIdentityGroups { get; set; } = new ();
+    public IdentityReferenceCollection WindowsIdentityGroups { get; set; } = new();
 
     public string SecuritySidIdentifier { get; set; } = HyperVStrings.HyperVAdminGroupWellKnownSid;
 

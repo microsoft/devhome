@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Globalization;
 using System.Text;
@@ -27,7 +27,7 @@ public class HyperVVirtualMachineHardDisk
 
     public override string ToString()
     {
-        StringBuilder builder = new ();
+        StringBuilder builder = new();
         builder.AppendLine(CultureInfo.InvariantCulture, $"VM HardDisk Name: {Name} ");
         builder.AppendLine(CultureInfo.InvariantCulture, $"VM HardDisk VmId: {VmId} ");
         builder.AppendLine(CultureInfo.InvariantCulture, $"VM HardDisk Size : {BytesHelper.ConvertFromBytes(DiskSizeInBytes)} ");

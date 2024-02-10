@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
@@ -16,7 +16,7 @@ public class HyperVProvider : IComputeSystemProvider
 
     public HyperVProvider(IHyperVManager hyperVManager)
     {
-       _hyperVManager = hyperVManager;
+        _hyperVManager = hyperVManager;
     }
 
     /// <summary> Gets or sets the default compute system properties. </summary>
@@ -38,7 +38,7 @@ public class HyperVProvider : IComputeSystemProvider
 
     public Uri? Icon
     {
-        get => new (Constants.ExtensionIcon);
+        get => new(Constants.ExtensionIcon);
         set => throw new NotSupportedException("Setting the icon is not supported");
     }
 

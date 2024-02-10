@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using HyperVExtension.DevSetupEngine.ConfigurationResultTypes;
 using Microsoft.CodeAnalysis.Emit;
@@ -15,7 +15,7 @@ namespace HyperVExtension.DevSetupEngine;
 /// Converts WinGet progress data (IConfigurationSetChangeData) into our own version of IConfigurationSetChangeData
 /// to pass back to the caller.
 /// </summary>
-internal class ApplyConfigurationProgressWatcher
+internal sealed class ApplyConfigurationProgressWatcher
 {
     private readonly IProgress<DevSetupEngineTypes.IConfigurationSetChangeData> _progress;
     private bool _isFirstProgress = true;

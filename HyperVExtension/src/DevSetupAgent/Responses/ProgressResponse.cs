@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Text.Json;
 using Microsoft.Windows.DevHome.DevSetupEngine;
@@ -17,7 +17,7 @@ namespace HyperVExtension.DevSetupAgent;
 ///   <request specific data>
 /// }
 /// </summary>
-internal class ProgressResponse : ResponseBase
+internal sealed class ProgressResponse : ResponseBase
 {
     private readonly ConfigurationSetChangeData _progressData;
 

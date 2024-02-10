@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -53,7 +53,7 @@ namespace HyperVExtension.DevSetupAgent;
 ///   }
 /// }
 /// </summary>
-internal class ConfigureResponse : ResponseBase
+internal sealed class ConfigureResponse : ResponseBase
 {
     private readonly ApplyConfigurationResult _applyConfigurationResult;
 

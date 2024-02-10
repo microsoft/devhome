@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Globalization;
 using System.Text;
@@ -20,7 +20,7 @@ public class PowerShellCommandlineStatement
     public string Command { get; set; } = string.Empty;
 
     /// <summary> Gets or sets the parameters for the PowerShell command. </summary>
-    public Dictionary<string, object> Parameters { get; set; } = new ();
+    public Dictionary<string, object> Parameters { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the script for the PowerShell command line statement.
@@ -45,7 +45,7 @@ public class PowerShellCommandlineStatement
 
     public override string ToString()
     {
-        StringBuilder builder = new ();
+        StringBuilder builder = new();
         builder.AppendLine(CultureInfo.InvariantCulture, $"Command: {Command}");
         builder.AppendLine(CultureInfo.InvariantCulture, $"Parameters: {CreateParameterString()}");
         builder.AppendLine(CultureInfo.InvariantCulture, $"Script: {Script}");
@@ -55,7 +55,7 @@ public class PowerShellCommandlineStatement
 
     private string CreateParameterString()
     {
-        StringBuilder builder = new ();
+        StringBuilder builder = new();
         foreach (var parameter in Parameters)
         {
             builder.AppendLine(CultureInfo.InvariantCulture, $"{parameter.Key} = {parameter.Value}");

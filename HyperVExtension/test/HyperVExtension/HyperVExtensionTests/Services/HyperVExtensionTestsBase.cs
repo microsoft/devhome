@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
 using System.Management.Automation;
@@ -26,7 +26,7 @@ public class HyperVExtensionTestsBase
 
     protected Mock<IPowerShellSession>? MockedPowerShellSession { get; set; }
 
-    protected PSCustomObjectMock PowerShellHyperVModule { get; set; } = new () { Name = string.Empty };
+    protected PSCustomObjectMock PowerShellHyperVModule { get; set; } = new() { Name = string.Empty };
 
     protected ServiceControllerStatus VirtualMachineManagementServiceStatus { get; set; } = ServiceControllerStatus.Running;
 
@@ -65,7 +65,7 @@ public class HyperVExtensionTestsBase
 
         return new Collection<PSObject>
         {
-            new (mockedObject),
+            new(mockedObject),
         };
     }
 

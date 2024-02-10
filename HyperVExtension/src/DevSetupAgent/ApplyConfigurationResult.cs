@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -24,8 +24,8 @@ public class ApplyConfigurationResult
 
     public ApplyConfigurationResult(IApplyConfigurationResult applyConfigurationResult)
     {
-        OpenConfigurationSetResult = new (applyConfigurationResult.OpenConfigurationSetResult);
-        ApplyConfigurationSetResult = new (applyConfigurationResult.ApplyConfigurationSetResult);
+        OpenConfigurationSetResult = new(applyConfigurationResult.OpenConfigurationSetResult);
+        ApplyConfigurationSetResult = new(applyConfigurationResult.ApplyConfigurationSetResult);
     }
 
     public OpenConfigurationSetResult? OpenConfigurationSetResult { get; set; }

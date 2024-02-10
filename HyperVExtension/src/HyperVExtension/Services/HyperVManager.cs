@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Globalization;
 using System.Management.Automation;
@@ -25,7 +25,7 @@ public class HyperVManager : IHyperVManager, IDisposable
 
     private readonly IHost _host;
 
-    private readonly object _operationLock = new ();
+    private readonly object _operationLock = new();
 
     /// <summary>
     /// This dictionary is used so we can map a virtual machines id to the amount of operations
@@ -33,9 +33,9 @@ public class HyperVManager : IHyperVManager, IDisposable
     /// at a time. The manager is still able perform multiple operations at time assuming each operation is
     /// for a differnt virtual machine.
     /// </summary>
-    private readonly Dictionary<Guid, uint> _virtualMachinesToOperateOn = new ();
+    private readonly Dictionary<Guid, uint> _virtualMachinesToOperateOn = new();
 
-    private readonly AutoResetEvent _operationEventForVirtualMachine = new (false);
+    private readonly AutoResetEvent _operationEventForVirtualMachine = new(false);
 
     private const uint _numberOfOperationsToPeformPerVirtualMachine = 1;
 
@@ -401,7 +401,7 @@ public class HyperVManager : IHyperVManager, IDisposable
         {
             // Build command line statement to connect to the VM.
             var commandLineStatements = new StatementBuilder()
-                .AddScript(string.Format(CultureInfo.InvariantCulture, HyperVStrings.VmConnectScript, vmId))
+                .AddScript($"{HyperVStrings.VmConnectScript} {vmId}")
                 .Build();
 
             var result = _powerShellService.Execute(commandLineStatements, PipeType.PipeOutput);
@@ -676,10 +676,10 @@ public class HyperVManager : IHyperVManager, IDisposable
         return stringA?.Equals(stringB, StringComparison.OrdinalIgnoreCase) ?? false;
     }
 
-     /// <summary>
-     /// Helper method that executes a list of PowerShell commandline statements
-     /// and returns the given T object or its default value.
-     /// </summary>
+    /// <summary>
+    /// Helper method that executes a list of PowerShell commandline statements
+    /// and returns the given T object or its default value.
+    /// </summary>
     private T? ExecuteAndReturnObject<T>(List<PowerShellCommandlineStatement> statements, PipeType pipeType)
     {
         var result = _powerShellService.Execute(statements, pipeType);

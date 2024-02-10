@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
 using System.Management.Automation;
@@ -10,7 +10,7 @@ namespace HyperVExtension.Models;
 public class PowerShellResult : PowerShellResultBase
 {
     /// <inheritdoc cref="PowerShellResultBase.PsObject"/>
-    public override Collection<PSObject> PsObjects { get; set; } = new ();
+    public override Collection<PSObject> PsObjects { get; set; } = new();
 
     /// <inheritdoc cref="PowerShellResultBase.CommandOutputErrorMessage"/>
     public override string CommandOutputErrorMessage { get; set; } = string.Empty;

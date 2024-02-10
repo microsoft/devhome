@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.Concurrent;
 using DevHome.Logging.Helpers;
@@ -45,9 +45,9 @@ public class Logger : ILoggerHost, IDisposable
         Dispose();
     }
 
-    private readonly BlockingCollection<LogEvent> eventQueue = new (new ConcurrentQueue<LogEvent>());
+    private readonly BlockingCollection<LogEvent> eventQueue = new(new ConcurrentQueue<LogEvent>());
 
-    private readonly ManualResetEvent processorCanceledEvent = new (true);
+    private readonly ManualResetEvent processorCanceledEvent = new(true);
 
     private CancellationTokenSource? cancelTokenSource;
 

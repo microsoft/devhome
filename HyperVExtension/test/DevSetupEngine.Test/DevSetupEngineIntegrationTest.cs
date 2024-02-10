@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -114,7 +114,7 @@ properties:
         Ensure: Present
   configurationVersion: 0.2.0";
 
-            Dictionary<string, Dictionary<ConfigurationUnitState, bool>> progressResults = new ()
+            Dictionary<string, Dictionary<ConfigurationUnitState, bool>> progressResults = new()
             {
                 { "OsVersion", new Dictionary<ConfigurationUnitState, bool>() { { ConfigurationUnitState.Pending, false }, { ConfigurationUnitState.InProgress, false }, { ConfigurationUnitState.Completed, false } } },
                 { "DeveloperMode", new Dictionary<ConfigurationUnitState, bool>() { { ConfigurationUnitState.Pending, false }, { ConfigurationUnitState.InProgress, false }, { ConfigurationUnitState.Completed, false } } },

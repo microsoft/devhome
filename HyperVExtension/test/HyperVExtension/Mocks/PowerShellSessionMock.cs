@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -10,7 +10,7 @@ namespace HyperVExtension.UnitTest.Mocks;
 
 public class PowerShellSessionMock : IPowerShellSession
 {
-    public Collection<PSObject> TestResultCollection { get; set; } = new ();
+    public Collection<PSObject> TestResultCollection { get; set; } = new();
 
     public string ErrorText { get; set; } = string.Empty;
 

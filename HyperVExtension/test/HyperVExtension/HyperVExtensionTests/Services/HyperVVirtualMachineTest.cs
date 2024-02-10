@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
 using System.Management.Automation;
@@ -19,13 +19,13 @@ namespace HyperVExtension.UnitTest.HyperVExtensionTests.Services;
 [TestClass]
 public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
 {
-    private readonly PSCustomObjectMock _psVirtualMachineObject = new ()
+    private readonly PSCustomObjectMock _psVirtualMachineObject = new()
     {
         Id = Guid.Parse("be3776d4-5082-4ca6-b352-58543365ba2d"),
         ParentCheckpointId = Guid.Parse("bcd583ed-f857-4182-9f77-d13ccb6032f2"),
     };
 
-    private readonly Checkpoint _psCheckpointAfterItWasCreated = new ()
+    private readonly Checkpoint _psCheckpointAfterItWasCreated = new()
     {
         ParentCheckpointId = Guid.Parse("bcd583ed-f857-4182-9f77-d13ccb6032f2"),
         ParentCheckpointName = "ParentCheckPoint",
@@ -33,13 +33,13 @@ public class HyperVVirtualMachineTest : HyperVExtensionTestsBase
         Name = "CurrentCheckPoint",
     };
 
-    private readonly Checkpoint _psVirtualMachineObjectAfterDeletingCheckpoint = new ()
+    private readonly Checkpoint _psVirtualMachineObjectAfterDeletingCheckpoint = new()
     {
         Id = Guid.Parse("be3776d4-5082-4ca6-b352-58543365ba2d"),
         ParentCheckpointId = Guid.Parse("00000000-0000-0000-0000-000000000000"),
     };
 
-    private readonly PSCustomObjectMock _psVirtualMachineObjectAfterDeletion = new ()
+    private readonly PSCustomObjectMock _psVirtualMachineObjectAfterDeletion = new()
     {
         IsDeleted = true,
     };

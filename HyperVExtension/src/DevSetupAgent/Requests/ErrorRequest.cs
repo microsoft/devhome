@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Text.Json.Nodes;
 
@@ -9,7 +9,7 @@ namespace HyperVExtension.DevSetupAgent;
 /// Class used to handle invalid requests (for example an exception while parsing request JSON).
 /// It creates an error response to send back to the client.
 /// </summary>
-internal class ErrorRequest : RequestBase
+internal sealed class ErrorRequest : RequestBase
 {
     public ErrorRequest(IRequestMessage requestMessage, JsonNode jsonData)
         : base(requestMessage, jsonData)

@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
 using HyperVExtension.Common.Extensions;
@@ -25,7 +25,7 @@ public sealed class HyperVExtension : IExtension, IDisposable
     /// Gets the synchronization object that is used to prevent the main program from exiting
     /// until the extension is disposed.
     /// </summary>
-    public ManualResetEvent ExtensionDisposedEvent { get; } = new (false);
+    public ManualResetEvent ExtensionDisposedEvent { get; } = new(false);
 
     /// <summary>
     /// Gets provider object for the specified provider type.
@@ -45,9 +45,6 @@ public sealed class HyperVExtension : IExtension, IDisposable
         {
             switch (providerType)
             {
-                case ProviderType.Settings:
-                    provider = _host.GetService<ISettingsProvider>();
-                    break;
                 case ProviderType.ComputeSystem:
                     provider = _host.GetService<IComputeSystemProvider>();
                     break;

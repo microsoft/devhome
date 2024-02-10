@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using HyperVExtension.DevSetupEngine;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace HyperVExtension.DevSetupEngine;
 
-internal class Program
+internal sealed class Program
 {
     public static IHost? Host
     {

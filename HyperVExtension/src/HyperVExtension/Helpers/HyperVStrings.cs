@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 namespace HyperVExtension.Helpers;
 
@@ -77,5 +77,5 @@ public static class HyperVStrings
     public const string SavedState = "Saved";
 
     // Hyper-V scripts
-    public const string VmConnectScript = "vmconnect.exe localhost -G {0}";
+    public const string VmConnectScript = "vmconnect.exe localhost -G";
 }
