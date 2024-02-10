@@ -28,7 +28,8 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
     }
 
     /// <inheritdoc />
-    public async Task<InstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId)
+    /// TODO: Consider using install options instead of 'version' parameter
+    public async Task<InstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version)
     {
         if (catalog == null)
         {
@@ -45,7 +46,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
 
         // 2. Install package
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting package installation for {packageId} from catalog {catalog.GetDescriptiveName()}");
-        var installResult = await InstallPackageInternalAsync(package);
+        var installResult = await InstallPackageInternalAsync(package, version);
         var extendedErrorCode = installResult.ExtendedErrorCode?.HResult ?? HRESULT.S_OK;
         var installErrorCode = installResult.GetValueOrDefault(res => res.InstallerErrorCode, HRESULT.S_OK); // WPM API V4
 
@@ -69,11 +70,42 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
     /// </summary>
     /// <param name="package">Package to install</param>
     /// <returns>Install result</returns>
-    private async Task<InstallResult> InstallPackageInternalAsync(CatalogPackage package)
+    private async Task<InstallResult> InstallPackageInternalAsync(CatalogPackage package, string version)
     {
         var installOptions = _wingetFactory.CreateInstallOptions();
         installOptions.PackageInstallMode = PackageInstallMode.Silent;
+        if (TryFindVersion(package, version, out var versionId))
+        {
+            installOptions.PackageVersionId = versionId;
+        }
+        else
+        {
+            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Specified version not found '{version}'. Falling back to default install version {package.DefaultInstallVersion.Version}");
+        }
+
         var packageManager = _wingetFactory.CreatePackageManager();
         return await packageManager.InstallPackageAsync(package, installOptions).AsTask();
+    }
+
+    /// <summary>
+    /// Try to find a specific version in the list of available versions for a package.
+    /// </summary>
+    /// <param name="package">Target package</param>
+    /// <param name="version">Version to find</param>
+    /// <param name="versionId">Found version</param>
+    /// <returns>True if the version was found, false otherwise</returns>
+    private bool TryFindVersion(CatalogPackage package, string version, out PackageVersionId versionId)
+    {
+        for (var i = 0; i < package.AvailableVersions.Count; i++)
+        {
+            if (package.AvailableVersions[i].Version == version)
+            {
+                versionId = package.AvailableVersions[i];
+                return true;
+            }
+        }
+
+        versionId = null;
+        return false;
     }
 }

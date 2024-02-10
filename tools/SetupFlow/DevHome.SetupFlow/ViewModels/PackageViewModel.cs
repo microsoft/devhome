@@ -2,13 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
-using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using Microsoft.Extensions.Hosting;
@@ -45,7 +45,6 @@ public partial class PackageViewModel : ObservableObject
     private readonly IWindowsPackageManager _wpm;
     private readonly IThemeSelectorService _themeSelector;
     private readonly IScreenReaderService _screenReaderService;
-    private readonly WindowsPackageManagerFactory _wingetFactory;
 
     /// <summary>
     /// Occurs after the package selection changes
@@ -59,13 +58,17 @@ public partial class PackageViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(ButtonAutomationName))]
     private bool _isSelected;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TooltipVersion))]
+    [NotifyPropertyChangedFor(nameof(PackageDescription))]
+    private string _selectedVersion;
+
     public PackageViewModel(
         ISetupFlowStringResource stringResource,
         IWindowsPackageManager wpm,
         IWinGetPackage package,
         IThemeSelectorService themeSelector,
         IScreenReaderService screenReaderService,
-        WindowsPackageManagerFactory wingetFactory,
         IHost host)
     {
         _stringResource = stringResource;
@@ -73,12 +76,13 @@ public partial class PackageViewModel : ObservableObject
         _package = package;
         _themeSelector = themeSelector;
         _screenReaderService = screenReaderService;
-        _wingetFactory = wingetFactory;
 
         // Lazy-initialize optional or expensive view model members
         _packageDarkThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Dark));
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
-        _installPackageTask = new Lazy<InstallPackageTask>(CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
+        _installPackageTask = new Lazy<InstallPackageTask>(() => CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
+
+        SelectedVersion = !string.IsNullOrEmpty(_package.InstalledVersion) ? _package.InstalledVersion : _package.AvailableVersions[0];
     }
 
     public PackageUniqueKey UniqueKey => _package.UniqueKey;
@@ -89,7 +93,7 @@ public partial class PackageViewModel : ObservableObject
 
     public string Name => _package.Name;
 
-    public string Version => _package.Version;
+    public IReadOnlyList<string> AvailableVersions => _package.AvailableVersions;
 
     public bool IsInstalled => _package.IsInstalled;
 
@@ -105,7 +109,7 @@ public partial class PackageViewModel : ObservableObject
 
     public string TooltipName => _stringResource.GetLocalized(StringResourceKey.PackageNameTooltip, Name);
 
-    public string TooltipVersion => _stringResource.GetLocalized(StringResourceKey.PackageVersionTooltip, Version);
+    public string TooltipVersion => _stringResource.GetLocalized(StringResourceKey.PackageVersionTooltip, SelectedVersion);
 
     public string TooltipIsInstalled => IsInstalled ? _stringResource.GetLocalized(StringResourceKey.PackageInstalledTooltip) : string.Empty;
 
@@ -199,7 +203,7 @@ public partial class PackageViewModel : ObservableObject
 
     private InstallPackageTask CreateInstallTask(Guid activityId)
     {
-        return _package.CreateInstallTask(_wpm, _stringResource, _wingetFactory, activityId);
+        return _package.CreateInstallTask(_wpm, _stringResource, SelectedVersion, activityId);
     }
 
     private string GetPackageDescription()
@@ -207,13 +211,13 @@ public partial class PackageViewModel : ObservableObject
         // Version | Source | Publisher name
         if (!_wpm.IsMsStorePackage(_package) && !string.IsNullOrEmpty(_package.PublisherName))
         {
-            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, Version, CatalogName, PublisherName);
+            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, SelectedVersion, CatalogName, PublisherName);
         }
 
         // Version | Source
         if (!_wpm.IsMsStorePackage(_package))
         {
-            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, Version, CatalogName);
+            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, SelectedVersion, CatalogName);
         }
 
         // Source | Publisher name

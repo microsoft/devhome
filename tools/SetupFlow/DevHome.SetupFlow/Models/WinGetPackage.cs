@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using DevHome.SetupFlow.Common.Helpers;
-using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
 using Microsoft.Management.Deployment;
 using Windows.Storage.Streams;
@@ -28,7 +29,8 @@ public class WinGetPackage : IWinGetPackage
         CatalogName = package.DefaultInstallVersion.PackageCatalog.Info.Name;
         UniqueKey = new(Id, CatalogId);
         Name = package.Name;
-        Version = package.DefaultInstallVersion.Version;
+        InstalledVersion = package.InstalledVersion.Version;
+        AvailableVersions = package.AvailableVersions.Select(v => v.Version).ToList();
         IsInstalled = package.InstalledVersion != null;
         IsElevationRequired = requiresElevated;
         PackageUrl = GetMetadataValue(package, metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null);
@@ -47,7 +49,9 @@ public class WinGetPackage : IWinGetPackage
 
     public string Name { get; }
 
-    public string Version { get; }
+    public string InstalledVersion { get; }
+
+    public IReadOnlyList<string> AvailableVersions { get; }
 
     public bool IsInstalled { get; }
 
@@ -68,7 +72,7 @@ public class WinGetPackage : IWinGetPackage
     public InstallPackageTask CreateInstallTask(
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory,
+        string version,
         Guid activityId) => new(wpm, stringResource, this, activityId);
 
     /// <summary>

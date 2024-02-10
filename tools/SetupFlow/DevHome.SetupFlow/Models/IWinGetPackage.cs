@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using DevHome.SetupFlow.Common.WindowsPackageManager;
 using DevHome.SetupFlow.Services;
 using Windows.Storage.Streams;
@@ -57,11 +58,17 @@ public interface IWinGetPackage
     }
 
     /// <summary>
-    /// Gets the version of the package which could be of any format supported
-    /// by WinGet package manager (e.g. alpha-numeric, 'Unknown', '1-preview, etc...).
-    /// <seealso cref="https://github.com/microsoft/winget-cli/blob/master/src/Microsoft.Management.Deployment/PackageManager.idl"/>
+    /// Gets the installed version of the package or null if the package is not installed
     /// </summary>
-    public string Version
+    public string InstalledVersion
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Gets the list of available versions for the package
+    /// </summary>
+    public IReadOnlyList<string> AvailableVersions
     {
         get;
     }
@@ -127,12 +134,13 @@ public interface IWinGetPackage
     /// </summary>
     /// <param name="wpm">Windows package manager service</param>
     /// <param name="stringResource">String resource service</param>
-    /// <param name="wingetFactory">WinGet factory</param>
+    /// <param name="version">Version to install</param>
+    /// <param name="activityId">Activity id</param>
     /// <returns>Task object for installing this package</returns>
     InstallPackageTask CreateInstallTask(
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        WindowsPackageManagerFactory wingetFactory,
+        string version,
         Guid activityId);
 }
 

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Models;
@@ -25,10 +24,10 @@ internal sealed class WinGetOperations : IWinGetOperations
     }
 
     /// <inheritdoc />
-    public async Task<InstallPackageResult> InstallPackageAsync(IWinGetPackage package) => await _installOperation.InstallPackageAsync(package);
+    public async Task<InstallPackageResult> InstallPackageAsync(WinGetPackageUri packageUri) => await _installOperation.InstallPackageAsync(packageUri);
 
     /// <inheritdoc />
-    public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<Uri> packageUris) => await _getPackageOperation.GetPackagesAsync(packageUris);
+    public async Task<IList<IWinGetPackage>> GetPackagesAsync(IList<WinGetPackageUri> packageUris) => await _getPackageOperation.GetPackagesAsync(packageUris);
 
     /// <inheritdoc />
     public async Task<IList<IWinGetPackage>> SearchAsync(string query, uint limit) => await _searchOperation.SearchAsync(query, limit);

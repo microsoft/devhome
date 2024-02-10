@@ -39,7 +39,7 @@
             </ItemsRepeater.Layout>
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                    <views:PackageView MinHeight="140" />
+                    <views:PackageView MinHeight="150" />
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
         </ItemsRepeater>

@@ -13,7 +13,7 @@ namespace DevHome.SetupFlow.Models;
 /// <param name="options">Uri options</param>
 public class WinGetPackageUri
 {
-    private WinGetPackageUri(string catalogName, string packageId, WinGetPackageUriOptions options = null)
+    internal WinGetPackageUri(string catalogName, string packageId, WinGetPackageUriOptions options = null)
     {
         CatalogName = catalogName;
         PackageId = packageId;
