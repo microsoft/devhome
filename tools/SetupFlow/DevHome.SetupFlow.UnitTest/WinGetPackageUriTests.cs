@@ -170,4 +170,29 @@ public class WinGetPackageUriTests
         // Assert
         Assert.IsTrue(result);
     }
+
+    [TestMethod]
+    [DataRow("x-ms-winget://catalog/package")]
+    [DataRow("x-ms-winget://catalog/package?version=1")]
+    public void Constructor_ValidUri_InitializesProperties(string uri)
+    {
+        // Act
+        var packageUri = new WinGetPackageUri(uri);
+
+        // Assert
+        Assert.AreEqual("catalog", packageUri.CatalogName);
+        Assert.AreEqual("package", packageUri.PackageId);
+        Assert.IsNotNull(packageUri.Options);
+    }
+
+    [TestMethod]
+    [DataRow("https://catalog/package")]
+    [DataRow("x-ms-winget://catalog?version=1")]
+    [DataRow("x-ms-winget://")]
+    [DataRow("x-ms-winget://?version=1")]
+    public void Constructor_InvalidUri_ThrowsException(string uri)
+    {
+        // Act/Assert
+        Assert.ThrowsException<UriFormatException>(() => new WinGetPackageUri(uri));
+    }
 }
