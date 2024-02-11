@@ -93,6 +93,8 @@ public partial class PackageViewModel : ObservableObject
 
     public string Name => _package.Name;
 
+    public string InstalledVersion => _package.InstalledVersion;
+
     public IReadOnlyList<string> AvailableVersions => _package.AvailableVersions;
 
     public bool IsInstalled => _package.IsInstalled;

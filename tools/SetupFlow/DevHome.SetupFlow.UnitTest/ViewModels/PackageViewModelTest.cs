@@ -29,7 +29,7 @@ public class PackageViewModelTest : BaseSetupFlowTest
         for (var i = 0; i < expectedPackages.Count; ++i)
         {
             Assert.AreEqual(expectedPackages[i].Name, packages[i].Name);
-            Assert.AreEqual(expectedPackages[i].Version, packages[i].Version);
+            Assert.AreEqual(expectedPackages[i].InstalledVersion, packages[i].InstalledVersion);
         }
     }
 
@@ -88,7 +88,7 @@ public class PackageViewModelTest : BaseSetupFlowTest
         package.Setup(p => p.CatalogId).Returns(source);
         package.Setup(p => p.CatalogName).Returns(source);
         package.Setup(p => p.PublisherName).Returns(publisher);
-        package.Setup(p => p.Version).Returns(version);
+        package.Setup(p => p.InstalledVersion).Returns(version);
         StringResource
             .Setup(sr => sr.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, It.IsAny<object[]>()))
             .Returns((string key, object[] args) => $"{args[0]} | {args[1]} | {args[2]}");

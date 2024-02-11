@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Web;
 
 namespace DevHome.SetupFlow.Models;
@@ -13,20 +14,27 @@ public sealed class WinGetPackageUriOptions
     // Query parameter names
     private const string VersionQueryParameter = "version";
 
-    internal WinGetPackageUriOptions(string packageUriQuery = null)
+    public WinGetPackageUriOptions(string version = null)
     {
-        var queryParams = HttpUtility.ParseQueryString(packageUriQuery ?? string.Empty);
-        Version = queryParams.Get(VersionQueryParameter) ?? string.Empty;
+        Version = version;
+    }
+
+    internal WinGetPackageUriOptions(Uri packageUri)
+    {
+        var queryParams = HttpUtility.ParseQueryString(packageUri.Query);
+        Version = queryParams.Get(VersionQueryParameter);
     }
 
     public string Version { get; }
+
+    public bool VersionSpecified => !string.IsNullOrWhiteSpace(Version);
 
     public string ToString(WinGetPackageUriParameters includeParameters)
     {
         var queryParams = HttpUtility.ParseQueryString(string.Empty);
 
         // Add version
-        if (includeParameters.HasFlag(WinGetPackageUriParameters.Version) && !string.IsNullOrWhiteSpace(Version))
+        if (includeParameters.HasFlag(WinGetPackageUriParameters.Version) && VersionSpecified)
         {
             queryParams.Add(VersionQueryParameter, Version);
         }

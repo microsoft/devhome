@@ -134,13 +134,13 @@ public interface IWinGetPackage
     /// </summary>
     /// <param name="wpm">Windows package manager service</param>
     /// <param name="stringResource">String resource service</param>
-    /// <param name="version">Version to install</param>
+    /// <param name="installVersion">Version to install</param>
     /// <param name="activityId">Activity id</param>
     /// <returns>Task object for installing this package</returns>
     InstallPackageTask CreateInstallTask(
         IWindowsPackageManager wpm,
         ISetupFlowStringResource stringResource,
-        string version,
+        string installVersion,
         Guid activityId);
 }
 
