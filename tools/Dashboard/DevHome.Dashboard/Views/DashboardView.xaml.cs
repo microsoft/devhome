@@ -120,19 +120,25 @@ public partial class DashboardView : ToolPage
         if (ViewModel.WidgetHostingService.CheckForWidgetServiceAsync())
         {
             ViewModel.HasWidgetService = true;
-            await SubscribeToWidgetCatalogEventsAsync();
-
-            // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
-            await ViewModel.WidgetIconService.CacheAllWidgetIconsAsync();
-
-            var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun));
-            Log.Logger()?.ReportInfo("DashboardView", $"Is first dashboard run = {isFirstDashboardRun}");
-            if (isFirstDashboardRun)
+            if (await SubscribeToWidgetCatalogEventsAsync())
             {
-                await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
-            }
+                // Cache the widget icons before we display the widgets, since we include the icons in the widgets.
+                await ViewModel.WidgetIconService.CacheAllWidgetIconsAsync();
 
-            await InitializePinnedWidgetListAsync(isFirstDashboardRun);
+                var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun));
+                Log.Logger()?.ReportInfo("DashboardView", $"Is first dashboard run = {isFirstDashboardRun}");
+                if (isFirstDashboardRun)
+                {
+                    await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
+                }
+
+                await InitializePinnedWidgetListAsync(isFirstDashboardRun);
+            }
+            else
+            {
+                Log.Logger()?.ReportError("DashboardView", $"Catalog event subscriptions failed, show error");
+                RestartDevHomeMessageStackPanel.Visibility = Visibility.Visible;
+            }
         }
         else
         {
