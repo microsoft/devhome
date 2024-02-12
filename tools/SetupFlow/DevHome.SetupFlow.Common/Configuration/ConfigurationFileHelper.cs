@@ -1,9 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DevHome.SetupFlow.Common.Exceptions;
@@ -11,7 +9,6 @@ using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Common.TelemetryEvents;
 using DevHome.Telemetry;
 using Microsoft.Management.Configuration;
-using Microsoft.Management.Configuration.Processor;
 using Windows.Storage;
 using Windows.Storage.Streams;
 
@@ -42,6 +39,7 @@ public class ConfigurationFileHelper
         }
     }
 
+    private const string PowerShellHandlerIdentifier = "pwsh";
     private readonly Guid _activityId;
     private ConfigurationProcessor _processor;
     private ConfigurationSet _configSet;
@@ -60,40 +58,8 @@ public class ConfigurationFileHelper
     {
         try
         {
-            var file = await StorageFile.GetFileFromPathAsync(filePath);
-            var modulesPath = Path.Combine(AppContext.BaseDirectory, @"runtimes\win\lib\net6.0\Modules");
-            var externalModulesPath = Path.Combine(AppContext.BaseDirectory, "ExternalModules");
-            var properties = new ConfigurationProcessorFactoryProperties();
-            properties.Policy = ConfigurationProcessorPolicy.Unrestricted;
-            properties.AdditionalModulePaths = new List<string>() { modulesPath, externalModulesPath };
-            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Additional module paths: {string.Join(", ", properties.AdditionalModulePaths)}");
-            var factory = new ConfigurationSetProcessorFactory(ConfigurationProcessorType.Hosted, properties);
-
-            _processor = new ConfigurationProcessor(factory);
-            _processor.MinimumLevel = DiagnosticLevel.Verbose;
-            _processor.Diagnostics += (sender, args) => LogConfigurationDiagnostics(args);
-            _processor.Caller = nameof(DevHome);
-
-            Log.Logger?.ReportInfo(Log.Component.Configuration, $"Opening configuration set from path {file.Path}");
-            var parentDir = await file.GetParentAsync();
-
-            // Instead of reading the file content from the file path, use the
-            // 'content' input parameter to ensure the data has not changed at
-            // runtime on disk (important when running elevated)
-            var inputStream = StringToStream(content);
-            var openResult = _processor.OpenConfigurationSet(inputStream);
-            _configSet = openResult.Set;
-            if (_configSet == null)
-            {
-                throw new OpenConfigurationSetException(openResult.ResultCode, openResult.Field);
-            }
-
-            // Set input file path in the configuration set to inform the
-            // processor about the working directory when applying the
-            // configuration
-            _configSet.Name = file.Name;
-            _configSet.Origin = parentDir.Path;
-            _configSet.Path = file.Path;
+            _processor = await CreateConfigurationProcessorAsync();
+            _configSet = await OpenConfigurationSetInternalAsync(_processor, filePath, content);
         }
         catch
         {
@@ -101,6 +67,24 @@ public class ConfigurationFileHelper
             _configSet = null;
             throw;
         }
+    }
+
+    private async Task<ConfigurationSet> OpenConfigurationSetInternalAsync(ConfigurationProcessor processor, string filePath, string content)
+    {
+        var file = await StorageFile.GetFileFromPathAsync(filePath);
+        var parentDir = await file.GetParentAsync();
+        var inputStream = StringToStream(content);
+
+        var openConfigResult = processor.OpenConfigurationSet(inputStream);
+        var configSet = openConfigResult.Set ?? throw new OpenConfigurationSetException(openConfigResult.ResultCode, openConfigResult.Field, openConfigResult.Value);
+
+        // Set input file path in the configuration set to inform the
+        // processor about the working directory when applying the
+        // configuration
+        configSet.Name = file.Name;
+        configSet.Origin = parentDir.Path;
+        configSet.Path = file.Path;
+        return configSet;
     }
 
     public async Task<ApplicationResult> ApplyConfigurationAsync()
@@ -124,7 +108,29 @@ public class ConfigurationFileHelper
         return new ApplicationResult(result);
     }
 
-    private void LogConfigurationDiagnostics(DiagnosticInformation diagnosticInformation)
+    /// <summary>
+    /// Create and configure the configuration processor.
+    /// </summary>
+    /// <returns>Configuration processor</returns>
+    private async Task<ConfigurationProcessor> CreateConfigurationProcessorAsync()
+    {
+        ConfigurationStaticFunctions config = new();
+        var factory = await config.CreateConfigurationSetProcessorFactoryAsync(PowerShellHandlerIdentifier).AsTask();
+
+        // Create and configure the configuration processor.
+        var processor = config.CreateConfigurationProcessor(factory);
+        processor.Caller = nameof(DevHome);
+        processor.Diagnostics += LogConfigurationDiagnostics;
+        processor.MinimumLevel = DiagnosticLevel.Verbose;
+        return processor;
+    }
+
+    /// <summary>
+    /// Log configuration diagnostics event handler
+    /// </summary>
+    /// <param name="sender">Event sender</param>
+    /// <param name="diagnosticInformation">Diagnostic information</param>
+    private void LogConfigurationDiagnostics(object sender, IDiagnosticInformation diagnosticInformation)
     {
         var sourceComponent = nameof(ConfigurationProcessor);
         switch (diagnosticInformation.Level)
@@ -151,10 +157,10 @@ public class ConfigurationFileHelper
     /// </summary>
     /// <param name="str">Target string</param>
     /// <returns>Input stream</returns>
-    private IInputStream StringToStream(string str)
+    private InMemoryRandomAccessStream StringToStream(string str)
     {
-        InMemoryRandomAccessStream result = new ();
-        using (DataWriter writer = new (result))
+        InMemoryRandomAccessStream result = new();
+        using (DataWriter writer = new(result))
         {
             writer.UnicodeEncoding = UnicodeEncoding.Utf8;
             writer.WriteString(str);

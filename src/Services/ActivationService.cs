@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Activation;
 using DevHome.Common.Contracts;
@@ -13,7 +13,6 @@ namespace DevHome.Services;
 
 public class ActivationService : IActivationService
 {
-    private readonly ActivationHandler<LaunchActivatedEventArgs> _defaultHandler;
     private readonly IEnumerable<IActivationHandler> _activationHandlers;
     private readonly IThemeSelectorService _themeSelectorService;
     private readonly ILocalSettingsService _localSettingsService;
@@ -21,12 +20,10 @@ public class ActivationService : IActivationService
     private bool _isInitialActivation = true;
 
     public ActivationService(
-        ActivationHandler<LaunchActivatedEventArgs> defaultHandler,
         IEnumerable<IActivationHandler> activationHandlers,
         IThemeSelectorService themeSelectorService,
         ILocalSettingsService localSettingsService)
     {
-        _defaultHandler = defaultHandler;
         _activationHandlers = activationHandlers;
         _themeSelectorService = themeSelectorService;
         _localSettingsService = localSettingsService;
@@ -42,6 +39,8 @@ public class ActivationService : IActivationService
             await InitializeAsync();
 
             // Set the MainWindow Content.
+            // We can skip the initialization page if it's not our first run.
+            // If it is the first run, we may have to install an extension or the widget service.
             App.MainWindow.Content = await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstRun)
                 ? Application.Current.GetService<ShellPage>()
                 : Application.Current.GetService<InitializationPage>();

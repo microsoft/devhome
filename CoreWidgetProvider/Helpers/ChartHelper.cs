@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Globalization;
 using System.Text;
@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal class ChartHelper
+internal sealed class ChartHelper
 {
     public enum ChartType
     {

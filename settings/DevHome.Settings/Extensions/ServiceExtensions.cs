@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Settings.ViewModels;
 using DevHome.Settings.Views;
@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace DevHome.Settings.Extensions;
+
 public static class ServiceExtensions
 {
     public static IServiceCollection AddSettings(this IServiceCollection services, HostBuilderContext context)

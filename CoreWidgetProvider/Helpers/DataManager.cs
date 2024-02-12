@@ -1,11 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using Timer = System.Timers.Timer;
 
 namespace CoreWidgetProvider.Helpers;
 
-internal class DataManager : IDisposable
+internal sealed class DataManager : IDisposable
 {
     private readonly SystemData systemData;
     private readonly DataType dataType;

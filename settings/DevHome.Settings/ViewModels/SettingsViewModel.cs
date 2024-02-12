@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -43,7 +43,7 @@ public partial class SettingViewModel : ObservableObject
 public partial class SettingsViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<SettingViewModel> _settingsList = new ();
+    private ObservableCollection<SettingViewModel> _settingsList = new();
 
     public SettingsViewModel()
     {
@@ -54,9 +54,9 @@ public partial class SettingsViewModel : ObservableObject
             new Setting("Preferences", string.Empty, stringResource.GetLocalized("Settings_Preferences_Header"), stringResource.GetLocalized("Settings_Preferences_Description"), "\ue713", false, false),
             new Setting("Accounts", string.Empty, stringResource.GetLocalized("Settings_Accounts_Header"), stringResource.GetLocalized("Settings_Accounts_Description"), "\ue77b", false, false),
             new Setting("Extensions", string.Empty, stringResource.GetLocalized("Settings_Extensions_Header"), stringResource.GetLocalized("Settings_Extensions_Description"), "\ued35", false, false),
-            new Setting("About", string.Empty, stringResource.GetLocalized("Settings_About_Header"), stringResource.GetLocalized("Settings_About_Description"), "\ue946", false, false),
-            new Setting("Feedback", string.Empty, stringResource.GetLocalized("Settings_Feedback_Header"), stringResource.GetLocalized("Settings_Feedback_Description"), "\ued15", false, false),
             new Setting("ExperimentalFeatures", string.Empty, stringResource.GetLocalized("Settings_ExperimentalFeatures_Header"), stringResource.GetLocalized("Settings_ExperimentalFeatures_Description"), "\ue74c", false, false),
+            new Setting("Feedback", string.Empty, stringResource.GetLocalized("Settings_Feedback_Header"), stringResource.GetLocalized("Settings_Feedback_Description"), "\ued15", false, false),
+            new Setting("About", string.Empty, stringResource.GetLocalized("Settings_About_Header"), stringResource.GetLocalized("Settings_About_Description"), "\ue946", false, false),
         };
 
         foreach (var setting in settings)

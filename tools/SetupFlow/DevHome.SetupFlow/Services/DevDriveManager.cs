@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -10,10 +10,12 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.SetupFlow.Common.Helpers;
+using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
 using DevHome.SetupFlow.ViewModels;
 using DevHome.SetupFlow.Windows;
+using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Management.Infrastructure;
 using Microsoft.Win32.SafeHandles;
@@ -46,7 +48,7 @@ public class DevDriveManager : IDevDriveManager
     /// <summary>
     /// Set that holds Dev Drives that have been created through the Dev Drive manager.
     /// </summary>
-    private readonly HashSet<IDevDrive> _devDrives = new ();
+    private readonly HashSet<IDevDrive> _devDrives = new();
 
     private DevDriveViewModel _devDriveViewModel;
 
@@ -145,7 +147,7 @@ public class DevDriveManager : IDevDriveManager
     {
         // Currently only one Dev Drive can be created at a time. If one was
         // produced before reuse it.
-        if (_devDrives.Any())
+        if (_devDrives.Count != 0)
         {
             Log.Logger?.ReportInfo(Log.Component.DevDrive, "Reusing existing Dev Drive");
             _devDrives.First().State = DevDriveState.New;
@@ -192,7 +194,7 @@ public class DevDriveManager : IDevDriveManager
 
                 SafeFileHandle volumeFileHandle = PInvoke.CreateFile(
                     volumePath,
-                    FILE_ACCESS_FLAGS.FILE_READ_ATTRIBUTES | FILE_ACCESS_FLAGS.FILE_WRITE_ATTRIBUTES,
+                    (uint)(FILE_ACCESS_RIGHTS.FILE_READ_ATTRIBUTES | FILE_ACCESS_RIGHTS.FILE_WRITE_ATTRIBUTES),
                     FILE_SHARE_MODE.FILE_SHARE_READ | FILE_SHARE_MODE.FILE_SHARE_WRITE,
                     null,
                     FILE_CREATION_DISPOSITION.OPEN_EXISTING,
@@ -253,7 +255,7 @@ public class DevDriveManager : IDevDriveManager
     /// <summary>
     /// Gets prepopulated data and updates the passed in dev drive object with it.
     /// </summary>
-    private IDevDrive GetDevDriveWithDefaultInfo()
+    private DevDrive GetDevDriveWithDefaultInfo()
     {
         Log.Logger?.ReportInfo(Log.Component.DevDrive, "Setting default Dev Drive info");
         var root = Path.GetPathRoot(Environment.SystemDirectory);
@@ -265,6 +267,10 @@ public class DevDriveManager : IDevDriveManager
             if (DevDriveUtil.MinDevDriveSizeInBytes > (ulong)drive.AvailableFreeSpace)
             {
                 Log.Logger?.ReportError(Log.Component.DevDrive, "Not enough space available to create a Dev Drive");
+                TelemetryFactory.Get<ITelemetry>().Log(
+                                              "DevDrive_Insufficient_DiskSpace",
+                                              LogLevel.Critical,
+                                              new EmptyEvent());
                 validationSuccessful = false;
             }
         }
@@ -470,7 +476,7 @@ public class DevDriveManager : IDevDriveManager
     /// <inheritdoc/>
     public void ConfirmChangesToDevDrive()
     {
-        if (_devDrives.Any())
+        if (_devDrives.Count != 0)
         {
             PreviousDevDrive = _devDrives.First();
         }

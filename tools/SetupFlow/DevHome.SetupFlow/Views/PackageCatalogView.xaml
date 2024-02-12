@@ -15,34 +15,31 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <StackPanel>
-                <TextBlock Text="{x:Bind Catalog.Name}" Style="{ThemeResource AppManagementPackageTitleTextBlock}" />
-                <TextBlock Text="{x:Bind Catalog.Description}" Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" />
+                <TextBlock Text="{x:Bind Catalog.Name, Mode=OneWay}" Style="{ThemeResource AppManagementPackageTitleTextBlock}" />
+                <TextBlock Text="{x:Bind Catalog.Description, Mode=OneWay}" Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" />
             </StackPanel>
             <HyperlinkButton
                 Grid.Column="1"
                 AutomationProperties.AutomationControlType="Button"
-                Visibility="{x:Bind Catalog.CanAddAllPackages, Mode=OneWay}"
-                CommandParameter="{x:Bind Catalog}"
+                CommandParameter="{x:Bind Catalog, Mode=OneWay}"
                 Command="{x:Bind ViewAllCommand, Mode=OneWay}">
                 <TextBlock x:Uid="ViewAll" />
             </HyperlinkButton>
         </Grid>
 
         <!-- List of packages -->
-        <ItemsRepeater ItemsSource="{x:Bind DisplayPackages}">
+        <ItemsRepeater ItemsSource="{x:Bind DisplayPackages, Mode=OneWay}">
             <ItemsRepeater.Layout>
                 <UniformGridLayout
                     Orientation="Horizontal"
-                    MinItemWidth="190"
                     MaximumRowsOrColumns="3"
                     MinRowSpacing="4"
                     MinColumnSpacing="4"
-                    MinItemHeight="140"
                     ItemsStretch="Fill" />
             </ItemsRepeater.Layout>
             <ItemsRepeater.ItemTemplate>
                 <DataTemplate x:DataType="viewmodels:PackageViewModel">
-                    <views:PackageView Height="140" />
+                    <views:PackageView MinHeight="140" />
                 </DataTemplate>
             </ItemsRepeater.ItemTemplate>
         </ItemsRepeater>

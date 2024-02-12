@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -31,4 +31,11 @@ public interface IAppInstallManagerService
     /// <returns>True if an app update was triggered, false otherwise</returns>
     /// <exception cref="COMException">Throws exception if operation failed (e.g. product id was not found)</exception>
     public Task<bool> StartAppUpdateAsync(string productId);
+
+    /// <summary>
+    /// Install a package from the store.
+    /// </summary>
+    /// <param name="packageId">Target package id</param>
+    /// <returns>True if package was installed, false otherwise</returns>
+    public Task<bool> TryInstallPackageAsync(string packageId);
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 namespace DevHome.Logging.Helpers;
 
@@ -7,10 +7,7 @@ public static class DictionaryExtensions
 {
     public static void DisposeAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
     {
-        if (dictionary is null)
-        {
-            throw new ArgumentNullException(nameof(dictionary));
-        }
+        ArgumentNullException.ThrowIfNull(dictionary);
 
         foreach (var kv in dictionary)
         {

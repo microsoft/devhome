@@ -1,28 +1,16 @@
 {
-  "ProductIds": [ "9NZCC27PR6N6", "9N8MHTPHNGVV", "9MV8F79FGXTR" ],
+  "ProductIds": [ "9NB9M5KZ8SLX", "9MV8F79FGXTR", "9NZCC27PR6N6" ],
   "Products": [
     {
       "LocalizedProperties": [
         {
-          "PublisherName": "Microsoft Corporation",
-          "ProductTitle": "Dev Home GitHub Extension (Preview)"
+          "PublisherName": "Martí Climent",
+          "ProductTitle": "WingetUI Widgets"
         }
       ],
-      "ProductId": "9NZCC27PR6N6",
+      "ProductId": "9NB9M5KZ8SLX",
       "Properties": {
-        "PackageFamilyName": "Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe"
-      }
-    },
-    {
-      "LocalizedProperties": [
-        {
-          "PublisherName": "Microsoft Corporation",
-          "ProductTitle": "Dev Home (Preview)"
-        }
-      ],
-      "ProductId": "9N8MHTPHNGVV",
-      "Properties": {
-        "PackageFamilyName": "Microsoft.Windows.DevHome_8wekyb3d8bbwe"
+        "PackageFamilyName": "9932MartCliment.WingetUIWidgets_g91dtg5srk15g"
       }
     },
     {
@@ -35,6 +23,18 @@
       "ProductId": "9MV8F79FGXTR",
       "Properties": {
         "PackageFamilyName": "Microsoft.Windows.DevHomeAzureExtension_8wekyb3d8bbwe"
+      }
+    },
+    {
+      "LocalizedProperties": [
+        {
+          "PublisherName": "Microsoft Corporation",
+          "ProductTitle": "Dev Home GitHub Extension (Preview)"
+        }
+      ],
+      "ProductId": "9NZCC27PR6N6",
+      "Properties": {
+        "PackageFamilyName": "Microsoft.Windows.DevHomeGitHubExtension_8wekyb3d8bbwe"
       }
     }
   ],

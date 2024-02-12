@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Text;
 using System.Text.Json.Nodes;
@@ -28,7 +28,7 @@ internal abstract class CoreWidget : WidgetImpl
         get; set;
     }
 
-    protected Dictionary<WidgetPageState, string> Template { get; set; } = new ();
+    protected Dictionary<WidgetPageState, string> Template { get; set; } = new();
 
     public CoreWidget()
     {
@@ -102,7 +102,7 @@ internal abstract class CoreWidget : WidgetImpl
     {
         LoadContentData();
 
-        WidgetUpdateRequestOptions updateOptions = new (Id)
+        WidgetUpdateRequestOptions updateOptions = new(Id)
         {
             Data = GetData(Page),
             Template = GetTemplateForPage(Page),
@@ -125,10 +125,10 @@ internal abstract class CoreWidget : WidgetImpl
 
     protected string GetTemplateForPage(WidgetPageState page)
     {
-        if (Template.ContainsKey(page))
+        if (Template.TryGetValue(page, out var value))
         {
             Log.Logger()?.ReportDebug(Name, ShortId, $"Using cached template for {page}");
-            return Template[page];
+            return value;
         }
 
         try

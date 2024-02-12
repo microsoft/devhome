@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -66,15 +66,8 @@ public class WidgetIconService : IWidgetIconService
 
                 // There is a widget bug where Definition update events are being raised as added events.
                 // If we already have an icon for this key, just remove and add again in case the icons changed.
-                if (_widgetLightIconCache.ContainsKey(widgetDefId))
-                {
-                    _widgetLightIconCache.Remove(widgetDefId);
-                }
-
-                if (_widgetDarkIconCache.ContainsKey(widgetDefId))
-                {
-                    _widgetDarkIconCache.Remove(widgetDefId);
-                }
+                _widgetLightIconCache.Remove(widgetDefId);
+                _widgetDarkIconCache.Remove(widgetDefId);
 
                 _widgetLightIconCache.Add(widgetDefId, itemLightImage);
                 _widgetDarkIconCache.Add(widgetDefId, itemDarkImage);

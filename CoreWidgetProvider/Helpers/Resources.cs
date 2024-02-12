@@ -1,10 +1,11 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Logging;
 using Microsoft.Windows.ApplicationModel.Resources;
 
 namespace CoreWidgetProvider.Helpers;
+
 public static class Resources
 {
     private static ResourceLoader? _resourceLoader;
@@ -51,8 +52,8 @@ public static class Resources
     // These are all the string identifiers that appear in widgets.
     public static string[] GetWidgetResourceIdentifiers()
     {
-        return new string[]
-        {
+        return
+        [
             "Widget_Template/Loading",
             "Widget_Template_Tooltip/Submit",
             "SSH_Widget_Template/Name",
@@ -89,6 +90,6 @@ public static class Resources
             "CPUUsage_Widget_Template/End_Process",
             "Widget_Template_Button/Save",
             "Widget_Template_Button/Cancel",
-        };
+        ];
     }
 }

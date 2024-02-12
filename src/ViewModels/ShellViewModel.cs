@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Contracts;
@@ -34,7 +34,7 @@ public partial class ShellViewModel : ObservableObject
     private object? _selected;
 
     [ObservableProperty]
-    private InfoBarModel _shellInfoBarModel = new ();
+    private InfoBarModel _shellInfoBarModel = new();
 
     public ShellViewModel(
         INavigationService navigationService,

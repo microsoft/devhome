@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Threading.Tasks;
@@ -30,7 +30,7 @@ public partial class MainPageBannerViewModel : ObservableObject
     [RelayCommand]
     private async Task BannerButtonAsync()
     {
-        await Launcher.LaunchUriAsync(new ("https://go.microsoft.com/fwlink/?linkid=2235076"));
+        await Launcher.LaunchUriAsync(new("https://go.microsoft.com/fwlink/?linkid=2235076"));
     }
 
     [RelayCommand]

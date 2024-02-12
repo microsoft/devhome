@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.SetupFlow.Common.Configuration;
 using DevHome.SetupFlow.Common.Helpers;
@@ -34,15 +34,17 @@ public sealed class ElevatedConfigurationTask
                 taskResult.RebootRequired = result.RequiresReboot;
                 taskResult.UnitResults = result.Result.UnitResults.Select(unitResult =>
                 {
-                    unitResult.Unit.Directives.TryGetValue("description", out var descriptionObj);
+                    unitResult.Unit.Settings.TryGetValue("description", out var descriptionObj);
                     return new ElevatedConfigureUnitTaskResult
                     {
-                        UnitName = unitResult.Unit.UnitName,
+                        Type = unitResult.Unit.Type,
                         Id = unitResult.Unit.Identifier,
-                        Description = descriptionObj?.ToString() ?? string.Empty,
+                        UnitDescription = descriptionObj?.ToString() ?? string.Empty,
                         Intent = unitResult.Unit.Intent.ToString(),
                         IsSkipped = unitResult.State == ConfigurationUnitState.Skipped,
                         HResult = unitResult.ResultInformation?.ResultCode?.HResult ?? HRESULT.S_OK,
+                        ResultSource = (int)(unitResult.ResultInformation?.ResultSource ?? ConfigurationUnitResultSource.None),
+                        ErrorDescription = unitResult.ResultInformation?.Description,
                     };
                 }).ToList();
 

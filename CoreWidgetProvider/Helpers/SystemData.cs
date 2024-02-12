@@ -1,9 +1,9 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 namespace CoreWidgetProvider.Helpers;
 
-internal class SystemData : IDisposable
+internal sealed class SystemData : IDisposable
 {
     public static MemoryStats MemStats { get; set; } = new MemoryStats();
 

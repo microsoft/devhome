@@ -1,5 +1,5 @@
-// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System.Globalization;
 using System.Text.Json.Nodes;
@@ -8,18 +8,18 @@ using CoreWidgetProvider.Widgets.Enums;
 
 namespace CoreWidgetProvider.Widgets;
 
-internal class SystemMemoryWidget : CoreWidget, IDisposable
+internal sealed class SystemMemoryWidget : CoreWidget, IDisposable
 {
-    private static Dictionary<string, string> Templates { get; set; } = new ();
+    private static Dictionary<string, string> Templates { get; set; } = new();
 
-    protected static readonly new string Name = nameof(SystemMemoryWidget);
+    private static readonly new string Name = nameof(SystemMemoryWidget);
 
     private readonly DataManager dataManager;
 
     public SystemMemoryWidget()
         : base()
     {
-        dataManager = new (DataType.Memory, UpdateWidget);
+        dataManager = new(DataType.Memory, UpdateWidget);
     }
 
     private string FloatToPercentString(float value)
@@ -78,6 +78,11 @@ internal class SystemMemoryWidget : CoreWidget, IDisposable
         catch (Exception e)
         {
             Log.Logger()?.ReportError(Name, ShortId, "Error retrieving data.", e);
+            var content = new JsonObject
+            {
+                { "errorMessage", e.Message },
+            };
+            ContentData = content.ToJsonString();
             DataState = WidgetDataState.Failed;
             return;
         }

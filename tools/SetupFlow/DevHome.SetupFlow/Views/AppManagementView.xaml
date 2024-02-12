@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft Corporation and Contributors. -->
+<!-- Copyright (c) Microsoft Corporation.. -->
 <!-- Licensed under the MIT License. -->
 
 <UserControl
@@ -55,7 +55,6 @@
                     HorizontalAlignment="Left"
                     Width="400"
                     Margin="0,0,0,20"
-                    IsEnabled="{x:Bind ViewModel.SearchBoxEnabled, Mode=OneWay}"
                     x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SearchBox">
                     <i:Interaction.Behaviors>
                         <ic:EventTriggerBehavior EventName="TextChanged">
@@ -108,11 +107,22 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Header text -->
-            <StackPanel Grid.Row="0" Padding="5 0" Orientation="Vertical" Spacing="4">
-                <TextBlock x:Name="SidePanelTitle" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SelectedPackages" />
-                <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind ViewModel.ApplicationsAddedText,Mode=OneWay}"/>
-            </StackPanel>
+            <Grid Grid.Row="0">
+                <!-- Header text -->
+                <StackPanel Grid.Row="0" Padding="5 0" Orientation="Vertical" Spacing="4">
+                    <TextBlock x:Name="SidePanelTitle" Style="{ThemeResource BaseTextBlockStyle}" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/SelectedPackages" />
+                    <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondary}" Text="{x:Bind ViewModel.ApplicationsAddedText,Mode=OneWay}"/>
+                </StackPanel>
+                <!-- Remove all -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <HyperlinkButton
+                        AutomationProperties.AutomationControlType="Button"
+                        Command="{x:Bind ViewModel.RemoveAllPackagesCommand}"
+                        IsEnabled="{x:Bind ViewModel.EnableRemoveAll, Mode=OneWay}">
+                        <TextBlock x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RemoveAll" />
+                    </HyperlinkButton>
+                </StackPanel>
+            </Grid>
 
             <!-- No package selected -->
             <TextBlock

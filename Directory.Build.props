@@ -30,12 +30,19 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.csproj'">
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference> 
     <Compile Include="$(MSBuildThisFileDirectory)\codeAnalysis\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)\codeAnalysis\StyleCop.json" Link="StyleCop.json" />
   </ItemGroup>
-
+  <!-- Needed for reverting back to pre-.NET 8 method of Host using the RID graph to determine assets  -->
+  <!-- https://learn.microsoft.com/en-us/dotnet/core/compatibility/deployment/8.0/rid-asset-list -->
+  <PropertyGroup>
+    <UseRidGraph>true</UseRidGraph>
+  </PropertyGroup>
+  <ItemGroup>
+	  <RuntimeHostConfigurationOption Include="System.Runtime.Loader.UseRidGraph" Value="true" />
+  </ItemGroup>
 </Project>

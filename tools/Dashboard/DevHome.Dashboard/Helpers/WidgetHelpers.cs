@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
 using System;
@@ -12,8 +12,31 @@ using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 
 namespace DevHome.Dashboard.Helpers;
-internal class WidgetHelpers
+
+internal sealed class WidgetHelpers
 {
+    public const string WebExperiencePackPackageId = "9MSSGKG348SP";
+    public const string WebExperiencePackageFamilyName = "MicrosoftWindows.Client.WebExperience_cw5n1h2txyewy";
+    public const string WidgetServiceStorePackageId = "9N3RK8ZV2ZR8";
+    public const string WidgetServicePackageFamilyName = "Microsoft.WidgetsPlatformRuntime_8wekyb3d8bbwe";
+
+    public static readonly string[] DefaultWidgetDefinitionIds =
+    {
+    #if CANARY_BUILD
+        "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
+        "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
+        "Microsoft.Windows.DevHome.Canary_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
+    #elif STABLE_BUILD
+        "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
+        "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
+        "Microsoft.Windows.DevHome_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
+    #else
+        "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_CPUUsage",
+        "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_GPUUsage",
+        "Microsoft.Windows.DevHome.Dev_8wekyb3d8bbwe!App!!CoreWidgetProvider!!System_NetworkUsage",
+    #endif
+    };
+
     public const string DevHomeHostName = "DevHome";
 
     private const double WidgetPxHeightSmall = 146;

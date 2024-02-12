@@ -1,7 +1,6 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
-using System.Web.Services.Description;
 using DevHome.Activation;
 using DevHome.Common.Contracts;
 using DevHome.Common.Contracts.Services;
@@ -9,6 +8,7 @@ using DevHome.Common.Extensions;
 using DevHome.Common.Models;
 using DevHome.Common.Services;
 using DevHome.Contracts.Services;
+using DevHome.Dashboard.Extensions;
 using DevHome.ExtensionLibrary.Extensions;
 using DevHome.Helpers;
 using DevHome.Services;
@@ -89,6 +89,7 @@ public partial class App : Application, IApp
 
             // Services
             services.AddSingleton<ILocalSettingsService, LocalSettingsService>();
+            services.AddSingleton<IExperimentationService, ExperimentationService>();
             services.AddSingleton<IThemeSelectorService, ThemeSelectorService>();
             services.AddTransient<INavigationViewService, NavigationViewService>();
 

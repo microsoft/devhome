@@ -1,9 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using DevHome.Common.Helpers;
 using Windows.ApplicationModel.Store.Preview.InstallControl;
 using Windows.Foundation;
 
@@ -15,6 +16,8 @@ namespace DevHome.Services;
 public class AppInstallManagerService : IAppInstallManagerService
 {
     private readonly AppInstallManager _appInstallManager;
+
+    private static readonly TimeSpan StoreInstallTimeout = new(0, 0, 60);
 
     public event TypedEventHandler<AppInstallManager, AppInstallManagerItemEventArgs> ItemCompleted
     {
@@ -67,5 +70,73 @@ public class AppInstallManagerService : IAppInstallManagerService
 
         // Check if update is available
         return appInstallItem != null;
+    }
+
+    public async Task<bool> TryInstallPackageAsync(string packageId)
+    {
+        try
+        {
+            var installTask = InstallPackageAsync(packageId);
+
+            // Wait for a maximum of StoreInstallTimeout (60 seconds).
+            var completedTask = await Task.WhenAny(installTask, Task.Delay(StoreInstallTimeout));
+
+            if (completedTask.Exception != null)
+            {
+                throw completedTask.Exception;
+            }
+
+            if (completedTask != installTask)
+            {
+                throw new TimeoutException("Store Install task did not finish in time.");
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log.Logger()?.ReportError("Package installation Failed", ex);
+        }
+
+        return false;
+    }
+
+    private async Task InstallPackageAsync(string packageId)
+    {
+        await Task.Run(() =>
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            AppInstallItem installItem;
+            try
+            {
+                Log.Logger()?.ReportInfo("WidgetHostingService", $"Starting {packageId} install");
+                installItem = _appInstallManager.StartAppInstallAsync(packageId, null, true, false).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                Log.Logger()?.ReportInfo("WidgetHostingService", $"{packageId} install failure");
+                tcs.SetException(ex);
+                return tcs.Task;
+            }
+
+            installItem.Completed += (sender, args) =>
+            {
+                tcs.SetResult(true);
+            };
+
+            installItem.StatusChanged += (sender, args) =>
+            {
+                if (installItem.GetCurrentStatus().InstallState == AppInstallState.Canceled
+                    || installItem.GetCurrentStatus().InstallState == AppInstallState.Error)
+                {
+                    tcs.TrySetException(new System.Management.Automation.JobFailedException(installItem.GetCurrentStatus().ErrorCode.ToString()));
+                }
+                else if (installItem.GetCurrentStatus().InstallState == AppInstallState.Completed)
+                {
+                    tcs.SetResult(true);
+                }
+            };
+            return tcs.Task;
+        });
     }
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Threading.Tasks;
@@ -7,11 +7,10 @@ using DevHome.SetupFlow.Common.Helpers;
 using LibGit2Sharp;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
-using Windows.Win32.Storage.FileSystem;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace DevHome.SetupFlow.Models;
-internal class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
+
+internal sealed class GenericRepository : Microsoft.Windows.DevHome.SDK.IRepository
 {
     private readonly string _displayName;
 

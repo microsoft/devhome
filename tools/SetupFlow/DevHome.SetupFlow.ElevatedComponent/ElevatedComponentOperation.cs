@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.SetupFlow.Common.Contracts;
 using DevHome.SetupFlow.Common.Helpers;
@@ -26,8 +26,8 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
     /// <summary>
     /// Dictionary of operations state by task arguments.
     /// </summary>
-    private readonly Dictionary<ITaskArguments, OperationState> _operationsState = new ();
-    private readonly object _operationStateLock = new ();
+    private readonly Dictionary<ITaskArguments, OperationState> _operationsState = new();
+    private readonly object _operationStateLock = new();
 
     // TODO: Share this value with the caller process and make a configurable option
     // https://github.com/microsoft/devhome/issues/622
@@ -252,7 +252,7 @@ public sealed class ElevatedComponentOperation : IElevatedComponentOperation
     /// <summary>
     /// Class for tracking the state of an operation.
     /// </summary>
-    private class OperationState
+    private sealed class OperationState
     {
         /// <summary>
         /// Gets or sets the number of remaining attempts to execute this operation.

@@ -1,10 +1,10 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
 using DevHome.Common.Helpers;
+using DevHome.Common.Models;
 using DevHome.Common.Services;
-using DevHome.Settings;
 using DevHome.Settings.ViewModels;
 using DevHome.ViewModels;
 using Microsoft.UI.Xaml;
@@ -38,6 +38,8 @@ public sealed partial class ShellPage : Page
         App.MainWindow.Activated += MainWindow_Activated;
 
         ActualThemeChanged += OnActualThemeChanged;
+
+        PointerPressed += OnPointerPressed;
     }
 
     private async void OnLoaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
@@ -46,6 +48,8 @@ public sealed partial class ShellPage : Page
 
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Left, VirtualKeyModifiers.Menu));
         KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoBack));
+        KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.Right, VirtualKeyModifiers.Menu));
+        KeyboardAccelerators.Add(BuildKeyboardAccelerator(VirtualKey.GoForward));
 
         await ViewModel.OnLoaded();
     }
@@ -89,11 +93,33 @@ public sealed partial class ShellPage : Page
 
     private static void OnKeyboardAcceleratorInvoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
-        var navigationService = Application.Current.GetService<INavigationService>();
+        if ((sender.Key == VirtualKey.GoBack) ||
+            ((sender.Key == VirtualKey.Left) && sender.Modifiers.HasFlag(VirtualKeyModifiers.Menu)))
+        {
+            args.Handled = Application.Current.GetService<INavigationService>().GoBack();
+        }
+        else if ((sender.Key == VirtualKey.GoForward) ||
+            ((sender.Key == VirtualKey.Right) && sender.Modifiers.HasFlag(VirtualKeyModifiers.Menu)))
+        {
+            args.Handled = Application.Current.GetService<INavigationService>().GoForward();
+        }
+    }
 
-        var result = navigationService.GoBack();
+    private static void OnPointerPressed(object sender, PointerRoutedEventArgs args)
+    {
+        var handled = false;
 
-        args.Handled = result;
+        // Handle mouse forward and back navigation.
+        if (args.GetCurrentPoint(null).Properties.IsXButton1Pressed)
+        {
+            handled = Application.Current.GetService<INavigationService>().GoBack();
+        }
+        else if (args.GetCurrentPoint(null).Properties.IsXButton2Pressed)
+        {
+            handled = Application.Current.GetService<INavigationService>().GoForward();
+        }
+
+        args.Handled = handled;
     }
 
     public static readonly DependencyProperty ExperimentalFeatureProperty = DependencyProperty.Register(
@@ -129,7 +155,7 @@ public sealed partial class ShellPage : Page
         {
             foreach (var tool in group.Tools)
             {
-                var expFeature = expVM.Features.FirstOrDefault(x => x.Id == tool.ExperimentId);
+                var expFeature = expVM.ExperimentalFeatures.FirstOrDefault(x => x.Id == tool.ExperimentalFeatureIdentity);
 
                 var navigationViewItemString = $@"
                     <NavigationViewItem

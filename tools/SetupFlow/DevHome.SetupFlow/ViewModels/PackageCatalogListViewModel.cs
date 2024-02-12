@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -8,24 +8,27 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Behaviors;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Services;
+using Microsoft.UI.Dispatching;
 
 namespace DevHome.SetupFlow.ViewModels;
 
 public partial class PackageCatalogListViewModel : ObservableObject
 {
-    private readonly IWindowsPackageManager _wpm;
-    private readonly CatalogDataSourceLoader _catalogDataSourceLoader;
+    private readonly ICatalogDataSourceLoader _catalogDataSourceLoader;
+    private readonly IExtensionService _extensionService;
     private readonly PackageCatalogViewModelFactory _packageCatalogViewModelFactory;
-    private bool _initialized;
+    private readonly DispatcherQueue _dispatcher;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CatalogFullPath))]
     private PackageCatalogViewModel _viewAllCatalog;
 
-    public List<string> CatalogFullPath => new ()
+    public List<string> CatalogFullPath => new()
     {
         AppManagementBehavior.Title,
         ViewAllCatalog?.Name ?? string.Empty,
@@ -34,58 +37,54 @@ public partial class PackageCatalogListViewModel : ObservableObject
     /// <summary>
     /// Gets a list of package catalogs to display
     /// </summary>
-    public ObservableCollection<PackageCatalogViewModel> PackageCatalogs { get; } = new ();
+    public ObservableCollection<PackageCatalogViewModel> PackageCatalogs { get; } = new();
 
     /// <summary>
     /// Gets a list of shimmer indices.
     /// This list is used to repeat the shimmer control {Count} times
     /// </summary>
-    public ObservableCollection<int> PackageCatalogShimmers { get; } = new ();
+    public ObservableCollection<int> PackageCatalogShimmers { get; } = new();
 
     public PackageCatalogListViewModel(
-        CatalogDataSourceLoader catalogDataSourceLoader,
-        IWindowsPackageManager wpm,
+        IExtensionService extensionService,
+        ICatalogDataSourceLoader catalogDataSourceLoader,
         PackageCatalogViewModelFactory packageCatalogViewModelFactory)
     {
+        _extensionService = extensionService;
+        _dispatcher = DispatcherQueue.GetForCurrentThread();
         _catalogDataSourceLoader = catalogDataSourceLoader;
-        _wpm = wpm;
         _packageCatalogViewModelFactory = packageCatalogViewModelFactory;
     }
 
     /// <summary>
     /// Load the package catalogs to display
     /// </summary>
-    public async Task LoadCatalogsAsync()
+    private async Task LoadCatalogsAsync()
     {
-        if (!_initialized)
+        PackageCatalogs.Clear();
+        AddShimmers(_catalogDataSourceLoader.CatalogCount);
+        try
         {
-            _initialized = true;
-            AddShimmers(_catalogDataSourceLoader.CatalogCount);
-            try
+            await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
             {
-                await Task.Run(async () => await _wpm.WinGetCatalog.ConnectAsync());
-                await foreach (var dataSourceCatalogs in _catalogDataSourceLoader.LoadCatalogsAsync())
+                foreach (var catalog in dataSourceCatalogs)
                 {
-                    foreach (var catalog in dataSourceCatalogs)
-                    {
-                        var catalogVM = await Task.Run(() => _packageCatalogViewModelFactory(catalog));
-                        catalogVM.CanAddAllPackages = true;
-                        PackageCatalogs.Add(catalogVM);
-                    }
-
-                    RemoveShimmers(dataSourceCatalogs.Count);
+                    var catalogVM = await Task.Run(() => _packageCatalogViewModelFactory(catalog));
+                    PackageCatalogs.Add(catalogVM);
                 }
-            }
-            catch (Exception e)
-            {
-                Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to connect to {nameof(_wpm.WinGetCatalog)}. Skipping catalogs loading operation.", e);
-            }
 
-            // Remove any remaining shimmers:
-            // This can happen if for example a catalog was detected but not
-            // displayed (e.g. catalog with no packages to display)
-            RemoveShimmers(_catalogDataSourceLoader.CatalogCount);
+                RemoveShimmers(dataSourceCatalogs.Count);
+            }
         }
+        catch (Exception e)
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Failed to load catalogs.", e);
+        }
+
+        // Remove any remaining shimmers:
+        // This can happen if for example a catalog was detected but not
+        // displayed (e.g. catalog with no packages to display)
+        RemoveShimmers(PackageCatalogShimmers.Count);
     }
 
     /// <summary>
@@ -127,9 +126,24 @@ public partial class PackageCatalogListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void OnLoaded()
+    private async Task OnLoadedAsync()
     {
+        // Listen for extension changes
+        _extensionService.OnExtensionsChanged += OnExtensionChangedAsync;
+
         // When the view is loaded, ensure we exit the view all packages mode
         ExitViewAllPackages();
+        await LoadCatalogsAsync();
+    }
+
+    [RelayCommand]
+    private void OnUnloaded()
+    {
+        _extensionService.OnExtensionsChanged -= OnExtensionChangedAsync;
+    }
+
+    private async void OnExtensionChangedAsync(object sender, EventArgs e)
+    {
+        await _dispatcher.EnqueueAsync(() => LoadCatalogsAsync());
     }
 }

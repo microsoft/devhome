@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         _host = host;
 
         // TODO https://github.com/microsoft/devhome/issues/631
-        _devDriveReviewViewModel = new (() => new DevDriveReviewViewModel(host, stringResource, this));
+        _devDriveReviewViewModel = new(() => new DevDriveReviewViewModel(host, stringResource, this));
         _stringResource = stringResource;
     }
 
@@ -39,7 +39,7 @@ public class DevDriveTaskGroup : ISetupTaskGroup
     /// </param>
     public void AddDevDriveTask(IDevDrive devDrive)
     {
-        if (_devDriveTasks.Any())
+        if (_devDriveTasks.Count != 0)
         {
             Log.Logger?.ReportInfo(Log.Component.DevDrive, $"Overwriting existing dev drive task");
             _devDriveTasks[0].DevDrive = devDrive;
@@ -61,7 +61,9 @@ public class DevDriveTaskGroup : ISetupTaskGroup
         _devDriveTasks.Clear();
     }
 
-    private readonly IList<CreateDevDriveTask> _devDriveTasks = new List<CreateDevDriveTask>();
+    private readonly List<CreateDevDriveTask> _devDriveTasks =
+        [
+        ];
 
     public IEnumerable<ISetupTask> SetupTasks
     {

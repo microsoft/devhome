@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     /// <summary>
     /// Class for deserializing a JSON winget package
     /// </summary>
-    private class JsonWinGetPackage
+    private sealed class JsonWinGetPackage
     {
         public Uri Uri { get; set; }
 
@@ -34,7 +34,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
     /// Class for deserializing a JSON package catalog with package ids from
     /// winget
     /// </summary>
-    private class JsonWinGetPackageCatalog
+    private sealed class JsonWinGetPackageCatalog
     {
         public string NameResourceKey { get; set; }
 
@@ -45,6 +45,7 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 
     private readonly ISetupFlowStringResource _stringResource;
     private readonly string _fileName;
+    private readonly JsonSerializerOptions jsonSerializerOptions = new() { ReadCommentHandling = JsonCommentHandling.Skip };
     private IList<JsonWinGetPackageCatalog> _jsonCatalogs = new List<JsonWinGetPackageCatalog>();
 
     public override int CatalogCount => _jsonCatalogs.Count;
@@ -64,8 +65,8 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
         // Open and deserialize JSON file
         Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Reading package list from JSON file {_fileName}");
         using var fileStream = File.OpenRead(_fileName);
-        var options = new JsonSerializerOptions() { ReadCommentHandling = JsonCommentHandling.Skip };
-        _jsonCatalogs = await JsonSerializer.DeserializeAsync<IList<JsonWinGetPackageCatalog>>(fileStream, options);
+
+        _jsonCatalogs = await JsonSerializer.DeserializeAsync<IList<JsonWinGetPackageCatalog>>(fileStream, jsonSerializerOptions);
     }
 
     public async override Task<IList<PackageCatalog>> LoadCatalogsAsync()
@@ -96,16 +97,20 @@ public class WinGetPackageJsonDataSource : WinGetPackageDataSource
 
         try
         {
-            var packages = await GetPackagesAsync(
-                jsonCatalog.WinGetPackages,
-                package => package.Uri,
-                async (package, appInfo) =>
+            var packages = await GetPackagesAsync(jsonCatalog.WinGetPackages.Select(p => p.Uri).ToList());
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for JSON packages: [{string.Join(", ", packages.Select(p => $"({p.Name}, {p.CatalogName})"))}]");
+            foreach (var package in packages)
             {
-                Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Obtaining icon information for JSON package {package.Id}");
-                var icon = await GetJsonApplicationIconAsync(appInfo);
-                package.LightThemeIcon = icon;
-                package.DarkThemeIcon = icon;
-            });
+                var packageUri = WindowsPackageManager.CreatePackageUri(package);
+                var jsonPackage = jsonCatalog.WinGetPackages.FirstOrDefault(p => packageUri == p.Uri);
+                if (jsonPackage != null)
+                {
+                    var icon = await GetJsonApplicationIconAsync(jsonPackage);
+                    package.LightThemeIcon = icon;
+                    package.DarkThemeIcon = icon;
+                }
+            }
+
             if (packages.Any())
             {
                 return new PackageCatalog()

@@ -1,5 +1,5 @@
-﻿// Copyright (c) Microsoft Corporation and Contributors
-// Licensed under the MIT license.
+﻿// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
 
 using System;
 using System.Diagnostics.Tracing;
@@ -15,20 +15,11 @@ public class ReportPinnedWidgetEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
 
-    public Guid DeploymentIdentifier
-    {
-        get;
-    }
+    public Guid DeploymentIdentifier { get; }
 
-    public string WidgetProviderDefinitionId
-    {
-        get;
-    }
+    public string WidgetProviderDefinitionId { get; }
 
-    public string WidgetDefinitionId
-    {
-        get;
-    }
+    public string WidgetDefinitionId { get; }
 
     public ReportPinnedWidgetEvent(string widgetProviderDefinitionId, string widgetDefinitionId)
     {
