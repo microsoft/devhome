@@ -1,0 +1,6 @@
+﻿RegNotifyChangeKeyValue
+REG_NOTIFY_FILTER
+CoCreateInstance
+CLSCTX
+WIN32_ERROR
+S_OK

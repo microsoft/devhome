@@ -47,6 +47,7 @@
     <ItemGroup>
         <ProjectReference Include="..\common\DevHome.Common.csproj" />
         <ProjectReference Include="..\CoreWidgetProvider\CoreWidgetProvider.csproj" />
+        <ProjectReference Include="..\HyperVExtension\src\HyperVExtensionServer\HyperVExtensionServer.csproj" />
         <ProjectReference Include="..\settings\DevHome.Settings\DevHome.Settings.csproj" />
         <ProjectReference Include="..\tools\Dashboard\DevHome.Dashboard\DevHome.Dashboard.csproj" />
         <ProjectReference Include="..\tools\Environments\DevHome.Environments\DevHome.Environments.csproj" />
