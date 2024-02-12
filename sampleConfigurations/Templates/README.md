@@ -1,4 +1,4 @@
-This section is reflective of the type of software development workloads that will be performed. If you are new to software development, or are looking for an introduction to the software development language, we recommend visiting the *Introduction* section.
+This section is reflective of the type of software development workloads that will be performed. If you are new to software development or are looking for an introduction to the software development language, we recommend visiting the [Introduction](./Introduction/) section, which has more information about various languages.
 
 ## Android Apps
 This directory focuses on software development languages used for developing Android Apps, with a device setup that is focused on creating and testing Android apps.
