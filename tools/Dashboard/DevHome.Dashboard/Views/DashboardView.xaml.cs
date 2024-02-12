@@ -162,10 +162,11 @@ public partial class DashboardView : ToolPage
             // If it's the first time the Dashboard has been displayed and we have no other widgets pinned to a
             // different version of Dev Home, pin some default widgets.
             await PinDefaultWidgetsAsync();
-            return;
         }
-
-        await RestorePinnedWidgetsAsync(hostWidgets);
+        else if (hostWidgets != null)
+        {
+            await RestorePinnedWidgetsAsync(hostWidgets);
+        }
     }
 
     private async Task<Widget[]> GetPreviouslyPinnedWidgets()
