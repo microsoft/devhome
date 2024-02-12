@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.Telemetry;
 using Microsoft.Diagnostics.Telemetry.Internal;
 
 namespace DevHome.Common.TelemetryEvents.SetupFlow.RepoTool;
+
 public class RepoInfoModificationEvent : EventBase
 {
     public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
