@@ -19,7 +19,7 @@ Sample configurations have been provided for various GitHub repositories. These 
 ```
 
 ### Learn to Code (Templates)
-Same configurations in this directory are directly related to the [Windows development paths](https://learn.microsoft.com/windows/dev-environment/#development-paths) on how to begin developing in a specific software development language. These configurations will allow you to automatically setup your device, and begin developing in your preferred language quickly.
+Sample configurations in this directory are directly related to the [Windows development paths](https://learn.microsoft.com/windows/dev-environment/#development-paths) on how to begin developing in a specific software development language. These configurations will allow you to automatically setup your device, and begin developing in your preferred language quickly.
 
 ### Sample DSC Resources (DscResources)
 Examples for a few specific DSC Resources are under the [DscResources](./DscResources/) directory.

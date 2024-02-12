@@ -14,7 +14,7 @@ The following two options are available for running a WinGet Configuration file 
 ### 1. Windows Package Manager
 1. Download the `configuration.dsc.yaml` file to your computer.
 1. Open your Windows Start Menu, search and launch "*Windows Terminal*".
-1. Type the following: `CD [C:\Users\User\Download]`
+1. Type the following: `CD <C:\Users\User\Download>`
 1. Type the following: `winget configure --file .\configuration.dsc.yaml`
 
 ### 2. Dev Home
