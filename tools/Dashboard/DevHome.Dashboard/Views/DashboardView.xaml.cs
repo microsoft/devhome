@@ -253,6 +253,15 @@ public partial class DashboardView : ToolPage
         {
             await PlaceWidget(orderedWidget, finalPlace++);
         }
+
+        // Go through the newly created list of pinned widgets and update any positions that may have changed.
+        // For example, if the provider for the widget at position 0 was deleted, the widget at position 1
+        // should be updated to have position 0, etc.
+        var updatedPlace = 0;
+        foreach (var widget in PinnedWidgets)
+        {
+            await WidgetHelpers.SetPositionCustomStateAsync(widget.Widget, updatedPlace++);
+        }
     }
 
     private async Task DeleteAbandonedWidgetAsync(Widget widget)
@@ -275,7 +284,6 @@ public partial class DashboardView : ToolPage
         var widget = orderedWidget.Value;
         var size = await widget.GetSizeAsync();
         await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace);
-        await WidgetHelpers.SetPositionCustomStateAsync(widget, finalPlace);
     }
 
     private async Task PinDefaultWidgetsAsync()
@@ -583,6 +591,7 @@ public partial class DashboardView : ToolPage
         PinnedWidgets.RemoveAt(draggedIndex);
         var widgetPair = new KeyValuePair<int, Widget>(droppedIndex, draggedWidgetViewModel.Widget);
         await PlaceWidget(widgetPair, droppedIndex);
+        await WidgetHelpers.SetPositionCustomStateAsync(draggedWidgetViewModel.Widget, droppedIndex);
 
         // Update the CustomState Position of any widgets that were moved.
         // The widget that has been dropped has already been updated, so don't do it again here.
