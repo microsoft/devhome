@@ -126,6 +126,7 @@ public partial class DashboardView : ToolPage
             await ViewModel.WidgetIconService.CacheAllWidgetIconsAsync();
 
             var isFirstDashboardRun = !(await _localSettingsService.ReadSettingAsync<bool>(WellKnownSettingsKeys.IsNotFirstDashboardRun));
+            Log.Logger()?.ReportInfo("DashboardView", $"Is first dashboard run = {isFirstDashboardRun}");
             if (isFirstDashboardRun)
             {
                 await Application.Current.GetService<ILocalSettingsService>().SaveSettingAsync(WellKnownSettingsKeys.IsNotFirstDashboardRun, true);
@@ -161,11 +162,13 @@ public partial class DashboardView : ToolPage
         {
             // If it's the first time the Dashboard has been displayed and we have no other widgets pinned to a
             // different version of Dev Home, pin some default widgets.
+            Log.Logger()?.ReportInfo("DashboardView", $"Pin default widgets");
             await PinDefaultWidgetsAsync();
-            return;
         }
-
-        await RestorePinnedWidgetsAsync(hostWidgets);
+        else if (hostWidgets != null)
+        {
+            await RestorePinnedWidgetsAsync(hostWidgets);
+        }
     }
 
     private async Task<Widget[]> GetPreviouslyPinnedWidgets()
@@ -291,6 +294,7 @@ public partial class DashboardView : ToolPage
             var id = widgetDefinition.Id;
             if (WidgetHelpers.DefaultWidgetDefinitionIds.Contains(id))
             {
+                Log.Logger()?.ReportInfo("DashboardView", $"Found default widget {id}");
                 await PinDefaultWidgetAsync(widgetDefinition);
             }
         }
@@ -303,7 +307,9 @@ public partial class DashboardView : ToolPage
             // Create widget
             var widgetHost = await ViewModel.WidgetHostingService.GetWidgetHostAsync();
             var size = WidgetHelpers.GetDefaultWidgetSize(defaultWidgetDefinition.GetWidgetCapabilities());
-            var newWidget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(defaultWidgetDefinition.Id, size));
+            var id = defaultWidgetDefinition.Id;
+            var newWidget = await Task.Run(async () => await widgetHost?.CreateWidgetAsync(id, size));
+            Log.Logger()?.ReportInfo("DashboardView", $"Created default widget {id}");
 
             // Set custom state on new widget.
             var position = PinnedWidgets.Count;
@@ -313,6 +319,7 @@ public partial class DashboardView : ToolPage
 
             // Put new widget on the Dashboard.
             await InsertWidgetInPinnedWidgetsAsync(newWidget, size, position);
+            Log.Logger()?.ReportInfo("DashboardView", $"Inserted default widget {id} at position {position}");
         }
         catch (Exception ex)
         {

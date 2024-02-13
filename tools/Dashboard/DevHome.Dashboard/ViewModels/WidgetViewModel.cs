@@ -124,8 +124,9 @@ public partial class WidgetViewModel : ObservableObject
                 return;
             }
 
-            Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
-            Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
+            // Uncomment for extra debugging output
+            // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
+            // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
 
             // Use the data to fill in the template.
             AdaptiveCardParseResult card;
