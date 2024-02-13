@@ -33,8 +33,9 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference> 
-    <Compile Include="$(MSBuildThisFileDirectory)\codeAnalysis\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
+    </PackageReference>
+    <Compile Condition="$(MSBuildProjectName) != 'DevHomeStub'" Include="$(MSBuildThisFileDirectory)\codeAnalysis\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
+    <Compile Condition="$(MSBuildProjectName) == 'DevHomeStub'" Include="$(MSBuildThisFileDirectory)\codeAnalysis\StubSuppressions.cs" Link="GlobalSuppressions.cs" />
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)\codeAnalysis\StyleCop.json" Link="StyleCop.json" />
   </ItemGroup>
   <!-- Needed for reverting back to pre-.NET 8 method of Host using the RID graph to determine assets  -->
