@@ -80,6 +80,9 @@ public class AdaptiveCardRenderingService : IAdaptiveCardRenderingService, IDisp
 
         // A different host config is used to render widgets (adaptive cards) in light and dark themes.
         await UpdateHostConfig();
+
+        // Remove margins from selectAction.
+        _renderer.AddSelectActionMargin = false;
     }
 
     public async Task UpdateHostConfig()

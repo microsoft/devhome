@@ -12,8 +12,8 @@ internal sealed class NavConfig
     [JsonPropertyName("navMenu")]
     public NavMenu NavMenu { get; set; }
 
-    [JsonPropertyName("experiments")]
-    public string[] ExperimentIds { get; set; }
+    [JsonPropertyName("experimentalFeatures")]
+    public ExperimentalFeatures[] ExperimentFeatures { get; set; }
 }
 
 internal sealed class NavMenu
@@ -48,8 +48,32 @@ internal sealed class Tool
     [JsonPropertyName("icon")]
     public string Icon { get; set; }
 
-    [JsonPropertyName("experimentId")]
-    public string ExperimentId { get; set; }
+    [JsonPropertyName("experimentalFeatureIdentity")]
+    public string ExperimentalFeatureIdentity { get; set; }
+}
+
+internal sealed class ExperimentalFeatures
+{
+    [JsonPropertyName("identity")]
+    public string Identity { get; set; }
+
+    [JsonPropertyName("enabledByDefault")]
+    public bool EnabledByDefault { get; set; }
+
+    [JsonPropertyName("buildTypeOverrides")]
+    public BuildTypeOverrides[] BuildTypeOverrides { get; set; }
+}
+
+internal sealed class BuildTypeOverrides
+{
+    [JsonPropertyName("buildType")]
+    public string BuildType { get; set; }
+
+    [JsonPropertyName("enabledByDefault")]
+    public bool EnabledByDefault { get; set; }
+
+    [JsonPropertyName("visible")]
+    public bool Visible { get; set; }
 }
 
 // Uses .NET's JSON source generator support for serializing / deserializing NavConfig to get some perf gains at startup.

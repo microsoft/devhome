@@ -9,12 +9,14 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Common.TelemetryEvents.SetupFlow.RepoTool;
 using DevHome.Contracts.Services;
 using DevHome.SetupFlow.Common.Helpers;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.TaskGroups;
 using DevHome.SetupFlow.Utilities;
+using DevHome.Telemetry;
 using Microsoft.Extensions.Hosting;
 using Microsoft.UI.Xaml;
 
@@ -210,6 +212,7 @@ public partial class RepoConfigViewModel : SetupPageViewModelBase
         {
             RepoReviewItems[location] = cloningInformation;
             _taskGroup.SaveSetupTaskInformation(RepoReviewItems.ToList());
+            TelemetryFactory.Get<ITelemetry>().Log("RepoTool_RepoModification_Event", LogLevel.Critical, new RepoInfoModificationEvent("ClonePath"), Host.GetService<SetupFlowOrchestrator>().ActivityId);
         }
     }
 

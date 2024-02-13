@@ -32,21 +32,9 @@
             "viewModelFullName": "DevHome.Environments.ViewModels.LandingPageViewModel",
             "icon": "E83B"
           }
-          /*,
-          {
-            "identity": "DevHome.TestExperiment",
-            "assembly": "DevHome.Experiments",
-            "viewFullName": "DevHome.Experiments.Views.TestExperimentPage",
-            "viewModelFullName": "DevHome.Experiments.ViewModels.TestExperimentViewModel",
-            "icon": "f0f7",
-            "experimentId": "ExperimentalFeature_1"
-          }
-          */
         ]
       }
     ]
   },
-  "experiments": [ /*
-  "ExperimentalFeature_1"
-  */ ]
+  "experimentalFeatures": []
 }

@@ -43,7 +43,9 @@ public sealed class ExtensionServer : IDisposable
         }
     }
 
+#pragma warning disable CA1822 // Mark members as static
     public void Run()
+#pragma warning restore CA1822 // Mark members as static
     {
         // TODO : We need to handle lifetime management of the server.
         // For details around ref counting and locking of out-of-proc COM servers, see
@@ -65,7 +67,7 @@ public sealed class ExtensionServer : IDisposable
         Trace.Unindent();
     }
 
-    private class Ole32
+    private sealed class Ole32
     {
 #pragma warning disable SA1310 // Field names should not contain underscore
         // https://docs.microsoft.com/windows/win32/api/wtypesbase/ne-wtypesbase-clsctx

@@ -10,6 +10,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using DevHome.Common.Renderers;
 using DevHome.Dashboard.Helpers;
 using DevHome.Dashboard.Services;
+using DevHome.Dashboard.TelemetryEvents;
+using DevHome.Telemetry;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -122,8 +124,9 @@ public partial class WidgetViewModel : ObservableObject
                 return;
             }
 
-            Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
-            Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
+            // Uncomment for extra debugging output
+            // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardTemplate = {cardTemplate}");
+            // Log.Logger()?.ReportDebug("WidgetViewModel", $"cardData = {cardData}");
 
             // Use the data to fill in the template.
             AdaptiveCardParseResult card;
@@ -287,7 +290,7 @@ public partial class WidgetViewModel : ObservableObject
 
     private async void HandleAdaptiveAction(RenderedAdaptiveCard sender, AdaptiveActionEventArgs args)
     {
-        Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction {nameof(args.Action)} for widget {Widget.Id}");
+        Log.Logger()?.ReportInfo("WidgetViewModel", $"HandleInvokedAction {args.Action.ActionTypeString} for widget {Widget.Id}");
         if (args.Action is AdaptiveOpenUrlAction openUrlAction)
         {
             Log.Logger()?.ReportInfo("WidgetViewModel", $"Url = {openUrlAction.Url}");
@@ -314,6 +317,11 @@ public partial class WidgetViewModel : ObservableObject
             await Widget.NotifyActionInvokedAsync(executeAction.Verb, dataToSend);
         }
 
+        TelemetryFactory.Get<ITelemetry>().Log(
+            "Dashboard_ReportWidgetInteraction",
+            LogLevel.Critical,
+            new ReportWidgetInteractionEvent(WidgetDefinition.ProviderDefinition.Id, WidgetDefinition.Id, args.Action.ActionTypeString));
+
         // TODO: Handle other ActionTypes
         // https://github.com/microsoft/devhome/issues/644
     }
@@ -322,5 +330,10 @@ public partial class WidgetViewModel : ObservableObject
     {
         Log.Logger()?.ReportDebug("WidgetViewModel", $"HandleWidgetUpdated for widget {sender.Id}");
         await RenderWidgetFrameworkElementAsync();
+    }
+
+    public void UnsubscribeFromWidgetUpdates()
+    {
+        Widget.WidgetUpdated -= HandleWidgetUpdated;
     }
 }
