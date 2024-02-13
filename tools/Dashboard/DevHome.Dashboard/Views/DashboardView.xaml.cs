@@ -246,12 +246,16 @@ public partial class DashboardView : ToolPage
         var finalPlace = 0;
         foreach (var orderedWidget in restoredWidgetsWithPosition)
         {
-            await PlaceWidget(orderedWidget, finalPlace++);
+            var widget = orderedWidget.Value;
+            var size = await widget.GetSizeAsync();
+            await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace++);
         }
 
         foreach (var orderedWidget in restoredWidgetsWithoutPosition)
         {
-            await PlaceWidget(orderedWidget, finalPlace++);
+            var widget = orderedWidget.Value;
+            var size = await widget.GetSizeAsync();
+            await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace++);
         }
 
         // Go through the newly created list of pinned widgets and update any positions that may have changed.
@@ -277,13 +281,6 @@ public partial class DashboardView : ToolPage
         var newWidgetList = await Task.Run(() => widgetHost.GetWidgets());
         length = (newWidgetList == null) ? 0 : newWidgetList.Length;
         Log.Logger()?.ReportInfo("DashboardView", $"After delete, {length} widgets for this host");
-    }
-
-    private async Task PlaceWidget(KeyValuePair<int, Widget> orderedWidget, int finalPlace)
-    {
-        var widget = orderedWidget.Value;
-        var size = await widget.GetSizeAsync();
-        await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace);
     }
 
     private async Task PinDefaultWidgetsAsync()
@@ -589,8 +586,8 @@ public partial class DashboardView : ToolPage
         // widgets between the starting and ending indices move up to replace the removed widget. If the widget was
         // moved from a higher index to a lower one, then the order of removal and insertion doesn't matter.
         PinnedWidgets.RemoveAt(draggedIndex);
-        var widgetPair = new KeyValuePair<int, Widget>(droppedIndex, draggedWidgetViewModel.Widget);
-        await PlaceWidget(widgetPair, droppedIndex);
+        var size = await draggedWidgetViewModel.Widget.GetSizeAsync();
+        await InsertWidgetInPinnedWidgetsAsync(draggedWidgetViewModel.Widget, size, droppedIndex);
         await WidgetHelpers.SetPositionCustomStateAsync(draggedWidgetViewModel.Widget, droppedIndex);
 
         // Update the CustomState Position of any widgets that were moved.
