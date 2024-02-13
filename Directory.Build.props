@@ -44,6 +44,6 @@
     <UseRidGraph>true</UseRidGraph>
   </PropertyGroup>
   <ItemGroup>
-	  <RuntimeHostConfigurationOption Include="System.Runtime.Loader.UseRidGraph" Value="true" />
+    <RuntimeHostConfigurationOption Include="System.Runtime.Loader.UseRidGraph" Value="true" />
   </ItemGroup>
 </Project>
