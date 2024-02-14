@@ -114,8 +114,11 @@
                                     IsEnabled="{x:Bind ViewModel.EnablePackageInstallerItem,Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" />
                             </ToolTipService.ToolTip>
                         </Grid>
+                        
                         <!--  settings card for setup target flow.  -->
-                        <Grid Background="Transparent">
+                        <Grid 
+                            Background="Transparent"
+                            Visibility="{x:Bind ViewModel.ShouldShowSetupTargetItem}">
                             <ctControls:SettingsCard
                                 x:Uid="ms-resource:///DevHome.SetupFlow/Resources/MainPage_SetupFlow_For_target"
                                 ActionIcon="{x:Null}"
