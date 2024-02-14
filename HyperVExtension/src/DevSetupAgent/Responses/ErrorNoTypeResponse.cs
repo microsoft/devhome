@@ -12,15 +12,8 @@ internal sealed class ErrorNoTypeResponse : ResponseBase
     public ErrorNoTypeResponse(string requestId)
         : base(requestId)
     {
-        Status = 0xFFFFFFFF;
+        Status = Windows.Win32.Foundation.HRESULT.E_FAIL;
+        ErrorDescription = "Missing Request type.";
         GenerateJsonData();
-    }
-
-    public string Error => "Missing Request type.";
-
-    protected override void GenerateJsonData()
-    {
-        base.GenerateJsonData();
-        JsonData![nameof(Error)] = Error;
     }
 }

@@ -16,6 +16,8 @@ public interface IHostRequest
 
     string RequestType { get; }
 
+    uint Version { get; set; }
+
     DateTime Timestamp { get; }
 
     IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken);

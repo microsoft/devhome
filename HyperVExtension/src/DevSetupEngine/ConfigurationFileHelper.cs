@@ -142,12 +142,12 @@ public class ConfigurationFileHelper
         var openConfigurationSetResult = OpenConfigurationSet(content);
         if (openConfigurationSetResult.ResultCode != null)
         {
-            return new ConfigurationResultTypes.ApplyConfigurationResult(openConfigurationSetResult.ResultCode, openConfigurationSetResult, null);
+            return new ConfigurationResultTypes.ApplyConfigurationResult(openConfigurationSetResult.ResultCode, string.Empty, openConfigurationSetResult, null);
         }
 
         var applyConfigurationSetResult = await ApplyConfigurationSetAsync(progress);
 
-        return new ConfigurationResultTypes.ApplyConfigurationResult(applyConfigurationSetResult.ResultCode, openConfigurationSetResult, applyConfigurationSetResult);
+        return new ConfigurationResultTypes.ApplyConfigurationResult(applyConfigurationSetResult.ResultCode, string.Empty, openConfigurationSetResult, applyConfigurationSetResult);
     }
 
     private void LogConfigurationDiagnostics(WinGet.DiagnosticInformation diagnosticInformation)

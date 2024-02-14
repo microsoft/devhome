@@ -3,6 +3,7 @@
 
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using HyperVExtension.HostGuestCommunication;
 using Microsoft.Windows.DevHome.DevSetupEngine;
 
 namespace HyperVExtension.DevSetupAgent;
@@ -58,9 +59,9 @@ internal sealed class ConfigureResponse : ResponseBase
     private readonly ApplyConfigurationResult _applyConfigurationResult;
 
     public ConfigureResponse(string requestId, IApplyConfigurationResult applyConfigurationResult)
-        : base(requestId)
+        : base(requestId, "Configure")
     {
-        _applyConfigurationResult = new ApplyConfigurationResult(applyConfigurationResult);
+        _applyConfigurationResult = new ApplyConfigurationResult().Populate(applyConfigurationResult);
         GenerateJsonData();
     }
 

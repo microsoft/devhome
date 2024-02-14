@@ -18,14 +18,17 @@ namespace HyperVExtension.DevSetupEngine.ConfigurationResultTypes;
 [ComDefaultInterface(typeof(IApplyConfigurationResult))]
 public class ApplyConfigurationResult : IApplyConfigurationResult
 {
-    public ApplyConfigurationResult(Exception? resultCode, IOpenConfigurationSetResult? openConfigurationSetResult, IApplyConfigurationSetResult? applyConfigurationSetResult)
+    public ApplyConfigurationResult(Exception? resultCode, string resultDescription, IOpenConfigurationSetResult? openConfigurationSetResult, IApplyConfigurationSetResult? applyConfigurationSetResult)
     {
         ResultCode = resultCode;
+        ResultDescription = resultDescription;
         OpenConfigurationSetResult = openConfigurationSetResult;
         ApplyConfigurationSetResult = applyConfigurationSetResult;
     }
 
     public Exception? ResultCode { get; }
+
+    public string ResultDescription { get; }
 
     public IOpenConfigurationSetResult? OpenConfigurationSetResult { get; }
 

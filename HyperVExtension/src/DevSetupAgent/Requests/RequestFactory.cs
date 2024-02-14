@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.ServiceModel.Channels;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Windows.Storage;
@@ -12,57 +13,59 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 public class RequestFactory : IRequestFactory
 {
-    public delegate IHostRequest CreateRequestDelegate(IRequestMessage message, JsonNode json);
+    public delegate IHostRequest CreateRequestDelegate(IRequestContext requestContext);
 
     private static readonly Dictionary<string, CreateRequestDelegate> _requestFactories = new()
     {
         // TODO: Define request type constants in one place
-        { "GetVersion", (message, json) => new GetVersionRequest(message, json) },
-        { "Configure", (message, json) => new ConfigureRequest(message, json) },
+        { "GetVersion", (requestContext) => new GetVersionRequest(requestContext) },
+        { "Configure", (requestContext) => new ConfigureRequest(requestContext) },
+        { "Ack", (requestContext) => new AckRequest(requestContext) },
     };
 
     public RequestFactory()
     {
     }
 
-    public IHostRequest CreateRequest(IRequestMessage message)
+    public IHostRequest CreateRequest(IRequestContext requestContext)
     {
         // Parse message.RequestData and create appropriate request object
         try
         {
-            if (!string.IsNullOrEmpty(message.RequestData))
+            if (!string.IsNullOrEmpty(requestContext.RequestMessage.RequestData))
             {
-                Logging.Logger()?.ReportInfo($"Received message: ID: '{message.RequestId}' Data: '{message.RequestData}'");
-                var requestJson = JsonNode.Parse(message.RequestData);
+                Logging.Logger()?.ReportInfo($"Received message: ID: '{requestContext.RequestMessage.RequestId}' Data: '{requestContext.RequestMessage.RequestData}'");
+                var requestJson = JsonNode.Parse(requestContext.RequestMessage.RequestData);
                 var requestType = (string?)requestJson?["RequestType"];
                 if (requestType != null)
                 {
                     if (_requestFactories.TryGetValue(requestType, out var createRequest))
                     {
                         // TODO: Try/catch error.
-                        return createRequest(message, requestJson!);
+                        requestContext.JsonData = requestJson!;
+                        return createRequest(requestContext);
                     }
                     else
                     {
-                        return new ErrorUnsupportedRequest(message, requestJson!, requestType);
+                        return new ErrorUnsupportedRequest(requestContext);
                     }
                 }
 
-                return new ErrorNoTypeRequest(message, requestJson!);
+                return new ErrorNoTypeRequest(requestContext.RequestMessage);
             }
             else
             {
                 // We have message id but no data, log error. Send error response.
-                Logging.Logger()?.ReportInfo($"Received message with empty data: ID: {message.RequestId}");
-                return new ErrorRequest(message, new JsonObject());
+                Logging.Logger()?.ReportInfo($"Received message with empty data: ID: {requestContext.RequestMessage.RequestId}");
+                return new ErrorRequest(requestContext.RequestMessage);
             }
         }
         catch (Exception ex)
         {
-            var messageId = message?.RequestId ?? "<unknown>";
-            var requestData = message?.RequestData ?? "<unknown>";
+            var messageId = requestContext.RequestMessage.RequestId ?? "<unknown>";
+            var requestData = requestContext.RequestMessage.RequestData ?? "<unknown>";
             Logging.Logger()?.ReportError($"Error processing message. Message ID: {messageId}. Request data: {requestData}", ex);
-            return new ErrorRequest(message!, new JsonObject());
+            return new ErrorRequest(requestContext.RequestMessage);
         }
     }
 }

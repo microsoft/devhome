@@ -11,15 +11,7 @@ internal sealed class GetVersionResponse : ResponseBase
     public GetVersionResponse(string requestId)
         : base(requestId)
     {
+        RequestType = "GetVersion";
         GenerateJsonData();
-    }
-
-    // TODO: Get version from assembly
-    public string Version => "0.0.1";
-
-    protected override void GenerateJsonData()
-    {
-        base.GenerateJsonData();
-        JsonData![nameof(Version)] = Version;
     }
 }

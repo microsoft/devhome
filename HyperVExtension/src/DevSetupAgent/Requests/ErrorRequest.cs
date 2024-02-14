@@ -9,20 +9,26 @@ namespace HyperVExtension.DevSetupAgent;
 /// Class used to handle invalid requests (for example an exception while parsing request JSON).
 /// It creates an error response to send back to the client.
 /// </summary>
-internal sealed class ErrorRequest : RequestBase
+internal class ErrorRequest : IHostRequest
 {
-    public ErrorRequest(IRequestMessage requestMessage, JsonNode jsonData)
-        : base(requestMessage, jsonData)
+    public ErrorRequest(IRequestMessage requestMessage)
     {
+        Timestamp = DateTime.UtcNow;
+        RequestId = requestMessage.RequestId!;
     }
 
-    public override bool IsStatusRequest => true;
+    public virtual uint Version { get; set; } = 1;
 
-    public override string RequestType => "ErrorNoType";
+    public virtual bool IsStatusRequest => true;
 
-    public override IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
+    public virtual string RequestId { get; }
+
+    public virtual string RequestType => "ErrorNoData";
+
+    public DateTime Timestamp { get; }
+
+    public virtual IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
     {
-        // TODO: This is a placeholder for a real request.
-        return new GetVersionResponse(RequestMessage.RequestId!);
+        return new ErrorResponse(RequestId);
     }
 }

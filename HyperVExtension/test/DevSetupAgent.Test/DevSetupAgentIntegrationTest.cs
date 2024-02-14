@@ -3,6 +3,7 @@
 
 using System.Text.Json;
 using HyperVExtension.DevSetupAgent;
+using HyperVExtension.HostGuestCommunication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
@@ -39,7 +40,7 @@ public class DevSetupAgentIntegrationTest
     [ClassCleanup]
     public static void ClassCleanup()
     {
-        Registry.CurrentUser.DeleteSubKeyTree(@"TEST", false);
+        //// Registry.CurrentUser.DeleteSubKeyTree(@"TEST", false);
     }
 
     [TestInitialize]
@@ -60,12 +61,13 @@ public class DevSetupAgentIntegrationTest
         var registryChannelSettings = TestHost.GetService<IRegistryChannelSettings>();
         var inputkey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.FromHostRegistryKeyPath);
         var messageId = "DevSetup{10000000-1000-1000-1000-100000000000}";
-        inputkey.SetValue(messageId, $"{{\"RequestId\": \"{messageId}\", \"RequestType\": \"GetVersion\", \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"}}");
+        var messageName = messageId + "~1~1";
+        inputkey.SetValue(messageName, $"{{\"RequestId\": \"{messageId}\", \"RequestType\": \"GetVersion\", \"Version\": 1, \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"}}");
 
         Thread.Sleep(3000);
 
         var outputKey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.ToHostRegistryKeyPath);
-        var responseMessage = (string?)outputKey.GetValue(messageId);
+        var responseMessage = (string?)outputKey.GetValue(messageName);
         Assert.IsNotNull(responseMessage);
         var json = JsonDocument.Parse(responseMessage).RootElement;
         Assert.AreEqual(messageId, json.GetProperty("RequestId").GetString());
@@ -75,8 +77,8 @@ public class DevSetupAgentIntegrationTest
         var now = DateTime.UtcNow;
         Assert.IsTrue(now - time < TimeSpan.FromSeconds(5));
 
-        var version = json.GetProperty("Version").GetString();
-        Assert.AreEqual("0.0.1", version);
+        var version = json.GetProperty("Version").GetInt32();
+        Assert.AreEqual(1, version);
 
         // TODO: Check that the response message is deleted
     }
@@ -87,12 +89,13 @@ public class DevSetupAgentIntegrationTest
         var registryChannelSettings = TestHost.GetService<IRegistryChannelSettings>();
         var inputkey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.FromHostRegistryKeyPath);
         var messageId = "DevSetup{10000000-1000-1000-1000-200000000000}";
-        inputkey.SetValue(messageId, $"{{\"RequestId\": \"{messageId}\", \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"}}");
+        var messageName = messageId + "~1~1";
+        inputkey.SetValue(messageName, $"{{\"RequestId\": \"{messageId}\", \"Version\": 1, \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"}}");
 
         Thread.Sleep(3000);
 
         var outputKey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.ToHostRegistryKeyPath);
-        var responseMessage = (string?)outputKey.GetValue(messageId);
+        var responseMessage = (string?)outputKey.GetValue(messageName);
         Assert.IsNotNull(responseMessage);
         var json = JsonDocument.Parse(responseMessage).RootElement;
         Assert.AreEqual(messageId, json.GetProperty("RequestId").GetString());
@@ -135,30 +138,35 @@ properties:
 
         var noNewLinesYaml = yaml.Replace(System.Environment.NewLine, "\\n");
 
-        yaml.ReplaceLineEndings("\r\n");
         var registryChannelSettings = TestHost.GetService<IRegistryChannelSettings>();
         var inputkey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.FromHostRegistryKeyPath);
         var messageId = "DevSetup{10000000-1000-1000-1000-100000000001}";
+        var messageName = messageId + "~1~1";
         var requestData =
             $"{{\"RequestId\": \"{messageId}\"," +
-            $" \"RequestType\": \"Configure\", \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"," +
+            $" \"RequestType\": \"Configure\", \"Version\": 1, \"Timestamp\":\"2023-11-21T08:08:58.6287789Z\"," +
             $" \"Configure\": \"{noNewLinesYaml}\" }}";
 
-        inputkey.SetValue(messageId, requestData);
+        inputkey.SetValue(messageName, requestData);
 
-        string? responseMessage = null;
         var outputKey = Registry.CurrentUser.CreateSubKey(registryChannelSettings.ToHostRegistryKeyPath);
         var waitTime = DateTime.Now + TimeSpan.FromMinutes(3);
+        var foundProgressMessage = false;
         var foundCompletedMessage = false;
         while ((waitTime > DateTime.Now) && !foundCompletedMessage)
         {
             Thread.Sleep(1000);
-            var valueNames = outputKey.GetValueNames();
-            foreach (var valueName in valueNames)
+            var messages = MessageHelper.MergeMessageParts(MessageHelper.GetRegistryMessageKvp(outputKey));
+            if (messages.Count == 0)
             {
-                System.Diagnostics.Trace.WriteLine($"Found response registry value '{valueName}'");
+                continue;
+            }
 
-                responseMessage = (string?)outputKey.GetValue(valueName);
+            foreach (var message in messages)
+            {
+                System.Diagnostics.Trace.WriteLine($"Found response registry value '{message.Key}'");
+
+                var responseMessage = message.Value;
                 if (responseMessage != null)
                 {
                     var json = JsonDocument.Parse(responseMessage).RootElement;
@@ -177,6 +185,7 @@ properties:
                         var configurationSetChangeData = json.GetProperty("ConfigurationSetChangeData").GetString();
                         Assert.IsNotNull(configurationSetChangeData);
                         System.Diagnostics.Trace.WriteLine(configurationSetChangeData);
+                        foundProgressMessage = true;
                     }
                     else
                     {
@@ -184,10 +193,11 @@ properties:
                     }
                 }
 
-                outputKey.DeleteValue(valueName);
+                MessageHelper.DeleteAllMessages(Registry.CurrentUser, registryChannelSettings.FromHostRegistryKeyPath, message.Key);
             }
         }
 
-        Assert.IsNotNull(responseMessage);
+        Assert.IsNotNull(foundProgressMessage);
+        Assert.IsNotNull(foundCompletedMessage);
     }
 }

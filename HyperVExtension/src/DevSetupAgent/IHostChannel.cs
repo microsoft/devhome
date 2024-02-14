@@ -11,4 +11,6 @@ public interface IHostChannel
     Task<IRequestMessage> WaitForMessageAsync(CancellationToken stoppingToken);
 
     void SendMessageAsync(IResponseMessage responseMessage, CancellationToken stoppingToken);
+
+    void DeleteResponseMessageAsync(string responseId, CancellationToken stoppingToken);
 }

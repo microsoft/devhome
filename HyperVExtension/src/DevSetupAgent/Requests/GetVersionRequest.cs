@@ -10,14 +10,12 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal sealed class GetVersionRequest : RequestBase
 {
-    public GetVersionRequest(IRequestMessage requestMessage, JsonNode jsonData)
-        : base(requestMessage, jsonData)
+    public GetVersionRequest(IRequestContext requestContext)
+        : base(requestContext)
     {
     }
 
     public override bool IsStatusRequest => true;
-
-    public override string RequestType => "GetVersion";
 
     public override IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
     {

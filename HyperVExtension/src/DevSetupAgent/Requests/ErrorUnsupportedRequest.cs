@@ -10,19 +10,15 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal sealed class ErrorUnsupportedRequest : RequestBase
 {
-    public ErrorUnsupportedRequest(IRequestMessage requestMessage, JsonNode jsonData, string requestType)
-        : base(requestMessage, jsonData)
+    public ErrorUnsupportedRequest(IRequestContext requestContext)
+        : base(requestContext)
     {
-        RequestType = requestType;
     }
 
     public override bool IsStatusRequest => true;
 
-    public override string RequestType { get; }
-
     public override IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
     {
-        // TODO: This is a placeholder for a real request.
-        return new GetVersionResponse(RequestMessage.RequestId!);
+        return new ErrorUnsupportedRequestResponse(RequestId, RequestType);
     }
 }

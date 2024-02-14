@@ -1,0 +1,3 @@
+﻿GetCurrentPackageFullName
+WIN32_ERROR
+S_OK

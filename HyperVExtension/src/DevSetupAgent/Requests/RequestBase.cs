@@ -17,14 +17,16 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal abstract class RequestBase : IHostRequest
 {
-    public RequestBase(IRequestMessage message, JsonNode jsonData)
+    public RequestBase(IRequestContext requestContext)
     {
-        RequestMessage = message;
-        JsonData = jsonData;
+        RequestContext = requestContext;
         RequestId = GetRequiredStringValue(nameof(RequestId));
         RequestType = GetRequiredStringValue(nameof(RequestType));
+        Version = GetRequiredUintValue(nameof(Version));
         Timestamp = GetRequiredDateTimeValue(nameof(Timestamp));
     }
+
+    protected IRequestContext RequestContext { get; }
 
     public virtual bool IsStatusRequest => false;
 
@@ -32,19 +34,15 @@ internal abstract class RequestBase : IHostRequest
 
     public virtual string RequestType { get; }
 
+    public virtual uint Version { get; set; }
+
     public virtual DateTime Timestamp { get; }
 
     public abstract IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken);
 
-    public IRequestMessage RequestMessage
-    {
-        get;
-    }
+    public IRequestMessage RequestMessage => RequestContext.RequestMessage;
 
-    public JsonNode JsonData
-    {
-        get;
-    }
+    public JsonNode JsonData => RequestContext.JsonData!;
 
     protected string GetRequiredStringValue(string valueName)
     {
@@ -69,6 +67,18 @@ internal abstract class RequestBase : IHostRequest
         try
         {
             return (DateTime?)JsonData[valueName] ?? throw new ArgumentException($"{valueName} cannot be empty.");
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException($"{valueName} cannot be empty.", ex);
+        }
+    }
+
+    protected uint GetRequiredUintValue(string valueName)
+    {
+        try
+        {
+            return (uint?)JsonData[valueName] ?? throw new ArgumentException($"{valueName} cannot be empty.");
         }
         catch (Exception ex)
         {
