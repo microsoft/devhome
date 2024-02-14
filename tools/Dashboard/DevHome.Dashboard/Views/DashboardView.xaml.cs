@@ -248,16 +248,26 @@ public partial class DashboardView : ToolPage
             }
         }
 
+        // Merge the dictionaries for easier looping. restoredWidgetsWithoutPosition should be empty, so this should be fast.
+        var lastOrderedKey = restoredWidgetsWithPosition.Count > 0 ? restoredWidgetsWithPosition.Last().Key : -1;
+        restoredWidgetsWithoutPosition.ToList().ForEach(x => restoredWidgetsWithPosition.Add(++lastOrderedKey, x.Value));
+
         // Now that we've ordered the widgets, put them in their final collection.
         var finalPlace = 0;
         foreach (var orderedWidget in restoredWidgetsWithPosition)
         {
-            await PlaceWidget(orderedWidget, finalPlace++);
+            var widget = orderedWidget.Value;
+            var size = await widget.GetSizeAsync();
+            await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace++);
         }
 
-        foreach (var orderedWidget in restoredWidgetsWithoutPosition)
+        // Go through the newly created list of pinned widgets and update any positions that may have changed.
+        // For example, if the provider for the widget at position 0 was deleted, the widget at position 1
+        // should be updated to have position 0, etc.
+        var updatedPlace = 0;
+        foreach (var widget in PinnedWidgets)
         {
-            await PlaceWidget(orderedWidget, finalPlace++);
+            await WidgetHelpers.SetPositionCustomStateAsync(widget.Widget, updatedPlace++);
         }
     }
 
@@ -274,14 +284,6 @@ public partial class DashboardView : ToolPage
         var newWidgetList = await Task.Run(() => widgetHost.GetWidgets());
         length = (newWidgetList == null) ? 0 : newWidgetList.Length;
         Log.Logger()?.ReportInfo("DashboardView", $"After delete, {length} widgets for this host");
-    }
-
-    private async Task PlaceWidget(KeyValuePair<int, Widget> orderedWidget, int finalPlace)
-    {
-        var widget = orderedWidget.Value;
-        var size = await widget.GetSizeAsync();
-        await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace);
-        await WidgetHelpers.SetPositionCustomStateAsync(widget, finalPlace);
     }
 
     private async Task PinDefaultWidgetsAsync()
@@ -587,8 +589,9 @@ public partial class DashboardView : ToolPage
         // widgets between the starting and ending indices move up to replace the removed widget. If the widget was
         // moved from a higher index to a lower one, then the order of removal and insertion doesn't matter.
         PinnedWidgets.RemoveAt(draggedIndex);
-        var widgetPair = new KeyValuePair<int, Widget>(droppedIndex, draggedWidgetViewModel.Widget);
-        await PlaceWidget(widgetPair, droppedIndex);
+        var size = await draggedWidgetViewModel.Widget.GetSizeAsync();
+        await InsertWidgetInPinnedWidgetsAsync(draggedWidgetViewModel.Widget, size, droppedIndex);
+        await WidgetHelpers.SetPositionCustomStateAsync(draggedWidgetViewModel.Widget, droppedIndex);
 
         // Update the CustomState Position of any widgets that were moved.
         // The widget that has been dropped has already been updated, so don't do it again here.
