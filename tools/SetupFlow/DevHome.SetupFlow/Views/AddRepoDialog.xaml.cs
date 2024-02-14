@@ -43,14 +43,6 @@ public partial class AddRepoDialog : ContentDialog
     }
 
     /// <summary>
-    /// Gets or sets the view model to handle adding a dev drive.
-    /// </summary>
-    public EditDevDriveViewModel EditDevDriveViewModel
-    {
-        get; set;
-    }
-
-    /// <summary>
     /// Hold the clone location in case the user decides not to add a dev drive.
     /// </summary>
     private string _oldCloneLocation;
@@ -68,14 +60,7 @@ public partial class AddRepoDialog : ContentDialog
         var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var defaultClonePath = Path.Join(userFolder, "source", "repos");
 
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId, defaultClonePath, this);
-        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
-
-        EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
-        {
-            AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
-            AddRepoViewModel.FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
-        };
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId, defaultClonePath, this, devDriveManager);
 
         // Changing view to account so the selection changed event for Segment correctly shows URL.
         AddRepoViewModel.CurrentPage = PageKind.AddViaAccount;
@@ -130,13 +115,13 @@ public partial class AddRepoDialog : ContentDialog
     {
         await Task.Run(() =>
         {
-            EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
+            AddRepoViewModel.EditDevDriveViewModel.SetUpStateIfDevDrivesIfExists();
 
-            if (EditDevDriveViewModel.DevDrive != null &&
-                EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
+            if (AddRepoViewModel.EditDevDriveViewModel.DevDrive != null &&
+                AddRepoViewModel.EditDevDriveViewModel.DevDrive.State == DevDriveState.ExistsOnSystem)
             {
                 AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario = true;
-                EditDevDriveViewModel.ClonePathUpdated();
+                AddRepoViewModel.EditDevDriveViewModel.ClonePathUpdated();
             }
         });
     }
@@ -145,7 +130,7 @@ public partial class AddRepoDialog : ContentDialog
     {
         AddRepoViewModel.ChangeToAccountPage();
         AddRepoViewModel.FolderPickerViewModel.CloseFolderPicker();
-        EditDevDriveViewModel.HideDevDriveUI();
+        AddRepoViewModel.EditDevDriveViewModel.HideDevDriveUI();
 
         // If DevHome has 1 provider installed and the provider has 1 logged in account
         // switch to the repo page.
@@ -164,7 +149,7 @@ public partial class AddRepoDialog : ContentDialog
         RepositoryProviderComboBox.SelectedIndex = -1;
         AddRepoViewModel.ChangeToUrlPage();
         AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
-        EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+        AddRepoViewModel.EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
         ToggleCloneButton();
     }
 
@@ -188,7 +173,7 @@ public partial class AddRepoDialog : ContentDialog
             var location = cloneLocationTextBox.Text;
             if (string.Equals(cloneLocationTextBox.Name, "DevDriveCloneLocationAliasTextBox", StringComparison.Ordinal))
             {
-                location = (EditDevDriveViewModel.DevDrive != null) ? EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
+                location = (AddRepoViewModel.EditDevDriveViewModel.DevDrive != null) ? AddRepoViewModel.EditDevDriveViewModel.GetDriveDisplayName() : string.Empty;
             }
 
             // In cases where location is empty don't update the cloneLocation. Only update when there are actual values.
@@ -346,7 +331,7 @@ public partial class AddRepoDialog : ContentDialog
         {
             AddRepoViewModel.ChangeToRepoPage();
             AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
-            EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+            AddRepoViewModel.EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
             AddRepoViewModel.SelectedAccount = AddRepoViewModel.Accounts.First();
             AddRepoViewModel.ShouldEnablePrimaryButton = false;
         }
@@ -370,7 +355,7 @@ public partial class AddRepoDialog : ContentDialog
         {
             AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = string.Empty;
             AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario = false;
-            EditDevDriveViewModel.RemoveNewDevDrive();
+            AddRepoViewModel.EditDevDriveViewModel.RemoveNewDevDrive();
             AddRepoViewModel.FolderPickerViewModel.EnableBrowseButton();
             AddRepoViewModel.FolderPickerViewModel.CloneLocation = _oldCloneLocation;
         }
@@ -381,7 +366,7 @@ public partial class AddRepoDialog : ContentDialog
     /// </summary>
     private async void CustomizeDevDriveHyperlinkButton_ClickAsync(object sender, RoutedEventArgs e)
     {
-        await EditDevDriveViewModel.PopDevDriveCustomizationAsync();
+        await AddRepoViewModel.EditDevDriveViewModel.PopDevDriveCustomizationAsync();
         ToggleCloneButton();
     }
 
@@ -391,9 +376,9 @@ public partial class AddRepoDialog : ContentDialog
     private void ToggleCloneButton()
     {
         var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && AddRepoViewModel.FolderPickerViewModel.ValidateCloneLocation();
-        if (EditDevDriveViewModel.DevDrive != null && EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
+        if (AddRepoViewModel.EditDevDriveViewModel.DevDrive != null && AddRepoViewModel.EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
         {
-            isEverythingGood &= EditDevDriveViewModel.IsDevDriveValid();
+            isEverythingGood &= AddRepoViewModel.EditDevDriveViewModel.IsDevDriveValid();
         }
 
         AddRepoViewModel.ShouldEnablePrimaryButton = isEverythingGood;
@@ -449,12 +434,12 @@ public partial class AddRepoDialog : ContentDialog
     /// </summary>
     public void UpdateDevDriveInfo()
     {
-        EditDevDriveViewModel.MakeDefaultDevDrive();
+        AddRepoViewModel.EditDevDriveViewModel.MakeDefaultDevDrive();
         AddRepoViewModel.FolderPickerViewModel.DisableBrowseButton();
         _oldCloneLocation = AddRepoViewModel.FolderPickerViewModel.CloneLocation;
-        AddRepoViewModel.FolderPickerViewModel.CloneLocation = EditDevDriveViewModel.GetDriveDisplayName();
-        AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+        AddRepoViewModel.FolderPickerViewModel.CloneLocation = AddRepoViewModel.EditDevDriveViewModel.GetDriveDisplayName();
+        AddRepoViewModel.FolderPickerViewModel.CloneLocationAlias = AddRepoViewModel.EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
         AddRepoViewModel.FolderPickerViewModel.InDevDriveScenario = true;
-        EditDevDriveViewModel.IsDevDriveCheckboxChecked = true;
+        AddRepoViewModel.EditDevDriveViewModel.IsDevDriveCheckboxChecked = true;
     }
 }

@@ -78,7 +78,7 @@ public sealed partial class RepoConfigView : UserControl
 
         _addRepoDialog.SetDeveloperIdChangedEvents();
 
-        if (_addRepoDialog.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
+        if (_addRepoDialog.AddRepoViewModel.EditDevDriveViewModel.CanShowDevDriveUI && ViewModel.ShouldAutoCheckDevDriveCheckbox)
         {
             _addRepoDialog.UpdateDevDriveInfo();
         }
@@ -86,9 +86,9 @@ public sealed partial class RepoConfigView : UserControl
         _addRepoDialog.IsSecondaryButtonEnabled = true;
         var result = await _addRepoDialog.ShowAsync(ContentDialogPlacement.InPlace);
 
-        var devDrive = _addRepoDialog.EditDevDriveViewModel.DevDrive;
+        var devDrive = _addRepoDialog.AddRepoViewModel.EditDevDriveViewModel.DevDrive;
 
-        if (_addRepoDialog.EditDevDriveViewModel.IsWindowOpen)
+        if (_addRepoDialog.AddRepoViewModel.EditDevDriveViewModel.IsWindowOpen)
         {
             ViewModel.DevDriveManager.RequestToCloseDevDriveWindow(devDrive);
         }
@@ -145,7 +145,7 @@ public sealed partial class RepoConfigView : UserControl
 
             // Check if user unchecked the Dev Drive checkbox before closing, to update the the behavior the next time the user launches the dialog. Note we only keep
             // track of this for the current launch of the setup flow. If the user completes or cancels the setup flow and re enters, we do not keep the unchecked behavior.
-            if (!_addRepoDialog.EditDevDriveViewModel.IsDevDriveCheckboxChecked)
+            if (!_addRepoDialog.AddRepoViewModel.EditDevDriveViewModel.IsDevDriveCheckboxChecked)
             {
                 ViewModel.ShouldAutoCheckDevDriveCheckbox = false;
             }
@@ -177,8 +177,8 @@ public sealed partial class RepoConfigView : UserControl
                 addKind,
                 _addRepoDialog.AddRepoViewModel.EverythingToClone.Count,
                 providerName,
-                _addRepoDialog.EditDevDriveViewModel.DevDrive.State == DevDriveState.New,
-                _addRepoDialog.EditDevDriveViewModel.DevDriveDetailsChanged),
+                _addRepoDialog.AddRepoViewModel.EditDevDriveViewModel.DevDrive.State == DevDriveState.New,
+                _addRepoDialog.AddRepoViewModel.EditDevDriveViewModel.DevDriveDetailsChanged),
                 ActivityId);
         }
         else if (cloneLocationKind == CloneLocationKind.LocalPath)

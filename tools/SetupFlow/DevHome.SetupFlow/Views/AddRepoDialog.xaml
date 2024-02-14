@@ -45,9 +45,14 @@
                     </Style>
                 </ResourceDictionary>
             </StackPanel.Resources>
-            <ctControls:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single" SelectionChanged="Segmented_SelectionChanged">
-                <ctControls:SegmentedItem x:Name="AddViaAccountSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton" IsEnabled="{x:Bind AddRepoViewModel.IsAccountButtonEnabled, Mode=OneWay}" AutomationProperties.PositionInSet="1" AutomationProperties.SizeOfSet="2"/>
-                <ctControls:SegmentedItem x:Name="AddViaUrlSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" AutomationProperties.PositionInSet="2" AutomationProperties.SizeOfSet="2"/>
+            <ctControls:Segmented MaxWidth="445" x:Name="SwitchViewsSegmentedView" HorizontalAlignment="Stretch" SelectionMode="Single">
+                <i:Interaction.Behaviors>
+                    <ic:EventTriggerBehavior EventName="SelectionChanged">
+                        <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.ChangePageCommand}" CommandParameter="{x:Bind SwitchViewsSegmentedView.SelectedItem, Mode=OneWay}"/>
+                    </ic:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+                <ctControls:SegmentedItem x:Name="AddViaAccountSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaAccountButton" IsEnabled="{x:Bind AddRepoViewModel.IsAccountButtonEnabled, Mode=OneWay}" AutomationProperties.PositionInSet="1" AutomationProperties.SizeOfSet="2" Tag="Account"/>
+                <ctControls:SegmentedItem x:Name="AddViaUrlSegmentedItem" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_AddViaUrlButton" AutomationProperties.PositionInSet="2" AutomationProperties.SizeOfSet="2" Tag="URL"/>
             </ctControls:Segmented>
 
             <!-- Adding a repo via URL -->
@@ -88,13 +93,28 @@
             
             <!-- Show Repositories -->
             <StackPanel x:Name="ShowRepositoriesStackPanel" Visibility="{x:Bind AddRepoViewModel.ShowRepoPage, Mode=OneWay}" Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
-                <Grid ColumnSpacing="8">
+                <Grid ColumnSpacing="8" RowSpacing="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="1.5*"/>
                     </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
                     <SplitButton x:Name="AccountSplitButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Grid.Row="0" Content="{x:Bind AddRepoViewModel.SelectedAccount, Mode=OneWay}" Flyout="{x:Bind AddRepoViewModel.AccountsToShow, Mode=OneWay}"/>
                     <TextBox x:Name="FilterTextBox" Grid.Column="1" TextChanged="FilterTextBox_TextChanged" x:Uid="ms-resource:///DevHome.SetupFlow/Resources/RepoTool_FilterTextBox" />
+                    <ComboBox x:Name="SortMethodComboBox" PlaceholderText="Sort" Grid.Row="1" Grid.ColumnSpan="2">
+                        <ComboBox.Items>
+                            <x:String>Name asending</x:String>
+                            <x:String>Name desending</x:String>
+                        </ComboBox.Items>
+                        <i:Interaction.Behaviors>
+                            <ic:EventTriggerBehavior EventName="SelectionChanged">
+                                <ic:InvokeCommandAction Command="{x:Bind AddRepoViewModel.SortReposCommand}" CommandParameter="{x:Bind SortMethodComboBox.SelectedItem, Mode=OneWay}"/>
+                            </ic:EventTriggerBehavior>
+                        </i:Interaction.Behaviors>
+                    </ComboBox>
                 </Grid>
                 <Grid Visibility="{x:Bind AddRepoViewModel.IsFetchingRepos, Mode=OneWay}" Height="300" Width="300">
                     <ProgressRing/>
@@ -168,7 +188,7 @@
             </Grid>
             <TextBlock Text="{x:Bind AddRepoViewModel.FolderPickerViewModel.FolderPickerErrorMessage, Mode=OneWay}" Visibility="{x:Bind AddRepoViewModel.FolderPickerViewModel.ShowFolderPickerError, Mode=OneWay}"/>
             <Grid
-                    Visibility="{x:Bind EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" 
+                    Visibility="{x:Bind AddRepoViewModel.EditDevDriveViewModel.ShowDevDriveInformation, Mode=OneWay}" 
                     Margin="0 10 0 10"
                     Grid.Row="2"
                     ColumnSpacing="10">
@@ -182,15 +202,15 @@
                 </Grid.RowDefinitions>
                 <CheckBox
                         Click="MakeNewDevDriveCheckBox_Click" 
-                        IsEnabled="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" 
-                        IsChecked="{x:Bind EditDevDriveViewModel.IsDevDriveCheckboxChecked, Mode=TwoWay}" 
+                        IsEnabled="{x:Bind AddRepoViewModel.EditDevDriveViewModel.IsDevDriveCheckboxEnabled}" 
+                        IsChecked="{x:Bind AddRepoViewModel.EditDevDriveViewModel.IsDevDriveCheckboxChecked, Mode=TwoWay}" 
                         Grid.Column="0" 
                         Grid.Row="0"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/NewDevDriveComboBox"/>
                 <HyperlinkButton 
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/CustomizeHyperLink"
                         Grid.Column="1" 
-                        Visibility="{x:Bind EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" 
+                        Visibility="{x:Bind AddRepoViewModel.EditDevDriveViewModel.ShowCustomizeOption, Mode=OneWay}" 
                         Click="CustomizeDevDriveHyperlinkButton_ClickAsync"
                         Grid.Row="0"
                         Margin="0 -3 0 0"
@@ -205,7 +225,7 @@
                         Severity="Error"
                         HorizontalAlignment="Stretch"
                         x:Uid="ms-resource:///DevHome.SetupFlow/Resources/DevDriveDefaultDriveCheckBoxError"
-                        Visibility="{x:Bind EditDevDriveViewModel.DevDriveValidationError, Mode=OneWay}"/>
+                        Visibility="{x:Bind AddRepoViewModel.EditDevDriveViewModel.DevDriveValidationError, Mode=OneWay}"/>
             </Grid>
         </StackPanel>
     </ScrollViewer>

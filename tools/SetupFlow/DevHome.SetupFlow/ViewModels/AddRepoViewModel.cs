@@ -10,6 +10,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.WinUI.Collections;
+using CommunityToolkit.WinUI.Controls;
+using DevHome.Common.Contracts;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
 using DevHome.Common.TelemetryEvents.DeveloperId;
@@ -48,7 +51,7 @@ public partial class AddRepoViewModel : ObservableObject
     private readonly List<CloningInformation> _previouslySelectedRepos;
 
     /// <summary>
-    /// Because logic is split between the back-end and the view model, incrementally migrating code from the view
+    /// Because logic is split between the back-end and the view model, migrating code from the view
     /// to the view model is impossible.
     /// This member is here to support this partial migration.  Once all the code-behind logic is out of the view
     /// _addRepoDialog can be removed.
@@ -67,6 +70,14 @@ public partial class AddRepoViewModel : ObservableObject
     /// THis can be made private when EditDevDriveViewModel is in this class.
     /// </remarks>
     public FolderPickerViewModel FolderPickerViewModel
+    {
+        get; private set;
+    }
+
+    /// <summary>
+    /// Gets the view model to handle adding a dev drive.
+    /// </summary>
+    public EditDevDriveViewModel EditDevDriveViewModel
     {
         get; private set;
     }
@@ -128,7 +139,7 @@ public partial class AddRepoViewModel : ObservableObject
     /// All repositories currently shown on the screen.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<RepoViewListItem> _repositories = new();
+    private IncrementalLoadingCollection<IncrementalRepoViewItemViewModel, RepoViewListItem> _repositories = new();
 
     /// <summary>
     /// Should the URL page be visible?
@@ -198,6 +209,33 @@ public partial class AddRepoViewModel : ObservableObject
     [ObservableProperty]
     private bool _isCancelling;
 
+    private enum SegmentedItemTag
+    {
+        Account,
+        URL,
+    }
+
+    [RelayCommand]
+    public void ChangePage(SegmentedItem selectedItem)
+    {
+        var pageToGoTo = Enum.Parse<SegmentedItemTag>(selectedItem.Tag.ToString());
+
+        if (pageToGoTo == SegmentedItemTag.Account)
+        {
+            ChangeToAccountPage();
+            return;
+        }
+
+        if (pageToGoTo == SegmentedItemTag.URL)
+        {
+            ChangeToUrlPage();
+            return;
+        }
+
+        // enum did not match.  Don't change.
+        return;
+    }
+
     /// <summary>
     /// Indicates if the ListView is currently filtering items.  A result of manually filtering a list view
     /// is that the SelectionChanged is fired for any selected item that is removed and the item isn't "re-selected"
@@ -238,7 +276,9 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         _isFiltering = true;
-        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(filteredRepositories));
+        var localRepositoires = OrderRepos(filteredRepositories).ToList();
+        var indexer = new IncrementalRepoViewItemViewModel(localRepositoires);
+        Repositories = new IncrementalLoadingCollection<IncrementalRepoViewItemViewModel, RepoViewListItem>(indexer);
         _isFiltering = false;
     }
 
@@ -350,6 +390,30 @@ public partial class AddRepoViewModel : ObservableObject
         });
     }
 
+    [RelayCommand]
+    public void SortRepos(string sortMethod)
+    {
+        var repositories = new List<RepoViewListItem>();
+        if (sortMethod.Equals("Name asending", StringComparison.OrdinalIgnoreCase))
+        {
+            repositories = _repositoriesForAccount
+                .OrderBy(x => Path.Join(x.OwningAccountName, x.DisplayName))
+                .Select(x => new RepoViewListItem(x))
+                .ToList();
+        }
+
+        if (sortMethod.Equals("Name desending", StringComparison.OrdinalIgnoreCase))
+        {
+            repositories = _repositoriesForAccount
+                .OrderByDescending(x => Path.Join(x.OwningAccountName, x.DisplayName))
+                .Select(x => new RepoViewListItem(x))
+                .ToList();
+        }
+
+        var indexer = new IncrementalRepoViewItemViewModel(repositories);
+        Repositories = new IncrementalLoadingCollection<IncrementalRepoViewItemViewModel, RepoViewListItem>(indexer);
+    }
+
     /// <summary>
     /// Makes the MenuFlyout object used to display multple accounts in the repo tool.
     /// </summary>
@@ -442,7 +506,8 @@ public partial class AddRepoViewModel : ObservableObject
         IHost host,
         Guid activityId,
         string defaultClonePath,
-        AddRepoDialog addRepoDialog)
+        AddRepoDialog addRepoDialog,
+        IDevDriveManager devDriveManager)
     {
         _addRepoDialog = addRepoDialog;
         _stringResource = stringResource;
@@ -459,6 +524,14 @@ public partial class AddRepoViewModel : ObservableObject
         _activityId = activityId;
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
         FolderPickerViewModel.CloneLocation = defaultClonePath;
+
+        EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
+
+        EditDevDriveViewModel.DevDriveClonePathUpdated += (_, updatedDevDriveRootPath) =>
+        {
+            FolderPickerViewModel.CloneLocationAlias = EditDevDriveViewModel.GetDriveDisplayName(DevDriveDisplayNameKind.FormattedDriveLabelKind);
+            FolderPickerViewModel.CloneLocation = updatedDevDriveRootPath;
+        };
     }
 
     /// <summary>
@@ -495,6 +568,14 @@ public partial class AddRepoViewModel : ObservableObject
 
     public void ChangeToUrlPage()
     {
+        /*
+        RepositoryProviderComboBox.SelectedIndex = -1;
+        AddRepoViewModel.ChangeToUrlPage();
+        AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
+        AddRepoViewModel.EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
+        ToggleCloneButton();
+        */
+
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Url page");
         ShowUrlPage = Visibility.Visible;
         ShowAccountPage = Visibility.Collapsed;
@@ -508,6 +589,23 @@ public partial class AddRepoViewModel : ObservableObject
 
     public void ChangeToAccountPage()
     {
+        /*
+         *         AddRepoViewModel.ChangeToAccountPage();
+        AddRepoViewModel.FolderPickerViewModel.CloseFolderPicker();
+        AddRepoViewModel.EditDevDriveViewModel.HideDevDriveUI();
+
+        // If DevHome has 1 provider installed and the provider has 1 logged in account
+        // switch to the repo page.
+        if (AddRepoViewModel.CanSkipAccountConnection)
+        {
+            RepositoryProviderComboBox.SelectedValue = AddRepoViewModel.ProviderNames[0];
+            SwitchToRepoPage(AddRepoViewModel.ProviderNames[0]);
+        }
+
+        SwitchViewsSegmentedView.IsEnabled = true;
+        ToggleCloneButton();
+        */
+
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Account page");
         ShouldShowUrlError = Visibility.Collapsed;
         ShowUrlPage = Visibility.Collapsed;
@@ -942,7 +1040,9 @@ public partial class AddRepoViewModel : ObservableObject
     /// <returns>All previously selected repos excluding any added via URL.</returns>
     public IEnumerable<RepoViewListItem> SetRepositories(string repositoryProvider, string loginId)
     {
-        Repositories = new ObservableCollection<RepoViewListItem>(OrderRepos(_repositoriesForAccount));
+        var localRepositoires = OrderRepos(_repositoriesForAccount).ToList();
+        var indexer = new IncrementalRepoViewItemViewModel(localRepositoires);
+        Repositories = new IncrementalLoadingCollection<IncrementalRepoViewItemViewModel, RepoViewListItem>(indexer);
 
         return _previouslySelectedRepos.Where(x => x.OwningAccount != null)
             .Where(x => x.ProviderName.Equals(repositoryProvider, StringComparison.OrdinalIgnoreCase)
