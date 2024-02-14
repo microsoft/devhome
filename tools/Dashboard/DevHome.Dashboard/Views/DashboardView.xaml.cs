@@ -242,16 +242,13 @@ public partial class DashboardView : ToolPage
             }
         }
 
+        // Merge the dictionaries for easier looping. restoredWidgetsWithoutPosition should be empty, so this should be fast.
+        var lastOrderedKey = restoredWidgetsWithPosition.Count > 0 ? restoredWidgetsWithPosition.Last().Key : -1;
+        restoredWidgetsWithoutPosition.ToList().ForEach(x => restoredWidgetsWithPosition.Add(++lastOrderedKey, x.Value));
+
         // Now that we've ordered the widgets, put them in their final collection.
         var finalPlace = 0;
         foreach (var orderedWidget in restoredWidgetsWithPosition)
-        {
-            var widget = orderedWidget.Value;
-            var size = await widget.GetSizeAsync();
-            await InsertWidgetInPinnedWidgetsAsync(widget, size, finalPlace++);
-        }
-
-        foreach (var orderedWidget in restoredWidgetsWithoutPosition)
         {
             var widget = orderedWidget.Value;
             var size = await widget.GetSizeAsync();
