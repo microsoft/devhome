@@ -10,6 +10,7 @@ public enum PipeType
 {
     None,
     PipeOutput,
+    DontClearBetweenStatements,
 }
 
 /// <summary> Interface that handles PowerShell command line statements. </summary>

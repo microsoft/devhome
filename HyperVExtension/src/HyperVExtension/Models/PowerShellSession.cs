@@ -37,9 +37,9 @@ public class PowerShellSession : IPowerShellSession, IDisposable
     }
 
     /// <inheritdoc cref="IPowerShellSession.AddScript(string)"/>
-    public void AddScript(string script)
+    public void AddScript(string script, bool useLocalScope)
     {
-        _powerShellSession.AddScript(script, true);
+        _powerShellSession.AddScript(script, useLocalScope);
     }
 
     /// <inheritdoc cref="IPowerShellSession.Invoke"/>

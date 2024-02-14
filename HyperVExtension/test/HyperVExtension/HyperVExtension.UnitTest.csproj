@@ -9,6 +9,7 @@
     <Nullable>enable</Nullable>
     <UseWinUI>true</UseWinUI>
     <ProjectPriFileName>resources.pri</ProjectPriFileName>
+    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="3.2.0">

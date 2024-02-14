@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System.Globalization;
-using System.ServiceProcess;
+using System.Management.Automation;
+using System.Net;
 using System.Text;
-using System.Text.Json;
 using HyperVExtension.Common;
 using HyperVExtension.Common.Extensions;
 using HyperVExtension.Helpers;
@@ -16,8 +16,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Windows.DevHome.SDK;
 using Moq;
-using Moq.Language;
-using WinRT;
 
 using Communication = HyperVExtension.CommunicationWithGuest;
 
@@ -292,5 +290,50 @@ properties:
         }
 
         System.Diagnostics.Trace.WriteLine(sb);
+    }
+
+    [TestMethod]
+    public void TestDevSetupAgentDeployment()
+    {
+        IHyperVManager hyperVManager = TestHost!.GetService<IHyperVManager>();
+        var machines = hyperVManager.GetAllVirtualMachines();
+        HyperVVirtualMachine? testVm = null;
+        foreach (var vm in machines)
+        {
+            if (string.Equals(vm.Name, "TestVM", StringComparison.OrdinalIgnoreCase))
+            {
+                testVm = vm;
+                break;
+            }
+        }
+
+        Assert.IsNotNull(testVm);
+
+        var powerShell = TestHost!.GetService<IPowerShellService>();
+
+        var deploymentHelperMock = new Mock<DevSetupAgentDeploymentHelper>(powerShell, testVm.Id);
+        deploymentHelperMock.CallBase = true;
+        deploymentHelperMock.Setup(x => x.GetSourcePath(It.IsAny<ushort>())).Returns(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\DevSetupAgent.zip"));
+
+        // TODO: figure out how to get the password from the user
+        var userName = "LocalAdmin";
+        var pwd = new NetworkCredential(string.Empty, "<>").SecurePassword;
+        deploymentHelperMock.Object.DeployDevSetupAgent(userName, pwd);
+
+        var session = deploymentHelperMock.Object.GetSessionObject(new PSCredential(userName, pwd));
+
+        // Verify that the DevSetupAgent service is installed and running in the VM.
+        var getService = new StatementBuilder()
+               .AddCommand("Invoke-Command")
+               .AddParameter("Session", session)
+               .AddParameter("ScriptBlock", ScriptBlock.Create("Get-Service DevSetupAgent"))
+               .Build();
+
+        var result = powerShell!.Execute(getService, PipeType.None);
+        Assert.IsTrue(string.IsNullOrEmpty(result.CommandOutputErrorMessage));
+
+        var psObject = result.PsObjects.FirstOrDefault();
+        Assert.IsNotNull(psObject);
+        Assert.AreEqual(psObject!.Properties["Status"].Value, "Running");
     }
 }

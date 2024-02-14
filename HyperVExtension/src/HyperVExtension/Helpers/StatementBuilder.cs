@@ -38,9 +38,9 @@ public class StatementBuilder
 
     /// <summary>  Adds a new PowerShell commandline statement with only a single script inside.</summary>
     /// <returns>The StatementBuilder object that is being used to contain the commandline statements</returns>
-    public StatementBuilder AddScript(string script)
+    public StatementBuilder AddScript(string script, bool useLocalScope)
     {
-        var statement = new PowerShellCommandlineStatement() { Script = script, };
+        var statement = new PowerShellCommandlineStatement() { Script = script, UseLocalScope = useLocalScope };
         _powerShellCommandLineStatements.Add(statement);
         return this;
     }

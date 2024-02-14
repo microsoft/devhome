@@ -26,7 +26,7 @@ public interface IPowerShellSession
 
     /// <summary> Adds a script to the PowerShell session. </summary>
     /// <param name="script">A string representing a script that can be run by PowerShell.</param>
-    public void AddScript(string script);
+    public void AddScript(string script, bool useLocalScope);
 
     /// <summary> Invokes the PowerShell statements. </summary>
     /// <returns>A collection of PowerShell Objects returned by PowerShell.</returns>

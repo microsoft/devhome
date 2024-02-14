@@ -93,7 +93,8 @@ public class PowerShellServiceTest : HyperVExtensionTestsBase
         var commandLineStatements = new StatementBuilder()
             .AddScript(
                 "[cultureinfo]::CurrentUICulture = 'en-US';" +
-                " 1 / 0")
+                " 1 / 0",
+                true)
             .Build();
 
         // Act

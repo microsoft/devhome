@@ -401,7 +401,7 @@ public class HyperVManager : IHyperVManager, IDisposable
         {
             // Build command line statement to connect to the VM.
             var commandLineStatements = new StatementBuilder()
-                .AddScript($"{HyperVStrings.VmConnectScript} {vmId}")
+                .AddScript($"{HyperVStrings.VmConnectScript} {vmId}", true)
                 .Build();
 
             var result = _powerShellService.Execute(commandLineStatements, PipeType.PipeOutput);
