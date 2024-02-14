@@ -180,6 +180,8 @@ namespace Microsoft.Windows.DevHome.DevSetupEngine
         // The overall result from applying the configuration set (Open configuration, apply configuration and anything in between).
         HRESULT ResultCode{ get; };
 
+        String ResultDescription{ get; };
+
         IOpenConfigurationSetResult OpenConfigurationSetResult{ get; };
 
         IApplyConfigurationSetResult ApplyConfigurationSetResult { get; };

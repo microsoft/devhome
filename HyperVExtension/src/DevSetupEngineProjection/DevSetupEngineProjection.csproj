@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="$(SolutionDir)ToolingVersions.props" />
-	<PropertyGroup>
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
+  <PropertyGroup>
     <!-- Set Platform to AnyCPU to allow consumption of the projection assembly from any architecture. -->
     <!-- <Platform>AnyCPU</Platform> -->
     <!-- Workaround for MSB3271 error on processor architecture mismatch -->
@@ -22,7 +22,7 @@
   </ItemGroup>
   
   <!--CsWinRT properties-->
-	<PropertyGroup>
+  <PropertyGroup>
     <!--Specify namespaces to create a C# projection for-->
     <CsWinRTIncludes>Microsoft.Windows.DevHome.DevSetupEngine</CsWinRTIncludes>
     <CsWinRTGeneratedFilesDir>$(SolutionDir)HyperVExtension\src\$(MSBuildProjectName)\bin\$(Platform)\$(Configuration)\</CsWinRTGeneratedFilesDir>

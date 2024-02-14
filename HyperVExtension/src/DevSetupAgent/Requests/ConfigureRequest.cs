@@ -22,8 +22,8 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 internal sealed class ConfigureRequest : RequestBase
 {
-    public ConfigureRequest(IRequestMessage requestMessage, JsonNode jsonData)
-        : base(requestMessage, jsonData)
+    public ConfigureRequest(IRequestContext requestContext)
+        : base(requestContext)
     {
         ConfigureData = GetRequiredStringValue("Configure").Replace("\\n", System.Environment.NewLine);
     }

@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.Diagnostics.PerformanceData;
 using System.Runtime.InteropServices;
+using System.Text;
 using DevHome.Logging;
+using HyperVExtension.HostGuestCommunication;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.Win32;
 using Windows.Foundation.Collections;
 
 namespace HyperVExtension.DevSetupAgent;
-
-// TODO: figure out when to delete sent messages from the registry.
-// Host cannot delete them (no such functionality in the Hyper-V KVP service).
-// We can delete them after some period of time.
 
 /// <summary>
 /// Implementation of IHostChannel using registry keys provided by Hyper-V Data Exchange Service (KVP).
@@ -18,12 +18,17 @@ namespace HyperVExtension.DevSetupAgent;
 /// https://learn.microsoft.com/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/dn798287(v=ws.11)
 /// "HKLM\SOFTWARE\Microsoft\Virtual Machine\External" contains data pushed to the guest from the host by a user
 /// "HKLM\SOFTWARE\Microsoft\Virtual Machine\Guest" contains data created on the guest. This data is available to the host as non-intrinsic data.
-/// Host client will create registry value named "DevSetup{<GUID>}" with JSON message as a string value.
+/// Host client will create registry value named "DevSetup{<GUID>}~<index>~<total>" with JSON message as a string value.
 /// The name of the registry value becomes "MessageId" and will be used for response so the client can match
 /// request with response.
 /// </summary>
 public sealed class HostRegistryChannel : IHostChannel, IDisposable
 {
+    // Public documentation doesn't say that there is a limit on the size of the value
+    // smaller than registry key values. But in the sample code for linux integration services
+    // HV_KVP_EXCHANGE_MAX_KEY_SIZE is used as a limit. In Windows code it's defined as 2048 (bytes).
+    // We'll need to split the message into smaller parts if it's too long.
+    private const int MaxValueCount = 1000;
     private readonly string _fromHostRegistryKeyPath;
     private readonly string _toHostRegistryKeyPath;
     private readonly RegistryWatcher _registryWatcher;
@@ -38,8 +43,8 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
         _registryHive = registryChannelSettings.RegistryHive;
 
         // Search and delete all existing registry values with name "DevSetup{<GUID>}"
-        DeleteAllMessages(_registryHive, _toHostRegistryKeyPath);
-        DeleteAllMessages(_registryHive, _fromHostRegistryKeyPath);
+        MessageHelper.DeleteAllMessages(_registryHive, _toHostRegistryKeyPath, MessageHelper.MessageIdStart);
+        MessageHelper.DeleteAllMessages(_registryHive, _fromHostRegistryKeyPath, MessageHelper.MessageIdStart);
 
         _registryKeyChangedEvent = new AutoResetEvent(true);
         _registryWatcher = new RegistryWatcher(_registryHive, _fromHostRegistryKeyPath, OnDevSetupKeyChanged);
@@ -80,23 +85,53 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
     {
         await Task.Run(
             () =>
-        {
-            try
             {
-                var regKey = _registryHive.CreateSubKey(_toHostRegistryKeyPath);
-                if (regKey == null)
+                try
                 {
-                    Logging.Logger()?.ReportError($"Cannot open {_toHostRegistryKeyPath} registry key. Error: {Marshal.GetLastWin32Error()}");
-                    return;
-                }
+                    var regKey = _registryHive.CreateSubKey(_toHostRegistryKeyPath);
+                    if (regKey == null)
+                    {
+                        Logging.Logger()?.ReportError($"Cannot open {_toHostRegistryKeyPath} registry key. Error: {Marshal.GetLastWin32Error()}");
+                        return;
+                    }
 
-                regKey.SetValue(responseMessage.ResponseId, responseMessage.ResponseData, RegistryValueKind.String);
-            }
-            catch (Exception ex)
+                    // Split message into parts due to the Hyper-V KVP service 2048 byte registry value limit.
+                    var numberOfParts = responseMessage.ResponseData.Length / MaxValueCount;
+                    if (responseMessage.ResponseData.Length % MaxValueCount != 0)
+                    {
+                        numberOfParts++;
+                    }
+
+                    var totalStr = $"{MessageHelper.Separator}{numberOfParts}";
+                    var index = 0;
+                    foreach (var subString in responseMessage.ResponseData.SplitByLength(MaxValueCount))
+                    {
+                        index++;
+                        regKey.SetValue($"{responseMessage.ResponseId}{MessageHelper.Separator}{index}{totalStr}", subString, RegistryValueKind.String);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logging.Logger()?.ReportError($"Could not write host message. Response ID: {responseMessage.ResponseId}", ex);
+                }
+            },
+            stoppingToken);
+    }
+
+    public async void DeleteResponseMessageAsync(string responseId, CancellationToken stoppingToken)
+    {
+        await Task.Run(
+            () =>
             {
-                Logging.Logger()?.ReportError($"Could not write host message. Response ID: {responseMessage.ResponseId}", ex);
-            }
-        },
+                try
+                {
+                    MessageHelper.DeleteAllMessages(_registryHive, _toHostRegistryKeyPath, responseId);
+                }
+                catch (Exception ex)
+                {
+                    Logging.Logger()?.ReportError($"Could not delete host message. Response ID: {responseId}", ex);
+                }
+            },
             stoppingToken);
     }
 
@@ -105,26 +140,76 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
         var requestMessage = default(RequestMessage);
         try
         {
+            // Messages are split in parts to workaround HyperV KVP service the 2048 bytes limit of registry value.
+            // We need to merge all parts of the message before processing it.
+            // TODO: Modify this class to use MessageHelper.MergeMessageParts (requires changing return valu and handling in the caller).
+            HashSet<string> ignoreMessages = new();
             var regKey = _registryHive.OpenSubKey(_fromHostRegistryKeyPath, true);
-            var values = regKey?.GetValueNames();
-            if (values != null)
+            var valueNames = regKey?.GetValueNames();
+            if (valueNames != null)
             {
-                foreach (var value in values)
+                foreach (var valueName in valueNames)
                 {
-                    if (value.StartsWith("DevSetup{", StringComparison.InvariantCultureIgnoreCase))
+                    if (valueName.StartsWith(MessageHelper.MessageIdStart, StringComparison.InvariantCultureIgnoreCase))
                     {
+                        var s = valueName.Split(MessageHelper.Separator);
+                        if (!MessageHelper.IsValidMessageName(s, out var index, out var total))
+                        {
+                            continue;
+                        }
+
+                        if (ignoreMessages.Contains(s[0]))
+                        {
+                            continue;
+                        }
+
+                        // Count if we have all parts of the message
+                        var count = 0;
+                        foreach (var valueNameTmp in valueNames)
+                        {
+                            if (valueNameTmp.StartsWith(s[0] + $"{MessageHelper.Separator}", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                if (!MessageHelper.IsValidMessageName(valueNameTmp.Split(MessageHelper.Separator), out var indeTmp, out var totalTmp))
+                                {
+                                    continue;
+                                }
+
+                                count++;
+                            }
+                        }
+
+                        if (count != total)
+                        {
+                            // Ignore this message for now. We don't have all parts.
+                            ignoreMessages.Add(s[0]);
+                            continue;
+                        }
+
+                        // Merge all parts of the message
                         // Preserve message GUID, delete the value and create response even if reading failed.
-                        requestMessage.RequestId = value;
+                        requestMessage.RequestId = s[0];
                         try
                         {
-                            requestMessage.RequestData = (string?)regKey!.GetValue(value);
+                            var sb = new StringBuilder();
+                            for (var i = 1; i <= total; i++)
+                            {
+                                var value1 = (string?)regKey!.GetValue(s[0] + $"{MessageHelper.Separator}{i}{MessageHelper.Separator}{total}");
+                                if (value1 == null)
+                                {
+                                    throw new InvalidOperationException($"Could not read guest message {valueName}");
+                                }
+
+                                sb.Append(value1);
+                            }
+
+                            requestMessage.RequestData = sb.ToString();
                         }
                         catch (Exception ex)
                         {
-                            Logging.Logger()?.ReportError($"Could not read host message {value}", ex);
+                            Logging.Logger()?.ReportError($"Could not read host message {valueName}", ex);
                         }
 
-                        regKey!.DeleteValue(value, false);
+                        MessageHelper.DeleteAllMessages(_registryHive, _fromHostRegistryKeyPath, s[0]);
                         break;
                     }
                 }
@@ -154,27 +239,6 @@ public sealed class HostRegistryChannel : IHostChannel, IDisposable
             }
 
             _disposed = true;
-        }
-    }
-
-    /// <summary>
-    /// Search and delete all existing registry values with name "DevSetup{*"
-    /// </summary>
-    /// <param name="registryKey">Parent registry key.</param>
-    /// <param name="registryKeyPath">Registry key sub-path to search.</param>
-    private void DeleteAllMessages(RegistryKey registryKey, string registryKeyPath)
-    {
-        var regKey = registryKey.OpenSubKey(registryKeyPath, true);
-        var values = regKey?.GetValueNames();
-        if (values != null)
-        {
-            foreach (var value in values)
-            {
-                if (value.StartsWith("DevSetup{", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    regKey!.DeleteValue(value, false);
-                }
-            }
         }
     }
 }

@@ -31,12 +31,16 @@ public class RequestManager : IRequestManager
     {
         if (!string.IsNullOrEmpty(message.RequestId))
         {
-            var request = _requestFactory.CreateRequest(message);
+            var requestContext = new RequestContext(message, _hostChannel);
+            var request = _requestFactory.CreateRequest(requestContext);
             if (request.IsStatusRequest)
             {
                 // Status requests (like GetVersion) execute immediately and return response.
                 var response = request.Execute(ProgressHandler, stoppingToken);
-                _hostChannel.SendMessageAsync(response.GetResponseMessage(), stoppingToken);
+                if (response.SendResponse)
+                {
+                    _hostChannel.SendMessageAsync(response.GetResponseMessage(), stoppingToken);
+                }
             }
             else
             {
@@ -57,6 +61,7 @@ public class RequestManager : IRequestManager
 
                 lock (_requestQueue)
                 {
+                    // TODO: send response indicating that request is queued.
                     _requestQueue.Enqueue(request);
                     if (!_asyncRequestRunning)
                     {
@@ -91,7 +96,6 @@ public class RequestManager : IRequestManager
 
             try
             {
-                // TODO: Make these requests to report progress.
                 var response = request.Execute(ProgressHandler, stoppingToken);
                 _hostChannel.SendMessageAsync(response.GetResponseMessage(), stoppingToken);
             }

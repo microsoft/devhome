@@ -154,6 +154,10 @@ properties:
                 }
             }
         }
+        catch (Exception ex)
+        {
+            Assert.Fail(ex.Message);
+        }
         finally
         {
             if (devSetupEnginePtr != IntPtr.Zero)

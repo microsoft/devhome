@@ -7,6 +7,8 @@ using System.Globalization;
 using System.Management.Automation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
+using System.Threading;
+using HyperVExtension.CommunicationWithGuest;
 using HyperVExtension.Exceptions;
 using HyperVExtension.Helpers;
 using HyperVExtension.Providers;
@@ -15,6 +17,7 @@ using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.Win32.Foundation;
 
 namespace HyperVExtension.Models;
 
@@ -527,9 +530,89 @@ public class HyperVVirtualMachine : IComputeSystem
 
     public IApplyConfigurationOperation? ApplyConfiguration(string configuration)
     {
-        // This is temporary until we have a proper implementation for this.
-        Logging.Logger()?.ReportError($"Configuration not supported yet for hyper-v");
-        return null;
+        try
+        {
+            var operation = new ApplyConfigurationOperation(this);
+            Task.Run(() =>
+            {
+                try
+                {
+                    // TODO: Make sure VM is running before applying configuration.
+                    // Hyper-V KVP service can set succeed even if VM is not running and VM will receive
+                    // registry key changes next time it starts.
+                    var guestSession = new GuestKvpSession(Guid.Parse(Id));
+                    var configureRequest = new ConfigureRequest(configuration);
+                    guestSession.SendRequest(configureRequest, CancellationToken.None);
+
+                    // Wait for response. 5 hours is an arbitrary period of time that should be big enough
+                    // for most scenarios.
+                    // Configuration task can run for a long time that we can't control. What's more, VM can be saved or paused,
+                    // then started and configuration task will continue to run.
+                    // TODO: To improve this we can:
+                    //   make the timeout configurable.
+                    //   query VM if it has completed the configuration task.
+                    //   monitor if VM was paused or saved while we are waiting for responses.
+                    var isCompleted = false;
+                    var waitTime = TimeSpan.FromHours(5);
+                    var startTime = DateTime.Now;
+                    while (!isCompleted || ((DateTime.Now - startTime) < waitTime))
+                    {
+                        var responses = guestSession.WaitForResponse(configureRequest.RequestId, TimeSpan.FromSeconds(30), true, CancellationToken.None);
+
+                        foreach (var response in responses)
+                        {
+                            if (response is ConfigureResponse configureResponse)
+                            {
+                                LogApplyConfigurationResult(configureResponse.ApplyConfigurationResult);
+
+                                // Create SDK's result. Set Completed status and event.
+                                operation.SetState(ConfigurationSetState.Completed, null, configureResponse.ApplyConfigurationResult);
+
+                                // Receiving ConfigureResponse means operation has completed. We don't expect anymore responses.
+                                isCompleted = true;
+                                break;
+                            }
+                            else if (response is ConfigureProgressResponse configureProgressResponse)
+                            {
+                                LogApplyConfigurationProgress(configureProgressResponse.ProgressData);
+
+                                // Create SDK's result. Set Completed status and event.
+                                operation.SetState(ConfigurationSetState.InProgress, configureProgressResponse.ProgressData, null);
+                            }
+                            else
+                            {
+                                // Unexpected (error) response. Log it and return error. Not much we can do here.
+                                Logging.Logger()?.ReportError(
+                                    $"Unexpected response while applying configuration on {DateTime.Now}: " +
+                                    $"responseId: {response.RequestId}, responseType: {response.ResponseType}, " +
+                                    $"VM details: {this}");
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logging.Logger()?.ReportError($"Failed to apply configuration on {DateTime.Now}: VM details: {this}", ex);
+                    operation.SetState(ConfigurationSetState.Completed, null, new HostGuestCommunication.ApplyConfigurationResult(ex.HResult, ex.Message));
+                }
+            });
+
+            return operation;
+        }
+        catch (Exception ex)
+        {
+            Logging.Logger()?.ReportError($"Failed to apply configuration on {DateTime.Now}: VM details: {this}", ex);
+            return new ApplyConfigurationOperation(this, ex);
+        }
+    }
+
+    // TODO: This can be to noisy. We need "verbose" logging level for this.
+    private void LogApplyConfigurationProgress(HostGuestCommunication.ConfigurationSetChangeData progressData)
+    {
+    }
+
+    private void LogApplyConfigurationResult(HostGuestCommunication.ApplyConfigurationResult applyConfigurationResult)
+    {
     }
 
     public override string ToString()

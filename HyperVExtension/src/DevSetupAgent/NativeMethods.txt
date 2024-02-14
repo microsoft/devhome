@@ -1,6 +1,8 @@
 ﻿RegNotifyChangeKeyValue
 REG_NOTIFY_FILTER
+CoInitializeSecurity
 CoCreateInstance
 CLSCTX
 WIN32_ERROR
 S_OK
+E_FAIL

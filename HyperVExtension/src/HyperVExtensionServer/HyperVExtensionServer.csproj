@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<Import Project="$(SolutionDir)ToolingVersions.props" />
+  <Import Project="$(SolutionDir)ToolingVersions.props" />
   <!-- Debug builds produce a console app; otherwise a Windows app -->
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputType>Exe</OutputType>
@@ -15,7 +15,7 @@
     <CsWinRTEnabled>false</CsWinRTEnabled>
     <StartupObject>HyperVExtension.Program</StartupObject>
     <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
-	<Platforms>x86;x64;arm64</Platforms>
+  <Platforms>x86;x64;arm64</Platforms>
     <PublishProfileFullPath Condition="'$(BuildingInsideVisualStudio)' != 'True'">$(SolutionDir)\src\Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfileFullPath>
   </PropertyGroup>
 
@@ -32,7 +32,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.3.230331000" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.231115000" />
   </ItemGroup>
 
   <ItemGroup>

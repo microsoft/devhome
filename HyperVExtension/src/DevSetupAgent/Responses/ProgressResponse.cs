@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System.Text.Json;
+using HyperVExtension.HostGuestCommunication;
 using Microsoft.Windows.DevHome.DevSetupEngine;
 
 namespace HyperVExtension.DevSetupAgent;
@@ -24,9 +25,9 @@ internal sealed class ProgressResponse : ResponseBase
     private uint ProgressCounter { get; }
 
     public ProgressResponse(string requestId, IConfigurationSetChangeData progressData, uint progressCounter)
-        : base(requestId)
+        : base(requestId, "Configure")
     {
-        _progressData = new ConfigurationSetChangeData(progressData);
+        _progressData = new ConfigurationSetChangeData().Populate(progressData);
         ProgressCounter = progressCounter;
         ResponseId = RequestId + $"_Progress_{ProgressCounter}";
         ResponseType = "Progress";
@@ -37,7 +38,7 @@ internal sealed class ProgressResponse : ResponseBase
     {
         base.GenerateJsonData();
         var progress = JsonSerializer.Serialize(_progressData);
-        JsonData![nameof(ProgressCounter)] = progress;
+        JsonData![nameof(ProgressCounter)] = ProgressCounter;
         JsonData![nameof(ConfigurationSetChangeData)] = progress;
     }
 }

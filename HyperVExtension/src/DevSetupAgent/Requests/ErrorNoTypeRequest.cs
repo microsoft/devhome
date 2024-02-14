@@ -8,32 +8,17 @@ namespace HyperVExtension.DevSetupAgent;
 /// <summary>
 /// Class used to handle requests that have no request type. It creates an error response to send back to the client.
 /// </summary>
-#pragma warning disable CA1852 // Seal internal types
-internal class ErrorNoTypeRequest : IHostRequest
-#pragma warning restore CA1852 // Seal internal types
+internal sealed class ErrorNoTypeRequest : ErrorRequest
 {
-    public ErrorNoTypeRequest(IRequestMessage requestMessage, JsonNode jsonData)
+    public ErrorNoTypeRequest(IRequestMessage requestMessage)
+        : base(requestMessage)
     {
-        RequestMessage = requestMessage;
-        Timestamp = DateTime.UtcNow;
     }
 
-    public IRequestMessage RequestMessage
+    public override string RequestType => "ErrorNoType";
+
+    public override IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
     {
-        get;
-    }
-
-    public bool IsStatusRequest => true;
-
-    public virtual string RequestId => "Unknown";
-
-    public string RequestType => "ErrorNoType";
-
-    public DateTime Timestamp { get; }
-
-    public IHostResponse Execute(ProgressHandler progressHandler, CancellationToken stoppingToken)
-    {
-        // TODO: This is a placeholder for a real response.
-        return new ErrorNoTypeResponse(RequestMessage.RequestId!);
+        return new ErrorNoTypeResponse(RequestId);
     }
 }

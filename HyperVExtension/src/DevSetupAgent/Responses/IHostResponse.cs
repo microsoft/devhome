@@ -18,7 +18,13 @@ public interface IHostResponse
 
     uint Status { get; set; }
 
+    string ErrorDescription { get; set; }
+
+    uint Version { get; set; }
+
     DateTime Timestamp { get; set; }
 
     IResponseMessage GetResponseMessage();
+
+    bool SendResponse { get; set; }
 }

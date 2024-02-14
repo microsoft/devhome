@@ -1,38 +1,57 @@
 ﻿// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System.ComponentModel;
 using HyperVExtension.DevSetupEngine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Win32;
 
 namespace HyperVExtension.DevSetupEngine;
 
 internal sealed class Program
 {
+    private const string AppIdPath = @"SOFTWARE\Classes\AppID\";
+    private const string ClsIdIdPath = @"SOFTWARE\Classes\ClSID\";
+
     public static IHost? Host
     {
         get; set;
     }
 
     [MTAThread]
-    public static void Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
+    public static int Main([System.Runtime.InteropServices.WindowsRuntime.ReadOnlyArray] string[] args)
     {
-        Logging.Logger()?.ReportInfo($"Launched with args: {string.Join(' ', args.ToArray())}");
+        try
+        {
+            Logging.Logger()?.ReportInfo($"Launched with args: {string.Join(' ', args.ToArray())}");
 
-        BuildHostContainer();
+            BuildHostContainer();
 
-        if ((args.Length > 0) && (args[0] == "-RegisterProcessAsComServer"))
-        {
-            RegisterProcessAsComServer();
+            if ((args.Length > 0) && string.Equals(args[0], "-RegisterProcessAsComServer", StringComparison.OrdinalIgnoreCase))
+            {
+                RegisterProcessAsComServer();
+            }
+            else if ((args.Length > 0) && string.Equals(args[0], "-RegisterComServer", StringComparison.OrdinalIgnoreCase))
+            {
+                RegisterComServer();
+            }
+            else if ((args.Length > 0) && string.Equals(args[0], "-UnregisterComServer", StringComparison.OrdinalIgnoreCase))
+            {
+                UnregisterComServer();
+            }
+            else
+            {
+                Logging.Logger()?.ReportWarn("Unknown arguments... exiting.");
+            }
         }
-        else if ((args.Length > 0) && (args[0] == "-RegisterComServer"))
+        catch (Exception ex)
         {
-            RegisterComServer();
+            Logging.Logger()?.ReportError($"Exception: {ex}");
+            return ex.HResult;
         }
-        else
-        {
-            Logging.Logger()?.ReportWarn("Unknown arguments... exiting.");
-        }
+
+        return 0;
     }
 
     private static void RegisterProcessAsComServer()
@@ -57,8 +76,27 @@ internal sealed class Program
 
     private static void RegisterComServer()
     {
-        // TODO: Register COM Server in HKLM.
-        Logging.Logger()?.ReportInfo($"TODO: Register COM Server in HKLM");
+        var appId = typeof(DevSetupEngineImpl).GUID.ToString("B");
+
+        var appIdKey = Registry.LocalMachine.CreateSubKey(AppIdPath + appId, true) ?? throw new Win32Exception();
+        appIdKey.SetValue("RunAs", "Interactive User", RegistryValueKind.String);
+
+        var clsIdKey = Registry.LocalMachine.CreateSubKey(ClsIdIdPath + appId, true) ?? throw new Win32Exception();
+        clsIdKey.SetValue("AppID", appId);
+
+        var localServer32Key = clsIdKey.CreateSubKey("LocalServer32", true) ?? throw new Win32Exception();
+
+        var exePath = Environment.ProcessPath!;
+
+        localServer32Key.SetValue(string.Empty, "\"" + exePath + "\"" + " -RegisterProcessAsComServer");
+        localServer32Key.SetValue("ServerExecutable", exePath);
+    }
+
+    private static void UnregisterComServer()
+    {
+        var appId = typeof(DevSetupEngineImpl).GUID.ToString("B");
+        Registry.LocalMachine.DeleteSubKeyTree(AppIdPath + appId, false);
+        Registry.LocalMachine.DeleteSubKeyTree(ClsIdIdPath + appId, false);
     }
 
     /// <summary>

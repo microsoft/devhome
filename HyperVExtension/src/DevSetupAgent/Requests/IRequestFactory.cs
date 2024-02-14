@@ -8,5 +8,5 @@ namespace HyperVExtension.DevSetupAgent;
 /// </summary>
 public interface IRequestFactory
 {
-    IHostRequest CreateRequest(IRequestMessage message);
+    IHostRequest CreateRequest(IRequestContext requestContext);
 }

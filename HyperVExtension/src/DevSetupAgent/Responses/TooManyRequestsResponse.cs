@@ -5,15 +5,14 @@ using System.Text.Json;
 
 namespace HyperVExtension.DevSetupAgent;
 
-internal sealed class TooManyRequestsResponse : ErrorResponseBase
+internal sealed class TooManyRequestsResponse : ResponseBase
 {
     public TooManyRequestsResponse(string requestId)
         : base(requestId)
     {
         // TODO: Better error story
-        Status = 0xFFFFFFFF;
+        Status = Windows.Win32.Foundation.HRESULT.E_FAIL;
+        ErrorDescription = "Too many requests in the queue.";
         GenerateJsonData();
     }
-
-    public override string Error => "Too many requests in the queue.";
 }
