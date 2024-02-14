@@ -75,14 +75,13 @@ namespace Microsoft.Windows.DevHome.SDK
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 2)] interface IRepositoryProvider2
     requires IRepositoryProvider
     {
-        String[] GetSearchFieldNames
+        String[] SearchFieldNames
         {
             get;
         };
 
-        Windows.Foundation.IAsyncOperation<IVector<String> > GetValuesForField(String fieldName, IMapView<String, String> fieldValues, IDeveloperId developerId);
-        String GetFieldSearchValue(String field, IDeveloperId developerId);
-        Windows.Foundation.IAsyncOperation<RepositoriesResult> GetRepositoriesAsync(IMapView<String, String> searchTerms, IDeveloperId developerId);
+        Windows.Foundation.IAsyncOperation<IVectorView<String> > GetValuesForSearchFieldAsync(String requestedSearchField, IMapView<String, String> fieldValues, IDeveloperId developerId);
+        Windows.Foundation.IAsyncOperation<RepositoriesResult> GetRepositoriesAsync(IMapView<String, String> fieldValues, IDeveloperId developerId);
     };
 
     [contract(Microsoft.Windows.DevHome.SDK.DevHomeContract, 1)]
