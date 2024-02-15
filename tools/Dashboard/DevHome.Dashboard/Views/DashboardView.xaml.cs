@@ -24,6 +24,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Windows.Widgets;
 using Microsoft.Windows.Widgets.Hosts;
 using Windows.System;
+using WinUIEx;
 using Log = DevHome.Dashboard.Helpers.Log;
 
 namespace DevHome.Dashboard.Views;
@@ -383,6 +384,15 @@ public partial class DashboardView : ToolPage
             catch (Exception ex)
             {
                 Log.Logger()?.ReportWarn("AddWidgetDialog", $"Creating widget failed: ", ex);
+                var mainWindow = Application.Current.GetService<WindowEx>();
+                var resourceLoader =
+                    new Microsoft.Windows.ApplicationModel.Resources.ResourceLoader(
+                        "DevHome.Dashboard.pri",
+                        "DevHome.Dashboard/Resources");
+                await mainWindow.ShowErrorMessageDialogAsync(
+                    title: string.Empty,
+                    content: resourceLoader.GetString("CouldNotCreateWidgetError"),
+                    buttonText: resourceLoader.GetString("CloseButtonText"));
             }
         }
     }
