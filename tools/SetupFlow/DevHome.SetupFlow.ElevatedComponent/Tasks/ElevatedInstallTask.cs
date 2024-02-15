@@ -35,7 +35,7 @@ public sealed class ElevatedInstallTask
     /// <summary>
     /// Installs a package given its ID and the ID of the catalog it comes from.
     /// </summary>
-    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(string packageId, string catalogName)
+    public IAsyncOperation<ElevatedInstallTaskResult> InstallPackage(string packageId, string catalogName, string version)
     {
         return Task.Run(async () =>
         {
@@ -72,6 +72,10 @@ public sealed class ElevatedInstallTask
 
                 var installOptions = _wingetFactory.CreateInstallOptions();
                 installOptions.PackageInstallMode = PackageInstallMode.Silent;
+                if (TryFindVersion(packageToInstall, version, out var versionId))
+                {
+                    installOptions.PackageVersionId = versionId;
+                }
 
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Initiating install of package {packageId}");
                 var installResult = await packageManager.InstallPackageAsync(packageToInstall, installOptions);
@@ -116,5 +120,27 @@ public sealed class ElevatedInstallTask
         findOptions.ResultLimit = 1;
 
         return findOptions;
+    }
+
+    /// <summary>
+    /// Try to find a specific version in the list of available versions for a package.
+    /// </summary>
+    /// <param name="package">Target package</param>
+    /// <param name="version">Version to find</param>
+    /// <param name="versionId">Found version</param>
+    /// <returns>True if the version was found, false otherwise</returns>
+    private bool TryFindVersion(CatalogPackage package, string version, out PackageVersionId? versionId)
+    {
+        for (var i = 0; i < package.AvailableVersions.Count; i++)
+        {
+            if (package.AvailableVersions[i].Version == version)
+            {
+                versionId = package.AvailableVersions[i];
+                return true;
+            }
+        }
+
+        versionId = null;
+        return false;
     }
 }

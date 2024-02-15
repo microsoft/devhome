@@ -106,6 +106,7 @@ public class InstallPackageTask : ISetupTask
         {
             PackageId = _package.Id,
             CatalogName = _package.CatalogName,
+            Version = _installVersion,
         };
     }
 
@@ -156,7 +157,7 @@ public class InstallPackageTask : ISetupTask
             {
                 Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Starting installation with elevation of package {_package.Id}");
                 AddMessage(_stringResource.GetLocalized(StringResourceKey.StartingInstallPackageMessage, _package.Id));
-                var elevatedResult = await elevatedComponentOperation.InstallPackageAsync(_package.Id, _package.CatalogName);
+                var elevatedResult = await elevatedComponentOperation.InstallPackageAsync(_package.Id, _package.CatalogName, _installVersion);
                 WasInstallSuccessful = elevatedResult.TaskSucceeded;
                 RequiresReboot = elevatedResult.RebootRequired;
                 _installResultStatus = (InstallResultStatus)elevatedResult.Status;
