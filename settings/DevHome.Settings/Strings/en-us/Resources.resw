@@ -541,5 +541,12 @@
   <data name="ViewLogs.Header" xml:space="preserve">
     <value>View logs</value>
     <comment>Click on this if you want to see Dev Home's logs on your machine.</comment>
+  <data name="Settings_Experimentation.Header" xml:space="preserve">
+    <value>Enable Experimentation</value>
+    <comment>Header for a card than when turned on enables experimentation</comment>
+  </data>
+  <data name="Settings_Experimentation.Description" xml:space="preserve">
+    <value>Placeholder description</value>
+    <comment>Body text description for a card that when turned on enables experimentation</comment>
   </data>
 </root>
