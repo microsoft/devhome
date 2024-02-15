@@ -66,4 +66,8 @@
     <value>Close</value>
     <comment>Name of the button that closes a view</comment>
   </data>
+  <data name="CloseButtonText" xml:space="preserve">
+    <value>Close</value>
+    <comment>Text for a button to close a content dialog.</comment>
+  </data>
 </root>

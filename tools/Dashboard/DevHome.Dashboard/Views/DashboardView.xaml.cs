@@ -390,9 +390,8 @@ public partial class DashboardView : ToolPage
                         "DevHome.Dashboard.pri",
                         "DevHome.Dashboard/Resources");
                 await mainWindow.ShowErrorMessageDialogAsync(
-                    title: string.Empty,
-                    content: resourceLoader.GetString("CouldNotCreateWidgetError"),
-                    buttonText: resourceLoader.GetString("CloseButtonText"));
+                    string.Empty,
+                    resourceLoader.GetString("CouldNotCreateWidgetError"));
             }
         }
     }

@@ -125,8 +125,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
                 Log.Logger?.ReportError(Log.Component.Configuration, $"Opening configuration set failed.", e);
                 await mainWindow.ShowErrorMessageDialogAsync(
                     StringResource.GetLocalized(StringResourceKey.ConfigurationViewTitle, file.Name),
-                    GetErrorMessage(e),
-                    StringResource.GetLocalized(StringResourceKey.Close));
+                    GetErrorMessage(e));
             }
             catch (Exception e)
             {
@@ -134,8 +133,7 @@ public partial class ConfigurationFileViewModel : SetupPageViewModelBase
 
                 await mainWindow.ShowErrorMessageDialogAsync(
                     file.Name,
-                    StringResource.GetLocalized(StringResourceKey.ConfigurationFileOpenUnknownError),
-                    StringResource.GetLocalized(StringResourceKey.Close));
+                    StringResource.GetLocalized(StringResourceKey.ConfigurationFileOpenUnknownError));
             }
         }
 

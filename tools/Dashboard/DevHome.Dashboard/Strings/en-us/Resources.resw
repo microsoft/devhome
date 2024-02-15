@@ -186,8 +186,4 @@
     <value>Dev Home encountered an error. The widget could not be created.</value>
     <comment>Error that pops up in a message dialog when the user tries to pin a widget but the widget could not be created.</comment>
   </data>
-  <data name="CloseButtonText" xml:space="preserve">
-    <value>Close</value>
-    <comment>Text for a button to close a content dialog.</comment>
-  </data>
 </root>

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DevHome.Common.Helpers;
+using DevHome.Common.Services;
 using DevHome.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -33,7 +34,7 @@ public static class WindowExExtensions
     /// <param name="title">Dialog title.</param>
     /// <param name="content">Dialog content.</param>
     /// <param name="buttonText">Close button text.</param>
-    public static async Task ShowErrorMessageDialogAsync(this WindowEx window, string title, string content, string buttonText)
+    public static async Task ShowErrorMessageDialogAsync(this WindowEx window, string title, string content, string? buttonText = null)
     {
         await window.ShowMessageDialogAsync(dialog =>
         {
@@ -41,8 +42,14 @@ public static class WindowExExtensions
             dialog.Content = new TextBlock()
             {
                 Text = content,
-                TextWrapping = Microsoft.UI.Xaml.TextWrapping.WrapWholeWords,
+                TextWrapping = TextWrapping.WrapWholeWords,
             };
+            if (buttonText == null)
+            {
+                var stringResource = new StringResource("DevHome.Common/Resources");
+                buttonText = stringResource.GetLocalized("CloseButtonText");
+            }
+
             dialog.PrimaryButtonText = buttonText;
         });
     }
