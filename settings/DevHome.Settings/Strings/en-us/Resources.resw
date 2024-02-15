@@ -538,4 +538,10 @@
     <value>Learn more</value>
     <comment>Click on this link if you want to learn more and read the security policy. View is an action.</comment>
   </data>
+  <data name="Settings_Experimentation.Header" xml:space="preserve">
+    <value>Enable Experimentation</value>
+  </data>
+  <data name="Settings_Experimentation.Description" xml:space="preserve">
+    <value>Placeholder description</value>
+  </data>
 </root>
