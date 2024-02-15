@@ -92,23 +92,6 @@ internal sealed class RepositoryProviders
     }
 
     /// <summary>
-    /// Asks the provider, given the fieldName, what was the value of the most recent search.
-    /// </summary>
-    /// <param name="providerName">The provider to use.</param>
-    /// <param name="fieldName">The search field to ask for</param>
-    /// <returns>A string representing the term used in the most recent search.  If the provider can't be found
-    /// string.empty is returned.</returns>
-    public string GetFieldSearchValue(string providerName, IDeveloperId developerId, string fieldName)
-    {
-        if (_providers.TryGetValue(providerName, out var repoProvider))
-        {
-            return repoProvider.GetFieldSearchValue(developerId, fieldName);
-        }
-
-        return string.Empty;
-    }
-
-    /// <summary>
     /// Goes through all providers to figure out if they can make a repo from a Uri.
     /// </summary>
     /// <param name="uri">The Uri to parse.</param>

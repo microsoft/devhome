@@ -91,7 +91,7 @@ internal sealed class RepositoryProvider
     /// <returns>The names of the search fields.</returns>
     public List<string> GetSearchTerms()
     {
-        return _repositoryProvider2?.GetSearchFieldNames.ToList() ?? new List<string>();
+        return _repositoryProvider2?.SearchFieldNames.ToList() ?? new List<string>();
     }
 
     /// <summary>
@@ -103,18 +103,7 @@ internal sealed class RepositoryProvider
     /// <returns>A list of names that can be used for the field.  An empty list is returned if the provider isn't found</returns>
     public List<string> GetValuesFor(IDeveloperId developerId, Dictionary<string, string> searchTerms, string fieldName)
     {
-        return _repositoryProvider2?.GetValuesForField(fieldName, searchTerms, developerId).AsTask().Result.ToList() ?? new List<string>();
-    }
-
-    /// <summary>
-    /// Asks the provider, given the fieldName, what was the value of the most recent search.
-    /// </summary>
-    /// <param name="fieldName">The search field to ask for</param>
-    /// <returns>A string representing the term used in the most recent search.  If the provider can't be found
-    /// string.empty is returned.</returns>
-    public string GetFieldSearchValue(IDeveloperId developerId, string fieldName)
-    {
-        return _repositoryProvider2?.GetFieldSearchValue(fieldName, developerId) ?? string.Empty;
+        return _repositoryProvider2?.GetValuesForSearchFieldAsync(fieldName, searchTerms, developerId).AsTask().Result.ToList() ?? new List<string>();
     }
 
     /// <summary>

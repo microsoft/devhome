@@ -416,7 +416,7 @@ public partial class AddRepoDialog : ContentDialog
             var localTermIndex = termIndex;
             ShowingSearchTermsGrid.RowDefinitions.Add(new RowDefinition());
 
-            var searchFieldName = await Task.Run(() => AddRepoViewModel.GetFieldSearchValue(providerName, loginId, searchTerms[localTermIndex]));
+            var searchFieldName = string.Empty;
             var searchFieldSuggestions = await Task.Run(() => AddRepoViewModel.GetSuggestionsFor(providerName, loginId, new(), searchTerms[localTermIndex]));
 
             _searchFieldsAndValues.Add(searchTerms[localTermIndex], searchFieldSuggestions);

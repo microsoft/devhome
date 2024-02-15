@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -691,20 +692,6 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Asks the provider, given the fieldName, what was the value of the most recent search.
-    /// </summary>
-    /// <param name="providerName">The provider to use.</param>
-    /// <param name="loginId">The account of the user</param>
-    /// <param name="fieldName">The search field to ask for</param>
-    /// <returns>A string representing the term used in the most recent search.</returns>
-    public string GetFieldSearchValue(string providerName, string loginId, string fieldName)
-    {
-        var loggedInDeveloper = _providers.GetAllLoggedInAccounts(providerName).FirstOrDefault(x => x.LoginId == loginId);
-
-        return _providers.GetFieldSearchValue(providerName, loggedInDeveloper, fieldName);
-    }
-
-    /// <summary>
     /// Makes sure all needed information is present.
     /// </summary>
     /// <returns>True if all information is in order, otherwise false</returns>
@@ -1145,18 +1132,13 @@ public partial class AddRepoViewModel : ObservableObject
         var searchFields = provider.GetSearchTerms();
         var pathString = string.Empty;
         var lastPathParts = new HashSet<string>();
+        var loggedInDeveloper = _providers.GetAllLoggedInAccounts(repositoryProvider).FirstOrDefault(x => x.LoginId == loginId);
 
         // If at least one search field is present make a list of the last part.
-        if (searchFields.Count > 0)
+        if (_repoSearchInputs.Count > 0)
         {
-            // Get all unique end path parts.
-            foreach (var repo in repositoriesForAccount)
-            {
-                var parts = repo.OwningAccountName.Split(Path.DirectorySeparatorChar);
-                var lastPathPart = parts[parts.Length - 1];
-                lastPathParts.Add(lastPathPart);
-            }
-
+            var pathParts = provider.GetValuesFor(loggedInDeveloper, _repoSearchInputs, searchFields.Last());
+            pathParts.ForEach(x => lastPathParts.Add(x));
             LastPathPartPlaceholderText = searchFields[searchFields.Count - 1];
         }
 
@@ -1165,14 +1147,10 @@ public partial class AddRepoViewModel : ObservableObject
         {
             var searchFieldsAndValues = searchFields.ToDictionary(x => x, y => new HashSet<string>());
 
-            // Determine all unique values for each part of the path.
-            foreach (var repo in repositoriesForAccount)
+            foreach (var searchField in _repoSearchInputs.Keys)
             {
-                var pathParts = repo.OwningAccountName.Split(Path.DirectorySeparatorChar);
-                for (var searchFieldIndex = 0; searchFieldIndex < pathParts.Length; searchFieldIndex++)
-                {
-                    searchFieldsAndValues[searchFields[searchFieldIndex]].Add(pathParts[searchFieldIndex]);
-                }
+                var validTerms = provider.GetValuesFor(loggedInDeveloper, _repoSearchInputs, searchField);
+                searchFieldsAndValues[searchField] = new HashSet<string>(validTerms);
             }
 
             // Go through all search terms to build the string.
