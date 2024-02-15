@@ -316,8 +316,8 @@ properties:
         deploymentHelperMock.Setup(x => x.GetSourcePath(It.IsAny<ushort>())).Returns(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\DevSetupAgent.zip"));
 
         // TODO: figure out how to get the password from the user
-        var userName = "LocalAdmin";
-        var pwd = new NetworkCredential(string.Empty, "<>").SecurePassword;
+        var userName = string.Empty;
+        var pwd = new NetworkCredential(string.Empty, string.Empty).SecurePassword;
         deploymentHelperMock.Object.DeployDevSetupAgent(userName, pwd);
 
         var session = deploymentHelperMock.Object.GetSessionObject(new PSCredential(userName, pwd));

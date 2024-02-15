@@ -44,7 +44,7 @@ public class DevSetupAgentDeploymentHelper
 
         var deployDevSetupAgentStatement = new StatementBuilder()
                 .AddScript(_script, false)
-                .AddCommand("DeployDevSetupAgent")
+                .AddCommand("Install-DevSetupAgent")
                 .AddParameter("VMId", _vmId)
                 .AddParameter("Session", session)
                 .AddParameter("Path", sourcePath)
@@ -122,7 +122,7 @@ public class DevSetupAgentDeploymentHelper
     }
 
     private readonly string _script = @"
-function DeployDevSetupAgent
+function Install-DevSetupAgent
 {
     Param(
         [Parameter(Mandatory = $true)]
@@ -202,7 +202,7 @@ function DeployDevSetupAgent
 
                 # Stop and remove previous version of DevSetupAgent service if it exists
                 $service = Get-Service -Name $using:DevSetupAgentConst -ErrorAction SilentlyContinue
-                if ($service -ne $null)
+                if ($service)
                 {
                     $serviceWMI = Get-WmiObject -Class Win32_Service -Filter ""Name='$using:DevSetupAgentConst'""
                     $existingServicePath = $serviceWMI.Properties[""PathName""].Value
@@ -232,7 +232,7 @@ function DeployDevSetupAgent
                     Remove-Variable -Name serviceWMI -ErrorAction SilentlyContinue
                 }
 
-                # Stop previous version of DevSetupEngine CON server if it exists
+                # Stop previous version of DevSetupEngine COM server if it exists
                 $devSetupEngineProcess = Get-Process -Name ""$using:DevSetupEngineConst"" -ErrorAction SilentlyContinue
                 if ($devSetupEngineProcess -ne $null)
                 {
