@@ -125,8 +125,13 @@ public class DevSetupAgentDeploymentHelper
 function DeployDevSetupAgent
 {
     Param(
+        [Parameter(Mandatory = $true)]
         [Guid] $VMId,
+        
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.Runspaces.PSSession] $Session,
+        
+        [Parameter(Mandatory = $true)]
         [string] $Path
     )
 
