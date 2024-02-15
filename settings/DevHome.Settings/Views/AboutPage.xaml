@@ -42,6 +42,18 @@
                             <HyperlinkButton x:Uid="SettingsPage_PrivacyPolicyLink" Margin="{StaticResource HyperlinkButtonNegativeMargin}" />
                         </StackPanel>
                     </ctControls:SettingsCard>
+                    <ctControls:SettingsCard
+                        Visibility="Collapsed"
+                        x:Name="ViewLogsSettingsCard"
+                        IsClickEnabled="True"
+                        HorizontalContentAlignment="Left"
+                        VerticalContentAlignment="Center"
+                        ContentAlignment="Left">
+                        <ctControls:SettingsCard.ActionIcon>
+                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8A7;"/>
+                        </ctControls:SettingsCard.ActionIcon>
+                        <TextBlock x:Uid="ViewLogs" />
+                    </ctControls:SettingsCard>
                 </ctControls:SettingsExpander.Items>
             </ctControls:SettingsExpander>
         </ScrollViewer>

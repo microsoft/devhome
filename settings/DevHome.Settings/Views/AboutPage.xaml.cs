@@ -1,9 +1,13 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using CommunityToolkit.Mvvm.Input;
 using DevHome.Common.Extensions;
 using DevHome.Common.Services;
+using DevHome.Logging;
 using DevHome.Settings.Models;
 using DevHome.Settings.ViewModels;
 using Microsoft.UI.Xaml;
@@ -13,15 +17,9 @@ namespace DevHome.Settings.Views;
 
 public sealed partial class AboutPage : Page
 {
-    public AboutViewModel ViewModel
-    {
-        get;
-    }
+    public AboutViewModel ViewModel { get; }
 
-    public ObservableCollection<Breadcrumb> Breadcrumbs
-    {
-        get;
-    }
+    public ObservableCollection<Breadcrumb> Breadcrumbs { get; }
 
     public AboutPage()
     {
@@ -34,6 +32,10 @@ public sealed partial class AboutPage : Page
             new(stringResource.GetLocalized("Settings_Header"), typeof(SettingsViewModel).FullName!),
             new(stringResource.GetLocalized("Settings_About_Header"), typeof(AboutViewModel).FullName!),
         };
+
+#if DEBUG
+        Loaded += ShowViewLogsButton;
+#endif
     }
 
     private void BreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
@@ -44,4 +46,26 @@ public sealed partial class AboutPage : Page
             crumb.NavigateTo();
         }
     }
+
+#if DEBUG
+    private void ShowViewLogsButton(object sender, RoutedEventArgs e)
+    {
+        ViewLogsSettingsCard.Visibility = Visibility.Visible;
+        ViewLogsSettingsCard.Command = OpenLogsLocationCommand;
+    }
+
+    [RelayCommand]
+    private void OpenLogsLocation()
+    {
+        var logLocation = GlobalLog.Logger?.Options.LogFileFolderRoot ?? string.Empty;
+        try
+        {
+            Process.Start("explorer.exe", $"{logLocation}");
+        }
+        catch (Exception e)
+        {
+            GlobalLog.Logger?.ReportError("AboutPage", $"Error opening log location", e);
+        }
+    }
+#endif
 }
