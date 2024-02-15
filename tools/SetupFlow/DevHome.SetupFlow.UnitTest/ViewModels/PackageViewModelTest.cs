@@ -100,6 +100,6 @@ public class PackageViewModelTest : BaseSetupFlowTest
         var packageViewModel = TestHost.CreateInstance<PackageViewModel>(package.Object);
 
         // Assert
-        Assert.AreEqual(expectedDescription, packageViewModel.PackageDescription);
+        Assert.AreEqual(expectedDescription, packageViewModel.PackageFullDescription);
     }
 }

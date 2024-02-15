@@ -60,7 +60,7 @@ public partial class PackageViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TooltipVersion))]
-    [NotifyPropertyChangedFor(nameof(PackageDescription))]
+    [NotifyPropertyChangedFor(nameof(PackageFullDescription))]
     private string _selectedVersion;
 
     public PackageViewModel(
@@ -82,7 +82,7 @@ public partial class PackageViewModel : ObservableObject
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
         _installPackageTask = new Lazy<InstallPackageTask>(() => CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
 
-        SelectedVersion = !string.IsNullOrEmpty(_package.InstalledVersion) ? _package.InstalledVersion : _package.AvailableVersions[0];
+        SelectedVersion = _package.IsInstalled ? _package.InstalledVersion : _package.DefaultInstallVersion;
     }
 
     public PackageUniqueKey UniqueKey => _package.UniqueKey;
@@ -105,7 +105,9 @@ public partial class PackageViewModel : ObservableObject
 
     public string InstallationNotes => _package.InstallationNotes;
 
-    public string PackageDescription => GetPackageDescription();
+    public string PackageFullDescription => GetPackageFullDescription();
+
+    public string PackageShortDescription => GetPackageShortDescription();
 
     public string PackageTitle => Name;
 
@@ -208,7 +210,19 @@ public partial class PackageViewModel : ObservableObject
         return _package.CreateInstallTask(_wpm, _stringResource, SelectedVersion, activityId);
     }
 
-    private string GetPackageDescription()
+    private string GetPackageShortDescription()
+    {
+        // Source | Publisher name
+        if (!string.IsNullOrEmpty(_package.PublisherName))
+        {
+            return _stringResource.GetLocalized(StringResourceKey.PackageDescriptionTwoParts, CatalogName, PublisherName);
+        }
+
+        // Source
+        return CatalogName;
+    }
+
+    private string GetPackageFullDescription()
     {
         // Version | Source | Publisher name
         if (!_wpm.IsMsStorePackage(_package) && !string.IsNullOrEmpty(_package.PublisherName))

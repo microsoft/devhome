@@ -22,7 +22,7 @@
             Style="{ThemeResource BodyStrongTextBlockStyle}"
             Visibility="{x:Bind Package.IsInstalled}"/>
         <TextBlock Text="{x:Bind Package.TooltipName}"/>
-        <TextBlock Text="{x:Bind Package.TooltipVersion}"/>
+        <TextBlock Text="{x:Bind Package.TooltipVersion, Mode=OneWay}"/>
         <TextBlock Text="{x:Bind Package.TooltipSource}"/>
         <TextBlock Text="{x:Bind Package.TooltipPublisher}"/>
     </StackPanel>

@@ -57,6 +57,7 @@
                             <Setter Target="Image.Opacity" Value="{ThemeResource AppManagementIconDisabledOpacity}"/>
                             <Setter Target="Title.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
                             <Setter Target="Version.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
+                            <Setter Target="Divider.Foreground" Value="{ThemeResource TextFillColorDisabledBrush}"/>
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -71,7 +72,11 @@
                     <TextBlock Name="Title" Style="{ThemeResource AppManagementPackageTitleTextBlock}" Text="{Binding PackageTitle}"/>
                 </controls:PackageDetailsSettingsCard.Header>
                 <controls:PackageDetailsSettingsCard.Description>
-                    <TextBlock Name="Version" Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{Binding PackageDescription}"/>
+                    <StackPanel Orientation="Horizontal" Spacing="3">
+                        <TextBlock Name="Version" Style="{ThemeResource AppManagementPackageDescriptionTextBlock}" Text="{Binding PackageShortDescription}"/>
+                        <TextBlock Name="Divider" Style="{ThemeResource AppManagementPackageDescriptionTextBlock}">|</TextBlock>
+                        <ContentControl IsTabStop="False" Content="{Binding IsInstalled, Converter={StaticResource LearnMoreInstalledConverter}}" />
+                    </StackPanel>
                 </controls:PackageDetailsSettingsCard.Description>
                 <controls:PackageDetailsSettingsCard.HeaderIcon>
                     <ImageIcon Name="Image" Source="{Binding Icon, Mode=OneWay}"/>
@@ -82,10 +87,11 @@
                         BorderThickness="0"
                         FontSize="{ThemeResource CaptionTextBlockFontSize}"
                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        IsTextSearchEnabled="True"
+                        Background="Transparent"
                         HorizontalAlignment="Left"
-                        SelectedItem="{Binding Version, Mode=TwoWay}"
-                        ItemsSource="{Binding Versions}" />
-                    <ContentControl IsTabStop="False" Content="{Binding IsInstalled, Converter={StaticResource LearnMoreInstalledConverter}}" />
+                        SelectedItem="{Binding SelectedVersion, Mode=TwoWay}"
+                        ItemsSource="{Binding AvailableVersions}" />
                     <Button
                         IsEnabled="{Binding IsInstalled, Converter={StaticResource BoolNegationConverter}}"
                         AutomationProperties.Name="{Binding ButtonAutomationName}"

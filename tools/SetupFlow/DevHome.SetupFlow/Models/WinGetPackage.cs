@@ -29,9 +29,10 @@ public class WinGetPackage : IWinGetPackage
         CatalogName = package.DefaultInstallVersion.PackageCatalog.Info.Name;
         UniqueKey = new(Id, CatalogId);
         Name = package.Name;
-        InstalledVersion = package.InstalledVersion.Version;
         AvailableVersions = package.AvailableVersions.Select(v => v.Version).ToList();
-        IsInstalled = package.InstalledVersion != null;
+        InstalledVersion = package.InstalledVersion?.Version;
+        DefaultInstallVersion = package.DefaultInstallVersion.Version;
+        IsInstalled = InstalledVersion != null;
         IsElevationRequired = requiresElevated;
         PackageUrl = GetMetadataValue(package, metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null);
         PublisherUrl = GetMetadataValue(package, metadata => new Uri(metadata.PublisherUrl), nameof(CatalogPackageMetadata.PublisherUrl), null);
@@ -50,6 +51,8 @@ public class WinGetPackage : IWinGetPackage
     public string Name { get; }
 
     public string InstalledVersion { get; }
+
+    public string DefaultInstallVersion { get; }
 
     public IReadOnlyList<string> AvailableVersions { get; }
 
@@ -75,7 +78,7 @@ public class WinGetPackage : IWinGetPackage
         string installVersion,
         Guid activityId) => new(wpm, stringResource, this, installVersion, activityId);
 
-    public WinGetPackageUri GetUri(string installVersion) => new(CatalogName, Id, new(InstalledVersion));
+    public WinGetPackageUri GetUri(string installVersion) => new(CatalogName, Id, new(installVersion));
 
     /// <summary>
     /// Gets the package metadata from the current culture name (e.g. 'en-US')

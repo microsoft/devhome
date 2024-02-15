@@ -66,6 +66,14 @@ public interface IWinGetPackage
     }
 
     /// <summary>
+    /// Gets the default version to install
+    /// </summary>
+    public string DefaultInstallVersion
+    {
+        get;
+    }
+
+    /// <summary>
     /// Gets the list of available versions for the package
     /// </summary>
     public IReadOnlyList<string> AvailableVersions

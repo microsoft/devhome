@@ -109,8 +109,10 @@
                             FontSize="{ThemeResource CaptionTextBlockFontSize}"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                             HorizontalAlignment="Left"
-                            SelectedItem="{Binding Version, Mode=TwoWay}"
-                            ItemsSource="{Binding Versions}">
+                            Background="Transparent"
+                            Padding="0"
+                            SelectedItem="{Binding SelectedVersion, Mode=TwoWay}"
+                            ItemsSource="{Binding AvailableVersions}">
                             <ComboBox.ItemContainerStyle>
                                 <Style TargetType="ComboBoxItem">
                                     <Setter Property="IsEnabled" Value="True" />
@@ -125,7 +127,7 @@
                             MaxLines="1"
                             TextTrimming="CharacterEllipsis"
                             Style="{ThemeResource CaptionTextBlockStyle}"
-                            Text="{Binding PackageDescription}"/>
+                            Text="{Binding PackageShortDescription}"/>
 
                         <!-- Package link / "Installed" -->
                         <ContentControl
