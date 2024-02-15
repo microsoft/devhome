@@ -12,9 +12,7 @@ public enum SeverityLevel
     Critical,
 }
 
-// For setting fail-fast behavior, at what level of failure will we conduct a fail-fast?
-// This is mostly intended for specifying whether any error or any critical error causes an FailFast.
-// By default we assume any critical failure is by definition something we should not continue after detecting.
+// By default, we FailFast on Critical since Critical failure is, by definition, something we should not continue after detecting.
 public enum FailFastSeverityLevel
 {
     Ignore = -1,
@@ -25,6 +23,12 @@ public enum FailFastSeverityLevel
 
 public class FailFast
 {
+    /// <summary>
+    /// Determine whether the message's severity level is at least at the FailFastSeverity threshold.
+    /// </summary>
+    /// <param name="severity">Severity of the log message.</param>
+    /// <param name="failFastSeverity">Threshold set for FailFast on logging.</param>
+    /// <returns>True if Dev Home should fail fast, false if it should not.</returns>
     public static bool IsFailFastSeverityLevel(SeverityLevel severity, FailFastSeverityLevel failFastSeverity)
     {
         return failFastSeverity switch
