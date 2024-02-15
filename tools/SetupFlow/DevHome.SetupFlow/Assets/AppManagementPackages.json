@@ -5,6 +5,10 @@
     "DescriptionResourceKey": "PopularAppsDescription",
     "WinGetPackages": [
       {
+        "Uri": "x-ms-winget://winget/7zip.7zip",
+        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/7zip.7zip.ico"
+      },
+      {
         "Uri": "x-ms-winget://winget/Microsoft.VisualStudio.2022.Community",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.VisualStudio.2022.Community.ico"
       },
@@ -31,10 +35,6 @@
       {
         "Uri": "x-ms-winget://winget/Microsoft.PowerToys",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Microsoft.PowerToys.ico"
-      },
-      {
-        "Uri": "x-ms-winget://winget/7zip.7zip",
-        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/7zip.7zip.ico"
       },
       {
         "Uri": "x-ms-winget://winget/Google.AndroidStudio",
@@ -83,10 +83,6 @@
       {
         "Uri": "x-ms-winget://winget/vim.vim",
         "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/vim.vim.ico"
-      },
-      {
-        "Uri": "x-ms-winget://winget/Postman.Postman",
-        "Icon": "ms-appx:////DevHome.SetupFlow/Assets/Apps/Postman.Postman.ico"
       },
       {
         "Uri": "x-ms-winget://winget/GitHub.GitHubDesktop",

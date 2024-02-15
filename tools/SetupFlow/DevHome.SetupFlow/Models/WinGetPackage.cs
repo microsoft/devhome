@@ -30,8 +30,8 @@ public class WinGetPackage : IWinGetPackage
         UniqueKey = new(Id, CatalogId);
         Name = package.Name;
         AvailableVersions = package.AvailableVersions.Select(v => v.Version).ToList();
-        InstalledVersion = package.InstalledVersion?.Version;
-        DefaultInstallVersion = package.DefaultInstallVersion.Version;
+        InstalledVersion = FindVersion(package.AvailableVersions, package.InstalledVersion);
+        DefaultInstallVersion = FindVersion(package.AvailableVersions, package.DefaultInstallVersion);
         IsInstalled = InstalledVersion != null;
         IsElevationRequired = requiresElevated;
         PackageUrl = GetMetadataValue(package, metadata => new Uri(metadata.PackageUrl), nameof(CatalogPackageMetadata.PackageUrl), null);
@@ -101,5 +101,38 @@ public class WinGetPackage : IWinGetPackage
             Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Failed to get package metadata [{metadataFieldName}] for package {package.Id}; defaulting to {defaultValue}");
             return defaultValue;
         }
+    }
+
+    /// <summary>
+    /// Find the provided version in the list of available versions
+    /// </summary>
+    /// <param name="availableVersions">List of available versions</param>
+    /// <param name="versionInfo">Version to find</param>
+    /// <returns>Package version</returns>
+    private string FindVersion(IReadOnlyList<PackageVersionId> availableVersions, PackageVersionInfo versionInfo)
+    {
+        if (versionInfo == null)
+        {
+            return null;
+        }
+
+        // Best effort to find the version in the list of available versions
+        // If CompareToVersion throws an exception, we default to the version provided
+        try
+        {
+            for (var i = 0; i < availableVersions.Count; i++)
+            {
+                if (versionInfo.CompareToVersion(availableVersions[i].Version) == CompareResult.Equal)
+                {
+                    return availableVersions[i].Version;
+                }
+            }
+        }
+        catch
+        {
+            Log.Logger?.ReportError(Log.Component.AppManagement, $"Unable to validate if the version {versionInfo.Version} is in the list of available versions");
+        }
+
+        return versionInfo.Version;
     }
 }
