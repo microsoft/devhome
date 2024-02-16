@@ -36,6 +36,7 @@ public class FeaturedApplicationsProvider : IFeaturedApplicationsProvider
                 "x-ms-winget://winget/Microsoft.VisualStudio.2022.Community",
                 "x-ms-winget://winget/Microsoft.VisualStudioCode",
                 "x-ms-winget://winget/Microsoft.PowerShell",
+                "x-ms-winget://winget/Notepad++.Notepad++",
                 "x-ms-winget://winget/Git.Git",
             });
         }

@@ -50,7 +50,7 @@
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState>
                         <VisualState.StateTriggers>
-                            <StateTrigger IsActive="{Binding IsInstalled}" />
+                            <StateTrigger IsActive="{Binding CanSelect, Converter={StaticResource BoolNegationConverter}}" />
                             <StateTrigger IsActive="{Binding IsSelected}" />
                         </VisualState.StateTriggers>
                         <VisualState.Setters>
@@ -93,6 +93,7 @@
                         SelectedItem="{Binding SelectedVersion, Mode=TwoWay}"
                         ItemsSource="{Binding AvailableVersions}" />
                     <Button
+                        IsEnabled="{Binding CanSelect}"
                         AutomationProperties.Name="{Binding ButtonAutomationName}"
                         Padding="5"
                         Command="{Binding ToggleSelectionCommand,Mode=OneWay}">

@@ -61,7 +61,10 @@ public partial class PackageViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TooltipVersion))]
     [NotifyPropertyChangedFor(nameof(PackageFullDescription))]
+    [NotifyPropertyChangedFor(nameof(CanSelect))]
     private string _selectedVersion;
+
+    public bool CanSelect => SelectedVersion != InstalledVersion;
 
     public PackageViewModel(
         ISetupFlowStringResource stringResource,
@@ -162,6 +165,14 @@ public partial class PackageViewModel : ObservableObject
     }
 
     partial void OnIsSelectedChanged(bool value) => SelectionChanged?.Invoke(null, this);
+
+    partial void OnSelectedVersionChanged(string value)
+    {
+        if (IsSelected && !CanSelect)
+        {
+            IsSelected = false;
+        }
+    }
 
     /// <summary>
     /// Toggle package selection
