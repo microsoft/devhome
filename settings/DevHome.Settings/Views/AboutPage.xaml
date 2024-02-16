@@ -46,13 +46,9 @@
                     <ctControls:SettingsCard
                         Visibility="Collapsed"
                         x:Name="ViewLogsSettingsCard"
+                        x:Uid="ViewLogs"
                         IsClickEnabled="True"
-                        ActionIcon="{ui:FontIcon Glyph=&#xE8A7;}"
-                        HorizontalContentAlignment="Left"
-                        VerticalContentAlignment="Center"
-                        ContentAlignment="Left">
-                        <TextBlock x:Uid="ViewLogs" />
-                    </ctControls:SettingsCard>
+                        ActionIcon="{ui:FontIcon Glyph=&#xE8A7;}" />
                 </ctControls:SettingsExpander.Items>
             </ctControls:SettingsExpander>
         </ScrollViewer>
