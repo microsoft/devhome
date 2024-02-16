@@ -146,25 +146,25 @@ public partial class AddRepoViewModel : ObservableObject
     /// Should the URL page be visible?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showUrlPage;
+    private bool _showUrlPage;
 
     /// <summary>
     /// Should the account page be visible?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showAccountPage;
+    private bool _showAccountPage;
 
     /// <summary>
     /// Should the repositories page be visible?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showRepoPage;
+    private bool _showRepoPage;
 
     /// <summary>
     /// Should the error text be shown?
     /// </summary>
     [ObservableProperty]
-    private Visibility _showErrorTextBox;
+    private bool _showErrorTextBox;
 
     /// <summary>
     /// Keeps track of if the account button is checked.  Used to switch UIs
@@ -190,7 +190,7 @@ public partial class AddRepoViewModel : ObservableObject
     public bool IsAccountComboBoxEnabled => Accounts.Count > 1;
 
     [ObservableProperty]
-    private Visibility _shouldShowUrlError;
+    private bool _shouldShowUrlError;
 
     [ObservableProperty]
     private bool _isFetchingRepos;
@@ -466,14 +466,14 @@ public partial class AddRepoViewModel : ObservableObject
             _previouslySelectedRepos.AddRange(EverythingToClone);
         }
 
-        ShowRepoPage = Visibility.Collapsed;
+        ShowRepoPage = false;
 
         // Store the logged in accounts to help figure out what account the user logged into.
         var loggedInAccounts = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
         await LogUserIn(_selectedRepoProvider, LoginUiContent, true);
         var loggedInAccountsWithNewAccount = await Task.Run(() => _providers.GetAllLoggedInAccounts(_selectedRepoProvider));
 
-        ShowRepoPage = Visibility.Visible;
+        ShowRepoPage = true;
         Accounts = new ObservableCollection<string>(loggedInAccountsWithNewAccount.Select(x => x.LoginId));
         AccountsToShow = ConstructFlyout();
 
@@ -509,7 +509,6 @@ public partial class AddRepoViewModel : ObservableObject
         List<CloningInformation> previouslySelectedRepos,
         IHost host,
         Guid activityId,
-        string defaultClonePath,
         AddRepoDialog addRepoDialog,
         IDevDriveManager devDriveManager)
     {
@@ -521,6 +520,9 @@ public partial class AddRepoViewModel : ObservableObject
         EverythingToClone = new List<CloningInformation>(_previouslySelectedRepos);
         _activityId = activityId;
         FolderPickerViewModel = new FolderPickerViewModel(stringResource);
+
+        var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var defaultClonePath = Path.Join(userFolder, "source", "repos");
         FolderPickerViewModel.CloneLocation = defaultClonePath;
 
         EditDevDriveViewModel = new EditDevDriveViewModel(devDriveManager);
@@ -535,8 +537,8 @@ public partial class AddRepoViewModel : ObservableObject
 
         // override changes ChangeToUrlPage to correctly set the state.
         UrlParsingError = string.Empty;
-        ShouldShowUrlError = Visibility.Collapsed;
-        ShowErrorTextBox = Visibility.Collapsed;
+        ShouldShowUrlError = false;
+        ShowErrorTextBox = false;
     }
 
     /// <summary>
@@ -593,16 +595,12 @@ public partial class AddRepoViewModel : ObservableObject
 
     public void ChangeToUrlPage()
     {
-        /*
-        RepositoryProviderComboBox.SelectedIndex = -1;
-        */
-
         FolderPickerViewModel.ShowFolderPicker();
         EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Url page");
-        ShowUrlPage = Visibility.Visible;
-        ShowAccountPage = Visibility.Collapsed;
-        ShowRepoPage = Visibility.Collapsed;
+        ShowUrlPage = true;
+        ShowAccountPage = false;
+        ShowRepoPage = false;
         IsUrlAccountButtonChecked = true;
         IsAccountToggleButtonChecked = false;
         CurrentPage = PageKind.AddViaUrl;
@@ -639,14 +637,15 @@ public partial class AddRepoViewModel : ObservableObject
 
         /*
          *Don't know why this is here.  Remove if not needed.
+         * This was here in case they logged in.
         SwitchViewsSegmentedView.IsEnabled = true;
         */
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Account page");
-        ShouldShowUrlError = Visibility.Collapsed;
-        ShowUrlPage = Visibility.Collapsed;
-        ShowAccountPage = Visibility.Visible;
-        ShowRepoPage = Visibility.Collapsed;
+        ShouldShowUrlError = false;
+        ShowUrlPage = false;
+        ShowAccountPage = true;
+        ShowRepoPage = false;
         IsUrlAccountButtonChecked = false;
         IsAccountToggleButtonChecked = true;
         CurrentPage = PageKind.AddViaAccount;
@@ -668,9 +667,9 @@ public partial class AddRepoViewModel : ObservableObject
         }
 
         Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Changing to Repo page");
-        ShowUrlPage = Visibility.Collapsed;
-        ShowAccountPage = Visibility.Collapsed;
-        ShowRepoPage = Visibility.Visible;
+        ShowUrlPage = false;
+        ShowAccountPage = false;
+        ShowRepoPage = true;
         CurrentPage = PageKind.Repositories;
         PrimaryButtonText = _stringResource.GetLocalized(StringResourceKey.RepoEverythingElsePrimaryButtonText);
         ShouldShowLoginUi = false;
@@ -696,7 +695,7 @@ public partial class AddRepoViewModel : ObservableObject
             if (!Uri.TryCreate(Url, UriKind.RelativeOrAbsolute, out _))
             {
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
-                ShouldShowUrlError = Visibility.Visible;
+                ShouldShowUrlError = true;
                 return false;
             }
 
@@ -705,11 +704,11 @@ public partial class AddRepoViewModel : ObservableObject
             if (sshMatch.Success)
             {
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.SSHConnectionStringNotAllowed);
-                ShouldShowUrlError = Visibility.Visible;
+                ShouldShowUrlError = true;
                 return false;
             }
 
-            ShouldShowUrlError = Visibility.Collapsed;
+            ShouldShowUrlError = false;
             return true;
         }
         else if (CurrentPage == PageKind.AddViaAccount || CurrentPage == PageKind.Repositories)
@@ -850,7 +849,7 @@ public partial class AddRepoViewModel : ObservableObject
         if (!Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out uri))
         {
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
-            ShouldShowUrlError = Visibility.Visible;
+            ShouldShowUrlError = true;
             return;
         }
 
@@ -868,7 +867,7 @@ public partial class AddRepoViewModel : ObservableObject
             {
                 Log.Logger?.ReportError(Log.Component.RepoConfig, $"Invalid URL {uri.OriginalString}", e);
                 UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationBadUrl);
-                ShouldShowUrlError = Visibility.Visible;
+                ShouldShowUrlError = true;
                 return;
             }
         }
@@ -909,14 +908,14 @@ public partial class AddRepoViewModel : ObservableObject
             return;
         }
 
-        ShouldShowUrlError = Visibility.Collapsed;
+        ShouldShowUrlError = false;
 
         // User could paste in a url of an already added repo.  Check for that here.
         if (_previouslySelectedRepos.Any(x => x.RepositoryToClone.OwningAccountName.Equals(cloningInformation.RepositoryToClone.OwningAccountName, StringComparison.OrdinalIgnoreCase)
             && x.RepositoryToClone.DisplayName.Equals(cloningInformation.RepositoryToClone.DisplayName, StringComparison.OrdinalIgnoreCase)))
         {
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlValidationRepoAlreadyAdded);
-            ShouldShowUrlError = Visibility.Visible;
+            ShouldShowUrlError = true;
             Log.Logger?.ReportInfo(Log.Component.RepoConfig, "Repository has already been added.");
             TelemetryFactory.Get<ITelemetry>().LogCritical("RepoTool_RepoAlreadyAdded_Event", false, _activityId);
             return;
@@ -926,7 +925,7 @@ public partial class AddRepoViewModel : ObservableObject
 
         EverythingToClone.Add(cloningInformation);
         ShouldEnablePrimaryButton = true;
-        ShouldShowUrlError = Visibility.Collapsed;
+        ShouldShowUrlError = false;
     }
 
     /// <summary>
@@ -987,7 +986,7 @@ public partial class AddRepoViewModel : ObservableObject
             // Should have a better error string.
             // TODO: Figure out a better error message?
             UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
-            ShouldShowUrlError = Visibility.Visible;
+            ShouldShowUrlError = true;
 
             InitiateAddAccountUserExperienceAsync(provider, loginFrame);
             return null;
@@ -999,7 +998,7 @@ public partial class AddRepoViewModel : ObservableObject
         // Because DevHome cannot tell if a repo is private, or does not exist, prompt the user to log in.
         // Only ask if DevHome hasn't asked already.
         UrlParsingError = _stringResource.GetLocalized(StringResourceKey.UrlNoAccountsHaveAccess);
-        ShouldShowUrlError = Visibility.Visible;
+        ShouldShowUrlError = true;
         IsLoggingIn = true;
         InitiateAddAccountUserExperienceAsync(provider, loginFrame);
         return null;

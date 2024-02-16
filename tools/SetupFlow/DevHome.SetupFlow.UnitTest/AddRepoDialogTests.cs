@@ -29,7 +29,7 @@ public class AddRepoDialogTests : BaseSetupFlowTest
     [TestMethod]
     public void SwitchToUrlScreenTest()
     {
-        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), string.Empty, null, TestHost.GetService<IDevDriveManager>());
+        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), null, TestHost.GetService<IDevDriveManager>());
         addRepoViewModel.ChangeToUrlPage();
         Assert.AreEqual(Visibility.Visible, addRepoViewModel.ShowUrlPage);
         Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowAccountPage);
@@ -42,7 +42,7 @@ public class AddRepoDialogTests : BaseSetupFlowTest
     [TestMethod]
     public void SwitchToRepoScreenTest()
     {
-        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), string.Empty, null, TestHost.GetService<IDevDriveManager>());
+        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), null, TestHost.GetService<IDevDriveManager>());
         addRepoViewModel.ChangeToRepoPage().Wait();
         Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowUrlPage);
         Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowAccountPage);

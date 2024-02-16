@@ -57,10 +57,7 @@ public partial class AddRepoDialog : ContentDialog
         this.InitializeComponent();
         _previouslySelectedRepos = previouslySelectedRepos;
 
-        var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        var defaultClonePath = Path.Join(userFolder, "source", "repos");
-
-        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId, defaultClonePath, this, devDriveManager);
+        AddRepoViewModel = new AddRepoViewModel(stringResource, previouslySelectedRepos, host, activityId, this, devDriveManager);
 
         // Changing view to account so the selection changed event for Segment correctly shows URL.
         AddRepoViewModel.CurrentPage = PageKind.AddViaAccount;
@@ -229,7 +226,7 @@ public partial class AddRepoDialog : ContentDialog
             // On the first run, ignore any warnings.
             // If this is set to visible and the user needs to log in they'll see an error message after the log-in
             // prompt exits even if they logged in successfully.
-            AddRepoViewModel.ShouldShowUrlError = Visibility.Collapsed;
+            AddRepoViewModel.ShouldShowUrlError = false;
 
             // Get deferral to prevent the dialog from closing when awaiting operations.
             var deferral = args.GetDeferral();
@@ -268,7 +265,7 @@ public partial class AddRepoDialog : ContentDialog
                 AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
             }
 
-            if (AddRepoViewModel.ShouldShowUrlError == Visibility.Visible)
+            if (AddRepoViewModel.ShouldShowUrlError)
             {
                 AddRepoViewModel.ShouldEnablePrimaryButton = false;
                 args.Cancel = true;
