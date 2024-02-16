@@ -64,7 +64,9 @@ public partial class PackageViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CanSelect))]
     private string _selectedVersion;
 
-    public bool CanSelect => SelectedVersion != InstalledVersion;
+    public bool CanSelect => IsSelectable();
+
+    public bool ShowVersionList => IsVersioningSupported();
 
     public PackageViewModel(
         ISetupFlowStringResource stringResource,
@@ -104,7 +106,7 @@ public partial class PackageViewModel : ObservableObject
 
     public string CatalogName => _package.CatalogName;
 
-    public string PublisherName => _package.PublisherName;
+    public string PublisherName => string.IsNullOrWhiteSpace(_package.PublisherName) ? PublisherNameNotAvailable : _package.PublisherName;
 
     public string InstallationNotes => _package.InstallationNotes;
 
@@ -168,7 +170,7 @@ public partial class PackageViewModel : ObservableObject
 
     partial void OnSelectedVersionChanged(string value)
     {
-        if (IsSelected && !CanSelect)
+        if (IsSelected && !IsSelectable())
         {
             IsSelected = false;
         }
@@ -255,6 +257,36 @@ public partial class PackageViewModel : ObservableObject
 
         // Source
         return CatalogName;
+    }
+
+    /// <summary>
+    /// Indicates if a specific version of the package can be selected to install
+    /// </summary>
+    /// <returns>True a package version can be specified to install</returns>
+    private bool IsVersioningSupported()
+    {
+        // Store packages have a single version
+        return !_wpm.IsMsStorePackage(_package);
+    }
+
+    /// <summary>
+    /// Checks if the package is selectable
+    /// </summary>
+    /// <returns>True if the package is selectable</returns>
+    /// <remarks>Allow selecting a different version to install if the package is installed</remarks>
+    private bool IsSelectable()
+    {
+        if (IsInstalled)
+        {
+            if (!IsVersioningSupported())
+            {
+                return false;
+            }
+
+            return SelectedVersion != InstalledVersion;
+        }
+
+        return true;
     }
 
     /// <summary>

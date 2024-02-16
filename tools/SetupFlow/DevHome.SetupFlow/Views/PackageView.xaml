@@ -106,6 +106,7 @@
 
                         <ComboBox
                             Grid.Row="1"
+                            Visibility="{Binding ShowVersionList}"
                             BorderThickness="0"
                             FontSize="{ThemeResource CaptionTextBlockFontSize}"
                             Foreground="{ThemeResource TextFillColorSecondaryBrush}"
