@@ -24,8 +24,8 @@ public class PowerShellSessionMock : IPowerShellSession
     {
     }
 
-    /// <inheritdoc cref="IPowerShellSession.AddScript(string)"/>
-    public void AddScript(string script)
+    /// <inheritdoc cref="IPowerShellSession.AddScript(string, bool)"/>
+    public void AddScript(string script, bool useLocalScope)
     {
     }
 

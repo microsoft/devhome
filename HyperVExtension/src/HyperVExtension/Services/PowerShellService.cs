@@ -81,7 +81,7 @@ public class PowerShellService : IPowerShellService, IDisposable
             return BuildPipelineAndExecuteStatements(commandLineStatements);
         }
 
-        return ExecuteIndividualStatements(commandLineStatements);
+        return ExecuteIndividualStatements(commandLineStatements, pipeType);
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ public class PowerShellService : IPowerShellService, IDisposable
     /// previous statement is not used as input for the next statement.
     /// </summary>
     /// <param name="commandLineStatements"> A list of statements that houses a PowerShell command and its parameters or a script.</param>
-    private Collection<PSObject> ExecuteIndividualStatements(IEnumerable<PowerShellCommandlineStatement> commandLineStatements)
+    private Collection<PSObject> ExecuteIndividualStatements(IEnumerable<PowerShellCommandlineStatement> commandLineStatements, PipeType pipeType)
     {
         Collection<PSObject> result = new();
 
@@ -119,7 +119,10 @@ public class PowerShellService : IPowerShellService, IDisposable
             }
 
             // Clear the PowerShell commands and streams to ensure that the previous command is not run again.
-            _powerShellSession.ClearSession();
+            if (pipeType != PipeType.DontClearBetweenStatements)
+            {
+                _powerShellSession.ClearSession();
+            }
         }
 
         return result;
@@ -140,12 +143,12 @@ public class PowerShellService : IPowerShellService, IDisposable
 
         if (isCommandEmptyOrNull && isScriptEmptyOrNull)
         {
-            throw new ArgumentException("Both the Command and Script properites were empty or null.");
+            throw new ArgumentException("Both the Command and Script properties were empty or null.");
         }
 
         if (isCommandUsedWithScript)
         {
-            throw new ArgumentException("Command and Script properites were used in the same statement. This is not allowed.");
+            throw new ArgumentException("Command and Script properties were used in the same statement. This is not allowed.");
         }
 
         // Add the command if its available.
@@ -163,7 +166,7 @@ public class PowerShellService : IPowerShellService, IDisposable
         // Add a script if its available and command is non-empty.
         if (isCommandEmptyOrNull && !isScriptEmptyOrNull)
         {
-            _powerShellSession.AddScript(statement.Script);
+            _powerShellSession.AddScript(statement.Script, statement.UseLocalScope);
         }
     }
 

@@ -32,6 +32,11 @@ public class PowerShellCommandlineStatement
     /// </remarks>
     public string Script { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets a value indicating whether to use local scope for the PowerShell script.
+    /// </summary>
+    public bool UseLocalScope { get; set; } = true;
+
     /// <summary> Returns a clone of the PowerShellCommandlineStatement object.</summary>
     public PowerShellCommandlineStatement Clone()
     {
@@ -40,6 +45,7 @@ public class PowerShellCommandlineStatement
             Command = Command,
             Parameters = Parameters,
             Script = Script,
+            UseLocalScope = UseLocalScope,
         };
     }
 
@@ -49,6 +55,7 @@ public class PowerShellCommandlineStatement
         builder.AppendLine(CultureInfo.InvariantCulture, $"Command: {Command}");
         builder.AppendLine(CultureInfo.InvariantCulture, $"Parameters: {CreateParameterString()}");
         builder.AppendLine(CultureInfo.InvariantCulture, $"Script: {Script}");
+        builder.AppendLine(CultureInfo.InvariantCulture, $"UseLocalScope: {UseLocalScope}");
 
         return builder.ToString();
     }
