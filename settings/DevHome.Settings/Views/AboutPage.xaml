@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ctControls="using:CommunityToolkit.WinUI.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="using:CommunityToolkit.WinUI"
     behaviors:NavigationViewHeaderBehavior.HeaderMode="Never"
     mc:Ignorable="d">
 
@@ -46,12 +47,10 @@
                         Visibility="Collapsed"
                         x:Name="ViewLogsSettingsCard"
                         IsClickEnabled="True"
+                        ActionIcon="{ui:FontIcon Glyph=&#xE8A7;}"
                         HorizontalContentAlignment="Left"
                         VerticalContentAlignment="Center"
                         ContentAlignment="Left">
-                        <ctControls:SettingsCard.ActionIcon>
-                            <FontIcon FontFamily="{ThemeResource SymbolThemeFontFamily}" Glyph="&#xE8A7;"/>
-                        </ctControls:SettingsCard.ActionIcon>
                         <TextBlock x:Uid="ViewLogs" />
                     </ctControls:SettingsCard>
                 </ctControls:SettingsExpander.Items>
