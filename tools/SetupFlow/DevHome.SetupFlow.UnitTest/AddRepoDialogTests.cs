@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using DevHome.Common.Extensions;
+using DevHome.Common.Services;
 using DevHome.SetupFlow.Models;
 using DevHome.SetupFlow.Services;
 using DevHome.SetupFlow.ViewModels;
@@ -28,7 +29,7 @@ public class AddRepoDialogTests : BaseSetupFlowTest
     [TestMethod]
     public void SwitchToUrlScreenTest()
     {
-        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), string.Empty, null);
+        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), string.Empty, null, TestHost.GetService<IDevDriveManager>());
         addRepoViewModel.ChangeToUrlPage();
         Assert.AreEqual(Visibility.Visible, addRepoViewModel.ShowUrlPage);
         Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowAccountPage);
@@ -41,8 +42,8 @@ public class AddRepoDialogTests : BaseSetupFlowTest
     [TestMethod]
     public void SwitchToRepoScreenTest()
     {
-        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), string.Empty, null);
-        addRepoViewModel.ChangeToRepoPage();
+        var addRepoViewModel = new AddRepoViewModel(TestHost.GetService<ISetupFlowStringResource>(), new List<CloningInformation>(), TestHost, Guid.NewGuid(), string.Empty, null, TestHost.GetService<IDevDriveManager>());
+        addRepoViewModel.ChangeToRepoPage().Wait();
         Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowUrlPage);
         Assert.AreEqual(Visibility.Collapsed, addRepoViewModel.ShowAccountPage);
         Assert.AreEqual(Visibility.Visible, addRepoViewModel.ShowRepoPage);

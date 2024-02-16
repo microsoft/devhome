@@ -74,7 +74,7 @@
             </ComboBox>
             <StackPanel x:Name="LoginUi" Visibility="{x:Bind AddRepoViewModel.ShouldShowLoginUi, Mode=OneWay}">
                 <!-- Title and Close button -->
-                <Grid x:Name="MyGrid">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition Width="40"/>
@@ -88,7 +88,7 @@
                         </Button.Content>
                     </Button>
                 </Grid>
-                <Frame x:Name="LoginUIContent" />
+                <Frame Content="{x:Bind AddRepoViewModel.LoginUiContent, Mode=OneWay}" />
             </StackPanel>
             
             <!-- Show Repositories -->

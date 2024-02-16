@@ -126,40 +126,13 @@ public partial class AddRepoDialog : ContentDialog
         });
     }
 
-    private void ChangeToAccountPage()
-    {
-        AddRepoViewModel.ChangeToAccountPage();
-        AddRepoViewModel.FolderPickerViewModel.CloseFolderPicker();
-        AddRepoViewModel.EditDevDriveViewModel.HideDevDriveUI();
-
-        // If DevHome has 1 provider installed and the provider has 1 logged in account
-        // switch to the repo page.
-        if (AddRepoViewModel.CanSkipAccountConnection)
-        {
-            RepositoryProviderComboBox.SelectedValue = AddRepoViewModel.ProviderNames[0];
-            SwitchToRepoPage(AddRepoViewModel.ProviderNames[0]);
-        }
-
-        SwitchViewsSegmentedView.IsEnabled = true;
-        ToggleCloneButton();
-    }
-
-    private void ChangeToUrlPage()
-    {
-        RepositoryProviderComboBox.SelectedIndex = -1;
-        AddRepoViewModel.ChangeToUrlPage();
-        AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
-        AddRepoViewModel.EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-        ToggleCloneButton();
-    }
-
     /// <summary>
     /// Open up the folder picker for choosing a clone location.
     /// </summary>
     private async void ChooseCloneLocationButton_Click(object sender, RoutedEventArgs e)
     {
         await AddRepoViewModel.FolderPickerViewModel.ChooseCloneLocation();
-        ToggleCloneButton();
+        AddRepoViewModel.ToggleCloneButton();
     }
 
     /// <summary>
@@ -182,7 +155,7 @@ public partial class AddRepoDialog : ContentDialog
 
         AddRepoViewModel.FolderPickerViewModel.ValidateCloneLocation();
 
-        ToggleCloneButton();
+        AddRepoViewModel.ToggleCloneButton();
     }
 
     /// <summary>
@@ -229,16 +202,7 @@ public partial class AddRepoDialog : ContentDialog
         var providerName = (string)RepositoryProviderComboBox.SelectedValue;
 
         AddRepoViewModel.AddOrRemoveRepository(providerName, loginId, e.AddedItems, e.RemovedItems);
-        ToggleCloneButton();
-    }
-
-    /// <summary>
-    /// Gets the frame used for logging in a user.  This can go away when the frame is moved to the view model.
-    /// </summary>
-    /// <returns>The frame used to log users in.</returns>
-    public Frame GetLoginUiContent()
-    {
-        return LoginUIContent;
+        AddRepoViewModel.ToggleCloneButton();
     }
 
     /// <summary>
@@ -260,7 +224,7 @@ public partial class AddRepoDialog : ContentDialog
             // Get the number of repos already selected to clone in a previous instance.
             // Used to figure out if the repo was added after the user logged into an account.
             var numberOfReposToCloneCount = AddRepoViewModel.EverythingToClone.Count;
-            AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation, LoginUIContent);
+            AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
 
             // On the first run, ignore any warnings.
             // If this is set to visible and the user needs to log in they'll see an error message after the log-in
@@ -301,7 +265,7 @@ public partial class AddRepoDialog : ContentDialog
             // and the number of repos to clone will not be changed.
             if (numberOfReposToCloneCount == AddRepoViewModel.EverythingToClone.Count)
             {
-                AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation, LoginUIContent);
+                AddRepoViewModel.AddRepositoryViaUri(AddRepoViewModel.Url, AddRepoViewModel.FolderPickerViewModel.CloneLocation);
             }
 
             if (AddRepoViewModel.ShouldShowUrlError == Visibility.Visible)
@@ -319,21 +283,10 @@ public partial class AddRepoDialog : ContentDialog
             var repositoryProviderName = (string)RepositoryProviderComboBox.SelectedItem;
             if (!string.IsNullOrEmpty(repositoryProviderName))
             {
-                SwitchToRepoPage(repositoryProviderName);
+                var deferral = args.GetDeferral();
+                await AddRepoViewModel.ChangeToRepoPage();
+                deferral.Complete();
             }
-        }
-    }
-
-    private async void SwitchToRepoPage(string repositoryProviderName)
-    {
-        await AddRepoViewModel.GetAccountsAsync(repositoryProviderName, LoginUIContent);
-        if (AddRepoViewModel.Accounts.Any())
-        {
-            AddRepoViewModel.ChangeToRepoPage();
-            AddRepoViewModel.FolderPickerViewModel.ShowFolderPicker();
-            AddRepoViewModel.EditDevDriveViewModel.ShowDevDriveUIIfEnabled();
-            AddRepoViewModel.SelectedAccount = AddRepoViewModel.Accounts.First();
-            AddRepoViewModel.ShouldEnablePrimaryButton = false;
         }
     }
 
@@ -367,27 +320,7 @@ public partial class AddRepoDialog : ContentDialog
     private async void CustomizeDevDriveHyperlinkButton_ClickAsync(object sender, RoutedEventArgs e)
     {
         await AddRepoViewModel.EditDevDriveViewModel.PopDevDriveCustomizationAsync();
-        ToggleCloneButton();
-    }
-
-    /// <summary>
-    /// Toggles the clone button.  Make sure other view models have correct information.
-    /// </summary>
-    private void ToggleCloneButton()
-    {
-        var isEverythingGood = AddRepoViewModel.ValidateRepoInformation() && AddRepoViewModel.FolderPickerViewModel.ValidateCloneLocation();
-        if (AddRepoViewModel.EditDevDriveViewModel.DevDrive != null && AddRepoViewModel.EditDevDriveViewModel.DevDrive.State != DevDriveState.ExistsOnSystem)
-        {
-            isEverythingGood &= AddRepoViewModel.EditDevDriveViewModel.IsDevDriveValid();
-        }
-
-        AddRepoViewModel.ShouldEnablePrimaryButton = isEverythingGood;
-
-        // Fill in EverythingToClone with the location
-        if (isEverythingGood)
-        {
-            AddRepoViewModel.SetCloneLocation(AddRepoViewModel.FolderPickerViewModel.CloneLocation);
-        }
+        AddRepoViewModel.ToggleCloneButton();
     }
 
     private void RepoUrlTextBox_TextChanged(object sender, RoutedEventArgs e)
@@ -398,19 +331,7 @@ public partial class AddRepoDialog : ContentDialog
             AddRepoViewModel.Url = (sender as TextBox).Text;
         }
 
-        ToggleCloneButton();
-    }
-
-    private void Segmented_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (AddRepoViewModel.CurrentPage == PageKind.AddViaUrl)
-        {
-            ChangeToAccountPage();
-        }
-        else
-        {
-            ChangeToUrlPage();
-        }
+        AddRepoViewModel.ToggleCloneButton();
     }
 
     /// <summary>
