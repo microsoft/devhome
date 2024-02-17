@@ -33,6 +33,9 @@ public class InstallPackageTaskArguments : ITaskArguments
         get; set;
     }
 
+    /// <summary>
+    /// Gets or sets the package version
+    /// </summary>
     public string Version
     {
         get; set;

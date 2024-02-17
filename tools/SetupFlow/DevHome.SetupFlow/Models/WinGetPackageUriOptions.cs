@@ -25,10 +25,21 @@ public sealed class WinGetPackageUriOptions
         Version = queryParams.Get(VersionQueryParameter);
     }
 
+    /// <summary>
+    /// Gets the version of the package
+    /// </summary>
     public string Version { get; }
 
+    /// <summary>
+    /// Gets a value indicating whether the <see cref="Version"/> is specified
+    /// </summary>
     public bool VersionSpecified => !string.IsNullOrWhiteSpace(Version);
 
+    /// <summary>
+    /// Returns the string representation of the options
+    /// </summary>
+    /// <param name="includeParameters">The parameters to include in the string</param>
+    /// <returns>Options as a string</returns>
     public string ToString(WinGetPackageUriParameters includeParameters)
     {
         var queryParams = HttpUtility.ParseQueryString(string.Empty);
@@ -42,6 +53,12 @@ public sealed class WinGetPackageUriOptions
         return queryParams.Count > 0 ? $"?{queryParams}" : string.Empty;
     }
 
+    /// <summary>
+    /// Compares the options with another options
+    /// </summary>
+    /// <param name="options">Target options to compare</param>
+    /// <param name="includeParameters">The parameters to include in the comparison</param>
+    /// <returns>True if the options are equal; otherwise, false</returns>
     public bool Equals(WinGetPackageUriOptions options, WinGetPackageUriParameters includeParameters)
     {
         if (options == null)
@@ -58,9 +75,12 @@ public sealed class WinGetPackageUriOptions
         return true;
     }
 
+    /// <inheritdoc/>
     public override string ToString() => ToString(WinGetPackageUriParameters.All);
 
+    /// <inheritdoc/>
     public override bool Equals(object obj) => Equals(obj as WinGetPackageUriOptions, WinGetPackageUriParameters.All);
 
+    /// <inheritdoc/>
     public override int GetHashCode() => ToString().GetHashCode();
 }

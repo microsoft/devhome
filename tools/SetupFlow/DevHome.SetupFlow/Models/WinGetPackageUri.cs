@@ -16,10 +16,19 @@ public class WinGetPackageUri
     /// </summary>
     private const string Scheme = "x-ms-winget";
 
+    /// <summary>
+    /// Gets the catalog name
+    /// </summary>
     public string CatalogName { get; private set; }
 
+    /// <summary>
+    /// Gets the package id
+    /// </summary>
     public string PackageId { get; private set; }
 
+    /// <summary>
+    /// Gets the package options
+    /// </summary>
     public WinGetPackageUriOptions Options { get; private set; }
 
     public WinGetPackageUri(string packageStringUri)
