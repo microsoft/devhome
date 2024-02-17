@@ -1,4 +1,4 @@
-# Microsoft.WindowsSandbox
+# Microsoft.WindowsSandbox.DSC
 The [Microsoft.WindowsSandbox.DSC](https://www.powershellgallery.com/packages/Microsoft.WindowsSandbox.DSC) PowerShell module contains the WindowsSandbox DSC Resource. This resource accepts either a reference to a Windows Sandbox .WSB file or properties to configure and launch an instance of the Windows Sandbox.
 
 >Note: The Windows Sandbox is an ephemoral instance of Windows. It also defaults to an administrative context when running the LogonCommand.
