@@ -88,6 +88,7 @@ public class PackageViewModelTest : BaseSetupFlowTest
         package.Setup(p => p.CatalogId).Returns(source);
         package.Setup(p => p.CatalogName).Returns(source);
         package.Setup(p => p.PublisherName).Returns(publisher);
+        package.Setup(p => p.IsInstalled).Returns(true);
         package.Setup(p => p.InstalledVersion).Returns(version);
         StringResource
             .Setup(sr => sr.GetLocalized(StringResourceKey.PackageDescriptionThreeParts, It.IsAny<object[]>()))
