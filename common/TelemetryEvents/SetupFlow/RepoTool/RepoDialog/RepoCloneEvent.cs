@@ -14,7 +14,7 @@ namespace DevHome.Common.TelemetryEvents.SetupFlow;
 [EventData]
 public class RepoCloneEvent : EventBase
 {
-    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServiceUsage;
+    public override PartA_PrivTags PartA_PrivTags => PrivTags.ProductAndServicePerformance;
 
     public string ProviderName
     {

@@ -55,3 +55,9 @@ using System.Diagnostics.CodeAnalysis;
 
 // Code quality
 [assembly: SuppressMessage("CodeQuality", "IDE0076:Invalid global 'SuppressMessageAttribute'", Justification = "Affect predefined suppressions.")]
+
+// Generated code
+[assembly: SuppressMessage(
+    "StyleCop.CSharp.DocumentationRules",
+    "SA1636:FileHeaderCopyrightTextMustMatch",
+    Justification = "Stub files are causing analyzer error because the file header does not match the expected value.")]
