@@ -29,7 +29,7 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
 
     /// <inheritdoc />
     /// TODO: Consider using install options instead of 'version' parameter
-    public async Task<InstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version)
+    public async Task<InstallPackageResult> InstallPackageAsync(WinGetCatalog catalog, string packageId, string version = null)
     {
         if (catalog == null)
         {
@@ -70,17 +70,17 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
     /// </summary>
     /// <param name="package">Package to install</param>
     /// <returns>Install result</returns>
-    private async Task<InstallResult> InstallPackageInternalAsync(CatalogPackage package, string version)
+    private async Task<InstallResult> InstallPackageInternalAsync(CatalogPackage package, string version = null)
     {
         var installOptions = _wingetFactory.CreateInstallOptions();
         installOptions.PackageInstallMode = PackageInstallMode.Silent;
-        if (TryFindVersion(package, version, out var versionId))
+        if (!string.IsNullOrWhiteSpace(version))
         {
-            installOptions.PackageVersionId = versionId;
+            installOptions.PackageVersionId = FindVersionOrThrow(package, version);
         }
         else
         {
-            Log.Logger?.ReportWarn(Log.Component.AppManagement, $"Specified version not found '{version}'. Falling back to default install version {package.DefaultInstallVersion.Version}");
+            Log.Logger?.ReportInfo(Log.Component.AppManagement, $"Install version not specified. Falling back to default install version {package.DefaultInstallVersion.Version}");
         }
 
         var packageManager = _wingetFactory.CreatePackageManager();
@@ -88,24 +88,24 @@ internal sealed class WinGetPackageInstaller : IWinGetPackageInstaller
     }
 
     /// <summary>
-    /// Try to find a specific version in the list of available versions for a package.
+    /// Find a specific version in the list of available versions for a package.
     /// </summary>
     /// <param name="package">Target package</param>
     /// <param name="version">Version to find</param>
-    /// <param name="versionId">Found version</param>
-    /// <returns>True if the version was found, false otherwise</returns>
-    private bool TryFindVersion(CatalogPackage package, string version, out PackageVersionId versionId)
+    /// <returns>Specified version</returns>
+    /// <exception>Exception thrown if the specified version was not found</exception>
+    private PackageVersionId FindVersionOrThrow(CatalogPackage package, string version)
     {
+        // Find the version in the list of available versions
         for (var i = 0; i < package.AvailableVersions.Count; i++)
         {
             if (package.AvailableVersions[i].Version == version)
             {
-                versionId = package.AvailableVersions[i];
-                return true;
+                return package.AvailableVersions[i];
             }
         }
 
-        versionId = null;
-        return false;
+        Log.Logger?.ReportError(Log.Component.AppManagement, $"Specified install version was not found {version}.");
+        throw new InstallPackageException(InstallResultStatus.InvalidOptions, InstallPackageException.InstallErrorInvalidParameter, HRESULT.S_OK);
     }
 }

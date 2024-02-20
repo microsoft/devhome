@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -87,7 +88,7 @@ public partial class PackageViewModel : ObservableObject
         _packageLightThemeIcon = new Lazy<BitmapImage>(() => GetIconByTheme(RestoreApplicationIconTheme.Light));
         _installPackageTask = new Lazy<InstallPackageTask>(() => CreateInstallTask(host.GetService<SetupFlowOrchestrator>().ActivityId));
 
-        SelectedVersion = _package.IsInstalled ? _package.InstalledVersion : _package.DefaultInstallVersion;
+        SelectedVersion = GetDefaultSelectedVersion();
     }
 
     public PackageUniqueKey UniqueKey => _package.UniqueKey;
@@ -283,10 +284,21 @@ public partial class PackageViewModel : ObservableObject
                 return false;
             }
 
-            return SelectedVersion != InstalledVersion;
+            var isValidSelectedVersion = AvailableVersions.Contains(SelectedVersion);
+            var isNotInstalledVersion = SelectedVersion != InstalledVersion;
+            return isValidSelectedVersion && isNotInstalledVersion;
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Get the default selected version
+    /// </summary>
+    /// <returns>Default selected version</returns>
+    private string GetDefaultSelectedVersion()
+    {
+        return _package.IsInstalled ? _package.InstalledVersion : _package.DefaultInstallVersion;
     }
 
     /// <summary>
