@@ -28,7 +28,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.Windows.DevHome.SDK;
 using Windows.Foundation;
 using WinUIEx;
@@ -422,7 +421,7 @@ public partial class AddRepoViewModel : ObservableObject
     }
 
     [RelayCommand]
-    public void SortRepos(ComboBox selectedItem)
+    public void SortRepos(TextBlock selectedItem)
     {
         IEnumerable<IRepository> repositories = new List<IRepository>();
         var sortMethod = Enum.Parse<SortMethod>(selectedItem.Tag.ToString());
